@@ -11,7 +11,7 @@ module.exports = {
     filename: '[name].js',
     path: resolve('dev'),
     publicPath: '/dev/',
-    library: 'DsLibs'
+    library: 'DsPlugins'
   },
   devServer: {
     contentBase: resolve('dev'),
