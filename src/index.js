@@ -24,9 +24,9 @@ export default () => ({
       return url.toString()
     },
     generate (url) {
-      return fetch(url)
+      return window.fetch(url)
         .then(response => {
-          return response.blob()  
+          return response.blob()
         })
         .then(blob => {
           return URL.createObjectURL(blob)
