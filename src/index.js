@@ -1,5 +1,6 @@
 import Plugin from './Plugin'
-import pluginLoader from './pluginLoader'
+import PluginLoader from './pluginLoader'
+const pluginLoader = new PluginLoader()
 
 export default rules => ({
   _methods: {},
