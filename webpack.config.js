@@ -1,30 +1,30 @@
 const path = require('path')
-<<<<<<< Updated upstream:webpack.config.js
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-=======
 const resolve = file => path.resolve(__dirname, file)
 let { plugin } = require('./src')
 plugin = plugin()
->>>>>>> Stashed changes:webpack.prod.config.js
 
 module.exports = {
   entry: './src/index.js',
   output: {
     filename: 'index.js',
-<<<<<<< Updated upstream:webpack.config.js
-    path: path.resolve(__dirname, 'dist')
-=======
     path: resolve('dist'),
     library: `${plugin.name}/v${plugin.version}`,
     libraryTarget: 'global',
     libraryExport: 'default',
     globalObject: 'window.pluginLoader'
->>>>>>> Stashed changes:webpack.prod.config.js
   },
-  mode: 'development',
   devServer: {
-    compress: true,
-    port: 9000
+    contentBase: resolve('dev'),
+    publicPath: '/dev/',
+    host: process.env.HOST || 'localhost',
+    port: process.env.PORT || '8080',
+    disableHostCheck: true
+  },
+  resolve: {
+    alias: {
+      '@dooksa/ds-plugins': resolve('node_modules/@dooksa/ds-plugins/dist'),
+      plugin: resolve('src')
+    }
   },
   module: {
     rules: [
@@ -42,11 +42,5 @@ module.exports = {
         }
       }
     ]
-  },
-  plugins: [
-    new HtmlWebpackPlugin({
-      appMountId: 'app',
-      filename: 'index.html'
-    })
-  ]
+  }
 }
