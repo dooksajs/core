@@ -14,7 +14,7 @@ export default {
           const current = basePlugins[name].current
 
           scriptSrc = current.src
-          pluginId = `${name}/v${current.}`
+          pluginId = `${name}/v${current.version}`
         }
       }
 
