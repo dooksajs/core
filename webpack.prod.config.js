@@ -1,16 +1,23 @@
 const path = require('path')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
+const resolve = file => path.resolve(__dirname, file)
+let { plugin } = require('./src')
+plugin = plugin()
 
 module.exports = {
+  mode: 'production',
   entry: './src/index.js',
   output: {
     filename: 'index.js',
-    path: path.resolve(__dirname, 'dist')
+    path: resolve('dist'),
+    library: `${plugin.name}/v${plugin.version}`,
+    libraryTarget: 'global',
+    libraryExport: 'default',
+    globalObject: 'window.pluginLoader'
   },
-  mode: 'development',
-  devServer: {
-    compress: true,
-    port: 9000
+  resolve: {
+    alias: {
+      '~': resolve('src')
+    }
   },
   module: {
     rules: [
@@ -20,7 +27,6 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            cacheCompression: false,
             presets: [
               '@babel/preset-env'
             ]
@@ -28,11 +34,5 @@ module.exports = {
         }
       }
     ]
-  },
-  plugins: [
-    new HtmlWebpackPlugin({
-      appMountId: 'app',
-      filename: 'index.html'
-    })
-  ]
+  }
 }
