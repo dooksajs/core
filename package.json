@@ -27,6 +27,6 @@
     "webpack-dev-server": "^3.11.2"
   },
   "dependencies": {
-    "@dooksa/script-loader": "git+ssh://git@bitbucket.org/dooksa/script-loader.git"
+    "@dooksa/script-loader": "git+ssh://git@bitbucket.org/dooksa/script-loader.git#v1.0.5"
   }
 }
