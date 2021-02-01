@@ -22,8 +22,7 @@ module.exports = {
   },
   resolve: {
     alias: {
-      '@dooksa/ds-plugins': resolve('src'),
-      '@dooksa/script-loader': resolve('node_modules/@dooksa/script-loader/dist')
+      '@dooksa/ds-plugins': resolve('src')
     }
   },
   module: {
