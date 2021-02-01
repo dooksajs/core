@@ -1,5 +1,5 @@
 import dsPlugins from '@dooksa/ds-plugins'
 
 const plugins = dsPlugins({})
-plugins.setup('uiAvatar')
+plugins.setup('dsFirebase')
 console.log(plugins)
