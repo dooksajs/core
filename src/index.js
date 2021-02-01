@@ -3,7 +3,7 @@ import PluginLoader from './pluginLoader'
 const pluginLoader = new PluginLoader()
 
 export default rules => ({
-  isDev: window.location.hostname.substring(window.location.hostname.length - 9) === 'localhost'
+  isDev: window.location.hostname.substring(window.location.hostname.length - 9) === 'localhost',
   _methods: {},
   queue: {},
   isLoaded: {},
@@ -41,7 +41,7 @@ export default rules => ({
     }
   },
   create (item) {
-    return new Plugin({ isDev }, item)
+    return new Plugin({ isDev: this.isDev }, item)
   },
   add (item) {
     if (item.methods) {
