@@ -1,7 +1,7 @@
 import ScriptLoader from '@dooksa/script-loader'
 
-export default function Plugin (plugin) {
-  plugin = plugin({ ScriptLoader })
+export default function Plugin ({ isDev }, createPlugin) {
+  const plugin = createPlugin({ ScriptLoader, isDev })
 
   this.name = plugin.name
   this._context = {

@@ -1,7 +1,9 @@
 import Plugin from './Plugin'
-import pluginLoader from './pluginLoader'
+import PluginLoader from './pluginLoader'
+const pluginLoader = new PluginLoader()
 
 export default rules => ({
+  isDev: window.location.hostname.substring(window.location.hostname.length - 9) === 'localhost',
   _methods: {},
   queue: {},
   isLoaded: {},
@@ -39,7 +41,7 @@ export default rules => ({
     }
   },
   create (item) {
-    return new Plugin(item)
+    return new Plugin({ isDev: this.isDev }, item)
   },
   add (item) {
     if (item.methods) {
@@ -72,51 +74,38 @@ export default rules => ({
         resolve()
       }
 
-      const pluginItem = pluginLoader(name, version)
+      const getPlugin = pluginLoader.get(name, version)
 
       this.isLoaded[name] = false
-      this.queue[name] = []
+      this.queue[name] = [getPlugin]
 
-      // remove async key, move plugin getter into pluginLoader
-      if (!pluginItem.get) {
-        const plugin = this.create(pluginItem.current)
+      getPlugin
+        .then((result) => {
+          const plugin = this.create(result)
 
-        if (plugin.dependencies) {
-          const depQueue = []
+          if (plugin.dependencies) {
+            const depQueue = []
 
-          for (let i = 0; i < plugin.dependencies.length; i++) {
-            const { name, version } = plugin.dependencies[i]
-            const depPlugin = this.setup(name, version)
+            for (let i = 0; i < plugin.dependencies.length; i++) {
+              const { name, version } = plugin.dependencies[i]
+              const depPlugin = this.setup(name, version)
 
-            depQueue.push(depPlugin)
+              depQueue.push(depPlugin)
+            }
+
+            Promise.all(depQueue)
+              .then(() => {
+                this.fetch(plugin, name)
+                this.add(plugin)
+                this.isLoading(name).then(() => resolve())
+              })
+          } else {
+            this.fetch(plugin, name)
+            this.add(plugin)
+            this.isLoading(name).then(() => resolve())
           }
-
-          Promise.all(depQueue)
-            .then(() => {
-              this.fetch(plugin, name)
-              this.add(plugin)
-              this.isLoading(name).then(() => resolve())
-            })
-        } else {
-          this.fetch(plugin, name)
-          this.add(plugin)
-          this.isLoading(name).then(() => resolve())
-        }
-      } else {
-        const getPlugin = new Promise((resolve, reject) => {
-          pluginItem.getPlugin()
-            .then((result) => {
-              const plugin = this.create(result.current)
-              const pluginSetup = this.fetch(plugin, name)
-
-              this.add(plugin)
-              this.queue[name].push(pluginSetup)
-              resolve()
-            })
         })
-
-        this.queue[name].push(getPlugin)
-      }
+        .catch(error => console.error(error))
     })
   }
 })
