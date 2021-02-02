@@ -8,6 +8,10 @@ export default function Plugin ({ isDev }, createPlugin) {
     name: plugin.name
   }
 
+  if (plugin.dependencies) {
+    this.dependencies = plugin.dependencies
+  }
+
   if (plugin.data) {
     this._context = { ...this._context, ...plugin.data }
   }
