@@ -26,9 +26,11 @@ export default function Plugin ({ isDev }, createPlugin) {
 
     for (const key in plugin.methods) {
       if (Object.hasOwnProperty.call(plugin.methods, key)) {
-        const method = plugin.methods[key]
-        this._context[key] = method
-        methods[key] = method.bind(this._context)
+        if (key.charAt(0) !== '_') {
+          const method = plugin.methods[key]
+          this._context[key] = method
+          methods[key] = method.bind(this._context)
+        }
       }
     }
 
