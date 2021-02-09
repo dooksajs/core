@@ -54,7 +54,7 @@ export default rules => ({
       }
     }
   },
-  fetch (plugin, name) {
+  setup (plugin, name) {
     const setup = plugin.setup()
 
     if (setup instanceof Promise) {
@@ -68,7 +68,7 @@ export default rules => ({
       this.isLoaded[name] = true
     }
   },
-  setup (name, version) {
+  install (name, version) {
     return new Promise((resolve) => {
       if (this.isLoaded[name] || this.queue[name]) {
         resolve()
@@ -88,19 +88,19 @@ export default rules => ({
 
             for (let i = 0; i < plugin.dependencies.length; i++) {
               const { name, version } = plugin.dependencies[i]
-              const depPlugin = this.setup(name, version)
+              const depPlugin = this.install(name, version)
 
               depQueue.push(depPlugin)
             }
 
             Promise.all(depQueue)
               .then(() => {
-                this.fetch(plugin, name)
+                this.setup(plugin, name)
                 this.add(plugin)
                 this.isLoading(name).then(() => resolve())
               })
           } else {
-            this.fetch(plugin, name)
+            this.setup(plugin, name)
             this.add(plugin)
             this.isLoading(name).then(() => resolve())
           }
