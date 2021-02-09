@@ -19,7 +19,6 @@ function DsPlugins ({ workflow, isDev, siteId }) {
 
   // load required plugins
   // TODO merge required plugins into one
-
   this.use({ name: 'dsFirebaseAuth' })
   this.use({ name: 'dsFirebaseFirestore' })
 
@@ -194,7 +193,7 @@ DsPlugins.prototype.callbackWhenAvailable = function (name, callback) {
   } else if (this.queue[name]) {
     this.isLoading(name).then(() => callback())
   } else {
-    this.use(name).then(() => callback())
+    this.use({ name }).then(() => callback())
   }
 }
 
