@@ -1,111 +1,215 @@
-import Plugin from './Plugin'
-import PluginLoader from './pluginLoader'
-const pluginLoader = new PluginLoader()
+import DsPlugin from './Plugin'
+import ScriptLoader from '@dooksa/script-loader'
+import basePlugins from './basePlugins'
 
-export default rules => ({
-  isDev: window.location.hostname.substring(window.location.hostname.length - 9) === 'localhost',
-  _methods: {},
-  queue: {},
-  isLoaded: {},
-  isLoading (name) {
-    return Promise.all(this.queue[name])
-  },
-  action (pluginName, fnName, params) {
-    const name = pluginName + '/' + fnName
+function DsPlugins ({ workflow, isDev, siteId }) {
+  // prepare global variable for plugin scripts
+  if (!window.pluginLoader) {
+    window.pluginLoader = {}
+  }
 
-    if (this.isLoaded[pluginName]) {
-      const action = this._methods[name](params)
+  this.isDev = isDev
+  this.workflow = workflow
+  this.queue = {}
+  this.isLoaded = {}
+  this._methods = {}
+  this.siteId = siteId
+  this.siteIdIsLoading = []
+  this.hostName = window.location.hostname
 
-      if (action instanceof Promise) {
-        Promise.resolve(action)
-          .then((result) => {
-            // rules({ id: name })
-          })
-      } else {
-        // rules({ id: name })
-      }
-    } else {
-      this.isLoading(pluginName)
-        .then(() => {
-          const action = this._methods[name](params)
+  // load required plugins
+  // TODO merge required plugins into one
 
-          if (action instanceof Promise) {
-            Promise.resolve(action)
-              .then((result) => {
-                // rules({ id: name })
-              })
-          } else {
-            // rules({ id: name })
-          }
-        })
-    }
-  },
-  create (item) {
-    return new Plugin({ isDev: this.isDev }, item)
-  },
-  add (item) {
-    if (item.methods) {
-      for (const key in item.methods) {
-        if (Object.hasOwnProperty.call(item.methods, key)) {
-          const method = item.methods[key]
+  this.use({ name: 'dsFirebaseAuth' })
+  this.use({ name: 'dsFirebaseFirestore' })
 
-          this._methods[`${item.name}/${key}`] = method
-        }
-      }
-    }
-  },
-  setup (plugin, name) {
-    const setup = plugin.setup()
+  if (!isDev) {
+    this.use({ name: 'dsFirebaseAnalytics' })
+    this.use({ name: 'dsFirebasePerformance' })
+  }
 
-    if (setup instanceof Promise) {
-      this.queue[name].push(setup)
-
-      Promise.resolve(setup)
-        .then(() => {
-          this.isLoaded[name] = true
-        })
-    } else {
-      this.isLoaded[name] = true
-    }
-  },
-  install (name, version) {
-    return new Promise((resolve) => {
-      if (this.isLoaded[name] || this.queue[name]) {
-        resolve()
-      }
-
-      const getPlugin = pluginLoader.get(name, version)
-
-      this.isLoaded[name] = false
-      this.queue[name] = [getPlugin]
-
-      getPlugin
-        .then((result) => {
-          const plugin = this.create(result)
-
-          if (plugin.dependencies) {
-            const depQueue = []
-
-            for (let i = 0; i < plugin.dependencies.length; i++) {
-              const { name, version } = plugin.dependencies[i]
-              const depPlugin = this.install(name, version)
-
-              depQueue.push(depPlugin)
+  if (!siteId) {
+    this.siteIdIsLoading = new Promise((resolve, reject) => {
+      this.callbackWhenAvailable('dsFirebaseFirestore', () => {
+        this._methods.dsFirebaseFirestore.getDocs({
+          query: {
+            path: ['sites'],
+            options: {
+              where: [{
+                path: 'domains',
+                op: 'array-contains',
+                value: this.hostName
+              }]
             }
-
-            Promise.all(depQueue)
-              .then(() => {
-                this.setup(plugin, name)
-                this.add(plugin)
-                this.isLoading(name).then(() => resolve())
-              })
-          } else {
-            this.setup(plugin, name)
-            this.add(plugin)
-            this.isLoading(name).then(() => resolve())
           }
         })
-        .catch(error => console.error(error))
+          .then((results) => {
+            this.siteId = results[0].id
+
+            resolve()
+          })
+          .catch((e) => reject(e))
+      })
     })
   }
-})
+}
+
+DsPlugins.prototype.action = function ({ pluginName, methodName, params, callback }) {
+  this.callbackWhenAvailable(pluginName, () => {
+    const action = this._methods[pluginName][methodName](params)
+
+    if (action instanceof Promise) {
+      Promise.resolve(action)
+        .then((result) => {
+          // rules({ id: name })
+        })
+    } else {
+      // rules({ id: name })
+    }
+  })
+}
+
+DsPlugins.prototype.add = function (item) {
+  if (item.methods) {
+    this._methods[item.name] = {}
+
+    for (const key in item.methods) {
+      if (Object.hasOwnProperty.call(item.methods, key)) {
+        const method = item.methods[key]
+
+        this._methods[item.name][key] = method
+      }
+    }
+  }
+}
+
+DsPlugins.prototype.get = function (name, version) {
+  return new Promise((resolve, reject) => {
+    let pluginId = version ? `${name}/v${version}` : name
+    let scriptSrc
+
+    if (basePlugins[name]) {
+      if (version && basePlugins[name].items[version]) {
+        scriptSrc = basePlugins[name].items[version]
+      } else {
+        const current = basePlugins[name].current
+
+        scriptSrc = current.src
+        pluginId = `${name}/v${current.version}`
+      }
+    }
+
+    if (scriptSrc) {
+      const script = new ScriptLoader({
+        id: 'plugin-' + pluginId,
+        src: scriptSrc
+      })
+
+      script.load()
+        .then(() => resolve(window.pluginLoader[pluginId]))
+        .catch(error => reject(error))
+    } else {
+      const error = new Error('plugin not found: ' + pluginId)
+
+      reject(error)
+    }
+  })
+}
+
+DsPlugins.prototype.install = function (name, version) {
+  return new Promise((resolve, reject) => {
+    this.isLoading[name] = false
+
+    // get plugin
+    this.get(name, version)
+      .then((item) => {
+        const plugin = new DsPlugin({ isDev: this.isDev }, item)
+        const queue = []
+
+        if (plugin.dependencies) {
+          const depQueue = []
+
+          for (let i = 0; i < plugin.dependencies.length; i++) {
+            const { name, version } = plugin.dependencies[i]
+            const depPlugin = this.use({ name, version })
+
+            depQueue.push(depPlugin)
+          }
+
+          // wait for all dependencies to load
+          Promise.all(depQueue)
+            .then(() => {
+              const setup = this.setup(plugin)
+
+              if (setup) {
+                queue.push(setup)
+              }
+
+              // wait for plugin to setup
+              Promise.all(queue)
+                .then(() => {
+                  this.add(plugin)
+                  this.isLoaded[name] = true
+                  resolve()
+                })
+                .catch(e => reject(e))
+            })
+            .catch(e => reject(e))
+        } else {
+          const setup = this.setup(plugin)
+
+          if (setup) {
+            queue.push(setup)
+          }
+
+          // wait for plugin to setup
+          Promise.all(queue)
+            .then(() => {
+              this.add(plugin)
+              this.isLoaded[name] = true
+              resolve()
+            })
+            .catch(e => reject(e))
+        }
+      })
+      .catch(e => reject(e))
+  })
+}
+
+DsPlugins.prototype.isLoading = function (name) {
+  return Promise.all(this.queue[name])
+}
+
+DsPlugins.prototype.setup = function (plugin, options) {
+  const setup = plugin.setup(options)
+
+  if (setup instanceof Promise) {
+    return setup
+  }
+}
+
+DsPlugins.prototype.callbackWhenAvailable = function (name, callback) {
+  if (this.isLoaded[name]) {
+    callback()
+  } else if (this.queue[name]) {
+    this.isLoading(name).then(() => callback())
+  } else {
+    this.use(name).then(() => callback())
+  }
+}
+
+DsPlugins.prototype.use = function ({ name, version, options }) {
+  if (this.isLoaded[name]) {
+    return Promise.resolve()
+  } else if (this.queue[name]) {
+    return this.isLoading(name)
+  } else {
+    const install = this.install(name, version, options)
+
+    this.queue[name] = [install]
+
+    return install
+  }
+}
+
+export default DsPlugins
