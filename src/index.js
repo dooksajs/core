@@ -2,7 +2,7 @@ import DsPlugin from './Plugin'
 import ScriptLoader from '@dooksa/script-loader'
 import basePlugins from './basePlugins'
 
-function DsPlugins ({ workflow, isDev, siteId }) {
+function DsPlugins ({ isDev, siteId }) {
   // prepare global variable for plugin scripts
   if (!window.pluginLoader) {
     window.pluginLoader = {}
@@ -10,7 +10,6 @@ function DsPlugins ({ workflow, isDev, siteId }) {
 
   this._methods = {}
   this.isDev = isDev
-  this.workflow = workflow
   this.queue = {}
   this.isLoaded = {}
   this.sitePluginsLoaded = false
@@ -55,17 +54,14 @@ function DsPlugins ({ workflow, isDev, siteId }) {
   })
 }
 
-DsPlugins.prototype.action = function ({ pluginName, methodName, params, callback }) {
+DsPlugins.prototype.action = function ({ pluginName, methodName, params, callback = Function }) {
   this.callbackWhenAvailable(pluginName, () => {
     const action = this._methods[pluginName][methodName](params)
 
     if (action instanceof Promise) {
-      Promise.resolve(action)
-        .then((result) => {
-          // rules({ id: name })
-        })
+      Promise.resolve(action).then((result) => callback(result))
     } else {
-      // rules({ id: name })
+      callback(action)
     }
   })
 }
