@@ -15,7 +15,7 @@ $ npm install
 $ npm run dev
 ```
 
-### Manually add plugin
+### Add plugin
 
 This will add plugin metadata that allows the system to load the required version on demand
 
