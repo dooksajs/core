@@ -8,6 +8,10 @@ export default function Plugin ({ isDev }, createPlugin) {
     name: plugin.name
   }
 
+  if (plugin.dependencies) {
+    this.dependencies = plugin.dependencies
+  }
+
   if (plugin.data) {
     this._context = { ...this._context, ...plugin.data }
   }
@@ -24,7 +28,11 @@ export default function Plugin ({ isDev }, createPlugin) {
       if (Object.hasOwnProperty.call(plugin.methods, key)) {
         const method = plugin.methods[key]
         this._context[key] = method
-        methods[key] = method.bind(this._context)
+
+        // Catch all the "_private" methods following the common js "_private" method naming convention
+        if (key.charAt(0) !== '_') {
+          methods[key] = method.bind(this._context)
+        }
       }
     }
 
