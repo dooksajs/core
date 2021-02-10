@@ -77,8 +77,12 @@ DsPlugins.prototype.add = function (plugin) {
   }
 }
 
-DsPlugins.prototype.addMetadata = function (data) {
-  this.metadata = { ...this.metadata, ...data }
+DsPlugins.prototype.addMetadata = function (meta) {
+  if (this.metadata[meta.name]) {
+    this.metadata[meta.name].items = { ...this.metadata[meta.name].items, ...meta.items }
+  } else {
+    this.metadata = { ...this.metadata, ...meta }
+  }
 }
 
 DsPlugins.prototype.get = function (name, version) {
@@ -93,21 +97,23 @@ DsPlugins.prototype.get = function (name, version) {
     if (this.metadata[name]) {
       const metadata = this.metadata[name]
 
-      if (version && metadata.items[version]) {
-        scriptOptions.src = metadata.items[version]
-      } else {
-        pluginId = `${name}/v${metadata.current.version}`
-        scriptOptions.src = metadata.current.src
-        scriptOptions.id = pluginId
+      if (!version) {
+        version = metadata.currentVersion
+        pluginId = `${name}/v${version}`
+      }
 
-        if (metadata.urlParams) {
-          scriptOptions.customParams = metadata.urlParams.names
-          scriptParams = metadata.urlParams.values
-        }
+      const item = metadata.items[version]
 
-        if (metadata.setupOptions) {
-          setupOptions = metadata.setupOptions
-        }
+      scriptOptions.src = item.src
+      scriptOptions.id = pluginId
+
+      if (item.urlParams && item.urlParams.names && item.urlParams.values) {
+        scriptOptions.customParams = item.urlParams.names
+        scriptParams = item.urlParams.values
+      }
+
+      if (item.setupOptions) {
+        setupOptions = item.setupOptions
       }
     }
 
