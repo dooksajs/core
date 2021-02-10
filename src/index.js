@@ -14,44 +14,41 @@ function DsPlugins ({ isDev, siteId }) {
   this.isLoaded = {}
   this.sitePluginsLoaded = false
   this.sitePluginsLoading = []
-  this.pluginMetadata = { ...basePluginMetadata }
+  this.metadata = { ...basePluginMetadata }
   this.hostName = window.location.hostname
 
   // load required plugins
   // TODO merge required plugins into one
-  this.use({ name: 'dsFirebaseAuth' })
-  this.use({ name: 'dsFirebaseFirestore' })
-
-  // remove condition when DOOKSA-223 is resolved
   if (!isDev) {
+    this.use({ name: 'dsFirebaseAuth' })
+    this.use({ name: 'dsFirebaseFirestore' })
     this.use({ name: 'dsFirebaseAnalytics' })
     this.use({ name: 'dsFirebasePerformance' })
-  }
 
-  this.sitePluginsLoading = new Promise((resolve, reject) => {
-    this.callbackWhenAvailable('dsFirebaseFirestore', () => {
-      this._methods.dsFirebaseFirestore.getDocs({
-        query: {
-          path: ['sites'],
-          options: {
-            where: [{
-              path: 'domains',
-              op: 'array-contains',
-              value: this.hostName
-            }]
+    this.sitePluginsLoading = new Promise((resolve, reject) => {
+      this.callbackWhenAvailable('dsFirebaseFirestore', () => {
+        this._methods.dsFirebaseFirestore.getDocs({
+          query: {
+            path: ['sites'],
+            options: {
+              where: [{
+                path: 'domains',
+                op: 'array-contains',
+                value: this.hostName
+              }]
+            }
           }
-        }
-      })
-        .then((results) => {
-          const doc = results[0]
-
-          this.pluginMetadata = { ...this.pluginMetadata, ...doc.plugins }
-
-          resolve()
         })
-        .catch((e) => reject(e))
+          .then((results) => {
+            const doc = results[0]
+
+            this.addMetadata(doc.plugins)
+            resolve()
+          })
+          .catch((e) => reject(e))
+      })
     })
-  })
+  }
 }
 
 DsPlugins.prototype.action = function ({ pluginName, methodName, params, callback = Function }) {
@@ -80,6 +77,14 @@ DsPlugins.prototype.add = function (plugin) {
   }
 }
 
+DsPlugins.prototype.addMetadata = function (meta) {
+  if (this.metadata[meta.name]) {
+    this.metadata[meta.name].items = { ...this.metadata[meta.name].items, ...meta.items }
+  } else {
+    this.metadata = { ...this.metadata, ...meta }
+  }
+}
+
 DsPlugins.prototype.get = function (name, version) {
   return new Promise((resolve, reject) => {
     let pluginId = version ? `${name}/v${version}` : name
@@ -89,24 +94,26 @@ DsPlugins.prototype.get = function (name, version) {
       src: null
     }
 
-    if (this.pluginMetadata[name]) {
-      const metadata = this.pluginMetadata[name]
+    if (this.metadata[name]) {
+      const metadata = this.metadata[name]
 
-      if (version && metadata.items[version]) {
-        scriptOptions.src = metadata.items[version]
-      } else {
-        pluginId = `${name}/v${metadata.current.version}`
-        scriptOptions.src = metadata.current.src
-        scriptOptions.id = pluginId
+      if (!version) {
+        version = metadata.currentVersion
+        pluginId = `${name}/v${version}`
+      }
 
-        if (metadata.urlParams) {
-          scriptOptions.customParams = metadata.urlParams.names
-          scriptParams = metadata.urlParams.values
-        }
+      const item = metadata.items[version]
 
-        if (metadata.setupOptions) {
-          setupOptions = metadata.setupOptions
-        }
+      scriptOptions.src = item.src
+      scriptOptions.id = pluginId
+
+      if (item.urlParams && item.urlParams.names && item.urlParams.values) {
+        scriptOptions.customParams = item.urlParams.names
+        scriptParams = item.urlParams.values
+      }
+
+      if (item.setupOptions) {
+        setupOptions = item.setupOptions
       }
     }
 
