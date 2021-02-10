@@ -14,7 +14,7 @@ function DsPlugins ({ isDev, siteId }) {
   this.isLoaded = {}
   this.sitePluginsLoaded = false
   this.sitePluginsLoading = []
-  this.pluginMetadata = { ...basePluginMetadata }
+  this.metadata = { ...basePluginMetadata }
   this.hostName = window.location.hostname
 
   // load required plugins
@@ -45,8 +45,7 @@ function DsPlugins ({ isDev, siteId }) {
         .then((results) => {
           const doc = results[0]
 
-          this.pluginMetadata = { ...this.pluginMetadata, ...doc.plugins }
-
+          this.addMetadata(doc.plugins)
           resolve()
         })
         .catch((e) => reject(e))
@@ -80,6 +79,10 @@ DsPlugins.prototype.add = function (plugin) {
   }
 }
 
+DsPlugins.prototype.addMetadata = function (data) {
+  this.metadata = { ...this.metadata, ...data }
+}
+
 DsPlugins.prototype.get = function (name, version) {
   return new Promise((resolve, reject) => {
     let pluginId = version ? `${name}/v${version}` : name
@@ -89,8 +92,8 @@ DsPlugins.prototype.get = function (name, version) {
       src: null
     }
 
-    if (this.pluginMetadata[name]) {
-      const metadata = this.pluginMetadata[name]
+    if (this.metadata[name]) {
+      const metadata = this.metadata[name]
 
       if (version && metadata.items[version]) {
         scriptOptions.src = metadata.items[version]
