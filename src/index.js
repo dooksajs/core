@@ -1,6 +1,6 @@
 import DsPlugin from './Plugin'
 import ScriptLoader from '@dooksa/script-loader'
-import basePlugins from './basePlugins'
+import basePluginConfigs from './basePlugins'
 
 function DsPlugins ({ isDev, siteId }) {
   // prepare global variable for plugin scripts
@@ -14,7 +14,7 @@ function DsPlugins ({ isDev, siteId }) {
   this.isLoaded = {}
   this.sitePluginsLoaded = false
   this.sitePluginsLoading = []
-  this.plugins = { ...basePlugins }
+  this.pluginConfigs = { ...basePluginConfigs }
   this.hostName = window.location.hostname
 
   // load required plugins
@@ -45,7 +45,7 @@ function DsPlugins ({ isDev, siteId }) {
         .then((results) => {
           const doc = results[0]
 
-          this.plugins = { ...this.plugins, ...doc.plugins }
+          this.pluginConfigs = { ...this.pluginConfigs, ...doc.plugins }
 
           resolve()
         })
@@ -66,15 +66,15 @@ DsPlugins.prototype.action = function ({ pluginName, methodName, params, callbac
   })
 }
 
-DsPlugins.prototype.add = function (item) {
-  if (item.methods) {
-    this._methods[item.name] = {}
+DsPlugins.prototype.add = function (plugin) {
+  if (plugin.methods) {
+    this._methods[plugin.name] = {}
 
-    for (const key in item.methods) {
-      if (Object.hasOwnProperty.call(item.methods, key)) {
-        const method = item.methods[key]
+    for (const key in plugin.methods) {
+      if (Object.hasOwnProperty.call(plugin.methods, key)) {
+        const method = plugin.methods[key]
 
-        this._methods[item.name][key] = method
+        this._methods[plugin.name][key] = method
       }
     }
   }
@@ -83,24 +83,30 @@ DsPlugins.prototype.add = function (item) {
 DsPlugins.prototype.get = function (name, version) {
   return new Promise((resolve, reject) => {
     let pluginId = version ? `${name}/v${version}` : name
-    let scriptSrc
+    const scriptOptions = {
+      id: pluginId,
+      src: null,
+      customParams: []
+    }
 
-    if (this.plugins[name]) {
-      if (version && this.plugins[name].items[version]) {
-        scriptSrc = this.plugins[name].items[version]
+    if (this.pluginConfigs[name]) {
+      const pluginConfig = this.pluginConfigs[name]
+
+      if (version && pluginConfig.items[version]) {
+        scriptOptions.src = pluginConfig.items[version]
       } else {
-        const current = this.plugins[name].current
+        pluginId = `${name}/v${pluginConfig.current.version}`
+        scriptOptions.src = pluginConfig.current.src
+        scriptOptions.id = pluginId
 
-        scriptSrc = current.src
-        pluginId = `${name}/v${current.version}`
+        if (pluginConfig.customParams) {
+          scriptOptions.customParams = pluginConfig.customParams
+        }
       }
     }
 
-    if (scriptSrc) {
-      const script = new ScriptLoader({
-        id: 'plugin-' + pluginId,
-        src: scriptSrc
-      })
+    if (scriptOptions.src) {
+      const script = new ScriptLoader(scriptOptions)
 
       script.load()
         .then(() => resolve(window.pluginLoader[pluginId]))
@@ -119,16 +125,16 @@ DsPlugins.prototype.install = function (name, version) {
 
     // get plugin
     this.get(name, version)
-      .then((item) => {
-        const plugin = new DsPlugin({ isDev: this.isDev }, item)
+      .then((plugin) => {
+        const dsPlugin = new DsPlugin({ isDev: this.isDev }, plugin)
         const queue = []
 
-        if (plugin.dependencies) {
+        if (dsPlugin.dependencies) {
           const depQueue = []
 
-          for (let i = 0; i < plugin.dependencies.length; i++) {
-            const { name, version } = plugin.dependencies[i]
-            const depPlugin = this.use({ name, version })
+          for (let i = 0; i < dsPlugin.dependencies.length; i++) {
+            const { name, version } = dsPlugin.dependencies[i]
+            const depPlugin = this.use({ name: name, version: version })
 
             depQueue.push(depPlugin)
           }
@@ -136,7 +142,7 @@ DsPlugins.prototype.install = function (name, version) {
           // wait for all dependencies to load
           Promise.all(depQueue)
             .then(() => {
-              const setup = this.setup(plugin)
+              const setup = this.setup(dsPlugin)
 
               if (setup) {
                 queue.push(setup)
@@ -145,7 +151,7 @@ DsPlugins.prototype.install = function (name, version) {
               // wait for plugin to setup
               Promise.all(queue)
                 .then(() => {
-                  this.add(plugin)
+                  this.add(dsPlugin)
                   this.isLoaded[name] = true
                   resolve()
                 })
@@ -153,7 +159,7 @@ DsPlugins.prototype.install = function (name, version) {
             })
             .catch(e => reject(e))
         } else {
-          const setup = this.setup(plugin)
+          const setup = this.setup(dsPlugin)
 
           if (setup) {
             queue.push(setup)
@@ -162,7 +168,7 @@ DsPlugins.prototype.install = function (name, version) {
           // wait for plugin to setup
           Promise.all(queue)
             .then(() => {
-              this.add(plugin)
+              this.add(dsPlugin)
               this.isLoaded[name] = true
               resolve()
             })
@@ -177,8 +183,8 @@ DsPlugins.prototype.isLoading = function (name) {
   return Promise.all(this.queue[name])
 }
 
-DsPlugins.prototype.setup = function (plugin, options) {
-  const setup = plugin.setup(options)
+DsPlugins.prototype.setup = function (dsPlugin, options) {
+  const setup = dsPlugin.setup(options)
 
   if (setup instanceof Promise) {
     return setup
@@ -195,13 +201,13 @@ DsPlugins.prototype.callbackWhenAvailable = function (name, callback) {
   }
 }
 
-DsPlugins.prototype.use = function ({ name, version, options }) {
+DsPlugins.prototype.use = function ({ name, version }) {
   if (this.isLoaded[name]) {
     return Promise.resolve()
   } else if (this.queue[name]) {
     return this.isLoading(name)
   } else {
-    const install = this.install(name, version, options)
+    const install = this.install(name, version)
 
     this.queue[name] = [install]
 
