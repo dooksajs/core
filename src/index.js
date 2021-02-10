@@ -19,38 +19,36 @@ function DsPlugins ({ isDev, siteId }) {
 
   // load required plugins
   // TODO merge required plugins into one
-  this.use({ name: 'dsFirebaseAuth' })
-  this.use({ name: 'dsFirebaseFirestore' })
-
-  // remove condition when DOOKSA-223 is resolved
   if (!isDev) {
+    this.use({ name: 'dsFirebaseAuth' })
+    this.use({ name: 'dsFirebaseFirestore' })
     this.use({ name: 'dsFirebaseAnalytics' })
     this.use({ name: 'dsFirebasePerformance' })
-  }
 
-  this.sitePluginsLoading = new Promise((resolve, reject) => {
-    this.callbackWhenAvailable('dsFirebaseFirestore', () => {
-      this._methods.dsFirebaseFirestore.getDocs({
-        query: {
-          path: ['sites'],
-          options: {
-            where: [{
-              path: 'domains',
-              op: 'array-contains',
-              value: this.hostName
-            }]
+    this.sitePluginsLoading = new Promise((resolve, reject) => {
+      this.callbackWhenAvailable('dsFirebaseFirestore', () => {
+        this._methods.dsFirebaseFirestore.getDocs({
+          query: {
+            path: ['sites'],
+            options: {
+              where: [{
+                path: 'domains',
+                op: 'array-contains',
+                value: this.hostName
+              }]
+            }
           }
-        }
-      })
-        .then((results) => {
-          const doc = results[0]
-
-          this.addMetadata(doc.plugins)
-          resolve()
         })
-        .catch((e) => reject(e))
+          .then((results) => {
+            const doc = results[0]
+
+            this.addMetadata(doc.plugins)
+            resolve()
+          })
+          .catch((e) => reject(e))
+      })
     })
-  })
+  }
 }
 
 DsPlugins.prototype.action = function ({ pluginName, methodName, params, callback = Function }) {
