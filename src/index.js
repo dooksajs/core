@@ -8,13 +8,14 @@ function DsPlugins ({ workflow, isDev, siteId }) {
     window.pluginLoader = {}
   }
 
+  this._methods = {}
   this.isDev = isDev
   this.workflow = workflow
   this.queue = {}
   this.isLoaded = {}
-  this._methods = {}
-  this.siteId = siteId
-  this.siteIdIsLoading = []
+  this.sitePluginsLoaded = false
+  this.sitePluginsLoading = []
+  this.plugins = { ...basePlugins }
   this.hostName = window.location.hostname
 
   // load required plugins
@@ -22,35 +23,36 @@ function DsPlugins ({ workflow, isDev, siteId }) {
   this.use({ name: 'dsFirebaseAuth' })
   this.use({ name: 'dsFirebaseFirestore' })
 
+  // remove condition when DOOKSA-223 is resolved
   if (!isDev) {
     this.use({ name: 'dsFirebaseAnalytics' })
     this.use({ name: 'dsFirebasePerformance' })
   }
 
-  if (!siteId) {
-    this.siteIdIsLoading = new Promise((resolve, reject) => {
-      this.callbackWhenAvailable('dsFirebaseFirestore', () => {
-        this._methods.dsFirebaseFirestore.getDocs({
-          query: {
-            path: ['sites'],
-            options: {
-              where: [{
-                path: 'domains',
-                op: 'array-contains',
-                value: this.hostName
-              }]
-            }
+  this.sitePluginsLoading = new Promise((resolve, reject) => {
+    this.callbackWhenAvailable('dsFirebaseFirestore', () => {
+      this._methods.dsFirebaseFirestore.getDocs({
+        query: {
+          path: ['sites'],
+          options: {
+            where: [{
+              path: 'domains',
+              op: 'array-contains',
+              value: this.hostName
+            }]
           }
-        })
-          .then((results) => {
-            this.siteId = results[0].id
-
-            resolve()
-          })
-          .catch((e) => reject(e))
+        }
       })
+        .then((results) => {
+          const doc = results[0]
+
+          this.plugins = { ...this.plugins, ...doc.plugins }
+
+          resolve()
+        })
+        .catch((e) => reject(e))
     })
-  }
+  })
 }
 
 DsPlugins.prototype.action = function ({ pluginName, methodName, params, callback }) {
@@ -87,11 +89,11 @@ DsPlugins.prototype.get = function (name, version) {
     let pluginId = version ? `${name}/v${version}` : name
     let scriptSrc
 
-    if (basePlugins[name]) {
-      if (version && basePlugins[name].items[version]) {
-        scriptSrc = basePlugins[name].items[version]
+    if (this.plugins[name]) {
+      if (version && this.plugins[name].items[version]) {
+        scriptSrc = this.plugins[name].items[version]
       } else {
-        const current = basePlugins[name].current
+        const current = this.plugins[name].current
 
         scriptSrc = current.src
         pluginId = `${name}/v${current.version}`
