@@ -1,6 +1,6 @@
 import DsPlugin from './Plugin'
 import ScriptLoader from '@dooksa/script-loader'
-import basePluginConfigs from './basePlugins'
+import basePluginMetadata from './basePlugins'
 
 function DsPlugins ({ isDev, siteId }) {
   // prepare global variable for plugin scripts
@@ -14,7 +14,7 @@ function DsPlugins ({ isDev, siteId }) {
   this.isLoaded = {}
   this.sitePluginsLoaded = false
   this.sitePluginsLoading = []
-  this.pluginConfigs = { ...basePluginConfigs }
+  this.pluginMetadata = { ...basePluginMetadata }
   this.hostName = window.location.hostname
 
   // load required plugins
@@ -45,7 +45,7 @@ function DsPlugins ({ isDev, siteId }) {
         .then((results) => {
           const doc = results[0]
 
-          this.pluginConfigs = { ...this.pluginConfigs, ...doc.plugins }
+          this.pluginMetadata = { ...this.pluginMetadata, ...doc.plugins }
 
           resolve()
         })
@@ -83,24 +83,29 @@ DsPlugins.prototype.add = function (plugin) {
 DsPlugins.prototype.get = function (name, version) {
   return new Promise((resolve, reject) => {
     let pluginId = version ? `${name}/v${version}` : name
+    let scriptParams, setupOptions
     const scriptOptions = {
       id: pluginId,
-      src: null,
-      customParams: []
+      src: null
     }
 
-    if (this.pluginConfigs[name]) {
-      const pluginConfig = this.pluginConfigs[name]
+    if (this.pluginMetadata[name]) {
+      const metadata = this.pluginMetadata[name]
 
-      if (version && pluginConfig.items[version]) {
-        scriptOptions.src = pluginConfig.items[version]
+      if (version && metadata.items[version]) {
+        scriptOptions.src = metadata.items[version]
       } else {
-        pluginId = `${name}/v${pluginConfig.current.version}`
-        scriptOptions.src = pluginConfig.current.src
+        pluginId = `${name}/v${metadata.current.version}`
+        scriptOptions.src = metadata.current.src
         scriptOptions.id = pluginId
 
-        if (pluginConfig.customParams) {
-          scriptOptions.customParams = pluginConfig.customParams
+        if (metadata.urlParams) {
+          scriptOptions.customParams = metadata.urlParams.names
+          scriptParams = metadata.urlParams.values
+        }
+
+        if (metadata.setupOptions) {
+          setupOptions = metadata.setupOptions
         }
       }
     }
@@ -108,8 +113,8 @@ DsPlugins.prototype.get = function (name, version) {
     if (scriptOptions.src) {
       const script = new ScriptLoader(scriptOptions)
 
-      script.load()
-        .then(() => resolve(window.pluginLoader[pluginId]))
+      script.load(scriptParams)
+        .then(() => resolve({ plugin: window.pluginLoader[pluginId], options: setupOptions }))
         .catch(error => reject(error))
     } else {
       const error = new Error('plugin not found: ' + pluginId)
@@ -125,7 +130,7 @@ DsPlugins.prototype.install = function (name, version) {
 
     // get plugin
     this.get(name, version)
-      .then((plugin) => {
+      .then(({ plugin, setupOptions }) => {
         const dsPlugin = new DsPlugin({ isDev: this.isDev }, plugin)
         const queue = []
 
@@ -142,7 +147,7 @@ DsPlugins.prototype.install = function (name, version) {
           // wait for all dependencies to load
           Promise.all(depQueue)
             .then(() => {
-              const setup = this.setup(dsPlugin)
+              const setup = this.setup(dsPlugin, setupOptions)
 
               if (setup) {
                 queue.push(setup)
@@ -159,7 +164,7 @@ DsPlugins.prototype.install = function (name, version) {
             })
             .catch(e => reject(e))
         } else {
-          const setup = this.setup(dsPlugin)
+          const setup = this.setup(dsPlugin, setupOptions)
 
           if (setup) {
             queue.push(setup)
