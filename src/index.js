@@ -77,12 +77,23 @@ DsPlugins.prototype.add = function (plugin) {
   }
 }
 
-DsPlugins.prototype.addMetadata = function (meta) {
-  if (this.metadata[meta.name]) {
-    this.metadata[meta.name].items = { ...this.metadata[meta.name].items, ...meta.items }
-  } else {
-    this.metadata = { ...this.metadata, ...meta }
+DsPlugins.prototype.addMetadata = function (data) {
+  for (const name in data) {
+    if (Object.hasOwnProperty.call(data, name)) {
+      const items = data[name].items
+
+      if (this.metadata[name]) {
+        this.metadata[name].items = { ...this.metadata[name].items, ...items }
+        delete data[name]
+      }
+    }
   }
+
+  this.metadata = { ...this.metadata, ...data }
+}
+
+DsPlugins.prototype.setCurrentVersion = function (name, version) {
+  this.metadata[name].currentVersion = version
 }
 
 DsPlugins.prototype.get = function (name, version) {

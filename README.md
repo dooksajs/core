@@ -49,7 +49,19 @@ plugins.addMetadata({
 
 ```
 
+### Change the default plugin version
+
+```js
+
+const plugins = new DsPlugins({ isDev: true })
+
+plugins.setCurrentVersion('googleMaps', '1.0.0')
+
+```
+
 ### Run a plugin method
+
+The action method will use the 'currentVersion' of the plugin
 
 ```js
 
