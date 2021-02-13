@@ -77,7 +77,27 @@ plugins.action({
       lng: 0
     }
   }, 
-  callback: (result) => console.log(result)
+  callback: (result, status) => {
+    if (status === plugins.PluginActionStatus.OK) {
+      console.log(result)
+    }
+  }
 })
+
+```
+
+### Plugin callback results
+
+Successful action results will be the returned value from the requested plugin method, an unsuccessful action results will be an error from the requested plugin method 
+
+To check if a action was successful, compare the status argument to the plugin constant "OK" 
+
+```js
+
+ callback: (result, status) => {
+    if (status === plugins.PluginActionStatus.OK) {
+      console.log(result)
+    }
+  }
 
 ```
