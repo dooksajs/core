@@ -2,10 +2,15 @@ import DsPlugin from './Plugin'
 import ScriptLoader from '@dooksa/script-loader'
 import basePluginMetadata from './basePlugins'
 
-function DsPlugins ({ isDev, siteId }) {
+function DsPlugins ({ isDev }) {
   // prepare global variable for plugin scripts
   if (!window.pluginLoader) {
     window.pluginLoader = {}
+  }
+
+  this.PluginActionStatus = {
+    OK: 'OK',
+    PLUGIN_ERROR: 'PLUGIN_ERROR'
   }
 
   this._methods = {}
@@ -53,12 +58,17 @@ function DsPlugins ({ isDev, siteId }) {
 
 DsPlugins.prototype.action = function ({ pluginName, methodName, params, callback = Function }) {
   this.callbackWhenAvailable(pluginName, () => {
-    const action = this._methods[pluginName][methodName](params)
+    const pluginResult = this._methods[pluginName][methodName](params)
 
-    if (action instanceof Promise) {
-      Promise.resolve(action).then((result) => callback(result))
+    if (pluginResult instanceof Promise) {
+      Promise.resolve(pluginResult)
+        .then(result => callback(result, this.PluginActionStatus.OK))
+        .catch(error => {
+          console.error(error)
+          callback(error, this.PluginActionStatus.PLUGIN_ERROR)
+        })
     } else {
-      callback(action)
+      callback(pluginResult, this.PluginActionStatus.OK)
     }
   })
 }
