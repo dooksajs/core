@@ -10,7 +10,11 @@ plugins.action({
     code: '404',
     message: 'page not found'
   },
-  callback: (e) => console.error(e)
+  callback: (result, status) => {
+    if (status === plugins.PluginActionStatus.OK) {
+      console.error(result)
+    }
+  }
 })
 
 // test adding multiple plugin metadata
