@@ -2,10 +2,15 @@ import DsPlugin from './Plugin'
 import ScriptLoader from '@dooksa/script-loader'
 import basePluginMetadata from './basePlugins'
 
-function DsPlugins ({ isDev, siteId }) {
+function DsPlugins ({ isDev }) {
   // prepare global variable for plugin scripts
   if (!window.pluginLoader) {
     window.pluginLoader = {}
+  }
+
+  this.PluginActionStatus = {
+    OK: 'OK',
+    PLUGIN_ERROR: 'PLUGIN_ERROR'
   }
 
   this._methods = {}
@@ -53,12 +58,17 @@ function DsPlugins ({ isDev, siteId }) {
 
 DsPlugins.prototype.action = function ({ pluginName, methodName, params, callback = Function }) {
   this.callbackWhenAvailable(pluginName, () => {
-    const action = this._methods[pluginName][methodName](params)
+    const pluginResult = this._methods[pluginName][methodName](params)
 
-    if (action instanceof Promise) {
-      Promise.resolve(action).then((result) => callback(result))
+    if (pluginResult instanceof Promise) {
+      Promise.resolve(pluginResult)
+        .then(result => callback(result, this.PluginActionStatus.OK))
+        .catch(error => {
+          console.error(error)
+          callback(error, this.PluginActionStatus.PLUGIN_ERROR)
+        })
     } else {
-      callback(action)
+      callback(pluginResult, this.PluginActionStatus.OK)
     }
   })
 }
@@ -77,12 +87,23 @@ DsPlugins.prototype.add = function (plugin) {
   }
 }
 
-DsPlugins.prototype.addMetadata = function (meta) {
-  if (this.metadata[meta.name]) {
-    this.metadata[meta.name].items = { ...this.metadata[meta.name].items, ...meta.items }
-  } else {
-    this.metadata = { ...this.metadata, ...meta }
+DsPlugins.prototype.addMetadata = function (data) {
+  for (const name in data) {
+    if (Object.hasOwnProperty.call(data, name)) {
+      const items = data[name].items
+
+      if (this.metadata[name]) {
+        this.metadata[name].items = { ...this.metadata[name].items, ...items }
+        delete data[name]
+      }
+    }
   }
+
+  this.metadata = { ...this.metadata, ...data }
+}
+
+DsPlugins.prototype.setCurrentVersion = function (name, version) {
+  this.metadata[name].currentVersion = version
 }
 
 DsPlugins.prototype.get = function (name, version) {

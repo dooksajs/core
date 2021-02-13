@@ -49,7 +49,19 @@ plugins.addMetadata({
 
 ```
 
+### Change the default plugin version
+
+```js
+
+const plugins = new DsPlugins({ isDev: true })
+
+plugins.setCurrentVersion('googleMaps', '1.0.0')
+
+```
+
 ### Run a plugin method
+
+The action method will use the 'currentVersion' of the plugin
 
 ```js
 
@@ -65,7 +77,27 @@ plugins.action({
       lng: 0
     }
   }, 
-  callback: (result) => console.log(result)
+  callback: (result, status) => {
+    if (status === plugins.PluginActionStatus.OK) {
+      console.log(result)
+    }
+  }
 })
+
+```
+
+### Plugin callback results
+
+Successful action results will be the returned value from the requested plugin method, an unsuccessful action results will be an error from the requested plugin method 
+
+To check if a action was successful, compare the status argument to the plugin constant "OK" 
+
+```js
+
+ callback: (result, status) => {
+    if (status === plugins.PluginActionStatus.OK) {
+      console.log(result)
+    }
+  }
 
 ```
