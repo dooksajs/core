@@ -8,11 +8,6 @@ function DsPlugins ({ isDev }) {
     window.pluginLoader = {}
   }
 
-  this.PluginActionStatus = {
-    OK: 'OK',
-    PLUGIN_ERROR: 'PLUGIN_ERROR'
-  }
-
   this._methods = {}
   this.isDev = isDev
   this.queue = {}
@@ -56,19 +51,22 @@ function DsPlugins ({ isDev }) {
   }
 }
 
-DsPlugins.prototype.action = function ({ pluginName, methodName, params, callback = Function }) {
+DsPlugins.prototype.action = function ({
+  pluginName,
+  methodName,
+  params,
+  callbackSuccess = Function,
+  callbackError = Function
+}) {
   this.callbackWhenAvailable(pluginName, () => {
     const pluginResult = this._methods[pluginName][methodName](params)
 
     if (pluginResult instanceof Promise) {
       Promise.resolve(pluginResult)
-        .then(result => callback(result, this.PluginActionStatus.OK))
-        .catch(error => {
-          console.error(error)
-          callback(error, this.PluginActionStatus.PLUGIN_ERROR)
-        })
+        .then(result => callbackSuccess(result))
+        .catch(error => callbackError(error))
     } else {
-      callback(pluginResult, this.PluginActionStatus.OK)
+      callbackSuccess(pluginResult)
     }
   })
 }
