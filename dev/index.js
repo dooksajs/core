@@ -10,10 +10,11 @@ plugins.action({
     code: '404',
     message: 'page not found'
   },
-  callback: (result, status) => {
-    if (status === plugins.PluginActionStatus.OK) {
-      console.error(result)
-    }
+  callbackSuccess: (result) => {
+    console.log(result)
+  },
+  callbackError: (err) => {
+    console.error(err)
   }
 })
 
