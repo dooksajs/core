@@ -115,7 +115,7 @@ DsPlugins.prototype.setCurrentVersion = function (name, version) {
 DsPlugins.prototype.load = function (name, version) {
   return new Promise((resolve, reject) => {
     let pluginId = version ? `${name}/v${version}` : name
-    let scriptParams, setupOptions
+    let setupOptions = {}
     const scriptOptions = {
       id: pluginId,
       src: null
@@ -134,21 +134,18 @@ DsPlugins.prototype.load = function (name, version) {
       scriptOptions.src = item.src
       scriptOptions.id = pluginId
 
-      if (item.urlParams && item.urlParams.names && item.urlParams.values) {
-        scriptOptions.customParams = item.urlParams.names
-        scriptParams = item.urlParams.values
-      }
-
       if (item.setupOptions) {
         setupOptions = item.setupOptions
+      } else if (metadata.setupOptions) {
+        setupOptions = metadata.setupOptions
       }
     }
 
     if (scriptOptions.src) {
       const script = new ScriptLoader(scriptOptions)
 
-      script.load(scriptParams)
-        .then(() => resolve({ plugin: window.pluginLoader[pluginId], options: setupOptions }))
+      script.load()
+        .then(() => resolve({ plugin: window.pluginLoader[pluginId], setupOptions }))
         .catch(error => reject(error))
     } else {
       this.fetch(name)
