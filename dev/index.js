@@ -3,20 +3,21 @@ import DsPlugins from '@dooksa/ds-plugins'
 const plugins = new DsPlugins({ isDev: true })
 
 // run plugin method
-plugins.action({
-  pluginName: 'dsFirebaseAuth',
-  methodName: 'error',
-  params: {
-    code: '404',
-    message: 'page not found'
+plugins.action(
+  'dsFirebaseFirestore/getDoc',
+  {
+    query: {
+      path: ['sites', 'fUMUuI70vL97BYuOUyJE', 'pages', 'Q4vgMGJ0FmP2UvQgGbtK']
+    }
   },
-  callbackSuccess: (result) => {
-    console.log(result)
-  },
-  callbackError: (err) => {
-    console.error(err)
+  {
+    onSuccess: {
+      commit: {
+        name: 'setPage'
+      }
+    }
   }
-})
+)
 
 // test adding multiple plugin metadata
 plugins.addMetadata({
@@ -50,3 +51,5 @@ console.log(plugins.metadata.dsTest)
 console.log(`previous version: ${plugins.metadata.dsTest.currentVersion}`)
 plugins.setCurrentVersion('dsTest', '1.0.1')
 console.log(`current version: ${plugins.metadata.dsTest.currentVersion}`)
+
+console.log(plugins)
