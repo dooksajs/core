@@ -143,9 +143,13 @@ DsPlugins.prototype.load = function (name, version) {
         .then(() => resolve({ plugin: window.pluginLoader[pluginId], options: setupOptions }))
         .catch(error => reject(error))
     } else {
-      const error = new Error('plugin not found: ' + pluginId)
-
-      reject(error)
+      this.fetch(name)
+        .then(() => {
+          this.load(name)
+            .then((plugin) => resolve(plugin))
+            .catch(error => reject(error))
+        })
+        .catch(error => reject(error))
     }
   })
 }
@@ -243,6 +247,35 @@ DsPlugins.prototype.use = function ({ name, version }) {
 
     return install
   }
+}
+
+DsPlugins.prototype.fetch = function (name) {
+  return new Promise((resolve, reject) => {
+    this.action(
+      'dsFirebaseFirestore/getDoc',
+      {
+        query: {
+          path: ['plugins'],
+          options: {
+            where: [{
+              path: 'name',
+              op: '==',
+              value: name
+            }]
+          }
+        }
+      },
+      {
+        onSuccess: (result) => {
+          const doc = result
+
+          this.addMetadata(doc.plugin)
+          resolve()
+        },
+        onError: (e) => reject(e)
+      }
+    )
+  })
 }
 
 export default DsPlugins
