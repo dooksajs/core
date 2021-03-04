@@ -104,7 +104,7 @@ DsPlugins.prototype.setCurrentVersion = function (name, version) {
   this.metadata[name].currentVersion = version
 }
 
-DsPlugins.prototype.get = function (name, version) {
+DsPlugins.prototype.load = function (name, version) {
   return new Promise((resolve, reject) => {
     let pluginId = version ? `${name}/v${version}` : name
     let scriptParams, setupOptions
@@ -154,8 +154,7 @@ DsPlugins.prototype.install = function (name, version) {
   return new Promise((resolve, reject) => {
     this.isLoading[name] = false
 
-    // get plugin
-    this.get(name, version)
+    this.load(name, version)
       .then(({ plugin, setupOptions }) => {
         const dsPlugin = new DsPlugin({ isDev: this.isDev }, plugin)
         const queue = []
