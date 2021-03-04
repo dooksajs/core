@@ -26,22 +26,26 @@ const plugins = new DsPlugins({ isDev: true })
 plugins.addMetadata({
   googleMaps: {
     currentVersion: '2.0.0',
+    setupOptions: { // optional
+      scriptParamNames: ['key', 'library'],
+      scriptParamValues: {
+        library: 'places',
+        key: 'API_KEY_1'
+      }
+    },
     items: {
       '2.0.0': {
-          src: 'https://www.example.com/ds-plugin-google-maps-2.0.0.js',
-          setupOptions: { // optional
-            dev: true
-          },
-          urlParams: { // optional
-            names: ['key', 'libraries'],
-            values: {
-              api: 'API_KEY'
-            }
-          }
-        }
+        src: 'https://www.example.com/ds-plugin-google-maps-2.0.0.js'
       },
       '1.0.0': {
-        src: 'https://www.example.com/ds-plugin-google-maps-1.0.0.js'
+        src: 'https://www.example.com/ds-plugin-google-maps-1.0.0.js',
+        setupOptions: { // optional
+          scriptParamNames: ['key', 'library'],
+          scriptParamValues: {
+            library: 'places',
+            key: 'API_KEY_2'
+          }
+        }
       }
     }
   }
@@ -67,37 +71,22 @@ The action method will use the 'currentVersion' of the plugin
 
 const plugins = new DsPlugins({ isDev: true })
 
-plugins.action({
-  pluginName: 'googleMaps',
-  methodName: 'addMarker',
-  params: { 
+plugins.action('googleMaps/addMarker',
+  {
     mapId: 'map',
     options: {
       lat: 0,
       lng: 0
     }
-  }, 
-  callback: (result, status) => {
-    if (status === plugins.PluginActionStatus.OK) {
+  },
+  {
+    onSuccess: (result) => {
       console.log(result)
+    },
+    onError: (error) => {
+      console.error(error)
     }
   }
-})
-
-```
-
-### Plugin callback results
-
-Successful action results will be the returned value from the requested plugin method, an unsuccessful action results will be an error from the requested plugin method 
-
-To check if a action was successful, compare the status argument to the plugin constant "OK" 
-
-```js
-
- callback: (result, status) => {
-    if (status === plugins.PluginActionStatus.OK) {
-      console.log(result)
-    }
-  }
+)
 
 ```
