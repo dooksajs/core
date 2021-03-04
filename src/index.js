@@ -9,77 +9,85 @@ function DsPlugins ({ isDev }) {
   }
 
   this._methods = {}
+  this._commits = {}
+  this._getters = {}
   this.isDev = isDev
   this.queue = {}
   this.isLoaded = {}
-  this.sitePluginsLoaded = false
-  this.sitePluginsLoading = []
   this.metadata = { ...basePluginMetadata }
   this.hostName = window.location.hostname
 
+  // TODO: [DS-325] Bundle all required plugins
   // load required plugins
-  // TODO merge required plugins into one
-  if (!isDev) {
-    this.use({ name: 'dsFirebaseAuth' })
-    this.use({ name: 'dsFirebaseFirestore' })
-    this.use({ name: 'dsFirebaseAnalytics' })
-    this.use({ name: 'dsFirebasePerformance' })
-
-    this.sitePluginsLoading = new Promise((resolve, reject) => {
-      this.callbackWhenAvailable('dsFirebaseFirestore', () => {
-        this._methods.dsFirebaseFirestore.getDocs({
-          query: {
-            path: ['sites'],
-            options: {
-              where: [{
-                path: 'domains',
-                op: 'array-contains',
-                value: this.hostName
-              }]
-            }
-          }
-        })
-          .then((results) => {
-            const doc = results[0]
-
-            this.addMetadata(doc.plugins)
-            resolve()
-          })
-          .catch((e) => reject(e))
-      })
-    })
-  }
+  this.use({ name: 'dsFirebaseAuth' })
+  this.use({ name: 'dsFirebaseFirestore' })
+  this.use({ name: 'dsFirebaseAnalytics' })
+  this.use({ name: 'dsFirebasePerformance' })
 }
 
-DsPlugins.prototype.action = function ({
-  pluginName,
-  methodName,
-  params,
-  callbackSuccess = Function,
-  callbackError = Function
-}) {
-  this.callbackWhenAvailable(pluginName, () => {
-    const pluginResult = this._methods[pluginName][methodName](params)
+DsPlugins.prototype.action = function (name, params, { onSuccess, onError }) {
+  this.callbackWhenAvailable(name, () => {
+    const pluginResult = this._methods[name](params)
 
     if (pluginResult instanceof Promise) {
       Promise.resolve(pluginResult)
-        .then(result => callbackSuccess(result))
-        .catch(error => callbackError(error))
+        .then(result => {
+          if (onSuccess) {
+            onSuccess(result)
+          }
+        })
+        .catch(error => {
+          if (onError) {
+            onError(error)
+          }
+        })
     } else {
-      callbackSuccess(pluginResult)
+      if (onSuccess) {
+        onSuccess(pluginResult)
+      }
     }
   })
 }
 
+DsPlugins.prototype.getters = function (name, params) {
+  if (this._getters[name]) {
+    return this._getters[name](params)
+  }
+}
+
+DsPlugins.prototype.getCommitParams = function (name, data) {
+  if (this._commits[name]) {
+    return this._commits[name](data)
+  }
+}
+
 DsPlugins.prototype.add = function (plugin) {
   if (plugin.methods) {
-    this._methods[plugin.name] = {}
-
     for (const key in plugin.methods) {
       if (Object.hasOwnProperty.call(plugin.methods, key)) {
         const method = plugin.methods[key]
 
-        this._methods[plugin.name][key] = method
+        this._methods[`${plugin.name}/${key}`] = method
+      }
+    }
+
+    if (plugin.commits) {
+      for (const key in plugin.commits) {
+        if (Object.hasOwnProperty.call(plugin.commits, key)) {
+          const commit = plugin.commits[key]
+
+          this._commits[`${plugin.name}/${key}`] = commit
+        }
+      }
+    }
+
+    if (plugin.getters) {
+      for (const key in plugin.getters) {
+        if (Object.hasOwnProperty.call(plugin.getters, key)) {
+          const getter = plugin.getters[key]
+
+          this._getters[`${plugin.name}/${key}`] = getter
+        }
       }
     }
   }
