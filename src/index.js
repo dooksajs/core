@@ -209,6 +209,7 @@ DsPlugins.prototype.install = function (name, version) {
             .then(() => {
               this.add(dsPlugin)
               this.isLoaded[name] = true
+
               resolve()
             })
             .catch(e => reject(e))
@@ -231,12 +232,16 @@ DsPlugins.prototype.setup = function (dsPlugin, options) {
 }
 
 DsPlugins.prototype.callbackWhenAvailable = function (name, callback) {
-  if (this.isLoaded[name]) {
+  if (this._methods[name] || this._commits[name]) {
     callback()
-  } else if (this.queue[name]) {
-    this.isLoading(name).then(() => callback())
   } else {
-    this.use({ name }).then(() => callback())
+    const [pluginName] = name.split('/')
+
+    if (this.queue[pluginName]) {
+      this.isLoading(pluginName).then(() => callback())
+    } else {
+      this.use({ name: pluginName }).then(() => callback())
+    }
   }
 }
 
