@@ -145,13 +145,21 @@ DsPlugins.prototype.load = function (name, version) {
       const script = new ScriptLoader(scriptOptions)
 
       script.load()
-        .then(() => resolve({ plugin: window.pluginLoader[pluginId], setupOptions }))
+        .then(() => {
+          if (window.pluginLoader[pluginId]) {
+            resolve(window.pluginLoader[pluginId], setupOptions)
+          } else {
+            const error = new Error('Plugin was not found: ' + pluginId)
+
+            reject(error)
+          }
+        })
         .catch(error => reject(error))
     } else {
       this.fetch(name)
         .then(() => {
           this.load(name)
-            .then((plugin) => resolve(plugin))
+            .then((plugin, setupOptions) => resolve(plugin, setupOptions))
             .catch(error => reject(error))
         })
         .catch(error => reject(error))
@@ -164,7 +172,7 @@ DsPlugins.prototype.install = function (name, version) {
     this.isLoading[name] = false
 
     this.load(name, version)
-      .then(({ plugin, setupOptions }) => {
+      .then((plugin, setupOptions) => {
         const dsPlugin = new DsPlugin({ isDev: this.isDev }, plugin)
         const queue = []
 
