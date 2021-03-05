@@ -27,7 +27,6 @@ function DsPlugins ({ isDev }) {
 
 DsPlugins.prototype.action = function (name, params, { onSuccess, onError }) {
   this.callbackWhenAvailable(name, () => {
-    console.log(this._methods)
     const pluginResult = this._methods[name](params)
 
     if (pluginResult instanceof Promise) {
@@ -244,15 +243,27 @@ DsPlugins.prototype.setup = function (dsPlugin, options) {
 }
 
 DsPlugins.prototype.callbackWhenAvailable = function (name, callback) {
-  if (this._methods[name] || this._commits[name]) {
+  if (this._methods[name] || this._commits[name] || this._getters[name]) {
     callback()
   } else {
     const [pluginName] = name.split('/')
 
     if (this.queue[pluginName]) {
-      this.isLoading(pluginName).then(() => callback())
+      this.isLoading(pluginName).then(() => {
+        if (this._methods[name] || this._commits[name] || this._getters[name]) {
+          callback()
+        } else {
+          console.error('action does not exist: ' + name)
+        }
+      })
     } else {
-      this.use({ name: pluginName }).then(() => callback())
+      this.use({ name: pluginName }).then(() => {
+        if (this._methods[name] || this._commits[name] || this._getters[name]) {
+          callback()
+        } else {
+          console.error('action does not exist: ' + name)
+        }
+      })
     }
   }
 }
