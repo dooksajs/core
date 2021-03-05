@@ -145,7 +145,17 @@ DsPlugins.prototype.load = function (name, version) {
       const script = new ScriptLoader(scriptOptions)
 
       script.load()
-        .then(() => resolve({ plugin: window.pluginLoader[pluginId], setupOptions }))
+        .then(() => {
+          const plugin = window.pluginLoader[pluginId]
+
+          if (plugin) {
+            resolve({ plugin, setupOptions })
+          } else {
+            const error = new Error('Plugin was not found: ' + pluginId)
+
+            reject(error)
+          }
+        })
         .catch(error => reject(error))
     } else {
       this.fetch(name)
@@ -165,6 +175,7 @@ DsPlugins.prototype.install = function (name, version) {
 
     this.load(name, version)
       .then(({ plugin, setupOptions }) => {
+        console.log(plugin, setupOptions, name)
         const dsPlugin = new DsPlugin({ isDev: this.isDev }, plugin)
         const queue = []
 
@@ -232,15 +243,27 @@ DsPlugins.prototype.setup = function (dsPlugin, options) {
 }
 
 DsPlugins.prototype.callbackWhenAvailable = function (name, callback) {
-  if (this._methods[name] || this._commits[name]) {
+  if (this._methods[name] || this._commits[name] || this._getters[name]) {
     callback()
   } else {
     const [pluginName] = name.split('/')
 
     if (this.queue[pluginName]) {
-      this.isLoading(pluginName).then(() => callback())
+      this.isLoading(pluginName).then(() => {
+        if (this._methods[name] || this._commits[name] || this._getters[name]) {
+          callback()
+        } else {
+          console.error('action does not exist: ' + name)
+        }
+      })
     } else {
-      this.use({ name: pluginName }).then(() => callback())
+      this.use({ name: pluginName }).then(() => {
+        if (this._methods[name] || this._commits[name] || this._getters[name]) {
+          callback()
+        } else {
+          console.error('action does not exist: ' + name)
+        }
+      })
     }
   }
 }
