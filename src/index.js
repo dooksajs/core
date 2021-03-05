@@ -27,6 +27,7 @@ function DsPlugins ({ isDev }) {
 
 DsPlugins.prototype.action = function (name, params, { onSuccess, onError }) {
   this.callbackWhenAvailable(name, () => {
+    console.log(this._methods)
     const pluginResult = this._methods[name](params)
 
     if (pluginResult instanceof Promise) {
@@ -146,8 +147,10 @@ DsPlugins.prototype.load = function (name, version) {
 
       script.load()
         .then(() => {
-          if (window.pluginLoader[pluginId]) {
-            resolve(window.pluginLoader[pluginId], setupOptions)
+          const plugin = window.pluginLoader[pluginId]
+
+          if (plugin) {
+            resolve({ plugin, setupOptions })
           } else {
             const error = new Error('Plugin was not found: ' + pluginId)
 
@@ -159,7 +162,7 @@ DsPlugins.prototype.load = function (name, version) {
       this.fetch(name)
         .then(() => {
           this.load(name)
-            .then((plugin, setupOptions) => resolve(plugin, setupOptions))
+            .then((plugin) => resolve(plugin))
             .catch(error => reject(error))
         })
         .catch(error => reject(error))
@@ -172,7 +175,8 @@ DsPlugins.prototype.install = function (name, version) {
     this.isLoading[name] = false
 
     this.load(name, version)
-      .then((plugin, setupOptions) => {
+      .then(({ plugin, setupOptions }) => {
+        console.log(plugin, setupOptions, name)
         const dsPlugin = new DsPlugin({ isDev: this.isDev }, plugin)
         const queue = []
 
