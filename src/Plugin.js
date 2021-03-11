@@ -1,11 +1,8 @@
-import ScriptLoader from '@dooksa/script-loader'
-
-export default function Plugin ({ isDev }, createPlugin) {
-  const plugin = createPlugin({ ScriptLoader, isDev })
-
+export default function Plugin (context, plugin) {
   this.name = plugin.name
+  this.version = plugin.version
   this._context = {
-    name: plugin.name
+    $context: context
   }
 
   if (plugin.dependencies) {
