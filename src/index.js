@@ -1,6 +1,5 @@
 import DsPlugin from './Plugin'
 import ScriptLoader from '@dooksa/script-loader'
-import basePluginMetadata from './basePlugins'
 
 function DsPlugins ({ isDev }) {
   // prepare global variable for plugin scripts
@@ -14,7 +13,7 @@ function DsPlugins ({ isDev }) {
   this.isDev = isDev
   this.queue = {}
   this.isLoaded = {}
-  this.metadata = { ...basePluginMetadata }
+  this.metadata = {}
   this.hostName = window.location.hostname
 
   // TODO: [DS-325] Bundle all required plugins
