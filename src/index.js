@@ -1,87 +1,91 @@
 import DsPlugin from './Plugin'
 import ScriptLoader from '@dooksa/script-loader'
-import basePluginMetadata from './basePlugins'
 
-function DsPlugins ({ isDev }) {
+function DsPlugins ({ isDev, store }) {
   // prepare global variable for plugin scripts
   if (!window.pluginLoader) {
     window.pluginLoader = {}
   }
 
-  this.PluginActionStatus = {
-    OK: 'OK',
-    PLUGIN_ERROR: 'PLUGIN_ERROR'
-  }
-
   this._methods = {}
-  this.isDev = isDev
+  this._commits = {}
+  this._getters = {}
+
   this.queue = {}
   this.isLoaded = {}
-  this.sitePluginsLoaded = false
-  this.sitePluginsLoading = []
-  this.metadata = { ...basePluginMetadata }
-  this.hostName = window.location.hostname
+  this.metadata = {}
 
-  // load required plugins
-  // TODO merge required plugins into one
-  if (!isDev) {
-    this.use({ name: 'dsFirebaseAuth' })
-    this.use({ name: 'dsFirebaseFirestore' })
-    this.use({ name: 'dsFirebaseAnalytics' })
-    this.use({ name: 'dsFirebasePerformance' })
-
-    this.sitePluginsLoading = new Promise((resolve, reject) => {
-      this.callbackWhenAvailable('dsFirebaseFirestore', () => {
-        this._methods.dsFirebaseFirestore.getDocs({
-          query: {
-            path: ['sites'],
-            options: {
-              where: [{
-                path: 'domains',
-                op: 'array-contains',
-                value: this.hostName
-              }]
-            }
-          }
-        })
-          .then((results) => {
-            const doc = results[0]
-
-            this.addMetadata(doc.plugins)
-            resolve()
-          })
-          .catch((e) => reject(e))
-      })
-    })
+  this.context = {
+    isDev,
+    store,
+    ScriptLoader,
+    action: this.action,
+    getters: this.getters
   }
 }
 
-DsPlugins.prototype.action = function ({ pluginName, methodName, params, callback = Function }) {
-  this.callbackWhenAvailable(pluginName, () => {
-    const pluginResult = this._methods[pluginName][methodName](params)
+DsPlugins.prototype.action = function (name, params, callback = {}) {
+  this.callbackWhenAvailable(name, () => {
+    const { onSuccess, onError } = callback
+    const pluginResult = this._methods[name](params)
 
     if (pluginResult instanceof Promise) {
       Promise.resolve(pluginResult)
-        .then(result => callback(result, this.PluginActionStatus.OK))
-        .catch(error => {
-          console.error(error)
-          callback(error, this.PluginActionStatus.PLUGIN_ERROR)
+        .then(result => {
+          if (onSuccess) {
+            onSuccess(result)
+          }
         })
-    } else {
-      callback(pluginResult, this.PluginActionStatus.OK)
+        .catch(error => {
+          if (onError) {
+            onError(error)
+          }
+        })
+    } else if (onSuccess) {
+      onSuccess(pluginResult)
     }
   })
 }
 
+DsPlugins.prototype.getters = function (name, params) {
+  if (this._getters[name]) {
+    return this._getters[name](params)
+  }
+}
+
+DsPlugins.prototype.getCommitParams = function (name, data) {
+  if (this._commits[name]) {
+    return this._commits[name](data)
+  }
+}
+
 DsPlugins.prototype.add = function (plugin) {
   if (plugin.methods) {
-    this._methods[plugin.name] = {}
-
     for (const key in plugin.methods) {
       if (Object.hasOwnProperty.call(plugin.methods, key)) {
         const method = plugin.methods[key]
 
-        this._methods[plugin.name][key] = method
+        this._methods[`${plugin.name}/${key}`] = method
+      }
+    }
+
+    if (plugin.commits) {
+      for (const key in plugin.commits) {
+        if (Object.hasOwnProperty.call(plugin.commits, key)) {
+          const commit = plugin.commits[key]
+
+          this._commits[`${plugin.name}/${key}`] = commit
+        }
+      }
+    }
+
+    if (plugin.getters) {
+      for (const key in plugin.getters) {
+        if (Object.hasOwnProperty.call(plugin.getters, key)) {
+          const getter = plugin.getters[key]
+
+          this._getters[`${plugin.name}/${key}`] = getter
+        }
       }
     }
   }
@@ -106,13 +110,12 @@ DsPlugins.prototype.setCurrentVersion = function (name, version) {
   this.metadata[name].currentVersion = version
 }
 
-DsPlugins.prototype.get = function (name, version) {
+DsPlugins.prototype.load = function (name, version, plugin) {
   return new Promise((resolve, reject) => {
     let pluginId = version ? `${name}/v${version}` : name
-    let scriptParams, setupOptions
+    let setupOptions = {}
     const scriptOptions = {
-      id: pluginId,
-      src: null
+      id: pluginId
     }
 
     if (this.metadata[name]) {
@@ -128,38 +131,48 @@ DsPlugins.prototype.get = function (name, version) {
       scriptOptions.src = item.src
       scriptOptions.id = pluginId
 
-      if (item.urlParams && item.urlParams.names && item.urlParams.values) {
-        scriptOptions.customParams = item.urlParams.names
-        scriptParams = item.urlParams.values
-      }
-
       if (item.setupOptions) {
         setupOptions = item.setupOptions
+      } else if (metadata.setupOptions) {
+        setupOptions = metadata.setupOptions
       }
+    }
+
+    if (plugin) {
+      resolve({ plugin, setupOptions })
     }
 
     if (scriptOptions.src) {
       const script = new ScriptLoader(scriptOptions)
 
-      script.load(scriptParams)
-        .then(() => resolve({ plugin: window.pluginLoader[pluginId], options: setupOptions }))
+      script.load()
+        .then(() => {
+          const plugin = window.pluginLoader[pluginId]
+
+          if (plugin) {
+            resolve({ plugin, setupOptions })
+          } else {
+            const error = new Error('Plugin was not found: ' + pluginId)
+
+            reject(error)
+          }
+        })
         .catch(error => reject(error))
     } else {
-      const error = new Error('plugin not found: ' + pluginId)
+      const error = { statusCode: 404, message: 'plugin not found: ' + name }
 
       reject(error)
     }
   })
 }
 
-DsPlugins.prototype.install = function (name, version) {
+DsPlugins.prototype.install = function (name, version, plugin) {
   return new Promise((resolve, reject) => {
     this.isLoading[name] = false
 
-    // get plugin
-    this.get(name, version)
+    this.load(name, version, plugin)
       .then(({ plugin, setupOptions }) => {
-        const dsPlugin = new DsPlugin({ isDev: this.isDev }, plugin)
+        const dsPlugin = new DsPlugin(this.context, plugin)
         const queue = []
 
         if (dsPlugin.dependencies) {
@@ -203,6 +216,7 @@ DsPlugins.prototype.install = function (name, version) {
             .then(() => {
               this.add(dsPlugin)
               this.isLoaded[name] = true
+
               resolve()
             })
             .catch(e => reject(e))
@@ -225,22 +239,38 @@ DsPlugins.prototype.setup = function (dsPlugin, options) {
 }
 
 DsPlugins.prototype.callbackWhenAvailable = function (name, callback) {
-  if (this.isLoaded[name]) {
+  if (this._methods[name] || this._commits[name] || this._getters[name]) {
     callback()
-  } else if (this.queue[name]) {
-    this.isLoading(name).then(() => callback())
   } else {
-    this.use({ name }).then(() => callback())
+    const [pluginName] = name.split('/')
+
+    if (this.queue[pluginName]) {
+      this.isLoading(pluginName).then(() => {
+        if (this._methods[name] || this._commits[name] || this._getters[name]) {
+          callback()
+        } else {
+          console.error('action does not exist: ' + name)
+        }
+      })
+    } else {
+      this.use({ name: pluginName }).then(() => {
+        if (this._methods[name] || this._commits[name] || this._getters[name]) {
+          callback()
+        } else {
+          console.error('action does not exist: ' + name)
+        }
+      })
+    }
   }
 }
 
-DsPlugins.prototype.use = function ({ name, version }) {
+DsPlugins.prototype.use = function ({ name, version, plugin }) {
   if (this.isLoaded[name]) {
     return Promise.resolve()
   } else if (this.queue[name]) {
     return this.isLoading(name)
   } else {
-    const install = this.install(name, version)
+    const install = this.install(name, version, plugin)
 
     this.queue[name] = [install]
 

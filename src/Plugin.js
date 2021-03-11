@@ -1,11 +1,8 @@
-import ScriptLoader from '@dooksa/script-loader'
-
-export default function Plugin ({ isDev }, createPlugin) {
-  const plugin = createPlugin({ ScriptLoader, isDev })
-
+export default function Plugin (context, plugin) {
   this.name = plugin.name
+  this.version = plugin.version
   this._context = {
-    name: plugin.name
+    $context: context
   }
 
   if (plugin.dependencies) {
@@ -17,25 +14,57 @@ export default function Plugin ({ isDev }, createPlugin) {
   }
 
   if (plugin.setup) {
-    const setup = plugin.setup.bind(this._context)
-    this.setup = setup
+    this.setup = plugin.setup.bind(this._context)
+  }
+
+  if (plugin.getters) {
+    const getters = {}
+
+    for (const key in plugin.getters) {
+      if (Object.hasOwnProperty.call(plugin.getters, key)) {
+        const item = plugin.getters[key]
+
+        this._context[key] = item
+        getters[key] = item.bind(this._context)
+      }
+    }
+
+    this.getters = getters
   }
 
   if (plugin.methods) {
     const methods = {}
+    const commits = {}
 
-    for (const key in plugin.methods) {
-      if (Object.hasOwnProperty.call(plugin.methods, key)) {
-        const method = plugin.methods[key]
-        this._context[key] = method
+    for (const mKey in plugin.methods) {
+      if (Object.hasOwnProperty.call(plugin.methods, mKey)) {
+        let item = plugin.methods[mKey]
+
+        if (item.method) {
+          if (item.commit) {
+            for (const cKey in item.commit) {
+              if (Object.hasOwnProperty.call(item.commit, cKey)) {
+                const commit = item.commit[cKey]
+
+                // TODO: [DS-321] commits might need to be bound to "this._context"
+                commits[`${mKey}/${cKey}`] = commit
+              }
+            }
+          }
+
+          item = item.method
+        }
+
+        this._context[mKey] = item
 
         // Catch all the "_private" methods following the common js "_private" method naming convention
-        if (key.charAt(0) !== '_') {
-          methods[key] = method.bind(this._context)
+        if (mKey.charAt(0) !== '_') {
+          methods[mKey] = item.bind(this._context)
         }
       }
     }
 
+    this.commits = commits
     this.methods = methods
   }
 }
