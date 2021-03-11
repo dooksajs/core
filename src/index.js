@@ -112,13 +112,12 @@ DsPlugins.prototype.setCurrentVersion = function (name, version) {
   this.metadata[name].currentVersion = version
 }
 
-DsPlugins.prototype.load = function (name, version) {
+DsPlugins.prototype.load = function (name, version, plugin) {
   return new Promise((resolve, reject) => {
     let pluginId = version ? `${name}/v${version}` : name
     let setupOptions = {}
     const scriptOptions = {
-      id: pluginId,
-      src: null
+      id: pluginId
     }
 
     if (this.metadata[name]) {
@@ -141,6 +140,10 @@ DsPlugins.prototype.load = function (name, version) {
       }
     }
 
+    if (plugin) {
+      resolve({ plugin, setupOptions })
+    }
+
     if (scriptOptions.src) {
       const script = new ScriptLoader(scriptOptions)
 
@@ -158,25 +161,20 @@ DsPlugins.prototype.load = function (name, version) {
         })
         .catch(error => reject(error))
     } else {
-      this.fetch(name)
-        .then(() => {
-          this.load(name)
-            .then((plugin) => resolve(plugin))
-            .catch(error => reject(error))
-        })
-        .catch(error => reject(error))
+      const error = { statusCode: 404, message: 'plugin not found: ' + name }
+
+      reject(error)
     }
   })
 }
 
-DsPlugins.prototype.install = function (name, version) {
+DsPlugins.prototype.install = function (name, version, plugin) {
   return new Promise((resolve, reject) => {
     this.isLoading[name] = false
 
-    this.load(name, version)
+    this.load(name, version, plugin)
       .then(({ plugin, setupOptions }) => {
-        console.log(plugin, setupOptions, name)
-        const dsPlugin = new DsPlugin({ isDev: this.isDev }, plugin)
+        const dsPlugin = new DsPlugin(this.context, plugin)
         const queue = []
 
         if (dsPlugin.dependencies) {
@@ -268,47 +266,18 @@ DsPlugins.prototype.callbackWhenAvailable = function (name, callback) {
   }
 }
 
-DsPlugins.prototype.use = function ({ name, version }) {
+DsPlugins.prototype.use = function ({ name, version, plugin }) {
   if (this.isLoaded[name]) {
     return Promise.resolve()
   } else if (this.queue[name]) {
     return this.isLoading(name)
   } else {
-    const install = this.install(name, version)
+    const install = this.install(name, version, plugin)
 
     this.queue[name] = [install]
 
     return install
   }
-}
-
-DsPlugins.prototype.fetch = function (name) {
-  return new Promise((resolve, reject) => {
-    this.action(
-      'dsFirebaseFirestore/getDoc',
-      {
-        query: {
-          path: ['plugins'],
-          options: {
-            where: [{
-              path: 'name',
-              op: '==',
-              value: name
-            }]
-          }
-        }
-      },
-      {
-        onSuccess: (result) => {
-          const doc = result
-
-          this.addMetadata(doc.plugin)
-          resolve()
-        },
-        onError: (e) => reject(e)
-      }
-    )
-  })
 }
 
 export default DsPlugins
