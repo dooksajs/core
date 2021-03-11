@@ -25,8 +25,9 @@ function DsPlugins ({ isDev, store }) {
   }
 }
 
-DsPlugins.prototype.action = function (name, params, { onSuccess, onError }) {
+DsPlugins.prototype.action = function (name, params, callback = {}) {
   this.callbackWhenAvailable(name, () => {
+    const { onSuccess, onError } = callback
     const pluginResult = this._methods[name](params)
 
     if (pluginResult instanceof Promise) {
@@ -41,10 +42,8 @@ DsPlugins.prototype.action = function (name, params, { onSuccess, onError }) {
             onError(error)
           }
         })
-    } else {
-      if (onSuccess) {
-        onSuccess(pluginResult)
-      }
+    } else if (onSuccess) {
+      onSuccess(pluginResult)
     }
   })
 }
