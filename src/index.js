@@ -1,7 +1,7 @@
 import DsPlugin from './Plugin'
 import ScriptLoader from '@dooksa/script-loader'
 
-function DsPlugins ({ isDev }) {
+function DsPlugins ({ isDev, store }) {
   // prepare global variable for plugin scripts
   if (!window.pluginLoader) {
     window.pluginLoader = {}
@@ -10,18 +10,19 @@ function DsPlugins ({ isDev }) {
   this._methods = {}
   this._commits = {}
   this._getters = {}
-  this.isDev = isDev
+
   this.queue = {}
   this.isLoaded = {}
   this.metadata = {}
   this.hostName = window.location.hostname
 
-  // TODO: [DS-325] Bundle all required plugins
-  // load required plugins
-  this.use({ name: 'dsFirebaseAuth' })
-  this.use({ name: 'dsFirebaseFirestore' })
-  this.use({ name: 'dsFirebaseAnalytics' })
-  this.use({ name: 'dsFirebasePerformance' })
+  this.context = {
+    isDev,
+    store,
+    ScriptLoader,
+    action: this.action,
+    getters: this.getters
+  }
 }
 
 DsPlugins.prototype.action = function (name, params, { onSuccess, onError }) {
