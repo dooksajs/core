@@ -14,7 +14,6 @@ function DsPlugins ({ isDev, store }) {
   this.queue = {}
   this.isLoaded = {}
   this.metadata = {}
-  this.hostName = window.location.hostname
 
   this.context = {
     isDev,
