@@ -13,6 +13,8 @@ function DsPlugins ({ isDev, store }) {
 
   this.queue = {}
   this.isLoaded = {}
+  this.onDemand = {}
+  this.onDemandQueue = {}
   this.metadata = {}
 
   this.context = {
@@ -140,6 +142,11 @@ DsPlugins.prototype.load = function (name, version, plugin) {
 
     if (plugin) {
       resolve({ plugin, setupOptions })
+    } else if (this.onDemandQueue[name]) {
+      plugin = this.onDemandQueue[name]
+      delete this.onDemandQueue[name]
+
+      resolve({ plugin, setupOptions })
     }
 
     if (scriptOptions.src) {
@@ -159,23 +166,28 @@ DsPlugins.prototype.load = function (name, version, plugin) {
         })
         .catch(error => reject(error))
     } else {
-      const error = { statusCode: 404, message: 'plugin not found: ' + name }
+      const error = { statusCode: 404, message: 'Plugin not found: ' + name }
 
       reject(error)
     }
   })
 }
 
-DsPlugins.prototype.install = function (name, version, plugin) {
+DsPlugins.prototype.install = function (name, version, pluginImport, onDemand) {
   return new Promise((resolve, reject) => {
-    this.isLoading[name] = false
+    this.isLoaded[name] = false
+    this.onDemand[name] = onDemand
 
-    this.load(name, version, plugin)
+    this.load(name, version, pluginImport)
       .then(({ plugin, setupOptions }) => {
         const dsPlugin = new DsPlugin(this.context, plugin)
         const queue = []
 
-        if (dsPlugin.dependencies) {
+        if (onDemand) {
+          this.onDemandQueue[name] = plugin
+
+          resolve()
+        } else if (dsPlugin.dependencies) {
           const depQueue = []
 
           for (let i = 0; i < dsPlugin.dependencies.length; i++) {
@@ -199,6 +211,7 @@ DsPlugins.prototype.install = function (name, version, plugin) {
                 .then(() => {
                   this.add(dsPlugin)
                   this.isLoaded[name] = true
+
                   resolve()
                 })
                 .catch(e => reject(e))
@@ -239,20 +252,20 @@ DsPlugins.prototype.setup = function (dsPlugin, options) {
 }
 
 DsPlugins.prototype.callbackWhenAvailable = function (name, callback) {
-  if (this._methods[name] || this._commits[name] || this._getters[name]) {
-    callback()
-  } else {
-    const [pluginName] = name.split('/')
+  const [pluginName] = name.split('/')
 
-    if (this.queue[pluginName]) {
-      this.isLoading(pluginName).then(() => {
-        if (this._methods[name] || this._commits[name] || this._getters[name]) {
-          callback()
-        } else {
-          console.error('action does not exist: ' + name)
-        }
-      })
-    } else {
+  if ((this._methods[name] || this._commits[name] || this._getters[name])) {
+    callback()
+  } else if (this.queue[pluginName] && !this.onDemand[pluginName]) {
+    this.isLoading(pluginName).then(() => {
+      if (this._methods[name] || this._commits[name] || this._getters[name]) {
+        callback()
+      } else {
+        console.error('action does not exist: ' + name)
+      }
+    })
+  } else if (this.onDemand[pluginName]) {
+    this.isLoading(pluginName).then(() => {
       this.use({ name: pluginName }).then(() => {
         if (this._methods[name] || this._commits[name] || this._getters[name]) {
           callback()
@@ -260,17 +273,25 @@ DsPlugins.prototype.callbackWhenAvailable = function (name, callback) {
           console.error('action does not exist: ' + name)
         }
       })
-    }
+    })
+  } else {
+    this.use({ name: pluginName }).then(() => {
+      if (this._methods[name] || this._commits[name] || this._getters[name]) {
+        callback()
+      } else {
+        console.error('action does not exist: ' + name)
+      }
+    })
   }
 }
 
-DsPlugins.prototype.use = function ({ name, version, plugin }) {
+DsPlugins.prototype.use = function ({ name, version, plugin, onDemand }) {
   if (this.isLoaded[name]) {
     return Promise.resolve()
-  } else if (this.queue[name]) {
+  } else if (this.queue[name] && !this.onDemand[name]) {
     return this.isLoading(name)
   } else {
-    const install = this.install(name, version, plugin)
+    const install = this.install(name, version, plugin, onDemand)
 
     this.queue[name] = [install]
 
