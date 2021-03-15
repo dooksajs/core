@@ -15,7 +15,28 @@ $ npm install
 $ npm run dev
 ```
 
-### Add plugin
+### Add a local plugin
+
+```js
+
+import pluginName from 'myPlugin'
+
+const plugins = new DsPlugins({ isDev: true })
+
+plugins.addMetadata({
+  pluginName: {
+    currentVersion: '1.0.0',
+    items: {
+      '1.0.0': {}
+    }
+  }
+})
+
+plugins.use({ name, version, plugin: pluginName, onDemand: true })
+
+```
+
+### Add a remote plugin
 
 This will add plugin metadata that allows the system to load the required version on demand
 
