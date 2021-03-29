@@ -31,6 +31,12 @@ function DsPlugins ({ isDev, store }) {
   }
 }
 
+DsPlugins.prototype.method = function (name, params) {
+  if (this._methods[name]) {
+    return this._methods[name](params)
+  }
+}
+
 DsPlugins.prototype.action = function (name, params, callback = {}) {
   this.callbackWhenAvailable(name, () => {
     const { onSuccess, onError } = callback
