@@ -17,12 +17,17 @@ function DsPlugins ({ isDev, store }) {
   this.onDemandQueue = {}
   this.metadata = {}
 
+  const method = this.method.bind(this)
+  const action = this.action.bind(this)
+  const getters = this.getters.bind(this)
+
   this.context = {
     isDev,
     store,
     ScriptLoader,
-    action: this.action,
-    getters: this.getters
+    action,
+    method,
+    getters
   }
 }
 
