@@ -17,36 +17,95 @@ function DsPlugins ({ isDev, store }) {
   this.onDemandQueue = {}
   this.metadata = {}
 
+  const method = this.method.bind(this)
+  const action = this.action.bind(this)
+  const getters = this.getters.bind(this)
+
   this.context = {
     isDev,
     store,
     ScriptLoader,
-    action: this.action,
-    getters: this.getters
+    action,
+    method,
+    getters
+  }
+}
+
+DsPlugins.prototype.method = function (name, params) {
+  if (this._methods[name]) {
+    return this._methods[name](params)
   }
 }
 
 DsPlugins.prototype.action = function (name, params, callback = {}) {
   this.callbackWhenAvailable(name, () => {
-    const { onSuccess, onError } = callback
+    const onSuccess = callback.onSuccess
+    const onError = callback.onError
     const pluginResult = this._methods[name](params)
 
     if (pluginResult instanceof Promise) {
       Promise.resolve(pluginResult)
-        .then(result => {
+        .then(results => {
           if (onSuccess) {
-            onSuccess(result)
+            if (onSuccess.method) {
+              onSuccess.method({ ...onSuccess.params, results })
+            } else {
+              onSuccess(results)
+            }
           }
         })
         .catch(error => {
           if (onError) {
+            if (onError.method) {
+              onError.method({ ...onError.params, results: pluginResult })
+            } else {
+              onError(pluginResult)
+            }
             onError(error)
           }
         })
     } else if (onSuccess) {
-      onSuccess(pluginResult)
+      if (onSuccess.method) {
+        return onSuccess.method({ ...onSuccess.params, results: pluginResult })
+      } else {
+        return onSuccess(pluginResult)
+      }
     }
   })
+}
+
+DsPlugins.prototype.callbackWhenAvailable = function (name, callback) {
+  const [pluginName] = name.split('/')
+
+  if ((this._methods[name] || this._commits[name] || this._getters[name])) {
+    callback()
+  } else if (this.queue[pluginName] && !this.onDemand[pluginName]) {
+    this.isLoading(pluginName).then(() => {
+      if (this._methods[name] || this._commits[name] || this._getters[name]) {
+        callback()
+      } else {
+        console.error('action does not exist: ' + name)
+      }
+    })
+  } else if (this.onDemand[pluginName]) {
+    this.isLoading(pluginName).then(() => {
+      this.use({ name: pluginName }).then(() => {
+        if (this._methods[name] || this._commits[name] || this._getters[name]) {
+          callback()
+        } else {
+          console.error('action does not exist: ' + name)
+        }
+      })
+    })
+  } else {
+    this.use({ name: pluginName }).then(() => {
+      if (this._methods[name] || this._commits[name] || this._getters[name]) {
+        callback()
+      } else {
+        console.error('action does not exist: ' + name)
+      }
+    })
+  }
 }
 
 DsPlugins.prototype.getters = function (name, params) {
@@ -248,40 +307,6 @@ DsPlugins.prototype.setup = function (dsPlugin, options) {
 
   if (setup instanceof Promise) {
     return setup
-  }
-}
-
-DsPlugins.prototype.callbackWhenAvailable = function (name, callback) {
-  const [pluginName] = name.split('/')
-
-  if ((this._methods[name] || this._commits[name] || this._getters[name])) {
-    callback()
-  } else if (this.queue[pluginName] && !this.onDemand[pluginName]) {
-    this.isLoading(pluginName).then(() => {
-      if (this._methods[name] || this._commits[name] || this._getters[name]) {
-        callback()
-      } else {
-        console.error('action does not exist: ' + name)
-      }
-    })
-  } else if (this.onDemand[pluginName]) {
-    this.isLoading(pluginName).then(() => {
-      this.use({ name: pluginName }).then(() => {
-        if (this._methods[name] || this._commits[name] || this._getters[name]) {
-          callback()
-        } else {
-          console.error('action does not exist: ' + name)
-        }
-      })
-    })
-  } else {
-    this.use({ name: pluginName }).then(() => {
-      if (this._methods[name] || this._commits[name] || this._getters[name]) {
-        callback()
-      } else {
-        console.error('action does not exist: ' + name)
-      }
-    })
   }
 }
 
