@@ -39,7 +39,8 @@ DsPlugins.prototype.method = function (name, params) {
 
 DsPlugins.prototype.action = function (name, params, callback = {}) {
   this.callbackWhenAvailable(name, () => {
-    const { onSuccess, onError } = callback
+    const onSuccess = callback.onSuccess
+    const onError = callback.onError
     const pluginResult = this._methods[name](params)
 
     if (pluginResult instanceof Promise) {
