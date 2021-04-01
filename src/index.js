@@ -74,22 +74,25 @@ DsPlugins.prototype.action = function (name, params, callback = {}) {
 }
 
 DsPlugins.prototype.callbackWhenAvailable = function (name, callback) {
-  const [pluginName] = name.split('/')
+  if (this.actionExists(name)) {
+    return callback()
+  }
 
-  if ((this._methods[name] || this._commits[name] || this._getters[name])) {
-    callback()
-  } else if (this.queue[pluginName] && !this.onDemand[pluginName]) {
-    this.isLoading(pluginName).then(() => {
-      if (this._methods[name] || this._commits[name] || this._getters[name]) {
+  const nameSplit = name.split('/')
+  const baseName = nameSplit[0] + '/' + nameSplit[1]
+
+  if (this.queue[baseName] && !this.onDemand[baseName]) {
+    this.isLoading(baseName).then(() => {
+      if (this.actionExists(name)) {
         callback()
       } else {
         console.error('action does not exist: ' + name)
       }
     })
-  } else if (this.onDemand[pluginName]) {
-    this.isLoading(pluginName).then(() => {
-      this.use({ name: pluginName }).then(() => {
-        if (this._methods[name] || this._commits[name] || this._getters[name]) {
+  } else if (this.onDemand[baseName]) {
+    this.isLoading(baseName).then(() => {
+      this.use({ name: baseName }).then(() => {
+        if (this.actionExists(name)) {
           callback()
         } else {
           console.error('action does not exist: ' + name)
@@ -97,14 +100,18 @@ DsPlugins.prototype.callbackWhenAvailable = function (name, callback) {
       })
     })
   } else {
-    this.use({ name: pluginName }).then(() => {
-      if (this._methods[name] || this._commits[name] || this._getters[name]) {
+    this.use({ name: baseName }).then(() => {
+      if (this.actionExists(name)) {
         callback()
       } else {
         console.error('action does not exist: ' + name)
       }
     })
   }
+}
+
+DsPlugins.prototype.actionExists = function (name) {
+  return (this._methods[name] || this._getters[name])
 }
 
 DsPlugins.prototype.getters = function (name, params) {
@@ -128,7 +135,7 @@ DsPlugins.prototype.add = function (plugin) {
         if (Object.hasOwnProperty.call(plugin.getters, key)) {
           const getter = plugin.getters[key]
 
-          this._getters[`${plugin.name}/${key}`] = getter
+          this._getters[`${plugin.name}/${plugin.version}/${key}`] = getter
         }
       }
     }
@@ -154,26 +161,24 @@ DsPlugins.prototype.setCurrentVersion = function (name, version) {
   this.metadata[name].currentVersion = version
 }
 
-DsPlugins.prototype.load = function (name, version, plugin) {
+DsPlugins.prototype.load = function (name, plugin) {
   return new Promise((resolve, reject) => {
-    let pluginId = version ? `${name}/v${version}` : name
+    const [baseName, version] = name.split('/')
     let setupOptions = {}
     const scriptOptions = {
-      id: pluginId
+      id: name
     }
 
-    if (this.metadata[name]) {
-      const metadata = this.metadata[name]
-
-      if (!version) {
-        version = metadata.currentVersion
-        pluginId = `${name}/v${version}`
-      }
-
+    if (this.metadata[baseName]) {
+      const metadata = this.metadata[baseName]
       const item = metadata.items[version]
 
+      if (!item) {
+        const error = { statusCode: 404, message: 'Plugin not found: ' + name }
+        reject(error)
+      }
+
       scriptOptions.src = item.src
-      scriptOptions.id = pluginId
 
       if (item.setupOptions) {
         setupOptions = item.setupOptions
@@ -196,12 +201,12 @@ DsPlugins.prototype.load = function (name, version, plugin) {
 
       script.load()
         .then(() => {
-          const plugin = window.pluginLoader[pluginId]
-
+          const plugin = window.pluginLoader[name]
+          console.log(window.pluginLoader, name)
           if (plugin) {
             resolve({ plugin, setupOptions })
           } else {
-            const error = new Error('Plugin was not found: ' + pluginId)
+            const error = new Error('Plugin was not found: ' + name)
 
             reject(error)
           }
@@ -215,12 +220,12 @@ DsPlugins.prototype.load = function (name, version, plugin) {
   })
 }
 
-DsPlugins.prototype.install = function (name, version, pluginImport, onDemand) {
+DsPlugins.prototype.install = function (name, pluginImport, onDemand) {
   return new Promise((resolve, reject) => {
     this.isLoaded[name] = false
-    this.onDemand[name] = onDemand
+    this.onDemand[name] = !!onDemand
 
-    this.load(name, version, pluginImport)
+    this.load(name, pluginImport)
       .then(({ plugin, setupOptions }) => {
         const dsPlugin = new DsPlugin(this.context, plugin)
         const queue = []
@@ -233,8 +238,7 @@ DsPlugins.prototype.install = function (name, version, pluginImport, onDemand) {
           const depQueue = []
 
           for (let i = 0; i < dsPlugin.dependencies.length; i++) {
-            const { name, version } = dsPlugin.dependencies[i]
-            const depPlugin = this.use({ name: name, version: version })
+            const depPlugin = this.use({ name: dsPlugin.dependencies[i].name })
 
             depQueue.push(depPlugin)
           }
@@ -293,13 +297,13 @@ DsPlugins.prototype.setup = function (dsPlugin, options) {
   }
 }
 
-DsPlugins.prototype.use = function ({ name, version, plugin, onDemand }) {
+DsPlugins.prototype.use = function ({ name, plugin, onDemand }) {
   if (this.isLoaded[name]) {
     return Promise.resolve()
   } else if (this.queue[name] && !this.onDemand[name]) {
     return this.isLoading(name)
   } else {
-    const install = this.install(name, version, plugin, onDemand)
+    const install = this.install(name, plugin, onDemand)
 
     this.queue[name] = [install]
 
