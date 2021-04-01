@@ -8,7 +8,6 @@ function DsPlugins ({ isDev, store }) {
   }
 
   this._methods = {}
-  this._commits = {}
   this._getters = {}
 
   this.queue = {}
@@ -114,29 +113,13 @@ DsPlugins.prototype.getters = function (name, params) {
   }
 }
 
-DsPlugins.prototype.getCommitParams = function (name, data) {
-  if (this._commits[name]) {
-    return this._commits[name](data)
-  }
-}
-
 DsPlugins.prototype.add = function (plugin) {
   if (plugin.methods) {
     for (const key in plugin.methods) {
       if (Object.hasOwnProperty.call(plugin.methods, key)) {
         const method = plugin.methods[key]
 
-        this._methods[`${plugin.name}/${key}`] = method
-      }
-    }
-
-    if (plugin.commits) {
-      for (const key in plugin.commits) {
-        if (Object.hasOwnProperty.call(plugin.commits, key)) {
-          const commit = plugin.commits[key]
-
-          this._commits[`${plugin.name}/${key}`] = commit
-        }
+        this._methods[`${plugin.name}/${plugin.version}/${key}`] = method
       }
     }
 
