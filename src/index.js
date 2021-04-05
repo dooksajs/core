@@ -3,9 +3,7 @@ import ScriptLoader from '@dooksa/script-loader'
 
 function DsPlugins ({ isDev, store }) {
   // prepare global variable for plugin scripts
-  if (!window.pluginLoader) {
-    window.pluginLoader = {}
-  }
+  window.pluginLoader = {}
 
   this._methods = {}
   this._getters = {}
