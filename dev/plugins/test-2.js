@@ -1,6 +1,6 @@
-window.pluginLoader['dsTest/1.0.1'] = {
+window.pluginLoader.dsTest = {
   name: 'dsTest',
-  version: '1.0.1',
+  version: '2',
   data: {
     text: 'hello'
   },
