@@ -4,35 +4,27 @@ const plugins = new DsPlugins({ isDev: true })
 
 // add test plugin
 plugins.use({
-  name: 'dsTest/1.0.0',
+  name: 'dsTest',
   plugin: {
     name: 'dsTest',
-    version: '1.0.0'
+    version: '1'
   }
 })
 
 // test adding multiple plugin metadata
-plugins.addMetadata({
-  dsTest: {
-    currentVersion: '1.0.0',
-    items: {
-      '1.0.0': {}
-    }
-  }
-})
+plugins.addMetadata([
+  ['dsTest', {
+    version: '1'
+  }]
+])
 
-plugins.addMetadata({
-  dsTest: {
-    currentVersion: '1.0.1',
-    items: {
-      '1.0.0': {},
-      '1.0.1': {
-        src: '/plugins/test-1.0.1.js'
-      }
-    }
-  }
-})
+plugins.addMetadata([
+  ['dsTest', {
+    version: '2',
+    src: '/plugins/test-2.js'
+  }]
+])
 
 console.log(plugins)
 
-plugins.action('dsTest/1.0.1/sayHi', 'john', { onSuccess: (r) => console.log(r) })
+plugins.action('dsTest/sayHi', 'john', { onSuccess: (r) => console.log(r) })

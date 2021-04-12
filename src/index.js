@@ -3,9 +3,7 @@ import ScriptLoader from '@dooksa/script-loader'
 
 function DsPlugins ({ isDev, store }) {
   // prepare global variable for plugin scripts
-  if (!window.pluginLoader) {
-    window.pluginLoader = {}
-  }
+  window.pluginLoader = {}
 
   this._methods = {}
   this._getters = {}
@@ -79,7 +77,7 @@ DsPlugins.prototype.callbackWhenAvailable = function (name, callback) {
   }
 
   const nameSplit = name.split('/')
-  const baseName = nameSplit[0] + '/' + nameSplit[1]
+  const baseName = nameSplit[0]
 
   if (this.queue[baseName] && !this.onDemand[baseName]) {
     this.isLoading(baseName).then(() => {
@@ -126,7 +124,7 @@ DsPlugins.prototype.add = function (plugin) {
       if (Object.hasOwnProperty.call(plugin.methods, key)) {
         const method = plugin.methods[key]
 
-        this._methods[`${plugin.name}/${plugin.version}/${key}`] = method
+        this._methods[`${plugin.name}/${key}`] = method
       }
     }
 
@@ -135,7 +133,7 @@ DsPlugins.prototype.add = function (plugin) {
         if (Object.hasOwnProperty.call(plugin.getters, key)) {
           const getter = plugin.getters[key]
 
-          this._getters[`${plugin.name}/${plugin.version}/${key}`] = getter
+          this._getters[`${plugin.name}/${key}`] = getter
         }
       }
     }
@@ -143,27 +141,23 @@ DsPlugins.prototype.add = function (plugin) {
 }
 
 DsPlugins.prototype.addMetadata = function (data) {
-  for (const name in data) {
-    if (Object.hasOwnProperty.call(data, name)) {
-      const items = data[name].items
+  for (let i = 0; i < data.length; i++) {
+    const name = data[i][0]
+    const value = data[i][1]
 
-      if (this.metadata[name]) {
-        this.metadata[name].items = { ...this.metadata[name].items, ...items }
-        delete data[name]
-      }
+    if (this.queue[name]) {
+      delete this.queue[name]
     }
+
+    this.isLoaded[name] = false
+    this.metadata[name] = value
   }
-
-  this.metadata = { ...this.metadata, ...data }
-}
-
-DsPlugins.prototype.setCurrentVersion = function (name, version) {
-  this.metadata[name].currentVersion = version
 }
 
 DsPlugins.prototype.load = function (name, plugin) {
   return new Promise((resolve, reject) => {
-    const [baseName, version] = name.split('/')
+    const nameFragments = name.split('/')
+    const baseName = nameFragments[0]
     let setupOptions = {}
     const scriptOptions = {
       id: name
@@ -171,18 +165,15 @@ DsPlugins.prototype.load = function (name, plugin) {
 
     if (this.metadata[baseName]) {
       const metadata = this.metadata[baseName]
-      const item = metadata.items[version]
 
-      if (!item) {
+      if (!metadata) {
         const error = { statusCode: 404, message: 'Plugin not found: ' + name }
         reject(error)
       }
 
-      scriptOptions.src = item.src
+      scriptOptions.src = metadata.src
 
-      if (item.setupOptions) {
-        setupOptions = item.setupOptions
-      } else if (metadata.setupOptions) {
+      if (metadata.setupOptions) {
         setupOptions = metadata.setupOptions
       }
     }

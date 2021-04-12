@@ -52,18 +52,6 @@ export default function Plugin (context, plugin) {
   }
 }
 
-Plugin.prototype.action = function (name, params) {
-  try {
-    if (this._methods[name]) {
-      return this._methods[name](params)
-    } else {
-      throw new Error('Method not found')
-    }
-  } catch (e) {
-    console.error(`${name} failed: `, e.message)
-  }
-}
-
 Plugin.prototype.setup = function () {
   if (this._setup) {
     return this._setup()
