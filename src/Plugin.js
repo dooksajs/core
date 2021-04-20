@@ -22,10 +22,14 @@ export default function Plugin (context, plugin) {
 
     for (const key in plugin.getters) {
       if (Object.hasOwnProperty.call(plugin.getters, key)) {
-        const item = plugin.getters[key]
-
+        let item = plugin.getters[key]
         this._context[key] = item
-        getters[key] = item.bind(this._context)
+
+        if (typeof item === 'function') {
+          item = item.bind(this._context)
+        }
+
+        getters[key] = item
       }
     }
 
