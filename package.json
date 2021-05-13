@@ -1,7 +1,7 @@
 {
-  "name": "@dooksa/ds-plugin-tokens",
+  "name": "@dooksa/ds-plugin-operators",
   "version": "0.1.0",
-  "description": "Ds tokens plugin is used simple text replacement used with workflow",
+  "description": "Ds operators plugin is used to add operators to the ds schema",
   "main": "src/index.js",
   "scripts": {
     "format": "standard --fix",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@bitbucket.org:dooksa/ds-plugin-tokens.git"
+    "url": "git+ssh://git@bitbucket.org:dooksa/ds-plugin-operators.git"
   },
   "author": {
     "name": "Thomas David",
@@ -20,6 +20,7 @@
     "@babel/core": "^7.12.10",
     "@babel/preset-env": "^7.12.11",
     "@dooksa/ds-plugins": "git+ssh://git@bitbucket.org:dooksa/ds-plugins.git#v2.1.0",
+    "@dooksa/script-loader": "git+ssh://git@bitbucket.org/dooksa/script-loader.git#v1.0.5",
     "babel-loader": "^8.2.2",
     "standard": "*",
     "webpack": "^5.17.0",

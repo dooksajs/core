@@ -1,6 +1,6 @@
 import DsPlugins from '@dooksa/ds-plugins'
 import { name, version } from '../ds.plugin.config'
-import dsParameters from 'plugin'
+import dsOperators from 'plugin'
 
 const plugins = new DsPlugins({ isDev: true })
 
@@ -16,45 +16,16 @@ plugins.addMetadata({
   }
 })
 
-console.log(dsParameters)
+console.log(dsOperators)
 // use plugin
-plugins.use({ name, plugin: dsParameters })
+plugins.use({ name, plugin: dsOperators, onDemand: false })
 console.log(plugins)
-// {
-//   metadata: {
-//     c123: [{
-//       id: 'tooken'
-//     }]
-//   },
-//   events: {
-//     tooken: {
-//       content_token: true
-//     }
-//   },
-//   actions: {
-//     tooken: [
-//       {
-//         type: 'pluginMethod',
-//         name: 'dsTokens/replace',
-//         computedParams: true,
-//         paramType: 'object',
-//         params: [
-//           ['data', {
-//             _$computed: true,
-//             getter: 'this/value'
-//           }],
-//           ['rules', [
-//             {
-//               actions: [
-//                 {
-//                   type: 'getter',
-//                   name: 'site/getTitle'
-//                 }
-//               ]
-//             }
-//           ]]
-//         ]
-//       }
-//     ]
-//   }
-// }
+plugins.action('dsOperators/eval', {
+  name: '++x',
+  values: [1]
+},
+{
+  onSuccess: (data) => {
+    console.log(data)
+  }
+})

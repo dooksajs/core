@@ -1,5 +1,5 @@
 module.exports = {
-  name: 'dsTokens',
-  filename: 'ds-tokens',
-  version: 1
+  name: 'dsOperators',
+  filename: 'ds-operators',
+  version: '0.1.0'
 }
