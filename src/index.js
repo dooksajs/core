@@ -5,6 +5,14 @@ export default {
   version,
   data: {
     operators: {
+      '==': v => v[0] === v[1],
+      '!=': v => v[0] !== v[1],
+      '>': v => v[0] > v[1],
+      '>=': v => v[0] >= v[1],
+      '<': v => v[0] < v[1],
+      '<=': v => v[0] <= v[1],
+      '!': v => !v[0],
+      '!!': v => !!v[0],
       '%': v => v[0] % v[1],
       '++x': v => ++v[0],
       'x++': v => v[0]++,
@@ -19,6 +27,31 @@ export default {
   methods: {
     eval ({ name, values }) {
       return this.operators[name](values)
+    },
+    compare (values) {
+      let result = false
+
+      for (let i = 0; i < values.length; i++) {
+        const value = values[i]
+
+        if (value === '&&') {
+          if ((values[i - 1] && values[i + 1])) {
+            result = true
+          } else {
+            break
+          }
+        }
+
+        if (value === '||') {
+          if ((values[i - 1] || values[i + 1])) {
+            result = true
+          } else {
+            break
+          }
+        }
+      }
+
+      return result
     },
     arrayMove ({ list, items, position }) {
       const length = items.length
