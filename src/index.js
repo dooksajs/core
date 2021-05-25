@@ -53,6 +53,9 @@ export default {
 
       return result
     },
+    arrayRemove ({ list, items }) {
+      return list.filter((item, index) => !items.includes(index))
+    },
     arrayMove ({ list, items, position }) {
       const length = items.length
       let indexEnd = position - length
