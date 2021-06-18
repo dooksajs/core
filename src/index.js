@@ -25,9 +25,19 @@ export default {
     }
   },
   methods: {
+    /**
+     * Evaluate two values
+     * @param {Object} eval - The Object containing the data to evaluate two values
+     * @param {string} eval.name - Operator name
+     * @param {string[]|number[]} eval.values - Contains two values to be evaluated
+     */
     eval ({ name, values }) {
       return this.operators[name](values)
     },
+    /**
+     * Compare two or more values
+     * @param {string[]|number[]} values - Contains two values or more values which are compared
+     */
     compare (values) {
       let result = false
 
@@ -53,9 +63,22 @@ export default {
 
       return result
     },
+    /**
+     * Remove items from an array
+     * @param {Object} arrayRemove - The Object containing the data to remove a group of items from an array
+     * @param {*[]} arrayRemove.list - The source array
+     * @param {number[]} arrayRemove.items - A list of indexes that will be removed
+     */
     arrayRemove ({ list, items }) {
       return list.filter((item, index) => !items.includes(index))
     },
+    /**
+     * Move a group of items to a new position in an array
+     * @param {Object} arrayMove - The Object containing the data to move a group of items within an array
+     * @param {*[]} arrayMove.list - The source array
+     * @param {number[]} arrayMove.items - A list of indexes that need to move
+     * @param {number} arrayMove.position - The location the items will move to within the array
+     */
     arrayMove ({ list, items, position }) {
       const length = items.length
       let indexEnd = position - length
