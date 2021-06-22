@@ -92,21 +92,18 @@ export default {
       }
 
       const listMiddle = []
-      let offset = 0
 
       for (let i = 0; i < length; i++) {
-        if (i > 0) {
-          ++offset
+        const k = items[i]
+
+        listMiddle.push(list[k])
+        list.splice(k, 1)
+
+        const nextIndex = i + 1
+        if (items[nextIndex]) {
+          const nextValue = items[nextIndex] - 1
+          items[nextIndex] = nextValue >= 0 ? nextValue : items[nextIndex]
         }
-
-        let j = items[i] - offset
-
-        if (j < 0) {
-          j = items[i]
-        }
-
-        listMiddle.push(list[j])
-        list.splice(j, 1)
       }
 
       const listEnd = list.splice(indexEnd)
