@@ -4,8 +4,10 @@
   "description": "The plugin library for Dooksa CMS",
   "main": "src/index.js",
   "scripts": {
+    "lint": "standard",
     "format": "standard --fix",
-    "dev": "webpack serve"
+    "dev": "webpack serve",
+    "test:unit": "cypress run --spec cypress/integration/ds-plugins.spec.js --headless"
   },
   "repository": {
     "type": "git",
@@ -15,11 +17,24 @@
     "name": "Thomas David",
     "email": "tom@mightysmile.com"
   },
+  "standard": {
+    "env": [
+      "browser",
+      "mocha"
+    ],
+    "globals": [
+      "cy",
+      "Cypress",
+      "expect",
+      "assert"
+    ]
+  },
   "devDependencies": {
     "@babel/cli": "^7.12.10",
     "@babel/core": "^7.12.10",
     "@babel/preset-env": "^7.12.11",
     "babel-loader": "^8.2.2",
+    "cypress": "^6.5.0",
     "standard": "*",
     "webpack": "^5.17.0",
     "webpack-cli": "^4.4.0",
