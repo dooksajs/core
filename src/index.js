@@ -77,38 +77,41 @@ export default {
      * @param {Object} arrayMove - The Object containing the data to move a group of items within an array
      * @param {*[]} arrayMove.list - The source array
      * @param {number[]} arrayMove.items - A list of indexes that need to move
-     * @param {number} arrayMove.position - The location the items will move to within the array
+     * @param {number} arrayMove.index - The location the items will move to within the array
      */
-    arrayMove ({ list, items, position }) {
+    arrayMove ({ list, items, index }) {
       const length = items.length
-      let indexEnd = position - length
+      let indexEnd = index - (length - 1)
 
-      if (indexEnd > list.length - 1 || (indexEnd < 0 && position < 0)) {
+      if (indexEnd > list.length - 1 || (indexEnd < 0 && index < 0)) {
         return
-      }
-
-      if (indexEnd <= 0 && position >= 0) {
-        indexEnd = position
+      } else if (indexEnd <= 0 && index >= 0) {
+        indexEnd = index
       }
 
       const listMiddle = []
-
+      // Create middle of array with new group items
       for (let i = 0; i < length; i++) {
-        const k = items[i]
-
-        listMiddle.push(list[k])
-        list.splice(k, 1)
-
-        const nextIndex = i + 1
-        if (items[nextIndex]) {
-          const nextValue = items[nextIndex] - 1
-          items[nextIndex] = nextValue >= 0 ? nextValue : items[nextIndex]
-        }
+        listMiddle.push(list[items[i]])
       }
 
-      const listEnd = list.splice(indexEnd)
+      items.sort((a, b) => a - b)
+      const startList = list
+      let offset = 1
+      // Remove moved items
+      for (let i = 0; i < length; i++) {
+        startList.splice(items[i], 1)
 
-      return list.concat(listMiddle, listEnd)
+        const nextIndex = i + 1
+        if (nextIndex < length) {
+          items[nextIndex] = items[nextIndex] - offset
+          ++offset
+        }
+      }
+      // Create end of array
+      const listEnd = startList.splice(indexEnd)
+
+      return startList.concat(listMiddle, listEnd)
     },
     /**
      * Merge items into array with the option to flatten
