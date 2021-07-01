@@ -1,16 +1,7 @@
 // import DsPlugins from '@dooksa/ds-plugins'
 import DsPlugins from '../../src/index'
 
-describe('Dummy', () => {
-  it('does nothing', () => {
-    expect(true)
-  })
-})
 describe('loading a test plugin then modify its metadata', () => {
-  beforeEach(() => {
-    // const plugins = new DsPlugins({ isDev: true })
-  })
-
   it('expect a test plugin to be loaded correctly', () => {
     const plugins = new DsPlugins({ isDev: true })
     // add test plugin
@@ -47,8 +38,5 @@ describe('loading a test plugin then modify its metadata', () => {
       }]
     ])
     expect(plugins.metadata.dsTest.version === 2)
-    // console.log(plugins)
-
-  // expect(plugins.action('dsTest/sayHi', 'john', { onSuccess: (r) => console.log(r) }))
   })
 })
