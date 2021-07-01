@@ -40,3 +40,26 @@ describe('loading a test plugin then modify its metadata', () => {
     expect(plugins.metadata.dsTest.version === 2)
   })
 })
+describe('load and run a test plugin', () => {
+  it('use a plugin action', () => {
+    const plugins = new DsPlugins({ isDev: true })
+    plugins.use({
+      name: 'dsTest',
+      plugin: {
+        name: 'dsTest',
+        version: '1'
+      }
+    })
+    plugins.addMetadata([
+      ['dsTest', {
+        version: '1'
+      }]
+    ])
+    plugins.addMetadata([
+      ['dsTest', {
+        src: '/plugins/test-2.js'
+      }]
+    ])
+    plugins.action('dsTest/sayHi', 'john', { onSuccess: (r) => expect(r).to.equal('hello john') })
+  })
+})
