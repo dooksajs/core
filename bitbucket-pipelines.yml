@@ -1,0 +1,22 @@
+#  NodeJS build with cypress
+# Test only of code. No actual deployment
+
+image: cypress/base:12
+
+pipelines:
+  default:
+    - step:
+        name: Build and Test
+        caches:
+          - node
+          - cypress
+        script:
+          - npm install -g npm@latest
+          - npm --version
+          - npm install
+          - npx cypress install
+          - npm run lint
+          - npm run test:unit
+definitions:
+  caches:
+    cypress: $HOME/.cache/Cypress
