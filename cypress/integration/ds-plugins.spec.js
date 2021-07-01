@@ -52,11 +52,6 @@ describe('load and run a test plugin', () => {
     })
     plugins.addMetadata([
       ['dsTest', {
-        version: '1'
-      }]
-    ])
-    plugins.addMetadata([
-      ['dsTest', {
         src: '/plugins/test-2.js'
       }]
     ])
