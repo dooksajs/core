@@ -179,6 +179,7 @@ export default {
      * @param {*[]} arrayMove.list - The source array
      * @param {number[]} arrayMove.items - A list of indexes that need to move
      * @param {number} arrayMove.index - The location the items will move to within the array
+     * @returns {Array} - New transformed array
      */
     arrayMove ({ list, items, index }) {
       const length = items.length
