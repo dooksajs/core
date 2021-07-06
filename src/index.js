@@ -73,6 +73,24 @@ export default {
       return list.filter((item, index) => !items.includes(index))
     },
     /**
+     * Find the next key value pair in a list
+     * @param {Object} nextKeyValue - The Object containing the params
+     * @param {*[]} nextKeyValue.list - An array of objects
+     * @param {string} nextKeyValue.key - The key used to compare
+     * @param {number} nextKeyValue.index - The index starting point
+     * @returns {[*, number]} An array with the found value and index
+     */
+    arrayNextKeyValue ({ list, key, index = 0 }) {
+      const currentValue = list[index][key]
+
+      for (let i = index; i < list.length; i++) {
+        if (list[i][key] !== currentValue) {
+          return [list[i][key], i]
+        }
+      }
+
+      return [currentValue, index]
+    },
     /**
      * Find the indexes of objects within a list by key value pairs
      * @param {Object} findByKeyValue - The Object containing the params
