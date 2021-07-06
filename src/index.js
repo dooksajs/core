@@ -73,6 +73,70 @@ export default {
       return list.filter((item, index) => !items.includes(index))
     },
     /**
+    /**
+     * Find the indexes of objects within a list by key value pairs
+     * @param {Object} findByKeyValue - The Object containing the params
+     * @param {*[]} findByKeyValue.list - An array of objects
+     * @param {string} findByKeyValue.key - The key used to compare
+     * @param {[string, number]} findByKeyValue.valueIndex - The value uses to compare and the index starting point
+     * @returns {[number, number]} An array with the start and end numbered indexes, -1 indicates there was only 1 item found within a group
+     */
+    arrayFindByKeyValue ({ list, key, valueIndex }) {
+      const value = valueIndex[0]
+      const index = valueIndex[1] || 0
+      const hasValue = (i) => (list[i] && list[i][key] === value)
+      const rangeItem = []
+
+      for (let i = index; i < list.length; i++) {
+        const item = list[i]
+
+        if (item[key] === value) {
+          const nextIndex = i + 1
+
+          if (rangeItem.length) {
+            if (!hasValue(nextIndex)) {
+              rangeItem.push(i)
+
+              return rangeItem
+            }
+          } else {
+            let prevIndex = i - 1
+
+            if (index && hasValue(prevIndex)) {
+              while (hasValue(prevIndex)) {
+                prevIndex--
+              }
+
+              rangeItem.push(prevIndex + 1)
+
+              // check if item is not in a group
+              if (!hasValue(nextIndex)) {
+                rangeItem.push(i)
+
+                return rangeItem
+              }
+            } else {
+              rangeItem.push(i)
+
+              // check if item is not in a group
+              if (!hasValue(nextIndex)) {
+                rangeItem.push(i)
+
+                return rangeItem
+              }
+
+              // if last item in the list push the rangeItem
+              if (nextIndex === list.length) {
+                rangeItem.push(i)
+
+                return rangeItem
+              }
+            }
+          }
+        }
+      }
+    },
+    /**
      * Move a group of items to a new position in an array
      * @param {Object} arrayMove - The Object containing the data to move a group of items within an array
      * @param {*[]} arrayMove.list - The source array
