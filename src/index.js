@@ -221,8 +221,9 @@ export default {
      * @param {array} arrayMerge.list - The source array
      * @param {Object[]} arrayMerge.items - An array of objects which contains the item and position it should be placed into the array
      * @param {*} arrayMerge.items[].value - The value to be merged into the original array
-     * @param {number} arrayMerge.items[].index - The position the value will be placed into the original array
-     * @param {number} arrayMerge.flat - The position the items will be placed in the array
+     * @param {number} arrayMerge.items[]._$index - The index the value will be placed into the original array
+     * @param {number} arrayMerge.flat - Flatten height
+     * @returns {Array} - A new list
      */
     arrayMerge ({ list, items, flat }) {
       let offset = 0
