@@ -1,23 +1,17 @@
 const path = require('path')
 const resolve = file => path.resolve(__dirname, file)
-let { plugin } = require('./src')
-plugin = plugin()
+const { filename, name } = require('./ds.plugin.config')
 
 module.exports = {
   mode: 'production',
   entry: './src/index.js',
   output: {
-    filename: 'index.js',
+    filename: `${filename}.js`,
     path: resolve('dist'),
-    library: `${plugin.name}/v${plugin.version}`,
+    library: name,
     libraryTarget: 'global',
     libraryExport: 'default',
     globalObject: 'window.pluginLoader'
-  },
-  resolve: {
-    alias: {
-      '~': resolve('src')
-    }
   },
   module: {
     rules: [
