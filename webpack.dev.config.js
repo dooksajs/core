@@ -1,3 +1,4 @@
+const express = require('express')
 const path = require('path')
 const resolve = file => path.resolve(__dirname, file)
 
@@ -16,11 +17,13 @@ module.exports = {
     publicPath: '/dev/',
     host: process.env.HOST || 'localhost',
     port: process.env.PORT || '8080',
-    disableHostCheck: true
+    disableHostCheck: true,
+    before (app) {
+      app.use('/dist', express.static(resolve('dist')))
+    }
   },
   resolve: {
     alias: {
-      '@dooksa/ds-plugins': resolve('node_modules/@dooksa/ds-plugins/dist'),
       plugin: resolve('src')
     }
   },
