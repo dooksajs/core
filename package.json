@@ -8,6 +8,7 @@
     "format": "standard --fix",
     "dev": "webpack serve --config webpack.dev.config.js",
     "build": "webpack --config webpack.prod.config.js",
+    "build:hash": "npm run build; node build/createHash.js",
     "test:unit": "cypress run --spec cypress/integration/ds-plugin-starter-kit.spec.js --headless"
   },
   "repository": {
