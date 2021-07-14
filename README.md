@@ -58,6 +58,8 @@ plugins.addMetadata([
   }]
 ])
 
+plugins.use({ name: 'googleMaps' })
+
 ```
 
 ### Run a plugin method

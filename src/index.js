@@ -29,8 +29,14 @@ function DsPlugins ({ isDev, store }) {
 }
 
 DsPlugins.prototype.method = function (name, params) {
-  if (this._methods[name]) {
-    return this._methods[name](params)
+  try {
+    if (this._methods[name]) {
+      return this._methods[name](params)
+    } else {
+      throw new Error('Method "' + name + '" does not exist')
+    }
+  } catch (error) {
+    return error
   }
 }
 
@@ -38,7 +44,7 @@ DsPlugins.prototype.action = function (name, params, callback = {}) {
   this.callbackWhenAvailable(name, () => {
     const onSuccess = callback.onSuccess
     const onError = callback.onError
-    const pluginResult = this._methods[name](params)
+    const pluginResult = this.method(name, params)
 
     if (pluginResult instanceof Promise) {
       Promise.resolve(pluginResult)
@@ -54,18 +60,25 @@ DsPlugins.prototype.action = function (name, params, callback = {}) {
         .catch(error => {
           if (onError) {
             if (onError.method) {
-              onError.method({ ...onError.params, results: pluginResult })
+              onError.method({ ...onError.params, results: error })
             } else {
-              onError(pluginResult)
+              onError(error)
             }
-            onError(error)
           }
         })
+    } else if (onError && pluginResult instanceof Error) {
+      if (onError) {
+        if (onError.method) {
+          onError.method({ ...onError.params, results: pluginResult })
+        } else {
+          onError(pluginResult)
+        }
+      }
     } else if (onSuccess) {
       if (onSuccess.method) {
-        return onSuccess.method({ ...onSuccess.params, results: pluginResult })
+        onSuccess.method({ ...onSuccess.params, results: pluginResult })
       } else {
-        return onSuccess(pluginResult)
+        onSuccess(pluginResult)
       }
     }
   })
