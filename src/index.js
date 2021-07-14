@@ -29,8 +29,14 @@ function DsPlugins ({ isDev, store }) {
 }
 
 DsPlugins.prototype.method = function (name, params) {
-  if (this._methods[name]) {
-    return this._methods[name](params)
+  try {
+    if (this._methods[name]) {
+      return this._methods[name](params)
+    } else {
+      throw new Error('Method "' + name + '" does not exist')
+    }
+  } catch (error) {
+    return error
   }
 }
 
