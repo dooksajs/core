@@ -16,7 +16,12 @@ pipelines:
           - npm install
           - npx cypress install
           - npm run lint
-          - npm run test:unit
+          - npm run dev
+          - npm run e2e:record -- --ci-build-id $BITBUCKET_BUILD_NUMBER --key $CYPRESS_REPORT_ID
+        artifacts:
+          # store any generates images and videos as artifacts
+          - cypress/screenshots/**
+          - cypress/videos/**
 definitions:
   caches:
     cypress: $HOME/.cache/Cypress

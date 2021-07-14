@@ -7,7 +7,9 @@
     "lint": "standard",
     "format": "standard --fix",
     "dev": "webpack serve",
-    "test:unit": "cypress run --spec cypress/integration/ds-plugins.spec.js --headless"
+    "test:unit": "cypress run --spec cypress/integration/ds-plugins.spec.js --headless",
+    "e2e": "cypress run",
+    "e2e:record": "cypress run --record"
   },
   "repository": {
     "type": "git",
