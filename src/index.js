@@ -159,7 +159,7 @@ DsPlugins.prototype.load = function (name, plugin) {
     const nameFragments = name.split('/')
     const baseName = nameFragments[0]
     let setupOptions = {}
-    const scriptOptions = {
+    let scriptOptions = {
       id: name
     }
 
@@ -171,7 +171,9 @@ DsPlugins.prototype.load = function (name, plugin) {
         reject(error)
       }
 
-      scriptOptions.src = metadata.src
+      if (metadata.script) {
+        scriptOptions = { ...scriptOptions, ...metadata.script }
+      }
 
       if (metadata.setupOptions) {
         setupOptions = metadata.setupOptions
@@ -193,7 +195,7 @@ DsPlugins.prototype.load = function (name, plugin) {
       script.load()
         .then(() => {
           const plugin = window.pluginLoader[name]
-          console.log(window.pluginLoader, name)
+
           if (plugin) {
             resolve({ plugin, setupOptions })
           } else {
