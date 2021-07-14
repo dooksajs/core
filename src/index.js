@@ -60,18 +60,25 @@ DsPlugins.prototype.action = function (name, params, callback = {}) {
         .catch(error => {
           if (onError) {
             if (onError.method) {
-              onError.method({ ...onError.params, results: pluginResult })
+              onError.method({ ...onError.params, results: error })
             } else {
-              onError(pluginResult)
+              onError(error)
             }
-            onError(error)
           }
         })
+    } else if (onError && pluginResult instanceof Error) {
+      if (onError) {
+        if (onError.method) {
+          onError.method({ ...onError.params, results: pluginResult })
+        } else {
+          onError(pluginResult)
+        }
+      }
     } else if (onSuccess) {
       if (onSuccess.method) {
-        return onSuccess.method({ ...onSuccess.params, results: pluginResult })
+        onSuccess.method({ ...onSuccess.params, results: pluginResult })
       } else {
-        return onSuccess(pluginResult)
+        onSuccess(pluginResult)
       }
     }
   })
