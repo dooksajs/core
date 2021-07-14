@@ -79,6 +79,7 @@ plugins.action('dsTest/positiveNumber', 1, { onSuccess: (r) => console.log(r) })
 plugins.action('dsTest/positiveNumber', -1, { onSuccess: (r) => console.log(r), onError: (e) => console.error(e) })
 plugins.action('dsTest/promisePositiveNumber', 1, { onSuccess: (r) => console.log(r), onError: (e) => console.error(e) })
 plugins.action('dsTest/promisePositiveNumber', -1, { onSuccess: (r) => console.log(r), onError: (e) => console.error(e) })
+plugins.action('dsTest/fakeFunction', '10')
 
 // Run direct methods
 const sayHello = plugins.method('dsTest/sayHi', 'John')
