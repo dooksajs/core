@@ -9,7 +9,7 @@
     "dev": "webpack serve",
     "test:unit": "cypress run --spec cypress/integration/ds-plugins.spec.js --headless",
     "e2e": "cypress run --spec cypress/integration/ds-plugins-e2e.spec.js",
-    "e2e:record": "cypress run --record"
+    "e2e:record": "cypress run --record --spec cypress/integration/ds-plugins-e2e.spec.js"
   },
   "repository": {
     "type": "git",
