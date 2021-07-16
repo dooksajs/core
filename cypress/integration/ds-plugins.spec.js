@@ -11,11 +11,13 @@ describe('test adding multiple plugin metadata', () => {
   it('metadata to be added', () => {
     expect(plugins.metadata.dsTest.version).equal('0.0.1')
   })
-  it('use a plugin - red', () => {
+  it('use a plugin with no methods', () => {
     const pluginState = plugins.use({
       name: 'dsTest'
     })
-    expect(pluginState).equal('0.0.1')
+    // **TODO** assertion can be improved to test for an empty object
+    // unsuccessfully tried chai assertions .to.be.empty() and .to.be.an('object')
+    expect(typeof (pluginState)).to.equal('object')
   })
 })
 // describe('create and run plugin methods', () => {
