@@ -16,9 +16,9 @@ pipelines:
           - npm install
           - npx cypress install
           - npm run lint
-          - npm run test:unit
-          # - npm run dev &
-          # - npm run e2e:record -- --key $CYPRESS_REPORT_ID
+          - npm run test:unitrecord -- --key $CYPRESS_REPORT_ID
+          - npm run dev &
+          - npm run e2e:record -- --key $CYPRESS_REPORT_ID
         artifacts:
           # store any generates images and videos as artifacts
           - cypress/screenshots/**

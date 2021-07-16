@@ -9,7 +9,13 @@ describe('test adding multiple plugin metadata', () => {
     }]
   ])
   it('metadata to be added', () => {
-    expect(plugins.metadata.dsTest.version).equal('0.0.2')
+    expect(plugins.metadata.dsTest.version).equal('0.0.1')
+  })
+  it('use a plugin - red', () => {
+    const pluginState = plugins.use({
+      name: 'dsTest'
+    })
+    expect(pluginState).equal('0.0.1')
   })
 })
 // describe('create and run plugin methods', () => {
