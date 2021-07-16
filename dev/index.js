@@ -44,7 +44,7 @@ plugins.use({
         })
       },
       /**
-       * promisePositiveNumber is a function that only accepts positive numbers
+       * positiveNumber is a function that only accepts positive numbers
        * @param {number} number - positive number
        * @returns {number || Error} - a positive number or an Error if the number is negative
        */
