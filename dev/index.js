@@ -72,9 +72,14 @@ plugins.use({
   onDemand: false
 })
 
-// Run actions
+// Run actions and display results
 plugins.action('dsTest/addAge', '10')
-plugins.action('dsTest/sayHi', 'John', { onSuccess: (r) => console.log(r) })
+plugins.action('dsTest/sayHi', 'John', {
+  onSuccess: (r) => {
+    const sayhi = document.querySelector('#data-sayhi')
+    sayhi ? sayhi.append(`${r}`) : console.dir(sayhi)
+  }
+})
 plugins.action('dsTest/positiveNumber', 1, { onSuccess: (r) => console.log(r) })
 plugins.action('dsTest/positiveNumber', -1, { onSuccess: (r) => console.log(r), onError: (e) => console.error(e) })
 plugins.action('dsTest/promisePositiveNumber', 1, { onSuccess: (r) => console.log(r), onError: (e) => console.error(e) })

@@ -5,4 +5,8 @@ describe('default test run, using dev webpack of ds-plugins', () => {
   it('run for coverage results of example tests', () => {
     cy.get('script').should('contain', 'main')
   })
+  it('test plugin method sayHi loaded and runs', () => {
+    cy.debug()
+    cy.get('#data-sayhi').should('have.text', 'Hi John! My age is 10 years old.')
+  })
 })
