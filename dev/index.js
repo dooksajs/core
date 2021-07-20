@@ -80,7 +80,12 @@ plugins.action('dsTest/sayHi', 'John', {
     sayhi ? sayhi.append(`${r}`) : console.dir(sayhi)
   }
 })
-plugins.action('dsTest/positiveNumber', 1, { onSuccess: (r) => console.log(r) })
+plugins.action('dsTest/positiveNumber', 1, {
+  onSuccess: (r) => {
+    const posNumber = document.querySelector('#data-posnumber')
+    posNumber ? posNumber.append(`${r}`) : console.dir(posNumber)
+  }
+})
 plugins.action('dsTest/positiveNumber', -1, { onSuccess: (r) => console.log(r), onError: (e) => console.error(e) })
 plugins.action('dsTest/promisePositiveNumber', 1, { onSuccess: (r) => console.log(r), onError: (e) => console.error(e) })
 plugins.action('dsTest/promisePositiveNumber', -1, { onSuccess: (r) => console.log(r), onError: (e) => console.error(e) })
