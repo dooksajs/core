@@ -17,4 +17,12 @@ describe('default test run, using dev webpack of ds-plugins', () => {
     cy.debug()
     cy.get('#data-posnumber-error').should('have.text', 'Error: No negative numbers!')
   })
+  it('plugin method promisePositiveNumber loaded and runs', () => {
+    cy.debug()
+    cy.get('#data-promise-posnumber').should('have.text', '1')
+  })
+  it('plugin method promisePositiveNumber loaded and error reported', () => {
+    cy.debug()
+    cy.get('#data-promise-posnumber-error').should('have.text', 'Error: Promise no negative numbers!')
+  })
 })

@@ -80,10 +80,16 @@ plugins.action('dsTest/sayHi', 'John', {
     sayhi ? sayhi.append(`${r}`) : console.dir(sayhi)
   }
 })
+
+// TODO: Set input as a selectable number for positive number tests
 plugins.action('dsTest/positiveNumber', 1, {
   onSuccess: (r) => {
     const posNumber = document.querySelector('#data-posnumber')
     posNumber ? posNumber.append(`${r}`) : console.dir(posNumber)
+  },
+  onError: (e) => {
+    const posNumber = document.querySelector('#data-posnumber')
+    posNumber ? posNumber.append(`${e}`) : console.dir(posNumber)
   }
 })
 plugins.action('dsTest/positiveNumber', -1, {
@@ -96,8 +102,26 @@ plugins.action('dsTest/positiveNumber', -1, {
     posNumber ? posNumber.append(`${e}`) : console.dir(posNumber)
   }
 })
-plugins.action('dsTest/promisePositiveNumber', 1, { onSuccess: (r) => console.log(r), onError: (e) => console.error(e) })
-plugins.action('dsTest/promisePositiveNumber', -1, { onSuccess: (r) => console.log(r), onError: (e) => console.error(e) })
+plugins.action('dsTest/promisePositiveNumber', 1, {
+  onSuccess: (r) => {
+    const posNumber = document.querySelector('#data-promise-posnumber')
+    posNumber ? posNumber.append(`${r}`) : console.dir(posNumber)
+  },
+  onError: (e) => {
+    const posNumber = document.querySelector('#data-promise-posnumber')
+    posNumber ? posNumber.append(`${e}`) : console.dir(posNumber)
+  }
+})
+plugins.action('dsTest/promisePositiveNumber', -1, {
+  onSuccess: (r) => {
+    const posNumber = document.querySelector('#data-promise-posnumber-error')
+    posNumber ? posNumber.append(`${r}`) : console.dir(posNumber)
+  },
+  onError: (e) => {
+    const posNumber = document.querySelector('#data-promise-posnumber-error')
+    posNumber ? posNumber.append(`${e}`) : console.dir(posNumber)
+  }
+})
 plugins.action('dsTest/fakeFunction', '10')
 
 // Run direct methods
