@@ -81,7 +81,7 @@ plugins.action('dsTest/sayHi', 'John', {
   }
 })
 
-// TODO: Set input as a selectable number for positive number tests
+// TODO: [DS-438] Set input as a selectable number for positive number tests
 plugins.action('dsTest/positiveNumber', 1, {
   onSuccess: (r) => {
     const posNumber = document.querySelector('#data-posnumber')
@@ -122,13 +122,16 @@ plugins.action('dsTest/promisePositiveNumber', -1, {
     posNumber ? posNumber.append(`${e}`) : console.dir(posNumber)
   }
 })
+// TODO: [DS-439] fakeFunction e2e test
 plugins.action('dsTest/fakeFunction', '10')
-
-// Run direct methods
+// TODO: [DS-440] direct methods e2e test
 const sayHello = plugins.method('dsTest/sayHi', 'John')
-console.log(`Unsafe run method result: ${sayHello}`)
+const directHello = document.querySelector('#data-directhello-error')
+directHello ? directHello.append(`${sayHello}`) : console.dir(sayHello)
 
 plugins.callbackWhenAvailable('dsTest/sayHi', () => {
   const sayHello = plugins.method('dsTest/sayHi', 'John')
   console.log(`Safe run method result: ${sayHello}`)
+  const directHello = document.querySelector('#data-directhello')
+  directHello ? directHello.append(`Safe run method: ${sayHello}`) : console.dir(sayHello)
 })
