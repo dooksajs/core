@@ -31,11 +31,11 @@ describe('ds-plugins e2e test run, using dev webpack', () => {
   it('direct method sayHi when available', () => {
     cy.get('#data-directhello').should('have.text', 'Safe run method: Hi John! My age is 10 years old.')
   })
-  it('plugin callback onSuccess method', () => {
+  it('plugin promise callback onSuccess method', () => {
     cy.debug()
     cy.get('#data-promise-callbackmethod').should('have.text', '1')
   })
-  it('plugin callback onError method', () => {
+  it('plugin promise callback onError method', () => {
     cy.debug()
     cy.get('#data-promise-callbackmethod-error').should('have.text', 'Error: Promise no negative numbers!')
   })
