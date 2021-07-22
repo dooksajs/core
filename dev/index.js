@@ -122,6 +122,40 @@ plugins.action('dsTest/promisePositiveNumber', -1, {
     posNumber ? posNumber.append(`${e}`) : console.dir(posNumber)
   }
 })
+// Use plugin callback onSuccess/onError method
+const posNumber = document.querySelector('#data-promise-callbackmethod')
+
+plugins.action('dsTest/promisePositiveNumber', 1, {
+  onSuccess: {
+    params: 'red',
+    method: (r) => {
+      posNumber.append(`${r.results}`)
+    }
+  },
+  onError: {
+    method: (e) => {
+      console.dir(e)
+      posNumber.append(`${e.results}`)
+    }
+  }
+})
+
+const posNumberError = document.querySelector('#data-promise-callbackmethod-error')
+
+plugins.action('dsTest/promisePositiveNumber', -1, {
+  onSuccess: {
+    params: 'red',
+    method: (r) => {
+      posNumberError.append(`${r.results}`)
+    }
+  },
+  onError: {
+    method: (e) => {
+      console.dir(e)
+      posNumberError.append(`${e.results}`)
+    }
+  }
+})
 // TODO: [DS-439] fakeFunction e2e test
 plugins.action('dsTest/fakeFunction', '10')
 // TODO: [DS-440] direct methods e2e test
