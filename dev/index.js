@@ -96,28 +96,19 @@ inputNumber.addEventListener('input', (event) => {
       posNumber ? posNumber.innerHTML = `${e}` : console.dir(posNumber)
     }
   })
+  // eslint-disable-next-line
+  plugins.action('dsTest/promisePositiveNumber', posnumber.value, {
+    onSuccess: (r) => {
+      const posNumber = document.querySelector('#data-promise-posnumber')
+      posNumber ? posNumber.innerHTML = `${r}` : console.dir(posNumber)
+    },
+    onError: (e) => {
+      const posNumber = document.querySelector('#data-promise-posnumber')
+      posNumber ? posNumber.innerHTML = `${e}` : console.dir(posNumber)
+    }
+  })
 })
 
-plugins.action('dsTest/positiveNumber', -1, {
-  onSuccess: (r) => {
-    const posNumber = document.querySelector('#data-posnumber-error')
-    posNumber ? posNumber.append(`${r}`) : console.dir(posNumber)
-  },
-  onError: (e) => {
-    const posNumber = document.querySelector('#data-posnumber-error')
-    posNumber ? posNumber.append(`${e}`) : console.dir(posNumber)
-  }
-})
-plugins.action('dsTest/promisePositiveNumber', 1, {
-  onSuccess: (r) => {
-    const posNumber = document.querySelector('#data-promise-posnumber')
-    posNumber ? posNumber.append(`${r}`) : console.dir(posNumber)
-  },
-  onError: (e) => {
-    const posNumber = document.querySelector('#data-promise-posnumber')
-    posNumber ? posNumber.append(`${e}`) : console.dir(posNumber)
-  }
-})
 plugins.action('dsTest/promisePositiveNumber', -1, {
   onSuccess: (r) => {
     const posNumber = document.querySelector('#data-promise-posnumber-error')
