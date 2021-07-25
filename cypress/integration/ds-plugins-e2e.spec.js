@@ -9,7 +9,14 @@ describe('ds-plugins e2e test run, using dev webpack', () => {
     cy.get('#data-sayhi').should('have.text', 'Hi John! My age is 10 years old.')
   })
   it('plugin method positiveNumber loaded and runs', () => {
+    cy.debug()
+    cy.get('#posnumber').type('1')
     cy.get('#data-posnumber').should('have.text', '1')
+  })
+  it('plugin method positiveNumber loaded and error reported', () => {
+    cy.debug()
+    cy.get('#posnumber').type('-1')
+    cy.get('#data-posnumber').should('have.text', 'Error: No negative numbers!')
   })
   it('plugin method positiveNumber loaded and error reported', () => {
     cy.get('#data-posnumber-error').should('have.text', 'Error: No negative numbers!')

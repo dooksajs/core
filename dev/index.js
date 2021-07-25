@@ -82,16 +82,22 @@ plugins.action('dsTest/sayHi', 'John', {
 })
 
 // TODO: [DS-438] Set input as a selectable number for positive number tests
-plugins.action('dsTest/positiveNumber', 1, {
-  onSuccess: (r) => {
-    const posNumber = document.querySelector('#data-posnumber')
-    posNumber ? posNumber.append(`${r}`) : console.dir(posNumber)
-  },
-  onError: (e) => {
-    const posNumber = document.querySelector('#data-posnumber')
-    posNumber ? posNumber.append(`${e}`) : console.dir(posNumber)
-  }
+// let posnumber
+const inputNumber = document.querySelector('#posnumber')
+inputNumber.addEventListener('input', (event) => {
+  // eslint-disable-next-line
+  plugins.action('dsTest/positiveNumber', posnumber.value, {
+    onSuccess: (r) => {
+      const posNumber = document.querySelector('#data-posnumber')
+      posNumber ? posNumber.innerHTML = `${r}` : console.dir(posNumber)
+    },
+    onError: (e) => {
+      const posNumber = document.querySelector('#data-posnumber')
+      posNumber ? posNumber.innerHTML = `${e}` : console.dir(posNumber)
+    }
+  })
 })
+
 plugins.action('dsTest/positiveNumber', -1, {
   onSuccess: (r) => {
     const posNumber = document.querySelector('#data-posnumber-error')
@@ -139,19 +145,19 @@ plugins.action('dsTest/promisePositiveNumber', 1, {
   }
 })
 
-const posNumberError = document.querySelector('#data-promise-callbackmethod-error')
+const posNumberErr = document.querySelector('#data-promise-callbackmethod-error')
 
 plugins.action('dsTest/promisePositiveNumber', -1, {
   onSuccess: {
     params: ['red'],
     method: (r) => {
-      posNumberError.append(`${r.results}`)
+      posNumberErr.append(`${r.results}`)
     }
   },
   onError: {
     method: (e) => {
       console.dir(e)
-      posNumberError.append(`${e.results}`)
+      posNumberErr.append(`${e.results}`)
     }
   }
 })
