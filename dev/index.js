@@ -126,22 +126,6 @@ plugins.action('dsTest/promisePositiveNumber', posnumber.value, {
   })
 })
 
-const posNumberErr = document.querySelector('#data-promise-callbackmethod-error')
-
-plugins.action('dsTest/promisePositiveNumber', -1, {
-  onSuccess: {
-    params: ['red'],
-    method: (r) => {
-      posNumberErr.append(`${r.results}`)
-    }
-  },
-  onError: {
-    method: (e) => {
-      console.dir(e)
-      posNumberErr.append(`${e.results}`)
-    }
-  }
-})
 // Use plugin callback onSuccess/onError method
 // TODO: [DS-439] fakeFunction e2e test
 plugins.action('dsTest/fakeFunction', '10')
