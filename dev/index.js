@@ -132,11 +132,11 @@ plugins.action('dsTest/fakeFunction', '10')
 
 const sayHello = plugins.method('dsTest/sayHi', 'John')
 const directHello = document.querySelector('#data-directhello-error')
-directHello.append(`${sayHello}`)
+directHello.innerHTML = `${sayHello}`
 
 plugins.callbackWhenAvailable('dsTest/sayHi', () => {
   const sayHello = plugins.method('dsTest/sayHi', 'John')
   console.log(`Safe run method result: ${sayHello}`)
   const directHello = document.querySelector('#data-directhello')
-  directHello.append(`Safe run method: ${sayHello}`)
+  directHello.innerHTML = `Safe run method: ${sayHello}`
 })
