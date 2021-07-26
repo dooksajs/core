@@ -107,23 +107,23 @@ inputNumber.addEventListener('input', (event) => {
       posNumber ? posNumber.innerHTML = `${e}` : console.dir(posNumber)
     }
   })
-})
-
-const posNumber = document.querySelector('#data-promise-callbackmethod')
-
-plugins.action('dsTest/promisePositiveNumber', 1, {
-  onSuccess: {
-    params: ['red'],
-    method: (r) => {
-      posNumber.append(`${r.results}`)
+  // eslint-disable-next-line
+plugins.action('dsTest/promisePositiveNumber', posnumber.value, {
+    onSuccess: {
+      params: ['red'],
+      method: (r) => {
+        const posNumber = document.querySelector('#data-promise-callbackmethod')
+        posNumber ? posNumber.innerHTML = `${r.results}` : console.dir(posNumber)
+      }
+    },
+    onError: {
+      method: (e) => {
+        console.dir(e)
+        const posNumber = document.querySelector('#data-promise-callbackmethod')
+        posNumber ? posNumber.innerHTML = `${e.results}` : console.dir(posNumber)
+      }
     }
-  },
-  onError: {
-    method: (e) => {
-      console.dir(e)
-      posNumber.append(`${e.results}`)
-    }
-  }
+  })
 })
 
 const posNumberErr = document.querySelector('#data-promise-callbackmethod-error')

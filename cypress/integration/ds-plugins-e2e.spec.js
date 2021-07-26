@@ -17,12 +17,10 @@ describe('ds-plugins e2e test run, using dev webpack', () => {
     cy.get('#data-posnumber').should('have.text', 'Error: No non-positive numbers!')
   })
   it('plugin method promisePositiveNumber loaded and runs', () => {
-    cy.debug()
     cy.get('#posnumber').type('5')
     cy.get('#data-promise-posnumber').should('have.text', '5')
   })
   it('plugin method promisePositiveNumber loaded and error reported', () => {
-    cy.debug()
     cy.get('#posnumber').type('-5')
     cy.get('#data-promise-posnumber').should('have.text', 'Error: Promise no non-positive numbers!')
   })
@@ -39,10 +37,12 @@ describe('ds-plugins e2e test run, using dev webpack', () => {
   })
   it('plugin promise callback onSuccess method', () => {
     cy.debug()
-    cy.get('#data-promise-callbackmethod').should('have.text', '1')
+    cy.get('#posnumber').type('4')
+    cy.get('#data-promise-callbackmethod').should('have.text', '4')
   })
   it('plugin promise callback onError method', () => {
     cy.debug()
-    cy.get('#data-promise-callbackmethod-error').should('have.text', 'Error: Promise no non-positive numbers!')
+    cy.get('#posnumber').type('0')
+    cy.get('#data-promise-callbackmethod').should('have.text', 'Error: Promise no non-positive numbers!')
   })
 })
