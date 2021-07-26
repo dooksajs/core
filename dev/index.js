@@ -89,22 +89,22 @@ inputNumber.addEventListener('input', (event) => {
   plugins.action('dsTest/positiveNumber', posnumber.value, {
     onSuccess: (r) => {
       const posNumber = document.querySelector('#data-posnumber')
-      posNumber ? posNumber.innerHTML = `${r}` : console.dir(posNumber)
+      posNumber.innerHTML = `${r}`
     },
     onError: (e) => {
       const posNumber = document.querySelector('#data-posnumber')
-      posNumber ? posNumber.innerHTML = `${e}` : console.dir(posNumber)
+      posNumber.innerHTML = `${e}`
     }
   })
   // eslint-disable-next-line
   plugins.action('dsTest/promisePositiveNumber', posnumber.value, {
     onSuccess: (r) => {
       const posNumber = document.querySelector('#data-promise-posnumber')
-      posNumber ? posNumber.innerHTML = `${r}` : console.dir(posNumber)
+      posNumber.innerHTML = `${r}`
     },
     onError: (e) => {
       const posNumber = document.querySelector('#data-promise-posnumber')
-      posNumber ? posNumber.innerHTML = `${e}` : console.dir(posNumber)
+      posNumber.innerHTML = `${e}`
     }
   })
   // eslint-disable-next-line
@@ -113,14 +113,14 @@ plugins.action('dsTest/promisePositiveNumber', posnumber.value, {
       params: ['red'],
       method: (r) => {
         const posNumber = document.querySelector('#data-promise-callbackmethod')
-        posNumber ? posNumber.innerHTML = `${r.results}` : console.dir(posNumber)
+        posNumber.innerHTML = `${r.results}`
       }
     },
     onError: {
       method: (e) => {
         console.dir(e)
         const posNumber = document.querySelector('#data-promise-callbackmethod')
-        posNumber ? posNumber.innerHTML = `${e.results}` : console.dir(posNumber)
+        posNumber.innerHTML = `${e.results}`
       }
     }
   })
@@ -145,14 +145,14 @@ plugins.action('dsTest/promisePositiveNumber', -1, {
 // Use plugin callback onSuccess/onError method
 // TODO: [DS-439] fakeFunction e2e test
 plugins.action('dsTest/fakeFunction', '10')
-// TODO: [DS-440] direct methods e2e test
+
 const sayHello = plugins.method('dsTest/sayHi', 'John')
 const directHello = document.querySelector('#data-directhello-error')
-directHello ? directHello.append(`${sayHello}`) : console.dir(sayHello)
+directHello.append(`${sayHello}`)
 
 plugins.callbackWhenAvailable('dsTest/sayHi', () => {
   const sayHello = plugins.method('dsTest/sayHi', 'John')
   console.log(`Safe run method result: ${sayHello}`)
   const directHello = document.querySelector('#data-directhello')
-  directHello ? directHello.append(`Safe run method: ${sayHello}`) : console.dir(sayHello)
+  directHello.append(`Safe run method: ${sayHello}`)
 })
