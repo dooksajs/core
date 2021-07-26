@@ -14,7 +14,7 @@ describe('ds-plugins e2e test run, using dev webpack', () => {
   })
   it('plugin method positiveNumber loaded and error reported', () => {
     cy.get('#posnumber').type('-4')
-    cy.get('#data-posnumber').should('have.text', 'Error: No negative numbers!')
+    cy.get('#data-posnumber').should('have.text', 'Error: No non-positive numbers!')
   })
   it('plugin method promisePositiveNumber loaded and runs', () => {
     cy.debug()
@@ -28,7 +28,7 @@ describe('ds-plugins e2e test run, using dev webpack', () => {
     //   $el.contents().filter((_, el) => el.nodeType === 3).remove()
     // })
     cy.get('#posnumber').type('5')
-    cy.get('#data-promise-posnumber-error').should('have.text', 'Error: Promise no negative numbers!')
+    cy.get('#data-promise-posnumber-error').should('have.text', 'Error: Promise no non-positive numbers!')
   })
   // Fix with DS-439
   // it('plugin action does not exist RED', () => {
@@ -47,6 +47,6 @@ describe('ds-plugins e2e test run, using dev webpack', () => {
   })
   it('plugin promise callback onError method', () => {
     cy.debug()
-    cy.get('#data-promise-callbackmethod-error').should('have.text', 'Error: Promise no negative numbers!')
+    cy.get('#data-promise-callbackmethod-error').should('have.text', 'Error: Promise no non-positive numbers!')
   })
 })

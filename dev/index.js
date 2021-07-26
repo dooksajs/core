@@ -37,7 +37,7 @@ plugins.use({
           if (number > 0) {
             resolve(number)
           } else {
-            const error = new Error('Promise no negative numbers!')
+            const error = new Error('Promise no non-positive numbers!')
 
             reject(error)
           }
@@ -53,7 +53,7 @@ plugins.use({
           if (number > 0) {
             return number
           } else {
-            throw new Error('No negative numbers!')
+            throw new Error('No non-positive numbers!')
           }
         } catch (error) {
           return error
