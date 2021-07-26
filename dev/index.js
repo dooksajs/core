@@ -109,16 +109,6 @@ inputNumber.addEventListener('input', (event) => {
   })
 })
 
-plugins.action('dsTest/promisePositiveNumber', -1, {
-  onSuccess: (r) => {
-    const posNumber = document.querySelector('#data-promise-posnumber-error')
-    posNumber ? posNumber.append(`${r}`) : console.dir(posNumber)
-  },
-  onError: (e) => {
-    const posNumber = document.querySelector('#data-promise-posnumber-error')
-    posNumber ? posNumber.append(`${e}`) : console.dir(posNumber)
-  }
-})
 const posNumber = document.querySelector('#data-promise-callbackmethod')
 
 plugins.action('dsTest/promisePositiveNumber', 1, {

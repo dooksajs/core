@@ -23,12 +23,8 @@ describe('ds-plugins e2e test run, using dev webpack', () => {
   })
   it('plugin method promisePositiveNumber loaded and error reported', () => {
     cy.debug()
-    // Clear text from any previous test updates
-    // cy.get('#data-promise-posnumber-error').then(($el) => {
-    //   $el.contents().filter((_, el) => el.nodeType === 3).remove()
-    // })
-    cy.get('#posnumber').type('5')
-    cy.get('#data-promise-posnumber-error').should('have.text', 'Error: Promise no non-positive numbers!')
+    cy.get('#posnumber').type('-5')
+    cy.get('#data-promise-posnumber').should('have.text', 'Error: Promise no non-positive numbers!')
   })
   // Fix with DS-439
   // it('plugin action does not exist RED', () => {
