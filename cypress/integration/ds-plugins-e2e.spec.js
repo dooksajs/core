@@ -36,7 +36,6 @@ describe('ds-plugins e2e test run, using dev webpack', () => {
     cy.get('#data-directhello').should('have.text', 'Safe run method: Hi John! My age is 10 years old.')
   })
   it('plugin promise callback onSuccess method', () => {
-    cy.debug()
     cy.get('#posnumber').type('4')
     cy.get('#data-promise-callbackmethod').should('have.text', '4')
   })
@@ -44,5 +43,9 @@ describe('ds-plugins e2e test run, using dev webpack', () => {
     cy.debug()
     cy.get('#posnumber').type('0')
     cy.get('#data-promise-callbackmethod').should('have.text', 'Error: Promise no non-positive numbers!')
+  })
+  it('plugin getters runs - RED', () => {
+    cy.debug()
+    cy.get('#data-getters-version').should('have.text', 'fluffybunnies')
   })
 })

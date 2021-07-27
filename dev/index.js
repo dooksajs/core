@@ -67,6 +67,20 @@ plugins.use({
       sayHi (name) {
         return `${this.say} ${name}! My age is ${this.age} years old.`
       }
+    },
+    getters: {
+      get version () {
+        try {
+          if (this.version) {
+            return this.version
+          } else {
+            throw new Error('version is undefined', this)
+          }
+        } catch (error) {
+          console.error(error)
+          return error
+        }
+      }
     }
   },
   onDemand: false
@@ -139,4 +153,15 @@ plugins.callbackWhenAvailable('dsTest/sayHi', () => {
   console.log(`Safe run method result: ${sayHello}`)
   const directHello = document.querySelector('#data-directhello')
   directHello.innerHTML = `Safe run method: ${sayHello}`
+})
+
+plugins.action('dsTest/version', {
+  onSuccess: (r) => {
+    const pluginVersion = document.querySelector('#data-getters-version')
+    pluginVersion ? pluginVersion.innerHTML = `${r}` : console.dir(pluginVersion)
+  },
+  onError: (e) => {
+    const pluginVersion = document.querySelector('#data-getters-version')
+    pluginVersion ? pluginVersion.innerHTML = `${e}` : console.dir(pluginVersion)
+  }
 })
