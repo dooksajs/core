@@ -7,6 +7,7 @@ pipelines:
   default:
     - step:
         name: Build and Test
+        max-time: 5
         caches:
           - node
           - cypress
