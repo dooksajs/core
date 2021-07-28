@@ -44,8 +44,4 @@ describe('ds-plugins e2e test run, using dev webpack', () => {
     cy.get('#posnumber').type('0')
     cy.get('#data-promise-callbackmethod').should('have.text', 'Error: Promise no non-positive numbers!')
   })
-  it('plugin getters runs - RED', () => {
-    cy.debug()
-    cy.get('#data-getters-input').should('have.text', 'fluffybunnies')
-  })
 })
