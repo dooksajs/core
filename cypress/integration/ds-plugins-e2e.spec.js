@@ -25,10 +25,10 @@ describe('ds-plugins e2e test run, using dev webpack', () => {
     cy.get('#data-promise-posnumber').should('have.text', 'Error: Promise no non-positive numbers!')
   })
   // Fix with DS-439
-  // it('plugin action does not exist RED', () => {
-  //    cy.debug()
-  //   cy.get('#data-fakefunction').should('have.text', 'Error: 2')
-  // })
+  it('plugin action does not exist RED', () => {
+    cy.debug()
+    cy.get('#data-fakefunction').should('have.text', 'Error: 2')
+  })
   it('direct method sayHi expect fail', () => {
     cy.get('#data-directhello-error').should('have.text', 'Error: Method "dsTest/sayHi" does not exist')
   })
@@ -46,6 +46,6 @@ describe('ds-plugins e2e test run, using dev webpack', () => {
   })
   it('plugin getters runs - RED', () => {
     cy.debug()
-    cy.get('#data-getters-version').should('have.text', 'fluffybunnies')
+    cy.get('#data-getters-input').should('have.text', 'fluffybunnies')
   })
 })

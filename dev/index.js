@@ -80,6 +80,19 @@ plugins.use({
           console.error(error)
           return error
         }
+      },
+      get input () {
+        try {
+          const inputNumber = document.querySelector('#posnumber')
+          if (inputNumber) {
+            return inputNumber
+          } else {
+            throw new Error('input is undefined')
+          }
+        } catch (error) {
+          console.error(error)
+          return error
+        }
       }
     }
   },
@@ -155,13 +168,13 @@ plugins.callbackWhenAvailable('dsTest/sayHi', () => {
   directHello.innerHTML = `Safe run method: ${sayHello}`
 })
 
-plugins.action('dsTest/version', {
+plugins.action('dsTest/input', {
   onSuccess: (r) => {
-    const pluginVersion = document.querySelector('#data-getters-version')
-    pluginVersion ? pluginVersion.innerHTML = `${r}` : console.dir(pluginVersion)
+    const pluginInput = document.querySelector('#data-getters-input')
+    pluginInput ? pluginInput.innerHTML = `${r}` : console.dir(pluginInput)
   },
   onError: (e) => {
-    const pluginVersion = document.querySelector('#data-getters-version')
-    pluginVersion ? pluginVersion.innerHTML = `${e}` : console.dir(pluginVersion)
+    const pluginInput = document.querySelector('#data-getters-input')
+    pluginInput ? pluginInput.innerHTML = `${e}` : console.dir(pluginInput)
   }
 })
