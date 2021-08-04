@@ -140,3 +140,15 @@ plugins.callbackWhenAvailable('dsTest/sayHi', () => {
   const directHello = document.querySelector('#data-directhello')
   directHello.innerHTML = `Safe run method: ${sayHello}`
 })
+
+// DS-452
+// handle promise response
+const loadMissingPlugin = document.querySelector('#data-loadmissing')
+const loadMissing = plugins.load('dstest/sayhi')
+loadMissing
+  .then((result) => {
+    loadMissingPlugin.innerHTML = `${result}`
+  })
+  .catch((e) => {
+    loadMissingPlugin.innerHTML = `${e.message}`
+  })
