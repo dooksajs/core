@@ -44,4 +44,9 @@ describe('ds-plugins e2e test run, using dev webpack', () => {
     cy.get('#posnumber').type('0')
     cy.get('#data-promise-callbackmethod').should('have.text', 'Error: Promise no non-positive numbers!')
   })
+  it('plugin load tries to load a missing plugin', () => {
+    cy.debug()
+    cy.get('#posnumber').type('0')
+    cy.get('#data-loadmissing').should('have.text', 'Plugin not found: dstest/sayhi')
+  })
 })
