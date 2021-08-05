@@ -72,22 +72,6 @@ plugins.use({
   onDemand: false
 })
 
-// DS-448
-// const dupAddMetadata = document.querySelector('#data-dupmetadata')
-// const dupAdd = plugins.addMetadata([
-//   ['dsTest', {
-//     description: ''
-//   }]
-// ])
-// console.dir(dupAdd)
-// dupAdd
-//   .then((result) => {
-//     dupAddMetadata.innerHTML = `${result}`
-//   })
-//   .catch((e) => {
-//     dupAddMetadata.innerHTML = `${e.message}`
-//   })
-
 // Run actions and display results
 plugins.action('dsTest/addAge', '10')
 plugins.action('dsTest/sayHi', 'John', {
