@@ -2,13 +2,22 @@ import DsPlugins from '@dooksa/ds-plugins'
 
 const plugins = new DsPlugins({ isDev: true })
 
-// test adding multiple plugin metadata
 plugins.addMetadata([
   ['dsTest', {
     version: '0.0.1'
   }]
 ])
-
+plugins.addMetadata([
+  ['dstest', {
+    description: 'test for ds-plugins'
+  }]
+])
+// add before use
+plugins.addMetadata([
+  ['dsTest', {
+    description: 'test for ds-plugins'
+  }]
+])
 // add test local plugin
 plugins.use({
   name: 'dsTest',
@@ -71,13 +80,33 @@ plugins.use({
   },
   onDemand: false
 })
-
+// add after use
+plugins.addMetadata([
+  ['dsTest', {
+    exampletest: 'test for updating ds-plugin metadata after use'
+  }]
+])
 // Run actions and display results
-plugins.action('dsTest/addAge', '10')
+plugins.action('dsTest/addAge', '10', {
+  onSuccess: (r) => {
+    const addAge = document.querySelector('#data-addage')
+    addAge.innerHTML = `${r}`
+  },
+  onError: (e) => {
+    const addAge = document.querySelector('#data-addage')
+    addAge.innerHTML = `${e}`
+    console.dir(e)
+  }
+})
 plugins.action('dsTest/sayHi', 'John', {
   onSuccess: (r) => {
     const sayhi = document.querySelector('#data-sayhi')
-    sayhi ? sayhi.append(`${r}`) : console.dir(sayhi)
+    sayhi.innerHTML = `${r}`
+  },
+  onError: (e) => {
+    const sayhi = document.querySelector('#data-sayhi')
+    sayhi.innerHTML = `${e}`
+    console.dir(e)
   }
 })
 
@@ -141,8 +170,6 @@ plugins.callbackWhenAvailable('dsTest/sayHi', () => {
   directHello.innerHTML = `Safe run method: ${sayHello}`
 })
 
-// DS-452
-// handle promise response
 const loadMissingPlugin = document.querySelector('#data-loadmissing')
 const loadMissing = plugins.load('dstest/sayhi')
 loadMissing
