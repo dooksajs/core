@@ -7,17 +7,19 @@ plugins.addMetadata([
     version: '0.0.1'
   }]
 ])
+// add before use (has no effect)
 plugins.addMetadata([
   ['dstest', {
     description: 'test for ds-plugins'
   }]
 ])
-// add before use
+
 plugins.addMetadata([
   ['dsTest', {
     description: 'test for ds-plugins'
   }]
 ])
+
 // add test local plugin
 plugins.use({
   name: 'dsTest',
@@ -81,11 +83,13 @@ plugins.use({
   onDemand: false
 })
 // add after use
-plugins.addMetadata([
-  ['dsTest', {
-    exampletest: 'test for updating ds-plugin metadata after use'
-  }]
-])
+// temporarily disabled until DS-449 is completed
+// plugins.addMetadata([
+//   ['dsTest', {
+//     exampletest: 'test for updating ds-plugin metadata after use'
+//   }]
+// ])
+
 // Run actions and display results
 plugins.action('dsTest/addAge', '10', {
   onSuccess: (r) => {
@@ -110,8 +114,6 @@ plugins.action('dsTest/sayHi', 'John', {
   }
 })
 
-// TODO: [DS-438] Set input as a selectable number for positive number tests
-// let posnumber
 const inputNumber = document.querySelector('#posnumber')
 inputNumber.addEventListener('input', (event) => {
   // eslint-disable-next-line
@@ -137,7 +139,7 @@ inputNumber.addEventListener('input', (event) => {
     }
   })
   // eslint-disable-next-line
-plugins.action('dsTest/promisePositiveNumber', posnumber.value, {
+  plugins.action('dsTest/promisePositiveNumber', posnumber.value, {
     onSuccess: {
       params: ['red'],
       method: (r) => {
@@ -149,6 +151,23 @@ plugins.action('dsTest/promisePositiveNumber', posnumber.value, {
       method: (e) => {
         console.dir(e)
         const posNumber = document.querySelector('#data-promise-callbackmethod')
+        posNumber.innerHTML = `${e.results}`
+      }
+    }
+  })
+  // eslint-disable-next-line
+  plugins.action('dsTest/positiveNumber', posnumber.value, {
+    onSuccess: {
+      params: ['red'],
+      method: (r) => {
+        const posNumber = document.querySelector('#data-callbackmethod')
+        posNumber.innerHTML = `${r.results}`
+      }
+    },
+    onError: {
+      method: (e) => {
+        console.dir(e)
+        const posNumber = document.querySelector('#data-callbackmethod')
         posNumber.innerHTML = `${e.results}`
       }
     }
