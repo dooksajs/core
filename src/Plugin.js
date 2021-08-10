@@ -16,26 +16,6 @@ export default function Plugin (context, plugin) {
   if (plugin.setup) {
     this.setup = plugin.setup.bind(this._context)
   }
-
-  if (plugin.getters) {
-    const getters = {}
-
-    for (const key in plugin.getters) {
-      if (Object.hasOwnProperty.call(plugin.getters, key)) {
-        let item = plugin.getters[key]
-        this._context[key] = item
-
-        if (typeof item === 'function') {
-          item = item.bind(this._context)
-        }
-
-        getters[key] = item
-      }
-    }
-
-    this.getters = getters
-  }
-
   if (plugin.methods) {
     const methods = {}
 
