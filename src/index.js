@@ -6,7 +6,6 @@ function DsPlugins ({ isDev, store }) {
   window.pluginLoader = {}
 
   this._methods = {}
-  this._getters = {}
 
   this.queue = {}
   this.isLoaded = {}
@@ -16,15 +15,13 @@ function DsPlugins ({ isDev, store }) {
 
   const method = this.method.bind(this)
   const action = this.action.bind(this)
-  const getters = this.getters.bind(this)
 
   this.context = {
     isDev,
     store,
     ScriptLoader,
     action,
-    method,
-    getters
+    method
   }
 }
 
@@ -46,7 +43,13 @@ DsPlugins.prototype.action = function (name, params, callback = {}) {
     const onError = callback.onError
     const pluginResult = this.method(name, params)
 
-    if (pluginResult instanceof Promise) {
+    if (onError && pluginResult instanceof Error) {
+      if (onError.method) {
+        onError.method({ ...onError.params, results: pluginResult })
+      } else {
+        onError(pluginResult)
+      }
+    } else if (pluginResult instanceof Promise) {
       Promise.resolve(pluginResult)
         .then(results => {
           if (onSuccess) {
@@ -66,14 +69,6 @@ DsPlugins.prototype.action = function (name, params, callback = {}) {
             }
           }
         })
-    } else if (onError && pluginResult instanceof Error) {
-      if (onError) {
-        if (onError.method) {
-          onError.method({ ...onError.params, results: pluginResult })
-        } else {
-          onError(pluginResult)
-        }
-      }
     } else if (onSuccess) {
       if (onSuccess.method) {
         onSuccess.method({ ...onSuccess.params, results: pluginResult })
@@ -122,13 +117,7 @@ DsPlugins.prototype.callbackWhenAvailable = function (name, callback) {
 }
 
 DsPlugins.prototype.actionExists = function (name) {
-  return (this._methods[name] || this._getters[name])
-}
-
-DsPlugins.prototype.getters = function (name, params) {
-  if (this._getters[name]) {
-    return this._getters[name](params)
-  }
+  return (this._methods[name])
 }
 
 DsPlugins.prototype.add = function (plugin) {
@@ -138,16 +127,6 @@ DsPlugins.prototype.add = function (plugin) {
         const method = plugin.methods[key]
 
         this._methods[`${plugin.name}/${key}`] = method
-      }
-    }
-
-    if (plugin.getters) {
-      for (const key in plugin.getters) {
-        if (Object.hasOwnProperty.call(plugin.getters, key)) {
-          const getter = plugin.getters[key]
-
-          this._getters[`${plugin.name}/${key}`] = getter
-        }
       }
     }
   }
