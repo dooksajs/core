@@ -43,7 +43,13 @@ DsPlugins.prototype.action = function (name, params, callback = {}) {
     const onError = callback.onError
     const pluginResult = this.method(name, params)
 
-    if (pluginResult instanceof Promise) {
+    if (onError && pluginResult instanceof Error) {
+      if (onError.method) {
+        onError.method({ ...onError.params, results: pluginResult })
+      } else {
+        onError(pluginResult)
+      }
+    } else if (pluginResult instanceof Promise) {
       Promise.resolve(pluginResult)
         .then(results => {
           if (onSuccess) {
@@ -63,14 +69,6 @@ DsPlugins.prototype.action = function (name, params, callback = {}) {
             }
           }
         })
-    } else if (onError && pluginResult instanceof Error) {
-      if (onError) {
-        if (onError.method) {
-          onError.method({ ...onError.params, results: pluginResult })
-        } else {
-          onError(pluginResult)
-        }
-      }
     } else if (onSuccess) {
       if (onSuccess.method) {
         onSuccess.method({ ...onSuccess.params, results: pluginResult })
