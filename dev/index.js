@@ -26,6 +26,8 @@ plugins.action('dsOperators/eval', {
 },
 {
   onSuccess: (data) => {
-    console.log(data)
+    const addAge = document.querySelector('#data-increment')
+    addAge.innerHTML = `${data}`
+    console.log('data', data)
   }
 })
