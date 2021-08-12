@@ -70,7 +70,24 @@ export default {
      * @param {number[]} arrayRemove.items - A list of indexes that will be removed
      */
     arrayRemove ({ list, items }) {
-      return list.filter((item, index) => !items.includes(index))
+      const newList = []
+
+      for (let i = 0; i < list.length; i++) {
+        let hasItem = false
+
+        for (let j = 0; j < items.length; j++) {
+          if (i === items[j]) {
+            hasItem = true
+            break
+          }
+        }
+
+        if (!hasItem) {
+          newList.push(list[i])
+        }
+      }
+
+      return newList
     },
     /**
      * Find the next key value pair in a list
