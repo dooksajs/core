@@ -4,6 +4,7 @@
   "description": "Ds operators plugin is used to add operators to the ds schema",
   "main": "src/index.js",
   "scripts": {
+    "lint": "standard",
     "format": "standard --fix",
     "dev": "webpack serve",
     "test:unit": "cypress run --spec cypress/integration/ds-plugin-operators.spec.js",
