@@ -6,10 +6,38 @@
   <title>Ds Operators playground</title>
 </head>
 <body>
-  <div style="display: flex; flex-direction: column">
-    <p>add age: </p>
-    <span id="data-increment"></span>
-  </div>
+  <form id="operators">
+    <h1>Testing operators</h1>
+    <section>
+      <h2>Input operands</h2>
+      <fieldset>
+        <label for="numeric-operand-0">Input a left operand number:</label>
+        <input type="number" id="numeric-operand-0" name="numeric-operand-0"
+        min="-10" max="10">
+        <label for="numeric-operand-1">Input a right operand number:</label>
+        <input type="number" id="numeric-operand-1" name="numeric-operand-1"
+        min="-10" max="10">
+      </fieldset>
+      <fieldset>
+        <label for="string-operand-0">Input a left operand string:</label>
+        <input type="text" id="string-operand-0" name="string-operand-0">
+        <label for="string-operand-1">Input a left operand string:</label>
+        <input type="text" id="string-operand-1" name="string-operand-1">
+      </fieldset>  
+    </section>
+    <section>
+      <p>
+        <button type="submit">Enter the operands</button>
+      </p>
+    </section>
+    <section>
+      <h2>Results</h2>
+      <div style="display: flex; flex-direction: column">
+        <p>increment operation: </p>
+        <span id="data-increment"></span>
+      </div>
+    </section>
+  </form>
   <script src="/dev/main.js"></script>
 </body>
 </html>

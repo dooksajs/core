@@ -16,18 +16,18 @@ plugins.addMetadata({
   }
 })
 
-console.log(dsOperators)
+// console.log(dsOperators)
 // use plugin
 plugins.use({ name, plugin: dsOperators, onDemand: false })
-console.log(plugins)
+const params = (new URL(document.location)).searchParams
+
 plugins.action('dsOperators/eval', {
   name: '++x',
-  values: [1]
+  values: [`${params.get('numeric-operand-0')}`]
 },
 {
   onSuccess: (data) => {
-    const addAge = document.querySelector('#data-increment')
-    addAge.innerHTML = `${data}`
-    console.log('data', data)
+    const incrementDisplay = document.querySelector('#data-increment')
+    incrementDisplay.innerHTML = `${data}`
   }
 })
