@@ -9,13 +9,8 @@ plugins.addMetadata([
 ])
 // add an extra 'bare plugin'
 plugins.addMetadata([
-  ['dstest', {
-    description: 'test for ds-plugins'
-  }]
-])
-// add before use (has no bad effect)
-plugins.addMetadata([
   ['dsTest', {
+    version: '0.0.1',
     description: 'test for ds-plugins'
   }]
 ])
@@ -82,13 +77,6 @@ plugins.use({
   },
   onDemand: false
 })
-// add after use
-// temporarily disabled until DS-449 is completed
-plugins.addMetadata([
-  ['dsTest', {
-    exampletest: 'test for updating ds-plugin metadata after use'
-  }]
-])
 
 // Run actions and display results
 plugins.action('dsTest/addAge', '10', {
