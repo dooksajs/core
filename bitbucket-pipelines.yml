@@ -19,6 +19,7 @@ pipelines:
           - npm run lint
           - npm run test:unitrecord -- --key $CYPRESS_REPORT_ID
           - npm run dev &
+          - PATH=$PATH:$BITBUCKET_CLONE_DIR/dev
           - npm run e2e:record -- --key $CYPRESS_REPORT_ID
         artifacts:
           # store any generates images and videos as artifacts
