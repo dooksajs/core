@@ -6,7 +6,7 @@ describe('ds-plugin-operators e2e test run, using dev webpack', () => {
     cy.get('script').should('contain', 'main')
   })
   it('plugin operator ++x loads and increments', () => {
-    cy.get('button').click()
+    cy.get('button').click() // trigger empty params
     cy.get('#operand-0').type('1')
     cy.get('#operator').type('++x')
     cy.get('button').click()
