@@ -22,7 +22,6 @@ plugins.use({ name, plugin: dsOperators, onDemand: false })
 const params = (new URL(document.location)).searchParams
 if (params.has('operator')) {
   const op = ((`${params.get('operator')}` || '++x')) // default operator
-  console.log('operator: ', params.get('operator'), op)
   plugins.action('dsOperators/eval', {
     name: op,
     values: [`${params.get('operand-0')}`, `${params.get('operand-1')}`]
