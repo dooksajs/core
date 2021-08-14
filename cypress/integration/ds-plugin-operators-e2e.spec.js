@@ -6,7 +6,6 @@ describe('ds-plugin-operators e2e test run, using dev webpack', () => {
     cy.get('script').should('contain', 'main')
   })
   it('plugin operator ++x loads and increments', () => {
-    cy.debug()
     cy.get('button').click()
     cy.get('#operand-0').type('1')
     cy.get('#operator').type('++x')
@@ -14,7 +13,6 @@ describe('ds-plugin-operators e2e test run, using dev webpack', () => {
     cy.get('#data-eval').should('have.text', '1 ++x -> 2')
   })
   it('plugin operator ++x loads and nothing input', () => {
-    cy.debug()
     cy.get('button').click()
     cy.get('#operator').type('++x')
     cy.get('#data-eval').should('have.text', '  -> 1')
@@ -22,10 +20,20 @@ describe('ds-plugin-operators e2e test run, using dev webpack', () => {
 })
 describe('ds-plugin-operators e2e operands input', () => {
   it('get all the operators', () => {
-    cy.debug()
     cy.exec('getOperators.sh')
       .then((result) => {
-        cy.log(result)
+        if (result.code === 0) {
+          result.stdout.split(',').forEach(op => {
+            const bareOp = op.replace(/'/g, '')
+            cy.get('#operand-0').type('1')
+            cy.get('#operand-1').type('2')
+            cy.get('#operator').clear()
+            cy.get('#operator').type(bareOp)
+            cy.get('button').click()
+            cy.get('#data-eval').should('not.contain', 'Sars-COV-2')
+            cy.log(op)
+          })
+        }
       })
   })
 })
