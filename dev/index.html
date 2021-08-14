@@ -9,20 +9,14 @@
   <form id="operators">
     <h1>Testing operators</h1>
     <section>
-      <h2>Input operands</h2>
+      <h2>Input operands and operands</h2>
       <fieldset>
-        <label for="numeric-operand-0">Input a left operand number:</label>
-        <input type="number" id="numeric-operand-0" name="numeric-operand-0"
-        min="-10" max="10">
-        <label for="numeric-operand-1">Input a right operand number:</label>
-        <input type="number" id="numeric-operand-1" name="numeric-operand-1"
-        min="-10" max="10">
-      </fieldset>
-      <fieldset>
-        <label for="string-operand-0">Input a left operand string:</label>
-        <input type="text" id="string-operand-0" name="string-operand-0">
-        <label for="string-operand-1">Input a left operand string:</label>
-        <input type="text" id="string-operand-1" name="string-operand-1">
+        <label for="operand-0">Input a left operand:</label>
+        <input type="text" id="operand-0" name="operand-0">
+        <label for="operator">Input an operator</label>
+        <input type="text" id="operator" name="operator">
+        <label for="operand-1">Input a right operand:</label>
+        <input type="text" id="operand-1" name="operand-1">
       </fieldset>  
     </section>
     <section>
@@ -33,8 +27,8 @@
     <section>
       <h2>Results</h2>
       <div style="display: flex; flex-direction: column">
-        <p>increment operation: </p>
-        <span id="data-increment"></span>
+        <p>eval output: </p>
+        <span id="data-eval"></span>
       </div>
     </section>
   </form>
