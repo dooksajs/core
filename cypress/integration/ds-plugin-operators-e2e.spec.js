@@ -18,6 +18,41 @@ describe('ds-plugin-operators e2e simple tests, using dev webpack', () => {
     cy.get('#data-eval').should('have.text', '   -> 1')
   })
 })
+
+describe('ds-plugin-operators compare() tests', () => {
+  it('test compare(values), values = ["1==1","&&","2==2"]', () => {
+    const argA = 1
+    const argB = 2
+    cy.get('#operand-0').clear()
+    // eslint-disable-next-line
+    cy.get('#operand-0').type(`${argA === argA}`)
+    cy.get('#operand-1').clear()
+    // eslint-disable-next-line
+    cy.get('#operand-1').type(`${argB===argB}`)
+    cy.get('#operator').clear()
+    cy.get('#operator').type('&&')
+    cy.get('button').click()
+    cy.get('#data-compare').should('have.text', 'true && true -> true')
+  })
+  it('test compare(values), values = [,"&&",]', () => {
+    cy.get('#operand-0').clear()
+    cy.get('#operand-1').clear()
+    cy.get('#operator').clear()
+    cy.get('#operator').type('&&')
+    cy.get('button').click()
+    cy.get('#data-compare').should('have.text', ' &&  -> false')
+  })
+  it('test compare(values), values = [,"&&",1]', () => {
+    cy.debug()
+    cy.get('#operand-0').clear()
+    cy.get('#operand-1').clear()
+    cy.get('#operand-1').type(1)
+    cy.get('#operator').clear()
+    cy.get('#operator').type('&&')
+    cy.get('button').click()
+    cy.get('#data-compare').should('have.text', ' && 1 -> false')
+  })
+})
 describe('ds-plugin-operators e2e operands input', () => {
   it('test all the eval operators', () => {
     cy.exec('getOperators.sh')
@@ -35,32 +70,5 @@ describe('ds-plugin-operators e2e operands input', () => {
           })
         }
       })
-  })
-})
-
-describe('ds-plugin-operators compare() tests', () => {
-  it('test compare(values), values = ["1==1","&&","2==2"]', () => {
-    cy.debug()
-    const argA = 1
-    const argB = 2
-    cy.get('#operand-0').clear()
-    // eslint-disable-next-line
-    cy.get('#operand-0').type(`${argA === argA}`)
-    cy.get('#operand-1').clear()
-    // eslint-disable-next-line
-    cy.get('#operand-1').type(`${argB===argB}`)
-    cy.get('#operator').clear()
-    cy.get('#operator').type('&&')
-    cy.get('button').click()
-    cy.get('#data-compare').should('have.text', 'true && true -> true')
-  })
-  it('test compare(values), values = [,"&&",]', () => {
-    cy.debug()
-    cy.get('#operand-0').clear()
-    cy.get('#operand-1').clear()
-    cy.get('#operator').clear()
-    cy.get('#operator').type('&&')
-    cy.get('button').click()
-    cy.get('#data-compare').should('have.text', ' &&  -> false')
   })
 })
