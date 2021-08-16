@@ -16,6 +16,7 @@ pipelines:
           - npm --version
           - npm install
           - npx cypress install
+          - npm ls
           - npm run lint
           - npm run test:unitrecord -- --key $CYPRESS_REPORT_ID
           - npm run dev &
