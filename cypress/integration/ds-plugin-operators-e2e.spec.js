@@ -19,7 +19,7 @@ describe('ds-plugin-operators e2e simple tests, using dev webpack', () => {
   })
 })
 
-describe('ds-plugin-operators compare() tests', () => {
+describe('ds-plugin-operators compare() "&&" tests', () => {
   it('test compare(values), values = ["1==1","&&","2==2"]', () => {
     const argA = 1
     const argB = 2
@@ -43,7 +43,6 @@ describe('ds-plugin-operators compare() tests', () => {
     cy.get('#data-compare').should('have.text', ' &&  -> false')
   })
   it('test compare(values), values = [,"&&",1]', () => {
-    cy.debug()
     cy.get('#operand-0').clear()
     cy.get('#operand-1').clear()
     cy.get('#operand-1').type(1)
@@ -51,6 +50,59 @@ describe('ds-plugin-operators compare() tests', () => {
     cy.get('#operator').type('&&')
     cy.get('button').click()
     cy.get('#data-compare').should('have.text', ' && 1 -> false')
+  })
+  it('test compare(values), values = ["guinea","&&", "pig"]', () => {
+    cy.get('#operand-0').clear()
+    cy.get('#operand-0').type('guinea')
+    cy.get('#operand-1').clear()
+    cy.get('#operand-1').type('pig')
+    cy.get('#operator').clear()
+    cy.get('#operator').type('&&')
+    cy.get('button').click()
+    cy.get('#data-compare').should('have.text', 'guinea && pig -> true')
+  })
+})
+describe('ds-plugin-operators compare() "||" tests', () => {
+  it('test compare(values), values = ["1==1","||","2==2"]', () => {
+    const argA = 1
+    const argB = 2
+    cy.get('#operand-0').clear()
+    // eslint-disable-next-line
+    cy.get('#operand-0').type(`${argA === argA}`)
+    cy.get('#operand-1').clear()
+    // eslint-disable-next-line
+    cy.get('#operand-1').type(`${argB===argB}`)
+    cy.get('#operator').clear()
+    cy.get('#operator').type('||')
+    cy.get('button').click()
+    cy.get('#data-compare').should('have.text', 'true || true -> true')
+  })
+  it('test compare(values), values = [,"||",]', () => {
+    cy.get('#operand-0').clear()
+    cy.get('#operand-1').clear()
+    cy.get('#operator').clear()
+    cy.get('#operator').type('||')
+    cy.get('button').click()
+    cy.get('#data-compare').should('have.text', ' ||  -> false')
+  })
+  it('test compare(values), values = [,"||",1]', () => {
+    cy.get('#operand-0').clear()
+    cy.get('#operand-1').clear()
+    cy.get('#operand-1').type(1)
+    cy.get('#operator').clear()
+    cy.get('#operator').type('||')
+    cy.get('button').click()
+    cy.get('#data-compare').should('have.text', ' || 1 -> true')
+  })
+  it('test compare(values), values = ["guinea","||", "pig"]', () => {
+    cy.get('#operand-0').clear()
+    cy.get('#operand-0').type('guinea')
+    cy.get('#operand-1').clear()
+    cy.get('#operand-1').type('pig')
+    cy.get('#operator').clear()
+    cy.get('#operator').type('||')
+    cy.get('button').click()
+    cy.get('#data-compare').should('have.text', 'guinea || pig -> true')
   })
 })
 describe('ds-plugin-operators e2e operands input', () => {
