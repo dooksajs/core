@@ -48,7 +48,7 @@ describe('ds-plugin-operators compare() tests', () => {
     cy.get('#operand-0').type(`${argA === argA}`)
     cy.get('#operand-1').clear()
     // eslint-disable-next-line
-    cy.get('#operand-0').type(`${argB===argB}`)
+    cy.get('#operand-1').type(`${argB===argB}`)
     cy.get('#operator').clear()
     cy.get('#operator').type('&&')
     cy.get('button').click()
