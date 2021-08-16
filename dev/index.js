@@ -25,6 +25,7 @@ if (params.has('operator')) {
   const op = ((`${params.get('operator')}` || '++x')) // default operator
   if (compareOps.includes(op)) {
     plugins.action('dsOperators/compare', {
+      name: 'compare', // not used by method
       values: [`${params.get('operand-0')}`, op, `${params.get('operand-1')}`]
     },
     {
