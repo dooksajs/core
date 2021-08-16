@@ -52,7 +52,7 @@ describe('ds-plugin-operators compare() tests', () => {
     cy.get('#operator').clear()
     cy.get('#operator').type('&&')
     cy.get('button').click()
-    cy.get('#data-compare').should('to.equal', 'true')
+    cy.get('#data-compare').should('have.text', 'true && true -> true')
   })
   it('test compare(values), values = [,"&&",]', () => {
     cy.debug()
@@ -61,6 +61,6 @@ describe('ds-plugin-operators compare() tests', () => {
     cy.get('#operator').clear()
     cy.get('#operator').type('&&')
     cy.get('button').click()
-    cy.get('#data-compare').should('to.equal', 'false')
+    cy.get('#data-compare').should('have.text', ' && -> true')
   })
 })

@@ -24,10 +24,11 @@ const compareOps = ['&&', '||']
 if (params.has('operator')) {
   const op = ((`${params.get('operator')}` || '++x')) // default operator
   if (compareOps.includes(op)) {
-    plugins.action('dsOperators/compare', {
-      name: 'compare', // not used by method
-      values: [`${params.get('operand-0')}`, op, `${params.get('operand-1')}`]
-    },
+    plugins.action('dsOperators/compare', ([
+        `${params.get('operand-0')}`,
+        op,
+        `${params.get('operand-1')}`
+    ]),
     {
       onSuccess: (data) => {
         const compareDisplay = document.querySelector('#data-compare')
