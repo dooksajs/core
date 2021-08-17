@@ -105,6 +105,36 @@ describe('ds-plugin-operators compare() "||" tests', () => {
     cy.get('#data-compare').should('have.text', 'guinea || pig -> true')
   })
 })
+describe('ds-plugin-operators arrayRemove() tests', () => {
+  it('remove an no-existent entry from source array', () => {
+    cy.get('#operand-0').type('1')
+    cy.get('#operand-1').type('4')
+    cy.get('#operator').clear()
+    cy.get('#operator').type('arrayRemove')
+    cy.get('button').click()
+    cy.get('#data-arrayop').should('have.text', '1 arrayRemove 4 -> 1')
+  })
+  it('remove an item from an array', () => {
+    cy.get('#operand-0').clear()
+    cy.get('#operand-0').type('1')
+    cy.get('#operand-1').clear()
+    cy.get('#operand-1').type('0')
+    cy.get('#operator').clear()
+    cy.get('#operator').type('arrayRemove')
+    cy.get('button').click()
+    cy.get('#data-arrayop').should('have.text', '1 arrayRemove 0 -> ')
+  })
+  it('remove items from an array', () => {
+    cy.get('#operand-0').clear()
+    cy.get('#operand-0').type('a,b,c')
+    cy.get('#operand-1').clear()
+    cy.get('#operand-1').type('0,2')
+    cy.get('#operator').clear()
+    cy.get('#operator').type('arrayRemove')
+    cy.get('button').click()
+    cy.get('#data-arrayop').should('have.text', 'a,b,c arrayRemove 0,2 -> b')
+  })
+})
 describe('ds-plugin-operators e2e operands input', () => {
   it('test all the eval operators', () => {
     cy.exec('getOperators.sh')
