@@ -40,11 +40,10 @@ if (params.has('operator')) {
         compareDisplay.innerHTML = `${error}`
       }
     })
-  } else if ((op.replace(/\s/g, '').match(/^array/))) {
-    plugins.action(`dsOperators/${op}`, ({
-      list: `${params.get('operand-0')}`.split(','),
-      items: `${params.get('operand-1')}`.split(',').map((a) => parseInt(a))
-    }),
+  } else if ((op.replace(/\s/g, '').match(/^arrayFindByKeyValue/))) {
+    plugins.action(`dsOperators/${op}`, (
+      JSON.parse(`${params.get('operand-0')}`)
+    ),
     {
       onSuccess: (data) => {
         const compareDisplay = document.querySelector('#data-arrayop')

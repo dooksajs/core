@@ -105,35 +105,28 @@ describe('ds-plugin-operators compare() "||" tests', () => {
     cy.get('#data-compare').should('have.text', 'guinea || pig -> true')
   })
 })
-describe('ds-plugin-operators arrayRemove() tests', () => {
-  it('remove an no-existent entry from source array', () => {
-    cy.get('#operand-0').type('1')
-    cy.get('#operand-1').type('4')
-    cy.get('#operator').clear()
-    cy.get('#operator').type('arrayRemove')
-    cy.get('button').click()
-    cy.get('#data-arrayop').should('have.text', '1 arrayRemove 4 -> 1')
+describe('test ds-plugin-operators array*', () => {
+  /* grab and use JSON file containing all test case arguments
+     This JSON is also used by webpack dev to display
+     a list of tests with RUN buttons
+     JSON schema and JSON data served by Webpack from data directory */
+  const arrayTests = require('./data/arrayTests.json')
+  it('checking the object is cool', () => {
+    cy.writeFile('./data/arrayout.txt', arrayTests, { flag: 'a+', log: true })
   })
-  it('remove an item from an array', () => {
-    cy.get('#operand-0').clear()
-    cy.get('#operand-0').type('1')
-    cy.get('#operand-1').clear()
-    cy.get('#operand-1').type('0')
-    cy.get('#operator').clear()
-    cy.get('#operator').type('arrayRemove')
-    cy.get('button').click()
-    cy.get('#data-arrayop').should('have.text', '1 arrayRemove 0 -> ')
-  })
-  it('remove items from an array', () => {
-    cy.get('#operand-0').clear()
-    cy.get('#operand-0').type('a,b,c')
-    cy.get('#operand-1').clear()
-    cy.get('#operand-1').type('0,2')
-    cy.get('#operator').clear()
-    cy.get('#operator').type('arrayRemove')
-    cy.get('button').click()
-    cy.get('#data-arrayop').should('have.text', 'a,b,c arrayRemove 0,2 -> b')
-  })
+  for (let i = 0; i < arrayTests.length; i++) {
+    const arrayTest = JSON.stringify(arrayTests[i])
+    if (arrayTest.match(/\$/)) {
+      continue
+    }
+    it(`arrayTest number: ${i} `, () => {
+      Cypress.$('#data-arrayop').html('')
+      cy.get('#operand-0').clear().type(`${arrayTest}`, { parseSpecialCharSequences: false })
+      cy.get('#operator').clear().type(`${arrayTests[i].operator}`)
+      cy.get('button').click()
+      cy.get('#data-arrayop').should('contain', `${arrayTests[i].expectedResult}`)
+    })
+  }
 })
 describe('ds-plugin-operators e2e operands input', () => {
   it('test all the eval operators', () => {

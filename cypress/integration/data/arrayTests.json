@@ -1,0 +1,79 @@
+[
+  {
+    "$comment": "FIX this with a proper $schema URI"
+  },
+  {
+    "operator": "arrayFindByKeyValue",
+    "list": 
+    [
+      {
+        "a": "stuff" 
+      }
+    ],
+    "key": "a",
+    "valueIndex": ["stuff", 0],
+    "expectedResult": "0, 0"
+  },
+  {
+    "operator": "arrayFindByKeyValue",
+    "list": 
+    [
+      {
+        "a": "stuff",
+        "x": "otherstuff"
+      }
+    ],
+    "key": "x",
+    "valueIndex": ["otherstuff", 0],
+    "expectedResult": "0, 0"
+  },
+  {
+    "operator": "arrayFindByKeyValue",
+    "list": 
+    [
+      {
+        "a": "stuff",
+        "x": "otherstuff"
+      }
+    ],
+    "key": "x",
+    "valueIndex": ["fluffybunnies", 0],
+    "expectedResult": "undefined"
+  },
+  {
+    "operator": "arrayRemove",
+    "$comment": "disable test",
+    "list": 
+    [
+      1
+    ],
+    "items": 4,
+    "expectedResult": "1 arrayRemove 4 -> 1"
+  },
+  {
+    "operator": "arrayRemove",
+    "$comment": "disable test",
+    "list": 
+    [
+      1
+    ],
+    "items": 0,
+    "expectedResult": "1 arrayRemove 0 -> "
+  },
+  {
+    "operator": "arrayRemove",
+    "$comment": "disable test",
+    "list": 
+    [
+      "a",
+      "b",
+      "c"
+    ],
+    "items": 
+    [
+      0,
+      2
+    ],
+    "expectedResult": "a,b,c arrayRemove 0,2 -> b"
+  }
+]
