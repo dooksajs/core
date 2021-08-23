@@ -40,7 +40,7 @@ if (params.has('operator')) {
         compareDisplay.innerHTML = `${error}`
       }
     })
-  } else if ((op.replace(/\s/g, '').match(/^arrayFindByKeyValue/))) {
+  } else if ((op.replace(/\s/g, '').match(/^array/))) {
     plugins.action(`dsOperators/${op}`, (
       JSON.parse(`${params.get('operand-0')}`)
     ),
