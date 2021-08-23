@@ -111,12 +111,9 @@ describe('test ds-plugin-operators array*', () => {
      a list of tests with RUN buttons
      JSON schema and JSON data served by Webpack from data directory */
   const arrayTests = require('./data/arrayTests.json')
-  it('checking the object is cool', () => {
-    cy.writeFile('./data/arrayout.txt', arrayTests, { flag: 'a+', log: true })
-  })
   for (let i = 0; i < arrayTests.length; i++) {
     const arrayTest = JSON.stringify(arrayTests[i])
-    if (arrayTest.match(/\$/)) {
+    if (arrayTest.match(/\$/)) { // JSON comment added disables tests
       continue
     }
     it(`arrayTest number: ${i} `, () => {
@@ -124,7 +121,7 @@ describe('test ds-plugin-operators array*', () => {
       cy.get('#operand-0').clear().type(`${arrayTest}`, { parseSpecialCharSequences: false })
       cy.get('#operator').clear().type(`${arrayTests[i].operator}`)
       cy.get('button').click()
-      cy.get('#data-arrayop').should('contain', `${arrayTests[i].expectedResult}`)
+      cy.get('#data-arrayop').should('has.text', `${JSON.stringify(arrayTests[i])} ${arrayTests[i].operator}  -> ${arrayTests[i].expectedResult}`)
     })
   }
 })

@@ -12,7 +12,7 @@
     ],
     "key": "a",
     "valueIndex": ["stuff", 0],
-    "expectedResult": "0, 0"
+    "expectedResult": "0,0"
   },
   {
     "operator": "arrayFindByKeyValue",
@@ -25,7 +25,7 @@
     ],
     "key": "x",
     "valueIndex": ["otherstuff", 0],
-    "expectedResult": "0, 0"
+    "expectedResult": "0,0"
   },
   {
     "operator": "arrayFindByKeyValue",
@@ -39,6 +39,23 @@
     "key": "x",
     "valueIndex": ["fluffybunnies", 0],
     "expectedResult": "undefined"
+  },
+  {
+    "operator": "arrayFindByKeyValue",
+    "list": 
+    [
+      {
+        "a": "stuff",
+        "x": "otherstuff"
+      },
+      {
+        "a": "stuff",
+        "x": "otherstuff"
+      }
+    ],
+    "key": "x",
+    "valueIndex": ["otherstuff", 0],
+    "expectedResult": "0,1"
   },
   {
     "operator": "arrayRemove",
