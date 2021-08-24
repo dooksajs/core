@@ -20,6 +20,23 @@
     [
       {
         "a": "stuff" 
+      },
+      {
+        "x": {
+          "a": "stuff"
+        }
+      }
+    ],
+    "key": "a",
+    "valueIndex": ["stuff", 0],
+    "expectedResult": "0,0"
+  },
+  {
+    "operator": "arrayFindByKeyValue",
+    "list": 
+    [
+      {
+        "a": "stuff" 
       }
     ],
     "key": "x",
@@ -83,6 +100,73 @@
       {
         "a": "stuff",
         "x": "otherstuff"
+      },
+      {
+         "a": "stuff"
+      }
+    ],
+    "key": "a",
+    "valueIndex": ["stuff", 1],
+    "expectedResult": "0,2"
+  },
+  {
+    "operator": "arrayFindByKeyValue",
+    "list": 
+    [
+      {
+        "a": "stuff",
+        "x": "otherstuff"
+      },
+      {
+        "a": "stuff",
+        "x": "otherstuff"
+      },
+      {
+         "x": "otherstuff"
+      },
+      {
+         "a": "stuff"
+      }
+    ],
+    "key": "a",
+    "valueIndex": ["stuff", 1],
+    "expectedResult": "0,1"
+  },
+
+  {
+    "operator": "arrayFindByKeyValue",
+    "list": 
+    [
+      {
+        "a": "stuff",
+        "x": "otherstuff"
+      },
+      {
+        "a": "stuff",
+        "x": "otherstuff"
+      },
+      {
+         "x": "otherstuff"
+      },
+      {
+         "a": "stuff"
+      }
+    ],
+    "key": "a",
+    "valueIndex": ["stuff", 2],
+    "expectedResult": "3,3"
+  },
+  {
+    "operator": "arrayFindByKeyValue",
+    "list": 
+    [
+      {
+        "a": "stuff",
+        "x": "otherstuff"
+      },
+      {
+        "a": "stuff",
+        "x": "otherstuff"
       }
     ],
     "key": "a",
@@ -108,6 +192,27 @@
     ],
     "key": "a",
     "valueIndex": ["stuff", 0],
+    "expectedResult": "0,2"
+  },
+  {
+    "operator": "arrayFindByKeyValue",
+    "list": 
+    [
+      {
+        "a": "stuff",
+        "x": "otherstuff"
+      },
+      {
+        "a": "stuff",
+        "x": "otherstuff"
+      },
+      {
+        "a": "stuff",
+        "x": "otherstuff"
+      }
+    ],
+    "key": "a",
+    "valueIndex": ["stuff", 2],
     "expectedResult": "0,2"
   },
   {
