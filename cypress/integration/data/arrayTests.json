@@ -48,6 +48,36 @@
     "list": 
     [
       {
+        "a": "otherstuff" 
+      },
+      {
+        "a": "stuff" 
+      }
+    ],
+    "key": "a",
+    "valueIndex": ["stuff", 0],
+    "expectedResult": "1,1"
+  },
+  {
+    "operator": "arrayFindByKeyValue",
+    "list": 
+    [
+      {
+        "a": "otherstuff" 
+      },
+      {
+        "a": "stuff" 
+      }
+    ],
+    "key": "a",
+    "valueIndex": ["stuff", 1],
+    "expectedResult": "1,1"
+  },
+  {
+    "operator": "arrayFindByKeyValue",
+    "list": 
+    [
+      {
         "a": "stuff",
         "x": "otherstuff"
       }
