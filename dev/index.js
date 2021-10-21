@@ -1,5 +1,5 @@
 import DsPlugins from '@dooksa/ds-plugins'
-import { name, filename, version } from '../ds.plugin.config'
+import { name, filename, version, integrity } from '../ds.plugin.config'
 
 const plugins = new DsPlugins({ isDev: true })
 
@@ -9,11 +9,11 @@ plugins.addMetadata([
     version,
     script: {
       src: `/dist/${filename}.js`,
-      integrity: 'sha512-NHj3yHLIurjFff1+vOIPJo7atTwujzZW+1YTG8hzJMqFhxED3JZx7Vpv+Pz/IEx7Hj38MCrNqalo+XkQqmjqNQ=='
+      integrity
     }
   }]
 ])
 
-plugins.use({ name })
+plugins.use({ name, version })
 
 console.log(plugins)

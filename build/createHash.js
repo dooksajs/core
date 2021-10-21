@@ -10,6 +10,10 @@ input.on('readable', () => {
   if (data) {
     hash.update(data)
   } else {
-    console.log(`sha512-${hash.digest('base64')} ${filename}`)
+    const hashBase64 = `sha512-${hash.digest('base64')}`
+
+    fs.writeFile('ds.plugin.integrity.js', `module.exports = { "hash": "${hashBase64}" }`, () => {
+      console.log(`${hashBase64} ${filename}`)
+    })
   }
 })
