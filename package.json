@@ -9,7 +9,10 @@
     "dev": "npm run build:hash; webpack serve --config webpack.dev.config.js",
     "build": "webpack --config webpack.prod.config.js",
     "build:hash": "npm run build; node build/createHash.js",
-    "test:unit": "cypress run --spec cypress/integration/ds-plugin-starter-kit.spec.js --headless"
+    "test:unit": "cypress run --spec cypress/integration/ds-plugin-starter-kit.spec.js",
+    "test:unitrecord": "cypress run --record --spec cypress/integration/ds-plugin-starter-kit.spec.js",
+    "e2e": "cypress run --spec cypress/integration/ds-plugin-starter-kit-e2e.spec.js",
+    "e2e:record": "cypress run --record --spec cypress/integration/ds-plugin-starter-kit-e2e.spec.js"
   },
   "repository": {
     "type": "git",
@@ -43,8 +46,11 @@
     "@babel/core": "^7.12.10",
     "@babel/preset-env": "^7.12.11",
     "@dooksa/ds-plugins": "git+ssh://git@bitbucket.org/dooksa/ds-plugins.git",
+    "@cypress/code-coverage": "^3.9.9",
     "babel-loader": "^8.2.2",
-    "cypress": "^6.5.0",
+    "cypress": "^8.0.0",
+    "babel-plugin-istanbul": "^6.0.0",
+    "html-webpack-plugin": "^4.5.1",
     "standard": "*",
     "webpack": "^5.17.0",
     "webpack-cli": "^4.4.0",
