@@ -6,8 +6,9 @@
   "scripts": {
     "lint": "standard",
     "format": "standard --fix",
-    "dev": "webpack serve --config webpack.dev.config.js",
+    "dev": "npm run build:hash; webpack serve --config webpack.dev.config.js",
     "build": "webpack --config webpack.prod.config.js",
+    "build:hash": "npm run build; node build/createHash.js",
     "test:unit": "cypress run --spec cypress/integration/ds-plugin-starter-kit.spec.js --headless"
   },
   "repository": {
@@ -31,7 +32,11 @@
     ]
   },
   "browserslist": [
-    "defaults"
+    "> 0.5%",
+    "last 2 versions",
+    "not dead",
+    "not IE 11",
+    "not OperaMini all"
   ],
   "devDependencies": {
     "@babel/cli": "^7.12.10",
@@ -40,7 +45,6 @@
     "@dooksa/ds-plugins": "git+ssh://git@bitbucket.org/dooksa/ds-plugins.git",
     "babel-loader": "^8.2.2",
     "cypress": "^6.5.0",
-    "html-webpack-plugin": "^4.5.1",
     "standard": "*",
     "webpack": "^5.17.0",
     "webpack-cli": "^4.4.0",

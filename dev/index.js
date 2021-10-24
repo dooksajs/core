@@ -1,5 +1,19 @@
-import dsPlugins from '@dooksa/ds-plugins'
-import myPlugin from 'plugin'
+import DsPlugins from '@dooksa/ds-plugins'
+import { name, filename, version, integrity } from '../ds.plugin.config'
 
-const plugins = dsPlugins(myPlugin)
+const plugins = new DsPlugins({ isDev: true })
+
+// add plugin metadata
+plugins.addMetadata([
+  [[name], {
+    version,
+    script: {
+      src: `/dist/${filename}.js`,
+      integrity
+    }
+  }]
+])
+
+plugins.use({ name, version })
+
 console.log(plugins)

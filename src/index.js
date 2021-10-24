@@ -1,41 +1,23 @@
-const plugin = () => ({
-  name: 'uiAvatar',
-  version: '1.0.0',
+import { name, version } from '../ds.plugin.config'
+
+/**
+ * Ds Plugin.
+ * @module plugin
+ */
+
+export default {
+  name,
+  version,
+  dependencies: [
+    // (Optional) Dependencies is a list of external dependent plugins
+  ],
   data: {
-    api: 'https://eu.ui-avatars.com/'
+    // (Optional) Data is a object of shared data
+  },
+  setup () {
+    // (Optional) Setup initialises the plugin
   },
   methods: {
-    createUrl (params) {
-      const url = new URL(this.api)
-      const searchParams = url.searchParams
-
-      for (const key in params) {
-        if (Object.hasOwnProperty.call(params, key)) {
-          const value = params[key]
-
-          if (value) {
-            params.append(key, value)
-          }
-        }
-      }
-
-      url.search = searchParams.toString()
-
-      return url.toString()
-    },
-    generate (url) {
-      return window.fetch(url)
-        .then(response => {
-          return response.blob()
-        })
-        .then(blob => {
-          return URL.createObjectURL(blob)
-        })
-    }
+    // (Optional) Methods contains the plugins functions
   }
-})
-
-module.exports = {
-  plugin,
-  default: plugin
 }
