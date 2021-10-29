@@ -5,7 +5,7 @@ describe('Dummy', () => {
 })
 describe('Loading test', () => {
   it('load test', () => {
-    cy.visit('http://localhost:8080')
     cy.debug()
+    cy.visit('http://localhost:8080')
   })
 })
