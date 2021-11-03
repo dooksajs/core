@@ -58,3 +58,5 @@ cypress/integration/examples/
 cypress/screenshots/
 cypress/videos/
 cypress/downloads/
+
+ds.plugin.integrity.js
