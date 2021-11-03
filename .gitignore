@@ -60,12 +60,4 @@ cypress/screenshots/
 cypress/videos/
 cypress/downloads/
 
-# Coverage reporting
-.nyc_output
-coverage/
-
-# project-specific
-.passwd
-
-# JSDoc output
-out/
+ds.plugin.integrity.js

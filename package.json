@@ -46,7 +46,7 @@
     "@babel/core": "^7.12.10",
     "@babel/preset-env": "^7.12.11",
     "@cypress/code-coverage": "^3.9.9",
-    "@dooksa/ds-plugins": "git+ssh://git@bitbucket.org/dooksa/ds-plugins.git",
+    "@dooksa/ds-plugins": "git+ssh://git@bitbucket.org/dooksa/ds-plugins.git#v2.1.0",
     "babel-loader": "^8.2.2",
     "babel-plugin-istanbul": "^6.0.0",
     "cypress": "^8.7.0",
