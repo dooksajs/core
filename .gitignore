@@ -53,6 +53,7 @@ cypress/fixtures/example.json
 cypress/fixtures/profile.json
 cypress/fixtures/users.json
 cypress/integration/examples/
+cypress/integration/[0-9]-*/
 
 #Cypress recordings
 cypress/screenshots/
