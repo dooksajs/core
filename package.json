@@ -42,7 +42,7 @@
     "@babel/cli": "^7.12.10",
     "@babel/core": "^7.12.10",
     "@babel/preset-env": "^7.12.11",
-    "@dooksa/ds-plugins": "git+ssh://git@bitbucket.org/dooksa/ds-plugins.git",
+    "@dooksa/ds-plugins": "git+ssh://git@bitbucket.org/dooksa/ds-plugins.git#v2.1.0",
     "babel-loader": "^8.2.2",
     "cypress": "^6.5.0",
     "standard": "*",
