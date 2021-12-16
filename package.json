@@ -4,8 +4,13 @@
   "description": "Ds operators plugin is used to add operators to the ds schema",
   "main": "src/index.js",
   "scripts": {
+    "lint": "standard",
     "format": "standard --fix",
-    "dev": "webpack serve"
+    "dev": "webpack serve",
+    "test:unit": "cypress run --spec cypress/integration/ds-plugin-operators.spec.js",
+    "test:unitrecord": "cypress run --record --spec cypress/integration/ds-plugin-operators.spec.js",
+    "e2e": "cypress run --spec cypress/integration/ds-plugin-operators-e2e.spec.js",
+    "e2e:record": "cypress run --record --spec cypress/integration/ds-plugin-operators-e2e.spec.js"
   },
   "repository": {
     "type": "git",
@@ -15,13 +20,28 @@
     "name": "Thomas David",
     "email": "tom@mightysmile.com"
   },
+  "standard": {
+    "env": [
+      "browser",
+      "mocha"
+    ],
+    "globals": [
+      "cy",
+      "Cypress",
+      "expect",
+      "assert"
+    ]
+  },
   "devDependencies": {
     "@babel/cli": "^7.12.10",
     "@babel/core": "^7.12.10",
     "@babel/preset-env": "^7.12.11",
+    "@cypress/code-coverage": "^3.9.9",
     "@dooksa/ds-plugins": "git+ssh://git@bitbucket.org:dooksa/ds-plugins.git#v2.1.0",
     "@dooksa/script-loader": "git+ssh://git@bitbucket.org/dooksa/script-loader.git#v1.0.5",
     "babel-loader": "^8.2.2",
+    "babel-plugin-istanbul": "^6.0.0",
+    "cypress": "^8.0.0",
     "standard": "*",
     "webpack": "^5.17.0",
     "webpack-cli": "^4.4.0",
