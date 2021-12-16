@@ -1,13 +1,16 @@
 {
   "name": "@dooksa/ds-plugins",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "The plugin library for Dooksa CMS",
   "main": "src/index.js",
   "scripts": {
     "lint": "standard",
     "format": "standard --fix",
     "dev": "webpack serve",
-    "test:unit": "cypress run --spec cypress/integration/ds-plugins.spec.js --headless"
+    "test:unit": "cypress run --spec cypress/integration/ds-plugins.spec.js",
+    "test:unitrecord": "cypress run --record --spec cypress/integration/ds-plugins.spec.js",
+    "e2e": "cypress run --spec cypress/integration/ds-plugins-e2e.spec.js",
+    "e2e:record": "cypress run --record --spec cypress/integration/ds-plugins-e2e.spec.js"
   },
   "repository": {
     "type": "git",
@@ -33,8 +36,10 @@
     "@babel/cli": "^7.12.10",
     "@babel/core": "^7.12.10",
     "@babel/preset-env": "^7.12.11",
+    "@cypress/code-coverage": "^3.9.9",
     "babel-loader": "^8.2.2",
-    "cypress": "^6.5.0",
+    "babel-plugin-istanbul": "^6.0.0",
+    "cypress": "^8.0.0",
     "standard": "*",
     "webpack": "^5.17.0",
     "webpack-cli": "^4.4.0",

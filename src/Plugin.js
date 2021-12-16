@@ -16,68 +16,23 @@ export default function Plugin (context, plugin) {
   if (plugin.setup) {
     this.setup = plugin.setup.bind(this._context)
   }
-
-  if (plugin.getters) {
-    const getters = {}
-
-    for (const key in plugin.getters) {
-      if (Object.hasOwnProperty.call(plugin.getters, key)) {
-        const item = plugin.getters[key]
-
-        this._context[key] = item
-        getters[key] = item.bind(this._context)
-      }
-    }
-
-    this.getters = getters
-  }
-
   if (plugin.methods) {
     const methods = {}
-    const commits = {}
 
-    for (const mKey in plugin.methods) {
-      if (Object.hasOwnProperty.call(plugin.methods, mKey)) {
-        let item = plugin.methods[mKey]
+    for (const key in plugin.methods) {
+      if (Object.hasOwnProperty.call(plugin.methods, key)) {
+        const item = plugin.methods[key]
 
-        if (item.method) {
-          if (item.commit) {
-            for (const cKey in item.commit) {
-              if (Object.hasOwnProperty.call(item.commit, cKey)) {
-                const commit = item.commit[cKey]
-
-                // TODO: [DS-321] commits might need to be bound to "this._context"
-                commits[`${mKey}/${cKey}`] = commit
-              }
-            }
-          }
-
-          item = item.method
-        }
-
-        this._context[mKey] = item
+        this._context[key] = item
 
         // Catch all the "_private" methods following the common js "_private" method naming convention
-        if (mKey.charAt(0) !== '_') {
-          methods[mKey] = item.bind(this._context)
+        if (key.charAt(0) !== '_') {
+          methods[key] = item.bind(this._context)
         }
       }
     }
 
-    this.commits = commits
     this.methods = methods
-  }
-}
-
-Plugin.prototype.action = function (name, params) {
-  try {
-    if (this._methods[name]) {
-      return this._methods[name](params)
-    } else {
-      throw new Error('Method not found')
-    }
-  } catch (e) {
-    console.error(`${name} failed: `, e.message)
   }
 }
 

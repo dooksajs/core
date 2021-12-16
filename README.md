@@ -19,20 +19,17 @@ $ npm run dev
 
 ```js
 
-import pluginName from 'myPlugin'
+import myPlugin from 'myPlugin'
 
 const plugins = new DsPlugins({ isDev: true })
 
-plugins.addMetadata({
-  pluginName: {
-    currentVersion: '1.0.0',
-    items: {
-      '1.0.0': {}
-    }
-  }
-})
+plugins.addMetadata([
+  [myPlugin.name, {
+    version: myPlugin.version,
+  }]
+])
 
-plugins.use({ name, version, plugin: pluginName, onDemand: true })
+plugins.use({ name, plugin: myPlugin, onDemand: true })
 
 ```
 
@@ -44,9 +41,9 @@ This will add plugin metadata that allows the system to load the required versio
 
 const plugins = new DsPlugins({ isDev: true })
 
-plugins.addMetadata({
-  googleMaps: {
-    currentVersion: '2.0.0',
+plugins.addMetadata([
+  ['googleMaps', {
+    version: '1.0.0',
     setupOptions: { // optional
       scriptParamNames: ['key', 'library'],
       scriptParamValues: {
@@ -54,33 +51,14 @@ plugins.addMetadata({
         key: 'API_KEY_1'
       }
     },
-    items: {
-      '2.0.0': {
-        src: 'https://www.example.com/ds-plugin-google-maps-2.0.0.js'
-      },
-      '1.0.0': {
-        src: 'https://www.example.com/ds-plugin-google-maps-1.0.0.js',
-        setupOptions: { // optional
-          scriptParamNames: ['key', 'library'],
-          scriptParamValues: {
-            library: 'places',
-            key: 'API_KEY_2'
-          }
-        }
-      }
+    script: {
+      src: 'https://www.example.com/ds-plugin-google-maps-1.0.0.js',
+      integrity: 'sha512-NHj3yHLIurjFff1+vOIPJo7atTwujzZW+1YTG8hzJMqFhxED3JZx7Vpv+Pz/IEx7Hj38MCrNqalo+XkQqmjqNQ=='
     }
-  }
-})
+  }]
+])
 
-```
-
-### Change the default plugin version
-
-```js
-
-const plugins = new DsPlugins({ isDev: true })
-
-plugins.setCurrentVersion('googleMaps', '1.0.0')
+plugins.use({ name: 'googleMaps' })
 
 ```
 

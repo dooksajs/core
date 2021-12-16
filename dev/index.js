@@ -2,42 +2,187 @@ import DsPlugins from '@dooksa/ds-plugins'
 
 const plugins = new DsPlugins({ isDev: true })
 
-// add test plugin
+plugins.addMetadata([
+  ['dsTest', {
+    version: '0.0.1'
+  }]
+])
+// add an extra 'bare plugin'
+plugins.addMetadata([
+  ['dsTest', {
+    version: '0.0.1',
+    description: 'test for ds-plugins'
+  }]
+])
+
+// add test local plugin
 plugins.use({
   name: 'dsTest',
   plugin: {
     name: 'dsTest',
-    version: '1.0.0'
-  }
-})
+    version: '0.0.1',
+    data: {
+      say: 'Hi',
+      age: 0
+    },
+    methods: {
+      /**
+       * Updates age data value
+       * @param {number} age - Age
+       */
+      addAge (age) {
+        this.age = age
+      },
+      /**
+       * promisePositiveNumber is a function that only accepts positive numbers
+       * @param {number} number - positive number
+       * @returns {Promise} - Resolves a positive number and rejects negatives
+       */
+      promisePositiveNumber (number) {
+        return new Promise((resolve, reject) => {
+          if (number > 0) {
+            resolve(number)
+          } else {
+            const error = new Error('Promise no non-positive numbers!')
 
-// test adding multiple plugin metadata
-plugins.addMetadata({
-  dsTest: {
-    currentVersion: '1.0.0',
-    items: {
-      '1.0.0': {}
-    }
-  }
-})
-
-plugins.addMetadata({
-  dsTest: {
-    currentVersion: '1.0.1',
-    items: {
-      '1.0.0': {},
-      '1.0.1': {
-        src: '/dist/test-1.0.1.js'
+            reject(error)
+          }
+        })
+      },
+      /**
+       * positiveNumber is a function that only accepts positive numbers
+       * @param {number} number - positive number
+       * @returns {number || Error} - a positive number or an Error if the number is negative
+       */
+      positiveNumber (number) {
+        try {
+          if (number > 0) {
+            return number
+          } else {
+            throw new Error('No non-positive numbers!')
+          }
+        } catch (error) {
+          return error
+        }
+      },
+      /**
+       * Say hello to someone and how old you are
+       * @param {string} name
+       * @returns A string
+       */
+      sayHi (name) {
+        return `${this.say} ${name}! My age is ${this.age} years old.`
       }
     }
+  },
+  onDemand: false
+})
+
+// Run actions and display results
+plugins.action('dsTest/addAge', '10', {
+  onSuccess: (r) => {
+    const addAge = document.querySelector('#data-addage')
+    addAge.innerHTML = `${r}`
+  },
+  onError: (e) => {
+    const addAge = document.querySelector('#data-addage')
+    addAge.innerHTML = `${e}`
+    console.dir(e)
+  }
+})
+plugins.action('dsTest/sayHi', 'John', {
+  onSuccess: (r) => {
+    const sayhi = document.querySelector('#data-sayhi')
+    sayhi.innerHTML = `${r}`
+  },
+  onError: (e) => {
+    const sayhi = document.querySelector('#data-sayhi')
+    sayhi.innerHTML = `${e}`
+    console.dir(e)
   }
 })
 
-console.log(plugins.metadata.dsTest)
+const inputNumber = document.querySelector('#posnumber')
+inputNumber.addEventListener('input', (event) => {
+  // eslint-disable-next-line
+  plugins.action('dsTest/positiveNumber', posnumber.value, {
+    onSuccess: (r) => {
+      const posNumber = document.querySelector('#data-posnumber')
+      posNumber.innerHTML = `${r}`
+    },
+    onError: (e) => {
+      const posNumber = document.querySelector('#data-posnumber')
+      posNumber.innerHTML = `${e}`
+    }
+  })
+  // eslint-disable-next-line
+  plugins.action('dsTest/promisePositiveNumber', posnumber.value, {
+    onSuccess: (r) => {
+      const posNumber = document.querySelector('#data-promise-posnumber')
+      posNumber.innerHTML = `${r}`
+    },
+    onError: (e) => {
+      const posNumber = document.querySelector('#data-promise-posnumber')
+      posNumber.innerHTML = `${e}`
+    }
+  })
+  // eslint-disable-next-line
+  plugins.action('dsTest/promisePositiveNumber', posnumber.value, {
+    onSuccess: {
+      params: ['red'],
+      method: (r) => {
+        const posNumber = document.querySelector('#data-promise-callbackmethod')
+        posNumber.innerHTML = `${r.results}`
+      }
+    },
+    onError: {
+      method: (e) => {
+        console.dir(e)
+        const posNumber = document.querySelector('#data-promise-callbackmethod')
+        posNumber.innerHTML = `${e.results}`
+      }
+    }
+  })
+  // eslint-disable-next-line
+  plugins.action('dsTest/positiveNumber', posnumber.value, {
+    onSuccess: {
+      params: ['red'],
+      method: (r) => {
+        const posNumber = document.querySelector('#data-callbackmethod')
+        posNumber.innerHTML = `${r.results}`
+      }
+    },
+    onError: {
+      method: (e) => {
+        console.dir(e)
+        const posNumber = document.querySelector('#data-callbackmethod')
+        posNumber.innerHTML = `${e.results}`
+      }
+    }
+  })
+})
 
-// change default plugin version
-console.log(`previous version: ${plugins.metadata.dsTest.currentVersion}`)
-plugins.setCurrentVersion('dsTest', '1.0.1')
-console.log(`current version: ${plugins.metadata.dsTest.currentVersion}`)
+// Use plugin callback onSuccess/onError method
+// TODO: [DS-439] fakeFunction e2e test
+plugins.action('dsTest/fakeFunction', '10')
 
-console.log(plugins)
+const sayHello = plugins.method('dsTest/sayHi', 'John')
+const directHello = document.querySelector('#data-directhello-error')
+directHello.innerHTML = `${sayHello}`
+
+plugins.callbackWhenAvailable('dsTest/sayHi', () => {
+  const sayHello = plugins.method('dsTest/sayHi', 'John')
+  console.log(`Safe run method result: ${sayHello}`)
+  const directHello = document.querySelector('#data-directhello')
+  directHello.innerHTML = `Safe run method: ${sayHello}`
+})
+
+const loadMissingPlugin = document.querySelector('#data-loadmissing')
+const loadMissing = plugins.load('dstest/sayhi')
+loadMissing
+  .then((result) => {
+    loadMissingPlugin.innerHTML = `${result}`
+  })
+  .catch((e) => {
+    loadMissingPlugin.innerHTML = `${e.message}`
+  })

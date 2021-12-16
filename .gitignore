@@ -29,7 +29,11 @@ cypress/fixtures/profile.json
 cypress/fixtures/users.json
 cypress/integration/examples/
 
-#Cypress recordings
+# Cypress recordings
 cypress/screenshots/
 cypress/videos/
 cypress/downloads/
+
+# Coverage reporting
+.nyc_output
+coverage/
