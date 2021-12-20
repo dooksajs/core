@@ -9,13 +9,8 @@ plugins.addMetadata([
 ])
 // add an extra 'bare plugin'
 plugins.addMetadata([
-  ['dstest', {
-    description: 'test for ds-plugins'
-  }]
-])
-// add before use (has no bad effect)
-plugins.addMetadata([
   ['dsTest', {
+    version: '0.0.1',
     description: 'test for ds-plugins'
   }]
 ])
