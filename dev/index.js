@@ -77,6 +77,13 @@ plugins.use({
   },
   onDemand: false
 })
+// add after use
+// temporarily disabled until DS-449 is completed
+// plugins.addMetadata([
+//   ['dsTest', {
+//     exampletest: 'test for updating ds-plugin metadata after use'
+//   }]
+// ])
 
 // Run actions and display results
 plugins.action('dsTest/addAge', '10', {
