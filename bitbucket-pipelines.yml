@@ -1,7 +1,7 @@
 #  NodeJS build with cypress
 # Test only of code. No actual deployment
 
-image: cypress/base:12
+image: cypress/base:14
 
 pipelines:
   default:
@@ -22,7 +22,7 @@ pipelines:
           - npm run dev &
           - PATH=$PATH:$BITBUCKET_CLONE_DIR/dev
           - npm run e2e:record -- --key $CYPRESS_REPORT_ID
-          - npx nyc report --reporter=text-summary
+          # temp disabled- npx nyc report --reporter=text-summary
         artifacts:
           # store any generates images and videos as artifacts
           - cypress/screenshots/**
