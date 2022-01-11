@@ -13,9 +13,25 @@ export default function Plugin (context, plugin) {
     this._context = { ...this._context, ...plugin.data }
   }
 
-  if (plugin.setup) {
-    this.setup = plugin.setup.bind(this._context)
+  if (plugin.getters) {
+    // Add observers to data
+    const getters = {}
+
+    for (const key in plugin.getters) {
+      if (Object.hasOwnProperty.call(plugin.getters, key)) {
+        const item = plugin.getters[key]
+        // Add getter
+        Object.defineProperty(this._context, key, { get: item })
+        // Catch the public getter
+        if (key.charAt(0) !== '_') {
+          getters[key] = item.bind(this._context)
+        }
+      }
+    }
+
+    this.getters = getters
   }
+
   if (plugin.methods) {
     const methods = {}
 
@@ -25,7 +41,7 @@ export default function Plugin (context, plugin) {
 
         this._context[key] = item
 
-        // Catch all the "_private" methods following the common js "_private" method naming convention
+        // Catch the public method
         if (key.charAt(0) !== '_') {
           methods[key] = item.bind(this._context)
         }
@@ -33,6 +49,10 @@ export default function Plugin (context, plugin) {
     }
 
     this.methods = methods
+  }
+
+  if (plugin.setup) {
+    this.setup = plugin.setup.bind(this._context)
   }
 }
 
