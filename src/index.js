@@ -4,25 +4,30 @@ import ScriptLoader from '@dooksa/script-loader'
 function DsPlugins ({ isDev, store }) {
   // prepare global variable for plugin scripts
   window.pluginLoader = {}
-
   this._methods = {}
-
+  this._getters = {}
   this.queue = {}
   this.isLoaded = {}
   this.onDemand = {}
   this.onDemandQueue = {}
   this.metadata = {}
 
+  const getter = this.getter.bind(this)
   const method = this.method.bind(this)
   const action = this.action.bind(this)
 
   this.context = {
+    $store: store,
     isDev,
-    store,
     ScriptLoader,
     action,
-    method
+    method,
+    getter
   }
+}
+
+DsPlugins.prototype.getter = function (name) {
+  return this._getters[name]
 }
 
 DsPlugins.prototype.method = function (name, params) {
@@ -120,6 +125,10 @@ DsPlugins.prototype.actionExists = function (name) {
   return (this._methods[name])
 }
 
+DsPlugins.prototype.metadataExists = function (name, version) {
+  return (this.metadata[name] && this.metadata[name].version === version)
+}
+
 DsPlugins.prototype.add = function (plugin) {
   if (plugin.methods) {
     for (const key in plugin.methods) {
@@ -127,6 +136,16 @@ DsPlugins.prototype.add = function (plugin) {
         const method = plugin.methods[key]
 
         this._methods[`${plugin.name}/${key}`] = method
+      }
+    }
+  }
+
+  if (plugin.getters) {
+    for (const key in plugin.getters) {
+      if (Object.hasOwnProperty.call(plugin.getters, key)) {
+        const getter = plugin.getters[key]
+
+        Object.defineProperty(this._getters, `${plugin.name}/${key}`, { get: getter })
       }
     }
   }
