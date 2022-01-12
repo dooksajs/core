@@ -12,7 +12,7 @@ pipelines:
           - node
           - cypress
         script:
-          - npm install --force -g node@16
+          - npm install -g npm@8
           - npm --version
           - npm install
           - npx cypress install
