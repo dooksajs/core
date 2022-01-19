@@ -1,10 +1,9 @@
-const express = require('express')
 const path = require('path')
 const resolve = file => path.resolve(__dirname, file)
 
 module.exports = {
-  mode: 'development',
   entry: './dev/index.js',
+  mode: 'development',
   devtool: 'source-map',
   output: {
     filename: '[name].js',
@@ -17,13 +16,11 @@ module.exports = {
     publicPath: '/dev/',
     host: process.env.HOST || 'localhost',
     port: process.env.PORT || '8080',
-    disableHostCheck: true,
-    before (app) {
-      app.use('/dist', express.static(resolve('dist')))
-    }
+    disableHostCheck: true
   },
   resolve: {
     alias: {
+      '@dooksa/ds-plugins': resolve('node_modules/@dooksa/ds-plugins/dist'),
       plugin: resolve('src')
     }
   },
