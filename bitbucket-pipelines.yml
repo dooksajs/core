@@ -12,12 +12,11 @@ pipelines:
           - node
           - cypress
         script:
-          - npm install -g npm@6
+          - npm install -g npm@8
           - node --version
           - npm --version
           - npm install
           - npx cypress install
-          - ( cd node_modules/@dooksa/ds-plugins; npm install )
           - npm ls
           - npm run lint
           - npm run test:unitrecord -- --key $CYPRESS_REPORT_ID
