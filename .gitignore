@@ -60,6 +60,7 @@ cypress/downloads/
 
 # Coverage reporting
 .nyc_output
-coverage/
+/coverage/
 
+# Generated Plugin integrity check
 ds.plugin.integrity.js
