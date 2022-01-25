@@ -13,6 +13,33 @@ function Plugin (plugin, context = {}) {
 
   this._context.$ds = context
 
+  //  check if plugin whats to add hooks
+  if (plugin.hooks) {
+    if (!this._context.$ds._hooks) {
+      this._context.$ds._hooks = {}
+    }
+
+    for (const key in plugin.hooks) {
+      if (Object.hasOwnProperty.call(plugin.hooks, key)) {
+        const { name, hook } = plugin.hooks[key]
+
+        this._context.$ds._hooks[key] = {
+          name: plugin.name + name.charAt(0).toUpperCase() + name.slice(1),
+          hook: hook.bind(this._context)
+        }
+      }
+    }
+  }
+
+  // check if plugin wants to use a hook
+  if (this._context.$ds._hooks) {
+    for (const key in this._context.$ds._hooks) {
+      if (plugin[key]) {
+        this._context['$' + this._context.$ds._hooks[key].name] = this._context.$ds._hooks[key].hook(plugin.name, plugin[key])
+      }
+    }
+  }
+
   if (plugin.getters) {
     // Add observers to data
     const getters = {}
