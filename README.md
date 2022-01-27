@@ -19,7 +19,37 @@ $ npm run dev
 
 ```js
 import DsPlugin from '@dooksa/ds-plugins'
-import myPlugin from 'myPlugin'
+
+const myPlugin = {
+  name: 'myPlugin',
+  version: 1,
+  dependencies: [
+    // list of plugin dependencies
+  ],
+  data: {
+    //  plugin data
+  },
+  setup () {
+    // setup is the first function executed
+  },
+  getters: {
+    // getters
+    _privateGetter () {
+      // private getter name starts with '_'
+    },
+    publicMethod () {
+      // public getter
+    }
+  },
+  methods: {
+    _privateMethod () {
+      // private method name starts with '_'
+    },
+    publicMethod () {
+      // public method
+    }
+  }
+} 
 
 const plugin = new DsPlugins(myPlugin, [{ name: 'isDev', value: true }])
 
