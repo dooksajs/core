@@ -1,43 +1,33 @@
-function Plugin (plugin, context = {}) {
+function Plugin (plugin, context) {
   this.name = plugin.name
   this.version = plugin.version
   this._context = {}
-
-  if (plugin.dependencies) {
-    this.dependencies = plugin.dependencies
-  }
 
   if (plugin.data) {
     this._context = { ...plugin.data }
   }
 
-  this._context.$ds = context
+  if (context) {
+    for (const key in context) {
+      if (Object.hasOwnProperty.call(context, key)) {
+        const item = context[key]
+        const pluginMetadata = {
+          name: plugin.name,
+          version: plugin.version,
+          dependencies: plugin.dependencies
+        }
 
-  //  check if plugin whats to add hooks
-  if (plugin.hooks) {
-    if (!this._context.$ds._hooks) {
-      this._context.$ds._hooks = {}
-    }
-
-    for (const key in plugin.hooks) {
-      if (Object.hasOwnProperty.call(plugin.hooks, key)) {
-        const { name, hook } = plugin.hooks[key]
-
-        this._context.$ds._hooks[key] = {
-          name: plugin.name + name.charAt(0).toUpperCase() + name.slice(1),
-          hook: hook.bind(this._context)
+        if (item.type === 'value') {
+          this._context[key] = item.value
+        } else if (item.type === 'action') {
+          this._context[key] = item.value(pluginMetadata)
         }
       }
     }
   }
 
-  // check if plugin wants to use a hook
-  if (this._context.$ds._hooks) {
-    for (const key in this._context.$ds._hooks) {
-      if (plugin[key]) {
-        this._context['$' + this._context.$ds._hooks[key].name] = this._context.$ds._hooks[key].hook(plugin.name, plugin[key])
-      }
-    }
+  if (plugin.dependencies) {
+    this.dependencies = plugin.dependencies
   }
 
   if (plugin.getters) {
@@ -65,11 +55,11 @@ function Plugin (plugin, context = {}) {
     for (const key in plugin.methods) {
       if (Object.hasOwnProperty.call(plugin.methods, key)) {
         const item = plugin.methods[key]
+        const firstChar = key.charAt(0)
 
         this._context[key] = item
-
         // Catch the public method
-        if (key.charAt(0) !== '_') {
+        if (firstChar !== '_') {
           methods[key] = item.bind(this._context)
         }
       }
