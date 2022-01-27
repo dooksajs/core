@@ -42,10 +42,10 @@ const myPlugin = {
     }
   },
   methods: {
-    _privateMethod () {
+    _privateMethod (params) {
       // private method name starts with '_'
     },
-    publicMethod () {
+    publicMethod (context, params) {
       // public method
     }
   }
