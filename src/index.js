@@ -55,11 +55,11 @@ function Plugin (plugin, context) {
     for (const key in plugin.methods) {
       if (Object.hasOwnProperty.call(plugin.methods, key)) {
         const item = plugin.methods[key]
-        const firstChar = key.charAt(0)
 
         this._context[key] = item
+
         // Catch the public method
-        if (firstChar !== '_') {
+        if (key.charAt(0) !== '_') {
           methods[key] = item.bind(this._context)
         }
       }
