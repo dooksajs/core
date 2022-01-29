@@ -31,7 +31,6 @@
     "@babel/cli": "^7.12.10",
     "@babel/core": "^7.12.10",
     "@babel/preset-env": "^7.12.11",
-    "@dooksa/ds-plugins": "file:../ds-plugins",
     "babel-loader": "^8.2.2",
     "babel-plugin-istanbul": "^6.0.0",
     "cypress": "^8.7.0",
@@ -42,6 +41,7 @@
     "webpack-dev-server": "^3.11.2"
   },
   "dependencies": {
-    "@dooksa/script-loader": "git+ssh://git@bitbucket.org/dooksa/script-loader.git#v1.0.5"
+    "@dooksa/ds-plugin": "bitbucket:dooksa/ds-plugin",
+    "@dooksa/script-loader": "bitbucket:dooksa/script-loader#v1.0.5"
   }
 }
