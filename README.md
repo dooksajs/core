@@ -1,5 +1,5 @@
 
-# Dooksa plugin management system 
+# Dooksa plugin constructor
 
 Constructor function for dooksa plugins
 
