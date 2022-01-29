@@ -29,23 +29,33 @@ export default {
     buildId,
     plugins = [],
     additionalPlugins = [],
-    store,
-    isDev
+    isDev,
+    appState
   }) {
     window.pluginLoader = {}
     this.buildId = buildId
-
-    const getter = this._getter.bind(this)
-    const method = this._method.bind(this)
-    const action = this._action.bind(this)
-
-    this.context = {
-      $store: store,
-      isDev,
-      action,
-      method,
-      getter
-    }
+    this.context = [
+      {
+        name: 'isDev',
+        dispatch: false,
+        value: isDev
+      },
+      {
+        name: '$action',
+        dispatch: true,
+        value: this._action.bind(this)
+      },
+      {
+        name: '$method',
+        dispatch: true,
+        value: this._method.bind(this)
+      },
+      {
+        name: '$getter',
+        dispatch: false,
+        value: this._getter.bind(this)
+      }
+    ]
 
     this._add({
       name,
