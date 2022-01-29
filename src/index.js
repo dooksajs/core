@@ -72,14 +72,14 @@ export default {
       const data = plugins[i]
 
       this.plugins[data.item.name] = data.item.version
-      this.use(data)
+      this.use({}, data)
     }
 
     for (let i = 0; i < additionalPlugins.length; i++) {
       const data = additionalPlugins[i]
 
       this.additionalPlugins[data.item.name] = data.item.version
-      this.use(data)
+      this.use({}, data)
     }
   },
   methods: {
@@ -112,7 +112,7 @@ export default {
         })
       } else if (this.setupOnRequest[baseName]) {
         this.isLoading(baseName).then(() => {
-          this.use({ item: { name: baseName } }).then(() => {
+          this.use({}, { item: { name: baseName } }).then(() => {
             if (this._actionExists(name)) {
               callback()
             } else {
@@ -121,7 +121,7 @@ export default {
           })
         })
       } else if (this.metadata[baseName]) {
-        this.use({ item: { name: baseName } }).then(() => {
+        this.use({}, { item: { name: baseName } }).then(() => {
           if (this._actionExists(name)) {
             callback()
           } else {
@@ -149,7 +149,7 @@ export default {
               const depQueue = []
 
               for (let i = 0; i < plugin.dependencies.length; i++) {
-                const depPlugin = this.use({
+                const depPlugin = this.use({}, {
                   item: {
                     name: plugin.dependencies[i].name,
                     version: plugin.dependencies[i].version
@@ -261,46 +261,49 @@ export default {
         }
       })
     },
-    _action (name, params, callback = {}) {
-      this._callbackWhenAvailable(name, () => {
-        const onSuccess = callback.onSuccess
-        const onError = callback.onError
-        const pluginResult = this.method(name, params)
+    _action (context) {
+      return (name, params, callback = {}) => {
+        console.log(this)
+        this._callbackWhenAvailable(name, () => {
+          const onSuccess = callback.onSuccess
+          const onError = callback.onError
+          const pluginResult = this._methods[name](context, params)
 
-        if (onError && pluginResult instanceof Error) {
-          if (onError.method) {
-            onError.method({ ...onError.params, results: pluginResult })
-          } else {
-            onError(pluginResult)
-          }
-        } else if (pluginResult instanceof Promise) {
-          Promise.resolve(pluginResult)
-            .then(results => {
-              if (onSuccess) {
-                if (onSuccess.method) {
-                  onSuccess.method({ ...onSuccess.params, results })
-                } else {
-                  onSuccess(results)
+          if (onError && pluginResult instanceof Error) {
+            if (onError.method) {
+              onError.method({ ...onError.params, results: pluginResult })
+            } else {
+              onError(pluginResult)
+            }
+          } else if (pluginResult instanceof Promise) {
+            Promise.resolve(pluginResult)
+              .then(results => {
+                if (onSuccess) {
+                  if (onSuccess.method) {
+                    onSuccess.method({ ...onSuccess.params, results })
+                  } else {
+                    onSuccess(results)
+                  }
                 }
-              }
-            })
-            .catch(error => {
-              if (onError) {
-                if (onError.method) {
-                  onError.method({ ...onError.params, results: error })
-                } else {
-                  onError(error)
+              })
+              .catch(error => {
+                if (onError) {
+                  if (onError.method) {
+                    onError.method({ ...onError.params, results: error })
+                  } else {
+                    onError(error)
+                  }
                 }
-              }
-            })
-        } else if (onSuccess) {
-          if (onSuccess.method) {
-            onSuccess.method({ ...onSuccess.params, results: pluginResult })
-          } else {
-            onSuccess(pluginResult)
+              })
+          } else if (onSuccess) {
+            if (onSuccess.method) {
+              onSuccess.method({ ...onSuccess.params, results: pluginResult })
+            } else {
+              onSuccess(pluginResult)
+            }
           }
-        }
-      })
+        })
+      }
     },
     _setup (plugin, options) {
       const setup = plugin.init(options)
@@ -333,18 +336,21 @@ export default {
     _getter (name) {
       return this._getter[name]
     },
-    _method (name, params) {
-      try {
-        if (this._methods[name]) {
-          return this._methods[name](params)
-        } else {
-          throw new Error('Method "' + name + '" does not exist')
+    _method (context) {
+      return (name, params) => {
+        try {
+          if (this._methods[name]) {
+            return this._methods[name](context, params)
+          } else {
+            // Check if the plugin needs to run setup
+            throw new Error('Method "' + name + '" does not exist')
+          }
+        } catch (error) {
+          return error
         }
-      } catch (error) {
-        return error
       }
     },
-    use ({ item, options = {}, plugin }) {
+    use (context, { item, options = {}, plugin }) {
       if (options.onDemand) {
         return this._addMetadata(item)
       }
@@ -355,7 +361,8 @@ export default {
         return this._isLoading(item.name)
       } else {
         this._addMetadata(item)
-        this.queue[item.name] = [this._install(item.name, plugin, options.setupOnRequest)]
+        const loadingPlugin = this._install(item.name, plugin, options.setupOnRequest)
+        this.queue[item.name] = [loadingPlugin]
       }
     }
   }
