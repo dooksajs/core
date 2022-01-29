@@ -64,6 +64,8 @@ export default {
       }
     })
 
+    // ISSUE: [DS-574] load ds-plugin-state and give appState to its context
+
     this.isLoaded[name] = true
 
     for (let i = 0; i < plugins.length; i++) {
