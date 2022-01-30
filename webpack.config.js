@@ -11,7 +11,7 @@ module.exports = {
     filename: '[name].js',
     path: resolve('dev'),
     publicPath: '/dev/',
-    library: 'DsPlugins'
+    library: 'DsPlugin'
   },
   devServer: {
     contentBase: resolve('dev'),
@@ -22,7 +22,7 @@ module.exports = {
   },
   resolve: {
     alias: {
-      '@dooksa/ds-plugins': resolve('src')
+      '@dooksa/ds-plugin': resolve('src')
     }
   },
   module: {
