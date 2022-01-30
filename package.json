@@ -1,6 +1,6 @@
 {
-  "name": "@dooksa/ds-plugins",
-  "version": "2.2.0",
+  "name": "@dooksa/ds-plugin",
+  "version": "1",
   "description": "The plugin library for Dooksa CMS",
   "main": "src/index.js",
   "scripts": {
@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@bitbucket.org:dooksa/ds-plugins.git"
+    "url": "git+ssh://git@bitbucket.org:dooksa/ds-plugin.git"
   },
   "author": {
     "name": "Thomas David",
@@ -43,7 +43,6 @@
     "standard": "*",
     "webpack": "^5.17.0",
     "webpack-cli": "^4.4.0",
-    "webpack-dev-server": "^3.11.2",
-    "@dooksa/script-loader": "git+ssh://git@bitbucket.org/dooksa/script-loader.git#v1.0.5"
+    "webpack-dev-server": "^3.11.2"
   }
 }
