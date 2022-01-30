@@ -18,7 +18,7 @@ $ npm run dev
 ### Test plugin 
 
 ```js
-import DsPlugin from '@dooksa/ds-plugins'
+import DsPlugin from '@dooksa/ds-plugin'
 
 const myPlugin = {
   name: 'myPlugin',
@@ -51,7 +51,7 @@ const myPlugin = {
   }
 } 
 
-const plugin = new DsPlugins(myPlugin, [{ name: 'isDev', value: true }])
+const plugin = new DsPlugin(myPlugin, [{ name: 'isDev', value: true }])
 
 plugin.init()
 
