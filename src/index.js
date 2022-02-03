@@ -3,7 +3,7 @@ import DsPlugin from '../../ds-plugins'
 import ScriptLoader from '@dooksa/script-loader'
 
 /**
- * Ds Plugin.
+ * Ds plugin manager
  * @module plugin
  */
 export default {
@@ -29,8 +29,7 @@ export default {
     buildId,
     plugins = [],
     additionalPlugins = [],
-    isDev,
-    appState
+    isDev
   }) {
     window.pluginLoader = {}
     this.buildId = buildId
@@ -63,8 +62,6 @@ export default {
         use: this.use
       }
     })
-
-    // ISSUE: [DS-574] load ds-plugin-state and give appState to its context
 
     this.isLoaded[name] = true
 
