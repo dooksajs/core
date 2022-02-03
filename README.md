@@ -17,10 +17,3 @@ $ npm install
 ```
 $ npm run dev
 ```
-
-### Build with hash
-This will build the external plugin
-
-```
-$ npm run build:hash
-```
