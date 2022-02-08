@@ -11,7 +11,7 @@ export default {
   version,
   data: {
     _methods: {},
-    _getter: {},
+    _getters: {},
     buildId: '',
     additionalPlugins: {},
     plugins: {},
@@ -324,7 +324,6 @@ export default {
         for (const key in plugin.getters) {
           if (Object.hasOwnProperty.call(plugin.getters, key)) {
             const getter = plugin.getters[key]
-
             Object.defineProperty(this._getters, `${plugin.name}/${key}`, { get: getter })
           }
         }
