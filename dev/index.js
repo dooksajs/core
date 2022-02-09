@@ -13,7 +13,7 @@ const dsTest = {
   }
 }
 
-const plugin = new DsPlugin(dsTest, [{ name: 'isDev', value: true }])
+const plugin = new DsPlugin(dsTest, [])
 
 plugin.init()
 

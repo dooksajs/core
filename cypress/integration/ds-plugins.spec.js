@@ -16,6 +16,10 @@ const dsTest = {
 
 describe('check plugin created', () => {
   it('check plugin name', () => {
+    const plugin = new DsPlugin(dsTest, [])
+    expect(plugin.name).equal('dsTest')
+  })
+  it('check plugin name with context', () => {
     const plugin = new DsPlugin(dsTest, [{ name: 'isDev', value: true }])
     expect(plugin.name).equal('dsTest')
   })
