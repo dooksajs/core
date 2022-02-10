@@ -14,4 +14,10 @@ describe('ds-plugins e2e test run, using dev webpack', () => {
   it('dependencies configured correctly', () => {
     cy.get('#data-depends').should('contain', 'dsTestSetup')
   })
+  it('dispatchable context configured correctly', () => {
+    cy.get('#data-dispatch').should('contain', 'Dispatching Context')
+  })
+  it('basic context configured correctly', () => {
+    cy.get('#data-value').should('contain', 'Dev')
+  })
 })

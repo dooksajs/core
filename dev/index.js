@@ -60,3 +60,34 @@ const pluginDepend = new DsPlugin(dsTestDepend, [])
 pluginDepend.init()
 const depend = document.querySelector('#data-depends')
 depend.innerHTML = pluginDepend.dependencies[0].name
+
+// Test dispatch coverage
+const dsTestDispatch = {
+  name: 'dsTestDispatch',
+  version: '2',
+  data: {
+    text: 'Dispatching Context'
+  },
+  setup: (params) => {
+    return `${params} setup`
+  }
+}
+
+const pluginDispatch = new DsPlugin(dsTestDispatch, [{
+  name: 'isDev',
+  value: () => {
+    return 'Dispatched'
+  },
+  dispatch: true
+}])
+
+pluginDispatch.init()
+const dispatch = document.querySelector('#data-dispatch')
+dispatch.innerHTML = pluginDispatch._context.text
+// context coverage
+const pluginTest = new DsPlugin(dsTest, [{ name: 'isDev', value: true }])
+
+pluginTest.init()
+
+const value = document.querySelector('#data-value')
+value.innerHTML = pluginTest._context.isDev ? 'Dev' : 'NotDev'
