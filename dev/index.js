@@ -37,3 +37,26 @@ const setupResult = pluginSetup.init('Actioned: ')
 
 const setup = document.querySelector('#data-setup')
 setup.innerHTML = setupResult
+
+// Test dependencies coverage
+const dsTestDepend = {
+  name: 'dsTestDepend',
+  version: '2',
+  data: {
+    text: 'Success'
+  },
+  setup: (params) => {
+    return `${params} setup`
+  },
+  dependencies: [
+    {
+      name: 'dsTestSetup',
+      version: 2
+    }]
+}
+
+const pluginDepend = new DsPlugin(dsTestDepend, [])
+
+pluginDepend.init()
+const depend = document.querySelector('#data-depends')
+depend.innerHTML = pluginDepend.dependencies[0].name

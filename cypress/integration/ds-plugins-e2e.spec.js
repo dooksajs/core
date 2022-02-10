@@ -11,4 +11,7 @@ describe('ds-plugins e2e test run, using dev webpack', () => {
   it('setup() runs correctly', () => {
     cy.get('#data-setup').should('contain', 'Actioned:')
   })
+  it('dependencies configured correctly', () => {
+    cy.get('#data-depends').should('contain', 'dsTestSetup')
+  })
 })
