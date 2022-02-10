@@ -5,4 +5,10 @@ describe('ds-plugins e2e test run, using dev webpack', () => {
   it('is the right script name built', () => {
     cy.get('script').should('contain', 'main')
   })
+  it('sayHi() displays in HTML', () => {
+    cy.get('#data-sayhi').should('contain', 'hello John')
+  })
+  it('setup() runs correctly', () => {
+    cy.get('#data-setup').should('contain', 'Actioned:')
+  })
 })
