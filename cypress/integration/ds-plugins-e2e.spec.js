@@ -20,4 +20,8 @@ describe('ds-plugins e2e test run, using dev webpack', () => {
   it('basic context configured correctly', () => {
     cy.get('#data-value').should('contain', 'Dev')
   })
+  it('oversimple getter configured correctly', () => {
+    cy.debug()
+    cy.get('#data-getters').should('contain', '1')
+  })
 })

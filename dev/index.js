@@ -91,3 +91,26 @@ pluginTest.init()
 
 const value = document.querySelector('#data-value')
 value.innerHTML = pluginTest._context.isDev ? 'Dev' : 'NotDev'
+
+const dsTestGetters = {
+  name: 'dsTestGetters',
+  version: '2',
+  data: {
+    text: 'hello'
+  },
+
+  getters: {
+    publicGetHeight () {
+    // public getter
+      const heights = [145, 134, 132, 142, 154]
+      return heights[Math.floor(Math.random() * (heights.length - 1))]
+    }
+  }
+}
+
+const pluginGetters = new DsPlugin(dsTestGetters, [])
+
+pluginGetters.init()
+
+const getters = document.querySelector('#data-getters')
+getters.innerHTML = pluginGetters.getters.publicGetHeight()
