@@ -1,7 +1,7 @@
 #  NodeJS build with cypress
 # Test only of code. No actual deployment
 
-image: cypress/base:14
+image: cypress/base:16.5.0
 
 pipelines:
   default:
@@ -12,8 +12,8 @@ pipelines:
           - node
           - cypress
         script:
-          - npm install -g npm@8
           - npm --version
+          - node --version
           - npm install
           - npx cypress install
           - ( cd node_modules/@dooksa/ds-plugins; npm install )
