@@ -1,6 +1,6 @@
 import DsPlugins from '@dooksa/ds-plugins'
 import { name, version } from '../ds.plugin.config'
-import myPlugin from 'plugin'
+import Plugin from 'plugin'
 
 const plugins = new DsPlugins({ isDev: true })
 
@@ -11,6 +11,6 @@ plugins.addMetadata([
   }]
 ])
 
-plugins.use({ name, plugin: myPlugin })
+plugins.use({ name, plugin: Plugin })
 
 console.log(plugins)

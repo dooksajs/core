@@ -12,9 +12,8 @@ pipelines:
           - node
           - cypress
         script:
-          # - npm install -g npm@8
-          - node --version
           - npm --version
+          - node --version
           - npm install
           - npx cypress install
           - npm ls
