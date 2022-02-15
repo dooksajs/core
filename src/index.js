@@ -100,7 +100,7 @@ export default {
       const baseName = nameSplit[0]
 
       if (this.queue[baseName] && !this.setupOnRequest[baseName]) {
-        this.isLoading(baseName).then(() => {
+        this._isLoading(baseName).then(() => {
           if (this._actionExists(name)) {
             callback()
           } else {
@@ -108,7 +108,7 @@ export default {
           }
         })
       } else if (this.setupOnRequest[baseName]) {
-        this.isLoading(baseName).then(() => {
+        this._isLoading(baseName).then(() => {
           this.use({}, { item: { name: baseName } }).then(() => {
             if (this._actionExists(name)) {
               callback()
@@ -260,7 +260,6 @@ export default {
     },
     _action (context) {
       return (name, params, callback = {}) => {
-        console.log(this)
         this._callbackWhenAvailable(name, () => {
           const onSuccess = callback.onSuccess
           const onError = callback.onError
@@ -330,7 +329,7 @@ export default {
       }
     },
     _getter (name) {
-      return this._getter[name]
+      return this._getters[name]
     },
     _method (context) {
       return (name, params) => {
