@@ -1,7 +1,7 @@
 #  NodeJS build with cypress
 # Test only of code. No actual deployment
 
-image: cypress/base:12
+image: cypress/base:16.5.0
 
 pipelines:
   default:
@@ -12,7 +12,7 @@ pipelines:
           - node
           - cypress
         script:
-          - npm install -g npm@latest
+          - node --version
           - npm --version
           - npm install
           - npx cypress install
