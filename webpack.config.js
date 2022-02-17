@@ -20,7 +20,7 @@ module.exports = {
   },
   resolve: {
     alias: {
-      '@dooksa/ds-plugins': resolve('node_modules/@dooksa/ds-plugins/dist'),
+      '@dooksa/ds-plugin': resolve('node_modules/@dooksa/ds-plugin'),
       plugin: resolve('src')
     }
   },

@@ -6,9 +6,7 @@
   "scripts": {
     "lint": "standard",
     "format": "standard --fix",
-    "dev": "webpack serve --config webpack.dev.config.js",
-    "build": "webpack --config webpack.prod.config.js",
-    "build:hash": "npm run build; node build/createHash.js",
+    "dev": "webpack serve --config webpack.config.js",
     "test:unit": "cypress run --spec cypress/integration/ds-plugin-starter-kit.spec.js",
     "test:unitrecord": "cypress run --record --spec cypress/integration/ds-plugin-starter-kit.spec.js",
     "e2e": "cypress run --spec cypress/integration/ds-plugin-starter-kit-e2e.spec.js",
@@ -55,6 +53,5 @@
     "webpack": "^5.17.0",
     "webpack-cli": "^4.4.0",
     "webpack-dev-server": "^3.11.2"
-  },
-  "dependencies": {}
+  }
 }
