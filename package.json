@@ -20,6 +20,18 @@
     "name": "Thomas David",
     "email": "tom@mightysmile.com"
   },
+  "standard": {
+    "env": [
+      "browser",
+      "mocha"
+    ],
+    "globals": [
+      "cy",
+      "Cypress",
+      "expect",
+      "assert"
+    ]
+  },
   "browserslist": [
     "> 0.5%",
     "last 2 versions",
@@ -31,6 +43,7 @@
     "@babel/cli": "^7.12.10",
     "@babel/core": "^7.12.10",
     "@babel/preset-env": "^7.12.11",
+    "@cypress/code-coverage": "^3.9.9",
     "babel-loader": "^8.2.2",
     "babel-plugin-istanbul": "^6.0.0",
     "cypress": "^8.7.0",
