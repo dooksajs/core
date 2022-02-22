@@ -329,7 +329,18 @@ export default {
       }
     },
     _getter (name) {
-      return this._getters[name]
+      return (name, params) => {
+        try {
+          if (this._getters[name]) {
+            return this._getters[name]()
+          } else {
+            // Check if the plugin needs to run setup
+            throw new Error('Getter "' + name + '" does not exist')
+          }
+        } catch (error) {
+          return error
+        }
+      }
     },
     _method (context) {
       return (name, params) => {
