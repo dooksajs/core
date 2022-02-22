@@ -51,7 +51,7 @@ function Plugin (plugin, context = []) {
       if (Object.hasOwnProperty.call(plugin.getters, key)) {
         const item = plugin.getters[key]
         // Add getter
-        Object.defineProperty(this._context, key, { get: item })
+        this._context[key] = item
         // Catch the public getter
         if (key.charAt(0) !== '_') {
           getters[key] = item.bind(this._context)
@@ -68,9 +68,8 @@ function Plugin (plugin, context = []) {
     for (const key in plugin.methods) {
       if (Object.hasOwnProperty.call(plugin.methods, key)) {
         const item = plugin.methods[key]
-
+        // Add method
         this._context[key] = item
-
         // Catch the public method
         if (key.charAt(0) !== '_') {
           methods[key] = item.bind(this._context)
