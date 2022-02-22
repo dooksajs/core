@@ -5,57 +5,23 @@ describe('ds-plugins e2e test run, using dev webpack', () => {
   it('is the right script name built', () => {
     cy.get('script').should('contain', 'main')
   })
-  it('plugin method sayHi loads and runs', () => {
-    cy.get('#data-sayhi').should('have.text', 'Hi John! My age is 10 years old.')
+  it('sayHi() displays in HTML', () => {
+    cy.get('#data-sayhi').should('contain', 'hello John')
   })
-  it('plugin method positiveNumber loaded and runs', () => {
-    cy.get('#posnumber').type('1')
-    cy.get('#data-posnumber').should('have.text', '1')
+  it('setup() runs correctly', () => {
+    cy.get('#data-setup').should('contain', 'Actioned:')
   })
-  it('plugin method positiveNumber loaded and error reported', () => {
-    cy.get('#posnumber').type('-4')
-    cy.get('#data-posnumber').should('have.text', 'Error: No non-positive numbers!')
+  it('dependencies configured correctly', () => {
+    cy.get('#data-depends').should('contain', 'dsTestSetup')
   })
-  it('plugin method promisePositiveNumber loaded and runs', () => {
-    cy.get('#posnumber').type('5')
-    cy.get('#data-promise-posnumber').should('have.text', '5')
+  it('dispatchable context configured correctly', () => {
+    cy.get('#data-dispatch').should('contain', 'Dispatching Context')
   })
-  it('plugin method promisePositiveNumber loaded and error reported', () => {
-    cy.get('#posnumber').type('-5')
-    cy.get('#data-promise-posnumber').should('have.text', 'Error: Promise no non-positive numbers!')
+  it('basic context configured correctly', () => {
+    cy.get('#data-value').should('contain', 'Dev')
   })
-  // Fix with DS-439
-  // it('plugin action does not exist RED', () => {
-  //   cy.debug()
-  //   cy.get('#data-fakefunction').should('have.text', 'Error: 2')
-  // })
-  it('direct method sayHi expect fail', () => {
-    cy.get('#data-directhello-error').should('have.text', 'Error: Method "dsTest/sayHi" does not exist')
-  })
-  it('direct method sayHi when available', () => {
-    cy.get('#data-directhello').should('have.text', 'Safe run method: Hi John! My age is 10 years old.')
-  })
-  it('plugin promise callback onSuccess method', () => {
-    cy.get('#posnumber').type('4')
-    cy.get('#data-promise-callbackmethod').should('have.text', '4')
-  })
-  it('plugin promise callback onError method', () => {
+  it('oversimple getter configured correctly', () => {
     cy.debug()
-    cy.get('#posnumber').type('0')
-    cy.get('#data-promise-callbackmethod').should('have.text', 'Error: Promise no non-positive numbers!')
-  })
-  it('plugin callback onSuccess method', () => {
-    cy.get('#posnumber').type('4')
-    cy.get('#data-callbackmethod').should('have.text', '4')
-  })
-  it('plugin callback onError method', () => {
-    cy.debug()
-    cy.get('#posnumber').type('0')
-    cy.get('#data-callbackmethod').should('have.text', 'Error: No non-positive numbers!')
-  })
-  it('plugin load tries to load a missing plugin', () => {
-    cy.debug()
-    cy.get('#posnumber').type('0')
-    cy.get('#data-loadmissing').should('have.text', 'Plugin not found: dstest/sayhi')
+    cy.get('#data-getters').should('contain', '1')
   })
 })

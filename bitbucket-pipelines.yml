@@ -13,6 +13,7 @@ pipelines:
           - cypress
         script:
           - npm --version
+          - node --version
           - npm install
           - npx cypress install
           - npm run lint
