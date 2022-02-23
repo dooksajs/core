@@ -33,12 +33,16 @@ export default {
       let hasCallback = false
 
       if (root) {
-        instanceId = nanoid()
+        instanceId = this.$method('dsUtilities/generateInstanceId')
         this.lastActionIndex[instanceId] = actions.length - 1
       }
 
       if (conditions.length) {
-        valid = this._compare(conditions, { instanceId: nanoid(), parentItemId, data })
+        valid = this._compare(conditions, {
+          instanceId: this.$method('dsUtilities/generateInstanceId'),
+          parentItemId,
+          data
+        })
       }
 
       for (let i = 0; i < actions.length; i++) {
@@ -47,7 +51,11 @@ export default {
         const item = action.items[itemId]
 
         if (item.conditions) {
-          valid = this._compare(item.conditions, { instanceId: nanoid(), parentItemId, data })
+          valid = this._compare(item.conditions, {
+            instanceId: this.$method('dsUtilities/generateInstanceId'),
+            parentItemId,
+            data
+          })
         }
 
         if (Object.hasOwnProperty.call(item, 'when') && valid !== item.when) {
