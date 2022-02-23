@@ -47,11 +47,6 @@ export default {
         name: '$method',
         dispatch: true,
         value: this._method.bind(this)
-      },
-      {
-        name: '$getter',
-        dispatch: false,
-        value: this._getter.bind(this)
       }
     ]
 
