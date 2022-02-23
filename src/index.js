@@ -9,7 +9,6 @@
  * @param {number} plugin.dependencies[].version - The version of the dependent plugin.
  * @param {Object} plugin.setup - This .
  * @param {Object.<string, (number|boolean|string|array|object)>} plugin.data - The object that contains plugins data.
- * @param {Object.<string, object>} plugin.getters - The version of the plugin.
  * @param {Object.<string, object>} plugin.methods - The version of the plugin.
  * @param {Object[]} context - Context is shared data between plugins.
  * @param {string} context.name - The name will be the key used within the plugin, e.g. '$action' = this.$action
@@ -42,24 +41,6 @@ function Plugin (plugin, context = []) {
   // set dependencies
   if (plugin.dependencies) {
     this.dependencies = plugin.dependencies
-  }
-  // set getters
-  if (plugin.getters) {
-    const getters = {}
-
-    for (const key in plugin.getters) {
-      if (Object.hasOwnProperty.call(plugin.getters, key)) {
-        const item = plugin.getters[key]
-        // Add getter
-        this._context[key] = item
-        // Catch the public getter
-        if (key.charAt(0) !== '_') {
-          getters[key] = item.bind(this._context)
-        }
-      }
-    }
-
-    this.getters = getters
   }
   // set methods
   if (plugin.methods) {
