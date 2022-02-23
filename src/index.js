@@ -11,7 +11,6 @@ export default {
   version,
   data: {
     _methods: {},
-    _getters: {},
     buildId: '',
     additionalPlugins: {},
     plugins: {},
@@ -316,29 +315,6 @@ export default {
 
             this._methods[`${plugin.name}/${key}`] = method
           }
-        }
-      }
-
-      if (plugin.getters) {
-        for (const key in plugin.getters) {
-          if (Object.hasOwnProperty.call(plugin.getters, key)) {
-            const getter = plugin.getters[key]
-            Object.defineProperty(this._getters, `${plugin.name}/${key}`, { get: getter })
-          }
-        }
-      }
-    },
-    _getter (name) {
-      return (name, params) => {
-        try {
-          if (this._getters[name]) {
-            return this._getters[name]()
-          } else {
-            // Check if the plugin needs to run setup
-            throw new Error('Getter "' + name + '" does not exist')
-          }
-        } catch (error) {
-          return error
         }
       }
     },
