@@ -15,11 +15,20 @@ export default {
   ],
   data: {
     items: {},
-    conditions: {}
+    conditions: {},
     lastActionIndex: {}
   },
   methods: {
-    dispatch ({
+    dispatch (context, { id, data }) {
+      this._dispatch({
+        root: true,
+        parentItemId: id,
+        actions: this.items[id],
+        conditions: this.conditions[id] || [],
+        data
+      })
+    },
+    _dispatch ({
       root,
       instanceId,
       parentItemId,
@@ -77,12 +86,12 @@ export default {
 
           callback.onSuccess = {
             params: {
-              id,
+              instanceId,
               parentItemId: itemId,
               actions: this._createActions(item.onSuccess, action),
               data
             },
-            method: this.rules.bind(this)
+            method: this._dispatch.bind(this)
           }
         }
 
@@ -97,18 +106,18 @@ export default {
               actions: this._createActions(item.onError, action),
               data
             },
-            method: this.rules.bind(this)
+            method: this._dispatch.bind(this)
           }
         }
 
         // Check if this action is the last item
-        if (i === this.lastActionIndex[id] && !hasCallback) {
+        if (i === this.lastActionIndex[instanceId] && !hasCallback) {
           lastItem = true
-          delete this.lastActionIndex[id]
+          delete this.lastActionIndex[instanceId]
         }
 
         const result = this._action({
-          id,
+          instanceId,
           itemId,
           items: action.items,
           conditions: action.conditions,
@@ -127,6 +136,12 @@ export default {
 
       return results
     },
+    set (context, item = {}) {
+      this.items = { ...this.items, ...item }
+    },
+    setConditions (context, item = {}) {
+      this.conditions = { ...this.conditions, ...item }
+    },
     _createActions (items, action) {
       const actions = []
 
@@ -141,7 +156,7 @@ export default {
       return actions
     },
     _action ({
-      id,
+      instanceId,
       name,
       type,
       computedParams,
@@ -157,7 +172,7 @@ export default {
     }) {
       if (computedParams) {
         params = this.$method('dsParameters/process', {
-          id,
+          id: instanceId,
           itemId,
           parentItemId,
           paramType,
@@ -273,31 +288,6 @@ export default {
 
       if (onError) {
         this._onError(onError.method || onError, onError.params)
-      }
-
-      return results
-    },
-    _getter ({ name, params, callback }) {
-      const onSuccess = callback.onSuccess
-      const onError = callback.onError
-      let results
-
-      if (typeof this.$context.store.getters[name] === 'function') {
-        results = this.$context.store.getters[name](params)
-      } else {
-        results = this.$context.store.getters[name]
-      }
-
-      if (results) {
-        if (onSuccess) {
-          this._onSuccess(onSuccess.method || onSuccess, onSuccess.params, results)
-        }
-      }
-
-      if (onError) {
-        if (onError) {
-          this._onError(onError.method || onError, onError.params)
-        }
       }
 
       return results

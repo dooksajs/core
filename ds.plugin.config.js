@@ -1,5 +1,5 @@
 module.exports = {
-  name: 'dsEvent',
-  filename: 'ds-event',
+  name: 'dsAction',
+  filename: 'ds-action',
   version: 1
 }
