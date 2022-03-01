@@ -1,0 +1,32 @@
+{
+  "name": "@dooksa/resource-loader",
+  "version": "1.0.5",
+  "description": "Resource loader provides a convenient wrapper to add scripts or link ot the DOM",
+  "main": "src/index.js",
+  "scripts": {
+    "format": "standard --fix",
+    "dev": "webpack serve --config webpack.config.js",
+    "unit-test": "cypress run --spec cypress/integration/resource.js --headless"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org/dooksa/resource-loader.git"
+  },
+  "author": {
+    "name": "Thomas David",
+    "email": "tom@mightysmile.com"
+  },
+  "license": "GPL-3.0",
+  "homepage": "https://bitbucket.org/dooksa/resource-loader#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.12.10",
+    "@babel/core": "^7.12.10",
+    "@babel/preset-env": "^7.12.11",
+    "babel-loader": "^8.2.2",
+    "standard": "*",
+    "webpack": "^5.17.0",
+    "webpack-cli": "^4.4.0",
+    "webpack-dev-server": "^3.11.2"
+  },
+  "dependencies": {}
+}
