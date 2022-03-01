@@ -42,6 +42,6 @@
   },
   "dependencies": {
     "@dooksa/ds-plugin": "bitbucket:dooksa/ds-plugin",
-    "@dooksa/script-loader": "bitbucket:dooksa/script-loader#v1.0.5"
+    "@dooksa/resource-loader": "bitbucket:dooksa/resource-loader"
   }
 }

@@ -1,6 +1,6 @@
 import { name, version } from '../ds.plugin.config'
 import DsPlugin from '../../ds-plugins'
-import ScriptLoader from '@dooksa/script-loader'
+import resource from '@dooksa/resource-loader'
 
 /**
  * Ds plugin manager
@@ -48,9 +48,9 @@ export default {
         value: this._method.bind(this)
       },
       {
-        name: 'ScriptLoader',
+        name: '$resource',
         dispatch: false,
-        value: ScriptLoader
+        value: resource
       }
     ]
 
@@ -249,25 +249,25 @@ export default {
           return resolve({ plugin, setupOptions })
         }
 
+        const error = { statusCode: 404, message: 'Plugin not found: ' + name }
+
         if (scriptOptions.src) {
-          const script = new ScriptLoader(scriptOptions)
+          scriptOptions.onSuccess = () => {
+            const plugin = window.pluginLoader[name]
 
-          script.load()
-            .then(() => {
-              const plugin = window.pluginLoader[name]
+            if (plugin) {
+              return resolve({ plugin, setupOptions })
+            } else {
+              const error = new Error('Plugin was not found: ' + name)
 
-              if (plugin) {
-                return resolve({ plugin, setupOptions })
-              } else {
-                const error = new Error('Plugin was not found: ' + name)
+              return reject(error)
+            }
+          }
 
-                return reject(error)
-              }
-            })
-            .catch(error => reject(error))
+          scriptOptions.onError = () => reject(error)
+
+          resource.script(scriptOptions)
         } else {
-          const error = { statusCode: 404, message: 'Plugin not found: ' + name }
-
           reject(error)
         }
       })
