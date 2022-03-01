@@ -33,12 +33,7 @@ export default {
   setup ({ appElement, appCache = {}, assetsURL }) {
     this.appElement = appElement
     this.assetsURL = assetsURL
-    this.cssElement = this._loadCSS(appCache.app.theme || 'bootstrap', () => {
-      appElement.classList.remove('loading')
-    })
-
     this.set({}, appCache)
-
     // get current page id
     const pageId = this.$method('dsRouter/getCurrentId')
     // render init page
@@ -208,22 +203,6 @@ export default {
     },
     _setTemplate (item) {
       this.templates = { ...this.templates, ...item }
-    },
-    _loadCSS (theme = 'bootstrap', callback) {
-      const cssElement = this.cssElement || document.createElement('link')
-
-      cssElement.id = 'ds-theme'
-      cssElement.rel = 'stylesheet'
-      cssElement.href = this.assetsURL + '/assets/css/' + theme + '.min.css'
-      document.head.insertBefore(cssElement, document.head.childNodes[document.head.childNodes.length - 1].nextSibling)
-
-      if (callback) {
-        cssElement.addEventListener('load', (e) => {
-          callback()
-        })
-      }
-
-      return cssElement
     }
   }
 }

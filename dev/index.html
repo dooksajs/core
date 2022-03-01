@@ -81,11 +81,22 @@
 
     const t0 = performance.now();
     const scriptPromises = []
+    const appElement = document.getElementById('app')
     const assetsURL = 'http://localhost:8080'
     // const assetsURL = 'https://cdn.dooksa.com/file/dooksa'
     const pathname = window.location.pathname
-    const cacheFilename = slugify.cleanPath(pathname) + '.js'
-    const appCacheScript = createScript('ds-app-cache', assetsURL + '/app_cache/' + window.location.hostname + '/' + cacheFilename)
+    const cacheFilename = slugify.cleanPath(pathname) +'.js'
+    const appCacheScript = createScript('ds-app-cache', assetsURL +'/app_cache/'+ window.location.hostname +'/'+ cacheFilename)
+    const cssElement = document.createElement('link')
+
+    cssElement.id = 'ds-theme'
+    cssElement.rel = 'stylesheet'
+    cssElement.href = assetsURL +'/assets/'+ window.location.hostname +'/css/theme.min.css'
+    document.head.insertBefore(cssElement, document.head.childNodes[document.head.childNodes.length - 1].nextSibling)
+    cssElement.addEventListener('load', (e) => {
+      appElement.classList.remove('loading')
+    })
+
     const mainScript = createScript('ds-app', './dev/main.js')
 
     scriptPromises.push(new Promise(resolve => {
