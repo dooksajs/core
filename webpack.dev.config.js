@@ -9,14 +9,17 @@ module.exports = {
     filename: '[name].js',
     path: resolve('dev'),
     publicPath: '/dev/',
-    library: 'dsPlugin'
+    library: 'dsApp'
   },
   devServer: {
     contentBase: resolve('dev'),
     publicPath: '/dev/',
+    hot: true,
+    compress: true,
     host: '0.0.0.0',
     port: process.env.PORT || '8080',
-    disableHostCheck: true
+    disableHostCheck: true,
+    historyApiFallback: true
   },
   resolve: {
     alias: {
