@@ -3,9 +3,116 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ds Plugin playground</title>
+  <link rel="preconnect" href="https://cdn.dooksa.com/">
+  <link rel="dns-prefetch" href="https://cdn.dooksa.com/" >
+  <style>
+    body {
+      margin: 0;
+    }
+
+    .loading {
+      display: none;
+    }
+  </style>
 </head>
 <body>
-  <script src="/dev/main.js"></script>
+  <div id="app" class="loading"></div>
+  <script>
+    const slugify = {
+      cleanStrings: [
+        ['a', '[ÀÁÂÃÄÅÆĀĂĄẠẢẤẦẨẪẬẮẰẲẴẶ]'],
+        ['c', '[ÇĆĈČ]'],
+        ['d', '[ÐĎĐÞ]'],
+        ['e', '[ÈÉÊËĒĔĖĘĚẸẺẼẾỀỂỄỆ]'],
+        ['g', '[ĜĞĢǴ]'],
+        ['h', '[ĤḦ]'],
+        ['i', '[ÌÍÎÏĨĪĮİỈỊ]'],
+        ['j', '[Ĵ]'],
+        ['ij', '[Ĳ]'],
+        ['k', '[Ķ]'],
+        ['l', '[ĹĻĽŁ]'],
+        ['m', '[Ḿ]'],
+        ['n', '[ÑŃŅŇ]'],
+        ['o', '[ÒÓÔÕÖØŌŎŐỌỎỐỒỔỖỘỚỜỞỠỢǪǬƠ]'],
+        ['oe', '[Œ]'],
+        ['p', '[ṕ]'],
+        ['r', '[ŔŖŘ]'],
+        ['s', '[ßŚŜŞŠ]'],
+        ['t', '[ŢŤ]'],
+        ['u', '[ÙÚÛÜŨŪŬŮŰŲỤỦỨỪỬỮỰƯ]'],
+        ['w', '[ẂŴẀẄ]'],
+        ['x', '[ẍ]'],
+        ['y', '[ÝŶŸỲỴỶỸ]'],
+        ['z', '[ŹŻŽ]'],
+        ['-', '[·/_,:;\']']
+      ],
+      cleanPath (value) {
+        let text = value.toString().toLowerCase().trim()
+
+        text = this._replaceString(text)
+
+        return text.replace(/\s+/g, '-') // Replace spaces with -
+          .replace(/[+]/g, '-') // Replace + with '-'
+          .replace(/[^\w-]+/g, '') // Remove all non-word chars
+          .replace(/--+/g, '-') // Replace multiple - with single -
+      },
+      _replaceString (text) {
+        for (let i = 0; i < this.cleanStrings.length; i++) {
+          const [to, from] = this.cleanStrings[i]
+
+          text = text.replace(new RegExp(from, 'gi'), to)
+        }
+
+        return text
+      }
+    }
+
+    function createScript (id, src) {
+      const script = document.createElement('script')
+
+      script.id = id
+      script.type = 'text/javascript'
+      script.src = src
+      script.type = 'module'
+      document.body.appendChild(script)
+
+      return script
+    }
+
+    const t0 = performance.now();
+    const scriptPromises = []
+    const assetsURL = 'http://localhost:8080'
+    // const assetsURL = 'https://cdn.dooksa.com/file/dooksa'
+    const pathname = window.location.pathname
+    const cacheFilename = slugify.cleanPath(pathname) + '.js'
+    const appCacheScript = createScript('ds-app-cache', assetsURL + '/app_cache/' + window.location.hostname + '/' + cacheFilename)
+    const mainScript = createScript('ds-app', './dev/main.js')
+
+    scriptPromises.push(new Promise(resolve => {
+      appCacheScript.addEventListener('load', () => {
+        const t1 = performance.now();
+        console.log(`Call to cache took ${t1 - t0} milliseconds.`);
+        resolve()
+      })
+    }))
+
+    scriptPromises.push(new Promise(resolve => {
+      mainScript.addEventListener('load', (e) => {
+        const t1 = performance.now()
+        console.log(`Call to main took ${t1 - t0} milliseconds.`);
+        resolve()
+      })
+    }))
+
+    Promise.all(scriptPromises)
+      .then(() => {
+        const t1 = performance.now()
+        window.dsApp.init({
+          appCache: window.dsAppCache,
+          assetsURL,
+          appElement: document.getElementById('app')
+        })
+      })
+  </script>
 </body>
 </html>
