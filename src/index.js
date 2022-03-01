@@ -1,7 +1,7 @@
 import { name, version } from '../ds.plugin.config'
 
 /**
- * Dooksa event plugin.
+ * Dooksa widget plugin.
  * @module plugin
  */
 export default {
@@ -9,88 +9,133 @@ export default {
   version,
   dependencies: [
     {
-      name: 'dsElement',
-      version: 1
-    },
-    {
-      name: 'dsContent',
+      name: 'dsEvent',
       version: 1
     }
   ],
   data: {
-    metadata: {},
-    content: {},
-    children: {},
-    items: {}
+    id: 'base' + name.charAt(0).toUpperCase() + name.substring(1),
+    state: {},
+    searchParams: null,
+    items: {},
+    cleanUrlSet: [
+      ['a', '[ÀÁÂÃÄÅÆĀĂĄẠẢẤẦẨẪẬẮẰẲẴẶ]'],
+      ['c', '[ÇĆĈČ]'],
+      ['d', '[ÐĎĐÞ]'],
+      ['e', '[ÈÉÊËĒĔĖĘĚẸẺẼẾỀỂỄỆ]'],
+      ['g', '[ĜĞĢǴ]'],
+      ['h', '[ĤḦ]'],
+      ['i', '[ÌÍÎÏĨĪĮİỈỊ]'],
+      ['j', '[Ĵ]'],
+      ['ij', '[Ĳ]'],
+      ['k', '[Ķ]'],
+      ['l', '[ĹĻĽŁ]'],
+      ['m', '[Ḿ]'],
+      ['n', '[ÑŃŅŇ]'],
+      ['o', '[ÒÓÔÕÖØŌŎŐỌỎỐỒỔỖỘỚỜỞỠỢǪǬƠ]'],
+      ['oe', '[Œ]'],
+      ['p', '[ṕ]'],
+      ['r', '[ŔŖŘ]'],
+      ['s', '[ßŚŜŞŠ]'],
+      ['t', '[ŢŤ]'],
+      ['u', '[ÙÚÛÜŨŪŬŮŰŲỤỦỨỪỬỮỰƯ]'],
+      ['w', '[ẂŴẀẄ]'],
+      ['x', '[ẍ]'],
+      ['y', '[ÝŶŸỲỴỶỸ]'],
+      ['z', '[ŹŻŽ]'],
+      ['-', '[·/_,:;\']']
+    ]
+  },
+  setup () {
+    window.addEventListener('popstate', event => {
+      this._updateState()
+      console.log(event.state, this.state)
+      this.$method('dsApp/update', this.state)
+      this.$action('dsEvent/emit', {
+        id: this.id,
+        name: 'navigate',
+        payload: {
+          value: this.currentPathname()
+        }
+      })
+    })
   },
   methods: {
-    create (context, id) {
-      const items = this._get(id)
+    getCurrentId () {
+      const currentPathname = this.currentPathname()
 
-      return this._render(items)
+      return this.items[currentPathname]
     },
-    set (context, { id, items, content, children }) {
-      this.children[id] = children
-      this.items[id] = items
-      this.content[id] = content
+    getPathById (context, id) {
+      return this.items[id]
     },
-    _content (id, index) {
-      return this.content[id][index]
+    currentPathname () {
+      return window.location.pathname
     },
-    _get (id) {
-      return {
-        id,
-        items: this.items[id],
-        children: this.children[id]
+    set (context, item) {
+      this.items = { ...this.items, ...item }
+      this._updateState()
+    },
+    navigate (context, nextPath) {
+      const path = this.currentPathname()
+      const prevId = this.items[path]
+      let nextId = this.items[nextPath]
+
+      if (!nextId) {
+        const cacheFilename = this.$method('dsRouter/cleanPath', nextPath)
+
+        this.$action('dsApp/fetch', cacheFilename, {
+          onSuccess: (data) => {
+            nextId = data.routes[nextPath]
+
+            this.$method('dsApp/set', data)
+            this.$method('dsApp/update', { prevId, nextId })
+            window.history.pushState({ prevId, nextId }, '', nextPath)
+            this._updateState()
+            this.$action('dsEvent/emit', {
+              id: this.id,
+              name: 'navigate',
+              payload: this.state
+            })
+          },
+          onError: (e) => {
+            console.error(e)
+          }
+        })
+      } else {
+        this.$method('dsApp/update', { prevId, nextId })
+        window.history.pushState({ prevId, nextId }, '', nextPath)
+        this._updateState()
       }
     },
-    _render ({ id, items, children, childItems }) {
-      const fragments = new window.DocumentFragment()
+    cleanPath (context, value) {
+      let text = value.toString().toLowerCase().trim()
 
-      for (let i = 0; i < children.length; i++) {
-        const item = childItems ? childItems[children[i]] : items[children[i]]
-        let component
+      text = this._replaceString(text)
 
-        if (item.component.type === 'element') {
-          component = this.$method('dsElement/create', item.component)
-        } else {
-          component = this.$method('dsElement/createNode', item.component.id)
-        }
-
-        if (item.children) {
-          const sibling = this._sibling(items, item.children)
-          const childComponent = this._render({
-            id,
-            items,
-            children: sibling.children,
-            childItems: sibling.items
-          })
-          component.appendChild(childComponent)
-        } else {
-          const content = this._content(id, item.content)
-
-          this.$method('dsContent/subscribe', { id: content.id, item: component })
-        }
-
-        fragments.append(component)
-      }
-
-      return fragments
+      return text.replace(/\s+/g, '-') // Replace spaces with -
+        .replace(/[+]/g, '-') // Replace + with '-'
+        .replace(/[^\w-]+/g, '') // Remove all non-word chars
+        .replace(/--+/g, '-') // Replace multiple - with single -
     },
-    _sibling (items, indexes) {
-      const newItems = {
-        items: [],
-        children: []
+    _updateState () {
+      const nextPath = this.currentPathname()
+
+      if (this.state.nextPath !== nextPath) {
+        this.state.prevPath = this.state.nextPath
+        this.state.prevId = this.state.nextId
+        this.state.nextPath = nextPath
+        this.state.nextId = this.getCurrentId()
+      }
+    },
+    _replaceString (text) {
+      for (let i = 0; i < this.cleanUrlSet.length; i++) {
+        const [to, from] = this.cleanUrlSet[i]
+
+        text = text.replace(new RegExp(from, 'gi'), to)
       }
 
-      for (let i = 0; i < indexes.length; i++) {
-        const index = indexes[i]
-
-        newItems.items.push(items[index])
-        newItems.children.push(i)
-      }
-
-      return newItems
+      return text
     }
   }
 }

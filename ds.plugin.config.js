@@ -1,5 +1,5 @@
 module.exports = {
-  name: 'dsLayout',
-  filename: 'ds-layout',
+  name: 'dsRouter',
+  filename: 'ds-router',
   version: 1
 }

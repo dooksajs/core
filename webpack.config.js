@@ -16,11 +16,11 @@ module.exports = {
     publicPath: '/dev/',
     host: process.env.HOST || 'localhost',
     port: process.env.PORT || '8080',
-    disableHostCheck: true
+    disableHostCheck: true,
+    historyApiFallback: true
   },
   resolve: {
     alias: {
-      '@dooksa/ds-plugins': resolve('node_modules/@dooksa/ds-plugins/dist'),
       plugin: resolve('src')
     }
   },
