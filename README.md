@@ -1,7 +1,7 @@
 
 # Resource loader
 
-Provides a convenient wrapper to add scripts or link ot the DOM
+Provides a convenient wrapper to add scripts or link to the DOM
 
 ### Installation
 
