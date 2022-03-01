@@ -1,7 +1,7 @@
 {
-  "name": "@dooksa/ds-plugin-layout",
+  "name": "@dooksa/ds-plugin-widget",
   "version": "1",
-  "description": "Layout rendering engine for system for Dooksa",
+  "description": "Widgets for system for Dooksa",
   "main": "src/index.js",
   "scripts": {
     "lint": "standard",
@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@bitbucket.org:dooksa/ds-plugin-layout.git"
+    "url": "git+ssh://git@bitbucket.org:dooksa/ds-plugin-widget.git"
   },
   "author": {
     "name": "Thomas David",

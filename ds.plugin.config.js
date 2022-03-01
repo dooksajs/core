@@ -1,5 +1,5 @@
 module.exports = {
-  name: 'dsLayout',
-  filename: 'ds-layout',
+  name: 'dsWidget',
+  filename: 'ds-widget',
   version: 1
 }
