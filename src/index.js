@@ -30,7 +30,6 @@ export default {
     additionalPlugins = [],
     isDev
   }) {
-    window.pluginLoader = {}
     this.buildId = buildId
     this.context = [
       {
@@ -47,11 +46,17 @@ export default {
         name: '$method',
         dispatch: true,
         value: this._method.bind(this)
+      },
+      {
+        name: 'ScriptLoader',
+        dispatch: false,
+        value: ScriptLoader
       }
     ]
 
     this._add({
       name,
+      version,
       methods: {
         use: this.use
       }
@@ -74,6 +79,21 @@ export default {
     }
   },
   methods: {
+    use (context, { item, options = {}, plugin }) {
+      if (options.onDemand) {
+        return this._addMetadata(item)
+      }
+
+      if (this.isLoaded[item.name]) {
+        return Promise.resolve()
+      } else if (this.queue[item.name] && !this.setupOnRequest[item.name]) {
+        return this._isLoading(item.name)
+      } else {
+        this._addMetadata(item)
+        const loadingPlugin = this._install(item.name, plugin, options.setupOnRequest)
+        this.queue[item.name] = [loadingPlugin]
+      }
+    },
     _actionExists (name) {
       return (this._methods[name])
     },
@@ -323,23 +343,8 @@ export default {
             throw new Error('Method "' + name + '" does not exist')
           }
         } catch (error) {
-          return error
+          console.error(error)
         }
-      }
-    },
-    use (context, { item, options = {}, plugin }) {
-      if (options.onDemand) {
-        return this._addMetadata(item)
-      }
-
-      if (this.isLoaded[item.name]) {
-        return Promise.resolve()
-      } else if (this.queue[item.name] && !this.setupOnRequest[item.name]) {
-        return this._isLoading(item.name)
-      } else {
-        this._addMetadata(item)
-        const loadingPlugin = this._install(item.name, plugin, options.setupOnRequest)
-        this.queue[item.name] = [loadingPlugin]
       }
     }
   }
