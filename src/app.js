@@ -47,20 +47,13 @@ export default {
   methods: {
     fetch (context, id) {
       return new Promise(resolve => {
-        const script = new this.ScriptLoader({
+        this.$resource.script({
           id: 'ds-app-cache__' + id,
           src: this.assetsURL + '/app_cache/' + window.location.hostname + '/' + id + '.js',
-          globalVars: ['dsAppCache']
+          globalVars: ['dsAppCache'],
+          onSuccess: ({ dsAppCache }) => resolve(dsAppCache),
+          onError: () => resolve()
         })
-
-        script.load()
-          .then(({ dsAppCache }) => {
-            resolve(dsAppCache)
-          })
-          .catch(e => {
-            console.error(e)
-            resolve()
-          })
       })
     },
     set (context, item) {
