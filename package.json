@@ -1,6 +1,6 @@
 {
   "name": "@dooksa/ds-plugin-router",
-  "version": "1",
+  "version": "1.0.0",
   "description": "Router for Dooksa",
   "main": "src/index.js",
   "scripts": {
