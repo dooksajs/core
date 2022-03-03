@@ -6,7 +6,9 @@
   "scripts": {
     "lint": "standard",
     "format": "standard --fix",
-    "dev": "webpack serve --config webpack.config.js",
+    "dev": "webpack serve --config webpack.dev.config.js",
+    "build": "webpack --config webpack.prod.config.js; npm run build:hash",
+    "build:hash": "node build/createHash.js",
     "test:unit": "cypress run --spec cypress/integration/ds-plugin-starter-kit.spec.js",
     "test:unitrecord": "cypress run --record --spec cypress/integration/ds-plugin-starter-kit.spec.js",
     "e2e": "cypress run --spec cypress/integration/ds-plugin-starter-kit-e2e.spec.js",
