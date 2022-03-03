@@ -1,4 +1,4 @@
-window.pluginLoader.dsTest = {
+window.dsApp.plugins.dsTest = {
   name: 'dsTest',
   version: '2',
   data: {
