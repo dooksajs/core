@@ -213,6 +213,11 @@ export default {
           .catch(e => reject(e))
       })
     },
+    /**
+     * Checks to see if the plugin is currently loading
+     * @param {string} name The name of the plugin
+     * @returns Promise
+     */
     _isLoading (name) {
       return Promise.all(this.queue[name])
     },
