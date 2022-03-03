@@ -1,15 +1,15 @@
 import DsPlugin from '@dooksa/ds-plugin'
-import dsAction from '../../ds-plugin-action'
-import dsWidget from '../../ds-plugin-layout'
-import dsElement from '../../ds-plugin-element'
-import dsContent from '../../ds-plugin-content'
-import dsOperators from '../../ds-plugin-operators'
-import dsEvent from '../../ds-plugin-event'
-import dsParameters from '../../ds-plugin-params'
-import dsUtilities from '../../ds-plugin-utilities'
-import dsRouter from '../../ds-plugin-router'
-import dsManager from '../../ds-plugin-manager'
-import dsApp from '../src/app'
+import dsAction from '@dooksa/ds-plugin-action'
+import dsWidget from '@dooksa/ds-plugin-widget'
+import dsElement from '@dooksa/ds-plugin-element'
+import dsContent from '@dooksa/ds-plugin-content'
+import dsOperators from '@dooksa/ds-plugin-operators'
+import dsEvent from '@dooksa/ds-plugin-event'
+import dsParameters from '@dooksa/ds-plugin-parameters'
+import dsUtilities from '@dooksa/ds-plugin-utilities'
+import dsRouter from '@dooksa/ds-plugin-router'
+import dsManager from '@dooksa/ds-plugin-manager'
+import dsApp from './app'
 
 // Core plugins
 const plugins = [
@@ -114,8 +114,8 @@ const plugins = [
     }
   }
 ]
-window.pluginLoader = {}
-window.dsApp = {
+
+export default {
   plugins: {},
   init ({ appCache, appElement, assetsURL }) {
     const pluginManager = new DsPlugin(dsManager)
