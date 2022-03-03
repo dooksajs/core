@@ -27,6 +27,14 @@
     "not IE 11",
     "not OperaMini all"
   ],
+  "env": {
+    "test:unit": {
+      "plugins": [ "istanbul" ]
+    },
+    "test:unitrecord": {
+      "plugins": [ "istanbul" ]
+    }
+  },
   "devDependencies": {
     "@babel/cli": "^7.12.10",
     "@babel/core": "^7.12.10",
@@ -41,9 +49,9 @@
     "webpack-dev-server": "^3.11.2"
   },
   "peerDependencies": {
-    "@dooksa/ds-plugin": "bitbucket:dooksa/ds-plugin"
+    "@dooksa/ds-plugin": "bitbucket:dooksa/ds-plugin#master"
   },
   "dependencies": {
-    "@dooksa/resource-loader": "bitbucket:dooksa/resource-loader"
+    "@dooksa/resource-loader": "bitbucket:dooksa/resource-loader#master"
   }
 }
