@@ -1,5 +1,5 @@
 import { name, version } from '../ds.plugin.config'
-import DsPlugin from '../../ds-plugins'
+import DsPlugin from '@dooksa/ds-plugin'
 import resource from '@dooksa/resource-loader'
 
 /**

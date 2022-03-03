@@ -40,8 +40,10 @@
     "webpack-cli": "^4.4.0",
     "webpack-dev-server": "^3.11.2"
   },
+  "peerDependencies": {
+    "@dooksa/ds-plugin": "bitbucket:dooksa/ds-plugin"
+  },
   "dependencies": {
-    "@dooksa/ds-plugin": "bitbucket:dooksa/ds-plugin",
     "@dooksa/resource-loader": "bitbucket:dooksa/resource-loader"
   }
 }
