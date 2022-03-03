@@ -114,8 +114,8 @@ const plugins = [
     }
   }
 ]
-window.pluginLoader = {}
-window.dsApp = {
+
+export default {
   plugins: {},
   init ({ appCache, appElement, assetsURL }) {
     const pluginManager = new DsPlugin(dsManager)
