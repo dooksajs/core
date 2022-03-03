@@ -1,6 +1,6 @@
 {
   "name": "@dooksa/ds-plugin-event",
-  "version": "1",
+  "version": "1.0.0",
   "description": "Events plugin management system for Dooksa",
   "main": "src/index.js",
   "scripts": {
