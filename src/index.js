@@ -253,7 +253,7 @@ export default {
 
         if (scriptOptions.src) {
           scriptOptions.onSuccess = () => {
-            const plugin = window.pluginLoader[name]
+            const plugin = window.dsApp.plugins[name]
 
             if (plugin) {
               return resolve({ plugin, setupOptions })
