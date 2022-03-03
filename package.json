@@ -27,11 +27,19 @@
     "not IE 11",
     "not OperaMini all"
   ],
+  "env": {
+    "test:unit": {
+      "plugins": [ "istanbul" ]
+    },
+    "test:unitrecord": {
+      "plugins": [ "istanbul" ]
+    }
+  },
   "devDependencies": {
     "@babel/cli": "^7.12.10",
     "@babel/core": "^7.12.10",
     "@babel/preset-env": "^7.12.11",
-    "@dooksa/ds-plugin": "bitbucket:dooksa/ds-plugin",
+    "@dooksa/ds-plugin": "bitbucket:dooksa/ds-plugin#master",
     "babel-loader": "^8.2.2",
     "babel-plugin-istanbul": "^6.0.0",
     "cypress": "^8.7.0",
