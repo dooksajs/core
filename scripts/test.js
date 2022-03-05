@@ -2,7 +2,7 @@ const cypress = require('cypress')
 const express = require('express')
 const fs = require('fs')
 const path = require('path')
-const { appDirectory, scriptDirectory } = require(path.join(__dirname, 'utils', 'paths.js'))
+const { appDirectory, scriptDirectory } = require('../utils/paths.js'))
 
 const app = express()
 const args = process.argv.slice(2)
