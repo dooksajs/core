@@ -22,5 +22,5 @@ $ npm run dev
 This will build the external plugin
 
 ```
-$ npm run build:hash
+$ npm run build
 ```

@@ -1,13 +1,10 @@
-import { name, version } from '../ds.plugin.config'
-
 /**
  * Ds Plugin.
  * @module plugin
  */
-
 export default {
-  name,
-  version,
+  name: 'dsStarterKit',
+  version: 1,
   dependencies: [
     // (Optional) Dependencies is a list of external dependent plugins
   ],

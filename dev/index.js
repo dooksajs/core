@@ -1,6 +1,4 @@
 import DsPlugin from '@dooksa/ds-plugin'
-// import { name, version } from '../ds.plugin.config'
-// import Plugin from 'plugin'
 
 const myPlugin = {
   name: 'myPlugin',
@@ -14,21 +12,12 @@ const myPlugin = {
   setup () {
     // setup is the first function executed
   },
-  getters: {
-    // getters
-    _privateGetter () {
-      // private getter name starts with '_'
-    },
-    publicMethod () {
-      // public getter
-    }
-  },
   methods: {
-    _privateMethod (params) {
-      // private method name starts with '_'
-    },
     publicMethod (context, params) {
       // public method
+    },
+    _privateMethod (params) {
+      // private method name starts with '_'
     }
   }
 }
