@@ -1,4 +1,4 @@
-import DsPlugin from '../../ds-plugins'
+import DsPlugin from '@dooksa/ds-plugin'
 import DsPluginTokens from '../../ds-plugin-tokens'
 import DsPluginOperators from '../../ds-plugin-operators'
 import DsPluginEvents from '../../ds-plugin-event'
@@ -110,24 +110,5 @@ pluginManager.init({
   additionalPlugins,
   isDev: true
 })
-// pluginManager.use({
-//   name: 'dsManager',
-//   plugin: pluginManager,
-//   onDemand: false,
-//   setupOptions: {
-//     buildId: 1
-//   }
-// })
+
 console.log(pluginManager)
-// const plugins = new DsPlugins({ isDev: true })
-
-// // add plugin metadata
-// plugins.addMetadata([
-//   [[name], {
-//     version
-//   }]
-// ])
-
-// plugins.use({ name, plugin: myPlugin })
-
-// console.log(plugins)

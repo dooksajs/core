@@ -1,4 +1,3 @@
-import { name, version } from '../ds.plugin.config'
 import DsPlugin from '@dooksa/ds-plugin'
 import resource from '@dooksa/resource-loader'
 
@@ -7,8 +6,8 @@ import resource from '@dooksa/resource-loader'
  * @module plugin
  */
 export default {
-  name,
-  version,
+  name: 'dsManager',
+  version: 1,
   data: {
     _methods: {},
     buildId: '',
@@ -55,14 +54,14 @@ export default {
     ]
 
     this._add({
-      name,
-      version,
+      name: this.name,
+      version: this.version,
       methods: {
         use: this.use
       }
     })
 
-    this.isLoaded[name] = true
+    this.isLoaded[this.name] = true
 
     for (let i = 0; i < plugins.length; i++) {
       const data = plugins[i]
