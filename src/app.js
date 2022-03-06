@@ -1,13 +1,11 @@
-import { name, version } from '../ds.plugin.config'
-
 /**
  * Ds App plugin.
  * @module plugin
  */
 
 export default {
-  name,
-  version,
+  name: 'dsApp',
+  version: 1,
   dependencies: [
     {
       name: 'dsRouter',
@@ -23,7 +21,6 @@ export default {
     }
   ],
   data: {
-    cssElement: null,
     assetsURL: '',
     appElement: null,
     pages: {},
