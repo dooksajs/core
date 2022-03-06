@@ -5,7 +5,6 @@
   "main": "src/index.js",
   "scripts": {
     "lint": "standard",
-<<<<<<< HEAD
     "lint:fix": "standard --fix",
     "dev": "ds-scripts dev",
     "build": "ds-scripts build",
@@ -13,14 +12,6 @@
     "test:unit:record": "ds-scripts --unit --record test",
     "test:e2e": "ds-scripts --e2e test",
     "test:e2e:record": "ds-scripts --e2e --record test"
-=======
-    "format": "standard --fix",
-    "dev": "webpack serve",
-    "test:unit": "cypress run --spec cypress/integration/ds-plugin-operators.spec.js",
-    "test:unitrecord": "cypress run --record --spec cypress/integration/ds-plugin-operators.spec.js",
-    "e2e": "cypress run --spec cypress/integration/ds-plugin-operators-e2e.spec.js",
-    "e2e:record": "cypress run --record --spec cypress/integration/ds-plugin-operators-e2e.spec.js"
->>>>>>> 20bdde02e36a8a29aa73ab39b6234a7ea6758618
   },
   "repository": {
     "type": "git",
@@ -43,24 +34,8 @@
     ]
   },
   "devDependencies": {
-<<<<<<< HEAD
     "@dooksa/ds-plugin": "bitbucket:dooksa/ds-plugin#master",
     "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts#master",
     "standard": "*"
-=======
-    "@babel/cli": "^7.12.10",
-    "@babel/core": "^7.12.10",
-    "@babel/preset-env": "^7.12.11",
-    "@cypress/code-coverage": "^3.9.9",
-    "@dooksa/ds-plugins": "git+ssh://git@bitbucket.org:dooksa/ds-plugins.git#v2.1.0",
-    "@dooksa/script-loader": "git+ssh://git@bitbucket.org/dooksa/script-loader.git#v1.0.5",
-    "babel-loader": "^8.2.2",
-    "babel-plugin-istanbul": "^6.0.0",
-    "cypress": "^8.0.0",
-    "standard": "*",
-    "webpack": "^5.17.0",
-    "webpack-cli": "^4.4.0",
-    "webpack-dev-server": "^3.11.2"
->>>>>>> 20bdde02e36a8a29aa73ab39b6234a7ea6758618
   }
 }
