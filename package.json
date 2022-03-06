@@ -1,12 +1,17 @@
 {
   "name": "@dooksa/resource-loader",
-  "version": "1.0.5",
+  "version": "1.0.0",
   "description": "Resource loader provides a convenient wrapper to add scripts or link ot the DOM",
   "main": "src/index.js",
   "scripts": {
+    "lint": "standard",
     "format": "standard --fix",
-    "dev": "webpack serve --config webpack.config.js",
-    "unit-test": "cypress run --spec cypress/integration/resource.js --headless"
+    "dev": "ds-scripts dev",
+    "build": "ds-scripts build",
+    "test:unit": "ds-scripts --unit test",
+    "test:unit:record": "ds-scripts --unit --record test",
+    "test:e2e": "ds-scripts --e2e test",
+    "test:e2e:record": "ds-scripts --e2e --record test"
   },
   "repository": {
     "type": "git",
@@ -16,17 +21,9 @@
     "name": "Thomas David",
     "email": "tom@mightysmile.com"
   },
-  "license": "GPL-3.0",
   "homepage": "https://bitbucket.org/dooksa/resource-loader#readme",
   "devDependencies": {
-    "@babel/cli": "^7.12.10",
-    "@babel/core": "^7.12.10",
-    "@babel/preset-env": "^7.12.11",
-    "babel-loader": "^8.2.2",
-    "standard": "*",
-    "webpack": "^5.17.0",
-    "webpack-cli": "^4.4.0",
-    "webpack-dev-server": "^3.11.2"
-  },
-  "dependencies": {}
+    "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts#master",
+    "standard": "*"
+  }
 }
