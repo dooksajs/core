@@ -5,12 +5,10 @@
   "main": "src/index.js",
   "scripts": {
     "lint": "standard",
-    "format": "standard --fix",
-    "dev": "webpack serve",
-    "test:unit": "cypress run --spec cypress/integration/ds-plugins.spec.js",
-    "test:unitrecord": "cypress run --record --spec cypress/integration/ds-plugins.spec.js",
-    "e2e": "cypress run --spec cypress/integration/ds-plugins-e2e.spec.js",
-    "e2e:record": "cypress run --record --spec cypress/integration/ds-plugins-e2e.spec.js"
+    "lint:fix": "standard --fix",
+    "dev": "ds-scripts dev",
+    "test:unit": "ds-scripts --unit test",
+    "test:unit:record": "ds-scripts --unit --record test"
   },
   "repository": {
     "type": "git",
@@ -20,37 +18,8 @@
     "name": "Thomas David",
     "email": "tom@mightysmile.com"
   },
-  "standard": {
-    "env": [
-      "browser",
-      "mocha"
-    ],
-    "globals": [
-      "cy",
-      "Cypress",
-      "expect",
-      "assert"
-    ]
-  },
-  "env": {
-    "test:unit": {
-      "plugins": [ "istanbul" ]
-    },
-    "test:unitrecord": {
-      "plugins": [ "istanbul" ]
-    }
-  },
   "devDependencies": {
-    "@babel/cli": "^7.12.10",
-    "@babel/core": "^7.12.10",
-    "@babel/preset-env": "^7.12.11",
-    "@cypress/code-coverage": "^3.9.9",
-    "babel-loader": "^8.2.2",
-    "babel-plugin-istanbul": "^6.0.0",
-    "cypress": "^8.0.0",
-    "standard": "*",
-    "webpack": "^5.17.0",
-    "webpack-cli": "^4.4.0",
-    "webpack-dev-server": "^3.11.2"
+    "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts#master",
+    "standard": "*"
   }
 }
