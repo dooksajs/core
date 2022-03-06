@@ -1,16 +1,17 @@
 {
   "name": "@dooksa/ds-plugin-router",
   "version": "1.0.0",
-  "description": "Router for Dooksa",
+  "description": "Routing for Dooksa",
   "main": "src/index.js",
   "scripts": {
     "lint": "standard",
-    "format": "standard --fix",
-    "dev": "webpack serve --config webpack.config.js",
-    "test:unit": "cypress run --spec cypress/integration/ds-plugin-starter-kit.spec.js",
-    "test:unitrecord": "cypress run --record --spec cypress/integration/ds-plugin-starter-kit.spec.js",
-    "e2e": "cypress run --spec cypress/integration/ds-plugin-starter-kit-e2e.spec.js",
-    "e2e:record": "cypress run --record --spec cypress/integration/ds-plugin-starter-kit-e2e.spec.js"
+    "lint:fix": "standard --fix",
+    "dev": "ds-scripts dev",
+    "build": "ds-scripts build",
+    "test:unit": "ds-scripts --unit test",
+    "test:unit:record": "ds-scripts --unit --record test",
+    "test:e2e": "ds-scripts --e2e test",
+    "test:e2e:record": "ds-scripts --e2e --record test"
   },
   "repository": {
     "type": "git",
@@ -20,33 +21,9 @@
     "name": "Thomas David",
     "email": "tom@mightysmile.com"
   },
-  "browserslist": [
-    "> 0.5%",
-    "last 2 versions",
-    "not dead",
-    "not IE 11",
-    "not OperaMini all"
-  ],
-  "env": {
-    "test:unit": {
-      "plugins": [ "istanbul" ]
-    },
-    "test:unitrecord": {
-      "plugins": [ "istanbul" ]
-    }
-  },
   "devDependencies": {
-    "@babel/cli": "^7.12.10",
-    "@babel/core": "^7.12.10",
-    "@babel/preset-env": "^7.12.11",
     "@dooksa/ds-plugin": "bitbucket:dooksa/ds-plugin#master",
-    "babel-loader": "^8.2.2",
-    "babel-plugin-istanbul": "^6.0.0",
-    "cypress": "^8.7.0",
-    "html-webpack-plugin": "^4.5.1",
-    "standard": "*",
-    "webpack": "^5.17.0",
-    "webpack-cli": "^4.4.0",
-    "webpack-dev-server": "^3.11.2"
+    "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts#master",
+    "standard": "*"
   }
 }

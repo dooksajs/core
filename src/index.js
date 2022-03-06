@@ -1,12 +1,10 @@
-import { name, version } from '../ds.plugin.config'
-
 /**
  * Dooksa widget plugin.
  * @module plugin
  */
 export default {
-  name,
-  version,
+  name: 'dsRouter',
+  version: 1,
   dependencies: [
     {
       name: 'dsEvent',
@@ -14,7 +12,7 @@ export default {
     }
   ],
   data: {
-    id: 'base' + name.charAt(0).toUpperCase() + name.substring(1),
+    id: 'base' + this.name.charAt(0).toUpperCase() + this.name.substring(1),
     state: {},
     searchParams: null,
     items: {},
