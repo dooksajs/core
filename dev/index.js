@@ -1,6 +1,6 @@
 import DsPlugin from '@dooksa/ds-plugin'
 import dsAction from '../../ds-plugin-action'
-import dsWidget from '../../ds-plugin-layout'
+import dsWidget from '../../ds-plugin-widget'
 import dsElement from '../../ds-plugin-element'
 import dsContent from '../../ds-plugin-content'
 import dsOperators from '../../ds-plugin-operators'

@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "lint": "standard",
-    "format": "standard --fix",
+    "lint:fix": "standard --fix",
     "dev": "ds-scripts dev",
     "build": "ds-scripts build",
     "test:unit": "ds-scripts --unit test",
@@ -22,7 +22,7 @@
     "email": "tom@mightysmile.com"
   },
   "devDependencies": {
-    "@dooksa/ds-scripts": "file:../ds-scripts",
+    "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts#master",
     "standard": "*"
   },
   "dependencies": {
