@@ -1,8 +1,6 @@
-import { name, version } from '../ds.plugin.config'
-
 export default {
-  name,
-  version,
+  name: 'dsOperators',
+  version: 1,
   data: {
     operators: {
       '==': v => v[0] === v[1],
