@@ -1,12 +1,10 @@
-import { name, version } from '../ds.plugin.config'
-
 /**
  * Dooksa action plugin.
  * @module plugin
  */
 export default {
-  name,
-  version,
+  name: 'dsAction',
+  version: 1,
   dependencies: [
     {
       name: 'dsParameters',
