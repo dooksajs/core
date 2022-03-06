@@ -1,12 +1,10 @@
-import { name, version } from '../ds.plugin.config'
-
 /**
  * Dooksa widget plugin.
  * @module plugin
  */
 export default {
-  name,
-  version,
+  name: 'dsWidget',
+  version: 1,
   dependencies: [
     {
       name: 'dsElement',
