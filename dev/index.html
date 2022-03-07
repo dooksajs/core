@@ -14,6 +14,7 @@
       display: none;
     }
   </style>
+  <title><%= htmlWebpackPlugin.options.title %></title>
 </head>
 <body>
   <div id="app" class="loading"></div>
@@ -97,7 +98,7 @@
       appElement.classList.remove('loading')
     })
 
-    const mainScript = createScript('ds-app', './dev/main.js')
+    const mainScript = createScript('ds-app', './main.js')
 
     scriptPromises.push(new Promise(resolve => {
       appCacheScript.addEventListener('load', () => {
