@@ -51,7 +51,7 @@ export default {
     window.addEventListener('popstate', event => {
       this._update(this.currentPath, this.currentPathname(), (state) => {
         this.$action('dsEvent/emit', {
-          id: this.id,
+          id: this.name,
           name: 'navigate',
           payload: state
         })
@@ -79,7 +79,7 @@ export default {
         window.history.pushState(state, '', nextPath)
 
         this.$action('dsEvent/emit', {
-          id: this.id,
+          id: this.name,
           name: 'navigate',
           payload: state
         })
@@ -123,7 +123,7 @@ export default {
             this.$method('dsApp/set', data)
             this.$method('dsApp/update', state)
             this.$action('dsEvent/emit', {
-              id: this.id,
+              id: this.name,
               name: 'navigate',
               payload: {
                 value: state
@@ -138,7 +138,7 @@ export default {
       } else {
         this.$method('dsApp/update', state)
         this.$action('dsEvent/emit', {
-          id: this.id,
+          id: this.name,
           name: 'navigate',
           payload: {
             value: state
