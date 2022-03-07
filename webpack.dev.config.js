@@ -2,6 +2,7 @@
 const path = require('path')
 const { appDirectory } = require('./utils/paths.js')
 const devPath = path.join(appDirectory, 'dev')
+const { name, globalObject } = require(path.resolve(appDirectory, 'ds.plugin.config'))
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
@@ -11,13 +12,15 @@ module.exports = {
   devtool: 'source-map',
   output: {
     filename: '[name].js',
-    library: 'dsPlugin'
+    library: name,
+    libraryTarget: 'global',
+    libraryExport: 'default',
+    globalObject
   },
   devServer: {
     compress: true,
     static: {
-      directory: devPath,
-      publicPath: devPath
+      directory: devPath
     },
     historyApiFallback: true,
     client: {
@@ -32,6 +35,7 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
+      title: name,
       inject: 'body',
       template: path.join(devPath, 'index.html'),
       filename: 'index.html'
