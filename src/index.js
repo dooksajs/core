@@ -12,7 +12,7 @@ export default {
     }
   ],
   data: {
-    id: 'base' + this.name.charAt(0).toUpperCase() + this.name.substring(1),
+    currentPath: '',
     state: {},
     searchParams: null,
     items: {},
@@ -45,16 +45,16 @@ export default {
     ]
   },
   setup () {
+    // set current path
+    this.currentPath = this.currentPathname()
+
     window.addEventListener('popstate', event => {
-      this._updateState()
-      console.log(event.state, this.state)
-      this.$method('dsApp/update', this.state)
-      this.$action('dsEvent/emit', {
-        id: this.id,
-        name: 'navigate',
-        payload: {
-          value: this.currentPathname()
-        }
+      this._update(this.currentPath, this.currentPathname(), (state) => {
+        this.$action('dsEvent/emit', {
+          id: this.id,
+          name: 'navigate',
+          payload: state
+        })
       })
     })
   },
@@ -72,39 +72,18 @@ export default {
     },
     set (context, item) {
       this.items = { ...this.items, ...item }
-      this._updateState()
     },
     navigate (context, nextPath) {
-      const path = this.currentPathname()
-      const prevId = this.items[path]
-      let nextId = this.items[nextPath]
+      this._update(this.currentPathname(), nextPath, (state) => {
+        // update history
+        window.history.pushState(state, '', nextPath)
 
-      if (!nextId) {
-        const cacheFilename = this.$method('dsRouter/cleanPath', nextPath)
-
-        this.$action('dsApp/fetch', cacheFilename, {
-          onSuccess: (data) => {
-            nextId = data.routes[nextPath]
-
-            this.$method('dsApp/set', data)
-            this.$method('dsApp/update', { prevId, nextId })
-            window.history.pushState({ prevId, nextId }, '', nextPath)
-            this._updateState()
-            this.$action('dsEvent/emit', {
-              id: this.id,
-              name: 'navigate',
-              payload: this.state
-            })
-          },
-          onError: (e) => {
-            console.error(e)
-          }
+        this.$action('dsEvent/emit', {
+          id: this.id,
+          name: 'navigate',
+          payload: state
         })
-      } else {
-        this.$method('dsApp/update', { prevId, nextId })
-        window.history.pushState({ prevId, nextId }, '', nextPath)
-        this._updateState()
-      }
+      })
     },
     cleanPath (context, value) {
       let text = value.toString().toLowerCase().trim()
@@ -116,16 +95,6 @@ export default {
         .replace(/[^\w-]+/g, '') // Remove all non-word chars
         .replace(/--+/g, '-') // Replace multiple - with single -
     },
-    _updateState () {
-      const nextPath = this.currentPathname()
-
-      if (this.state.nextPath !== nextPath) {
-        this.state.prevPath = this.state.nextPath
-        this.state.prevId = this.state.nextId
-        this.state.nextPath = nextPath
-        this.state.nextId = this.getCurrentId()
-      }
-    },
     _replaceString (text) {
       for (let i = 0; i < this.cleanUrlSet.length; i++) {
         const [to, from] = this.cleanUrlSet[i]
@@ -134,6 +103,52 @@ export default {
       }
 
       return text
+    },
+    _update (prevPath, nextPath, callback) {
+      const state = {
+        nextId: this.items[nextPath],
+        prevId: this.items[prevPath]
+      }
+
+      // update current path
+      this.currentPath = this.currentPathname()
+
+      if (!state.nextId) {
+        const cacheFilename = this.$method('dsRouter/cleanPath', nextPath)
+
+        this.$action('dsApp/fetch', cacheFilename, {
+          onSuccess: (data) => {
+            state.nextId = data.routes[nextPath]
+
+            this.$method('dsApp/set', data)
+            this.$method('dsApp/update', state)
+            this.$action('dsEvent/emit', {
+              id: this.id,
+              name: 'navigate',
+              payload: {
+                value: state
+              }
+            })
+
+            if (callback) {
+              callback(state)
+            }
+          }
+        })
+      } else {
+        this.$method('dsApp/update', state)
+        this.$action('dsEvent/emit', {
+          id: this.id,
+          name: 'navigate',
+          payload: {
+            value: state
+          }
+        })
+
+        if (callback) {
+          callback(state)
+        }
+      }
     }
   }
 }
