@@ -16,12 +16,17 @@
  * @param {(string|object)} context.value - The value of the context.
  */
 function Plugin (plugin, context = []) {
+  let _context = {
+    name: plugin.name,
+    version: plugin.version
+  }
+
   this.name = plugin.name
   this.version = plugin.version
-  this._context = {}
+
   // set data to context
   if (plugin.data) {
-    this._context = { ...plugin.data }
+    _context = { ..._context, ...plugin.data }
   }
   // set context to plugin
   for (let i = 0; i < context.length; i++) {
@@ -33,14 +38,15 @@ function Plugin (plugin, context = []) {
     }
 
     if (item.dispatch) {
-      this._context[item.name] = item.value(pluginMetadata)
+      _context[item.name] = item.value(pluginMetadata)
     } else {
-      this._context[item.name] = item.value
+      _context[item.name] = item.value
     }
   }
   // set dependencies
   if (plugin.dependencies) {
     this.dependencies = plugin.dependencies
+    _context.dependencies = plugin.dependencies
   }
   // set methods
   if (plugin.methods) {
@@ -50,10 +56,10 @@ function Plugin (plugin, context = []) {
       if (Object.hasOwnProperty.call(plugin.methods, key)) {
         const item = plugin.methods[key]
         // Add method
-        this._context[key] = item
+        _context[key] = item
         // Catch the public method
         if (key.charAt(0) !== '_') {
-          methods[key] = item.bind(this._context)
+          methods[key] = item.bind(_context)
         }
       }
     }
@@ -62,7 +68,7 @@ function Plugin (plugin, context = []) {
   }
   // set setup function
   if (plugin.setup) {
-    this.setup = plugin.setup.bind(this._context)
+    this.setup = plugin.setup.bind(_context)
   }
 }
 
