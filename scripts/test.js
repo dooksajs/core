@@ -1,3 +1,4 @@
+require('dotenv').config()
 const cypress = require('cypress')
 const express = require('express')
 const fs = require('fs')
@@ -54,7 +55,7 @@ if (args.includes('--e2e')) {
 cypress.run({
   spec: path.join(appDirectory, 'cypress', 'integration', specFile),
   config,
-  configFile: path.join(scriptDirectory, 'cypress.json'),
+  configFile: path.join(appDirectory, 'cypress.json'),
   record: args.includes('--record')
 })
   .then(() => {
