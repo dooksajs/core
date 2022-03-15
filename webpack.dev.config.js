@@ -2,7 +2,7 @@
 const path = require('path')
 const { appDirectory } = require('./utils/paths.js')
 const devPath = path.join(appDirectory, 'dev')
-const { name, globalObject } = require(path.resolve(appDirectory, 'ds.plugin.config'))
+const { name, devGlobalObject } = require(path.resolve(appDirectory, 'ds.plugin.config'))
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
@@ -15,7 +15,7 @@ module.exports = {
     library: name,
     libraryTarget: 'global',
     libraryExport: 'default',
-    globalObject
+    globalObject: devGlobalObject || window
   },
   devServer: {
     compress: true,
