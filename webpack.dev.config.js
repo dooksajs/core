@@ -15,7 +15,7 @@ module.exports = {
     library: name,
     libraryTarget: 'global',
     libraryExport: 'default',
-    globalObject: devGlobalObject || window
+    globalObject: devGlobalObject || 'window'
   },
   devServer: {
     compress: true,
