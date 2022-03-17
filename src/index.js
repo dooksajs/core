@@ -32,15 +32,20 @@ export default {
     addBaseItem (context, { id, item }) {
       this.baseItems[id] = item
     },
-    create (context, { layoutId, instanceId }) {
-      if (!this.elements[instanceId]) {
-        const layout = this.layout[layoutId]
-        const children = this.children[layoutId]
+    createSection (context, { parentElement, id, instanceId }) {
+      const items = this._getItem(id, instanceId)
 
-        this.elements[instanceId] = this._render(layoutId, instanceId, layout, children, layout)
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i]
+        const component = this._createElement(
+          id,
+          item.instanceId,
+          item.layoutId
+        )
 
-        return this.elements[instanceId]
+        this._appendChildren(component, parentElement)
       }
+    },
 
       return this.elements[instanceId]
     },
@@ -65,53 +70,112 @@ export default {
     setContent (context, item = {}) {
       this.content = { ...this.content, ...item }
     },
+    setItem (context, item = {}) {
+      this.items = { ...this.items, ...item }
+    },
     setLayout (context, item = {}) {
       this.layout = { ...this.layout, ...item }
+    },
+    _appendChildren (items, parentElement) {
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i]
+
+        if (Object.prototype.hasOwnProperty.call(item, 'parentIndex')) {
+          const parentElement = items[item.parentIndex].element
+
+          parentElement.appendChild(item.element)
+        } else {
+          parentElement.appendChild(item.element)
+        }
+      }
     },
     _content (id, index) {
       return this.content[id][index]
     },
-    _render (layoutId, instanceId, layout, children, childItems) {
-      const fragments = []
+    _createElement (id, instanceId, layoutId) {
+      if (!this.elements[instanceId]) {
+        const layout = this.layout[layoutId]
+        const children = this._getChildren(layoutId)
+
+        this.elements[instanceId] = this._renderElement(id, instanceId, layoutId, layout, children, layout)
+
+        return this.elements[instanceId]
+      }
+
+      return this.elements[instanceId]
+    },
+    _getChildren (id) {
+      return this.children[id] || [0]
+    },
+    _getContent (instanceId) {
+      return this.content[instanceId]
+    },
+    _getElement (id) {
+      return this.elements[id]
+    },
+    _getItem (id, instanceId) {
+      const instance = id + '__' + instanceId
+
+      if (this.items[instance]) {
+        return this.items[instance]
+      }
+
+      return this.baseItems[instanceId]
+    },
+    _setElement (id, item) {
+      this.elements[id] = item
+    },
+    _renderElement (id, instanceId, layoutId, layout, children, childItems) {
+      let fragments = []
 
       for (let i = 0; i < children.length; i++) {
         const item = childItems[children[i]]
-        let component
-
+        // add element Id
         item.component.elementId = item.component.elementId ? item.component.elementId : instanceId + '__' + i
+        // create parent component
+        const component = this.$method('dsElement/create' + item.component.type, item.component)
+        const fragment = { element: component }
 
-        if (item.component.type === 'element') {
-          component = this.$method('dsElement/create', item.component)
-        } else {
-          component = this.$method('dsElement/createNode', item.component.id)
+        if (Object.prototype.hasOwnProperty.call(item, 'parentIndex')) {
+          fragment.parentIndex = item.parentIndex
         }
+
+        fragments.push(fragment)
 
         if (item.children) {
           const sibling = this._sibling(layoutId, layout, item.children)
-          const childComponent = this._render(
-            layoutId,
+          const childComponent = this._renderElement(
+            id,
             instanceId,
+            layoutId,
             layout,
             sibling.children,
             sibling.items
           )
 
-          if (item.contentIndex) {
+          if (Object.hasOwnProperty.call(item, 'contentIndex')) {
             const content = this._content(instanceId, item.contentIndex)
 
             this.$method('dsContent/subscribe', { id: content.id, item: component })
           }
 
-          for (let i = 0; i < childComponent.length; i++) {
-            component.appendChild(childComponent[i])
-          }
+          fragments = fragments.concat(childComponent)
         } else if (Object.hasOwnProperty.call(item, 'contentIndex')) {
           const content = this._content(instanceId, item.contentIndex)
 
-          this.$method('dsContent/subscribe', { id: content.id, item: component })
+          if (content.type === 'section') {
+            const sectionContent = this.$method('dsContent/get', content.id)
+            // get element id?
+            this.sections[instanceId] = sectionContent.value
+            this.createSection({}, {
+              parentElement: component,
+              id,
+              instanceId: sectionContent.value
+            })
+          } else {
+            this.$method('dsContent/subscribe', { id: content.id, item: component })
+          }
         }
-
-        fragments.push(component)
       }
 
       return fragments
