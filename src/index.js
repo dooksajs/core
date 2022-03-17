@@ -16,6 +16,7 @@ export default {
     }
   ],
   data: {
+    sections: {},
     content: {},
     children: {},
     layout: {},
@@ -46,11 +47,121 @@ export default {
         this._appendChildren(component, parentElement)
       }
     },
+    updateSection (context, { parentElement, prevId, prevInstanceId, nextId, nextInstanceId }) {
+      const prevItems = this._getItem(prevId, prevInstanceId)
+      const nextItems = this._getItem(nextId, nextInstanceId)
+      const renderLength = nextItems.length > prevItems.length ? nextItems.length : prevItems.length
 
-      return this.elements[instanceId]
+      for (let i = 0; i < renderLength; i++) {
+        const prevItem = prevItems[i]
+        const nextItem = nextItems[i]
+
+        if (nextItem) {
+          if (prevItem) {
+            if (prevItem.instanceId !== nextItem.instanceId) {
+              if (prevItem.layoutId === nextItem.layoutId) {
+                const layout = this.layout[nextItem.layoutId]
+                let prevElement = this._getElement(prevItem.instanceId)
+                // Add element reference
+                if (!prevElement) {
+                  prevElement = this._getElement(nextItem.instanceId)
+
+                  this._setElement(nextItem.instanceId, prevElement)
+                }
+
+                // Update content
+                for (let i = 0; i < layout.length; i++) {
+                  if (Object.prototype.hasOwnProperty.call(layout[i], 'contentIndex')) {
+                    const prevContent = this._content(prevItem.instanceId, layout[i].contentIndex)
+                    const nextContent = this._content(nextItem.instanceId, layout[i].contentIndex)
+
+                    if (prevContent.type !== 'section') {
+                      this.$method('dsContent/unsubscribe', { id: prevContent.id, item: prevElement[i].element })
+                      this.$method('dsContent/subscribe', { id: nextContent.id, item: prevElement[i].element })
+                    } else {
+                      if (prevContent.id !== nextContent.id) {
+                        const prevSectionContent = this.$method('dsContent/get', prevContent.id)
+                        const nextSectionContent = this.$method('dsContent/get', nextContent.id)
+
+                        this.updateSection({}, {
+                          parentElement: prevElement[i].element,
+                          prevId,
+                          prevInstanceId: prevSectionContent.value,
+                          nextId,
+                          nextInstanceId: nextSectionContent.value
+                        })
+                      }
+                    }
+                  }
+                }
+              } else {
+                const prevChildren = this._getChildren(prevItem.layoutId)
+                const prevElement = this._getElement(prevItem.instanceId)
+                const nextElement = this._createElement(
+                  nextId,
+                  nextItem.instanceId,
+                  nextItem.layoutId
+                )
+                // Remove previous widget
+                for (let i = 0; i < prevChildren.length; i++) {
+                  const index = prevChildren[i]
+
+                  prevElement[index].element.remove()
+                }
+                // Add new widget
+                for (let i = 0; i < nextElement.length; i++) {
+                  const item = nextElement[i]
+
+                  if (Object.prototype.hasOwnProperty.call(item, 'parentIndex')) {
+                    const parentElement = nextElement[item.parentIndex].element
+
+                    parentElement.appendChild(item.element)
+                  } else {
+                    parentElement.appendChild(item.element)
+                  }
+                }
+              }
+            }
+          } else {
+            const nextElement = this._createElement(
+              nextId,
+              nextItem.instanceId,
+              nextItem.layoutId
+            )
+
+            for (let i = 0; i < nextElement.length; i++) {
+              const item = nextElement[i]
+
+              if (Object.prototype.hasOwnProperty.call(item, 'parentIndex')) {
+                const parentElement = nextElement[item.parentIndex].element
+
+                parentElement.appendChild(item.element)
+              } else {
+                parentElement.appendChild(item.element)
+              }
+            }
+          }
+        } else {
+          const items = this._getElement(prevItem.instanceId)
+          // remove element from the dom
+          for (let i = 0; i < items.length; i++) {
+            items[i].element.remove()
+          }
+        }
+      }
     },
-    getElement (context, id) {
-      return this.elements[id]
+    removeSection (context, { id, instanceId }) {
+      const sections = this._getItem(id, instanceId)
+
+      for (let i = 0; i < sections.length; i++) {
+        const section = sections[i]
+        const children = this._getChildren(section.layoutId)
+        const item = this._getElement(section.instanceId)
+        // remove parent elements from the DOM
+        for (let i = 0; i < children.length; i++) {
+          item[i].element.remove()
+        }
+      }
     },
     getBaseItem (context, id) {
       return this.baseItems[id]
@@ -60,9 +171,6 @@ export default {
     },
     setBaseItem (context, item = {}) {
       this.baseItems = { ...this.baseItems, ...item }
-    },
-    setItem (context, item = {}) {
-      this.items = { ...this.items, ...item }
     },
     setChildren (context, item = {}) {
       this.children = { ...this.children, ...item }
