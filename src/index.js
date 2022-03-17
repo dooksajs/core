@@ -77,6 +77,8 @@ export default {
       this._update(this.currentPathname(), nextPath, (state) => {
         // update history
         window.history.pushState(state, '', nextPath)
+        // update current path
+        this.currentPath = this.currentPathname()
 
         this.$action('dsEvent/emit', {
           id: this.name,
@@ -106,6 +108,8 @@ export default {
     },
     _update (prevPath, nextPath, callback) {
       const state = {
+        nextPath,
+        prevPath,
         nextId: this.items[nextPath],
         prevId: this.items[prevPath]
       }
