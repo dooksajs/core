@@ -92,72 +92,24 @@ export default {
       const nextLength = nextTemplate.widgets.length
       const prevLength = prevTemplate.widgets.length
       const renderLength = nextLength > prevLength ? nextLength : prevLength
-      // parentElement could be specified by a parameter
+
       for (let i = 0; i < renderLength; i++) {
         const nextWidgetId = nextTemplate.widgets[i]
         const prevWidgetId = prevTemplate.widgets[i]
 
         if (nextWidgetId) {
-          let prevWidgets = this.$method('dsWidget/getItem', prevId + '__' + prevWidgetId)
-          let nextWidgets = this.$method('dsWidget/getItem', nextId + '__' + nextWidgetId)
-
-          if (!prevWidgets) {
-            prevWidgets = this.$method('dsWidget/getBaseItem', prevWidgetId)
-          }
-
-          if (!nextWidgets) {
-            nextWidgets = this.$method('dsWidget/getBaseItem', nextWidgetId)
-          }
-
-          const renderLength = nextWidgets.length > prevWidgets.length ? nextWidgets.length : prevWidgets.length
-
-          for (let i = 0; i < renderLength; i++) {
-            const nextWidget = nextWidgets[i]
-            const prevWidget = prevWidgets[i]
-
-            if (nextWidget) {
-              // this should be handled in dsWidgets
-              const newElement = this.$method('dsWidget/create', {
-                layoutId: nextWidget.layoutId,
-                instanceId: nextWidget.instanceId
-              })
-
-              if (prevWidget) {
-                const prevElement = this.$method('dsWidget/getElement', prevWidget.instanceId)
-                let parentElement = null
-                parentElement = prevElement[0].parentElement
-
-                if (!parentElement) {
-                  parentElement = this.appElement
-                }
-
-                parentElement.replaceChildren(...newElement)
-              } else {
-                this.appElement.appendChild(...newElement)
-              }
-            } else if (prevWidget) {
-              const prevElement = this.$method('dsWidget/getElement', prevWidget.instanceId)
-              // remove element from the dom
-              for (let i = 0; i < prevElement.length; i++) {
-                prevElement[i].remove()
-              }
-            }
-          }
+          this.$method('dsWidget/updateSection', {
+            parentElement: this.appElement,
+            prevId,
+            prevInstanceId: prevWidgetId,
+            nextId,
+            nextInstanceId: nextWidgetId
+          })
         } else if (prevWidgetId) {
-          let prevWidgets = this.$method('dsWidget/getItem', prevId + '__' + prevWidgetId)
-
-          if (!prevWidgets) {
-            prevWidgets = this.$method('dsWidget/getBaseItem', prevWidgetId)
-          }
-
-          for (let i = 0; i < prevWidgets.length; i++) {
-            const prevWidget = prevWidgets[i]
-            const prevElement = this.$method('dsWidget/getElement', prevWidget.instanceId)
-            // remove element from the dom
-            for (let i = 0; i < prevElement.length; i++) {
-              prevElement[i].remove()
-            }
-          }
+          this.$method('dsWidget/removeSection', {
+            id: prevWidgetId,
+            instanceId: prevId
+          })
         }
       }
     },
@@ -172,9 +124,9 @@ export default {
       }
 
       for (let i = 0; i < template.widgets.length; i++) {
-        const id = template.widgets[i]
+        const instanceId = template.widgets[i]
 
-        this.$method('dsWidget/createSection', { parentElement: this.appElement, id, instanceId: pageId })
+        this.$method('dsWidget/createSection', { parentElement: this.appElement, id: pageId, instanceId: instanceId })
       }
     },
     _setPage (item) {
