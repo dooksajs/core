@@ -172,24 +172,9 @@ export default {
       }
 
       for (let i = 0; i < template.widgets.length; i++) {
-        const widgetId = template.widgets[i]
-        let widgets = this.$method('dsWidget/getItem', pageId + '__' + widgetId)
+        const id = template.widgets[i]
 
-        if (!widgets) {
-          widgets = this.$method('dsWidget/getBaseItem', widgetId)
-        }
-
-        for (let i = 0; i < widgets.length; i++) {
-          const widget = widgets[i]
-          const component = this.$method('dsWidget/create', {
-            layoutId: widget.layoutId,
-            instanceId: widget.instanceId
-          })
-
-          for (let i = 0; i < component.length; i++) {
-            this.appElement.appendChild(component[i])
-          }
-        }
+        this.$method('dsWidget/createSection', { parentElement: this.appElement, id, instanceId: pageId })
       }
     },
     _setPage (item) {
