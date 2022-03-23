@@ -40,13 +40,13 @@ export default {
       let hasCallback = false
 
       if (root) {
-        instanceId = this.$method('dsUtilities/generateInstanceId')
+        instanceId = this.$method('dsUtilities/generateId')
         this.lastActionIndex[instanceId] = actions.length - 1
       }
 
       if (conditions.length) {
         valid = this._compare(conditions, {
-          instanceId: this.$method('dsUtilities/generateInstanceId'),
+          instanceId: this.$method('dsUtilities/generateId'),
           parentItemId,
           data
         })
@@ -59,7 +59,7 @@ export default {
 
         if (item.conditions) {
           valid = this._compare(item.conditions, {
-            instanceId: this.$method('dsUtilities/generateInstanceId'),
+            instanceId: this.$method('dsUtilities/generateId'),
             parentItemId,
             data
           })
@@ -135,10 +135,10 @@ export default {
       return results
     },
     set (context, item = {}) {
-      this.items = { ...this.items, ...item }
+      this.items = Object.assign(item, this.items)
     },
     setConditions (context, item = {}) {
-      this.conditions = { ...this.conditions, ...item }
+      this.conditions = Object.assign(item, this.conditions)
     },
     _createActions (items, action) {
       const actions = []
