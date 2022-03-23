@@ -111,3 +111,26 @@ describe('Eval greater than', function () {
     })).to.be.false
   })
 })
+
+describe('Eval greater than or equal', function () {
+  it('can return true if the first operand is greater than the second operand.', function () {
+    expect(methods.eval({
+      name: '>=',
+      values: [2, 1]
+    })).to.be.true
+  })
+
+  it('can return false if the first operand is less than the second operand.', function () {
+    expect(methods.eval({
+      name: '>=',
+      values: [1, 2]
+    })).to.be.false
+  })
+
+  it('can return true if the first operand is equal to the second operand.', function () {
+    expect(methods.eval({
+      name: '>=',
+      values: [1, 1]
+    })).to.be.true
+  })
+})
