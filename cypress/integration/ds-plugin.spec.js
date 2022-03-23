@@ -238,3 +238,33 @@ describe('Eval decrement', function () {
     }), 'NaN is NaN')
   })
 })
+
+describe('Eval exponentiation', function () {
+  it('operator can return the first operand to the power of the second ', function () {
+    expect(methods.eval({
+      name: '**',
+      values: [2, 3]
+    })).to.equal(8)
+  })
+
+  it('operator can return a valid number  from a small float operand and small positive integer second', function () {
+    expect(methods.eval({
+      name: '**',
+      values: [1e-34, 4]
+    })).to.equal(9.999999999999998e-137)
+  })
+
+  it('operator can return a number with at least one numeric string operand', function () {
+    expect(methods.eval({
+      name: '**',
+      values: ['2', 4]
+    })).to.equal(16)
+  })
+
+  it('operator can return NaN for a non-numeric string operand', function () {
+    assert.isNaN(methods.eval({
+      name: '--x',
+      values: ['two', 4]
+    }), 'NaN is NaN')
+  })
+})
