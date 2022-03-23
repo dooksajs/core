@@ -12,7 +12,15 @@ export default {
       version: 1
     },
     {
-      name: 'dsContent',
+      name: 'dsElement',
+      version: 1
+    },
+    {
+      name: 'dsParameters',
+      version: 1
+    },
+    {
+      name: 'dsAction',
       version: 1
     },
     {
@@ -22,19 +30,18 @@ export default {
   ],
   data: {
     assetsURL: '',
-    appElement: null,
+    appElementId: '',
     pages: {},
     pageTypes: {},
     template: {}
   },
-  setup ({ appElement, appCache = {}, assetsURL }) {
-    this.appElement = appElement
+  setup ({ appCache = {}, assetsURL }) {
     this.assetsURL = assetsURL
     this.set({}, appCache)
     // get current page id
     const pageId = this.$method('dsRouter/getCurrentId')
     // render init page
-    this.render({}, pageId)
+    this._render(pageId)
   },
   methods: {
     fetch (context, id) {
@@ -48,33 +55,6 @@ export default {
         })
       })
     },
-    set (context, item) {
-      // add cache actions
-      if (item.actions) {
-        this.$method('dsAction/set', item.actions.items)
-        this.$method('dsAction/setConditions', item.actions.conditions)
-      }
-      // add cache params
-      if (item.params) {
-        this.$method('dsParameters/set', item.params.items)
-        this.$method('dsParameters/setUsedBy', item.params.usedBy)
-      }
-      // add cache widgets
-      if (item.widgets) {
-        this.$method('dsWidget/setContent', item.widgets.content)
-        this.$method('dsWidget/setChildren', item.widgets.children)
-        this.$method('dsWidget/setLayout', item.widgets.layout)
-        this.$method('dsWidget/setBaseItem', item.widgets.baseItems)
-        this.$method('dsWidget/setItem', item.widgets.items)
-      }
-
-      this.$method('dsContent/set', item.content)
-      this.$method('dsRouter/set', item.routes)
-
-      this._setPage(item.pages)
-      this._setPageType(item.pageTypes)
-      this._setTemplate(item.templates)
-    },
     update (context, { prevId, nextId }) {
       const prevPage = this.pages[prevId]
       const prevPageType = this.pageTypes[prevPage.pageTypeId]
@@ -84,10 +64,8 @@ export default {
       const nextPageType = this.pageTypes[nextPage.pageTypeId]
       const nextTemplate = this.templates[nextPageType.templateId]
 
-      // update class on body
-      if (nextTemplate.classList) {
-        document.body.setAttribute('class', nextTemplate.classList.join(' '))
-      }
+      this.$method('dsElement/detachContent', { contentId: prevPageType.templateId, elementId: 'appElement' })
+      this.$method('dsElement/attachContent', { contentId: nextPageType.templateId, elementId: 'appElement' })
 
       const nextLength = nextTemplate.widgets.length
       const prevLength = prevTemplate.widgets.length
@@ -98,45 +76,79 @@ export default {
         const prevWidgetId = prevTemplate.widgets[i]
 
         if (nextWidgetId) {
-          this.$method('dsWidget/updateSection', {
-            parentElement: this.appElement,
+          this.$method('dsWidget/update', {
+            parentElementId: 'appElement',
             prevId,
             prevInstanceId: prevWidgetId,
             nextId,
             nextInstanceId: nextWidgetId
           })
         } else if (prevWidgetId) {
-          this.$method('dsWidget/removeSection', {
-            id: prevWidgetId,
-            instanceId: prevId
+          this.$method('dsWidget/remove', {
+            id: prevId,
+            instanceId: prevWidgetId
           })
         }
       }
     },
-    render (context, pageId) {
+    set (context, item) {
+      // Set actions
+      if (item.actions) {
+        this.$method('dsAction/set', item.actions.items)
+        this.$method('dsAction/setConditions', item.actions.conditions)
+      }
+      // Set params
+      if (item.parameters) {
+        this.$method('dsParameters/set', item.parameters.items)
+        this.$method('dsParameters/setUsedBy', item.parameters.usedBy)
+      }
+      // Set element content
+      if (item.elements) {
+        if (item.elements.values) {
+          this.$method('dsElement/setValues', item.elements.values)
+        }
+
+        if (item.elements.attributes) {
+          this.$method('dsElement/setAttributes', item.elements.attributes)
+        }
+      }
+      // Set widgets
+      if (item.widgets) {
+        this.$method('dsWidget/setComponentData', item.widgets.componentData)
+        this.$method('dsWidget/setLayoutStart', item.widgets.layoutStart)
+        this.$method('dsWidget/setLayout', item.widgets.layout)
+        this.$method('dsWidget/setDefaultItems', item.widgets.defaultItems)
+        this.$method('dsWidget/setItems', item.widgets.items)
+      }
+      // set routes
+      this.$method('dsRouter/set', item.routes)
+      // Set page
+      this._setPage(item.pages)
+      this._setPageType(item.pageTypes)
+      this._setTemplate(item.templates)
+    },
+    _render (pageId) {
       const page = this.pages[pageId]
       // todo: build metadata
       const pageType = this.pageTypes[page.pageTypeId]
       const template = this.templates[pageType.templateId]
-      // add class to body
-      if (template.classList) {
-        document.body.setAttribute('class', template.classList.join(' '))
-      }
+      // add attributes to appElement
+      this.$method('dsElement/attachContent', { contentId: pageType.templateId, elementId: 'appElement' })
 
       for (let i = 0; i < template.widgets.length; i++) {
         const instanceId = template.widgets[i]
 
-        this.$method('dsWidget/createSection', { parentElement: this.appElement, id: pageId, instanceId: instanceId })
+        this.$method('dsWidget/create', { parentElementId: 'appElement', id: pageId, instanceId: instanceId })
       }
     },
     _setPage (item) {
-      this.pages = { ...this.pages, ...item }
+      this.pages = Object.assign(item, this.pages)
     },
     _setPageType (item) {
-      this.pageTypes = { ...this.pageTypes, ...item }
+      this.pageTypes = Object.assign(item, this.pageTypes)
     },
     _setTemplate (item) {
-      this.templates = { ...this.templates, ...item }
+      this.templates = Object.assign(item, this.templates)
     }
   }
 }

@@ -2,7 +2,6 @@ import DsPlugin from '@dooksa/ds-plugin'
 import dsAction from '@dooksa/ds-plugin-action'
 import dsWidget from '@dooksa/ds-plugin-widget'
 import dsElement from '@dooksa/ds-plugin-element'
-import dsContent from '@dooksa/ds-plugin-content'
 import dsOperators from '@dooksa/ds-plugin-operators'
 import dsEvent from '@dooksa/ds-plugin-event'
 import dsParameters from '@dooksa/ds-plugin-parameters'
@@ -39,16 +38,6 @@ const plugins = [
       version: dsElement.version
     },
     plugin: dsElement,
-    options: {
-      setupOnRequest: false
-    }
-  },
-  {
-    item: {
-      name: dsContent.name,
-      version: dsContent.version
-    },
-    plugin: dsContent,
     options: {
       setupOnRequest: false
     }
@@ -96,17 +85,7 @@ const plugins = [
   {
     item: {
       name: dsUtilities.name,
-      version: dsUtilities.version,
-      setupOptions: {
-        docId: {
-          alphabet: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
-          alphabetLength: 20
-        },
-        instanceId: {
-          alphabet: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
-          alphabetLength: 17
-        }
-      }
+      version: dsUtilities.version
     },
     plugin: dsUtilities,
     options: {
@@ -117,7 +96,7 @@ const plugins = [
 
 export default {
   plugins: {},
-  init ({ appCache, appElement, assetsURL }) {
+  init ({ appCache, assetsURL }) {
     const pluginManager = new DsPlugin(dsManager)
 
     plugins.push({
@@ -126,7 +105,6 @@ export default {
         version: dsApp.version,
         setupOptions: {
           appCache,
-          appElement,
           assetsURL
         }
       },
