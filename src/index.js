@@ -15,24 +15,25 @@ export default {
     items: {}
   },
   methods: {
-    addListener (context, { id, name, payload }) {
+    addListener (context, { id, name, item }) {
       if (this.items[id]) {
         if (this.items[id][name]) {
-          this.items[id][name].push(payload)
+          this.items[id][name].push(item)
         } else {
-          this.items[id][name] = [payload]
+          this.items[id][name] = [item]
         }
       } else {
         this.items[id] = {
-          [name]: [payload]
+          [name]: [item]
         }
       }
     },
     emit (context, { id, name, payload }) {
-      const actions = this._listener(id, context.name + '/' + name)
+      const eventName = this._name(context.name, name)
+      const listeners = this._getListener(id, eventName)
 
-      for (let i = 0; i < actions.length; i++) {
-        this.$action('dsAction/dispatch', { id: actions[i], data: payload })
+      for (let i = 0; i < listeners.length; i++) {
+        this.$method('dsAction/dispatch', { id: listeners[i], data: payload })
       }
     },
     removeListener (context, { id, name, value }) {
@@ -55,12 +56,15 @@ export default {
         }
       }
     },
-    _listener (id, name) {
+    _getListener (id, name) {
       if (this.items[id]) {
         return this.items[id][name] ? [...this.items[id][name]] : []
       }
 
       return []
+    },
+    _name (contextName, name) {
+      return contextName + '/' + name
     }
   }
 }
