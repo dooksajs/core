@@ -42,3 +42,12 @@ describe('Eval not equal', function () {
     })).to.be.true
   })
 })
+
+describe('Eval less than', function () {
+  it('can return true if the first operand is less than the second operand.', function () {
+    expect(methods.eval({
+      name: '<',
+      values: [1, 2]
+    })).to.be.true
+  })
+})
