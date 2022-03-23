@@ -285,7 +285,7 @@ describe('Eval addition', function () {
   })
 })
 
-describe('Eval subtracttion', function () {
+describe('Eval subtraction', function () {
   it('can return a number if the operands are numbers.', function () {
     expect(methods.eval({
       name: '-',
@@ -298,5 +298,69 @@ describe('Eval subtracttion', function () {
       name: '-',
       values: ['1', 2]
     })).to.equal(-1)
+  })
+})
+
+describe('Eval subtraction', function () {
+  it('can return a number if the operands are numbers.', function () {
+    expect(methods.eval({
+      name: '-',
+      values: [1, 2]
+    })).to.equal(-1)
+  })
+
+  it('can return a number if the operands are numbers that may be expressed as a string.', function () {
+    expect(methods.eval({
+      name: '-',
+      values: ['1', 2]
+    })).to.equal(-1)
+  })
+})
+
+describe('Eval multiplication', function () {
+  it('can return a number if the operands are numbers.', function () {
+    expect(methods.eval({
+      name: '*',
+      values: [2, 3]
+    })).to.equal(6)
+  })
+
+  it('can return a number if the operands are numbers that may be expressed as a string.', function () {
+    expect(methods.eval({
+      name: '*',
+      values: ['2', 3]
+    })).to.equal(6)
+  })
+})
+
+describe('Eval logical NOT', function () {
+  it('can return true if the operand is falsey', function () {
+    expect(methods.eval({
+      name: '!',
+      values: []
+    })).to.equal(true)
+  })
+
+  it('can return false if the operator expression is true', function () {
+    expect(methods.eval({
+      name: '!',
+      values: ['3 > 2']
+    })).to.equal(false)
+  })
+})
+
+describe('Eval logical NOT NOT', function () {
+  it('can return false if the operand is falsey.', function () {
+    expect(methods.eval({
+      name: '!!',
+      values: []
+    })).to.equal(false)
+  })
+
+  it('can return true if the operator expression is true', function () {
+    expect(methods.eval({
+      name: '!!',
+      values: ['3 > 2']
+    })).to.equal(true)
   })
 })
