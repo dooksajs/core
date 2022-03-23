@@ -201,3 +201,40 @@ describe('Eval increment', function () {
     }), 'NaN is NaN')
   })
 })
+
+describe('Eval decrement', function () {
+  it('postfix operator can return the operand', function () {
+    expect(methods.eval({
+      name: 'x--',
+      values: [1]
+    })).to.equal(1)
+  })
+
+  it('prefix operator can return a number 1 less than the operand', function () {
+    expect(methods.eval({
+      name: '--x',
+      values: [1]
+    })).to.equal(0)
+  })
+
+  it('prefix operator can return a number 1 less than the rounded float operand', function () {
+    expect(methods.eval({
+      name: '--x',
+      values: [1e-34]
+    })).to.equal(-1)
+  })
+
+  it('prefix operator can return a number 1 less than the numeric string operand', function () {
+    expect(methods.eval({
+      name: '--x',
+      values: ['1']
+    })).to.equal(0)
+  })
+
+  it('prefix operator can return NaN for a non-numeric string operand', function () {
+    assert.isNaN(methods.eval({
+      name: '--x',
+      values: ['one']
+    }), 'NaN is NaN')
+  })
+})
