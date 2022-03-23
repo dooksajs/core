@@ -50,4 +50,11 @@ describe('Eval less than', function () {
       values: [1, 2]
     })).to.be.true
   })
+
+  it('can return false if the first operand is greater than the second operand.', function () {
+    expect(methods.eval({
+      name: '<',
+      values: [2, 1]
+    })).to.be.false
+  })
 })
