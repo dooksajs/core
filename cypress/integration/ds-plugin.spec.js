@@ -284,3 +284,19 @@ describe('Eval addition', function () {
     })).to.equal('12')
   })
 })
+
+describe('Eval subtracttion', function () {
+  it('can return a number if the operands are numbers.', function () {
+    expect(methods.eval({
+      name: '-',
+      values: [1, 2]
+    })).to.equal(-1)
+  })
+
+  it('can return a number if the operands are numbers that may be expressed as a string.', function () {
+    expect(methods.eval({
+      name: '-',
+      values: ['1', 2]
+    })).to.equal(-1)
+  })
+})
