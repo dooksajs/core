@@ -164,3 +164,40 @@ describe('Eval remainder', function () {
     })).to.equal(2)
   })
 })
+
+describe('Eval increment', function () {
+  it('postfix operator can return the operand', function () {
+    expect(methods.eval({
+      name: 'x++',
+      values: [1]
+    })).to.equal(1)
+  })
+
+  it('prefix operator can return a number 1 greater than the operand', function () {
+    expect(methods.eval({
+      name: '++x',
+      values: [1]
+    })).to.equal(2)
+  })
+
+  it('prefix operator can return a number 1 greater than the rounded float operand', function () {
+    expect(methods.eval({
+      name: '++x',
+      values: [1e-34]
+    })).to.equal(1)
+  })
+
+  it('prefix operator can return a number 1 greater than the numeric string operand', function () {
+    expect(methods.eval({
+      name: '++x',
+      values: ['1']
+    })).to.equal(2)
+  })
+
+  it('prefix operator can return NaN for a non-numeric string operand', function () {
+    assert.isNaN(methods.eval({
+      name: '++x',
+      values: ['one']
+    }), 'NaN is NaN')
+  })
+})
