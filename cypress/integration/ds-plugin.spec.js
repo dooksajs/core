@@ -363,4 +363,11 @@ describe('Eval logical NOT NOT', function () {
       values: ['3 > 2']
     })).to.equal(true)
   })
+
+  it('can return false if the operator expression is false', function () {
+    expect(methods.eval({
+      name: '!!',
+      values: ['3 === 2']
+    })).to.equal(true)
+  })
 })
