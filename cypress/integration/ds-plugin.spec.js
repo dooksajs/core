@@ -371,3 +371,43 @@ describe('Eval logical NOT NOT', function () {
     })).to.equal(true)
   })
 })
+
+describe('test for arrayFindByKeyValue', function () {
+  expect(methods.arrayFindByKeyValue({
+    list:
+    [
+      {
+        a: 'stuff'
+      }
+    ],
+    key: 'a',
+    valueIndex: ['stuff', 0]
+  })
+  ).to.eql([0, 0])
+})
+
+// describe('test ds-plugin-operators array*', () => {
+//   /* grab and use JSON file containing all test case arguments
+//      This JSON is also used by webpack dev to display
+//      a list of tests with RUN buttons
+//      JSON schema and JSON data served by Webpack from data directory */
+//   const arrayTests = require('./fixtures/arrayTests.json')
+//   for (let i = 0; i < arrayTests.length; i++) {
+//     const arrayTest = JSON.stringify(arrayTests[i])
+//     if (arrayTest.match(/\$/)) { // JSON comment added disables tests
+//       continue
+//     }
+//     it(`arrayTest number: ${i} `, () => {
+//       expect(methods.arrayTests[i].operator({
+//         arrayTests[i].
+//       }
+
+//       ))
+//       Cypress.$('#data-arrayop').html('')
+//       cy.get('#operand-0').clear().type(`${arrayTest}`, { parseSpecialCharSequences: false })
+//       cy.get('#operator').clear().type(`${arrayTests[i].operator}`)
+//       cy.get('button').click()
+//       cy.get('#data-arrayop').should('has.text', `${JSON.stringify(arrayTests[i])} ${arrayTests[i].operator}  -> ${arrayTests[i].expectedResult}`)
+//     })
+//   }
+// })
