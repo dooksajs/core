@@ -4,7 +4,12 @@ import DsPlugin from '@dooksa/ds-plugin'
 import dsOperators from '../../src'
 const plugin = new DsPlugin(dsOperators)
 const methods = plugin.methods
-
+beforeEach(() => {
+  cy.on('uncaught:exception', (e, runnable) => {
+    console.log('error: ', e)
+    console.log('runnable: ', runnable)
+  })
+})
 describe('Setup', function () {
   it('Initialise', function () {
     expect(plugin.init()).to.be.undefined
@@ -372,42 +377,406 @@ describe('Eval logical NOT NOT', function () {
   })
 })
 
-describe('test for arrayFindByKeyValue', function () {
-  expect(methods.arrayFindByKeyValue({
-    list:
-    [
-      {
-        a: 'stuff'
-      }
-    ],
-    key: 'a',
-    valueIndex: ['stuff', 0]
+describe('tests for arrayFindByKeyValue', function () {
+  it('can find a string in an object with a single element',
+    function () {
+      expect(methods.arrayFindByKeyValue({
+        list:
+      [
+        {
+          a: 'stuff'
+        }
+      ],
+        key: 'a',
+        valueIndex: ['stuff', 0]
+      })
+      ).to.eql([0, 0])
+    })
+
+  it('can find a string in an object with embed similar elements',
+    function () {
+      expect(methods.arrayFindByKeyValue({
+        list:
+      [
+        {
+          a: 'stuff'
+        },
+        {
+          x: {
+            a: 'stuff'
+          }
+        }
+      ],
+        key: 'a',
+        valueIndex: ['stuff', 0]
+      })
+      ).to.eql([0, 0])
+    })
+  it('can find the first element of an array, with the second element matching having and embedded matching object', function () {
+    expect(methods.arrayFindByKeyValue({
+      list:
+        [
+          {
+            a: 'stuff'
+          },
+          {
+            x: {
+              a: 'stuff'
+            }
+          }
+        ],
+      key: 'a',
+      valueIndex: ['stuff', 0]
+    })
+    ).to.eql([0, 0])
   })
-  ).to.eql([0, 0])
+  it('fails to find a non-exisitent object', function () {
+    expect(methods.arrayFindByKeyValue({
+      list:
+      [
+        {
+          a: 'stuff'
+        }
+      ],
+      key: 'x',
+      valueIndex: ['stuff', 0]
+    })
+    ).to.be.undefined
+  })
+  it('finds the second object in the array', function () {
+    expect(methods.arrayFindByKeyValue({
+      list:
+      [
+        {
+          a: 'otherstuff'
+        },
+        {
+          a: 'stuff'
+        }
+      ],
+      key: 'a',
+      valueIndex: ['stuff', 0]
+    })
+    ).to.eql([1, 1])
+  })
+  it('finds the second object in the array, starting the search from the second object', function () {
+    expect(methods.arrayFindByKeyValue({
+      list:
+      [
+        {
+          a: 'otherstuff'
+        },
+        {
+          a: 'stuff'
+        }
+      ],
+      key: 'a',
+      valueIndex: ['stuff', 1]
+    })
+    ).to.eql([1, 1])
+  })
+
+  it('finds second object in the first object', function () {
+    expect(methods.arrayFindByKeyValue({
+      list:
+      [
+        {
+          a: 'stuff',
+          x: 'otherstuff'
+        }
+      ],
+      key: 'x',
+      valueIndex: ['otherstuff', 0]
+    })
+    ).to.eql([0, 0])
+  })
+
+  it('fails to find second object in first object when only the key matches', function () {
+    expect(methods.arrayFindByKeyValue({
+      list:
+      [
+        {
+          a: 'stuff',
+          x: 'otherstuff'
+        }
+      ],
+      key: 'x',
+      valueIndex: ['fluffybunnies', 0]
+    })
+    ).to.be.undefined
+  })
+
+  it('finds second object in first object snd sdecond object when it also exists in second object of the second object', function () {
+    expect(methods.arrayFindByKeyValue({
+      list:
+      [
+        {
+          a: 'stuff',
+          x: 'otherstuff'
+        },
+        {
+          a: 'stuff',
+          x: 'otherstuff'
+        },
+        {
+          a: 'stuff'
+        }
+      ],
+      key: 'x',
+      valueIndex: ['otherstuff', 0]
+    })
+    ).to.eql([0, 1])
+  })
+
+  it('starting the search from the first object, finds the first object of the second and third objects ', function () {
+    expect(methods.arrayFindByKeyValue({
+      list:
+      [
+        {
+          a: 'stuff',
+          x: 'otherstuff'
+        },
+        {
+          a: 'stuff',
+          x: 'otherstuff'
+        },
+        {
+          a: 'stuff'
+        }
+      ],
+      key: 'a',
+      valueIndex: ['stuff', 1]
+    })
+    ).to.eql([0, 2])
+  })
+
+  it('WHY did it not find ONLY the first object of the second object?', function () {
+    expect(methods.arrayFindByKeyValue({
+      list:
+      [
+        {
+          a: 'stuff',
+          x: 'otherstuff'
+        },
+        {
+          a: 'stuff',
+          x: 'otherstuff'
+        },
+        {
+          x: 'otherstuff'
+        },
+        {
+          a: 'stuff'
+        }
+      ],
+      key: 'a',
+      valueIndex: ['stuff', 1]
+    })
+    ).to.eql([1, 1])
+  })
+
+  it('starting at the third object, find the first object of the fourth object', function () {
+    expect(methods.arrayFindByKeyValue({
+      list:
+      [
+        {
+          a: 'stuff',
+          x: 'otherstuff'
+        },
+        {
+          a: 'stuff',
+          x: 'otherstuff'
+        },
+        {
+          x: 'otherstuff'
+        },
+        {
+          a: 'stuff'
+        }
+      ],
+      key: 'a',
+      valueIndex: ['stuff', 2]
+    })
+    ).to.eql([3, 3])
+  })
+
+  it('fails to find a non-existent KV pair', function () {
+    expect(methods.arrayFindByKeyValue({
+      list:
+      [
+        {
+          a: 'stuff',
+          x: 'otherstuff'
+        },
+        {
+          a: 'stuff',
+          x: 'otherstuff'
+        }
+      ],
+      key: 'a',
+      valueIndex: ['otherstuff', 0]
+    })
+    ).to.eq(undefined)
+  })
+
+  it('find an instance of KV in each object in the array', function () {
+    expect(methods.arrayFindByKeyValue({
+      list:
+      [
+        {
+          a: 'stuff',
+          x: 'otherstuff'
+        },
+        {
+          a: 'stuff',
+          x: 'otherstuff'
+        },
+        {
+          a: 'stuff',
+          x: 'otherstuff'
+        }
+      ],
+      key: 'a',
+      valueIndex: ['stuff', 0]
+    })
+    ).to.eql([0, 2])
+  })
+
+  it('WHY does this find all instances of the KV pair, when the search starts at the last object?', function () {
+    expect(methods.arrayFindByKeyValue({
+      list:
+      [
+        {
+          a: 'stuff',
+          x: 'otherstuff'
+        },
+        {
+          a: 'stuff',
+          x: 'otherstuff'
+        },
+        {
+          a: 'stuff',
+          x: 'otherstuff'
+        }
+      ],
+      key: 'a',
+      valueIndex: ['stuff', 2]
+    })
+    ).to.eql([2, 2])
+  })
+
+  it('WHY does this find all instances of the KV pair, when the search starts at the second object?', function () {
+    expect(methods.arrayFindByKeyValue({
+      list:
+      [
+        {
+          a: 'stuff',
+          x: 'otherstuff'
+        },
+        {
+          a: 'stuff',
+          x: 'otherstuff'
+        },
+        {
+          a: 'stuff',
+          x: 'otherstuff'
+        }
+      ],
+      key: 'a',
+      valueIndex: ['stuff', 1]
+    })
+    ).to.eql([0, 2])
+  })
+
+  it('does not find a second-level object that matches the KV as it is an unexpected structure', function () {
+    expect(methods.arrayFindByKeyValue({
+      list:
+      [
+        {
+          a: {
+            a: 'stuff',
+            x: 'otherstuff'
+          }
+        },
+        {
+          a: 'stuff',
+          x: 'otherstuff'
+        }
+      ],
+      key: 'x',
+      valueIndex: ['otherstuff', 0]
+    })
+    ).to.eql([1, 1])
+  })
+
+  it('does not find a KV match at second level of first and third objects. Does find a match with the second object', function () {
+    expect(methods.arrayFindByKeyValue({
+      list:
+      [
+        {
+          a: {
+            a: 'stuff',
+            x: 'otherstuff'
+          }
+        },
+        {
+          a: 'stuff',
+          x: 'otherstuff'
+        },
+        {
+          a: {
+            a: 'stuff',
+            x: 'otherstuff'
+          }
+        }
+      ],
+      key: 'x',
+      valueIndex: ['otherstuff', 0]
+    })
+    ).to.eql([1, 1])
+  })
+
+  it('should not find a non-existent KV pair, when key and values exist separately across the objects', function () {
+    expect(methods.arrayFindByKeyValue({
+      list:
+      [
+        {
+          a: {
+            a: 'stuff',
+            x: 'otherstuff'
+          }
+        },
+        {
+          a: 'stuff',
+          x: 'otherstuff'
+        },
+        {
+          a: {
+            a: 'stuff',
+            x: 'otherstuff'
+          }
+        }
+      ],
+      key: 'a',
+      valueIndex: ['otherstuff', 0]
+    })
+    ).to.be.undefined
+  })
+
+  it('search handles and empty second object', function () {
+    expect(methods.arrayFindByKeyValue({
+      list:
+      [
+        {
+          a: 'stuff',
+          x: 'otherstuff'
+        },
+        {
+        }
+      ],
+      key: 'x',
+      valueIndex: ['otherstuff', 0]
+    })
+    ).to.eql([0, 0])
+  })
 })
-
-// describe('test ds-plugin-operators array*', () => {
-//   /* grab and use JSON file containing all test case arguments
-//      This JSON is also used by webpack dev to display
-//      a list of tests with RUN buttons
-//      JSON schema and JSON data served by Webpack from data directory */
-//   const arrayTests = require('./fixtures/arrayTests.json')
-//   for (let i = 0; i < arrayTests.length; i++) {
-//     const arrayTest = JSON.stringify(arrayTests[i])
-//     if (arrayTest.match(/\$/)) { // JSON comment added disables tests
-//       continue
-//     }
-//     it(`arrayTest number: ${i} `, () => {
-//       expect(methods.arrayTests[i].operator({
-//         arrayTests[i].
-//       }
-
-//       ))
-//       Cypress.$('#data-arrayop').html('')
-//       cy.get('#operand-0').clear().type(`${arrayTest}`, { parseSpecialCharSequences: false })
-//       cy.get('#operator').clear().type(`${arrayTests[i].operator}`)
-//       cy.get('button').click()
-//       cy.get('#data-arrayop').should('has.text', `${JSON.stringify(arrayTests[i])} ${arrayTests[i].operator}  -> ${arrayTests[i].expectedResult}`)
-//     })
-//   }
-// })
