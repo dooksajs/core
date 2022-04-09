@@ -825,3 +825,19 @@ describe('tests for arrayRemove', function () {
       ).to.eql(['b'])
     })
 })
+
+describe('tests for arrayPrevKeyValue', function () {
+  it('fail to find a previous key',
+    function () {
+      expect(methods.arrayPrevKeyValue({
+        list:
+      [
+        { a: 'stuff' }
+      ],
+        key: [
+          4
+        ]
+      })
+      ).to.eql([undefined, 0])
+    })
+})
