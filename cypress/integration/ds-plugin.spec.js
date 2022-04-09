@@ -780,3 +780,48 @@ describe('tests for arrayFindByKeyValue', function () {
     ).to.eql([0, 0])
   })
 })
+
+describe('tests for arrayRemove', function () {
+  it('can not remove the contents of an index that does not exist',
+    function () {
+      expect(methods.arrayRemove({
+        list:
+      [
+        1
+      ],
+        items: [
+          4
+        ]
+      })
+      ).to.eql([1])
+    })
+  it('removes an object for which an array entry exists',
+    function () {
+      expect(methods.arrayRemove({
+        list:
+    [
+      1
+    ],
+        items: [
+          0
+        ]
+      })
+      ).to.eql([])
+    })
+  it('removes an the first and last object from an array lenghth > 2',
+    function () {
+      expect(methods.arrayRemove({
+        list:
+    [
+      'a',
+      'b',
+      'c'
+    ],
+        items: [
+          0,
+          2
+        ]
+      })
+      ).to.eql(['b'])
+    })
+})
