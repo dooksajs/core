@@ -63,3 +63,4 @@ cypress/downloads/
 # Coverage reporting
 .nyc_output
 coverage/
+.env
