@@ -412,24 +412,26 @@ describe('tests for arrayFindByKeyValue', function () {
       })
       ).to.eql([0, 0])
     })
+
   it('can find the first element of an array, with the second element matching having and embedded matching object', function () {
     expect(methods.arrayFindByKeyValue({
       list:
-        [
-          {
+      [
+        {
+          a: 'stuff'
+        },
+        {
+          x: {
             a: 'stuff'
-          },
-          {
-            x: {
-              a: 'stuff'
-            }
           }
-        ],
+        }
+      ],
       key: 'a',
       valueIndex: ['stuff', 0]
     })
     ).to.eql([0, 0])
   })
+
   it('fails to find a non-exisitent object', function () {
     expect(methods.arrayFindByKeyValue({
       list:
@@ -443,6 +445,7 @@ describe('tests for arrayFindByKeyValue', function () {
     })
     ).to.be.undefined
   })
+
   it('finds the second object in the array', function () {
     expect(methods.arrayFindByKeyValue({
       list:
@@ -459,6 +462,7 @@ describe('tests for arrayFindByKeyValue', function () {
     })
     ).to.eql([1, 1])
   })
+
   it('finds the second object in the array, starting the search from the second object', function () {
     expect(methods.arrayFindByKeyValue({
       list:
@@ -799,9 +803,9 @@ describe('tests for arrayRemove', function () {
     function () {
       expect(methods.arrayRemove({
         list:
-    [
-      1
-    ],
+      [
+        1
+      ],
         items: [
           0
         ]
@@ -812,11 +816,11 @@ describe('tests for arrayRemove', function () {
     function () {
       expect(methods.arrayRemove({
         list:
-    [
-      'a',
-      'b',
-      'c'
-    ],
+      [
+        'a',
+        'b',
+        'c'
+      ],
         items: [
           0,
           2
@@ -834,10 +838,91 @@ describe('tests for arrayPrevKeyValue', function () {
       [
         { a: 'stuff' }
       ],
-        key: [
-          4
-        ]
+        key: '4'
       })
       ).to.eql([undefined, 0])
+    })
+
+  it('what happens if there is only one match and it is after the list indexs object (default 0)',
+    function () {
+      expect(methods.arrayPrevKeyValue({
+        list:
+      [
+        { b: 'stuff' },
+        { a: 'stuff' }
+      ],
+        key: 'a'
+      })
+      ).to.eql([undefined, 0])
+    })
+
+  it('does not return the KV previous to the key entry',
+    function () {
+      expect(methods.arrayPrevKeyValue({
+        list:
+      [
+        { b: 'otherstuff' },
+        { a: 'stuff' }
+      ],
+        key: 'a',
+        index: 1
+      })
+      ).to.eql([undefined, 0])
+    })
+
+  it('returns the value for the key previous to the start of the starting index',
+    function () {
+      expect(methods.arrayPrevKeyValue({
+        list:
+      [
+        { b: 'otherstuff' },
+        { a: 'stuff' }
+      ],
+        key: 'b',
+        index: 1
+      })
+      ).to.eql(['otherstuff', 0])
+    })
+
+  it('returns the value for the key matching the start of the starting index',
+    function () {
+      expect(methods.arrayPrevKeyValue({
+        list:
+      [
+        { b: 'otherstuff' },
+        { a: 'stuff' }
+      ],
+        key: 'b',
+        index: 0
+      })
+      ).to.eql(['otherstuff', 0])
+    })
+  it('returns the value for the key matching the start of the starting index',
+    function () {
+      expect(methods.arrayPrevKeyValue({
+        list:
+      [
+        { b: 'stuff' },
+        { b: 'otherstuff' },
+        { a: 'stuff' }
+      ],
+        key: 'b',
+        index: 2
+      })
+      ).to.eql(['otherstuff', 1])
+    })
+  it('returns the value for the key matching the start of the starting index',
+    function () {
+      expect(methods.arrayPrevKeyValue({
+        list:
+      [
+        { b: 'stuff' },
+        { b: 'stuff' },
+        { a: 'stuff' }
+      ],
+        key: 'b',
+        index: 1
+      })
+      ).to.eql(['stuff', 1])
     })
 })
