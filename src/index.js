@@ -108,10 +108,10 @@ export default {
     },
     /**
      * Find the previous key value pair in a list
-     * @param {Object} nextKeyValue - The Object containing the params
-     * @param {*[]} nextKeyValue.list - An array of objects
-     * @param {string} nextKeyValue.key - The key used to compare
-     * @param {number} nextKeyValue.index - The index starting point
+     * @param {Object} prevKeyValue - The Object containing the params
+     * @param {*[]} prevKeyValue.list - An array of objects
+     * @param {string} prevKeyValue.key - The key used to compare
+     * @param {number} prevKeyValue.index - The index starting point
      * @returns {[*, number]} An array with the found value and index
      */
     arrayPrevKeyValue ({ list, key, index = 0 }) {
