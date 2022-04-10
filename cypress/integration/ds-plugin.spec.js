@@ -925,4 +925,32 @@ describe('tests for arrayPrevKeyValue', function () {
       })
       ).to.eql(['stuff', 1])
     })
+  it('returns the value and the index of the object for the key matching before the starting index 1',
+    function () {
+      expect(methods.arrayPrevKeyValue({
+        list:
+      [
+        { b: 'otherstuff' },
+        { c: 'stuff' },
+        { a: 'stuff' }
+      ],
+        key: 'b',
+        index: 1
+      })
+      ).to.eql(['otherstuff', 0])
+    })
+  it('returns the value and the index of the object for the key matching before the starting index 2',
+    function () {
+      expect(methods.arrayPrevKeyValue({
+        list:
+      [
+        { b: 'otherstuff' },
+        { c: 'stuff' },
+        { a: 'stuff' }
+      ],
+        key: 'b',
+        index: 2
+      })
+      ).to.eql(['otherstuff', 0])
+    })
 })
