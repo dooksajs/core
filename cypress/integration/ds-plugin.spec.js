@@ -954,3 +954,142 @@ describe('tests for arrayPrevKeyValue', function () {
       ).to.eql(['otherstuff', 0])
     })
 })
+
+describe('tests for arrayNextKeyValue', function () {
+  it('fail to find a next key',
+    function () {
+      expect(methods.arrayNextKeyValue({
+        list:
+      [
+        { a: 'stuff' }
+      ],
+        key: '4'
+      })
+      ).to.eql([undefined, 0])
+    })
+
+  it('one match and it is after the list indexs object (default 0)',
+    function () {
+      expect(methods.arrayNextKeyValue({
+        list:
+      [
+        { b: 'stuff' },
+        { a: 'stuff' }
+      ],
+        key: 'a'
+      })
+      ).to.eql(['stuff', 1])
+    })
+
+  it('returns the KV next to the key entry',
+    function () {
+      expect(methods.arrayNextKeyValue({
+        list:
+      [
+        { b: 'otherstuff' },
+        { a: 'stuff' }
+      ],
+        key: 'a',
+        index: 1
+      })
+      ).to.eql(['stuff', 1])
+    })
+
+  it('returns the value for the next key from the start of the starting index which does not exist',
+    function () {
+      expect(methods.arrayNextKeyValue({
+        list:
+      [
+        { b: 'otherstuff' },
+        { a: 'stuff' }
+      ],
+        key: 'b',
+        index: 1
+      })
+      ).to.eql([undefined, 1])
+    })
+
+  it('returns the value for the key matching the start of the starting index',
+    function () {
+      expect(methods.arrayNextKeyValue({
+        list:
+      [
+        { b: 'otherstuff' },
+        { a: 'stuff' }
+      ],
+        key: 'b',
+        index: 0
+      })
+      ).to.eql([undefined, 1])
+    })
+  it('returns the value for the key matching the start of the starting index',
+    function () {
+      expect(methods.arrayNextKeyValue({
+        list:
+      [
+        { b: 'stuff' },
+        { b: 'otherstuff' },
+        { a: 'stuff' }
+      ],
+        key: 'b',
+        index: 2
+      })
+      ).to.eql([undefined, 2])
+    })
+  it('returns the value for the key matching the start of the starting index',
+    function () {
+      expect(methods.arrayNextKeyValue({
+        list:
+      [
+        { b: 'stuff' },
+        { b: 'stuff' },
+        { a: 'stuff' }
+      ],
+        key: 'b',
+        index: 0
+      })
+      ).to.eql(['stuff', 0])
+    })
+  it('returns the value and the index of the object for the key matching before the starting index 1',
+    function () {
+      expect(methods.arrayNextKeyValue({
+        list:
+      [
+        { b: 'otherstuff' },
+        { c: 'stuff' },
+        { a: 'stuff' }
+      ],
+        key: 'b',
+        index: 1
+      })
+      ).to.eql([undefined, 1])
+    })
+  it('returns the value and the index of the object for the key matching before the starting index 2',
+    function () {
+      expect(methods.arrayNextKeyValue({
+        list:
+      [
+        { b: 'otherstuff' },
+        { c: 'stuff' },
+        { a: 'stuff' }
+      ],
+        key: 'b',
+        index: 2
+      })
+      ).to.eql([undefined, 0])
+    })
+  it('returns the value and the index of the object for the key matching before the starting index 2',
+    function () {
+      expect(methods.arrayNextKeyValue({
+        list:
+      [
+        { b: 'otherstuff' },
+        { b: 'stuff' },
+        { a: 'stuff' }
+      ],
+        key: 'b',
+        index: 0
+      })
+      ).to.eql(['stuff', 1])
+    })
+})
