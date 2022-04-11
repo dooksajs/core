@@ -1048,7 +1048,7 @@ describe('tests for arrayNextKeyValue', function () {
         key: 'b',
         index: 0
       })
-      ).to.eql(['stuff', 0])
+      ).to.eql([undefined, 2])
     })
   it('returns the value and the index of the object for the key matching before the starting index 1',
     function () {
@@ -1076,7 +1076,7 @@ describe('tests for arrayNextKeyValue', function () {
         key: 'b',
         index: 2
       })
-      ).to.eql([undefined, 0])
+      ).to.eql([undefined, 2])
     })
   it('returns the value and the index of the object for the key matching before the starting index 2',
     function () {
