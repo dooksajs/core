@@ -1115,4 +1115,104 @@ describe('tests for arrayMove', function () {
         ]
       )
     })
+  it('move 3 list entries to 1',
+    function () {
+      expect(methods.arrayMove({
+        list:
+      [
+        { a: 'otherstuff' },
+        { b: 'stuff' },
+        { c: 'stuffed' },
+        { d: 'stuff' },
+        { c: 'stuff' }
+      ],
+        items: [0, 2, 3],
+        index: 1
+      })
+      ).to.eql(
+        [
+          { b: 'stuff' },
+          { a: 'otherstuff' },
+          { c: 'stuffed' },
+          { d: 'stuff' },
+          { c: 'stuff' }
+        ]
+      )
+    })
+  it('move 3 list entries to 1, reversing list of selected entries',
+    function () {
+      expect(methods.arrayMove({
+        list:
+      [
+        { a: 'otherstuff' },
+        { b: 'stuff' },
+        { c: 'stuffed' },
+        { d: 'stuff' },
+        { c: 'stuff' }
+      ],
+        items: [3, 2, 0],
+        index: 1
+      })
+      ).to.eql(
+        [
+          { b: 'stuff' },
+          { d: 'stuff' },
+          { c: 'stuffed' },
+          { a: 'otherstuff' },
+          { c: 'stuff' }
+        ]
+      )
+    })
+  it('move 3 list entries to 1, unordered list of selected entries',
+    function () {
+      expect(methods.arrayMove({
+        list:
+      [
+        { a: 'otherstuff' },
+        { b: 'stuff' },
+        { c: 'stuffed' },
+        { d: 'stuff' },
+        { c: 'stuff' }
+      ],
+        items: [3, 0, 2],
+        index: 1
+      })
+      ).to.eql(
+        [
+          { b: 'stuff' },
+          { d: 'stuff' },
+          { a: 'otherstuff' },
+          { c: 'stuffed' },
+          { c: 'stuff' }
+        ]
+      )
+    })
+  it('fail to move first entry to beyond the length of the array',
+    function () {
+      expect(methods.arrayMove({
+        list:
+      [
+        { b: 'otherstuff' },
+        { b: 'stuff' },
+        { a: 'stuff' }
+      ],
+        items: [0],
+        index: 3
+      })
+      ).to.be.undefined
+    })
+  it('faill to move first entry to beyond the start of the array',
+    function () {
+      expect(methods.arrayMove({
+        list:
+      [
+        { b: 'otherstuff' },
+        { b: 'stuff' },
+        { a: 'stuff' }
+      ],
+        items: [0],
+        index: -1
+      })
+      ).to.be.undefined
+    })
 })
