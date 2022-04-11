@@ -1084,12 +1084,35 @@ describe('tests for arrayNextKeyValue', function () {
         list:
       [
         { b: 'otherstuff' },
-        { b: 'stuff' },
+        { c: 'stuff' },
         { a: 'stuff' }
       ],
         key: 'b',
-        index: 0
+        index: 2
       })
-      ).to.eql(['stuff', 1])
+      ).to.eql([undefined, 2])
+    })
+})
+
+describe('tests for arrayMove', function () {
+  it('move first entry to middle',
+    function () {
+      expect(methods.arrayMove({
+        list:
+      [
+        { b: 'otherstuff' },
+        { b: 'stuff' },
+        { a: 'stuff' }
+      ],
+        items: [0],
+        index: 1
+      })
+      ).to.eql(
+        [
+          { b: 'stuff' },
+          { b: 'otherstuff' },
+          { a: 'stuff' }
+        ]
+      )
     })
 })
