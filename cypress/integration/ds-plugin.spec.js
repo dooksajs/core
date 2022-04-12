@@ -1216,3 +1216,107 @@ describe('tests for arrayMove', function () {
       ).to.be.undefined
     })
 })
+
+describe('tests for arrayMerge', function () {
+  it('insert an item into the start of the list by default',
+    function () {
+      expect(methods.arrayMerge({
+        list:
+      [
+        { b: 'otherstuff' },
+        { b: 'stuff' },
+        { a: 'stuff' }
+      ],
+        items: [0]
+      })
+      ).to.eql(
+        [
+          0,
+          { b: 'otherstuff' },
+          { b: 'stuff' },
+          { a: 'stuff' }
+        ]
+      )
+    })
+  it('insert a sorted list of items into the start of the list by default',
+    function () {
+      expect(methods.arrayMerge({
+        list:
+      [
+        { b: 'otherstuff' },
+        { b: 'stuff' },
+        { a: 'stuff' }
+      ],
+        items: [0, 1, 'a']
+      })
+      ).to.eql(
+        [
+          'a',
+          1,
+          0,
+          { b: 'otherstuff' },
+          { b: 'stuff' },
+          { a: 'stuff' }
+        ]
+      )
+    })
+  it('insert a sorted list of items into the start of the list by default',
+    function () {
+      expect(methods.arrayMerge({
+        list:
+      [
+        { b: 'otherstuff' },
+        { b: 'stuff' },
+        { a: 'stuff' }
+      ],
+        items:
+        [
+          0,
+          1,
+          'a',
+          { a: 0 }
+        ]
+      })
+      ).to.eql(
+        [
+          { a: 0 },
+          'a',
+          1,
+          0,
+          { b: 'otherstuff' },
+          { b: 'stuff' },
+          { a: 'stuff' }
+        ]
+      )
+    })
+  it('insert a sorted list of items into the start of the list by default and flatten it (no effect)',
+    function () {
+      expect(methods.arrayMerge({
+        list:
+      [
+        { b: 'otherstuff' },
+        { b: 'stuff' },
+        { a: 'stuff' }
+      ],
+        items:
+        [
+          0,
+          1,
+          'a',
+          { a: 0 }
+        ],
+        flat: 0
+      })
+      ).to.eql(
+        [
+          { a: 0 },
+          'a',
+          1,
+          0,
+          { b: 'otherstuff' },
+          { b: 'stuff' },
+          { a: 'stuff' }
+        ]
+      )
+    })
+})
