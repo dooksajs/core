@@ -1319,4 +1319,72 @@ describe('tests for arrayMerge', function () {
         ]
       )
     })
+  it('insert a sorted list of items, including a subarray, into the start of the list by default',
+    function () {
+      expect(methods.arrayMerge({
+        list:
+      [
+        { b: 'otherstuff' },
+        { b: 'stuff' },
+        { a: 'stuff' }
+      ],
+        items:
+        [
+          {
+            x: 0,
+            y: 1,
+            z: 'a'
+          },
+          [{ a: 0 }]
+        ]
+      })
+      ).to.eql(
+        [
+
+          [{ a: 0 }],
+          {
+            x: 0,
+            y: 1,
+            z: 'a'
+          },
+          { b: 'otherstuff' },
+          { b: 'stuff' },
+          { a: 'stuff' }
+        ]
+      )
+    })
+  it('insert a sorted list of items, including a subarray, into the start of the list by default, flattening 1 level',
+    function () {
+      expect(methods.arrayMerge({
+        list:
+      [
+        { b: 'otherstuff' },
+        { b: 'stuff' },
+        { a: 'stuff' }
+      ],
+        items:
+        [
+          {
+            x: 0,
+            y: 1,
+            z: 'a'
+          },
+          [{ a: 0 }]
+        ],
+        flat: 1
+      })
+      ).to.eql(
+        [
+          { a: 0 },
+          {
+            x: 0,
+            y: 1,
+            z: 'a'
+          },
+          { b: 'otherstuff' },
+          { b: 'stuff' },
+          { a: 'stuff' }
+        ]
+      )
+    })
 })
