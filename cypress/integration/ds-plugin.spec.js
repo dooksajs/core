@@ -620,7 +620,7 @@ describe('tests for arrayFindByKeyValue', function () {
       key: 'a',
       valueIndex: ['otherstuff', 0]
     })
-    ).to.eq(undefined)
+    ).to.be.undefined
   })
 
   it('find an instance of KV in each object in the array', function () {
@@ -812,7 +812,7 @@ describe('tests for arrayRemove', function () {
       })
       ).to.eql([])
     })
-  it('removes an the first and last object from an array lenghth > 2',
+  it('removes the first and last object from an array lenghth > 2',
     function () {
       expect(methods.arrayRemove({
         list:
@@ -1009,7 +1009,7 @@ describe('tests for arrayNextKeyValue', function () {
       ).to.eql([undefined, 1])
     })
 
-  it('returns the value for the key matching the start of the starting index',
+  it('returns the value after the key matching the start of the starting index',
     function () {
       expect(methods.arrayNextKeyValue({
         list:
@@ -1022,7 +1022,7 @@ describe('tests for arrayNextKeyValue', function () {
       })
       ).to.eql([undefined, 1])
     })
-  it('returns the value for the key matching the start of the starting index',
+  it('does not return the value for the key matching the start of the starting index',
     function () {
       expect(methods.arrayNextKeyValue({
         list:
@@ -1036,7 +1036,7 @@ describe('tests for arrayNextKeyValue', function () {
       })
       ).to.eql([undefined, 2])
     })
-  it('returns the value for the key matching the start of the starting index',
+  it('does not return the unique value after the matching key at the start of the starting index',
     function () {
       expect(methods.arrayNextKeyValue({
         list:
@@ -1050,7 +1050,7 @@ describe('tests for arrayNextKeyValue', function () {
       })
       ).to.eql([undefined, 2])
     })
-  it('returns the value and the index of the object for the key matching before the starting index 1',
+  it(' does not return the value and index of the object where the matching key is before the starting index 1',
     function () {
       expect(methods.arrayNextKeyValue({
         list:
@@ -1064,21 +1064,7 @@ describe('tests for arrayNextKeyValue', function () {
       })
       ).to.eql([undefined, 1])
     })
-  it('returns the value and the index of the object for the key matching before the starting index 2',
-    function () {
-      expect(methods.arrayNextKeyValue({
-        list:
-      [
-        { b: 'otherstuff' },
-        { c: 'stuff' },
-        { a: 'stuff' }
-      ],
-        key: 'b',
-        index: 2
-      })
-      ).to.eql([undefined, 2])
-    })
-  it('returns the value and the index of the object for the key matching before the starting index 2',
+  it('does not return the value and the index of the object for the key matching before the starting index 2',
     function () {
       expect(methods.arrayNextKeyValue({
         list:
