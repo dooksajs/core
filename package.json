@@ -23,7 +23,7 @@
   },
   "homepage": "https://bitbucket.org/dooksa/resource-loader#readme",
   "devDependencies": {
-    "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts#master",
+    "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts",
     "standard": "*"
   }
 }
