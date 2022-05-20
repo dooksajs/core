@@ -11,7 +11,7 @@ $ npm install --save bitbucket:dooksa/resource-loader
 
 ### How to add script
 
-Include the javascript file, the script file is located in the the [dist](https://bitbucket.org/dooksa/repo-utils/src/master/src/dist) directory
+Include the javascript file, the script file is located in the the [dist](https://bitbucket.org/dooksa/resource-loader/src/master/dist/) directory
 
 ```html
 
