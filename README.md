@@ -3,11 +3,6 @@
 
 Provides a convenient wrapper to add scripts or link to the DOM
 
-### Installation using npm
-
-```
-$ npm install --save bitbucket:dooksa/resource-loader
-```
 
 ### How to add script
 
@@ -15,7 +10,7 @@ Include the javascript file, the script file is located in the the [dist](https:
 
 ```html
 
-<script src="/path/to/file/ds-resource.js>
+<script src="path/to/file/ds-resource.js>
 
 ```
 
@@ -46,6 +41,13 @@ window.dsResource.link({
   onError: () => console.error('Bootstrap failed')
 })
 
+```
+
+### Installation using npm
+
+```
+
+$ npm install --save bitbucket:dooksa/resource-loader
 
 ```
 
@@ -57,6 +59,7 @@ To add a script
 
 import resource from '@dooksa/resource-loader'
 
+// add a script
 resource.script({
   id: 'jquery-slim',
   src: 'https://code.jquery.com/jquery-3.5.1.slim.min.js',
@@ -69,14 +72,7 @@ resource.script({
   onError: () => console.error('jQuery script failed')
 })
 
-```
-
-To add some CSS
-
-```js
-
-import resource from '@dooksa/resource-loader'
-
+// add a css file (link resource)
 resource.link({
   id: 'bootstrap',
   href: 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css',
@@ -86,10 +82,11 @@ resource.link({
   onError: () => console.error('Bootstrap failed')
 })
 
-
 ```
 
 ### Build
+
+The script will be placed in the dist directory
 
 ```js
 
