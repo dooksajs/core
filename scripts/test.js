@@ -95,11 +95,13 @@ cypress.run(config)
         if (result.failures) {
           console.error('Could not execute tests')
           console.error(result.message)
+          console.log(result.failures)
           process.exit(result.failures)
         }
 
         // print test results and exit
         // with the number of failed tests as exit code
+        console.log(result.totalFailed)
         process.exit(result.totalFailed)
       })
       .catch(() => process.exit(1))
