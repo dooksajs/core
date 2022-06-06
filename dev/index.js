@@ -1,27 +1,43 @@
 import DsPlugin from '@dooksa/ds-plugin'
+import dsManager from '../../ds-plugin-manager'
+import dsComponent from '../../ds-plugin-component'
+import dsLayout from '../src'
 
-const myPlugin = {
-  name: 'myPlugin',
-  version: 1,
-  dependencies: [
-    // list of plugin dependencies
-  ],
-  data: {
-    //  plugin data
-  },
-  setup () {
-    // setup is the first function executed
-  },
-  methods: {
-    publicMethod (context, params) {
-      // public method
+const plugins = [
+  {
+    item: {
+      name: dsComponent.name,
+      version: dsComponent.version
     },
-    _privateMethod (params) {
-      // private method name starts with '_'
+    plugin: dsComponent,
+    options: {
+      setupOnRequest: false
+    }
+  },
+  {
+    item: {
+      name: dsLayout.name,
+      version: dsLayout.version,
+      setupOptions: {
+        html: document.getElementById('app')
+      }
+    },
+    plugin: dsLayout,
+    options: {
+      setupOnRequest: false
     }
   }
-}
+]
+// const plugin = new DsPlugin(dsLayout, [])
+// console.log(plugin)
+// plugin.init({
+//   html: document.getElementById('app')
+// })
 
-const plugin = new DsPlugin(myPlugin, [])
-
-plugin.init()
+const pluginManager = new DsPlugin(dsManager)
+pluginManager.init({
+  build: 1,
+  plugins,
+  DsPlugin,
+  isDev: true
+})

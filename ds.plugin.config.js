@@ -1,6 +1,6 @@
 module.exports = {
-  name: 'dsStarterKit',
-  filename: 'ds-starter-kit',
+  name: 'dsLayout',
+  filename: 'ds-layout',
   globalObject: 'window.dsApp.plugins',
   version: 1
 }

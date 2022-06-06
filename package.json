@@ -1,7 +1,7 @@
 {
-  "name": "@dooksa/ds-plugin-starter-kit",
+  "name": "@dooksa/ds-plugin-layout",
   "version": "1.0.0",
-  "description": "This is a starter kit to build plugins for Dooksa",
+  "description": "Advanced layout builder for Dooksa",
   "main": "src/index.js",
   "scripts": {
     "dev": "ds-scripts dev",
@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@bitbucket.org:dooksa/ds-plugin-starter-kit.git"
+    "url": "git+ssh://git@bitbucket.org:dooksa/ds-plugin-layout.git"
   },
   "author": {
     "name": "Thomas David",
@@ -25,5 +25,8 @@
     "@dooksa/ds-plugin": "bitbucket:dooksa/ds-plugin#master",
     "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts#master",
     "standard": "*"
+  },
+  "dependencies": {
+    "object-hash": "^3.0.0"
   }
 }
