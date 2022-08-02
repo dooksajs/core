@@ -1,108 +1,136 @@
 window.dsAppCache = {
+  id: 'page_foo',
+  metadata: {
+    owner: 'userId',
+    created: '1644932021700',
+    updated: '1644932021700',
+    pageTypeId: 'pageTemplate_2',
+    descriptionContentId: '',
+    imageContentId: '',
+    titleContentId: ''
+  },
   app: {
-    locale: 'en',
     id: 'appId_1',
     theme: 'bootstrap'
   },
-  pages: {
-    pageDocId_2: {
-      cache: true,
-      owner: 'userId',
-      created: '1644932021700',
-      updated: '1644932021700',
-      pageTypeId: 'pageTypeDocId_2',
-      descriptionContentId: '',
-      imageContentId: '',
-      titleContentId: ''
-    }
-  },
-  pageTypes: {
-    pageTypeDocId_2: {
-      cache: true,
-      created: '1644932021700',
-      updated: '1644932021700',
-      templateId: 'templateDocId_2',
-      title: 'Page'
-    }
+  pageType: {
+    id: 'pageTemplate_2',
+    created: '1644932021700',
+    updated: '1644932021700',
+    templateId: 'template_2',
+    title: 'Page'
   },
   templates: {
-    templateDocId_2: {
-      cache: true,
-      widgets: [
-        'baseWidgetInstanceId_2'
-      ],
-      classList: [
-        'bg-dark'
-      ]
+    pageTemplate_2: [],
+    template_2: {
+      name: 'Main',
+      main: '_ZPhyHOc6A3HwPrLMH3b1YN',
+      widgets: ['_ZPhyHOc6A3HwPrLMH3b1YN']
     }
   },
   routes: {
-    '/foo': 'pageDocId_2'
+    currentPath: '/foo',
+    paths: ['/foo']
   },
-  content: {
-    contentId_3: {
-      type: 'text',
-      value: 'Bar'
+  widgets: {
+    items: {
+      _ZPhyHOc6A3HwPrLMH3b1YN: [
+        {
+          groupId: '_fxsvSTurDPdbRakFLxCK4p',
+          instanceId: '_FxsvSTurDPdbRakFLxCK4p',
+          layout: {
+            default: { id: '_BIAklh1FkBmDPibBeDyvlg' },
+            edit: { id: '_H2e4SzLZHVwebhHxkUbSlw', templateId: '_lDZKiYj73WWRlL3RVyeMO8', modifierId: '_wcx_d77j_LAySA_zzdfPew' }
+          }
+        },
+        {
+          groupId: '_fxsvSTurDPdbRakFLxCK4P',
+          instanceId: '_FosvSTurDPdbRakFLxCK4p',
+          layout: {
+            default: { id: '_BIAklh1FkBmDPibBeDyvla' }
+          }
+        }
+      ]
     },
-    contentId_4: {
-      type: 'link',
-      value: {
-        href: '/bar'
+    loaded: {
+      _ZPhyHOc6A3HwPrLMH3b1YN_FxsvSTurDPdbRakFLxCK4p_default: true,
+      _ZPhyHOc6A3HwPrLMH3b1YN_FosvSTurDPdbRakFLxCK4p_default: true
+    },
+    content: {
+      _ZPhyHOc6A3HwPrLMH3b1YN_FxsvSTurDPdbRakFLxCK4p_default: [
+        '_kdgOHycw4QG7i5ftSdoFRg'
+      ],
+      _ZPhyHOc6A3HwPrLMH3b1YN_FosvSTurDPdbRakFLxCK4p_default: [
+        '_fdgOHycw4QG7i5ftSdoFRa',
+        '_fdgOHycw4QG7i5ftSdoFRt'
+      ]
+    },
+    layout: {
+      _ZPhyHOc6A3HwPrLMH3b1YN_FxsvSTurDPdbRakFLxCK4p_default: '_wcx_d77j_LAySA_zzdfPew'
+    },
+    templates: {
+      _wcx_d77j_LAySA_zzdfPew: {
+        _rvMd83GSZuYVdwgUxRYWvK_lkZxHJt5396RqwdoTsDZIA: '_wcx_d77j_LAySA_zzdfPew'
       }
     }
   },
-  widgets: {
-    baseItems: {
-      baseWidgetInstanceId_2: [
-        {
-          groupId: 'widgetGroupId_2',
-          layoutId: 'layoutDocId_2',
-          instanceId: 'widgetInstanceId_3'
-        }
-      ]
+  elements: {
+    value: {
+      _fdgOHycw4QG7i5ftSdoFRt: {
+        default: 'Bar'
+      },
+      _fdgOHycw4QG7i5ftSdoFRa: {
+        default: '/bar'
+      },
+      _kdgOHycw4QG7i5ftSdoFRg: {
+        default: 'http://localhost:8080/assets/images/photo-default.jpeg',
+        fr: 'http://localhost:8080/assets/images/photo-fr.jpeg',
+        es: 'http://localhost:8080/assets/images/photo-es.jpeg'
+      }
     },
-    content: {
-      widgetInstanceId_3: [
-        {
-          id: 'contentId_3',
-          type: 'text'
-        },
-        {
-          id: 'contentId_4',
-          type: 'link'
-        }
-      ]
-    },
-    children: {
-      layoutDocId_2: [0]
-    },
-    layout: {
-      layoutDocId_2: [
+    type: {
+      _kdgOHycw4QG7i5ftSdoFRg: ['image', true],
+      _fdgOHycw4QG7i5ftSdoFRa: ['link', true],
+      _fdgOHycw4QG7i5ftSdoFRt: ['text', true]
+    }
+  },
+  components: {
+    _wcx_d77j_LAySA_zzdfPep: ['dsDiv', {
+      className: 'container'
+    }],
+    _wcx_d77j_LAySA_zzdfPew: ['dsImg', {
+      className: 'img-fluid rounded'
+    }],
+    _wcx_d77j_LAySA_zzdfPeW: ['dsImg', {
+      className: 'img-fluid rounded shadow'
+    }],
+    _wcx_d77j_LAySA_zzdfPea: ['dsA'],
+    _wcx_d77j_LAySA_zzdfPet: ['dsText']
+  },
+  layouts: {
+    items: {
+      _BIAklh1FkBmDPibBeDyvla: [
         {
           children: [1],
-          component: {
-            id: 'dsDiv',
-            type: 'element',
-            classList: ['container', 'my-5']
-          }
+          componentId: '_wcx_d77j_LAySA_zzdfPep'
         },
         {
-          contentIndex: 1,
           children: [2],
-          component: {
-            id: 'dsAnchor',
-            type: 'element',
-            classList: ['btn', 'btn-primary']
-          }
+          parentIndex: 0,
+          componentId: '_wcx_d77j_LAySA_zzdfPea',
+          contentIndex: 0
         },
         {
-          contentIndex: 0,
-          component: {
-            id: 'dsText',
-            type: 'node'
-          }
+          parentIndex: 1,
+          componentId: '_wcx_d77j_LAySA_zzdfPet',
+          contentIndex: 1
         }
       ]
+    },
+    modifiers: {
+      _wcx_d77j_LAySA_zzdfPew: {
+        1: '_wcx_d77j_LAySA_zzdfPeW'
+      }
     }
   }
 }

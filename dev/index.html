@@ -5,19 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="preconnect" href="https://cdn.dooksa.com/">
   <link rel="dns-prefetch" href="https://cdn.dooksa.com/" >
-  <style>
-    body {
-      margin: 0;
-    }
-
-    .loading {
-      display: none;
-    }
-  </style>
+  <link rel="preload" href="./assets/css/ds-icons.min.css" as="style" onload="this.rel='stylesheet'">
   <title><%= htmlWebpackPlugin.options.title %></title>
 </head>
 <body>
-  <div id="app" class="loading"></div>
+  <div id="app"></div>
   <script>
     const slugify = {
       cleanStrings: [
@@ -82,7 +74,7 @@
 
     const t0 = performance.now();
     const scriptPromises = []
-    const appElement = document.getElementById('app')
+    // const assetsURL = 'http://192.168.1.64:8080'
     const assetsURL = 'http://localhost:8080'
     // const assetsURL = 'https://cdn.dooksa.com/file/dooksa'
     const pathname = window.location.pathname
@@ -94,11 +86,8 @@
     cssElement.rel = 'stylesheet'
     cssElement.href = assetsURL +'/assets/'+ window.location.hostname +'/css/theme.min.css'
     document.head.insertBefore(cssElement, document.head.childNodes[document.head.childNodes.length - 1].nextSibling)
-    cssElement.addEventListener('load', (e) => {
-      appElement.classList.remove('loading')
-    })
-
-    const mainScript = createScript('ds-app', './main.js')
+   
+    const mainScript = createScript('ds-app', '/main.js')
 
     scriptPromises.push(new Promise(resolve => {
       appCacheScript.addEventListener('load', () => {
@@ -116,13 +105,14 @@
       })
     }))
 
+    window.dsDevTool = null
+
     Promise.all(scriptPromises)
       .then(() => {
-        const t1 = performance.now()
-        window.dsApp.init({
+        window.dsDevTool = window.dsApp.init({
           appCache: window.dsAppCache,
           assetsURL,
-          appElement: document.getElementById('app')
+          isDev: true
         })
       })
   </script>

@@ -1,318 +1,136 @@
 window.dsAppCache = {
+  id: 'page_bar',
+  metadata: {
+    owner: 'userId',
+    created: '1644932021700',
+    updated: '1644932021700',
+    pageTypeId: 'pageTemplate_1',
+    descriptionContentId: '',
+    imageContentId: '',
+    titleContentId: ''
+  },
   app: {
-    locale: 'en',
     id: 'appId_1',
     theme: 'bootstrap'
   },
-  pages: {
-    pageDocId_3: {
-      cache: true,
-      owner: 'userId',
-      created: '1644932021700',
-      updated: '1644932021700',
-      pageTypeId: 'pageTypeDocId_2',
-      descriptionContentId: '',
-      imageContentId: '',
-      titleContentId: ''
-    }
-  },
-  pageTypes: {
-    pageTypeDocId_2: {
-      cache: true,
-      created: '1644932021700',
-      updated: '1644932021700',
-      templateId: 'templateDocId_2',
-      title: 'Page'
-    }
+  pageType: {
+    id: 'pageTemplate_1',
+    created: '1644932021700',
+    updated: '1644932021700',
+    templateId: 'template_1',
+    title: 'Page'
   },
   templates: {
-    templateDocId_2: {
-      cache: true,
-      widgets: [
-        'baseWidgetInstanceId_2'
-      ],
-      classList: [
-        'bg-dark'
-      ]
+    pageTemplate_1: [],
+    template_1: {
+      name: 'Main',
+      main: '_ZPhyHOc6A3HwPrLMH3b1Yn',
+      widgets: ['_ZPhyHOc6A3HwPrLMH3b1Yn']
     }
   },
   routes: {
-    '/bar': 'pageDocId_3'
+    currentPath: '/bar',
+    paths: ['/bar']
   },
-  content: {
-    contentId_7: {
-      type: 'text',
-      value: 'Foo'
+  widgets: {
+    items: {
+      _ZPhyHOc6A3HwPrLMH3b1Yn: [
+        {
+          groupId: '_exsvSTurDPdbRakFLxCK4p',
+          instanceId: '_MxsvSTurDPdbRakFLxCK4p',
+          layout: {
+            default: { id: '_BIAklh1FkBmDPibBeDyvlg' },
+            edit: { id: '_H2e4SzLZHVwebhHxkUbSlw', templateId: '_lDZKiYj73WWRlL3RVyeMO8', modifierId: '_wcx_d77j_LAySA_zzdfPew' }
+          }
+        },
+        {
+          groupId: '_exsvSTurDPdbRakFLxCK4P',
+          instanceId: '_MxsvSTurDPdbRakFLxCK4P',
+          layout: {
+            default: { id: '_BIAklh1FkBmDPibBeDyvla' }
+          }
+        }
+      ]
     },
-    contentId_8: {
-      type: 'link',
-      value: {
-        href: '/foo'
-      }
+    loaded: {
+      _ZPhyHOc6A3HwPrLMH3b1Yn_MxsvSTurDPdbRakFLxCK4p_default: true,
+      _ZPhyHOc6A3HwPrLMH3b1Yn_MxsvSTurDPdbRakFLxCK4P_default: true
     },
-    contentId_5: {
-      type: 'text',
-      value: 'Dooksa'
+    content: {
+      _ZPhyHOc6A3HwPrLMH3b1Yn_MxsvSTurDPdbRakFLxCK4p_default: [
+        '_kdgOHycw4QG7i5ftSdoFRg'
+      ],
+      _ZPhyHOc6A3HwPrLMH3b1Yn_MxsvSTurDPdbRakFLxCK4P_default: [
+        '_kdgOHycw4QG7i5ftSdoFRa',
+        '_kdgOHycw4QG7i5ftSdoFRt'
+      ]
     },
-    contentId_6: {
-      type: 'link',
-      value: {
-        href: '/'
-      }
+    layout: {
+      _ZPhyHOc6A3HwPrLMH3b1Yn_MxsvSTurDPdbRakFLxCK4p_default: '_wcx_d77j_LAySA_zzdfPew'
     },
-    contentId_9: {
-      type: 'image',
-      value: {
-        src: 'https://cdn.dooksa.com/file/dooksa/app/images/appId_1/terra-4hJzQF7G0HE-unsplash.jpg',
-        alt: 'hello',
-        height: '300',
-        width: '300'
+    templates: {
+      _wcx_d77j_LAySA_zzdfPew: {
+        _rvMd83GSZuYVdwgUxRYWvK_lkZxHJt5396RqwdoTsDZIA: '_wcx_d77j_LAySA_zzdfPew'
       }
     }
   },
-  widgets: {
-    baseItems: {
-      baseWidgetInstanceId_2: [
-        {
-          groupId: 'widgetGroupId_2',
-          layoutId: 'layoutDocId_2',
-          instanceId: 'widgetInstanceId_3'
-        }
-      ]
+  elements: {
+    value: {
+      _kdgOHycw4QG7i5ftSdoFRt: {
+        default: 'Foo'
+      },
+      _kdgOHycw4QG7i5ftSdoFRa: {
+        default: '/foo'
+      },
+      _kdgOHycw4QG7i5ftSdoFRg: {
+        default: 'http://localhost:8080/assets/images/photo-default.jpeg',
+        fr: 'http://localhost:8080/assets/images/photo-fr.jpeg',
+        es: 'http://localhost:8080/assets/images/photo-es.jpeg'
+      }
     },
+    type: {
+      _kdgOHycw4QG7i5ftSdoFRg: ['image', true],
+      _kdgOHycw4QG7i5ftSdoFRa: ['link', true],
+      _kdgOHycw4QG7i5ftSdoFRt: ['text', true]
+    }
+  },
+  components: {
+    _wcx_d77j_LAySA_zzdfPep: ['dsDiv', {
+      className: 'container'
+    }],
+    _wcx_d77j_LAySA_zzdfPew: ['dsImg', {
+      className: 'img-fluid rounded'
+    }],
+    _wcx_d77j_LAySA_zzdfPeW: ['dsImg', {
+      className: 'img-fluid rounded shadow'
+    }],
+    _wcx_d77j_LAySA_zzdfPea: ['dsA'],
+    _wcx_d77j_LAySA_zzdfPet: ['dsText']
+  },
+  layouts: {
     items: {
-      pageDocId_3__baseWidgetInstanceId_2: [
-        {
-          groupId: 'widgetGroupId_3',
-          layoutId: 'layoutDocId_4',
-          instanceId: 'widgetInstanceId_8'
-        },
-        {
-          groupId: 'widgetGroupId_2',
-          layoutId: 'layoutDocId_2',
-          instanceId: 'widgetInstanceId_4'
-        },
-        {
-          groupId: 'widgetGroupId_4',
-          layoutId: 'layoutDocId_3',
-          instanceId: 'widgetInstanceId_5'
-        },
-        {
-          groupId: 'widgetGroupId_5',
-          layoutId: 'layoutDocId_5',
-          instanceId: 'widgetInstanceId_6'
-        }
-      ]
-    },
-    content: {
-      widgetInstanceId_4: [
-        {
-          id: 'contentId_5',
-          type: 'text'
-        },
-        {
-          id: 'contentId_6',
-          type: 'link'
-        }
-      ],
-      widgetInstanceId_5: [
-        {
-          id: 'contentId_7',
-          type: 'text'
-        },
-        {
-          id: 'contentId_8',
-          type: 'link'
-        }
-      ],
-      widgetInstanceId_8: [
-        {
-          id: 'contentId_5',
-          type: 'text'
-        },
-        {
-          id: 'contentId_6',
-          type: 'link'
-        }
-      ],
-      widgetInstanceId_6: [
-        {
-          id: 'contentId_9',
-          type: 'image'
-        },
-        {
-          id: 'contentId_5',
-          type: 'text'
-        }
-      ]
-    },
-    children: {
-      layoutDocId_2: [0],
-      layoutDocId_3: [0],
-      layoutDocId_4: [0],
-      layoutDocId_5: [0]
-    },
-    layout: {
-      layoutDocId_2: [
+      _BIAklh1FkBmDPibBeDyvla: [
         {
           children: [1],
-          component: {
-            id: 'dsDiv',
-            type: 'element',
-            classList: ['container', 'my-5']
-          }
-        },
-        {
-          contentIndex: 1,
-          children: [2],
-          component: {
-            id: 'dsAnchor',
-            type: 'element',
-            classList: ['btn', 'btn-primary']
-          }
-        },
-        {
-          contentIndex: 0,
-          component: {
-            id: 'dsText',
-            type: 'node'
-          }
-        }
-      ],
-      layoutDocId_3: [
-        {
-          children: [1],
-          component: {
-            id: 'dsDiv',
-            type: 'element',
-            classList: ['container', 'my-5']
-          }
-        },
-        {
-          contentIndex: 1,
-          children: [2],
-          component: {
-            id: 'dsAnchor',
-            type: 'element',
-            classList: ['btn', 'btn-secondary']
-          }
-        },
-        {
-          contentIndex: 0,
-          component: {
-            id: 'dsText',
-            type: 'node'
-          }
-        }
-      ],
-      layoutDocId_4: [
-        {
-          children: [1],
-          component: {
-            id: 'dsDiv',
-            type: 'element',
-            classList: ['navbar', 'navbar-expand-lg', 'navbar-light', 'bg-light']
-          }
+          componentId: '_wcx_d77j_LAySA_zzdfPep'
         },
         {
           children: [2],
-          component: {
-            id: 'dsDiv',
-            type: 'element',
-            classList: ['container-fluid']
-          }
+          parentIndex: 0,
+          componentId: '_wcx_d77j_LAySA_zzdfPea',
+          contentIndex: 0
         },
         {
-          contentIndex: 1,
-          children: [3],
-          component: {
-            id: 'dsAnchor',
-            type: 'element',
-            classList: ['navbar-brand']
-          }
-        },
-        {
-          contentIndex: 0,
-          component: {
-            id: 'dsText',
-            type: 'node'
-          }
-        }
-      ],
-      layoutDocId_5: [
-        {
-          children: [1],
-          component: {
-            id: 'dsDiv',
-            type: 'element',
-            classList: ['container', 'my-5']
-          }
-        },
-        {
-          children: [2, 3, 4],
-          component: {
-            id: 'dsDiv',
-            type: 'element',
-            classList: ['row']
-          }
-        },
-        {
-          children: [5],
-          component: {
-            id: 'dsDiv',
-            type: 'element',
-            classList: ['col']
-          }
-        },
-        {
-          children: [5],
-          component: {
-            id: 'dsDiv',
-            type: 'element',
-            classList: ['col']
-          }
-        },
-        {
-          children: [5],
-          component: {
-            id: 'dsDiv',
-            type: 'element',
-            classList: ['col']
-          }
-        },
-        {
-          children: [6, 7],
-          component: {
-            id: 'dsDiv',
-            type: 'element',
-            classList: ['card']
-          }
-        },
-        {
-          contentIndex: 0,
-          component: {
-            id: 'dsImage',
-            type: 'element',
-            classList: ['card-img-top', 'img-fluid']
-          }
-        },
-        {
-          children: [8],
-          component: {
-            id: 'dsDiv',
-            type: 'element',
-            classList: ['card-body']
-          }
-        },
-        {
-          contentIndex: 1,
-          component: {
-            id: 'dsH5',
-            type: 'element',
-            classList: ['card-text']
-          }
+          parentIndex: 1,
+          componentId: '_wcx_d77j_LAySA_zzdfPet',
+          contentIndex: 1
         }
       ]
+    },
+    modifiers: {
+      _wcx_d77j_LAySA_zzdfPew: {
+        1: '_wcx_d77j_LAySA_zzdfPeW'
+      }
     }
   }
 }
