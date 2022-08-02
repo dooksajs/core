@@ -135,10 +135,10 @@ export default {
       return results
     },
     set (context, item = {}) {
-      this.items = Object.assign(item, this.items)
+      this.items = { ...this.items, ...item }
     },
     setConditions (context, item = {}) {
-      this.conditions = Object.assign(item, this.conditions)
+      this.conditions = { ...this.conditions, ...item }
     },
     _createActions (items, action) {
       const actions = []
