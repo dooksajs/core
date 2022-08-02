@@ -336,10 +336,10 @@ export default {
       this._detachItem('widget', id)
     },
     setItems (context, items) {
-      this.items = Object.assign(items, this.items)
+      this.items = { ...this.items, ...items }
     },
     setContent (context, { id, items }) {
-      this.content[id] = { ...items, ...this.content[id] }
+      this.content[id] = { ...this.content[id], ...items }
     },
     _getRenderQueue (items) {
       const render = {
