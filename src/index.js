@@ -31,14 +31,19 @@ function Plugin (plugin, context = []) {
   // set context to plugin
   for (let i = 0; i < context.length; i++) {
     const item = context[i]
-    const pluginMetadata = {
-      name: plugin.name,
-      version: plugin.version,
-      dependencies: plugin.dependencies
-    }
 
-    if (item.dispatch) {
-      _context[item.name] = item.value(pluginMetadata)
+    if (item.name === 'isDev' && item.value) {
+      _context.isDev = true
+      
+      if (plugin.name !== 'dsDevTool') {
+        _context.$action('dsDevTool/set', { _context, plugin })
+      }
+    } else if (item.dispatch) {
+      _context[item.name] = item.value({
+        name: plugin.name,
+        version: plugin.version,
+        dependencies: plugin.dependencies
+      })
     } else {
       _context[item.name] = item.value
     }
