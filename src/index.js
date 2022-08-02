@@ -1,3 +1,31 @@
+const cleanUrlSet = [
+  ['a', '[ÀÁÂÃÄÅÆĀĂĄẠẢẤẦẨẪẬẮẰẲẴẶ]'],
+  ['c', '[ÇĆĈČ]'],
+  ['d', '[ÐĎĐÞ]'],
+  ['e', '[ÈÉÊËĒĔĖĘĚẸẺẼẾỀỂỄỆ]'],
+  ['g', '[ĜĞĢǴ]'],
+  ['h', '[ĤḦ]'],
+  ['i', '[ÌÍÎÏĨĪĮİỈỊ]'],
+  ['j', '[Ĵ]'],
+  ['ij', '[Ĳ]'],
+  ['k', '[Ķ]'],
+  ['l', '[ĹĻĽŁ]'],
+  ['m', '[Ḿ]'],
+  ['n', '[ÑŃŅŇ]'],
+  ['o', '[ÒÓÔÕÖØŌŎŐỌỎỐỒỔỖỘỚỜỞỠỢǪǬƠ]'],
+  ['oe', '[Œ]'],
+  ['p', '[ṕ]'],
+  ['r', '[ŔŖŘ]'],
+  ['s', '[ßŚŜŞŠ]'],
+  ['t', '[ŢŤ]'],
+  ['u', '[ÙÚÛÜŨŪŬŮŰŲỤỦỨỪỬỮỰƯ]'],
+  ['w', '[ẂŴẀẄ]'],
+  ['x', '[ẍ]'],
+  ['y', '[ÝŶŸỲỴỶỸ]'],
+  ['z', '[ŹŻŽ]'],
+  ['-', '[·/_,:;\']']
+]
+
 /**
  * Dooksa widget plugin.
  * @module plugin
@@ -14,35 +42,8 @@ export default {
   data: {
     currentPath: '',
     state: {},
-    searchParams: null,
-    items: {},
-    cleanUrlSet: [
-      ['a', '[ÀÁÂÃÄÅÆĀĂĄẠẢẤẦẨẪẬẮẰẲẴẶ]'],
-      ['c', '[ÇĆĈČ]'],
-      ['d', '[ÐĎĐÞ]'],
-      ['e', '[ÈÉÊËĒĔĖĘĚẸẺẼẾỀỂỄỆ]'],
-      ['g', '[ĜĞĢǴ]'],
-      ['h', '[ĤḦ]'],
-      ['i', '[ÌÍÎÏĨĪĮİỈỊ]'],
-      ['j', '[Ĵ]'],
-      ['ij', '[Ĳ]'],
-      ['k', '[Ķ]'],
-      ['l', '[ĹĻĽŁ]'],
-      ['m', '[Ḿ]'],
-      ['n', '[ÑŃŅŇ]'],
-      ['o', '[ÒÓÔÕÖØŌŎŐỌỎỐỒỔỖỘỚỜỞỠỢǪǬƠ]'],
-      ['oe', '[Œ]'],
-      ['p', '[ṕ]'],
-      ['r', '[ŔŖŘ]'],
-      ['s', '[ßŚŜŞŠ]'],
-      ['t', '[ŢŤ]'],
-      ['u', '[ÙÚÛÜŨŪŬŮŰŲỤỦỨỪỬỮỰƯ]'],
-      ['w', '[ẂŴẀẄ]'],
-      ['x', '[ẍ]'],
-      ['y', '[ÝŶŸỲỴỶỸ]'],
-      ['z', '[ŹŻŽ]'],
-      ['-', '[·/_,:;\']']
-    ]
+    searchParams: false,
+    items: {}
   },
   setup () {
     // set current path
@@ -50,6 +51,7 @@ export default {
 
     window.addEventListener('popstate', event => {
       this._update(this.currentPath, this.currentPathname(), (state) => {
+        this.$method('dsApp/update', state)
         this.$action('dsEvent/emit', {
           id: this.name,
           name: 'navigate',
@@ -64,14 +66,11 @@ export default {
 
       return this.items[currentPathname]
     },
-    getPathById (context, id) {
-      return this.items[id]
-    },
     currentPathname () {
       return window.location.pathname
     },
-    set (context, item) {
-      this.items = { ...this.items, ...item }
+    set (context, { id, item }) {
+      this.items[item.currentPath] = id
     },
     navigate (context, nextPath) {
       this._update(this.currentPathname(), nextPath, (state) => {
@@ -79,6 +78,8 @@ export default {
         window.history.pushState(state, '', nextPath)
         // update current path
         this.currentPath = this.currentPathname()
+
+        this.$method('dsApp/update', state)
 
         this.$action('dsEvent/emit', {
           id: this.name,
@@ -98,22 +99,21 @@ export default {
         .replace(/--+/g, '-') // Replace multiple - with single -
     },
     _replaceString (text) {
-      for (let i = 0; i < this.cleanUrlSet.length; i++) {
-        const [to, from] = this.cleanUrlSet[i]
+      for (let i = 0; i < cleanUrlSet.length; i++) {
+        const [to, from] = cleanUrlSet[i]
 
         text = text.replace(new RegExp(from, 'gi'), to)
       }
 
       return text
     },
-    _update (prevPath, nextPath, callback) {
+    _update (prevPath, nextPath, callback = () => {}) {
       const state = {
         nextPath,
         prevPath,
         nextId: this.items[nextPath],
         prevId: this.items[prevPath]
       }
-
       // update current path
       this.currentPath = this.currentPathname()
 
@@ -122,36 +122,15 @@ export default {
 
         this.$action('dsApp/fetch', cacheFilename, {
           onSuccess: (data) => {
-            state.nextId = data.routes[nextPath]
+            state.nextId = data.id
 
             this.$method('dsApp/set', data)
-            this.$method('dsApp/update', state)
-            this.$action('dsEvent/emit', {
-              id: this.name,
-              name: 'navigate',
-              payload: {
-                value: state
-              }
-            })
 
-            if (callback) {
-              callback(state)
-            }
+            callback(state)
           }
         })
       } else {
-        this.$method('dsApp/update', state)
-        this.$action('dsEvent/emit', {
-          id: this.name,
-          name: 'navigate',
-          payload: {
-            value: state
-          }
-        })
-
-        if (callback) {
-          callback(state)
-        }
+        callback(state)
       }
     }
   }
