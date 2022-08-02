@@ -1,4 +1,4 @@
-import DsPlugin from '@dooksa/ds-plugin'
+import DsPlugin from '../../ds-plugin'
 import resource from '@dooksa/resource-loader'
 
 /**
@@ -32,11 +32,6 @@ export default {
     this.buildId = buildId
     this.context = [
       {
-        name: 'isDev',
-        dispatch: false,
-        value: isDev
-      },
-      {
         name: '$action',
         dispatch: true,
         value: this._action.bind(this)
@@ -50,6 +45,11 @@ export default {
         name: '$resource',
         dispatch: false,
         value: resource
+      },
+      {
+        name: 'isDev',
+        dispatch: false,
+        value: isDev
       }
     ]
 
@@ -75,6 +75,13 @@ export default {
 
       this.additionalPlugins[data.item.name] = data.item.version
       this.use({}, data)
+    }
+
+    if (isDev) {
+      return {
+        $method: this._method.bind(this)(),
+        $action: this._action.bind(this)()
+      }
     }
   },
   methods: {
