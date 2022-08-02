@@ -362,9 +362,7 @@ export default {
       const template = this.widgets[id]
       const item = {
         widgets: {
-          items: {
-            [sectionId]: []
-          },
+          items: {},
           content: {},
           layout: {}
         },
@@ -406,8 +404,14 @@ export default {
           item.widgets.content[itemId] = content
           item.elements.value = { ...item.elements.value, ...elements.value }
           item.elements.type = { ...item.elements.type, ...elements.type }
+
           layout.default = { id: layoutId }
-          item.widgets.items[sectionId].push({ groupId, instanceId, layout })
+
+          if (!item.widgets.items[sectionId]) {
+            item.widgets.items[sectionId] = [{ groupId, instanceId, layout }]
+          } else {
+            item.widgets.items[sectionId].push({ groupId, instanceId, layout })
+          }
 
           this.$method('dsWidget/setLoaded', { id: itemId, value: true })
         }
@@ -465,7 +469,7 @@ export default {
             const contentId = defaultContent[i]
             const contentType = this.$method('dsElement/getType', contentId)
 
-            if (type === contentType) {
+            if (type === contentType[0]) {
               id = contentId
               defaultContent.splice(i, 1)
               exists = true
@@ -477,14 +481,14 @@ export default {
         content.push(id)
 
         if (!exists) {
-          elements.type[id] = type
+          elements.type[id] = [type, permanent]
 
           if (type === 'section') {
             const elementValue = {}
 
             for (let i = 0; i < value.length; i++) {
               const [lang, templateId] = value[i]
-              const [sectionId] = this.create({}, { id: templateId, defaultContent, groupId, view, modifiers })
+              const [sectionId] = this.create({}, { id: templateId, defaultContent, groupId, view, modifiers, lang })
 
               elementValue[lang] = sectionId
             }
