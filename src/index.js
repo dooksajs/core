@@ -384,7 +384,7 @@ export default {
       return item
     },
     set (context, item) {
-      this.items = Object.assign(item, this.items)
+      this.items = { ...this.items, ...item }
     },
     _getItem (id) {
       return this.items[id]
