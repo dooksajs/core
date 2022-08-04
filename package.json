@@ -8,7 +8,8 @@
     "format": "standard --fix",
     "dev": "ds-scripts dev",
     "test:unit": "ds-scripts --unit test",
-    "test:unit:record": "ds-scripts --unit --record test"
+    "test:unit:record": "ds-scripts --unit --record test",
+    "update": "ds-scripts update"
   },
   "repository": {
     "type": "git",
@@ -19,11 +20,11 @@
     "email": "tom@mightysmile.com"
   },
   "devDependencies": {
-    "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts#v1.0.1",
+    "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts#v1.0.0",
     "standard": "*"
   },
   "peerDependencies": {
-    "@dooksa/ds-plugin": "bitbucket:dooksa/ds-plugin#v2.2.1"
+    "@dooksa/ds-plugin": "bitbucket:dooksa/ds-plugin#v1.0.0"
   },
   "dependencies": {
     "@dooksa/resource-loader": "bitbucket:dooksa/resource-loader#v1.0.0"
