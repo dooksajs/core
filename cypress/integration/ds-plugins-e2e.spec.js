@@ -1,3 +1,6 @@
+/* global it, describe, beforeEach, cy */
+/* eslint no-undef: "error" */
+
 describe('ds-plugins e2e test run, using dev webpack', () => {
   beforeEach(() => {
     cy.visit('http://localhost:8081/')

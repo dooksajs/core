@@ -1,6 +1,6 @@
 {
   "name": "@dooksa/ds-plugin",
-  "version": "1.0.0",
+  "version": "2.2.0",
   "description": "The plugin library for Dooksa CMS",
   "main": "src/index.js",
   "scripts": {
@@ -19,7 +19,7 @@
     "email": "tom@mightysmile.com"
   },
   "devDependencies": {
-    "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts#master",
+    "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts#v1.0.0",
     "standard": "*"
   }
 }

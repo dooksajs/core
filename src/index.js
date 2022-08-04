@@ -34,7 +34,7 @@ function Plugin (plugin, context = []) {
 
     if (item.name === 'isDev' && item.value) {
       _context.isDev = true
-      
+
       if (plugin.name !== 'dsDevTool') {
         _context.$action('dsDevTool/set', { _context, plugin })
       }
