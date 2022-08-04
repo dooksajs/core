@@ -13,6 +13,7 @@ const scripts = {
   dev: true,
   build: true,
   lint: true,
+  update: true,
   dispatch (scriptName) {
     require('../scripts/' + scriptName)
   }

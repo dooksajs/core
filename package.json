@@ -1,6 +1,6 @@
 {
   "name": "@dooksa/ds-scripts",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Configuration and scripts for Dooksa plugins.",
   "author": {
     "name": "Thomas David",
