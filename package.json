@@ -1,6 +1,6 @@
 {
   "name": "@dooksa/ds-scripts",
-  "version": "1.0.2",
+  "version": "1.0.0",
   "description": "Configuration and scripts for Dooksa plugins.",
   "author": {
     "name": "Thomas David",
@@ -41,7 +41,7 @@
     "@babel/cli": "^7.17.6",
     "@babel/core": "^7.17.5",
     "@babel/preset-env": "^7.16.11",
-    "@dooksa/ds-plugin": "bitbucket:dooksa/ds-plugin#v2.2.1",
+    "@dooksa/ds-plugin": "bitbucket:dooksa/ds-plugin#v1.0.0",
     "babel-loader": "^8.2.3",
     "babel-plugin-istanbul": "^6.1.1",
     "browserslist": "^4.19.3",
