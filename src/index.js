@@ -1,5 +1,5 @@
-import DsPlugin from '../../ds-plugin'
 import resource from '@dooksa/resource-loader'
+import DsPlugin from '@dooksa/ds-plugin'
 
 /**
  * Ds plugin manager
