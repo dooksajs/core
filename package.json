@@ -19,13 +19,13 @@
     "email": "tom@mightysmile.com"
   },
   "devDependencies": {
-    "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts#master",
+    "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts#v1.0.0",
     "standard": "*"
   },
   "peerDependencies": {
-    "@dooksa/ds-plugin": "bitbucket:dooksa/ds-plugin#master"
+    "@dooksa/ds-plugin": "bitbucket:dooksa/ds-plugin#v2.2.0"
   },
   "dependencies": {
-    "@dooksa/resource-loader": "bitbucket:dooksa/resource-loader#master"
+    "@dooksa/resource-loader": "bitbucket:dooksa/resource-loader#v1.0.0"
   }
 }
