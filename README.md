@@ -17,28 +17,52 @@ $ npm run dev
 
 ### Basic setup
 
+Initialise the manager and include a plugin
+
 ```js
 
-import plugin from 'myPlugin'
+import DsPlugin from '@dooksa/ds-plugin'
+import dsManager from '@dooksa/ds-plugin-manager'
+import myPlugin from 'myPlugin'
 
-const pluginManager = new DsPlugin(plugin)
+const pluginManager = new DsPlugin(dsManager)
 
 pluginManager.init({
   buildId: 1,
-  plugins: [],
-  additionalPlugins: [],
+  plugins: [{
+    name: myPlugin.name,
+    version: myPlugin.version,
+    plugin: myPlugin
+  }],
   isDev: true
 })
 
 ```
 
-### Add plugins
+### Add plugins with options
+
+Adding a plugin with options allows you to define arguments that the plugin's setup will receive
 
 ```js
 
-const plugins = [
-  
-]
+const dsElement = {
+  name: 'dsElement',
+  version: 1,
+  setup ({ appRootElementId }) {
+    console.log(appRootElementId)
+  }
+}
+
+const plugin = {
+  name: dsElement.name,
+  version: dsElement.version,
+  plugin: dsElement,
+  options: {
+    setup: { 
+      appRootElementId: 'app'
+    }
+  }
+}
 
 ```
 
@@ -51,11 +75,16 @@ There might be an issue with setupOptions being skipped
 for example
 
 ```js
-[DsPluginFirebaseStorage.name]: {
-    name: DsPluginFirebaseStorage.name,
-    plugin: DsPluginFirebaseStorage,
-    onDemand: true
+
+import dsModal from '@dooksa/ds-plugin-modal'
+
+const plugin = {
+  name: dsModal.name,
+  version: dsModal.version,
+  options: {
+    setupOnRequest: true
   }
+}
 
 ```
 
@@ -65,53 +94,14 @@ This will add plugin metadata that allows the system to load the required versio
 
 ```js
 
-const plugins = new DsPlugins({ isDev: true })
-
-plugins.addMetadata([
-  ['googleMaps', {
-    version: '1.0.0',
-    setupOptions: { // optional
-      scriptParamNames: ['key', 'library'],
-      scriptParamValues: {
-        library: 'places',
-        key: 'API_KEY_1'
-      }
-    },
+const plugin {
+  name: 'dsBootstrap',
+  version: 1,
+  options: {
+    setupOnRequest: true,
     script: {
-      src: 'https://www.example.com/ds-plugin-google-maps-1.0.0.js',
-      integrity: 'sha512-NHj3yHLIurjFff1+vOIPJo7atTwujzZW+1YTG8hzJMqFhxED3JZx7Vpv+Pz/IEx7Hj38MCrNqalo+XkQqmjqNQ=='
-    }
-  }]
-])
-
-plugins.use({ name: 'googleMaps' })
-
-```
-
-### Run a plugin method
-
-The action method will use the 'currentVersion' of the plugin
-
-```js
-
-const plugins = new DsPlugins({ isDev: true })
-
-plugins.action('googleMaps/addMarker',
-  {
-    mapId: 'map',
-    options: {
-      lat: 0,
-      lng: 0
-    }
-  },
-  {
-    onSuccess: (result) => {
-      console.log(result)
-    },
-    onError: (error) => {
-      console.error(error)
+      src: `/plugins/ds-bootstrap/1/ds-bootstrap.js`,
+      integrity: 'sha512-FV6gBFXtpWI8QiN+yCzueZTkzwcvfUOgpwOGrTmZDgTrx2I5/2K5mUOFAH73WGULrvehVJ3BiPL8EnDti25k1A=='
     }
   }
-)
-
-```
+}

@@ -28,7 +28,7 @@ export default {
     context: {}
   },
   /**
-   * 
+   * Setup plugin 
    * @param {Object} setup - The variables needed to setup the plugin
    * @param {number} setup.buildId - The build id for the current system
    * @param {Object[]} setup.plugins - A list of base plugins
