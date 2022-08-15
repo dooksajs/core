@@ -384,7 +384,7 @@ export default {
           console.error(error)
         }
       }
-    }
+    },
     /**
      * Run plugins setup function
      * @param {DsPlugin} plugin - DsPlugin object 
