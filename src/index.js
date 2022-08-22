@@ -28,13 +28,13 @@ export default {
     context: {}
   },
   /**
-   * Setup plugin 
+   * Setup plugin
    * @param {Object} setup - The variables needed to setup the plugin
    * @param {number} setup.buildId - The build id for the current system
    * @param {Object[]} setup.plugins - A list of base plugins
    * @param {string} setup.plugins[].name - The name of the plugin
    * @param {number} setup.plugins[].version - The version of the plugin
-   * @param {DsPlugin} setup.plugins[].plugin - The plugin object 
+   * @param {DsPlugin} setup.plugins[].plugin - The plugin object
    * @param {Object} setup.plugins[].options - Options used by the plugin
    * @param {boolean} setup.plugins[].options.setupOnRequest - Run the plugins setup function when its methods are used
    * @param {Object} setup.plugins[].options.setup - Params sent to the plugins setup function
@@ -90,7 +90,7 @@ export default {
 
       this.use({}, plugins[i])
     }
-    
+
     for (let i = 0; i < additionalPlugins.length; i++) {
       const item = additionalPlugins[i]
 
@@ -111,12 +111,12 @@ export default {
   methods: {
     /**
      * Add plugin to the manager
-     * @param {*} context 
+     * @param {*} context
      * @param {Object} item - @see this.setup plugin item
      */
     use (context, item) {
       this._addOptions(item.name, item.options)
-      this.plugins[item.name] = item 
+      this.plugins[item.name] = item
       this.pluginUseQueue.push(item)
       this.queue[item.name] = []
 
@@ -131,8 +131,8 @@ export default {
     },
     /**
      * Higher order function to allow plugins to run other plugins async methods
-     * @param {*} context 
-     * @returns 
+     * @param {*} context
+     * @returns
      */
     _action (context) {
       return (name, params, callback = {}) => {
@@ -180,7 +180,7 @@ export default {
     /**
      * Check if plugins method exists
      * @param {string} name - The name of plugins method
-     * @returns boolean based on if the request plugin exists 
+     * @returns boolean based on if the request plugin exists
      */
     _actionExists (name) {
       return (this._methods[name])
@@ -212,16 +212,16 @@ export default {
     },
     /**
      * Get plugin
-     * @param {string} - Name of plugin 
+     * @param {string} - Name of plugin
      * @returns {DsPlugin} - Plugin object
      */
     _get (name) {
       return this.plugins[name]
     },
     /**
-     * Find and load plugin used by the @see action function 
+     * Find and load plugin used by the @see action function
      * @param {string} name - Name of method
-     * @param {function} callback - Callback used to run after loading the requested plugin 
+     * @param {function} callback - Callback used to run after loading the requested plugin
      * @returns returns callback return value if it is not async
      */
     _callbackWhenAvailable (name, callback) {
@@ -251,7 +251,7 @@ export default {
      */
     _fetch (name, options) {
       return new Promise((resolve, reject) => {
-        const error = { statusCode: 404, message: 'Plugin not found: '+ name }
+        const error = { statusCode: 404, message: 'Plugin not found: ' + name }
 
         options.onSuccess = () => {
           const plugin = window.dsApp.plugins[name]
@@ -270,7 +270,7 @@ export default {
     },
     /**
      * Get plugins setup options
-     * @param {string} name - Name of plugin 
+     * @param {string} name - Name of plugin
      * @returns Setup options @see this.setup
      */
     _getOptions (name) {
@@ -278,7 +278,7 @@ export default {
     },
     /**
      * Install plugin and its dependencies
-     * @param {string} name - Name of plugin 
+     * @param {string} name - Name of plugin
      * @param {DsPlugin} plugin - Dooksa plugin object
      * @param {Object} setup - Setup options @see this.setup
      * @returns Promise
@@ -301,13 +301,13 @@ export default {
               if (plugin.dependencies) {
                 this._installDependencies(name, plugin.dependencies)
               }
-      
+
               this._setup(plugin, options.setup)
                 .then(() => resolve())
                 .catch((e) => reject(e))
             })
         }
-        // fetch setup on request plugin  
+        // fetch setup on request plugin
         if (this.setupOnRequestQueue[name]) {
           plugin = this.setupOnRequestQueue[name]
         }
@@ -326,8 +326,8 @@ export default {
     },
     /**
      * Install plugins dependencies
-     * @param {string} name - Name of plugin 
-     * @param {Object[]} dependencies - A list of plugin dependencies  
+     * @param {string} name - Name of plugin
+     * @param {Object[]} dependencies - A list of plugin dependencies
      */
     _installDependencies (name, dependencies) {
       for (let i = 0; i < dependencies.length; i++) {
@@ -335,7 +335,7 @@ export default {
         // Check if plugin is loaded
         if (!this.isLoaded[plugin.name]) {
           const options = this._getOptions(plugin.name)
-     
+
           if (!options.setupOnRequest) {
             this.queue[name].push(this.queue[plugin.name])
           } else {
@@ -348,8 +348,7 @@ export default {
             // Add to plugin loading queue
             this.queue[name].push(depPlugin)
           }
-
-        } 
+        }
       }
     },
     /**
@@ -368,8 +367,8 @@ export default {
     },
     /**
      * Higher order function to allow plugins to run other plugins methods
-     * @param {Object} context 
-     * @returns 
+     * @param {Object} context
+     * @returns
      */
     _method (context) {
       return (name, params) => {
@@ -387,7 +386,7 @@ export default {
     },
     /**
      * Run plugins setup function
-     * @param {DsPlugin} plugin - DsPlugin object 
+     * @param {DsPlugin} plugin - DsPlugin object
      * @param {Object} options - Plugins setup options
      * @returns Promise
      */
@@ -421,8 +420,8 @@ export default {
      */
     _use ({ name, options = {} }) {
       const plugin = this._get(name)
-       // Return if plugin is loaded
-       if (this.isLoaded[name]) {
+      // Return if plugin is loaded
+      if (this.isLoaded[name]) {
         return Promise.resolve()
       }
       // Check if plugin is in loading queue and can run setup
