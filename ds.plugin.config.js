@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   name: 'dsManager',
   filename: 'ds-plugin-manager',
   version: 1,
