@@ -136,6 +136,7 @@ export default {
      */
     _action (context) {
       return (name, params, callback = {}) => {
+        console.log(name)
         this._callbackWhenAvailable(name, () => {
           const onSuccess = callback.onSuccess
           const onError = callback.onError
@@ -274,7 +275,7 @@ export default {
      * @returns Setup options @see this.setup
      */
     _getOptions (name) {
-      return this.options[name]
+      return this.options[name] || {}
     },
     /**
      * Install plugin and its dependencies
@@ -311,6 +312,7 @@ export default {
         if (this.setupOnRequestQueue[name]) {
           plugin = this.setupOnRequestQueue[name]
         }
+
         // install dependencies
         if (plugin.dependencies) {
           this._installDependencies(name, plugin.dependencies)
@@ -420,6 +422,7 @@ export default {
      */
     _use ({ name, options = {} }) {
       const plugin = this._get(name)
+      console.log(plugin, name)
       // Return if plugin is loaded
       if (this.isLoaded[name]) {
         return Promise.resolve()
