@@ -1,3 +1,5 @@
+import { createRequire } from 'module'
+const require = createRequire(import.meta.url);
 const cypress = require('cypress')
 const express = require('express')
 const fs = require('fs')

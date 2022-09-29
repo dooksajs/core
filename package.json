@@ -37,11 +37,19 @@
       "assert"
     ]
   },
+  "type": "module",
   "dependencies": {
     "@babel/cli": "^7.17.6",
     "@babel/core": "^7.17.5",
     "@babel/preset-env": "^7.16.11",
+    "@dooksa/ds-app": "file:../ds-app",
     "@dooksa/ds-plugin": "bitbucket:dooksa/ds-plugin#v1.0.0",
+    "@dooksa/ds-plugin-component": "file:../ds-plugin-component",
+    "@dooksa/ds-plugin-database": "file:../ds-plugin-database",
+    "@dooksa/ds-plugin-dev-tool": "file:../ds-plugin-dev-tool",
+    "@dooksa/ds-plugin-manager": "file:../ds-plugin-manager",
+    "@dooksa/ds-plugin-parse": "file:../ds-plugin-parse",
+    "@dooksa/ds-plugin-template": "file:../ds-plugin-template",
     "babel-loader": "^8.2.3",
     "babel-plugin-istanbul": "^6.1.1",
     "browserslist": "^4.19.3",
@@ -49,6 +57,8 @@
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
     "html-webpack-plugin": "^5.5.0",
+    "node-html-parser": "^5.4.2-0",
+    "object-hash": "^3.0.0",
     "standard": "*",
     "terser-webpack-plugin": "^5.3.1",
     "webpack": "^5.70.0",

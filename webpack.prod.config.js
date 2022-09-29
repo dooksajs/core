@@ -1,21 +1,25 @@
-const path = require('path')
-const TerserPlugin = require('terser-webpack-plugin')
-const { appDirectory } = require(path.join(__dirname, 'utils', 'paths.js'))
-const { filename, name, globalObject } = require(path.join(appDirectory, 'ds.plugin.config'))
+import { createRequire } from 'module'
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { appDirectory } from './utils/paths.js'
 
-module.exports = {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const require = createRequire(import.meta.url);
+const TerserPlugin = require('terser-webpack-plugin')
+const { default: { filename, name } } = await import(path.join(appDirectory, 'ds.plugin.config.js'));
+
+export default {
   target: 'browserslist:' + path.join(__dirname, '.browserslistrc'),
   entry: path.resolve(appDirectory, 'src/index'),
   mode: 'production',
   output: {
-    clean: true,
     filename: `${filename}.js`,
     path: path.resolve(appDirectory, 'dist'),
     publicPath: 'https://cdn.dooksa.com/',
     library: name,
-    libraryTarget: 'global',
-    libraryExport: 'default',
-    globalObject
+    libraryTarget: 'umd',
+    globalObject: 'this'
   },
   optimization: {
     minimize: true,

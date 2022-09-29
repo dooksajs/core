@@ -1,7 +1,9 @@
-const fs = require('fs')
-const path = require('path')
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-module.exports = {
-  appDirectory: fs.realpathSync(process.cwd()),
-  scriptDirectory: path.resolve(__dirname, '..')
-}
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export const appDirectory = fs.realpathSync(process.cwd())
+export const scriptDirectory = path.resolve(__dirname, '..')

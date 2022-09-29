@@ -4,17 +4,17 @@
 process.env.BABEL_ENV = 'production'
 process.env.NODE_ENV = 'production'
 
-const createHash = require('../utils/createHash.js')
-const webpack = require('webpack')
-const webpackConfig = require('../webpack.prod.config.js')
+import path from 'path';
+import fs from 'fs'
+import webpack from 'webpack'
+import { appDirectory } from '../utils/paths.js'
+import webpackConfig from '../webpack.prod.config.js'
 
-const compiler = webpack(webpackConfig)
+const pluginCompiler = webpack(webpackConfig)
 
-compiler.run((err, stats) => {
+pluginCompiler.run((err, stats) => {
   if (err || stats.hasErrors()) {
     console.log(err)
   }
   console.log('Plugin compiled.')
-  // create hash from plugin
-  createHash()
 })

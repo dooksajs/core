@@ -1,12 +1,11 @@
-const os = require('os')
-const path = require('path')
-const { appDirectory } = require('./paths.js')
-const { filename } = require(path.join(appDirectory, 'ds.plugin.config.js'))
-const crypto = require('crypto')
-const fs = require('fs')
+import os from 'os'
+import path from 'path'
+import crypto from 'crypto'
+import fs from 'fs'
+
 const hash = crypto.createHash('sha512', 'resolveDS-263')
 
-module.exports = function () {
+export default function (filename) {
   const input = fs.createReadStream(`dist/${filename}.js`)
 
   input.on('readable', () => {

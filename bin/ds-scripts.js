@@ -12,10 +12,12 @@ const scripts = {
   test: true,
   dev: true,
   build: true,
+  build_template: true,
   lint: true,
   update: true,
   dispatch (scriptName) {
-    require('../scripts/' + scriptName)
+    import('../scripts/' + scriptName + '.js')
+      .catch(e => console.log(e))
   }
 }
 
