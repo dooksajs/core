@@ -136,7 +136,6 @@ export default {
      */
     _action (context) {
       return (name, params, callback = {}) => {
-        console.log(name)
         this._callbackWhenAvailable(name, () => {
           const onSuccess = callback.onSuccess
           const onError = callback.onError
@@ -296,9 +295,9 @@ export default {
           return resolve()
         }
 
-        if (options.script) {
-          return this._fetch(name, options.script)
-            .then(plugin => {
+        if (options.import) {
+          return import(/* webpackChunkName: "plugin" */ options.import)
+            .then(({ default: plugin }) => {
               if (plugin.dependencies) {
                 this._installDependencies(name, plugin.dependencies)
               }
@@ -392,7 +391,7 @@ export default {
      * @param {Object} options - Plugins setup options
      * @returns Promise
      */
-    _setup (plugin, options) {
+    _setup (plugin, options = {}) {
       return new Promise((resolve, reject) => {
         const dsPlugin = new DsPlugin(plugin, this.context)
         const setup = dsPlugin.init(options)
@@ -422,7 +421,6 @@ export default {
      */
     _use ({ name, options = {} }) {
       const plugin = this._get(name)
-      console.log(plugin, name)
       // Return if plugin is loaded
       if (this.isLoaded[name]) {
         return Promise.resolve()
