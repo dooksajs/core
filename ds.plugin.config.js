@@ -1,5 +1,5 @@
-module.exports = {
-  name: 'dsTokens',
-  filename: 'ds-tokens',
+export default {
+  name: 'dsToken',
+  filename: 'ds-token',
   version: 1
 }
