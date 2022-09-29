@@ -1,31 +1,3 @@
-const cleanUrlSet = [
-  ['a', '[ÀÁÂÃÄÅÆĀĂĄẠẢẤẦẨẪẬẮẰẲẴẶ]'],
-  ['c', '[ÇĆĈČ]'],
-  ['d', '[ÐĎĐÞ]'],
-  ['e', '[ÈÉÊËĒĔĖĘĚẸẺẼẾỀỂỄỆ]'],
-  ['g', '[ĜĞĢǴ]'],
-  ['h', '[ĤḦ]'],
-  ['i', '[ÌÍÎÏĨĪĮİỈỊ]'],
-  ['j', '[Ĵ]'],
-  ['ij', '[Ĳ]'],
-  ['k', '[Ķ]'],
-  ['l', '[ĹĻĽŁ]'],
-  ['m', '[Ḿ]'],
-  ['n', '[ÑŃŅŇ]'],
-  ['o', '[ÒÓÔÕÖØŌŎŐỌỎỐỒỔỖỘỚỜỞỠỢǪǬƠ]'],
-  ['oe', '[Œ]'],
-  ['p', '[ṕ]'],
-  ['r', '[ŔŖŘ]'],
-  ['s', '[ßŚŜŞŠ]'],
-  ['t', '[ŢŤ]'],
-  ['u', '[ÙÚÛÜŨŪŬŮŰŲỤỦỨỪỬỮỰƯ]'],
-  ['w', '[ẂŴẀẄ]'],
-  ['x', '[ẍ]'],
-  ['y', '[ÝŶŸỲỴỶỸ]'],
-  ['z', '[ŹŻŽ]'],
-  ['-', '[·/_,:;\']']
-]
-
 /**
  * Dooksa widget plugin.
  * @module plugin
@@ -51,7 +23,7 @@ export default {
 
     window.addEventListener('popstate', event => {
       this._update(this.currentPath, this.currentPathname(), (state) => {
-        this.$method('dsApp/update', state)
+        this.$method('dsPage/updateDOM', state)
         this.$action('dsEvent/emit', {
           id: this.name,
           name: 'navigate',
@@ -69,8 +41,8 @@ export default {
     currentPathname () {
       return window.location.pathname
     },
-    set (context, { id, item }) {
-      this.items[item.currentPath] = id
+    setPath (context, { pageId, path }) {
+      this.items[path] = pageId
     },
     navigate (context, nextPath) {
       this._update(this.currentPathname(), nextPath, (state) => {
@@ -79,7 +51,7 @@ export default {
         // update current path
         this.currentPath = this.currentPathname()
 
-        this.$method('dsApp/update', state)
+        this.$method('dsPage/updateDOM', state)
 
         this.$action('dsEvent/emit', {
           id: this.name,
@@ -89,23 +61,13 @@ export default {
       })
     },
     cleanPath (context, value) {
-      let text = value.toString().toLowerCase().trim()
+      const text = value.toString().trim().toLocaleLowerCase('en-US')
 
-      text = this._replaceString(text)
-
-      return text.replace(/\s+/g, '-') // Replace spaces with -
+      return text.replace(/[_,:;]/gi, '-')
+        .replace(/\s+/g, '-') // Replace spaces with -
         .replace(/[+]/g, '-') // Replace + with '-'
         .replace(/[^\w-]+/g, '') // Remove all non-word chars
         .replace(/--+/g, '-') // Replace multiple - with single -
-    },
-    _replaceString (text) {
-      for (let i = 0; i < cleanUrlSet.length; i++) {
-        const [to, from] = cleanUrlSet[i]
-
-        text = text.replace(new RegExp(from, 'gi'), to)
-      }
-
-      return text
     },
     _update (prevPath, nextPath, callback = () => {}) {
       const state = {
@@ -118,13 +80,13 @@ export default {
       this.currentPath = this.currentPathname()
 
       if (!state.nextId) {
-        const cacheFilename = this.$method('dsRouter/cleanPath', nextPath)
+        const path = this.cleanPath({}, nextPath)
 
-        this.$action('dsApp/fetch', cacheFilename, {
+        this.$action('dsPage/getOneByPath', { path }, {
           onSuccess: (data) => {
             state.nextId = data.id
 
-            this.$method('dsApp/set', data)
+            this.$method('dsPage/set', data)
 
             callback(state)
           }
