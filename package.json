@@ -1,7 +1,7 @@
 {
-  "name": "@dooksa/ds-app",
+  "name": "@dooksa/ds-plugin-page",
   "version": "1.0.0",
-  "description": "Dooksa core app",
+  "description": "Manage pages",
   "main": "src/index.js",
   "scripts": {
     "lint": "standard",
@@ -15,14 +15,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@bitbucket.org:dooksa/ds-app.git"
+    "url": "git+ssh://git@bitbucket.org:dooksa/ds-plugin-page.git"
   },
   "author": {
     "name": "Thomas David",
     "email": "tom@mightysmile.com"
   },
   "devDependencies": {
-    "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts#master",
     "standard": "*"
   },
   "dependencies": {
@@ -36,6 +35,7 @@
     "@dooksa/ds-plugin-parameters": "bitbucket:dooksa/ds-plugin-parameters#master",
     "@dooksa/ds-plugin-router": "bitbucket:dooksa/ds-plugin-router#master",
     "@dooksa/ds-plugin-utilities": "bitbucket:dooksa/ds-plugin-utilities#master",
-    "@dooksa/ds-plugin-widget": "bitbucket:dooksa/ds-plugin-widget#master"
+    "@dooksa/ds-plugin-widget": "bitbucket:dooksa/ds-plugin-widget#master",
+    "@dooksa/ds-scripts": "file:../ds-scripts"
   }
 }
