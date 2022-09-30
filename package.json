@@ -23,19 +23,5 @@
   },
   "devDependencies": {
     "standard": "*"
-  },
-  "dependencies": {
-    "@dooksa/ds-plugin": "bitbucket:dooksa/ds-plugin#master",
-    "@dooksa/ds-plugin-action": "bitbucket:dooksa/ds-plugin-action#master",
-    "@dooksa/ds-plugin-content": "bitbucket:dooksa/ds-plugin-content#master",
-    "@dooksa/ds-plugin-element": "bitbucket:dooksa/ds-plugin-element#master",
-    "@dooksa/ds-plugin-event": "bitbucket:dooksa/ds-plugin-event#master",
-    "@dooksa/ds-plugin-manager": "bitbucket:dooksa/ds-plugin-manager#master",
-    "@dooksa/ds-plugin-operators": "bitbucket:dooksa/ds-plugin-operators#master",
-    "@dooksa/ds-plugin-parameters": "bitbucket:dooksa/ds-plugin-parameters#master",
-    "@dooksa/ds-plugin-router": "bitbucket:dooksa/ds-plugin-router#master",
-    "@dooksa/ds-plugin-utilities": "bitbucket:dooksa/ds-plugin-utilities#master",
-    "@dooksa/ds-plugin-widget": "bitbucket:dooksa/ds-plugin-widget#master",
-    "@dooksa/ds-scripts": "file:../ds-scripts"
   }
 }
