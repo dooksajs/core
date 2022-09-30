@@ -137,14 +137,14 @@ export default {
 
       return valueLength
     },
+    _splice (string, start, end, insert = '') {
+      return string.slice(0, start) + insert + string.slice(end)
+    },
     _updateText (process, item, insert, start, end, updateText) {
       item.valueLength = insert.length
       process.text = this._splice(process.text, start, end, insert)
 
       updateText(process.text)
-    },
-    _splice (string, start, end, insert = '') {
-      return string.slice(0, start) + insert + string.slice(end)
     }
   }
 }
