@@ -31,6 +31,10 @@ function Plugin (plugin, context = []) {
   // set context to plugin
   for (let i = 0; i < context.length; i++) {
     const item = context[i]
+    // ISSUE: [DS-752] applying context to plugins should be more dynamic
+    if (plugin.name === 'dsToken' && item.name === '$token') {
+      _context.$token = item.value
+    }
 
     if (item.name === 'isDev' && item.value) {
       _context.isDev = true
@@ -70,6 +74,21 @@ function Plugin (plugin, context = []) {
     }
 
     this.methods = methods
+  }
+  // set tokens
+  if (plugin.tokens) {
+    const tokens = {}
+
+    for (const key in plugin.tokens) {
+      if (Object.hasOwnProperty.call(plugin.tokens, key)) {
+        const item = plugin.tokens[key]
+
+        _context[key] = item
+        tokens[key] = item.bind(_context)
+      }
+    }
+
+    this.tokens = tokens
   }
   // set setup function
   if (plugin.setup) {
