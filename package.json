@@ -12,6 +12,7 @@
     "lint": "standard",
     "lint:fix": "standard --fix"
   },
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@bitbucket.org:dooksa/ds-plugin-component.git"

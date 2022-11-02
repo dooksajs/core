@@ -1,6 +1,4 @@
-module.exports = {
+export default {
   name: 'dsComponent',
-  filename: 'ds-component',
-  globalObject: 'window.dsApp.plugins',
   version: 1
 }
