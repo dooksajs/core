@@ -90,6 +90,18 @@ function Plugin (plugin, context = []) {
 
     this.tokens = tokens
   }
+  // set components
+  if (plugin.components) {
+    for (let i = 0; i < plugin.components.length; i++) {
+      const component = plugin.components[i]
+      // check if component is lazy loaded
+      if (component.lazy) {
+        component.isLazy = true
+      }
+    }
+
+    this.components = plugin.components
+  }
   // set setup function
   if (plugin.setup) {
     this.setup = plugin.setup.bind(_context)
