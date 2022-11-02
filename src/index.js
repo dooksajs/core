@@ -23,8 +23,9 @@ export default {
       if (!components) {
         const items = this._getItem(id)
         const head = this._getHead(id)
+        const events = this._getEvent(id)
 
-        components = this._create(id, items, head, items, sectionId, instanceId, parentElementId, prefixId, lang, view)
+        components = this._create(id, items, head, items, events, sectionId, instanceId, parentElementId, prefixId, lang, view)
 
         for (let i = 0; i < components.length; i++) {
           const component = components[i]
@@ -53,27 +54,20 @@ export default {
       this.items = { ...this.items, ...items }
     },
     _attachComponent (components, component, sectionId, instanceId, view, parentElementId, prefixId, lang) {
+      let elementId = parentElementId
+
       if (component.elementId) {
         const parentId = !isNaN(component.parentIndex) ? components[component.parentIndex].elementId : parentElementId
 
-        if (Object.hasOwnProperty.call(component, 'contentIndex')) {
-          const contentId = this.$method('dsWidget/getContentItem', {
-            sectionId,
-            instanceId,
-            prefixId,
-            parentElementId,
-            index: component.contentIndex
-          })
-
-          this.$method('dsElement/attachContent', { contentId, elementId: component.elementId, lang })
-          this.$method('dsWidget/attachItem', { type: 'content', id: contentId })
-        }
+        elementId = component.elementId
 
         this.$method('dsElement/append', {
           parentId,
           childId: component.elementId
         })
-      } else if (Object.hasOwnProperty.call(component, 'contentIndex')) {
+      }
+
+      if (Object.hasOwnProperty.call(component, 'contentIndex')) {
         const contentId = this.$method('dsWidget/getContentItem', {
           sectionId,
           instanceId,
@@ -86,6 +80,7 @@ export default {
 
         if (contentType[0] === 'section') {
           const sectionId = this.$method('dsElement/getValue', { id: contentId })
+
           // create a new widget and append it to this element item
           this.$method('dsWidget/create', {
             id: sectionId,
@@ -96,13 +91,13 @@ export default {
           })
         } else {
           // missing parentElement
-          this.$method('dsElement/attachContent', { contentId, elementId: parentElementId, lang })
+          this.$method('dsElement/attachContent', { contentId, elementId, lang })
         }
 
         this.$method('dsWidget/attachItem', { type: 'content', id: contentId })
       }
     },
-    _create (id, items, head, children, sectionId, instanceId, parentElementId, prefixId, lang, view, components = [], componentChildren, currentIndex = 0) {
+    _create (id, items, head, children, events, sectionId, instanceId, parentElementId, prefixId, lang, view, components = [], componentChildren, currentIndex = 0) {
       // components might make this variable redundant
       // position of components within the layout
       let fragments = []
@@ -134,10 +129,23 @@ export default {
             payload.modifierId = this.modifiers[modifierId][currentIndex]
           }
 
-          const component = this.$method('dsComponent/getItem', payload)
+          const component = this.$method('dsComponent/get', payload)
 
+          if (component.textNode) {
+            this.$method('dsElement/createNode', elementId)
+          } else {
+            this.$method('dsElement/createElement', { id: elementId, sectionId, instanceId, item: component })
+          }
           // create parent component
-          this.$method('dsElement/create' + component.type, { id: elementId, item: component })
+
+          // add event listener to element
+          if (events[currentIndex]) {
+            const event = events[currentIndex]
+
+            for (let i = 0; i < event.action.length; i++) {
+              this.$method('dsEvent/addListener', { id: elementId, name: event.on, item: event.action[i] })
+            }
+          }
 
           fragment.elementId = elementId
         } else {
@@ -153,6 +161,7 @@ export default {
             items,
             sibling.head,
             sibling.children,
+            events,
             sectionId,
             instanceId,
             parentElementId,
@@ -194,15 +203,17 @@ export default {
           const contentType = this.$method('dsElement/getType', contentId)
 
           if (contentType[0] === 'section') {
-            const sectionId = this.$method('dsElement/getValue', { id: contentId })
+            const newSectionId = this.$method('dsElement/getValue', { id: contentId })
             // create a new widget and append it to this component item
             this.$method('dsWidget/create', {
-              id: sectionId,
+              id: newSectionId,
               parentElementId: elementId,
               prefixId,
               lang,
               view
             })
+
+            this.$method('dsWidget/setSectionParentId', { childId: newSectionId, parentId: sectionId })
           } else {
             // missing parentElement
             this.$method('dsElement/attachContent', { contentId, elementId, lang })
@@ -221,6 +232,9 @@ export default {
     },
     _getHead (id) {
       return this.head[id] || [0]
+    },
+    _getEvent (id) {
+      return this.event[id] || []
     },
     _getItem (id) {
       return this.items[id]
