@@ -1,5 +1,5 @@
 import resource from '@dooksa/resource-loader'
-import DsPlugin from '@dooksa/ds-plugin'
+import DsPlugin from '../../ds-plugin/src/index.js'
 
 const NAME = 'dsManager'
 const VERSION = 1
@@ -22,8 +22,10 @@ export default {
     appBuildId: '',
     appPlugins: [],
     appAdditionalPlugins: [],
+    depQueue: {},
     queue: {},
     isLoaded: {},
+    initialising: {},
     setupOnRequest: {},
     setupOnRequestQueue: {},
     options: {},
@@ -47,7 +49,7 @@ export default {
    */
   setup ({
     buildId,
-    plugins = [],
+    plugins = {},
     additionalPlugins = [],
     isDev
   }) {
@@ -65,7 +67,6 @@ export default {
       },
       {
         name: '$resource',
-        dispatch: false,
         value: resource
       },
       {
@@ -94,14 +95,12 @@ export default {
 
     this.isLoaded[NAME] = true
 
-    for (let i = 0; i < plugins.length; i++) {
-      if (i === plugins.length - 1) {
-        plugins[i].lastItem = true
+    for (const key in plugins) {
+      if (Object.prototype.hasOwnProperty.call(plugins, key)) {
+        this.use({}, { plugin: plugins[key] })
       }
-
-      this.use({}, plugins[i])
     }
-
+    // ISSUE: [DS-757] additional plugins might be obsolete
     for (let i = 0; i < additionalPlugins.length; i++) {
       const item = additionalPlugins[i]
 
@@ -111,6 +110,8 @@ export default {
 
       this.use({}, item)
     }
+
+    this._processQueue()
 
     if (isDev) {
       return {
@@ -125,15 +126,23 @@ export default {
      * @param {*} context
      * @param {Object} item - @see this.setup plugin item
      */
-    use (context, item) {
-      this._addOptions(item.name, item.options)
-      this.plugins[item.name] = item
-      this.pluginUseQueue.push(item)
-      this.queue[item.name] = []
+    use (context, { plugin, process }) {
+      this._addOptions(plugin.name, plugin.options)
+      this.plugins[plugin.name] = plugin
+      this.pluginUseQueue.push(plugin)
+      this.queue[plugin.name] = []
+      this.depQueue[plugin.name] = []
 
-      if (item.lastItem) {
-        for (let i = 0; i < this.pluginUseQueue.length; i++) {
-          const item = this.pluginUseQueue[i]
+      if (process) {
+        this._processQueue()
+      }
+    },
+    _processQueue () {
+      for (let i = 0; i < this.pluginUseQueue.length; i++) {
+        const item = this.pluginUseQueue[i]
+        const queue = this._getQueue(item.name)
+
+        if (!queue.length) {
           const loadingPlugin = this._install(item.name, item.plugin)
           // Add to plugin to queue
           this.queue[item.name] = [loadingPlugin]
@@ -271,7 +280,7 @@ export default {
      * @returns {DsPlugin} - Plugin object
      */
     _get (name) {
-      return this.plugins[name]
+      return this.plugins[name] ? this.plugins[name].plugin : this.setupOnRequestQueue[name]
     },
     /**
      * Find and load plugin used by the @see action function
@@ -280,48 +289,43 @@ export default {
      * @returns returns callback return value if it is not async
      */
     _callbackWhenAvailable (name, callback) {
-      if (this._actionExists(name)) {
+      const pluginName = name.split('/')[0]
+
+      if (this.isLoaded[pluginName] && this._actionExists(name)) {
         return callback()
       }
 
-      const pluginName = name.split('/')[0]
+      if (!this.initialising[pluginName]) {
+        const plugin = this._get(pluginName)
+        const loadingPlugin = this._install(pluginName, plugin, true)
+        // add to loading queue
+        this.queue[pluginName].push(loadingPlugin)
 
-      if (!this.isLoaded[pluginName]) {
-        this._use({ name: pluginName, options: { setupOnRequest: false } }).then(() => {
-          if (this._actionExists(name)) {
-            callback()
-          } else {
-            console.error('action does not exist: ' + name)
-          }
-        })
+        loadingPlugin
+          .then(() => {
+            if (this._actionExists(name)) {
+              callback()
+            } else {
+              console.error('action does not exist: ' + name)
+            }
+          })
+          .catch(e => console.error(e))
       } else {
-        console.error('action does not exist: ' + name)
+        // wait for installation to finish
+        const queue = this._getQueue(pluginName)
+
+        Promise.all(queue)
+          .then(() => {
+            if (this._actionExists(name)) {
+              callback()
+            } else {
+              console.error('action does not exist: ' + name)
+            }
+          })
       }
     },
-    /**
-     * Fetch external plugin
-     * @param {string} name - Name of plugin
-     * @param {Object} options - {@link https://bitbucket.org/dooksa/resource-loader/src/master/README.md resource-loader}
-     * @returns Promise
-     */
-    _fetch (name, options) {
-      return new Promise((resolve, reject) => {
-        const error = { statusCode: 404, message: 'Plugin not found: ' + name }
-
-        options.onSuccess = () => {
-          const plugin = window.dsApp.plugins[name]
-          // Make this a constant
-          if (plugin) {
-            resolve(plugin)
-          } else {
-            reject(error)
-          }
-        }
-
-        options.onError = () => reject(error)
-
-        resource.script(options)
-      })
+    _getQueue (name) {
+      return this.queue[name] || []
     },
     /**
      * Get plugins setup options
@@ -335,49 +339,67 @@ export default {
      * Install plugin and its dependencies
      * @param {string} name - Name of plugin
      * @param {DsPlugin} plugin - Dooksa plugin object
-     * @param {Object} setup - Setup options @see this.setup
+     * @param {Boolean} forceSetup - Force to run the plugins setup method
      * @returns Promise
      */
-    _install (name, plugin, setup) {
+    _install (name, plugin, forceSetup = false) {
       return new Promise((resolve, reject) => {
         const options = this._getOptions(name)
-
+        // set plugin loading process
         this.isLoaded[name] = false
-        // load plugin
-        if (options.setupOnRequest && !setup) {
-          this.setupOnRequestQueue[name] = plugin
+        this.initialising[name] = true
 
-          return resolve()
-        }
-
+        // lazy load plugin
         if (options.import) {
-          return import(/* webpackChunkName: "plugin" */ options.import)
-            .then(({ default: plugin }) => {
-              if (plugin.dependencies) {
-                this._installDependencies(name, plugin.dependencies)
-              }
+          if (!options.setupOnRequest || forceSetup) {
+            import(`../node_modules/@dooksa-extra/${options.import}/src/index.js`)
+              .then(({ default: plugin }) => {
+                if (plugin.dependencies) {
+                  this._installDependencies(name, plugin.dependencies)
+                }
 
-              this._setup(plugin, options.setup)
-                .then(() => resolve())
-                .catch((e) => reject(e))
-            })
-        }
-        // fetch setup on request plugin
-        if (this.setupOnRequestQueue[name]) {
-          plugin = this.setupOnRequestQueue[name]
-        }
+                const dsPlugin = new DsPlugin(plugin, this.context)
 
-        // install dependencies
-        if (plugin.dependencies) {
-          this._installDependencies(name, plugin.dependencies)
-        }
+                // add plugin to manager
+                this._add(dsPlugin)
 
-        this._isLoading(name)
-          .then(() => {
-            this._setup(plugin, options.setup)
-              .then(() => resolve())
-              .catch((e) => reject(e))
-          })
+                // run plugins setup
+                this._setup(dsPlugin, options.setup)
+                  .then(() => resolve(`Setup import ${name}`))
+                  .catch((e) => reject(e))
+              })
+              .catch(e => reject(e))
+          } else {
+            this.initialising[name] = false
+            return resolve(`Lazy loading ${name}`)
+          }
+        } else {
+          let dsPlugin
+          // fetch setup on request plugin
+          if (this.setupOnRequestQueue[name]) {
+            dsPlugin = this.setupOnRequestQueue[name]
+          } else {
+            dsPlugin = new DsPlugin(plugin, this.context)
+            // add plugin to manager
+            this._add(dsPlugin)
+          }
+
+          if (options.setupOnRequest && !forceSetup) {
+            this.setupOnRequestQueue[name] = dsPlugin
+            this.initialising[name] = false
+
+            return resolve()
+          }
+
+          // install dependencies
+          if (dsPlugin.dependencies) {
+            this._installDependencies(name, dsPlugin.dependencies)
+          }
+
+          this._setup(dsPlugin, options.setup)
+            .then(() => resolve(name))
+            .catch((e) => reject(e))
+        }
       })
     },
     /**
@@ -390,36 +412,16 @@ export default {
         const plugin = dependencies[i]
         // Check if plugin is loaded
         if (!this.isLoaded[plugin.name]) {
-          const options = this._getOptions(plugin.name)
-
-          if (!options.setupOnRequest) {
-            this.queue[name].push(this.queue[plugin.name])
-          } else {
-            const depPlugin = this._use({
-              name: plugin.name,
-              options: {
-                setupOnRequest: false
-              }
-            })
-            // Add to plugin loading queue
-            this.queue[name].push(depPlugin)
-          }
+          const depPlugin = this._use({
+            name: plugin.name,
+            options: {
+              setupOnRequest: false
+            }
+          })
+          // Add to plugin loading queue
+          this.depQueue[name].push(depPlugin)
         }
       }
-    },
-    /**
-     * Checks to see if the plugin is currently loading
-     * @param {string} name The name of the plugin
-     * @returns Promise
-     */
-    _isLoading (name) {
-      const queue = this.queue[name]
-
-      if (queue) {
-        return Promise.all(this.queue[name])
-      }
-
-      return Promise.resolve()
     },
     /**
      * Higher order function to allow plugins to run other plugins methods
@@ -436,7 +438,7 @@ export default {
             throw new Error('Method "' + name + '" does not exist')
           }
         } catch (error) {
-          console.error(error)
+          console.error(name, error)
         }
       }
     },
@@ -448,23 +450,34 @@ export default {
      */
     _setup (plugin, options = {}) {
       return new Promise((resolve, reject) => {
-        const dsPlugin = new DsPlugin(plugin, this.context)
-        const setup = dsPlugin.init(options)
+        const queue = this.depQueue[plugin.name]
 
-        if (setup instanceof Promise) {
-          setup
-            .then(() => {
-              this._add(dsPlugin)
+        Promise.all(queue)
+          .then(() => {
+            const setup = plugin.init(options)
+
+            if (setup instanceof Promise) {
+              setup
+                .then(() => {
+                  this.isLoaded[plugin.name] = true
+                  this.initialising[plugin.name] = false
+                  // remove from setup queue
+                  delete this.setupOnRequestQueue[plugin.name]
+
+                  console.log('Plugin successfully async loaded: ' + plugin.name)
+
+                  resolve(plugin.name)
+                })
+                .catch(e => reject(e))
+            } else {
               this.isLoaded[plugin.name] = true
+              this.initialising[plugin.name] = false
 
-              resolve()
-            })
-            .catch(e => reject(e))
-        } else {
-          this._add(dsPlugin)
-
-          resolve()
-        }
+              console.log('Plugin successfully loaded: ' + plugin.name)
+              resolve(plugin.name)
+            }
+          })
+          .catch(e => reject(e))
       })
     },
     _token (name, params) {
@@ -480,21 +493,29 @@ export default {
      * @returns Promise
      */
     _use ({ name, options = {} }) {
-      const plugin = this._get(name)
       // Return if plugin is loaded
       if (this.isLoaded[name]) {
         return Promise.resolve()
       }
+
+      const plugin = this._get(name)
+      const queue = this._getQueue(name)
+      let forceSetup = false
+
       // Check if plugin is in loading queue and can run setup
-      if (this.queue[name] && (this.setupOnRequest[name] === false || options.setupOnRequest === false)) {
-        return this._install(name, plugin, true)
+      if (!this.initialising[name] && (!this.setupOnRequest[name] || !options.setupOnRequest)) {
+        forceSetup = true
       }
 
-      const loadingPlugin = this._install(name, plugin)
+      if (!queue || forceSetup) {
+        const loadingPlugin = this._install(name, plugin, forceSetup)
 
-      this.queue[name].push(loadingPlugin)
+        queue.push(loadingPlugin)
 
-      return loadingPlugin
+        return loadingPlugin
+      }
+
+      return Promise.resolve()
     }
   }
 }
