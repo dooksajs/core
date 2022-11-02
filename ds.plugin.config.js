@@ -1,6 +1,6 @@
-module.exports = {
-  name: 'dsStarterKit',
-  filename: 'ds-starter-kit',
+export default {
+  name: 'dsTemplate',
+  filename: 'ds-template',
   globalObject: 'window.dsApp.plugins',
   version: 1
 }
