@@ -12,177 +12,181 @@ export default {
     }
   ],
   data: {
-    items: {},
-    conditions: {},
-    lastActionIndex: {}
+    actions: {},
+    sequence: {},
+    conditions: {}
   },
   methods: {
-    dispatch (context, { id, data }) {
+    dispatch (context, { sequenceId, payload }) {
+      const sequence = this.sequence[sequenceId]
+
+      if (!sequence) return
+
       this._dispatch({
-        root: true,
-        parentItemId: id,
-        actions: this.items[id],
-        conditions: this.conditions[id] || [],
-        data
+        sequenceId,
+        actions: sequence.actions,
+        conditions: sequence.conditions || {},
+        payload
       })
     },
+    _getEntryId (item) {
+      return item.entry.map(key => item[key])
+    },
+    set (context, { actions, conditions, sequence }) {
+      if (actions) {
+        this.actions = { ...this.actions, ...actions }
+      }
+
+      if (conditions) {
+        this.conditions = { ...this.conditions, ...conditions }
+      }
+
+      if (sequence) {
+        this.sequence[sequence.id] = {
+          actions: sequence.actions
+        }
+
+        if (sequence.conditions) {
+          this.sequence[sequence.id].conditions = sequence.conditions
+        }
+      }
+    },
+    setConditions (context, item) {
+      this.conditions = { ...this.conditions, ...item }
+    },
     _dispatch ({
-      root,
-      instanceId,
-      parentItemId,
-      actions = [],
-      conditions = [],
-      data,
+      sequenceId,
+      instance = {
+        iteration: {},
+        results: {}
+      },
+      parentEntry,
+      actions = {},
+      conditions = {},
+      payload,
       results = {}
     }) {
-      let lastItem = false
       let valid = true
-      let hasCallback = false
 
-      if (root) {
-        instanceId = this.$method('dsUtilities/generateId')
-        this.lastActionIndex[instanceId] = actions.length - 1
+      instance.payload = payload
+
+      if (parentEntry) {
+        instance.results[parentEntry] = results
       }
 
       if (conditions.length) {
         valid = this._compare(conditions, {
-          instanceId: this.$method('dsUtilities/generateId'),
-          parentItemId,
-          data
+          parentEntry,
+          instance
         })
       }
 
-      for (let i = 0; i < actions.length; i++) {
-        const action = actions[i]
-        const itemId = action.itemId
-        const item = action.items[itemId]
+      for (let i = 0; i < actions.entry.length; i++) {
+        const entry = actions.entry[i]
+        const item = actions[entry]
+        let action = item
+
+        if (item._$id) {
+          action = this.actions[item._$id]
+        }
 
         if (item.conditions) {
           valid = this._compare(item.conditions, {
-            instanceId: this.$method('dsUtilities/generateId'),
-            parentItemId,
-            data
+            parentEntry,
+            instance
           })
         }
 
-        if (Object.hasOwnProperty.call(item, 'when') && valid !== item.when) {
+        if (Object.hasOwnProperty.call(action, 'when') && valid !== action.when) {
           return
         }
 
         // Check if item has a literal value
-        if (Object.hasOwnProperty.call(item, 'value')) {
-          return [item.value]
+        if (Object.hasOwnProperty.call(action, 'value')) {
+          return [action.value]
         }
 
         const callback = {
           onSuccess: null,
           onError: null
         }
-        // TODO: [DS-561] make sure onSuccess value exists to avoid complex condition
-        if (Array.isArray(item.onSuccess) && item.onSuccess.length) {
-          hasCallback = true
 
+        // Setup onSuccess callback
+        if (Object.hasOwnProperty.call(item, 'onSuccess')) {
           callback.onSuccess = {
             params: {
-              instanceId,
-              parentItemId: itemId,
-              actions: this._createActions(item.onSuccess, action),
-              data
+              parentEntry: entry,
+              actions: {
+                entry: item.onSuccess,
+                ...actions
+              },
+              instance
             },
             method: this._dispatch.bind(this)
           }
         }
 
-        // TODO: [DS-562] make sure onError value exists to avoid complex condition
-        if (Array.isArray(item.onError) && item.onSuccess.length) {
-          hasCallback = true
-
+        // Setup onError callback
+        if (Object.hasOwnProperty.call(item, 'onError')) {
           callback.onError = {
             params: {
-              id: instanceId,
-              parentItemId: itemId,
-              actions: this._createActions(item.onError, action),
-              data
+              parentEntry: entry,
+              actions: {
+                entry: item.onError,
+                ...actions
+              },
+              instance
             },
             method: this._dispatch.bind(this)
           }
-        }
-
-        // Check if this action is the last item
-        if (i === this.lastActionIndex[instanceId] && !hasCallback) {
-          lastItem = true
-          delete this.lastActionIndex[instanceId]
         }
 
         const result = this._action({
-          instanceId,
-          itemId,
-          items: action.items,
-          conditions: action.conditions,
-          parentItemId,
-          ...item,
-          callback,
-          data,
-          results,
-          lastItem
+          instance,
+          entry,
+          actions,
+          conditions: item.conditions,
+          parentEntry,
+          name: action.name,
+          type: action.type,
+          computedParams: action._$computedParams,
+          paramType: action.paramType,
+          params: action.params,
+          callback
         })
 
         if (result) {
-          results[itemId] = result
+          results[entry] = result
         }
       }
 
       return results
     },
-    set (context, item = {}) {
-      this.items = { ...this.items, ...item }
-    },
-    setConditions (context, item = {}) {
-      this.conditions = { ...this.conditions, ...item }
-    },
-    _createActions (items, action) {
-      const actions = []
-
-      for (let i = 0; i < items.length; i++) {
-        actions.push({
-          itemId: items[i],
-          items: action.items,
-          params: action.params
-        })
-      }
-
-      return actions
+    _createActions (entry, actions) {
+      return { entry, ...actions }
     },
     _action ({
-      instanceId,
+      instance,
       name,
       type,
       computedParams,
       paramType,
-      paramItems,
       params,
-      data,
-      results,
       callback = {},
-      itemId,
-      parentItemId,
-      lastItem
+      entry,
+      parentEntry
     }) {
       if (computedParams) {
         params = this.$method('dsParameters/process', {
-          id: instanceId,
-          itemId,
-          parentItemId,
+          instance,
+          entry,
+          parentEntry,
           paramType,
-          params,
-          paramItems,
-          data,
-          results,
-          lastItem
+          params
         })
       }
 
-      return this['_' + type]({ name, params, callback })
+      return this['_process/' + type]({ name, params, callback })
     },
     /**
      * This callback is used after a rule
@@ -190,31 +194,16 @@ export default {
      */
 
     /**
-     * Runs onError callback
+     * Event callback
      * @param {onEventCallback} callback - This callback is expected to be a rule or another function within the workflow scope
      * @param {Object} params - An object that are params for the rules callback
      * @param {*} result - The result from the parent function to pass onto the callback
      */
-    _onError (callback, params, result) {
+    _onEvent (callback, params, result) {
       let callbackParams = result
 
       if (params) {
         callbackParams = { ...params, result }
-      }
-
-      callback(callbackParams)
-    },
-    /**
-     * Runs onSuccess callback
-     * @param {onEventCallback} callback - This callback is expected to be a rule or another function within the workflow scope
-     * @param {Object} params - An object that are params for the rules callback
-     * @param {*} results - The results from the parent function to pass onto the callback
-     */
-    _onSuccess (callback, params, results) {
-      let callbackParams = results
-
-      if (params) {
-        callbackParams = { ...params, results }
       }
 
       callback(callbackParams)
@@ -239,15 +228,15 @@ export default {
             const item = condition.values[i]
             let value = item.value
 
-            if (Object.hasOwnProperty.call(item, 'itemId')) {
+            if (Object.hasOwnProperty.call(item, 'entry')) {
               value = this._action({
                 instanceId,
-                itemId: item.itemId,
+                entry: item.entry,
                 parentItemId,
                 paramItems: condition.params,
                 data,
                 lastItem: length === i,
-                ...condition.items[item.itemId]
+                ...condition.items[item.entry]
               })
             }
 
@@ -275,30 +264,30 @@ export default {
 
       return result
     },
-    _getProcessValue ({ params, callback }) {
+    '_process/getProcessValue' ({ params, callback }) {
       const onSuccess = callback.onSuccess
       const onError = callback.onError
       const results = params
 
       if (onSuccess) {
-        this._onSuccess(onSuccess.method || onSuccess, onSuccess.params, results)
+        this._onEvent(onSuccess.method || onSuccess, onSuccess.params, results)
       }
 
       if (onError) {
-        this._onError(onError.method || onError, onError.params)
+        this._onEvent(onError.method || onError, onError.params)
       }
 
       return results
     },
-    _pluginAction ({ name, params, callback }) {
+    '_process/pluginAction' ({ name, params, callback }) {
       this.$action(name, params, callback)
     },
-    _pluginMethod ({ name, params, callback }) {
+    '_process/pluginMethod' ({ name, params, callback }) {
       const onSuccess = callback.onSuccess
       const results = this.$method(name, params)
 
       if (onSuccess) {
-        this._onSuccess(onSuccess.method || onSuccess, onSuccess.params, results)
+        this._onEvent(onSuccess.method || onSuccess, onSuccess.params, results)
       }
     }
   }
