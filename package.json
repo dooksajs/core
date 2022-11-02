@@ -13,9 +13,10 @@
     "lint": "standard",
     "lint:fix": "standard --fix"
   },
+  "type": "module",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@bitbucket.org:dooksa/ds-plugin-starter-kit.git"
+    "url": "git+ssh://git@bitbucket.org:dooksa/ds-plugin-template.git"
   },
   "author": {
     "name": "Thomas David",
