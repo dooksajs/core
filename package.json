@@ -24,10 +24,14 @@
     "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts#v1.0.0",
     "standard": "*"
   },
-  "peerDependencies": {
-    "@dooksa/ds-plugin": "bitbucket:dooksa/ds-plugin#v1.0.0"
-  },
   "dependencies": {
-    "@dooksa/resource-loader": "bitbucket:dooksa/resource-loader#v1.0.0"
+    "@dooksa-extra/ds-plugin-database": "bitbucket:dooksa/ds-plugin-database#master",
+    "@dooksa-extra/ds-plugin-parse": "bitbucket:dooksa/ds-plugin-parse#master",
+    "@dooksa-extra/ds-plugin-template": "bitbucket:dooksa/ds-plugin-template#master",
+    "@dooksa-extra/ds-plugin-utilities": "bitbucket:dooksa/ds-plugin-utilities#master",
+    "@dooksa/resource-loader": "bitbucket:dooksa/resource-loader#master"
+  },
+  "peerDependencies": {
+    "@dooksa/ds-plugin": "bitbucket:dooksa/ds-plugin#master"
   }
 }
