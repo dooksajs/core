@@ -117,33 +117,38 @@ export default {
     setLoaded (context, { id, value }) {
       this.loaded[id] = value
     },
-    _loadTemplate (sectionId, instanceId, groupId, layout, prefixId, view) {
+    _templateExists (sectionId, instanceId, layout, view) {
       let itemId = sectionId + instanceId + '_' + view
       // check if widget has layout and is loaded
       if (!this.loaded[itemId] && !layout[view]) {
         itemId = sectionId + instanceId + '_default'
         view = 'default'
       }
+
       // set if widget loaded
       // load widget template
-      if (!this.loaded[itemId]) {
-        const content = this._getContent(prefixId)
-        const defaultContent = content[sectionId + '_' + instanceId + '_default'] || []
-        const modifiers = this.templates[layout[view].modifierId]
+      return !!this.loaded[itemId]
+    },
+    _loadTemplate (sectionId, instanceId, groupId, layout, prefixId, view, callback) {
+      const content = this._getContent(prefixId)
+      const defaultContent = content[sectionId + '_' + instanceId + '_default'] || []
+      const modifiers = this.templates[layout[view].modifierId]
 
-        this.$method('dsTemplate/create', {
-          id: layout[view].templateId,
-          sectionId,
-          instanceId,
-          groupId,
-          defaultContent,
-          modifiers,
-          view,
-          head: true
-        })
-      }
-
-      return layout[view]
+      this.$action('dsTemplate/create', {
+        id: layout[view].templateId,
+        sectionId,
+        instanceId,
+        groupId,
+        defaultContent,
+        modifiers,
+        view,
+        head: true
+      }, {
+        onSuccess: (result) => {
+          callback(result[1])
+        },
+        onError: (e) => console.log(e)
+      })
     },
     _createInstance (sectionId, instanceId, groupId, layout, view, parentElementId, prefixId, lang) {
       // check if instance is attached to DOM
@@ -151,10 +156,19 @@ export default {
         return
       }
 
-      const currentLayout = this._loadTemplate(sectionId, instanceId, groupId, layout, prefixId, view)
+      const templateExists = this._templateExists(sectionId, instanceId, layout, view)
 
+      if (!templateExists) {
+        this._loadTemplate(sectionId, instanceId, groupId, layout, prefixId, view, (id) => {
+          this._renderLayout(id, sectionId, instanceId, prefixId, lang, view, parentElementId)
+        })
+      } else {
+        this._renderLayout(layout[view].id, sectionId, instanceId, prefixId, lang, view, parentElementId)
+      }
+    },
+    _renderLayout (id, sectionId, instanceId, prefixId, lang, view, parentElementId) {
       this.$method('dsLayout/render', {
-        id: currentLayout.id,
+        id,
         sectionId,
         instanceId,
         prefixId,
@@ -314,9 +328,14 @@ export default {
             // }
             // }
           } else {
-            const nextLayout = nextItem.layout[nextView] || nextItem.layout.default
             // attach new element
-            attachInstance.push({ nextSectionId, instanceId: nextItem.instanceId, parentElementId, nextLayout, nextView })
+            attachInstance.push({
+              sectionId: nextSectionId,
+              instanceId: nextItem.instanceId,
+              parentElementId,
+              layout: nextItem.layout,
+              view: nextView
+            })
           }
         } else {
           prevView = this._getInstanceView(prevView, prevItem.layout)
@@ -362,10 +381,17 @@ export default {
         if (!item.layout[view]) {
           return this.getContentItem({}, { sectionId, instanceId, prefixId, parentElementId, index, view: 'default', head: false })
         }
-        // check if template exists
-        this._loadTemplate(sectionId, instanceId, item.groupId, item.layout, prefixId, view)
 
-        return this.getContentItem({}, { sectionId, instanceId, prefixId, parentElementId, index, head: false })
+        const templateExists = this._templateExists(sectionId, instanceId, item.layout, view)
+
+        if (templateExists) {
+          // check if template exists
+          this._loadTemplate(sectionId, instanceId, item.groupId, item.layout, prefixId, view, () => {
+            return this.getContentItem({}, { sectionId, instanceId, prefixId, parentElementId, index, head: false })
+          })
+        } else {
+          return this.getContentItem({}, { sectionId, instanceId, prefixId, parentElementId, index, head: false })
+        }
       }
     },
     _getContent (id) {
