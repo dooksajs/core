@@ -6,38 +6,9 @@ export default {
   name: 'dsLayout',
   version: 1,
   data: {
-    metadata: {
-      _BIAklh1FkBmDPibBeDyvlg: {
-        title: 'Image',
-        content: {
-          image: 1
-        }
-      },
-      _H2e4SzLZHVwebhHxkUbSlw: {
-        title: 'Two sections',
-        content: {
-          section: 2
-        }
-      }
-    },
-    items: {
-      _BIAklh1FkBmDPibBeDyvlg: [
-        {
-          children: [1],
-          componentId: '_wcx_d77j_LAySA_zzdfPep'
-        },
-        {
-          parentIndex: 0,
-          componentId: '_wcx_d77j_LAySA_zzdfPew',
-          contentIndex: 0
-        }
-      ],
-      _H2e4SzLZHVwebhHxkUbSlw: [
-        {
-          contentIndex: 0
-        }
-      ]
-    },
+    metadata: {},
+    event: {},
+    items: {},
     head: {},
     components: {},
     modifiers: {}
