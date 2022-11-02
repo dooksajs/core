@@ -12,6 +12,7 @@
     "test:e2e": "ds-scripts --e2e test",
     "test:e2e:record": "ds-scripts --e2e --record test"
   },
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@bitbucket.org:dooksa/ds-plugin-event.git"
