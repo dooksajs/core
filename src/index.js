@@ -1,21 +1,114 @@
-import DsPlugin from '../../ds-plugin/src/index.js'
-import dsMetadata from '../../ds-plugin-metadata/src/index.js'
-import dsAction from '../../ds-plugin-action/src/index.js'
-import dsWidget from '../../ds-plugin-widget/src/index.js'
-import dsElement from '../../ds-plugin-element/src/index.js'
-import dsOperators from '../../ds-plugin-operators/src/index.js'
-import dsEvent from '../../ds-plugin-event/src/index.js'
-import dsParameters from '../../ds-plugin-params/src/index.js'
-import dsUtilities from '../../ds-plugin-utilities/src/index.js'
-import dsRouter from '../../ds-plugin-router/src/index.js'
-import dsComponent from '../../ds-plugin-component/src/index.js'
-import dsLayout from '../../ds-plugin-layout/src/index.js'
-import dsToken from '../../ds-plugin-tokens/src/index.js'
-import dsManager from '../../ds-plugin-manager/src/index.js'
-import dsPage from '../../ds-plugin-page/src/index.js'
+import DsPlugin from '@dooksa/ds-plugin'
+import dsMetadata from '@dooksa/ds-plugin-metadata'
+import dsAction from '@dooksa/ds-plugin-action'
+import dsWidget from '@dooksa/ds-plugin-widget'
+import dsElement from '@dooksa/ds-plugin-element'
+import dsOperators from '@dooksa/ds-plugin-operators'
+import dsEvent from '@dooksa/ds-plugin-event'
+import dsParameters from '@dooksa/ds-plugin-parameters'
+import dsRouter from '@dooksa/ds-plugin-router'
+import dsComponent from '@dooksa/ds-plugin-component'
+import dsLayout from '@dooksa/ds-plugin-layout'
+import dsToken from '@dooksa/ds-plugin-token'
+import dsManager from '@dooksa/ds-plugin-manager'
+import dsPage from '@dooksa/ds-plugin-page'
+import 'bootstrap/dist/css/bootstrap.css'
 
 export default {
-  plugins: [],
+  plugins: {
+    [dsMetadata.name]: {
+      name: dsMetadata.name,
+      version: dsMetadata.version,
+      plugin: dsMetadata
+    },
+    [dsToken.name]: {
+      name: dsToken.name,
+      version: dsToken.version,
+      plugin: dsToken
+    },
+    [dsRouter.name]: {
+      name: dsRouter.name,
+      version: dsRouter.version,
+      plugin: dsRouter
+    },
+    [dsComponent.name]: {
+      name: dsComponent.name,
+      version: dsComponent.version,
+      plugin: dsComponent
+    },
+    [dsLayout.name]: {
+      name: dsLayout.name,
+      version: dsLayout.version,
+      plugin: dsLayout
+    },
+    [dsWidget.name]: {
+      name: dsWidget.name,
+      version: dsWidget.version,
+      plugin: dsWidget
+    },
+    [dsAction.name]: {
+      name: dsAction.name,
+      version: dsAction.version,
+      plugin: dsAction
+    },
+    [dsEvent.name]: {
+      name: dsEvent.name,
+      version: dsEvent.version,
+      plugin: dsEvent
+    },
+    [dsParameters.name]: {
+      name: dsParameters.name,
+      version: dsParameters.version,
+      plugin: dsParameters
+    },
+    [dsOperators.name]: {
+      name: dsOperators.name,
+      version: dsOperators.version,
+      plugin: dsOperators
+    },
+    [dsElement.name]: {
+      name: dsElement.name,
+      version: dsElement.version,
+      plugin: dsElement
+    },
+    [dsPage.name]: {
+      name: dsPage.name,
+      version: dsPage.version,
+      plugin: dsPage
+    },
+    dsParse: {
+      name: 'dsParse',
+      version: 1,
+      options: {
+        import: 'ds-plugin-parse',
+        setupOnRequest: true
+      }
+    },
+    dsDatabase: {
+      name: 'dsDatabase',
+      version: 1,
+      options: {
+        import: 'ds-plugin-database',
+        setupOnRequest: true
+      }
+    },
+    dsTemplate: {
+      name: 'dsTemplate',
+      version: 1,
+      options: {
+        import: 'ds-plugin-template',
+        setupOnRequest: true
+      }
+    },
+    dsUtilities: {
+      name: 'dsUtilities',
+      version: 1,
+      options: {
+        import: 'ds-plugin-utilities',
+        setupOnRequest: true
+      }
+    }
+  },
   use (plugin = {}, options = {}) {
     const item = {
       name: plugin.name,
@@ -28,89 +121,21 @@ export default {
     }
 
     // ISSUE: add plugin schema checks
-    this.plugins.push(item)
+    this.plugins[plugin.name] = item
   },
   init ({ prefetchedPage, assetsURL, isDev, rootElementId = 'app' }) {
     const pluginManager = new DsPlugin(dsManager)
-    // Core plugins
-    const plugins = [
-      {
-        name: dsMetadata.name,
-        version: dsMetadata.version,
-        plugin: dsMetadata
-      },
-      {
-        name: dsToken.name,
-        version: dsToken.version,
-        plugin: dsToken
-      },
-      {
-        name: dsRouter.name,
-        version: dsRouter.version,
-        plugin: dsRouter
-      },
-      {
-        name: dsComponent.name,
-        version: dsComponent.version,
-        plugin: dsComponent
-      },
-      {
-        name: dsLayout.name,
-        version: dsLayout.version,
-        plugin: dsLayout
-      },
-      {
-        name: dsWidget.name,
-        version: dsWidget.version,
-        plugin: dsWidget
-      },
-      {
-        name: dsAction.name,
-        version: dsAction.version,
-        plugin: dsAction
-      },
-      {
-        name: dsEvent.name,
-        version: dsEvent.version,
-        plugin: dsEvent
-      },
-      {
-        name: dsParameters.name,
-        version: dsParameters.version,
-        plugin: dsParameters
-      },
-      {
-        name: dsOperators.name,
-        version: dsOperators.version,
-        plugin: dsOperators
-      },
-      {
-        name: dsUtilities.name,
-        version: dsUtilities.version,
-        plugin: dsUtilities
-      },
-      {
-        name: dsElement.name,
-        version: dsElement.version,
-        plugin: dsElement,
-        options: {
-          setup: { rootElementId }
-        }
-      },
-      {
-        name: dsPage.name,
-        version: dsPage.version,
-        plugin: dsPage,
-        options: {
-          setup: { prefetchedPage }
-        }
-      },
-      ...this.plugins
-    ]
+    // core plugins options
+    this.plugins[dsElement.name].options = {
+      setup: { rootElementId }
+    }
+    this.plugins[dsPage.name].options = {
+      setup: { prefetchedPage }
+    }
 
     return pluginManager.init({
       build: 1,
-      plugins,
+      plugins: this.plugins,
       DsPlugin,
       isDev
     })

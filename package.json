@@ -6,7 +6,6 @@
   "scripts": {
     "lint": "standard",
     "lint:fix": "standard --fix",
-    "dev": "ds-scripts dev",
     "build": "ds-scripts build",
     "test:unit": "ds-scripts --unit test",
     "test:unit:record": "ds-scripts --unit --record test",
