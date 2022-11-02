@@ -14,6 +14,7 @@ export default {
   data: {
     _methods: {},
     _tokens: {},
+    _components: {},
     buildId: '',
     additionalPlugins: {},
     plugins: {},
@@ -76,6 +77,10 @@ export default {
         value: this._token.bind(this),
         use: ['dsToken']
       },
+      {
+        name: '$component',
+        value: this._component.bind(this),
+        use: ['dsComponent', 'dsParse', 'dsElement']
       }
     ]
     // add dsManager
@@ -215,6 +220,15 @@ export default {
           }
         }
       }
+
+      // ISSUE: [DS-756] Add catch if component exists
+      if (plugin.components) {
+        for (let i = 0; i < plugin.components.length; i++) {
+          const component = plugin.components[i]
+
+          this._components[component.name] = { ...component, plugin: plugin.name }
+        }
+      }
     },
     /**
      * Store plugins setup options
@@ -225,6 +239,31 @@ export default {
       this.setupOnRequest[name] = !!options.setupOnRequest
       this.isLoaded[name] = false
       this.options[name] = options
+    },
+    _component (name) {
+      if (this._components[name]) {
+        const component = this._components[name]
+
+        if (!this.isLoaded[component.plugin]) {
+          const pluginName = component.plugin
+          const options = this._getOptions(pluginName)
+          const plugin = this.setupOnRequestQueue[pluginName]
+
+          this._setup(plugin, options.setup)
+            .catch((e) => console.error(e))
+        }
+
+        if (component.isLazy && !component.loading) {
+          component.loading = true
+          component.lazy()
+            .then(() => {
+              component.loading = false
+            })
+            .catch(e => console.error(e))
+        }
+
+        return component
+      }
     },
     /**
      * Get plugin
