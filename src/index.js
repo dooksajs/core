@@ -20,6 +20,7 @@ export default {
   methods: {
     create (context, {
       id,
+      entry,
       sectionId = this.$method('dsUtilities/generateId'),
       instanceId,
       groupId = this.$method('dsUtilities/generateId'),
@@ -28,8 +29,25 @@ export default {
       view = 'default',
       head = false
     }) {
-      const template = this.widgets[id]
-      const item = {
+      // get template
+      let item = this.items[entry] || this.items[this.entry[id]]
+
+      if (!item) {
+        return new Promise(resolve => {
+          this._fetch(id)
+            .then(() => {
+              entry = this.entry[id]
+              item = this.items[entry]
+
+              const result = this._constructor(id, entry, item, sectionId, instanceId, groupId, defaultContent, modifiers, view, head)
+
+              resolve(result)
+            })
+        })
+      }
+
+      return this._constructor(id, entry, item, sectionId, instanceId, groupId, defaultContent, modifiers, view, head)
+    },
         widgets: {
           items: {},
           content: {},
@@ -170,6 +188,22 @@ export default {
       }
 
       return [content, elements, defaultContent]
+    _fetch (id) {
+      return new Promise((resolve, reject) => {
+        this.$action('dsDatabase/getOne', { collection: 'widgetTemplates', id },
+          {
+            onSuccess: (record) => {
+              this.set({}, { id: record.id, item: record })
+              resolve(record)
+            },
+            onError: (error) => {
+              console.error(error)
+              reject(error)
+            }
+          }
+        )
+      })
+    },
     }
   }
 }
