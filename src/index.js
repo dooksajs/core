@@ -12,14 +12,14 @@ export default {
     }
   ],
   data: {
+    head: {},
     items: {},
     content: {},
     loaded: {},
-    view: {
-      _ZPhyHOc6A3HwPrLMH3b1Yn: 'edit'
-    },
+    view: {},
     templates: {},
     layout: {},
+    sectionParents: {},
     attached: {
       section: {},
       instance: {},
@@ -34,7 +34,7 @@ export default {
   methods: {
     create (context, { id, parentElementId, prefixId, lang }) {
       const [items, sectionId] = this._getItems(id, prefixId)
-      let view = this._getSectionView(id)
+      let view = this._getSectionView(sectionId)
 
       for (let i = 0; i < items.length; i++) {
         const item = items[i]
@@ -45,6 +45,34 @@ export default {
       }
 
       this.attachItem({}, { type: 'section', id: sectionId })
+    },
+    insert (context, { id, index, item }) {
+      // check if section exists
+      if (this.items[id]) {
+        // create new id's
+        item.groupId = this.$method('dsUtilities/generateId')
+        item.instanceId = this.$method('dsUtilities/generateId')
+
+        if (Number.isNaN(index)) {
+          this.items[id].push(item)
+        } else {
+          this.items[id].splice(index, 0, item)
+        }
+
+        let view = this._getSectionView(id)
+
+        view = this._getInstanceView(view, item.layout)
+
+        const pageId = this.$method('dsRouter/getCurrentId')
+
+        this._createInstance(id, item.instanceId, item.groupId, item.layout, view, 'appElement', pageId)
+      }
+    },
+    setSectionParentId (context, { childId, parentId }) {
+      this.sectionParents[childId] = parentId
+    },
+    getSectionParentId (context, sectionId) {
+      return this.sectionParents[sectionId]
     },
     _getSectionView (id) {
       return this.view[id] || 'default'
@@ -58,6 +86,9 @@ export default {
     getLayout (context, id) {
       return this.layout[id]
     },
+    getHead (context, id) {
+      return this.head[id]
+    },
     set (context, { pageId, payload }) {
       if (payload.items) {
         this.setItems({}, payload.items)
@@ -69,6 +100,10 @@ export default {
 
       if (payload.loaded) {
         this.loaded = { ...this.loaded, ...payload.loaded }
+      }
+      // the entry points for a page
+      if (payload.head) {
+        this.head = { ...this.head, ...payload.head }
       }
 
       if (payload.layout) {
@@ -402,7 +437,7 @@ export default {
 
       for (const itemId in items) {
         if (Object.prototype.hasOwnProperty.bind(items, itemId)) {
-          const sectionId = itemId.slice(0, 22)
+          const sectionId = itemId.slice(0, 23)
 
           if (!this.attached.section[sectionId]) {
             render.section[sectionId] = true
@@ -442,7 +477,7 @@ export default {
         return [this.items[currentId], currentId, true]
       }
 
-      return [this.items[id], id, false]
+      return [this.items[id] || [], id, false]
     }
   }
 }
