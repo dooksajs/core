@@ -35,9 +35,9 @@
     "vite": "^3.1.0"
   },
   "dependencies": {
-    "@dooksa-extra/ds-plugin-parse": "bitbucket:dooksa/ds-plugin-parse#v1.0.0",
-    "@dooksa/ds-app": "bitbucket:dooksa/ds-app#v1.0.0",
-    "@dooksa/ds-plugin-dev-tool": "bitbucket:dooksa/ds-plugin-dev-tool#v1.0.0",
+    "@dooksa-extra/ds-plugin-parse": "bitbucket:dooksa/ds-plugin-parse#master",
+    "@dooksa/ds-app": "bitbucket:dooksa/ds-app#master",
+    "@dooksa/ds-plugin-dev-tool": "bitbucket:dooksa/ds-plugin-dev-tool#master",
     "node-html-parser": "^6.1.1",
     "vite-plugin-virtual-html": "^0.4.0"
   }
