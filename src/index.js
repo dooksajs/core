@@ -39,7 +39,7 @@ export default {
           this.$method('dsMetadata/setTheme', page.app.theme)
           this.$method('dsMetadata/setAppId', page.app.id)
           this.set({}, page)
-
+          // update route if path is a redirect
           if (page.foundPath && page.foundPath !== page.path) {
             return this.$method('dsRouter/navigate', this._cleanPath(page.path))
           }
@@ -72,16 +72,16 @@ export default {
       })
     },
     getOneByPath (context, { path, expand }) {
-      const filterPath = `(path='${path}')`
-      const options = {
-        filter: filterPath
-      }
-
-      if (expand) {
-        options.expand = expand
-      }
-
       return new Promise((resolve, reject) => {
+        const filterPath = `(path='${path}')`
+        const options = {
+          filter: filterPath
+        }
+
+        if (expand) {
+          options.expand = expand
+        }
+
         this.$action('dsDatabase/getList', {
           collection: 'pages',
           options
@@ -119,12 +119,12 @@ export default {
                   resolve(page)
                 },
                 onError: (error) => {
-                  console.log(error)
+                  console.error(error)
                   reject(error)
                 }
               })
             } else {
-              console.log(error)
+              console.error(error)
               reject(error)
             }
           }
