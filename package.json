@@ -1,0 +1,29 @@
+{
+  "name": "@dooksa-extra/ds-plugin-devtool",
+  "version": "1.0.0",
+  "description": "Development tools for Dooksa",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "ds-scripts dev",
+    "update": "ds-scripts update",
+    "test:unit": "ds-scripts --unit test",
+    "test:unit:record": "ds-scripts --unit --record test",
+    "test:e2e": "ds-scripts --e2e test",
+    "test:e2e:record": "ds-scripts --e2e --record test",
+    "lint": "standard",
+    "lint:fix": "standard --fix"
+  },
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org:dooksa/ds-plugin-devtool.git"
+  },
+  "author": {
+    "name": "Thomas David",
+    "email": "tom@mightysmile.com"
+  },
+  "devDependencies": {
+    "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts#master",
+    "standard": "*"
+  }
+}
