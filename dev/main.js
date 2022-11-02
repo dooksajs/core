@@ -1,5 +1,5 @@
 import dsApp from '@dooksa/ds-app'
-import dsDevTool from '@dooksa/ds-plugin-dev-tool'
+import dsDevTool from '@dooksa-extra/ds-plugin-devtool'
 import dsPlugin from '@dooksa/plugin'
 import dsPluginDeps from '@dooksa/plugin-dependencies'
 import dsPluginTemplates from '@dooksa/plugin-templates'

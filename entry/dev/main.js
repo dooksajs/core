@@ -1,6 +1,6 @@
 import dsApp from '@dooksa/ds-app'
 import dsParse from '@dooksa/ds-plugin-parse'
-import dsDevTool from '@dooksa/ds-plugin-dev-tool'
+import dsDevTool from '@dooksa-extra/ds-plugin-devtool'
 import dsPlugin from '@dooksa/plugin'
 // import dsPluginDeps from '@dooksa/pluginDeps'
 import bootstrapPage from './data/index.js.js'
