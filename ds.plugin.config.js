@@ -1,6 +1,4 @@
-module.exports = {
-  name: 'dsOperators',
-  filename: 'ds-operators',
-  globalObject: 'window.dsApp.plugins',
+export default {
+  name: 'dsOperator',
   version: 1
 }

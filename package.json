@@ -10,6 +10,7 @@
     "test:unit": "ds-scripts --unit test",
     "test:unit:record": "ds-scripts --unit --record test"
   },
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@bitbucket.org:dooksa/ds-plugin-operators.git"
