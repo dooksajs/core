@@ -22,11 +22,7 @@
     "email": "tom@mightysmile.com"
   },
   "devDependencies": {
-    "@dooksa/ds-plugin": "bitbucket:dooksa/ds-plugin#master",
     "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts#master",
     "standard": "*"
-  },
-  "dependencies": {
-    "object-hash": "^3.0.0"
   }
 }
