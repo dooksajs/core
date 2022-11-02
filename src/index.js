@@ -32,8 +32,8 @@ function Plugin (plugin, context = []) {
   for (let i = 0; i < context.length; i++) {
     const item = context[i]
     // ISSUE: [DS-752] applying context to plugins should be more dynamic
-    if (plugin.name === 'dsToken' && item.name === '$token') {
-      _context.$token = item.value
+    if (item.use && item.use.includes(plugin.name)) {
+      _context[item.name] = item.value
     }
 
     if (item.name === 'isDev' && item.value) {
