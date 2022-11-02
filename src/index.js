@@ -13,6 +13,7 @@ export default {
   version: VERSION,
   data: {
     _methods: {},
+    _tokens: {},
     buildId: '',
     additionalPlugins: {},
     plugins: {},
@@ -68,8 +69,13 @@ export default {
       },
       {
         name: 'isDev',
-        dispatch: false,
         value: isDev
+      },
+      {
+        name: '$token',
+        value: this._token.bind(this),
+        use: ['dsToken']
+      },
       }
     ]
     // add dsManager
@@ -196,6 +202,16 @@ export default {
             const method = plugin.methods[key]
 
             this._methods[`${plugin.name}/${key}`] = method
+          }
+        }
+      }
+
+      if (plugin.tokens) {
+        for (const key in plugin.tokens) {
+          if (Object.hasOwnProperty.call(plugin.tokens, key)) {
+            const token = plugin.tokens[key]
+
+            this._tokens[`${plugin.name}/${key}`] = token
           }
         }
       }
@@ -411,6 +427,11 @@ export default {
           resolve()
         }
       })
+    },
+    _token (name, params) {
+      if (this._tokens[name]) {
+        return this._tokens[name](params)
+      }
     },
     /**
      * Initialise the plugin installation
