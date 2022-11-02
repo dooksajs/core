@@ -1,5 +1,5 @@
 {
-  "name": "@dooksa/ds-plugin-template",
+  "name": "@dooksa-extra/ds-plugin-template",
   "version": "1.0.0",
   "description": "Dooksa templates",
   "main": "src/index.js",
@@ -23,8 +23,7 @@
     "email": "tom@mightysmile.com"
   },
   "devDependencies": {
-    "@dooksa/ds-plugin": "bitbucket:dooksa/ds-plugin#master",
-    "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts#master",
+    "@dooksa/ds-scripts": "bitbucket:dooksa/ds-script#master",
     "standard": "*"
   }
 }
