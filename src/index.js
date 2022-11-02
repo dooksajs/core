@@ -15,31 +15,32 @@ export default {
     items: {}
   },
   methods: {
-    addListener (context, { id, name, item }) {
+    addListener (context, { id, on, action }) {
       if (this.items[id]) {
-        if (this.items[id][name]) {
-          this.items[id][name].push(item)
+        if (this.items[id][on]) {
+          this.items[id][on].push(action)
         } else {
-          this.items[id][name] = [item]
+          this.items[id][on] = [action]
         }
       } else {
         this.items[id] = {
-          [name]: [item]
+          [on]: [action]
         }
       }
     },
-    emit (context, { id, name, payload }) {
-      const eventName = this._name(context.name, name)
-      const listeners = this._getListener(id, eventName)
+    emit (context, { id, on, payload }) {
+      // not sure why we need the context name
+      // const eventName = this._name(context.name, on)
+      const listeners = this.getListener({}, { id, on })
 
       for (let i = 0; i < listeners.length; i++) {
-        this.$method('dsAction/dispatch', { id: listeners[i], data: payload })
+        this.$method('dsAction/dispatch', { sequenceId: listeners[i], payload })
       }
     },
-    removeListener (context, { id, name, value }) {
+    removeListener (context, { id, on, value }) {
       if (this.items[id]) {
-        if (this.items[id][name]) {
-          const items = this.items[id][name]
+        if (this.items[id][on]) {
+          const items = this.items[id][on]
           const list = []
 
           for (let i = 0; i < items.length; i++) {
@@ -49,16 +50,16 @@ export default {
           }
 
           if (!list.length) {
-            delete this.items[id][name]
+            delete this.items[id][on]
           } else {
-            this.items[id][name] = list
+            this.items[id][on] = list
           }
         }
       }
     },
-    _getListener (id, name) {
+    getListener (context, { id, on }) {
       if (this.items[id]) {
-        return this.items[id][name] ? [...this.items[id][name]] : []
+        return this.items[id][on] ? this.items[id][on] : []
       }
 
       return []
