@@ -9,12 +9,12 @@ const scriptName = args[args.length - 1]
  * Fetch scripts
  */
 const scripts = {
-  test: true,
+  // test: true,
   dev: true,
   build: true,
-  build_template: true,
-  lint: true,
-  update: true,
+  template: true,
+  // lint: true,
+  // update: true,
   dispatch (scriptName) {
     import('../scripts/' + scriptName + '.js')
       .catch(e => console.log(e))

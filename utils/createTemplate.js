@@ -1,25 +1,38 @@
 import path from 'path'
 import fs from 'fs'
-import DsPlugin from '@dooksa/ds-plugin'
-import DsManager from '@dooksa/ds-plugin-manager'
-import DsDevTool from '@dooksa/ds-plugin-dev-tool'
-import DsParse from '@dooksa/ds-plugin-parse'
-import modifiers from '../scripts/templates/index.js'
-const dsManager = new DsPlugin(DsManager, [])
+import dsApp from '@dooksa/ds-app'
+import dsDevTool from '@dooksa/ds-plugin-dev-tool'
+import dsParse from '@dooksa-extra/ds-plugin-parse'
+import modifiers from '../data/tempalte-modifiers.js'
 
-const dsApp = dsManager.init({
-  buildId: 1,
-  plugins: [
-    {
-      name: DsDevTool.name,
-      plugin: DsDevTool
-    },
-    {
-      name: DsParse.name,
-      plugin: DsParse
+// dummy window
+global.window = {
+  location: {
+    pathname: ''
+  },
+  addEventListener: () => {}
+}
+// dummy document
+global.document = {
+  createElement: () => ({}),
+  getElementById: () => ({
+    parentElement: {
+      replaceChild: () => {}
     }
-  ],
-  isDev: true
+  })
+}
+
+const devPlugins = [
+  dsParse,
+  dsDevTool
+]
+
+// Add dev tools
+for (let i = 0; i < devPlugins.length; i++) {
+  dsApp.use(devPlugins[i])
+}
+const devApp = dsApp.init({
+  isDev: true,
 })
 
 const mergeStrings = (a, b, spacer = ' ') => {
@@ -55,7 +68,7 @@ export const importScript = function (script, basePath) {
 }
 
 export const createTemplate = (rootElement) => {
-  return dsApp.$method('dsParse/toWidget', { rootElement, isTemplate: true })
+  return devApp.$method('dsParse/toWidget', { rootElement, isTemplate: true })
 }
 
 export const createModifier = (id, index, baseTemplate) => {
@@ -79,7 +92,7 @@ export const createModifier = (id, index, baseTemplate) => {
     for (let i = 0; i < modifierComponents.length; i++) {
       const modifierComponent = modifierComponents[i]
       const component = mergeComponent(baseComponent, modifierComponent)
-      const componentId = dsApp.$method('dsParse/createHash', component)
+      const componentId = devApp.$method('dsParse/createHash', component)
 
       result.components[componentId] = component
       result.modifiers[id] = {

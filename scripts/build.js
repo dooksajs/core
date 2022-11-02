@@ -1,20 +1,27 @@
-'use strict'
+import path from 'path'
+import legacy from '@vitejs/plugin-legacy'
+import { appDirectory, scriptDirectory } from '../utils/paths.js'
+import { build } from 'vite'
 
-// Do this as the first thing so that any code reading it knows the right env.
-process.env.BABEL_ENV = 'production'
-process.env.NODE_ENV = 'production'
+console.log(path.resolve(appDirectory, 'dist'))
 
-import path from 'path';
-import fs from 'fs'
-import webpack from 'webpack'
-import { appDirectory } from '../utils/paths.js'
-import webpackConfig from '../webpack.prod.config.js'
-
-const pluginCompiler = webpack(webpackConfig)
-
-pluginCompiler.run((err, stats) => {
-  if (err || stats.hasErrors()) {
-    console.log(err)
-  }
-  console.log('Plugin compiled.')
-})
+;(async () => {
+  await build({
+    root: path.resolve(appDirectory, 'build'),
+    build: {
+      emptyOutDir: true,
+      outDir: path.resolve(appDirectory, 'dist'),
+      sourcemap: true
+    },
+    plugins: [
+      legacy({
+        targets: ['defaults', 'not IE 11']
+      })
+    ],
+    resolve: {
+      alias:{
+        '@dooksa/plugin': path.resolve(appDirectory, 'src', 'index.js')
+      }
+    }
+  })
+})()

@@ -1,30 +1,36 @@
-'use strict'
-
-// Do this as the first thing so that any code reading it knows the right env.
-process.env.BABEL_ENV = 'development'
-process.env.NODE_ENV = 'development'
-
-import webpackConfig from '../webpack.dev.config.js'
-import { createRequire } from 'module'
 import path from 'path';
-import { appDirectory } from '../utils/paths.js'
+import fs from 'fs';
+import { scriptDirectory, appDirectory } from '../utils/paths.js'
+import { createServer } from 'vite'
+import '../utils/getDependencies.js'
+import '../utils/getTemplates.js'
 
-const { default: { hasTemplates } } = await import(path.join(appDirectory, 'ds.plugin.config.js'))
-const require = createRequire(import.meta.url);
-const webpack = require('webpack')
-const WebpackDevServer = require('webpack-dev-server')
+;(async () => {
+  const { default: { name } } = await import(path.join(appDirectory, 'ds.plugin.config.js'))
+  const emptyExport = path.resolve(scriptDirectory, 'utils', 'emptyExport.js')
+  let pluginDepPath = path.resolve(scriptDirectory, 'tmp', name + '-pluginDeps.js')
+  let pluginTemplates = path.resolve(scriptDirectory, 'tmp', name + '-raw-templates.js')
 
-if (hasTemplates) {
-  // await import('./build_template.js')
-}
+  if (!fs.existsSync(pluginDepPath)) {
+    pluginDepPath = emptyExport
+  }
 
-const compiler = webpack(webpackConfig)
-const devServerOptions = { ...webpackConfig.devServer, open: true }
-const server = new WebpackDevServer(devServerOptions, compiler)
+  if (!fs.existsSync(pluginTemplates)) {
+    pluginTemplates = emptyExport
+  }
 
-const runServer = async () => {
-  console.log('Starting server...')
-  await server.start()
-}
+  const server = await createServer({
+    root: path.resolve(scriptDirectory, 'dev'),
+    resolve: { 
+      alias: {
+        '@dooksa/plugin': path.resolve(appDirectory, 'src', 'index.js'),
+        '@dooksa/plugin-config': path.resolve(appDirectory, 'ds.plugin.config.js'),
+        '@dooksa/plugin-dependencies': pluginDepPath,
+        '@dooksa/plugin-templates': pluginTemplates
+      }
+     }
+  })
+  await server.listen()
 
-runServer()
+  server.printUrls()
+})()
