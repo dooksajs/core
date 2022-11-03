@@ -38,7 +38,7 @@
     "@dooksa/ds-plugin-page": "bitbucket:dooksa/ds-plugin-page",
     "@dooksa/ds-plugin-parameters": "bitbucket:dooksa/ds-plugin-parameters",
     "@dooksa/ds-plugin-router": "bitbucket:dooksa/ds-plugin-router",
-    "@dooksa/ds-plugin-template": "bitbucket:dooksa/ds-plugin-templates",
+    "@dooksa/ds-plugin-template": "bitbucket:dooksa/ds-plugin-template",
     "@dooksa/ds-plugin-token": "bitbucket:dooksa/ds-plugin-tokens",
     "@dooksa/ds-plugin-utilities": "bitbucket:dooksa/ds-plugin-utilities",
     "@dooksa/ds-plugin-widget": "bitbucket:dooksa/ds-plugin-widget",
