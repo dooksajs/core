@@ -19,22 +19,9 @@
     "name": "Thomas David",
     "email": "tom@mightysmile.com"
   },
-  "standard": {
-    "env": [
-      "browser",
-      "mocha"
-    ],
-    "globals": [
-      "cy",
-      "Cypress",
-      "expect",
-      "assert"
-    ]
-  },
+
   "devDependencies": {
-    "@cypress/code-coverage": "^3.9.12",
-    "@dooksa/ds-plugin": "bitbucket:dooksa/ds-plugin#master",
-    "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts#master",
+    "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts",
     "standard": "*"
   }
 }
