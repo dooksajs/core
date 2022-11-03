@@ -1,5 +1,5 @@
 import resource from '@dooksa/resource-loader'
-import DsPlugin from '../../ds-plugin/src/index.js'
+import DsPlugin from '@dooksa/ds-plugin'
 
 const NAME = 'dsManager'
 const VERSION = 1
