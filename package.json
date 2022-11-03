@@ -30,11 +30,9 @@
       "assert"
     ]
   },
-  "devDependencies": {
-    "@vitejs/plugin-legacy": "^2.2.0",
-    "vite": "^3.1.0"
-  },
   "dependencies": {
+    "@vitejs/plugin-legacy": "^2.2.0",
+    "vite": "^3.1.0",
     "@dooksa-extra/ds-plugin-parse": "bitbucket:dooksa/ds-plugin-parse",
     "@dooksa/ds-app": "bitbucket:dooksa/ds-app",
     "@dooksa-extra/ds-plugin-devtool": "bitbucket:dooksa/ds-plugin-devtool",
