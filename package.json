@@ -24,6 +24,6 @@
   },
   "devDependencies": {
     "standard": "*",
-    "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts#v1.0.0"
+    "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts"
   }
 }
