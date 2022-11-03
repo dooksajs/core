@@ -13,10 +13,14 @@
     "test:e2e": "ds-scripts --e2e test",
     "test:e2e:record": "ds-scripts --e2e --record test"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org:dooksa/ds-plugin-database.git"
+  },
   "author": "Thomas David",
   "type": "module",
   "devDependencies": {
-    "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts#master",
+    "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts",
     "pocketbase": "^0.7.1"
   }
 }
