@@ -28,7 +28,7 @@
   "dependencies": {
     "@dooksa/ds-plugin": "bitbucket:dooksa/ds-plugin",
     "@dooksa/ds-plugin-action": "bitbucket:dooksa/ds-plugin-action",
-    "@dooksa/ds-plugin-component": "bitbucket:dooksa/ds-plugin-Components",
+    "@dooksa/ds-plugin-component": "bitbucket:dooksa/ds-plugin-component",
     "@dooksa/ds-plugin-element": "bitbucket:dooksa/ds-plugin-element",
     "@dooksa/ds-plugin-event": "bitbucket:dooksa/ds-plugin-event",
     "@dooksa/ds-plugin-layout": "bitbucket:dooksa/ds-plugin-layout",
