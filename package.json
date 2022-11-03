@@ -22,20 +22,26 @@
   },
   "type": "module",
   "devDependencies": {
+    "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts",
     "standard": "*"
   },
   "dependencies": {
-    "@dooksa/ds-plugin": "bitbucket:dooksa/ds-plugin#v1.0.0",
-    "@dooksa/ds-plugin-action": "bitbucket:dooksa/ds-plugin-action#v1.0.0",
-    "@dooksa/ds-plugin-content": "bitbucket:dooksa/ds-plugin-content#v1.0.0",
-    "@dooksa/ds-plugin-element": "bitbucket:dooksa/ds-plugin-element#v1.0.0",
-    "@dooksa/ds-plugin-event": "bitbucket:dooksa/ds-plugin-event#v1.0.0",
-    "@dooksa/ds-plugin-manager": "bitbucket:dooksa/ds-plugin-manager#v1.0.0",
-    "@dooksa/ds-plugin-operators": "bitbucket:dooksa/ds-plugin-operators#v1.0.0",
-    "@dooksa/ds-plugin-parameters": "bitbucket:dooksa/ds-plugin-parameters#v1.0.0",
-    "@dooksa/ds-plugin-router": "bitbucket:dooksa/ds-plugin-router#v1.0.0",
-    "@dooksa/ds-plugin-utilities": "bitbucket:dooksa/ds-plugin-utilities#v1.0.0",
-    "@dooksa/ds-plugin-widget": "bitbucket:dooksa/ds-plugin-widget#v1.0.0",
-    "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts#v1.0.0"
+    "@dooksa/ds-plugin": "bitbucket:dooksa/ds-plugin",
+    "@dooksa/ds-plugin-action": "bitbucket:dooksa/ds-plugin-action",
+    "@dooksa/ds-plugin-component": "bitbucket:dooksa/ds-plugin-Components",
+    "@dooksa/ds-plugin-element": "bitbucket:dooksa/ds-plugin-element",
+    "@dooksa/ds-plugin-event": "bitbucket:dooksa/ds-plugin-event",
+    "@dooksa/ds-plugin-layout": "bitbucket:dooksa/ds-plugin-layout",
+    "@dooksa/ds-plugin-manager": "bitbucket:dooksa/ds-plugin-manager",
+    "@dooksa/ds-plugin-metadata": "bitbucket:dooksa/ds-plugin-metadata",
+    "@dooksa/ds-plugin-operators": "bitbucket:dooksa/ds-plugin-operators",
+    "@dooksa/ds-plugin-page": "bitbucket:dooksa/ds-plugin-page",
+    "@dooksa/ds-plugin-parameters": "bitbucket:dooksa/ds-plugin-parameters",
+    "@dooksa/ds-plugin-router": "bitbucket:dooksa/ds-plugin-router",
+    "@dooksa/ds-plugin-template": "bitbucket:dooksa/ds-plugin-templates",
+    "@dooksa/ds-plugin-token": "bitbucket:dooksa/ds-plugin-tokens",
+    "@dooksa/ds-plugin-utilities": "bitbucket:dooksa/ds-plugin-utilities",
+    "@dooksa/ds-plugin-widget": "bitbucket:dooksa/ds-plugin-widget",
+    "bootstrap": "^5.2.2"
   }
 }
