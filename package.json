@@ -40,7 +40,6 @@
     "@dooksa/ds-plugin-router": "bitbucket:dooksa/ds-plugin-router",
     "@dooksa/ds-plugin-template": "bitbucket:dooksa/ds-plugin-template",
     "@dooksa/ds-plugin-token": "bitbucket:dooksa/ds-plugin-tokens",
-    "@dooksa/ds-plugin-utilities": "bitbucket:dooksa/ds-plugin-utilities",
     "@dooksa/ds-plugin-widget": "bitbucket:dooksa/ds-plugin-widget",
     "bootstrap": "^5.2.2"
   }
