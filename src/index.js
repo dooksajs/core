@@ -352,7 +352,7 @@ export default {
         // lazy load plugin
         if (options.import) {
           if (!options.setupOnRequest || forceSetup) {
-            import(`../node_modules/@dooksa-extra/${options.import}/src/index.js`)
+            import(`./plugins/${options.import}.js`)
               .then(({ default: plugin }) => {
                 if (plugin.dependencies) {
                   this._installDependencies(name, plugin.dependencies)
