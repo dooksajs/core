@@ -2,11 +2,12 @@
   "name": "@dooksa/ds-plugin-manager",
   "version": "1.0.0",
   "description": "Plugin manager for Dooksa",
-  "main": "./src/index.js",
+  "main": "./dist/ds-plugin-manager.js",
   "scripts": {
     "lint": "standard",
     "format": "standard --fix",
     "dev": "ds-scripts dev",
+    "build": "ds-scripts build_lib",
     "test:unit": "ds-scripts --unit test",
     "test:unit:record": "ds-scripts --unit --record test",
     "update": "ds-scripts update"
