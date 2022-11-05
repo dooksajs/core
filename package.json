@@ -2,8 +2,9 @@
   "name": "@dooksa/ds-plugin-component",
   "version": "1.0.0",
   "description": "Components for Dooksa",
-  "main": "src/index.js",
+  "main": "dist/ds-plugin-component.js",
   "scripts": {
+    "build": "ds-scripts build_lib",
     "dev": "ds-scripts dev",
     "test:unit": "ds-scripts --unit test",
     "test:unit:record": "ds-scripts --unit --record test",
