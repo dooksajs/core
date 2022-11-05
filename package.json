@@ -2,11 +2,12 @@
   "name": "@dooksa/ds-plugin",
   "version": "1.0.0",
   "description": "The plugin library for Dooksa CMS",
-  "main": "src/index.js",
+  "main": "dist/ds-plugin.js",
   "scripts": {
     "lint": "standard",
     "lint:fix": "standard --fix",
     "dev": "ds-scripts dev",
+    "build": "ds-scripts build_lib",
     "test:unit": "ds-scripts --unit test",
     "test:unit:record": "ds-scripts --unit --record test"
   },
