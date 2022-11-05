@@ -2,8 +2,9 @@
   "name": "@dooksa/ds-plugin-metadata",
   "version": "1.0.0",
   "description": "Metadata for a dooksa app",
-  "main": "src/index.js",
+  "main": "dist/ds-plugin-metadata.js",
   "scripts": {
+    "build": "ds-scripts build_lib",
     "dev": "ds-scripts dev",
     "test:unit": "ds-scripts --unit test",
     "test:unit:record": "ds-scripts --unit --record test",

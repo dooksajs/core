@@ -1,5 +1,5 @@
 export default {
   name: 'dsMetadata',
-  filename: 'ds-metadata',
+  fileName: 'ds-plugin-metadata',
   version: 1
 }
