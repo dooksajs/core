@@ -1,5 +1,5 @@
 export default {
   name: 'dsToken',
-  filename: 'ds-token',
+  fileName: 'ds-plugin-token',
   version: 1
 }
