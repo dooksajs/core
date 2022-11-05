@@ -20,7 +20,8 @@ import { build } from 'vite'
         lib: {
           entry: path.resolve(appDirectory, 'src'),
           name,
-          fileName
+          fileName,
+          formats: ['es']
         },
         emptyOutDir: true,
         outDir: path.resolve(appDirectory, 'dist')
