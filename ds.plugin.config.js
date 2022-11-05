@@ -1,6 +1,5 @@
 export default {
   name: 'dsResource',
-  filename: 'ds-resource',
-  globalObject: 'window',
+  fileName: 'ds-plugin-resource',
   version: 1
 }
