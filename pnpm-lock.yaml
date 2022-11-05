@@ -1,0 +1,717 @@
+lockfileVersion: 5.4
+
+specifiers:
+  '@dooksa/ds-scripts': bitbucket:dooksa/ds-scripts
+  pocketbase: ^0.7.1
+
+devDependencies:
+  '@dooksa/ds-scripts': bitbucket.org/dooksa/ds-scripts/ff880a288f55148c8325802d6da47a9a50f47ba0
+  pocketbase: 0.7.4
+
+packages:
+
+  /@babel/standalone/7.20.2:
+    resolution: {integrity: sha512-oQX2oyEZCKzOaLImmg3NMm+1DFDm1pIkAme3xCvi170oYCzr5GazANyzFrsV4+9jup6b5uXlgIghXWGGUUEzSQ==}
+    engines: {node: '>=6.9.0'}
+    dev: true
+
+  /@esbuild/android-arm/0.15.13:
+    resolution: {integrity: sha512-RY2fVI8O0iFUNvZirXaQ1vMvK0xhCcl0gqRj74Z6yEiO1zAUa7hbsdwZM1kzqbxHK7LFyMizipfXT3JME+12Hw==}
+    engines: {node: '>=12'}
+    cpu: [arm]
+    os: [android]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@esbuild/linux-loong64/0.15.13:
+    resolution: {integrity: sha512-+BoyIm4I8uJmH/QDIH0fu7MG0AEx9OXEDXnqptXCwKOlOqZiS4iraH1Nr7/ObLMokW3sOCeBNyD68ATcV9b9Ag==}
+    engines: {node: '>=12'}
+    cpu: [loong64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@iconify/types/2.0.0:
+    resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
+    dev: true
+
+  /@nodelib/fs.scandir/2.1.5:
+    resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
+    engines: {node: '>= 8'}
+    dependencies:
+      '@nodelib/fs.stat': 2.0.5
+      run-parallel: 1.2.0
+    dev: true
+
+  /@nodelib/fs.stat/2.0.5:
+    resolution: {integrity: sha512-RkhPPp2zrqDAQA/2jNhnztcPAlv64XdhIp7a7454A5ovI7Bukxgt7MX7udwAu3zg1DcpPU0rz3VV1SeaqvY4+A==}
+    engines: {node: '>= 8'}
+    dev: true
+
+  /@nodelib/fs.walk/1.2.8:
+    resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
+    engines: {node: '>= 8'}
+    dependencies:
+      '@nodelib/fs.scandir': 2.1.5
+      fastq: 1.13.0
+    dev: true
+
+  /@vitejs/plugin-legacy/2.3.0_vite@3.2.2:
+    resolution: {integrity: sha512-Bh62i0gzQvvT8AeAAb78nOnqSYXypkRmQmOTImdPZ39meHR9e2une3AIFmVo4s1SDmcmJ6qj18Sa/lRc/14KaA==}
+    engines: {node: ^14.18.0 || >=16.0.0}
+    peerDependencies:
+      terser: ^5.4.0
+      vite: ^3.0.0
+    dependencies:
+      '@babel/standalone': 7.20.2
+      core-js: 3.26.0
+      magic-string: 0.26.7
+      regenerator-runtime: 0.13.10
+      systemjs: 6.13.0
+      vite: 3.2.2
+    dev: true
+
+  /bootstrap/5.2.2:
+    resolution: {integrity: sha512-dEtzMTV71n6Fhmbg4fYJzQsw1N29hJKO1js5ackCgIpDcGid2ETMGC6zwSYw09v05Y+oRdQ9loC54zB1La3hHQ==}
+    peerDependencies:
+      '@popperjs/core': ^2.11.6
+    dev: true
+
+  /braces/3.0.2:
+    resolution: {integrity: sha512-b8um+L1RzM3WDSzvhm6gIz1yfTbBt6YTlcEKAvsmqCZZFw46z626lVj9j1yEPW33H5H+lBQpZMP1k8l+78Ha0A==}
+    engines: {node: '>=8'}
+    dependencies:
+      fill-range: 7.0.1
+    dev: true
+
+  /core-js/3.26.0:
+    resolution: {integrity: sha512-+DkDrhoR4Y0PxDz6rurahuB+I45OsEUv8E1maPTB6OuHRohMMcznBq9TMpdpDMm/hUPob/mJJS3PqgbHpMTQgw==}
+    requiresBuild: true
+    dev: true
+
+  /esbuild-android-64/0.15.13:
+    resolution: {integrity: sha512-yRorukXBlokwTip+Sy4MYskLhJsO0Kn0/Fj43s1krVblfwP+hMD37a4Wmg139GEsMLl+vh8WXp2mq/cTA9J97g==}
+    engines: {node: '>=12'}
+    cpu: [x64]
+    os: [android]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /esbuild-android-arm64/0.15.13:
+    resolution: {integrity: sha512-TKzyymLD6PiVeyYa4c5wdPw87BeAiTXNtK6amWUcXZxkV51gOk5u5qzmDaYSwiWeecSNHamFsaFjLoi32QR5/w==}
+    engines: {node: '>=12'}
+    cpu: [arm64]
+    os: [android]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /esbuild-darwin-64/0.15.13:
+    resolution: {integrity: sha512-WAx7c2DaOS6CrRcoYCgXgkXDliLnFv3pQLV6GeW1YcGEZq2Gnl8s9Pg7ahValZkpOa0iE/ojRVQ87sbUhF1Cbg==}
+    engines: {node: '>=12'}
+    cpu: [x64]
+    os: [darwin]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /esbuild-darwin-arm64/0.15.13:
+    resolution: {integrity: sha512-U6jFsPfSSxC3V1CLiQqwvDuj3GGrtQNB3P3nNC3+q99EKf94UGpsG9l4CQ83zBs1NHrk1rtCSYT0+KfK5LsD8A==}
+    engines: {node: '>=12'}
+    cpu: [arm64]
+    os: [darwin]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /esbuild-freebsd-64/0.15.13:
+    resolution: {integrity: sha512-whItJgDiOXaDG/idy75qqevIpZjnReZkMGCgQaBWZuKHoElDJC1rh7MpoUgupMcdfOd+PgdEwNQW9DAE6i8wyA==}
+    engines: {node: '>=12'}
+    cpu: [x64]
+    os: [freebsd]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /esbuild-freebsd-arm64/0.15.13:
+    resolution: {integrity: sha512-6pCSWt8mLUbPtygv7cufV0sZLeylaMwS5Fznj6Rsx9G2AJJsAjQ9ifA+0rQEIg7DwJmi9it+WjzNTEAzzdoM3Q==}
+    engines: {node: '>=12'}
+    cpu: [arm64]
+    os: [freebsd]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /esbuild-linux-32/0.15.13:
+    resolution: {integrity: sha512-VbZdWOEdrJiYApm2kkxoTOgsoCO1krBZ3quHdYk3g3ivWaMwNIVPIfEE0f0XQQ0u5pJtBsnk2/7OPiCFIPOe/w==}
+    engines: {node: '>=12'}
+    cpu: [ia32]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /esbuild-linux-64/0.15.13:
+    resolution: {integrity: sha512-rXmnArVNio6yANSqDQlIO4WiP+Cv7+9EuAHNnag7rByAqFVuRusLbGi2697A5dFPNXoO//IiogVwi3AdcfPC6A==}
+    engines: {node: '>=12'}
+    cpu: [x64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /esbuild-linux-arm/0.15.13:
+    resolution: {integrity: sha512-Ac6LpfmJO8WhCMQmO253xX2IU2B3wPDbl4IvR0hnqcPrdfCaUa2j/lLMGTjmQ4W5JsJIdHEdW12dG8lFS0MbxQ==}
+    engines: {node: '>=12'}
+    cpu: [arm]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /esbuild-linux-arm64/0.15.13:
+    resolution: {integrity: sha512-alEMGU4Z+d17U7KQQw2IV8tQycO6T+rOrgW8OS22Ua25x6kHxoG6Ngry6Aq6uranC+pNWNMB6aHFPh7aTQdORQ==}
+    engines: {node: '>=12'}
+    cpu: [arm64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /esbuild-linux-mips64le/0.15.13:
+    resolution: {integrity: sha512-47PgmyYEu+yN5rD/MbwS6DxP2FSGPo4Uxg5LwIdxTiyGC2XKwHhHyW7YYEDlSuXLQXEdTO7mYe8zQ74czP7W8A==}
+    engines: {node: '>=12'}
+    cpu: [mips64el]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /esbuild-linux-ppc64le/0.15.13:
+    resolution: {integrity: sha512-z6n28h2+PC1Ayle9DjKoBRcx/4cxHoOa2e689e2aDJSaKug3jXcQw7mM+GLg+9ydYoNzj8QxNL8ihOv/OnezhA==}
+    engines: {node: '>=12'}
+    cpu: [ppc64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /esbuild-linux-riscv64/0.15.13:
+    resolution: {integrity: sha512-+Lu4zuuXuQhgLUGyZloWCqTslcCAjMZH1k3Xc9MSEJEpEFdpsSU0sRDXAnk18FKOfEjhu4YMGaykx9xjtpA6ow==}
+    engines: {node: '>=12'}
+    cpu: [riscv64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /esbuild-linux-s390x/0.15.13:
+    resolution: {integrity: sha512-BMeXRljruf7J0TMxD5CIXS65y7puiZkAh+s4XFV9qy16SxOuMhxhVIXYLnbdfLrsYGFzx7U9mcdpFWkkvy/Uag==}
+    engines: {node: '>=12'}
+    cpu: [s390x]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /esbuild-netbsd-64/0.15.13:
+    resolution: {integrity: sha512-EHj9QZOTel581JPj7UO3xYbltFTYnHy+SIqJVq6yd3KkCrsHRbapiPb0Lx3EOOtybBEE9EyqbmfW1NlSDsSzvQ==}
+    engines: {node: '>=12'}
+    cpu: [x64]
+    os: [netbsd]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /esbuild-openbsd-64/0.15.13:
+    resolution: {integrity: sha512-nkuDlIjF/sfUhfx8SKq0+U+Fgx5K9JcPq1mUodnxI0x4kBdCv46rOGWbuJ6eof2n3wdoCLccOoJAbg9ba/bT2w==}
+    engines: {node: '>=12'}
+    cpu: [x64]
+    os: [openbsd]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /esbuild-sunos-64/0.15.13:
+    resolution: {integrity: sha512-jVeu2GfxZQ++6lRdY43CS0Tm/r4WuQQ0Pdsrxbw+aOrHQPHV0+LNOLnvbN28M7BSUGnJnHkHm2HozGgNGyeIRw==}
+    engines: {node: '>=12'}
+    cpu: [x64]
+    os: [sunos]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /esbuild-windows-32/0.15.13:
+    resolution: {integrity: sha512-XoF2iBf0wnqo16SDq+aDGi/+QbaLFpkiRarPVssMh9KYbFNCqPLlGAWwDvxEVz+ywX6Si37J2AKm+AXq1kC0JA==}
+    engines: {node: '>=12'}
+    cpu: [ia32]
+    os: [win32]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /esbuild-windows-64/0.15.13:
+    resolution: {integrity: sha512-Et6htEfGycjDrtqb2ng6nT+baesZPYQIW+HUEHK4D1ncggNrDNk3yoboYQ5KtiVrw/JaDMNttz8rrPubV/fvPQ==}
+    engines: {node: '>=12'}
+    cpu: [x64]
+    os: [win32]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /esbuild-windows-arm64/0.15.13:
+    resolution: {integrity: sha512-3bv7tqntThQC9SWLRouMDmZnlOukBhOCTlkzNqzGCmrkCJI7io5LLjwJBOVY6kOUlIvdxbooNZwjtBvj+7uuVg==}
+    engines: {node: '>=12'}
+    cpu: [arm64]
+    os: [win32]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /esbuild/0.15.13:
+    resolution: {integrity: sha512-Cu3SC84oyzzhrK/YyN4iEVy2jZu5t2fz66HEOShHURcjSkOSAVL8C/gfUT+lDJxkVHpg8GZ10DD0rMHRPqMFaQ==}
+    engines: {node: '>=12'}
+    hasBin: true
+    requiresBuild: true
+    optionalDependencies:
+      '@esbuild/android-arm': 0.15.13
+      '@esbuild/linux-loong64': 0.15.13
+      esbuild-android-64: 0.15.13
+      esbuild-android-arm64: 0.15.13
+      esbuild-darwin-64: 0.15.13
+      esbuild-darwin-arm64: 0.15.13
+      esbuild-freebsd-64: 0.15.13
+      esbuild-freebsd-arm64: 0.15.13
+      esbuild-linux-32: 0.15.13
+      esbuild-linux-64: 0.15.13
+      esbuild-linux-arm: 0.15.13
+      esbuild-linux-arm64: 0.15.13
+      esbuild-linux-mips64le: 0.15.13
+      esbuild-linux-ppc64le: 0.15.13
+      esbuild-linux-riscv64: 0.15.13
+      esbuild-linux-s390x: 0.15.13
+      esbuild-netbsd-64: 0.15.13
+      esbuild-openbsd-64: 0.15.13
+      esbuild-sunos-64: 0.15.13
+      esbuild-windows-32: 0.15.13
+      esbuild-windows-64: 0.15.13
+      esbuild-windows-arm64: 0.15.13
+    dev: true
+
+  /fast-glob/3.2.12:
+    resolution: {integrity: sha512-DVj4CQIYYow0BlaelwK1pHl5n5cRSJfM60UA0zK891sVInoPri2Ekj7+e1CT3/3qxXenpI+nBBmQAcJPJgaj4w==}
+    engines: {node: '>=8.6.0'}
+    dependencies:
+      '@nodelib/fs.stat': 2.0.5
+      '@nodelib/fs.walk': 1.2.8
+      glob-parent: 5.1.2
+      merge2: 1.4.1
+      micromatch: 4.0.5
+    dev: true
+
+  /fastq/1.13.0:
+    resolution: {integrity: sha512-YpkpUnK8od0o1hmeSc7UUs/eB/vIPWJYjKck2QKIzAf71Vm1AAQ3EbuZB3g2JIy+pg+ERD0vqI79KyZiB2e2Nw==}
+    dependencies:
+      reusify: 1.0.4
+    dev: true
+
+  /fill-range/7.0.1:
+    resolution: {integrity: sha512-qOo9F+dMUmC2Lcb4BbVvnKJxTPjCm+RRpe4gDuGrzkL7mEVl/djYSu2OdQ2Pa302N4oqkSg9ir6jaLWJ2USVpQ==}
+    engines: {node: '>=8'}
+    dependencies:
+      to-regex-range: 5.0.1
+    dev: true
+
+  /fsevents/2.3.2:
+    resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
+    engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
+    os: [darwin]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /function-bind/1.1.1:
+    resolution: {integrity: sha512-yIovAzMX49sF8Yl58fSCWJ5svSLuaibPxXQJFLmBObTuCr0Mf1KiPopGM9NiFjiYBCbfaa2Fh6breQ6ANVTI0A==}
+    dev: true
+
+  /glob-parent/5.1.2:
+    resolution: {integrity: sha512-AOIgSQCepiJYwP3ARnGx+5VnTu2HBYdzbGP45eLw1vr3zB3vZLeyed1sC9hnbcOc9/SrMyM5RPQrkGz4aS9Zow==}
+    engines: {node: '>= 6'}
+    dependencies:
+      is-glob: 4.0.3
+    dev: true
+
+  /has/1.0.3:
+    resolution: {integrity: sha512-f2dvO0VU6Oej7RkWJGrehjbzMAjFp5/VKPp5tTpWIV4JHHZK1/BxbFRtf/siA2SWTe09caDmVtYYzWEIbBS4zw==}
+    engines: {node: '>= 0.4.0'}
+    dependencies:
+      function-bind: 1.1.1
+    dev: true
+
+  /iconify-icon/1.0.1:
+    resolution: {integrity: sha512-8qXahj8q0fJ1uMkVJ1DujJw35CWBFxUY9UFCzytfItNjcoj+Dz7yUakuXTzaByIc8seQCnw9CuLVzHdw7yEkBQ==}
+    dependencies:
+      '@iconify/types': 2.0.0
+    dev: true
+
+  /is-core-module/2.11.0:
+    resolution: {integrity: sha512-RRjxlvLDkD1YJwDbroBHMb+cukurkDWNyHx7D3oNB5x9rb5ogcksMC5wHCadcXoo67gVr/+3GFySh3134zi6rw==}
+    dependencies:
+      has: 1.0.3
+    dev: true
+
+  /is-extglob/2.1.1:
+    resolution: {integrity: sha512-SbKbANkN603Vi4jEZv49LeVJMn4yGwsbzZworEoyEiutsN3nJYdbO36zfhGJ6QEDpOZIFkDtnq5JRxmvl3jsoQ==}
+    engines: {node: '>=0.10.0'}
+    dev: true
+
+  /is-glob/4.0.3:
+    resolution: {integrity: sha512-xelSayHH36ZgE7ZWhli7pW34hNbNl8Ojv5KVmkJD4hBdD3th8Tfk9vYasLM+mXWOZhFkgZfxhLSnrwRr4elSSg==}
+    engines: {node: '>=0.10.0'}
+    dependencies:
+      is-extglob: 2.1.1
+    dev: true
+
+  /is-number/7.0.0:
+    resolution: {integrity: sha512-41Cifkg6e8TylSpdtTpeLVMqvSBEVzTttHvERD741+pnZ8ANv0004MRL43QKPDlK9cGvNp6NZWZUBlbGXYxxng==}
+    engines: {node: '>=0.12.0'}
+    dev: true
+
+  /magic-string/0.26.7:
+    resolution: {integrity: sha512-hX9XH3ziStPoPhJxLq1syWuZMxbDvGNbVchfrdCtanC7D13888bMFow61x8axrx+GfHLtVeAx2kxL7tTGRl+Ow==}
+    engines: {node: '>=12'}
+    dependencies:
+      sourcemap-codec: 1.4.8
+    dev: true
+
+  /merge2/1.4.1:
+    resolution: {integrity: sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==}
+    engines: {node: '>= 8'}
+    dev: true
+
+  /micromatch/4.0.5:
+    resolution: {integrity: sha512-DMy+ERcEW2q8Z2Po+WNXuw3c5YaUSFjAO5GsJqfEl7UjvtIuFKO6ZrKvcItdy98dwFI2N1tg3zNIdKaQT+aNdA==}
+    engines: {node: '>=8.6'}
+    dependencies:
+      braces: 3.0.2
+      picomatch: 2.3.1
+    dev: true
+
+  /nanoid/3.3.4:
+    resolution: {integrity: sha512-MqBkQh/OHTS2egovRtLk45wEyNXwF+cokD+1YPf9u5VfJiRdAiRwB2froX5Co9Rh20xs4siNPm8naNotSD6RBw==}
+    engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
+    hasBin: true
+    dev: true
+
+  /object-hash/3.0.0:
+    resolution: {integrity: sha512-RSn9F68PjH9HqtltsSnqYC1XXoWe9Bju5+213R98cNGttag9q9yAOTzdbsqvIa7aNm5WffBZFpWYr2aWrklWAw==}
+    engines: {node: '>= 6'}
+    dev: true
+
+  /path-parse/1.0.7:
+    resolution: {integrity: sha512-LDJzPVEEEPR+y48z93A0Ed0yXb8pAByGWo/k5YYdYgpY2/2EsOsksJrq7lOHxryrVOn1ejG6oAp8ahvOIQD8sw==}
+    dev: true
+
+  /picocolors/1.0.0:
+    resolution: {integrity: sha512-1fygroTLlHu66zi26VoTDv8yRgm0Fccecssto+MhsZ0D/DGW2sm8E8AjW7NU5VVTRt5GxbeZ5qBuJr+HyLYkjQ==}
+    dev: true
+
+  /picomatch/2.3.1:
+    resolution: {integrity: sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==}
+    engines: {node: '>=8.6'}
+    dev: true
+
+  /pocketbase/0.7.4:
+    resolution: {integrity: sha512-PvBRi4hbgbiBwDjhHa9lGD/ala8dSTjKeNAsHAgsXdIo4v9RgCk2s3Zqd/4UXVBgTJHVM6F7fGOZPvvJfSNVLQ==}
+    dev: true
+
+  /postcss/8.4.18:
+    resolution: {integrity: sha512-Wi8mWhncLJm11GATDaQKobXSNEYGUHeQLiQqDFG1qQ5UTDPTEvKw0Xt5NsTpktGTwLps3ByrWsBrG0rB8YQ9oA==}
+    engines: {node: ^10 || ^12 || >=14}
+    dependencies:
+      nanoid: 3.3.4
+      picocolors: 1.0.0
+      source-map-js: 1.0.2
+    dev: true
+
+  /queue-microtask/1.2.3:
+    resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
+    dev: true
+
+  /regenerator-runtime/0.13.10:
+    resolution: {integrity: sha512-KepLsg4dU12hryUO7bp/axHAKvwGOCV0sGloQtpagJ12ai+ojVDqkeGSiRX1zlq+kjIMZ1t7gpze+26QqtdGqw==}
+    dev: true
+
+  /resolve/1.22.1:
+    resolution: {integrity: sha512-nBpuuYuY5jFsli/JIs1oldw6fOQCBioohqWZg/2hiaOybXOft4lonv85uDOKXdf8rhyK159cxU5cDcK/NKk8zw==}
+    hasBin: true
+    dependencies:
+      is-core-module: 2.11.0
+      path-parse: 1.0.7
+      supports-preserve-symlinks-flag: 1.0.0
+    dev: true
+
+  /reusify/1.0.4:
+    resolution: {integrity: sha512-U9nH88a3fc/ekCF1l0/UP1IosiuIjyTh7hBvXVMHYgVcfGvt897Xguj2UOLDeI5BG2m7/uwyaLVT6fbtCwTyzw==}
+    engines: {iojs: '>=1.0.0', node: '>=0.10.0'}
+    dev: true
+
+  /rollup/2.79.1:
+    resolution: {integrity: sha512-uKxbd0IhMZOhjAiD5oAFp7BqvkA4Dv47qpOCtaNvng4HBwdbWtdOh8f5nZNuk2rp51PMGk3bzfWu5oayNEuYnw==}
+    engines: {node: '>=10.0.0'}
+    hasBin: true
+    optionalDependencies:
+      fsevents: 2.3.2
+    dev: true
+
+  /run-parallel/1.2.0:
+    resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}
+    dependencies:
+      queue-microtask: 1.2.3
+    dev: true
+
+  /source-map-js/1.0.2:
+    resolution: {integrity: sha512-R0XvVJ9WusLiqTCEiGCmICCMplcCkIwwR11mOSD9CR5u+IXYdiseeEuXCVAjS54zqwkLcPNnmU4OeJ6tUrWhDw==}
+    engines: {node: '>=0.10.0'}
+    dev: true
+
+  /sourcemap-codec/1.4.8:
+    resolution: {integrity: sha512-9NykojV5Uih4lgo5So5dtw+f0JgJX30KCNI8gwhz2J9A15wD0Ml6tjHKwf6fTSa6fAdVBdZeNOs9eJ71qCk8vA==}
+    dev: true
+
+  /supports-preserve-symlinks-flag/1.0.0:
+    resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
+    engines: {node: '>= 0.4'}
+    dev: true
+
+  /systemjs/6.13.0:
+    resolution: {integrity: sha512-P3cgh2bpaPvAO2NE3uRp/n6hmk4xPX4DQf+UzTlCAycssKdqhp6hjw+ENWe+aUS7TogKRFtptMosTSFeC6R55g==}
+    dev: true
+
+  /to-regex-range/5.0.1:
+    resolution: {integrity: sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==}
+    engines: {node: '>=8.0'}
+    dependencies:
+      is-number: 7.0.0
+    dev: true
+
+  /vite-plugin-virtual-html/0.4.0:
+    resolution: {integrity: sha512-zRohaYcDtcQdUemOVfChE1SzfBsTK3Lnzg+dVyXQfxk0K3A89Tr7M794PRtQK7x995AXWPEwvin5anCRzAmeMg==}
+    dependencies:
+      fast-glob: 3.2.12
+    dev: true
+
+  /vite/3.2.2:
+    resolution: {integrity: sha512-pLrhatFFOWO9kS19bQ658CnRYzv0WLbsPih6R+iFeEEhDOuYgYCX2rztUViMz/uy/V8cLCJvLFeiOK7RJEzHcw==}
+    engines: {node: ^14.18.0 || >=16.0.0}
+    hasBin: true
+    peerDependencies:
+      less: '*'
+      sass: '*'
+      stylus: '*'
+      sugarss: '*'
+      terser: ^5.4.0
+    peerDependenciesMeta:
+      less:
+        optional: true
+      sass:
+        optional: true
+      stylus:
+        optional: true
+      sugarss:
+        optional: true
+      terser:
+        optional: true
+    dependencies:
+      esbuild: 0.15.13
+      postcss: 8.4.18
+      resolve: 1.22.1
+      rollup: 2.79.1
+    optionalDependencies:
+      fsevents: 2.3.2
+    dev: true
+
+  bitbucket.org/dooksa/ds-app/7386a4ba30ed2f5390cb154d822541796c4f4c6b:
+    resolution: {commit: 7386a4ba30ed2f5390cb154d822541796c4f4c6b, repo: git+ssh://git@bitbucket.org/dooksa/ds-app.git, type: git}
+    name: '@dooksa/ds-app'
+    version: 1.0.0
+    dependencies:
+      '@dooksa/ds-plugin': bitbucket.org/dooksa/ds-plugin/667ab14dfa8dd73db33e52c6dbe0d921d34fe65c
+      '@dooksa/ds-plugin-action': bitbucket.org/dooksa/ds-plugin-action/4b2a5259a984c62c032f8a7d24bf07722c611edc
+      '@dooksa/ds-plugin-component': bitbucket.org/dooksa/ds-plugin-component/59fd56bebbfcc1213093e225e861f7da4de028c4
+      '@dooksa/ds-plugin-element': bitbucket.org/dooksa/ds-plugin-element/0e12e6b50b04ecc6846563524dff8c908101b414
+      '@dooksa/ds-plugin-event': bitbucket.org/dooksa/ds-plugin-event/ab45385e538c6e3fb5adf6e5ded5f85bc09a9dbc
+      '@dooksa/ds-plugin-layout': bitbucket.org/dooksa/ds-plugin-layout/b70c21cb03a7cd6fd0d359747ad228169e375f5e
+      '@dooksa/ds-plugin-manager': bitbucket.org/dooksa/ds-plugin-manager/65607d25c3ba6166036f3385936f4512687e5294
+      '@dooksa/ds-plugin-metadata': bitbucket.org/dooksa/ds-plugin-metadata/69debe84b9db9e47196f818e1a504e77a5824692
+      '@dooksa/ds-plugin-operators': bitbucket.org/dooksa/ds-plugin-operators/c8aa2ae28bbe73b33111cd240b5f1b62b13757a5
+      '@dooksa/ds-plugin-page': bitbucket.org/dooksa/ds-plugin-page/fcfda1245b5d0c50a49e4dbbadd4235ae9050c80
+      '@dooksa/ds-plugin-parameters': bitbucket.org/dooksa/ds-plugin-parameters/f41035b9962c50370565ea292fbcbdbe7827d100
+      '@dooksa/ds-plugin-router': bitbucket.org/dooksa/ds-plugin-router/f04790546760aaeaefe8081a46c793df71ee3cf5
+      '@dooksa/ds-plugin-template': bitbucket.org/dooksa/ds-plugin-template/4291cbb15fd31c4083e309243c3909a7a5fd16df
+      '@dooksa/ds-plugin-token': bitbucket.org/dooksa/ds-plugin-tokens/85c0561b3b4e65695e4b20ba569d3e1d63aecabc
+      '@dooksa/ds-plugin-widget': bitbucket.org/dooksa/ds-plugin-widget/8f1065061fba354b47d402a19aba306f81d8a29f
+      bootstrap: 5.2.2
+    transitivePeerDependencies:
+      - '@popperjs/core'
+    dev: true
+
+  bitbucket.org/dooksa/ds-plugin-action/4b2a5259a984c62c032f8a7d24bf07722c611edc:
+    resolution: {commit: 4b2a5259a984c62c032f8a7d24bf07722c611edc, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-action.git, type: git}
+    name: '@dooksa/ds-plugin-action'
+    version: 1.0.0
+    dev: true
+
+  bitbucket.org/dooksa/ds-plugin-component/59fd56bebbfcc1213093e225e861f7da4de028c4:
+    resolution: {commit: 59fd56bebbfcc1213093e225e861f7da4de028c4, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-component.git, type: git}
+    name: '@dooksa/ds-plugin-component'
+    version: 1.0.0
+    dev: true
+
+  bitbucket.org/dooksa/ds-plugin-database/203169410dac4231eaa36590fdcbf9f25bf35bed:
+    resolution: {commit: 203169410dac4231eaa36590fdcbf9f25bf35bed, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-database.git, type: git}
+    name: '@dooksa-extra/ds-plugin-database'
+    version: 1.0.0
+    dev: true
+
+  bitbucket.org/dooksa/ds-plugin-devtool/fee3613f4f85dc0f52e789ec1fe04b1068e1c825:
+    resolution: {commit: fee3613f4f85dc0f52e789ec1fe04b1068e1c825, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-devtool.git, type: git}
+    name: '@dooksa-extra/ds-plugin-devtool'
+    version: 1.0.0
+    dev: true
+
+  bitbucket.org/dooksa/ds-plugin-element/0e12e6b50b04ecc6846563524dff8c908101b414:
+    resolution: {commit: 0e12e6b50b04ecc6846563524dff8c908101b414, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-element.git, type: git}
+    name: '@dooksa/ds-plugin-element'
+    version: 1.0.0
+    dependencies:
+      iconify-icon: 1.0.1
+    dev: true
+
+  bitbucket.org/dooksa/ds-plugin-event/ab45385e538c6e3fb5adf6e5ded5f85bc09a9dbc:
+    resolution: {commit: ab45385e538c6e3fb5adf6e5ded5f85bc09a9dbc, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-event.git, type: git}
+    name: '@dooksa/ds-plugin-event'
+    version: 1.0.0
+    dev: true
+
+  bitbucket.org/dooksa/ds-plugin-layout/b70c21cb03a7cd6fd0d359747ad228169e375f5e:
+    resolution: {commit: b70c21cb03a7cd6fd0d359747ad228169e375f5e, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-layout.git, type: git}
+    name: '@dooksa/ds-plugin-layout'
+    version: 1.0.0
+    dependencies:
+      object-hash: 3.0.0
+    dev: true
+
+  bitbucket.org/dooksa/ds-plugin-manager/65607d25c3ba6166036f3385936f4512687e5294:
+    resolution: {commit: 65607d25c3ba6166036f3385936f4512687e5294, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-manager.git, type: git}
+    name: '@dooksa/ds-plugin-manager'
+    version: 1.0.0
+    dependencies:
+      '@dooksa-extra/ds-plugin-database': bitbucket.org/dooksa/ds-plugin-database/203169410dac4231eaa36590fdcbf9f25bf35bed
+      '@dooksa-extra/ds-plugin-parse': bitbucket.org/dooksa/ds-plugin-parse/7e88f2bfab4d085930fb2bdac5fafb278f6dfbce
+      '@dooksa-extra/ds-plugin-template': bitbucket.org/dooksa/ds-plugin-template/4291cbb15fd31c4083e309243c3909a7a5fd16df
+      '@dooksa-extra/ds-plugin-utilities': bitbucket.org/dooksa/ds-plugin-utilities/25b072152b334f0d49ed21f2c100b47e817d2ed8
+      '@dooksa/ds-plugin': bitbucket.org/dooksa/ds-plugin/667ab14dfa8dd73db33e52c6dbe0d921d34fe65c
+      '@dooksa/resource-loader': bitbucket.org/dooksa/resource-loader/cca5dcd969a45aaa19fa4d5d2bfa577426b3c4d1
+    dev: true
+
+  bitbucket.org/dooksa/ds-plugin-metadata/69debe84b9db9e47196f818e1a504e77a5824692:
+    resolution: {commit: 69debe84b9db9e47196f818e1a504e77a5824692, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-metadata.git, type: git}
+    name: '@dooksa/ds-plugin-metadata'
+    version: 1.0.0
+    dev: true
+
+  bitbucket.org/dooksa/ds-plugin-operators/c8aa2ae28bbe73b33111cd240b5f1b62b13757a5:
+    resolution: {commit: c8aa2ae28bbe73b33111cd240b5f1b62b13757a5, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-operators.git, type: git}
+    name: '@dooksa/ds-plugin-operators'
+    version: 1.0.0
+    dev: true
+
+  bitbucket.org/dooksa/ds-plugin-page/fcfda1245b5d0c50a49e4dbbadd4235ae9050c80:
+    resolution: {commit: fcfda1245b5d0c50a49e4dbbadd4235ae9050c80, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-page.git, type: git}
+    name: '@dooksa/ds-plugin-page'
+    version: 1.0.0
+    dev: true
+
+  bitbucket.org/dooksa/ds-plugin-parameters/f41035b9962c50370565ea292fbcbdbe7827d100:
+    resolution: {commit: f41035b9962c50370565ea292fbcbdbe7827d100, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-parameters.git, type: git}
+    name: '@dooksa/ds-plugin-parameters'
+    version: 1.0.0
+    dev: true
+
+  bitbucket.org/dooksa/ds-plugin-parse/7e88f2bfab4d085930fb2bdac5fafb278f6dfbce:
+    resolution: {commit: 7e88f2bfab4d085930fb2bdac5fafb278f6dfbce, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-parse.git, type: git}
+    name: '@dooksa-extra/ds-plugin-parse'
+    version: 1.0.0
+    dependencies:
+      nanoid: 3.3.4
+      object-hash: 3.0.0
+    dev: true
+
+  bitbucket.org/dooksa/ds-plugin-router/f04790546760aaeaefe8081a46c793df71ee3cf5:
+    resolution: {commit: f04790546760aaeaefe8081a46c793df71ee3cf5, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-router.git, type: git}
+    name: '@dooksa/ds-plugin-router'
+    version: 1.0.0
+    dev: true
+
+  bitbucket.org/dooksa/ds-plugin-template/4291cbb15fd31c4083e309243c3909a7a5fd16df:
+    resolution: {commit: 4291cbb15fd31c4083e309243c3909a7a5fd16df, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-template.git, type: git}
+    name: '@dooksa-extra/ds-plugin-template'
+    version: 1.0.0
+    dev: true
+
+  bitbucket.org/dooksa/ds-plugin-tokens/85c0561b3b4e65695e4b20ba569d3e1d63aecabc:
+    resolution: {commit: 85c0561b3b4e65695e4b20ba569d3e1d63aecabc, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-tokens.git, type: git}
+    name: '@dooksa/ds-plugin-token'
+    version: 0.1.0
+    dev: true
+
+  bitbucket.org/dooksa/ds-plugin-utilities/25b072152b334f0d49ed21f2c100b47e817d2ed8:
+    resolution: {commit: 25b072152b334f0d49ed21f2c100b47e817d2ed8, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-utilities.git, type: git}
+    name: '@dooksa-extra/ds-plugin-utilities'
+    version: 1.0.0
+    dependencies:
+      nanoid: 3.3.4
+    dev: true
+
+  bitbucket.org/dooksa/ds-plugin-widget/8f1065061fba354b47d402a19aba306f81d8a29f:
+    resolution: {commit: 8f1065061fba354b47d402a19aba306f81d8a29f, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-widget.git, type: git}
+    name: '@dooksa/ds-plugin-widget'
+    version: 1.0.0
+    dev: true
+
+  bitbucket.org/dooksa/ds-plugin/667ab14dfa8dd73db33e52c6dbe0d921d34fe65c:
+    resolution: {commit: 667ab14dfa8dd73db33e52c6dbe0d921d34fe65c, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin.git, type: git}
+    name: '@dooksa/ds-plugin'
+    version: 1.0.0
+    dev: true
+
+  bitbucket.org/dooksa/ds-scripts/ff880a288f55148c8325802d6da47a9a50f47ba0:
+    resolution: {tarball: https://bitbucket.org/dooksa/ds-scripts/get/ff880a288f55148c8325802d6da47a9a50f47ba0.tar.gz}
+    name: '@dooksa/ds-scripts'
+    version: 1.0.0
+    hasBin: true
+    dependencies:
+      '@dooksa-extra/ds-plugin-devtool': bitbucket.org/dooksa/ds-plugin-devtool/fee3613f4f85dc0f52e789ec1fe04b1068e1c825
+      '@dooksa-extra/ds-plugin-parse': bitbucket.org/dooksa/ds-plugin-parse/7e88f2bfab4d085930fb2bdac5fafb278f6dfbce
+      '@dooksa/ds-app': bitbucket.org/dooksa/ds-app/7386a4ba30ed2f5390cb154d822541796c4f4c6b
+      '@vitejs/plugin-legacy': 2.3.0_vite@3.2.2
+      vite: 3.2.2
+      vite-plugin-virtual-html: 0.4.0
+    transitivePeerDependencies:
+      - '@popperjs/core'
+      - less
+      - sass
+      - stylus
+      - sugarss
+      - terser
+    dev: true
+
+  bitbucket.org/dooksa/resource-loader/cca5dcd969a45aaa19fa4d5d2bfa577426b3c4d1:
+    resolution: {tarball: https://bitbucket.org/dooksa/resource-loader/get/cca5dcd969a45aaa19fa4d5d2bfa577426b3c4d1.tar.gz}
+    name: '@dooksa/resource-loader'
+    version: 1.0.0
+    dev: true
