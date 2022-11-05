@@ -2,11 +2,12 @@
   "name": "@dooksa/ds-plugin-event",
   "version": "1.0.0",
   "description": "Events plugin management system for Dooksa",
-  "main": "src/index.js",
+  "main": "dist/ds-plugin-event.js",
   "scripts": {
     "lint": "standard",
     "lint:fix": "standard --fix",
     "dev": "ds-scripts dev",
+    "build": "ds-scripts build_lib",
     "test:unit": "ds-scripts --unit test",
     "test:unit:record": "ds-scripts --unit --record test",
     "test:e2e": "ds-scripts --e2e test",

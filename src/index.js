@@ -12,6 +12,7 @@ export default {
     }
   ],
   data: {
+    handlers: {},
     items: {}
   },
   methods: {
@@ -63,6 +64,18 @@ export default {
       }
 
       return []
+    },
+    getHandler (id) {
+      return this.handler[id]
+    },
+    addHandler (id, callback) {
+      this.handler[id] = callback
+    },
+    removeHandler (id) {
+      delete this.handler[id]
+    },
+    set (context, item) {
+      this.items = { ...this.items, ...item }
     },
     _name (contextName, name) {
       return contextName + '/' + name
