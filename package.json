@@ -2,10 +2,10 @@
   "name": "@dooksa-extra/ds-plugin-template",
   "version": "1.0.0",
   "description": "Dooksa templates",
-  "main": "src/index.js",
+  "main": "dist/ds-plugin-template.js",
   "scripts": {
     "dev": "ds-scripts dev",
-    "build": "ds-scripts build",
+    "build": "ds-scripts build_lib",
     "test:unit": "ds-scripts --unit test",
     "test:unit:record": "ds-scripts --unit --record test",
     "test:e2e": "ds-scripts --e2e test",

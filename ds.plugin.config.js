@@ -1,6 +1,5 @@
 export default {
   name: 'dsTemplate',
-  filename: 'ds-template',
-  globalObject: 'window.dsApp.plugins',
+  fileName: 'ds-plugin-template',
   version: 1
 }
