@@ -1,5 +1,5 @@
-import path from 'path';
-import fs from 'fs';
+import path from 'path'
+import fs from 'fs'
 import { scriptDirectory, appDirectory } from '../utils/paths.js'
 import { createServer } from 'vite'
 import '../utils/getDependencies.js'
@@ -21,14 +21,14 @@ import '../utils/getTemplates.js'
 
   const server = await createServer({
     root: path.resolve(scriptDirectory, 'dev'),
-    resolve: { 
+    resolve: {
       alias: {
         '@dooksa/plugin': path.resolve(appDirectory, 'src', 'index.js'),
         '@dooksa/plugin-config': path.resolve(appDirectory, 'ds.plugin.config.js'),
         '@dooksa/plugin-dependencies': pluginDepPath,
         '@dooksa/plugin-templates': pluginTemplates
       }
-     }
+    }
   })
   await server.listen()
 

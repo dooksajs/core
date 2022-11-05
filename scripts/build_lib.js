@@ -1,6 +1,5 @@
 import path from 'path'
-import legacy from '@vitejs/plugin-legacy'
-import { appDirectory, scriptDirectory } from '../utils/paths.js'
+import { appDirectory } from '../utils/paths.js'
 import { build } from 'vite'
 
 ;(async () => {
@@ -19,21 +18,16 @@ import { build } from 'vite'
     await build({
       build: {
         lib: {
-          entry: path.resolve(appDirectory, 'src'),,
+          entry: path.resolve(appDirectory, 'src'),
           name,
           fileName
         },
         emptyOutDir: true,
-        outDir: path.resolve(appDirectory, 'dist'),
-        sourcemap: true
+        outDir: path.resolve(appDirectory, 'dist')
       },
-      plugins: [
-        legacy({
-          targets: ['defaults', 'not IE 11']
-        })
-      ],
+
       resolve: {
-        alias:{
+        alias: {
           '@dooksa/plugin': path.resolve(appDirectory, 'src', 'index.js')
         }
       }

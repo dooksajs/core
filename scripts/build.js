@@ -1,6 +1,6 @@
 import path from 'path'
 import legacy from '@vitejs/plugin-legacy'
-import { appDirectory, scriptDirectory } from '../utils/paths.js'
+import { appDirectory } from '../utils/paths.js'
 import { build } from 'vite'
 
 console.log(path.resolve(appDirectory, 'dist'))
@@ -19,7 +19,7 @@ console.log(path.resolve(appDirectory, 'dist'))
       })
     ],
     resolve: {
-      alias:{
+      alias: {
         '@dooksa/plugin': path.resolve(appDirectory, 'src', 'index.js')
       }
     }
