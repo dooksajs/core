@@ -41,6 +41,7 @@
     "@dooksa/ds-plugin-template": "bitbucket:dooksa/ds-plugin-template",
     "@dooksa/ds-plugin-token": "bitbucket:dooksa/ds-plugin-tokens",
     "@dooksa/ds-plugin-widget": "bitbucket:dooksa/ds-plugin-widget",
+    "@popperjs/core": "^2.11.6",
     "bootstrap": "^5.2.2"
   }
 }

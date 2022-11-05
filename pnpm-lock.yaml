@@ -17,35 +17,37 @@ specifiers:
   '@dooksa/ds-plugin-token': bitbucket:dooksa/ds-plugin-tokens
   '@dooksa/ds-plugin-widget': bitbucket:dooksa/ds-plugin-widget
   '@dooksa/ds-scripts': bitbucket:dooksa/ds-scripts
+  '@popperjs/core': ^2.11.6
   bootstrap: ^5.2.2
   standard: '*'
 
 dependencies:
-  '@dooksa/ds-plugin': bitbucket.org/dooksa/ds-plugin/667ab14dfa8dd73db33e52c6dbe0d921d34fe65c
-  '@dooksa/ds-plugin-action': bitbucket.org/dooksa/ds-plugin-action/4b2a5259a984c62c032f8a7d24bf07722c611edc
-  '@dooksa/ds-plugin-component': bitbucket.org/dooksa/ds-plugin-component/59fd56bebbfcc1213093e225e861f7da4de028c4
-  '@dooksa/ds-plugin-element': bitbucket.org/dooksa/ds-plugin-element/0e12e6b50b04ecc6846563524dff8c908101b414
-  '@dooksa/ds-plugin-event': bitbucket.org/dooksa/ds-plugin-event/ab45385e538c6e3fb5adf6e5ded5f85bc09a9dbc
-  '@dooksa/ds-plugin-layout': bitbucket.org/dooksa/ds-plugin-layout/b70c21cb03a7cd6fd0d359747ad228169e375f5e
-  '@dooksa/ds-plugin-manager': bitbucket.org/dooksa/ds-plugin-manager/e616474db5f433372478bf7afb90d344da6d0016
-  '@dooksa/ds-plugin-metadata': bitbucket.org/dooksa/ds-plugin-metadata/69debe84b9db9e47196f818e1a504e77a5824692
-  '@dooksa/ds-plugin-operators': bitbucket.org/dooksa/ds-plugin-operators/c8aa2ae28bbe73b33111cd240b5f1b62b13757a5
-  '@dooksa/ds-plugin-page': bitbucket.org/dooksa/ds-plugin-page/fcfda1245b5d0c50a49e4dbbadd4235ae9050c80
-  '@dooksa/ds-plugin-parameters': bitbucket.org/dooksa/ds-plugin-parameters/f41035b9962c50370565ea292fbcbdbe7827d100
-  '@dooksa/ds-plugin-router': bitbucket.org/dooksa/ds-plugin-router/f04790546760aaeaefe8081a46c793df71ee3cf5
-  '@dooksa/ds-plugin-template': bitbucket.org/dooksa/ds-plugin-template/4291cbb15fd31c4083e309243c3909a7a5fd16df
-  '@dooksa/ds-plugin-token': bitbucket.org/dooksa/ds-plugin-tokens/85c0561b3b4e65695e4b20ba569d3e1d63aecabc
-  '@dooksa/ds-plugin-widget': bitbucket.org/dooksa/ds-plugin-widget/8f1065061fba354b47d402a19aba306f81d8a29f
-  bootstrap: 5.2.2
+  '@dooksa/ds-plugin': bitbucket.org/dooksa/ds-plugin/d9a48f2f6cb39186493369f8feb4e3167e221ebc
+  '@dooksa/ds-plugin-action': bitbucket.org/dooksa/ds-plugin-action/f013d6158e07b5733ac0b4fca17d6a9e371cef84
+  '@dooksa/ds-plugin-component': bitbucket.org/dooksa/ds-plugin-component/9f3a8bbf080c3fd81d671046635cbc48d90661b7
+  '@dooksa/ds-plugin-element': bitbucket.org/dooksa/ds-plugin-element/6fea630564e6e4a02ea6adf9b5812e318a265f0e
+  '@dooksa/ds-plugin-event': bitbucket.org/dooksa/ds-plugin-event/53a0212836cd21ed20ff64b91104955aab5f5b70
+  '@dooksa/ds-plugin-layout': bitbucket.org/dooksa/ds-plugin-layout/2982a89a7faaa1a8b437003d30279cacf9caef1e
+  '@dooksa/ds-plugin-manager': bitbucket.org/dooksa/ds-plugin-manager/78d378d098dce3bd11dc4a61eafac97b4fee74a8
+  '@dooksa/ds-plugin-metadata': bitbucket.org/dooksa/ds-plugin-metadata/f891e0d31c3bc2d95ca4c2a1808ea854c697bb37
+  '@dooksa/ds-plugin-operators': bitbucket.org/dooksa/ds-plugin-operators/530714ff00f949cfba0a4cf273ebb649293ca889
+  '@dooksa/ds-plugin-page': bitbucket.org/dooksa/ds-plugin-page/22eefe2db03e2da7b19aee5e2ab831167161328e
+  '@dooksa/ds-plugin-parameters': bitbucket.org/dooksa/ds-plugin-parameters/e5c8c7d613fc796fbfa985377a567670c72b6262
+  '@dooksa/ds-plugin-router': bitbucket.org/dooksa/ds-plugin-router/0256c95c87b93813f681ca9dd879db452194f5a9
+  '@dooksa/ds-plugin-template': bitbucket.org/dooksa/ds-plugin-template/e84d4073bf075442843406aed5ff38ae49edbc72
+  '@dooksa/ds-plugin-token': bitbucket.org/dooksa/ds-plugin-tokens/aaea2277d4425ea50bd69ebe9938bc5813d0ed45
+  '@dooksa/ds-plugin-widget': bitbucket.org/dooksa/ds-plugin-widget/94227c1a00d9d416683e95e296ef697eb7f02c1e
+  '@popperjs/core': 2.11.6
+  bootstrap: 5.2.2_@popperjs+core@2.11.6
 
 devDependencies:
-  '@dooksa/ds-scripts': bitbucket.org/dooksa/ds-scripts/67472a14c095762e6c2143ffa4a95b84aa3fdfdd
+  '@dooksa/ds-scripts': bitbucket.org/dooksa/ds-scripts/95dd64d275f9d35520b64a902a08f2eaf78f09b4_@popperjs+core@2.11.6
   standard: 17.0.0
 
 packages:
 
-  /@babel/standalone/7.20.1:
-    resolution: {integrity: sha512-/gWSncVyOroPfSNASCOIsR08As7UWT7bOKlTkvmprc0Q3v4s6YFxpaYP/eyAZQWbVjSnewX8bZv2In9fwXqPHQ==}
+  /@babel/standalone/7.20.2:
+    resolution: {integrity: sha512-oQX2oyEZCKzOaLImmg3NMm+1DFDm1pIkAme3xCvi170oYCzr5GazANyzFrsV4+9jup6b5uXlgIghXWGGUUEzSQ==}
     engines: {node: '>=6.9.0'}
     dev: true
 
@@ -107,6 +109,43 @@ packages:
   /@iconify/types/2.0.0:
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
 
+  /@jridgewell/gen-mapping/0.3.2:
+    resolution: {integrity: sha512-mh65xKQAzI6iBcFzwv28KVWSmCkdRBWoOh+bYQGW3+6OZvbbN3TqMGo5hqYxQniRcH9F2VZIoJCm4pa3BPDK/A==}
+    engines: {node: '>=6.0.0'}
+    dependencies:
+      '@jridgewell/set-array': 1.1.2
+      '@jridgewell/sourcemap-codec': 1.4.14
+      '@jridgewell/trace-mapping': 0.3.17
+    dev: true
+
+  /@jridgewell/resolve-uri/3.1.0:
+    resolution: {integrity: sha512-F2msla3tad+Mfht5cJq7LSXcdudKTWCVYUgw6pLFOOHSTtZlj6SWNYAp+AhuqLmWdBO2X5hPrLcu8cVP8fy28w==}
+    engines: {node: '>=6.0.0'}
+    dev: true
+
+  /@jridgewell/set-array/1.1.2:
+    resolution: {integrity: sha512-xnkseuNADM0gt2bs+BvhO0p78Mk762YnZdsuzFV018NoG1Sj1SCQvpSqa7XUaTam5vAGasABV9qXASMKnFMwMw==}
+    engines: {node: '>=6.0.0'}
+    dev: true
+
+  /@jridgewell/source-map/0.3.2:
+    resolution: {integrity: sha512-m7O9o2uR8k2ObDysZYzdfhb08VuEml5oWGiosa1VdaPZ/A6QyPkAJuwN0Q1lhULOf6B7MtQmHENS743hWtCrgw==}
+    dependencies:
+      '@jridgewell/gen-mapping': 0.3.2
+      '@jridgewell/trace-mapping': 0.3.17
+    dev: true
+
+  /@jridgewell/sourcemap-codec/1.4.14:
+    resolution: {integrity: sha512-XPSJHWmi394fuUuzDnGz1wiKqWfo1yXecHQMRf2l6hztTO+nPru658AyDngaBe7isIxEkRsPR3FZh+s7iVa4Uw==}
+    dev: true
+
+  /@jridgewell/trace-mapping/0.3.17:
+    resolution: {integrity: sha512-MCNzAp77qzKca9+W/+I0+sEpaUnZoeasnghNeVc41VZCEKaCH73Vq3BZZ/SzWIgrqE4H4ceI+p+b6C0mHf9T4g==}
+    dependencies:
+      '@jridgewell/resolve-uri': 3.1.0
+      '@jridgewell/sourcemap-codec': 1.4.14
+    dev: true
+
   /@nodelib/fs.scandir/2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
     engines: {node: '>= 8'}
@@ -128,23 +167,27 @@ packages:
       fastq: 1.13.0
     dev: true
 
+  /@popperjs/core/2.11.6:
+    resolution: {integrity: sha512-50/17A98tWUfQ176raKiOGXuYpLyyVMkxxG6oylzL3BPOlA6ADGdK7EYunSa4I064xerltq9TGXs8HmOk5E+vw==}
+
   /@types/json5/0.0.29:
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
     dev: true
 
-  /@vitejs/plugin-legacy/2.3.0_vite@3.2.2:
+  /@vitejs/plugin-legacy/2.3.0_terser@5.15.1+vite@3.2.2:
     resolution: {integrity: sha512-Bh62i0gzQvvT8AeAAb78nOnqSYXypkRmQmOTImdPZ39meHR9e2une3AIFmVo4s1SDmcmJ6qj18Sa/lRc/14KaA==}
     engines: {node: ^14.18.0 || >=16.0.0}
     peerDependencies:
       terser: ^5.4.0
       vite: ^3.0.0
     dependencies:
-      '@babel/standalone': 7.20.1
+      '@babel/standalone': 7.20.2
       core-js: 3.26.0
       magic-string: 0.26.7
       regenerator-runtime: 0.13.10
       systemjs: 6.13.0
-      vite: 3.2.2
+      terser: 5.15.1
+      vite: 3.2.2_terser@5.15.1
     dev: true
 
   /acorn-jsx/5.3.2_acorn@8.8.1:
@@ -221,10 +264,12 @@ packages:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
     dev: true
 
-  /bootstrap/5.2.2:
+  /bootstrap/5.2.2_@popperjs+core@2.11.6:
     resolution: {integrity: sha512-dEtzMTV71n6Fhmbg4fYJzQsw1N29hJKO1js5ackCgIpDcGid2ETMGC6zwSYw09v05Y+oRdQ9loC54zB1La3hHQ==}
     peerDependencies:
       '@popperjs/core': ^2.11.6
+    dependencies:
+      '@popperjs/core': 2.11.6
 
   /brace-expansion/1.1.11:
     resolution: {integrity: sha512-iCuPHDFgrHX7H2vEI/5xpz07zSHB00TpugqhmYtVmMO6518mCuRMoOYFldEBl0g187ufozdaHgWKcYFb61qGiA==}
@@ -238,6 +283,10 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       fill-range: 7.0.1
+    dev: true
+
+  /buffer-from/1.1.2:
+    resolution: {integrity: sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ==}
     dev: true
 
   /builtins/5.0.1:
@@ -275,6 +324,10 @@ packages:
 
   /color-name/1.1.4:
     resolution: {integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==}
+    dev: true
+
+  /commander/2.20.3:
+    resolution: {integrity: sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==}
     dev: true
 
   /concat-map/0.0.1:
@@ -1706,6 +1759,18 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
+  /source-map-support/0.5.21:
+    resolution: {integrity: sha512-uBHU3L3czsIyYXKX88fdrGovxdSCoTGDRZ6SYXtSRxLZUzHg5P/66Ht6uoUlHu9EZod+inXhKo3qQgwXUT/y1w==}
+    dependencies:
+      buffer-from: 1.1.2
+      source-map: 0.6.1
+    dev: true
+
+  /source-map/0.6.1:
+    resolution: {integrity: sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==}
+    engines: {node: '>=0.10.0'}
+    dev: true
+
   /sourcemap-codec/1.4.8:
     resolution: {integrity: sha512-9NykojV5Uih4lgo5So5dtw+f0JgJX30KCNI8gwhz2J9A15wD0Ml6tjHKwf6fTSa6fAdVBdZeNOs9eJ71qCk8vA==}
     dev: true
@@ -1802,6 +1867,17 @@ packages:
     resolution: {integrity: sha512-P3cgh2bpaPvAO2NE3uRp/n6hmk4xPX4DQf+UzTlCAycssKdqhp6hjw+ENWe+aUS7TogKRFtptMosTSFeC6R55g==}
     dev: true
 
+  /terser/5.15.1:
+    resolution: {integrity: sha512-K1faMUvpm/FBxjBXud0LWVAGxmvoPbZbfTCYbSgaaYQaIXI3/TdI7a7ZGA73Zrou6Q8Zmz3oeUTsp/dj+ag2Xw==}
+    engines: {node: '>=10'}
+    hasBin: true
+    dependencies:
+      '@jridgewell/source-map': 0.3.2
+      acorn: 8.8.1
+      commander: 2.20.3
+      source-map-support: 0.5.21
+    dev: true
+
   /text-table/0.2.0:
     resolution: {integrity: sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==}
     dev: true
@@ -1860,7 +1936,7 @@ packages:
       fast-glob: 3.2.12
     dev: true
 
-  /vite/3.2.2:
+  /vite/3.2.2_terser@5.15.1:
     resolution: {integrity: sha512-pLrhatFFOWO9kS19bQ658CnRYzv0WLbsPih6R+iFeEEhDOuYgYCX2rztUViMz/uy/V8cLCJvLFeiOK7RJEzHcw==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
@@ -1886,6 +1962,7 @@ packages:
       postcss: 8.4.18
       resolve: 1.22.1
       rollup: 2.79.1
+      terser: 5.15.1
     optionalDependencies:
       fsevents: 2.3.2
     dev: true
@@ -1931,155 +2008,154 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  bitbucket.org/dooksa/ds-app/003a863898448c53cc279899825116cccdca8790:
-    resolution: {commit: 003a863898448c53cc279899825116cccdca8790, repo: git+ssh://git@bitbucket.org/dooksa/ds-app.git, type: git}
+  bitbucket.org/dooksa/ds-app/7386a4ba30ed2f5390cb154d822541796c4f4c6b_@popperjs+core@2.11.6:
+    resolution: {commit: 7386a4ba30ed2f5390cb154d822541796c4f4c6b, repo: git+ssh://git@bitbucket.org/dooksa/ds-app.git, type: git}
+    id: bitbucket.org/dooksa/ds-app/7386a4ba30ed2f5390cb154d822541796c4f4c6b
     name: '@dooksa/ds-app'
     version: 1.0.0
     dependencies:
-      '@dooksa/ds-plugin': bitbucket.org/dooksa/ds-plugin/667ab14dfa8dd73db33e52c6dbe0d921d34fe65c
-      '@dooksa/ds-plugin-action': bitbucket.org/dooksa/ds-plugin-action/4b2a5259a984c62c032f8a7d24bf07722c611edc
-      '@dooksa/ds-plugin-component': bitbucket.org/dooksa/ds-plugin-component/59fd56bebbfcc1213093e225e861f7da4de028c4
-      '@dooksa/ds-plugin-element': bitbucket.org/dooksa/ds-plugin-element/0e12e6b50b04ecc6846563524dff8c908101b414
-      '@dooksa/ds-plugin-event': bitbucket.org/dooksa/ds-plugin-event/ab45385e538c6e3fb5adf6e5ded5f85bc09a9dbc
-      '@dooksa/ds-plugin-layout': bitbucket.org/dooksa/ds-plugin-layout/b70c21cb03a7cd6fd0d359747ad228169e375f5e
-      '@dooksa/ds-plugin-manager': bitbucket.org/dooksa/ds-plugin-manager/e616474db5f433372478bf7afb90d344da6d0016
-      '@dooksa/ds-plugin-metadata': bitbucket.org/dooksa/ds-plugin-metadata/69debe84b9db9e47196f818e1a504e77a5824692
-      '@dooksa/ds-plugin-operators': bitbucket.org/dooksa/ds-plugin-operators/c8aa2ae28bbe73b33111cd240b5f1b62b13757a5
-      '@dooksa/ds-plugin-page': bitbucket.org/dooksa/ds-plugin-page/fcfda1245b5d0c50a49e4dbbadd4235ae9050c80
-      '@dooksa/ds-plugin-parameters': bitbucket.org/dooksa/ds-plugin-parameters/f41035b9962c50370565ea292fbcbdbe7827d100
-      '@dooksa/ds-plugin-router': bitbucket.org/dooksa/ds-plugin-router/f04790546760aaeaefe8081a46c793df71ee3cf5
-      '@dooksa/ds-plugin-template': bitbucket.org/dooksa/ds-plugin-template/4291cbb15fd31c4083e309243c3909a7a5fd16df
-      '@dooksa/ds-plugin-token': bitbucket.org/dooksa/ds-plugin-tokens/85c0561b3b4e65695e4b20ba569d3e1d63aecabc
-      '@dooksa/ds-plugin-utilities': bitbucket.org/dooksa/ds-plugin-utilities/25b072152b334f0d49ed21f2c100b47e817d2ed8
-      '@dooksa/ds-plugin-widget': bitbucket.org/dooksa/ds-plugin-widget/8f1065061fba354b47d402a19aba306f81d8a29f
-      bootstrap: 5.2.2
+      '@dooksa/ds-plugin': bitbucket.org/dooksa/ds-plugin/d9a48f2f6cb39186493369f8feb4e3167e221ebc
+      '@dooksa/ds-plugin-action': bitbucket.org/dooksa/ds-plugin-action/f013d6158e07b5733ac0b4fca17d6a9e371cef84
+      '@dooksa/ds-plugin-component': bitbucket.org/dooksa/ds-plugin-component/9f3a8bbf080c3fd81d671046635cbc48d90661b7
+      '@dooksa/ds-plugin-element': bitbucket.org/dooksa/ds-plugin-element/6fea630564e6e4a02ea6adf9b5812e318a265f0e
+      '@dooksa/ds-plugin-event': bitbucket.org/dooksa/ds-plugin-event/53a0212836cd21ed20ff64b91104955aab5f5b70
+      '@dooksa/ds-plugin-layout': bitbucket.org/dooksa/ds-plugin-layout/2982a89a7faaa1a8b437003d30279cacf9caef1e
+      '@dooksa/ds-plugin-manager': bitbucket.org/dooksa/ds-plugin-manager/78d378d098dce3bd11dc4a61eafac97b4fee74a8
+      '@dooksa/ds-plugin-metadata': bitbucket.org/dooksa/ds-plugin-metadata/f891e0d31c3bc2d95ca4c2a1808ea854c697bb37
+      '@dooksa/ds-plugin-operators': bitbucket.org/dooksa/ds-plugin-operators/530714ff00f949cfba0a4cf273ebb649293ca889
+      '@dooksa/ds-plugin-page': bitbucket.org/dooksa/ds-plugin-page/22eefe2db03e2da7b19aee5e2ab831167161328e
+      '@dooksa/ds-plugin-parameters': bitbucket.org/dooksa/ds-plugin-parameters/e5c8c7d613fc796fbfa985377a567670c72b6262
+      '@dooksa/ds-plugin-router': bitbucket.org/dooksa/ds-plugin-router/0256c95c87b93813f681ca9dd879db452194f5a9
+      '@dooksa/ds-plugin-template': bitbucket.org/dooksa/ds-plugin-template/e84d4073bf075442843406aed5ff38ae49edbc72
+      '@dooksa/ds-plugin-token': bitbucket.org/dooksa/ds-plugin-tokens/aaea2277d4425ea50bd69ebe9938bc5813d0ed45
+      '@dooksa/ds-plugin-widget': bitbucket.org/dooksa/ds-plugin-widget/94227c1a00d9d416683e95e296ef697eb7f02c1e
+      bootstrap: 5.2.2_@popperjs+core@2.11.6
     transitivePeerDependencies:
       - '@popperjs/core'
     dev: true
 
-  bitbucket.org/dooksa/ds-plugin-action/4b2a5259a984c62c032f8a7d24bf07722c611edc:
-    resolution: {commit: 4b2a5259a984c62c032f8a7d24bf07722c611edc, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-action.git, type: git}
+  bitbucket.org/dooksa/ds-plugin-action/f013d6158e07b5733ac0b4fca17d6a9e371cef84:
+    resolution: {commit: f013d6158e07b5733ac0b4fca17d6a9e371cef84, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-action.git, type: git}
     name: '@dooksa/ds-plugin-action'
     version: 1.0.0
 
-  bitbucket.org/dooksa/ds-plugin-component/59fd56bebbfcc1213093e225e861f7da4de028c4:
-    resolution: {commit: 59fd56bebbfcc1213093e225e861f7da4de028c4, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-component.git, type: git}
+  bitbucket.org/dooksa/ds-plugin-component/9f3a8bbf080c3fd81d671046635cbc48d90661b7:
+    resolution: {commit: 9f3a8bbf080c3fd81d671046635cbc48d90661b7, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-component.git, type: git}
     name: '@dooksa/ds-plugin-component'
     version: 1.0.0
 
-  bitbucket.org/dooksa/ds-plugin-database/203169410dac4231eaa36590fdcbf9f25bf35bed:
-    resolution: {commit: 203169410dac4231eaa36590fdcbf9f25bf35bed, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-database.git, type: git}
+  bitbucket.org/dooksa/ds-plugin-database/6a4295fd7a34abd684cdca8eac9eed88e7917190:
+    resolution: {commit: 6a4295fd7a34abd684cdca8eac9eed88e7917190, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-database.git, type: git}
     name: '@dooksa-extra/ds-plugin-database'
     version: 1.0.0
 
-  bitbucket.org/dooksa/ds-plugin-devtool/fee3613f4f85dc0f52e789ec1fe04b1068e1c825:
-    resolution: {commit: fee3613f4f85dc0f52e789ec1fe04b1068e1c825, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-devtool.git, type: git}
+  bitbucket.org/dooksa/ds-plugin-devtool/959bef9acfbf78ce86a241cd995309331f64342d:
+    resolution: {commit: 959bef9acfbf78ce86a241cd995309331f64342d, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-devtool.git, type: git}
     name: '@dooksa-extra/ds-plugin-devtool'
     version: 1.0.0
     dev: true
 
-  bitbucket.org/dooksa/ds-plugin-element/0e12e6b50b04ecc6846563524dff8c908101b414:
-    resolution: {commit: 0e12e6b50b04ecc6846563524dff8c908101b414, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-element.git, type: git}
+  bitbucket.org/dooksa/ds-plugin-element/6fea630564e6e4a02ea6adf9b5812e318a265f0e:
+    resolution: {commit: 6fea630564e6e4a02ea6adf9b5812e318a265f0e, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-element.git, type: git}
     name: '@dooksa/ds-plugin-element'
     version: 1.0.0
     dependencies:
       iconify-icon: 1.0.1
 
-  bitbucket.org/dooksa/ds-plugin-event/ab45385e538c6e3fb5adf6e5ded5f85bc09a9dbc:
-    resolution: {commit: ab45385e538c6e3fb5adf6e5ded5f85bc09a9dbc, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-event.git, type: git}
+  bitbucket.org/dooksa/ds-plugin-event/53a0212836cd21ed20ff64b91104955aab5f5b70:
+    resolution: {commit: 53a0212836cd21ed20ff64b91104955aab5f5b70, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-event.git, type: git}
     name: '@dooksa/ds-plugin-event'
     version: 1.0.0
 
-  bitbucket.org/dooksa/ds-plugin-layout/b70c21cb03a7cd6fd0d359747ad228169e375f5e:
-    resolution: {commit: b70c21cb03a7cd6fd0d359747ad228169e375f5e, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-layout.git, type: git}
+  bitbucket.org/dooksa/ds-plugin-layout/2982a89a7faaa1a8b437003d30279cacf9caef1e:
+    resolution: {commit: 2982a89a7faaa1a8b437003d30279cacf9caef1e, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-layout.git, type: git}
     name: '@dooksa/ds-plugin-layout'
     version: 1.0.0
-    dependencies:
-      object-hash: 3.0.0
 
-  bitbucket.org/dooksa/ds-plugin-manager/e616474db5f433372478bf7afb90d344da6d0016:
-    resolution: {commit: e616474db5f433372478bf7afb90d344da6d0016, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-manager.git, type: git}
+  bitbucket.org/dooksa/ds-plugin-manager/78d378d098dce3bd11dc4a61eafac97b4fee74a8:
+    resolution: {commit: 78d378d098dce3bd11dc4a61eafac97b4fee74a8, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-manager.git, type: git}
     name: '@dooksa/ds-plugin-manager'
     version: 1.0.0
     dependencies:
-      '@dooksa-extra/ds-plugin-database': bitbucket.org/dooksa/ds-plugin-database/203169410dac4231eaa36590fdcbf9f25bf35bed
-      '@dooksa-extra/ds-plugin-parse': bitbucket.org/dooksa/ds-plugin-parse/7e88f2bfab4d085930fb2bdac5fafb278f6dfbce
-      '@dooksa-extra/ds-plugin-template': bitbucket.org/dooksa/ds-plugin-template/4291cbb15fd31c4083e309243c3909a7a5fd16df
-      '@dooksa-extra/ds-plugin-utilities': bitbucket.org/dooksa/ds-plugin-utilities/25b072152b334f0d49ed21f2c100b47e817d2ed8
-      '@dooksa/ds-plugin': bitbucket.org/dooksa/ds-plugin/667ab14dfa8dd73db33e52c6dbe0d921d34fe65c
-      '@dooksa/resource-loader': bitbucket.org/dooksa/resource-loader/cca5dcd969a45aaa19fa4d5d2bfa577426b3c4d1
+      '@dooksa-extra/ds-plugin-database': bitbucket.org/dooksa/ds-plugin-database/6a4295fd7a34abd684cdca8eac9eed88e7917190
+      '@dooksa-extra/ds-plugin-parse': bitbucket.org/dooksa/ds-plugin-parse/825131add66df1ef74c64f4f21b02c000d358a1a
+      '@dooksa-extra/ds-plugin-template': bitbucket.org/dooksa/ds-plugin-template/e84d4073bf075442843406aed5ff38ae49edbc72
+      '@dooksa-extra/ds-plugin-utilities': bitbucket.org/dooksa/ds-plugin-utilities/88d76ed947d088ea76cdfc589af0624bb723aebb
+      '@dooksa/ds-plugin': bitbucket.org/dooksa/ds-plugin/d9a48f2f6cb39186493369f8feb4e3167e221ebc
+      '@dooksa/resource-loader': bitbucket.org/dooksa/resource-loader/62193df21e23aa45401b4700574dbdae85b7b80f
 
-  bitbucket.org/dooksa/ds-plugin-metadata/69debe84b9db9e47196f818e1a504e77a5824692:
-    resolution: {commit: 69debe84b9db9e47196f818e1a504e77a5824692, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-metadata.git, type: git}
+  bitbucket.org/dooksa/ds-plugin-metadata/f891e0d31c3bc2d95ca4c2a1808ea854c697bb37:
+    resolution: {commit: f891e0d31c3bc2d95ca4c2a1808ea854c697bb37, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-metadata.git, type: git}
     name: '@dooksa/ds-plugin-metadata'
     version: 1.0.0
 
-  bitbucket.org/dooksa/ds-plugin-operators/c8aa2ae28bbe73b33111cd240b5f1b62b13757a5:
-    resolution: {commit: c8aa2ae28bbe73b33111cd240b5f1b62b13757a5, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-operators.git, type: git}
-    name: '@dooksa/ds-plugin-operators'
+  bitbucket.org/dooksa/ds-plugin-operators/530714ff00f949cfba0a4cf273ebb649293ca889:
+    resolution: {commit: 530714ff00f949cfba0a4cf273ebb649293ca889, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-operators.git, type: git}
+    name: '@dooksa/ds-plugin-operator'
     version: 1.0.0
 
-  bitbucket.org/dooksa/ds-plugin-page/fcfda1245b5d0c50a49e4dbbadd4235ae9050c80:
-    resolution: {commit: fcfda1245b5d0c50a49e4dbbadd4235ae9050c80, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-page.git, type: git}
+  bitbucket.org/dooksa/ds-plugin-page/22eefe2db03e2da7b19aee5e2ab831167161328e:
+    resolution: {commit: 22eefe2db03e2da7b19aee5e2ab831167161328e, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-page.git, type: git}
     name: '@dooksa/ds-plugin-page'
     version: 1.0.0
 
-  bitbucket.org/dooksa/ds-plugin-parameters/f41035b9962c50370565ea292fbcbdbe7827d100:
-    resolution: {commit: f41035b9962c50370565ea292fbcbdbe7827d100, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-parameters.git, type: git}
-    name: '@dooksa/ds-plugin-parameters'
+  bitbucket.org/dooksa/ds-plugin-parameters/e5c8c7d613fc796fbfa985377a567670c72b6262:
+    resolution: {commit: e5c8c7d613fc796fbfa985377a567670c72b6262, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-parameters.git, type: git}
+    name: '@dooksa/ds-plugin-parameter'
     version: 1.0.0
 
-  bitbucket.org/dooksa/ds-plugin-parse/7e88f2bfab4d085930fb2bdac5fafb278f6dfbce:
-    resolution: {commit: 7e88f2bfab4d085930fb2bdac5fafb278f6dfbce, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-parse.git, type: git}
+  bitbucket.org/dooksa/ds-plugin-parse/825131add66df1ef74c64f4f21b02c000d358a1a:
+    resolution: {commit: 825131add66df1ef74c64f4f21b02c000d358a1a, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-parse.git, type: git}
     name: '@dooksa-extra/ds-plugin-parse'
     version: 1.0.0
     dependencies:
-      nanoid: 3.3.4
       object-hash: 3.0.0
 
-  bitbucket.org/dooksa/ds-plugin-router/f04790546760aaeaefe8081a46c793df71ee3cf5:
-    resolution: {commit: f04790546760aaeaefe8081a46c793df71ee3cf5, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-router.git, type: git}
+  bitbucket.org/dooksa/ds-plugin-router/0256c95c87b93813f681ca9dd879db452194f5a9:
+    resolution: {commit: 0256c95c87b93813f681ca9dd879db452194f5a9, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-router.git, type: git}
     name: '@dooksa/ds-plugin-router'
     version: 1.0.0
 
-  bitbucket.org/dooksa/ds-plugin-template/4291cbb15fd31c4083e309243c3909a7a5fd16df:
-    resolution: {commit: 4291cbb15fd31c4083e309243c3909a7a5fd16df, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-template.git, type: git}
+  bitbucket.org/dooksa/ds-plugin-template/e84d4073bf075442843406aed5ff38ae49edbc72:
+    resolution: {commit: e84d4073bf075442843406aed5ff38ae49edbc72, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-template.git, type: git}
     name: '@dooksa-extra/ds-plugin-template'
     version: 1.0.0
 
-  bitbucket.org/dooksa/ds-plugin-tokens/85c0561b3b4e65695e4b20ba569d3e1d63aecabc:
-    resolution: {commit: 85c0561b3b4e65695e4b20ba569d3e1d63aecabc, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-tokens.git, type: git}
+  bitbucket.org/dooksa/ds-plugin-tokens/aaea2277d4425ea50bd69ebe9938bc5813d0ed45:
+    resolution: {commit: aaea2277d4425ea50bd69ebe9938bc5813d0ed45, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-tokens.git, type: git}
     name: '@dooksa/ds-plugin-token'
     version: 0.1.0
 
-  bitbucket.org/dooksa/ds-plugin-utilities/25b072152b334f0d49ed21f2c100b47e817d2ed8:
-    resolution: {commit: 25b072152b334f0d49ed21f2c100b47e817d2ed8, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-utilities.git, type: git}
+  bitbucket.org/dooksa/ds-plugin-utilities/88d76ed947d088ea76cdfc589af0624bb723aebb:
+    resolution: {commit: 88d76ed947d088ea76cdfc589af0624bb723aebb, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-utilities.git, type: git}
     name: '@dooksa-extra/ds-plugin-utilities'
     version: 1.0.0
     dependencies:
       nanoid: 3.3.4
 
-  bitbucket.org/dooksa/ds-plugin-widget/8f1065061fba354b47d402a19aba306f81d8a29f:
-    resolution: {commit: 8f1065061fba354b47d402a19aba306f81d8a29f, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-widget.git, type: git}
+  bitbucket.org/dooksa/ds-plugin-widget/94227c1a00d9d416683e95e296ef697eb7f02c1e:
+    resolution: {commit: 94227c1a00d9d416683e95e296ef697eb7f02c1e, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-widget.git, type: git}
     name: '@dooksa/ds-plugin-widget'
     version: 1.0.0
 
-  bitbucket.org/dooksa/ds-plugin/667ab14dfa8dd73db33e52c6dbe0d921d34fe65c:
-    resolution: {commit: 667ab14dfa8dd73db33e52c6dbe0d921d34fe65c, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin.git, type: git}
+  bitbucket.org/dooksa/ds-plugin/d9a48f2f6cb39186493369f8feb4e3167e221ebc:
+    resolution: {commit: d9a48f2f6cb39186493369f8feb4e3167e221ebc, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin.git, type: git}
     name: '@dooksa/ds-plugin'
     version: 1.0.0
 
-  bitbucket.org/dooksa/ds-scripts/67472a14c095762e6c2143ffa4a95b84aa3fdfdd:
-    resolution: {tarball: https://bitbucket.org/dooksa/ds-scripts/get/67472a14c095762e6c2143ffa4a95b84aa3fdfdd.tar.gz}
+  bitbucket.org/dooksa/ds-scripts/95dd64d275f9d35520b64a902a08f2eaf78f09b4_@popperjs+core@2.11.6:
+    resolution: {tarball: https://bitbucket.org/dooksa/ds-scripts/get/95dd64d275f9d35520b64a902a08f2eaf78f09b4.tar.gz}
+    id: bitbucket.org/dooksa/ds-scripts/95dd64d275f9d35520b64a902a08f2eaf78f09b4
     name: '@dooksa/ds-scripts'
     version: 1.0.0
     hasBin: true
     dependencies:
-      '@dooksa-extra/ds-plugin-devtool': bitbucket.org/dooksa/ds-plugin-devtool/fee3613f4f85dc0f52e789ec1fe04b1068e1c825
-      '@dooksa-extra/ds-plugin-parse': bitbucket.org/dooksa/ds-plugin-parse/7e88f2bfab4d085930fb2bdac5fafb278f6dfbce
-      '@dooksa/ds-app': bitbucket.org/dooksa/ds-app/003a863898448c53cc279899825116cccdca8790
-      '@vitejs/plugin-legacy': 2.3.0_vite@3.2.2
-      vite: 3.2.2
+      '@dooksa-extra/ds-plugin-devtool': bitbucket.org/dooksa/ds-plugin-devtool/959bef9acfbf78ce86a241cd995309331f64342d
+      '@dooksa-extra/ds-plugin-parse': bitbucket.org/dooksa/ds-plugin-parse/825131add66df1ef74c64f4f21b02c000d358a1a
+      '@dooksa/ds-app': bitbucket.org/dooksa/ds-app/7386a4ba30ed2f5390cb154d822541796c4f4c6b_@popperjs+core@2.11.6
+      '@vitejs/plugin-legacy': 2.3.0_terser@5.15.1+vite@3.2.2
+      terser: 5.15.1
+      vite: 3.2.2_terser@5.15.1
       vite-plugin-virtual-html: 0.4.0
     transitivePeerDependencies:
       - '@popperjs/core'
@@ -2087,10 +2163,9 @@ packages:
       - sass
       - stylus
       - sugarss
-      - terser
     dev: true
 
-  bitbucket.org/dooksa/resource-loader/cca5dcd969a45aaa19fa4d5d2bfa577426b3c4d1:
-    resolution: {tarball: https://bitbucket.org/dooksa/resource-loader/get/cca5dcd969a45aaa19fa4d5d2bfa577426b3c4d1.tar.gz}
+  bitbucket.org/dooksa/resource-loader/62193df21e23aa45401b4700574dbdae85b7b80f:
+    resolution: {tarball: https://bitbucket.org/dooksa/resource-loader/get/62193df21e23aa45401b4700574dbdae85b7b80f.tar.gz}
     name: '@dooksa/resource-loader'
     version: 1.0.0
