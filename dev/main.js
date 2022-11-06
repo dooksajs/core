@@ -62,7 +62,7 @@ if (dsPluginTemplates) {
           metadata.actions = { ...metadata.actions, [key]: item.sequence.id }
 
           if (item.params) {
-            app.$method('dsParameters/set', item.params)
+            app.$method('dsParameter/set', item.params)
           }
         }
       }
