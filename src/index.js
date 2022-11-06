@@ -180,8 +180,8 @@ export default {
       }
       // set params
       if (item.parameters) {
-        this.$action('dsParameters/set', item.parameters.items)
-        this.$action('dsParameters/setUsedBy', item.parameters.usedBy)
+        this.$action('dsParameter/set', item.parameters.items)
+        this.$action('dsParameter/setUsedBy', item.parameters.usedBy)
       }
       // set components
       if (item.components) {
