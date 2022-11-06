@@ -1,5 +1,5 @@
 const h = {
-  name: "dsOperators",
+  name: "dsOperator",
   version: 1,
   data: {
     operators: {
