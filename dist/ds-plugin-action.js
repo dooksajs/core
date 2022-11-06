@@ -3,7 +3,7 @@ const _ = {
   version: 1,
   dependencies: [
     {
-      name: "dsParameters",
+      name: "dsParameter",
       version: 1
     }
   ],
@@ -116,7 +116,7 @@ const _ = {
       entry: i,
       parentEntry: a
     }) {
-      return t && (d = this.$method("dsParameters/process", {
+      return t && (d = this.$method("dsParameter/process", {
         instance: o,
         entry: i,
         parentEntry: a,

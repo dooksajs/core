@@ -7,7 +7,7 @@ export default {
   version: 1,
   dependencies: [
     {
-      name: 'dsParameters',
+      name: 'dsParameter',
       version: 1
     }
   ],
@@ -177,7 +177,7 @@ export default {
       parentEntry
     }) {
       if (computedParams) {
-        params = this.$method('dsParameters/process', {
+        params = this.$method('dsParameter/process', {
           instance,
           entry,
           parentEntry,
