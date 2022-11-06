@@ -3,9 +3,9 @@ import dsMetadata from '@dooksa/ds-plugin-metadata'
 import dsAction from '@dooksa/ds-plugin-action'
 import dsWidget from '@dooksa/ds-plugin-widget'
 import dsElement from '@dooksa/ds-plugin-element'
-import dsOperators from '@dooksa/ds-plugin-operators'
+import dsOperator from '@dooksa/ds-plugin-operator'
 import dsEvent from '@dooksa/ds-plugin-event'
-import dsParameters from '@dooksa/ds-plugin-parameters'
+import dsParameter from '@dooksa/ds-plugin-parameter'
 import dsRouter from '@dooksa/ds-plugin-router'
 import dsComponent from '@dooksa/ds-plugin-component'
 import dsLayout from '@dooksa/ds-plugin-layout'
@@ -56,15 +56,15 @@ export default {
       version: dsEvent.version,
       plugin: dsEvent
     },
-    [dsParameters.name]: {
-      name: dsParameters.name,
-      version: dsParameters.version,
-      plugin: dsParameters
+    [dsParameter.name]: {
+      name: dsParameter.name,
+      version: dsParameter.version,
+      plugin: dsParameter
     },
-    [dsOperators.name]: {
-      name: dsOperators.name,
-      version: dsOperators.version,
-      plugin: dsOperators
+    [dsOperator.name]: {
+      name: dsOperator.name,
+      version: dsOperator.version,
+      plugin: dsOperator
     },
     [dsElement.name]: {
       name: dsElement.name,
