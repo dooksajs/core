@@ -1,12 +1,12 @@
 import { scriptDirectory, appDirectory } from '../utils/paths.js'
 import { kebabToCamelCase } from '../utils/text.js'
-import path from 'path';
+import path from 'path'
 import fs from 'fs'
 
 ;(async () => {
   const { default: { name, devDependencies } } = await import(path.resolve(appDirectory, 'ds.plugin.config.js'))
 
-  const depPath = path.join(scriptDirectory, 'tmp', name +'-pluginDeps.js')
+  const depPath = path.join(scriptDirectory, 'tmp', name + '-pluginDeps.js')
   let dependencies = 'export default {'
 
   if (devDependencies) {
@@ -18,7 +18,7 @@ import fs from 'fs'
       const name = dependency.split('/')
       const depPath = path.join(appDirectory, 'node_modules', dependency, 'src', 'index.js')
       const depImportName = kebabToCamelCase(name[name.length - 1])
-      
+
       depNames.push(depImportName)
 
       dependencies += `import ${depImportName} from '${depPath}';\n`
@@ -31,5 +31,5 @@ import fs from 'fs'
     }
   }
 
-  await fs.writeFileSync(depPath, dependencies +  '}')
+  await fs.writeFileSync(depPath, dependencies + '}')
 })()

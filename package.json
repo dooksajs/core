@@ -38,5 +38,8 @@
     "terser": "^5.15.1",
     "vite": "^3.1.0",
     "vite-plugin-virtual-html": "^0.4.0"
+  },
+  "devDependencies": {
+    "standard": "^17.0.0"
   }
 }

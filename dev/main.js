@@ -2,7 +2,7 @@ import dsApp from '@dooksa/ds-app'
 import dsDevTool from '@dooksa-extra/ds-plugin-devtool'
 import dsPlugin from '@dooksa/plugin'
 import dsPluginDeps from '@dooksa/plugin-dependencies'
-import dsPluginTemplates from '@dooksa/plugin-templates'
+import dsTemplates from 'dsTemplates'
 import bootstrapPage from '../data/index.js'
 import dsParse from '@dooksa-extra/ds-plugin-parse'
 
@@ -37,19 +37,26 @@ const app = dsApp.init({
 window.dsDevTool = app
 
 // build templates
-if (dsPluginTemplates) {
+if (dsTemplates) {
   // Need to find a better way to find a section and its parent element
   const sectionId = bootstrapPage.widgets.head[bootstrapPage.id][0]
 
-  for (let i = 0; i < dsPluginTemplates.length; i++) {
-    const template = dsPluginTemplates[i];
+  for (let i = 0; i < dsTemplates.length; i++) {
+    const template = dsTemplates[i]
     const div = document.createElement('div')
 
-    div.innerHTML = template.html
+    div.innerHTML = template
 
-    const templateScript = div.querySelector('script').textContent
+    const templateScript = div.querySelector('script')
     const templateElement = div.querySelector('template')
-    const metadata = new Function(templateScript)();
+
+    if (!templateScript) {
+      console.error(dsTemplates, 'is missing <script> tag')
+      break
+    }
+
+    /* eslint no-new-func: 'error' */
+    const metadata = new Function(templateScript.textContent)()
 
     if (metadata.methods) {
       for (const key in metadata.methods) {
@@ -69,30 +76,33 @@ if (dsPluginTemplates) {
     }
 
     app.$action('dsParse/toWidget',
-      { 
+      {
         rootElement: templateElement.content,
         isTemplate: true,
         metadata
       },
       {
         onSuccess: (item) => {
+          console.log(item)
           app.$action('dsTemplate/set',
-            { id: template.name, item },
-            { onSuccess: () => {
-              app.$method('dsWidget/insert', {
-                id: sectionId,
-                item: {
-                  layout: {
-                    default: {
-                      id: app.$method('dsUtilities/generateId'),
-                      templateId: template.name
+            { id: metadata.id, item },
+            {
+              onSuccess: () => {
+                app.$method('dsWidget/insert', {
+                  id: sectionId,
+                  item: {
+                    layout: {
+                      default: {
+                        id: app.$method('dsUtilities/generateId'),
+                        templateId: metadata.id
+                      }
                     }
                   }
-                }
-              })
-            }})
+                })
+              }
+            })
         },
-        onError: (result) => console.log(result),
+        onError: (result) => console.log(result)
       }
     )
   }
