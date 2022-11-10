@@ -7,35 +7,35 @@ const a = {
     keys: {}
   },
   methods: {
-    set(s, { _context: e, plugin: t }) {
-      this.items[t.name] = e, this.plugins.push(t.name), t.data && (this.keys[t.name + "/data"] = this._createKeys(t.data)), t.methods && (this.keys[t.name + "/methods"] = this._createKeys(t.data));
+    set({ _context: s, plugin: t }) {
+      this.items[t.name] = s, this.plugins.push(t.name), t.data && (this.keys[t.name + "/data"] = this._createKeys(t.data)), t.methods && (this.keys[t.name + "/methods"] = this._createKeys(t.data));
     },
     getPlugins() {
       return this.plugins;
     },
-    getData(s, e) {
-      const t = this.keys[e + "/data"] || [], o = {
-        name: e,
-        version: this.items[e].version
+    getData(s) {
+      const t = this.keys[s + "/data"] || [], e = {
+        name: s,
+        version: this.items[s].version
       };
       for (let i = 0; i < t.length; i++) {
         const r = t[i];
-        o[r] = this.items[e][r];
+        e[r] = this.items[s][r];
       }
-      return o;
+      return e;
     },
-    getAll(s, e) {
-      return this.items[e];
+    getAll(s) {
+      return this.items[s];
     },
-    getItem(s, { name: e, id: t }) {
-      if (this.items[e] && this.items[e][t])
-        return this.items[e][t];
+    getItem({ name: s, id: t }) {
+      if (this.items[s] && this.items[s][t])
+        return this.items[s][t];
     },
     _createKeys(s) {
-      const e = [];
-      for (const t in s)
-        Object.prototype.hasOwnProperty.call(s, t) && e.push(t);
-      return e;
+      const t = [];
+      for (const e in s)
+        Object.prototype.hasOwnProperty.call(s, e) && t.push(e);
+      return t;
     }
   }
 };
