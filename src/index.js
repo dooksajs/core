@@ -17,7 +17,7 @@ export default {
     conditions: {}
   },
   methods: {
-    dispatch (context, { sequenceId, payload }) {
+    dispatch ({ sequenceId, payload }) {
       const sequence = this.sequence[sequenceId]
 
       if (!sequence) return
@@ -32,7 +32,7 @@ export default {
     _getEntryId (item) {
       return item.entry.map(key => item[key])
     },
-    set (context, { actions, conditions, sequence }) {
+    set ({ actions, conditions, sequence }) {
       if (actions) {
         this.actions = { ...this.actions, ...actions }
       }
@@ -51,7 +51,7 @@ export default {
         }
       }
     },
-    setConditions (context, item) {
+    setConditions (item) {
       this.conditions = { ...this.conditions, ...item }
     },
     _dispatch ({
