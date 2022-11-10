@@ -14,11 +14,11 @@ export default {
     modifiers: {}
   },
   methods: {
-    getComponents (context, { instanceId, view = 'default' }) {
+    getComponents ({ instanceId, view = 'default' }) {
       return this.components[view + instanceId]
     },
-    render (context, { id, sectionId, instanceId, view = 'default', parentElementId = 'appElement', prefixId, lang = 'default' }) {
-      let components = this.getComponents({}, { instanceId, view })
+    render ({ id, sectionId, instanceId, view = 'default', parentElementId = 'appElement', prefixId, lang = 'default' }) {
+      let components = this.getComponents({ instanceId, view })
 
       if (!components) {
         const items = this._getItem(id)
@@ -45,13 +45,13 @@ export default {
         this.$method('dsWidget/attachItem', { type: 'instance', id: instanceId })
       }
     },
-    setHead (context, head) {
+    setHead (head) {
       this.head = { ...this.head, ...head }
     },
-    setModifiers (context, items) {
+    setModifiers (items) {
       this.modifiers = { ...this.modifiers, ...items }
     },
-    setItems (context, items) {
+    setItems (items) {
       this.items = { ...this.items, ...items }
     },
     _attachComponent (components, component, sectionId, instanceId, view, parentElementId, prefixId, lang) {
