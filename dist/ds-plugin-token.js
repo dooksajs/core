@@ -13,64 +13,64 @@ const c = {
     empty() {
       return "";
     },
-    placeholder(n) {
-      const s = this.$method("dsMetadata/getLang"), e = this.values[n[2]];
-      return e[s] ? e[s] : e.default;
+    placeholder(s) {
+      const n = this.$method("dsMetadata/getLang"), t = this.values[s[2]];
+      return t[n] ? t[n] : t.default;
     }
   },
   methods: {
-    textContent(n, { instanceId: s, text: e, updateText: o }) {
+    textContent({ instanceId: s, text: n, updateText: t }) {
       let a = 0;
-      (!this.process[s] || this.process[s].tokens !== e) && (this.process[s] = {
+      (!this.process[s] || this.process[s].tokens !== n) && (this.process[s] = {
         list: {},
-        text: e,
-        tokens: e
+        text: n,
+        tokens: n
       });
-      const l = this.process[s];
-      for (let i = 0; i < l.text.length; i++)
-        if (l.text[i] === "[") {
-          let t = "";
-          for (let h = i + 1; h < l.text.length; h++) {
-            const d = l.text[h];
-            if (d === "]") {
+      const i = this.process[s];
+      for (let l = 0; l < i.text.length; l++)
+        if (i.text[l] === "[") {
+          let h = "";
+          for (let e = l + 1; e < i.text.length; e++) {
+            const o = i.text[e];
+            if (o === "]") {
               let u = 0;
-              t.length > 1 && (l.list[a] = {
-                id: t,
+              h.length > 1 && (i.list[a] = {
+                id: h,
                 processed: !1,
                 value: "",
-                start: i
+                start: l
               }, u = this._get(
                 "values",
                 s,
-                l,
-                a,
-                t.split(":"),
                 i,
-                h + 1,
-                o
-              ), a++), i = i + u;
+                a,
+                h.split(":"),
+                l,
+                e + 1,
+                t
+              ), a++), l = l + u;
               break;
             }
-            t += d;
+            h += o;
           }
         }
     },
-    _get(n, s, e, o, a, l, i, r) {
-      const t = e.list[o];
-      let h = 0;
-      return t.value = this.$token(a[0] + "/" + a[1], a), t.value === void 0 && (t.value = "[" + a.join(":") + "]"), t.value instanceof Promise ? (t.value.then((d) => {
-        for (let u = 0; u < o; u++) {
-          const f = e.list[u];
+    _get(s, n, t, a, i, l, r, h) {
+      const e = t.list[a];
+      let o = 0;
+      return e.value = this.$token(i[0] + "/" + i[1], i), e.value === void 0 && (e.value = "[" + i.join(":") + "]"), e.value instanceof Promise ? (e.value.then((u) => {
+        for (let d = 0; d < a; d++) {
+          const f = t.list[d];
           f.processed && (l += f.valueLength);
         }
-        this._updateText(e, t, d, l, l, r), t.processed = !0;
-      }), this._updateText(e, t, "", l, i, r)) : (this._updateText(e, t, t.value, l, i, r), t.processed = !0, h = t.value.length), h;
+        this._updateText(t, e, u, l, l, h), e.processed = !0;
+      }), this._updateText(t, e, "", l, r, h)) : (this._updateText(t, e, e.value, l, r, h), e.processed = !0, o = e.value.length), o;
     },
-    _splice(n, s, e, o = "") {
-      return n.slice(0, s) + o + n.slice(e);
+    _splice(s, n, t, a = "") {
+      return s.slice(0, n) + a + s.slice(t);
     },
-    _updateText(n, s, e, o, a, l) {
-      s.valueLength = e.length, n.text = this._splice(n.text, o, a, e), l(n.text);
+    _updateText(s, n, t, a, i, l) {
+      n.valueLength = t.length, s.text = this._splice(s.text, a, i, t), l(s.text);
     }
   }
 };

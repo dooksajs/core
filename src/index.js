@@ -27,7 +27,6 @@ export default {
   methods: {
     /**
      * Convert tokens to related string and update the element that the content is attached to
-     * @param {Object} context This object is used to identify what method ran this function
      * @param {string} param.instanceId An ID related to the content and the target, usually the element ID
      * @param {string} param.text The original text that includes the tokens
      * @param {Function} param.updateText This the function that updates the element, e.g. element.textContent
