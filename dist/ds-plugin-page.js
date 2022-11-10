@@ -1,4 +1,4 @@
-const y = {
+const g = {
   name: "dsPage",
   version: 1,
   dependencies: [
@@ -27,23 +27,23 @@ const y = {
     items: {},
     templates: {}
   },
-  setup({ prefetchedPage: e }) {
-    e && Promise.resolve(e).then((t) => {
-      if (this.$method("dsMetadata/setTheme", t.app.theme), this.$method("dsMetadata/setAppId", t.app.id), this.set({}, t), t.foundPath && t.foundPath !== t.path)
-        return this.$method("dsRouter/navigate", this._cleanPath(t.path));
-      this._render(t.id);
-    }).catch((t) => console.log(t));
+  setup({ prefetchedPage: t }) {
+    t && Promise.resolve(t).then((e) => {
+      if (this.$method("dsMetadata/setTheme", e.app.theme), this.$method("dsMetadata/setAppId", e.app.id), this.set(e), e.foundPath && e.foundPath !== e.path)
+        return this.$method("dsRouter/navigate", this._cleanPath(e.path));
+      this._render(e.id);
+    }).catch((e) => console.log(e));
   },
   methods: {
-    getOneById(e, { id: t, expand: s }) {
-      const i = {
+    getOneById({ id: t, expand: e }) {
+      const s = {
         collection: "pages",
         id: t
       };
-      return s && (i.options = { expand: s }), new Promise((d) => {
+      return e && (s.options = { expand: e }), new Promise((d) => {
         this.$action(
           "dsDatabase/getOne",
-          i,
+          s,
           {
             onSuccess: (o) => d(o),
             onError: (o) => {
@@ -53,41 +53,41 @@ const y = {
         );
       });
     },
-    getOneByPath(e, { path: t, expand: s }) {
-      return new Promise((i, d) => {
-        const o = `(path='${t}')`, p = {
+    getOneByPath({ path: t, expand: e }) {
+      return new Promise((s, d) => {
+        const o = `(path='${t}')`, h = {
           filter: o
         };
-        s && (p.expand = s), this.$action(
+        e && (h.expand = e), this.$action(
           "dsDatabase/getList",
           {
             collection: "pages",
-            options: p
+            options: h
           },
           {
             onSuccess: (a) => {
-              const h = a;
-              h.foundPath = a.path, i(h);
+              const i = a;
+              i.foundPath = a.path, s(i);
             },
             onError: (a) => {
               if (a.code === 404) {
-                const h = s.split(",");
-                let c = "page";
-                for (let n = 0; n < h.length; n++)
-                  c += ",page." + h[n];
+                const i = e.split(",");
+                let l = "page";
+                for (let n = 0; n < i.length; n++)
+                  l += ",page." + i[n];
                 this.$action(
                   "dsDatabase/getList",
                   {
                     collection: "pagePaths",
                     options: {
                       filter: o,
-                      expand: c
+                      expand: l
                     }
                   },
                   {
                     onSuccess: (n) => {
-                      const l = n.items[0]["@expand"].page;
-                      l.foundPath = n.path, i(l);
+                      const p = n.items[0]["@expand"].page;
+                      p.foundPath = n.path, s(p);
                     },
                     onError: (n) => {
                       console.error(n), d(n);
@@ -101,46 +101,46 @@ const y = {
         );
       });
     },
-    updateDOM(e, { prevId: t, nextId: s }) {
-      const i = this.items[t], d = this.types[i.typesId], o = i.templateId || d.templateId, p = this.templates[o], a = this.items[s], h = this.types[a.typesId], c = a.templateId || h.templateId, n = this.templates[c], l = n.widgets.length, f = p.widgets.length, g = l > f ? l : f;
-      for (let r = 0; r < g; r++) {
-        const u = n.widgets[r], m = p.widgets[r];
-        u ? this.$method("dsWidget/update", {
+    updateDOM({ prevId: t, nextId: e }) {
+      const s = this.items[t], d = this.types[s.typesId], o = s.templateId || d.templateId, h = this.templates[o], a = this.items[e], i = this.types[a.typesId], l = a.templateId || i.templateId, n = this.templates[l], p = n.widgets.length, c = h.widgets.length, u = p > c ? p : c;
+      for (let r = 0; r < u; r++) {
+        const f = n.widgets[r], m = h.widgets[r];
+        f ? this.$method("dsWidget/update", {
           parentElementId: "appElement",
           prevPrefixId: t,
           prevId: m,
-          nextPrefixId: s,
-          nextId: u
+          nextPrefixId: e,
+          nextId: f
         }) : m && this.$method("dsWidget/remove", {
           sectionId: m,
           prefixId: t
         });
       }
     },
-    set(e, t) {
-      this.$method("dsRouter/setPath", { pageId: t.id, path: this._cleanPath(t.path) }), t.actions && (this.$action("dsAction/set", t.actions.items), this.$action("dsAction/setConditions", t.actions.conditions)), t.parameters && (this.$action("dsParameter/set", t.parameters.items), this.$action("dsParameter/setUsedBy", t.parameters.usedBy)), t.components && this.$method("dsComponent/set", t.components), t.layouts && (t.layouts.items && this.$method("dsLayout/setItems", t.layouts.items), t.layouts.head && this.$method("dsLayout/setHead", t.layouts.head), t.layouts.modifiers && this.$method("dsLayout/setModifiers", t.layouts.modifiers)), t.elements && (t.elements.value && this.$method("dsElement/setValues", t.elements.value), t.elements.attributes && this.$method("dsElement/setAttributes", t.elements.attributes), t.elements.type && this.$method("dsElement/setTypes", t.elements.type)), t.widgets && this.$method("dsWidget/set", { pageId: t.id, payload: t.widgets }), this._setItem(t.id, t.metadata), this._setTemplate(t.templates);
+    set(t) {
+      this.$method("dsRouter/setPath", { pageId: t.id, path: this._cleanPath(t.path) }), t.actions && (this.$method("dsAction/set", t.actions.items), this.$method("dsAction/setConditions", t.actions.conditions)), t.parameters && (this.$method("dsParameter/set", t.parameters.items), this.$method("dsParameter/setUsedBy", t.parameters.usedBy)), t.components && this.$method("dsComponent/set", t.components), t.layouts && (t.layouts.items && this.$method("dsLayout/setItems", t.layouts.items), t.layouts.head && this.$method("dsLayout/setHead", t.layouts.head), t.layouts.modifiers && this.$method("dsLayout/setModifiers", t.layouts.modifiers)), t.elements && (t.elements.value && this.$method("dsElement/setValues", t.elements.value), t.elements.attributes && this.$method("dsElement/setAttributes", t.elements.attributes), t.elements.type && this.$method("dsElement/setTypes", t.elements.type)), t.widgets && this.$method("dsWidget/set", { pageId: t.id, payload: t.widgets }), this._setItem(t.id, t.metadata), this._setTemplate(t.templates);
     },
-    _cleanPath(e) {
-      const t = e.split("/");
-      return t.shift(), "/" + t.join("/");
+    _cleanPath(t) {
+      const e = t.split("/");
+      return e.shift(), "/" + e.join("/");
     },
-    _render(e) {
-      const t = this.$method("dsWidget/getHead", e);
-      for (let s = 0; s < t.length; s++)
+    _render(t) {
+      const e = this.$method("dsWidget/getHead", t);
+      for (let s = 0; s < e.length; s++)
         this.$method("dsWidget/create", {
           parentElementId: "appElement",
-          prefixId: e,
-          id: t[s]
+          prefixId: t,
+          id: e[s]
         });
     },
-    _setItem(e, t) {
-      this.items[e] = t;
+    _setItem(t, e) {
+      this.items[t] = e;
     },
-    _setTemplate(e) {
-      this.templates = { ...this.templates, ...e };
+    _setTemplate(t) {
+      this.templates = { ...this.templates, ...t };
     }
   }
 };
 export {
-  y as default
+  g as default
 };
