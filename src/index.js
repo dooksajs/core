@@ -253,7 +253,8 @@ export default {
       if (this._components[name]) {
         const component = this._components[name]
 
-        if (!this.isLoaded[component.plugin]) {
+        // setup on request
+        if (!this.isLoaded[component.plugin] && this.setupOnRequestQueue[component.plugin]) {
           const pluginName = component.plugin
           const options = this._getOptions(pluginName)
           const plugin = this.setupOnRequestQueue[pluginName]
