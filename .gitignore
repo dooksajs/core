@@ -5,7 +5,6 @@
 
 # Node artifact files
 node_modules/
-dist/
 # Compiled Java class files
 *.class
 
@@ -61,5 +60,3 @@ cypress/downloads/
 # Coverage reporting
 .nyc_output
 coverage/
-
-ds.plugin.integrity.js
