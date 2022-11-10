@@ -1,24 +1,27 @@
 import dsApp from '@dooksa/ds-app'
 import dsDevTool from '@dooksa-extra/ds-plugin-devtool'
 import dsPlugin from '@dooksa/plugin'
-import dsPluginDeps from '@dooksa/plugin-dependencies'
+import dsDependencies from 'dsDependencies'
 import dsTemplates from 'dsTemplates'
 import bootstrapPage from '../data/index.js'
 import dsParse from '@dooksa-extra/ds-plugin-parse'
 
 const plugins = {
+  dsApp,
+  dsDevTool,
   dsPlugin,
-  ...dsPluginDeps
+  dsParse,
+  ...dsDependencies
 }
 
 // load the plugin and dependencies
 for (const key in plugins) {
   if (Object.prototype.hasOwnProperty.call(plugins, key)) {
-    dsApp.use(plugins[key], { setupOnRequest: true })
+    if (key !== 'dsApp') {
+      plugins.dsApp.use(plugins[key], { setupOnRequest: true })
+    }
   }
 }
-
-dsApp.use(dsDevTool)
 
 // force utilities to load
 dsApp.plugins.dsParse = {
@@ -28,7 +31,7 @@ dsApp.plugins.dsParse = {
 }
 
 // start app
-const app = dsApp.init({
+const app = plugins.dsApp.init({
   appRootElementId: 'app',
   isDev: true,
   prefetchedPage: bootstrapPage
