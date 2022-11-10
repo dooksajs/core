@@ -21,21 +21,21 @@ export default {
      * Set the apps id
      * @param {string} id - appId
      */
-    setAppId (context, id) {
+    setAppId (id) {
       this.appId = id
     },
     /**
      * Set the apps language
      * @param {string} value - name of theme
      */
-    setLang (context, value) {
+    setLang (value) {
       this.language = value
     },
     /**
      * Set the apps theme name
      * @param {string} value - name of theme
      */
-    setTheme (context, value) {
+    setTheme (value) {
       this.theme = value
     }
   }
