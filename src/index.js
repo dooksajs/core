@@ -16,6 +16,11 @@ import 'bootstrap/dist/css/bootstrap.css'
 
 export default {
   plugins: {
+    [dsManager.name]: {
+      name: dsManager.name,
+      version: dsManager.version,
+      plugin: dsManager
+    },
     [dsMetadata.name]: {
       name: dsMetadata.name,
       version: dsMetadata.version,
@@ -30,6 +35,11 @@ export default {
       name: dsRouter.name,
       version: dsRouter.version,
       plugin: dsRouter
+    },
+    [dsElement.name]: {
+      name: dsElement.name,
+      version: dsElement.version,
+      plugin: dsElement
     },
     [dsComponent.name]: {
       name: dsComponent.name,
@@ -65,11 +75,6 @@ export default {
       name: dsOperator.name,
       version: dsOperator.version,
       plugin: dsOperator
-    },
-    [dsElement.name]: {
-      name: dsElement.name,
-      version: dsElement.version,
-      plugin: dsElement
     },
     [dsPage.name]: {
       name: dsPage.name,
@@ -124,7 +129,7 @@ export default {
     this.plugins[plugin.name] = item
   },
   init ({ prefetchedPage, assetsURL, isDev, rootElementId = 'app' }) {
-    const pluginManager = new DsPlugin(dsManager)
+    const pluginManager = new DsPlugin(this.plugins[dsManager.name].plugin)
     // core plugins options
     this.plugins[dsElement.name].options = {
       setup: { rootElementId }
@@ -132,7 +137,9 @@ export default {
     this.plugins[dsPage.name].options = {
       setup: { prefetchedPage }
     }
-
+    // Remove manager from plugin list
+    delete this.plugins[dsManager.name]
+    // start dooksa
     return pluginManager.init({
       build: 1,
       plugins: this.plugins,
