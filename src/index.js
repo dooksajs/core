@@ -32,7 +32,7 @@ export default {
      * @param {string} param.text The original text that includes the tokens
      * @param {Function} param.updateText This the function that updates the element, e.g. element.textContent
      */
-    textContent (context, { instanceId, text, updateText }) {
+    textContent ({ instanceId, text, updateText }) {
       let tokenIndex = 0
       // create new process if text is different or no process exists
       if (!this.process[instanceId] || this.process[instanceId].tokens !== text) {
