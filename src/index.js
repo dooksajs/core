@@ -16,12 +16,9 @@ export default {
     _tokens: {},
     _components: {},
     buildId: '',
-    additionalPlugins: {},
     plugins: {},
     pluginUseQueue: [],
     appBuildId: '',
-    appPlugins: [],
-    appAdditionalPlugins: [],
     depQueue: {},
     queue: {},
     isLoaded: {},
@@ -43,26 +40,22 @@ export default {
    * @param {boolean} setup.plugins[].options.setupOnRequest - Run the plugins setup function when its methods are used
    * @param {Object} setup.plugins[].options.setup - Params sent to the plugins setup function
    * @param {Object} setup.plugins[].options.script - This is to load an external plugin (refer to {@link https://bitbucket.org/dooksa/resource-loader/src/master/README.md resource-loader})
-   * @param {Array} setup.additionalPlugins - A list of external plugins
    * @param {boolean} setup.isDev - Toggle development mode
    * @returns {Object} Development tools used by browser extension if it is enabled
    */
   setup ({
     buildId,
     plugins = {},
-    additionalPlugins = [],
     isDev
   }) {
     this.buildId = buildId
     this.context = [
       {
         name: '$action',
-        dispatch: true,
         value: this._action.bind(this)
       },
       {
         name: '$method',
-        dispatch: true,
         value: this._method.bind(this)
       },
       {
@@ -100,16 +93,6 @@ export default {
         this.use({}, { plugin: plugins[key] })
       }
     }
-    // ISSUE: [DS-757] additional plugins might be obsolete
-    for (let i = 0; i < additionalPlugins.length; i++) {
-      const item = additionalPlugins[i]
-
-      if (i === additionalPlugins.length - 1) {
-        item.lastItem = true
-      }
-
-      this.use({}, item)
-    }
 
     this._processQueue()
 
@@ -126,7 +109,7 @@ export default {
      * @param {*} context
      * @param {Object} item - @see this.setup plugin item
      */
-    use (context, { plugin, process }) {
+    use ({ plugin, process }) {
       this._addOptions(plugin.name, plugin.options)
       this.plugins[plugin.name] = plugin
       this.pluginUseQueue.push(plugin)
