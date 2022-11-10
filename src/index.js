@@ -12,7 +12,6 @@
  * @param {Object.<string, object>} plugin.methods - The version of the plugin.
  * @param {Object[]} context - Context is shared data between plugins.
  * @param {string} context.name - The name will be the key used within the plugin, e.g. '$action' = this.$action
- * @param {number} context.dispatch - If true the context.value (function) return value will be used.
  * @param {(string|object)} context.value - The value of the context.
  */
 function Plugin (plugin, context = []) {
@@ -42,12 +41,6 @@ function Plugin (plugin, context = []) {
       if (plugin.name !== 'dsDevTool') {
         _context.$action('dsDevTool/set', { _context, plugin })
       }
-    } else if (item.dispatch) {
-      _context[item.name] = item.value({
-        name: plugin.name,
-        version: plugin.version,
-        dependencies: plugin.dependencies
-      })
     } else {
       _context[item.name] = item.value
     }
