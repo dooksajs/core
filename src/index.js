@@ -15,7 +15,7 @@ export default {
      * @param {String} item.modifierId - This might be redundant due to modified components being precompiled
      * @returns
      */
-    get (context, { id, modifierId }) {
+    get ({ id, modifierId }) {
       const component = this.items[id]
 
       if (component.id === 'text') {
@@ -34,7 +34,7 @@ export default {
         }
       }
     },
-    set (context, item) {
+    set (item) {
       this.items = { ...this.items, ...item }
     }
   }
