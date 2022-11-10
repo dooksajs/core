@@ -13,48 +13,48 @@ const _ = {
     conditions: {}
   },
   methods: {
-    dispatch(o, { sequenceId: e, payload: s }) {
-      const t = this.sequence[e];
+    dispatch({ sequenceId: s, payload: e }) {
+      const t = this.sequence[s];
       !t || this._dispatch({
-        sequenceId: e,
+        sequenceId: s,
         actions: t.actions,
         conditions: t.conditions || {},
-        payload: s
+        payload: e
       });
     },
-    _getEntryId(o) {
-      return o.entry.map((e) => o[e]);
+    _getEntryId(s) {
+      return s.entry.map((e) => s[e]);
     },
-    set(o, { actions: e, conditions: s, sequence: t }) {
-      e && (this.actions = { ...this.actions, ...e }), s && (this.conditions = { ...this.conditions, ...s }), t && (this.sequence[t.id] = {
+    set({ actions: s, conditions: e, sequence: t }) {
+      s && (this.actions = { ...this.actions, ...s }), e && (this.conditions = { ...this.conditions, ...e }), t && (this.sequence[t.id] = {
         actions: t.actions
       }, t.conditions && (this.sequence[t.id].conditions = t.conditions));
     },
-    setConditions(o, e) {
-      this.conditions = { ...this.conditions, ...e };
+    setConditions(s) {
+      this.conditions = { ...this.conditions, ...s };
     },
     _dispatch({
-      sequenceId: o,
+      sequenceId: s,
       instance: e = {
         iteration: {},
         results: {}
       },
-      parentEntry: s,
-      actions: t = {},
+      parentEntry: t,
+      actions: o = {},
       conditions: n = {},
       payload: d,
-      results: c = {}
+      results: a = {}
     }) {
       let i = !0;
-      e.payload = d, s && (e.results[s] = c), n.length && (i = this._compare(n, {
-        parentEntry: s,
+      e.payload = d, t && (e.results[t] = a), n.length && (i = this._compare(n, {
+        parentEntry: t,
         instance: e
       }));
-      for (let a = 0; a < t.entry.length; a++) {
-        const l = t.entry[a], r = t[l];
+      for (let c = 0; c < o.entry.length; c++) {
+        const l = o.entry[c], r = o[l];
         let h = r;
         if (r._$id && (h = this.actions[r._$id]), r.conditions && (i = this._compare(r.conditions, {
-          parentEntry: s,
+          parentEntry: t,
           instance: e
         })), Object.hasOwnProperty.call(h, "when") && i !== h.when)
           return;
@@ -69,7 +69,7 @@ const _ = {
             parentEntry: l,
             actions: {
               entry: r.onSuccess,
-              ...t
+              ...o
             },
             instance: e
           },
@@ -79,7 +79,7 @@ const _ = {
             parentEntry: l,
             actions: {
               entry: r.onError,
-              ...t
+              ...o
             },
             instance: e
           },
@@ -88,9 +88,9 @@ const _ = {
         const p = this._action({
           instance: e,
           entry: l,
-          actions: t,
+          actions: o,
           conditions: r.conditions,
-          parentEntry: s,
+          parentEntry: t,
           name: h.name,
           type: h.type,
           computedParams: h._$computedParams,
@@ -98,81 +98,81 @@ const _ = {
           params: h.params,
           callback: u
         });
-        p && (c[l] = p);
+        p && (a[l] = p);
       }
-      return c;
+      return a;
     },
-    _createActions(o, e) {
-      return { entry: o, ...e };
+    _createActions(s, e) {
+      return { entry: s, ...e };
     },
     _action({
-      instance: o,
+      instance: s,
       name: e,
-      type: s,
-      computedParams: t,
+      type: t,
+      computedParams: o,
       paramType: n,
       params: d,
-      callback: c = {},
+      callback: a = {},
       entry: i,
-      parentEntry: a
+      parentEntry: c
     }) {
-      return t && (d = this.$method("dsParameter/process", {
-        instance: o,
+      return o && (d = this.$method("dsParameter/process", {
+        instance: s,
         entry: i,
-        parentEntry: a,
+        parentEntry: c,
         paramType: n,
         params: d
-      })), this["_process/" + s]({ name: e, params: d, callback: c });
+      })), this["_process/" + t]({ name: e, params: d, callback: a });
     },
-    _onEvent(o, e, s) {
-      let t = s;
-      e && (t = { ...e, result: s }), o(t);
+    _onEvent(s, e, t) {
+      let o = t;
+      e && (o = { ...e, result: t }), s(o);
     },
-    _compare(o, { instanceId: e, parentItemId: s, data: t }) {
-      let n = !1, d = !1, c = [];
-      for (let i = 0; i < o.length; i++) {
-        const a = o[i], l = a.name;
+    _compare(s, { instanceId: e, parentItemId: t, data: o }) {
+      let n = !1, d = !1, a = [];
+      for (let i = 0; i < s.length; i++) {
+        const c = s[i], l = c.name;
         if (l === "&&" || l === "||")
-          c = [...c, l], d = !0;
+          a = [...a, l], d = !0;
         else {
-          const r = [], h = a.values.length - 1;
-          for (let p = 0; p < a.values.length; p++) {
-            const m = a.values[p];
+          const r = [], h = c.values.length - 1;
+          for (let p = 0; p < c.values.length; p++) {
+            const m = c.values[p];
             let f = m.value;
             Object.hasOwnProperty.call(m, "entry") && (f = this._action({
               instanceId: e,
               entry: m.entry,
-              parentItemId: s,
-              paramItems: a.params,
-              data: t,
+              parentItemId: t,
+              paramItems: c.params,
+              data: o,
               lastItem: h === p,
-              ...a.items[m.entry]
+              ...c.items[m.entry]
             })), r.push(f);
           }
           const u = this.$method("dsOperators/eval", { name: l, values: r });
-          c.push(u);
+          a.push(u);
         }
       }
       if (d)
-        n = this.$method("dsOperators/compare", c);
+        n = this.$method("dsOperators/compare", a);
       else
-        for (let i = 0; i < c.length; i++)
-          if (n = !0, !c[i]) {
+        for (let i = 0; i < a.length; i++)
+          if (n = !0, !a[i]) {
             n = !1;
             break;
           }
       return n;
     },
-    "_process/getProcessValue"({ params: o, callback: e }) {
-      const s = e.onSuccess, t = e.onError, n = o;
-      return s && this._onEvent(s.method || s, s.params, n), t && this._onEvent(t.method || t, t.params), n;
+    "_process/getProcessValue"({ params: s, callback: e }) {
+      const t = e.onSuccess, o = e.onError, n = s;
+      return t && this._onEvent(t.method || t, t.params, n), o && this._onEvent(o.method || o, o.params), n;
     },
-    "_process/pluginAction"({ name: o, params: e, callback: s }) {
-      this.$action(o, e, s);
+    "_process/pluginAction"({ name: s, params: e, callback: t }) {
+      this.$action(s, e, t);
     },
-    "_process/pluginMethod"({ name: o, params: e, callback: s }) {
-      const t = s.onSuccess, n = this.$method(o, e);
-      t && this._onEvent(t.method || t, t.params, n);
+    "_process/pluginMethod"({ name: s, params: e, callback: t }) {
+      const o = t.onSuccess, n = this.$method(s, e);
+      o && this._onEvent(o.method || o, o.params, n);
     }
   }
 };
