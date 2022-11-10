@@ -14,7 +14,7 @@ const r = {
     items: {}
   },
   setup() {
-    this.currentPath = this.currentPathname(), window.addEventListener("popstate", (a) => {
+    this.currentPath = this.currentPathname(), window.addEventListener("popstate", (e) => {
       this._update(this.currentPath, this.currentPathname(), (t) => {
         this.$method("dsPage/updateDOM", t), this.$action("dsEvent/emit", {
           id: this.name,
@@ -26,42 +26,42 @@ const r = {
   },
   methods: {
     getCurrentId() {
-      const a = this.currentPathname();
-      return this.items[a];
+      const e = this.currentPathname();
+      return this.items[e];
     },
     currentPathname() {
       return window.location.pathname;
     },
-    setPath(a, { pageId: t, path: e }) {
-      this.items[e] = t;
+    setPath({ pageId: e, path: t }) {
+      this.items[t] = e;
     },
-    navigate(a, t) {
-      this._update(this.currentPathname(), t, (e) => {
-        window.history.pushState(e, "", t), this.currentPath = this.currentPathname(), this.$method("dsPage/updateDOM", e), this.$action("dsEvent/emit", {
+    navigate(e) {
+      this._update(this.currentPathname(), e, (t) => {
+        window.history.pushState(t, "", e), this.currentPath = this.currentPathname(), this.$method("dsPage/updateDOM", t), this.$action("dsEvent/emit", {
           id: this.name,
           name: "navigate",
-          payload: e
+          payload: t
         });
       });
     },
-    cleanPath(a, t) {
-      return t.toString().trim().toLocaleLowerCase("en-US").replace(/[_,:;]/gi, "-").replace(/\s+/g, "-").replace(/[+]/g, "-").replace(/[^\w-]+/g, "").replace(/--+/g, "-");
+    cleanPath(e) {
+      return e.toString().trim().toLocaleLowerCase("en-US").replace(/[_,:;]/gi, "-").replace(/\s+/g, "-").replace(/[+]/g, "-").replace(/[^\w-]+/g, "").replace(/--+/g, "-");
     },
-    _update(a, t, e = () => {
+    _update(e, t, n = () => {
     }) {
-      const n = {
+      const a = {
         nextPath: t,
-        prevPath: a,
+        prevPath: e,
         nextId: this.items[t],
-        prevId: this.items[a]
+        prevId: this.items[e]
       };
-      if (this.currentPath = this.currentPathname(), n.nextId)
-        e(n);
+      if (this.currentPath = this.currentPathname(), a.nextId)
+        n(a);
       else {
-        const i = this.cleanPath({}, t);
+        const i = this.cleanPath(t);
         this.$action("dsPage/getOneByPath", { path: i }, {
           onSuccess: (s) => {
-            n.nextId = s.id, this.$method("dsPage/set", s), e(n);
+            a.nextId = s.id, this.$method("dsPage/set", s), n(a);
           }
         });
       }
