@@ -41,10 +41,10 @@ export default {
     currentPathname () {
       return window.location.pathname
     },
-    setPath (context, { pageId, path }) {
+    setPath ({ pageId, path }) {
       this.items[path] = pageId
     },
-    navigate (context, nextPath) {
+    navigate (nextPath) {
       this._update(this.currentPathname(), nextPath, (state) => {
         // update history
         window.history.pushState(state, '', nextPath)
@@ -60,7 +60,7 @@ export default {
         })
       })
     },
-    cleanPath (context, value) {
+    cleanPath (value) {
       const text = value.toString().trim().toLocaleLowerCase('en-US')
 
       return text.replace(/[_,:;]/gi, '-')
@@ -80,7 +80,7 @@ export default {
       this.currentPath = this.currentPathname()
 
       if (!state.nextId) {
-        const path = this.cleanPath({}, nextPath)
+        const path = this.cleanPath(nextPath)
 
         this.$action('dsPage/getOneByPath', { path }, {
           onSuccess: (data) => {
