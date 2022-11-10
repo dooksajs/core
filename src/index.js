@@ -15,21 +15,21 @@ export default {
     })
   },
   methods: {
-    getList (context, { collection, page = 1, perPage = 25, options = {} }) {
+    getList ({ collection, page = 1, perPage = 25, options = {} }) {
       return new Promise((resolve, reject) => {
         this.client.records.getList(collection, page, perPage, options)
           .then(records => resolve(records))
           .catch(error => reject(error))
       })
     },
-    getOne (context, { collection, id, options = {} }) {
+    getOne ({ collection, id, options = {} }) {
       return new Promise((resolve, reject) => {
         this.client.records.getOne(collection, id, options)
           .then(record => resolve(record))
           .catch(error => reject(error))
       })
     },
-    create (context, { collection, data, options = {} }) {
+    create ({ collection, data, options = {} }) {
       // add a modal check
       return new Promise((resolve, reject) => {
         this.client.records.create(collection, data, options)
@@ -37,7 +37,7 @@ export default {
           .catch(error => reject(error))
       })
     },
-    update (context, { collection, id, data }) {
+    update ({ collection, id, data }) {
       // add a modal check
       return new Promise((resolve, reject) => {
         this.client.records.update(collection, id, data)
@@ -45,7 +45,7 @@ export default {
           .catch(error => reject(error))
       })
     },
-    delete (context, { collection, id }) {
+    delete ({ collection, id }) {
       return new Promise((resolve, reject) => {
         this.client.records.delete(collection, id)
           .then(() => resolve('OK'))
