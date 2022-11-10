@@ -16,7 +16,7 @@ export default {
     items: {}
   },
   methods: {
-    addListener (context, { id, on, action }) {
+    addListener ({ id, on, action }) {
       if (this.items[id]) {
         if (this.items[id][on]) {
           this.items[id][on].push(action)
@@ -29,16 +29,16 @@ export default {
         }
       }
     },
-    emit (context, { id, on, payload }) {
+    emit ({ id, on, payload }) {
       // not sure why we need the context name
       // const eventName = this._name(context.name, on)
-      const listeners = this.getListener({}, { id, on })
+      const listeners = this.getListener({ id, on })
 
       for (let i = 0; i < listeners.length; i++) {
         this.$method('dsAction/dispatch', { sequenceId: listeners[i], payload })
       }
     },
-    removeListener (context, { id, on, value }) {
+    removeListener ({ id, on, value }) {
       if (this.items[id]) {
         if (this.items[id][on]) {
           const items = this.items[id][on]
@@ -58,7 +58,7 @@ export default {
         }
       }
     },
-    getListener (context, { id, on }) {
+    getListener ({ id, on }) {
       if (this.items[id]) {
         return this.items[id][on] ? this.items[id][on] : []
       }
@@ -74,7 +74,7 @@ export default {
     removeHandler (id) {
       delete this.handler[id]
     },
-    set (context, item) {
+    set (item) {
       this.items = { ...this.items, ...item }
     },
     _name (contextName, name) {
