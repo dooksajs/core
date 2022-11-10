@@ -1,4 +1,4 @@
-const m = {
+const n = {
   name: "dsEvent",
   version: 1,
   dependencies: [
@@ -12,44 +12,44 @@ const m = {
     items: {}
   },
   methods: {
-    addListener(s, { id: e, on: t, action: i }) {
-      this.items[e] ? this.items[e][t] ? this.items[e][t].push(i) : this.items[e][t] = [i] : this.items[e] = {
-        [t]: [i]
+    addListener({ id: e, on: t, action: s }) {
+      this.items[e] ? this.items[e][t] ? this.items[e][t].push(s) : this.items[e][t] = [s] : this.items[e] = {
+        [t]: [s]
       };
     },
-    emit(s, { id: e, on: t, payload: i }) {
-      const n = this.getListener({}, { id: e, on: t });
-      for (let h = 0; h < n.length; h++)
-        this.$method("dsAction/dispatch", { sequenceId: n[h], payload: i });
+    emit({ id: e, on: t, payload: s }) {
+      const h = this.getListener({ id: e, on: t });
+      for (let i = 0; i < h.length; i++)
+        this.$method("dsAction/dispatch", { sequenceId: h[i], payload: s });
     },
-    removeListener(s, { id: e, on: t, value: i }) {
+    removeListener({ id: e, on: t, value: s }) {
       if (this.items[e] && this.items[e][t]) {
-        const n = this.items[e][t], h = [];
-        for (let r = 0; r < n.length; r++)
-          n[r] !== i && h.push(n[r]);
-        h.length ? this.items[e][t] = h : delete this.items[e][t];
+        const h = this.items[e][t], i = [];
+        for (let r = 0; r < h.length; r++)
+          h[r] !== s && i.push(h[r]);
+        i.length ? this.items[e][t] = i : delete this.items[e][t];
       }
     },
-    getListener(s, { id: e, on: t }) {
+    getListener({ id: e, on: t }) {
       return this.items[e] ? this.items[e][t] ? this.items[e][t] : [] : [];
     },
-    getHandler(s) {
-      return this.handler[s];
+    getHandler(e) {
+      return this.handler[e];
     },
-    addHandler(s, e) {
-      this.handler[s] = e;
+    addHandler(e, t) {
+      this.handler[e] = t;
     },
-    removeHandler(s) {
-      delete this.handler[s];
+    removeHandler(e) {
+      delete this.handler[e];
     },
-    set(s, e) {
+    set(e) {
       this.items = { ...this.items, ...e };
     },
-    _name(s, e) {
-      return s + "/" + e;
+    _name(e, t) {
+      return e + "/" + t;
     }
   }
 };
 export {
-  m as default
+  n as default
 };
