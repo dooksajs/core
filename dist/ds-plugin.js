@@ -1,16 +1,12 @@
-function c(e, a = []) {
+function i(e, c = []) {
   let s = {
     name: e.name,
     version: e.version
   };
   this.name = e.name, this.version = e.version, e.data && (s = { ...s, ...e.data });
-  for (let o = 0; o < a.length; o++) {
-    const t = a[o];
-    t.use && t.use.includes(e.name) && (s[t.name] = t.value), t.name === "isDev" && t.value ? (s.isDev = !0, e.name !== "dsDevTool" && s.$action("dsDevTool/set", { _context: s, plugin: e })) : t.dispatch ? s[t.name] = t.value({
-      name: e.name,
-      version: e.version,
-      dependencies: e.dependencies
-    }) : s[t.name] = t.value;
+  for (let o = 0; o < c.length; o++) {
+    const t = c[o];
+    t.use && t.use.includes(e.name) && (s[t.name] = t.value), t.name === "isDev" && t.value ? (s.isDev = !0, e.name !== "dsDevTool" && s.$action("dsDevTool/set", { _context: s, plugin: e })) : s[t.name] = t.value;
   }
   if (e.dependencies && (this.dependencies = e.dependencies, s.dependencies = e.dependencies), e.methods) {
     const o = {};
@@ -39,10 +35,10 @@ function c(e, a = []) {
   }
   e.setup && (this.setup = e.setup.bind(s));
 }
-c.prototype.init = function(e) {
+i.prototype.init = function(e) {
   if (this.setup)
     return this.setup(e);
 };
 export {
-  c as default
+  i as default
 };
