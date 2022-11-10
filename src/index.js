@@ -80,7 +80,7 @@ export default {
         const contentType = this.$method('dsElement/getType', contentId)
 
         if (contentType[0] === 'section') {
-          const sectionId = this.$method('dsElement/getValue', { id: contentId })
+          const newSectionId = this.$method('dsElement/getValue', { id: contentId })
 
           // create a new widget and append it to this element item
           this.$method('dsWidget/create', {
@@ -90,6 +90,8 @@ export default {
             lang,
             view
           })
+
+          this.$method('dsWidget/setSectionParentId', { childId: newSectionId, parentId: sectionId })
         } else {
           // missing parentElement
           this.$method('dsElement/attachContent', { contentId, elementId, lang })
@@ -175,52 +177,14 @@ export default {
           )
 
           if (Object.hasOwnProperty.call(item, 'contentIndex')) {
-            const contentId = this.$method('dsWidget/getContentItem', {
-              sectionId,
-              instanceId,
-              prefixId,
-              parentElementId,
-              index: item.contentIndex
-            })
             // this fragment contains content
             fragment.contentIndex = item.contentIndex
-
-            this.$method('dsElement/attachContent', { contentId, elementId, lang })
-            this.$method('dsWidget/attachItem', { type: 'content', id: contentId })
           }
 
           fragments = fragments.concat(result)
         } else if (Object.hasOwnProperty.call(item, 'contentIndex')) {
-          const contentId = this.$method('dsWidget/getContentItem', {
-            sectionId,
-            instanceId,
-            prefixId,
-            parentElementId,
-            index: item.contentIndex
-          })
           // mark fragment has content
           fragment.contentIndex = item.contentIndex
-
-          const contentType = this.$method('dsElement/getType', contentId)
-
-          if (contentType[0] === 'section') {
-            const newSectionId = this.$method('dsElement/getValue', { id: contentId })
-            // create a new widget and append it to this component item
-            this.$method('dsWidget/create', {
-              id: newSectionId,
-              parentElementId: elementId,
-              prefixId,
-              lang,
-              view
-            })
-
-            this.$method('dsWidget/setSectionParentId', { childId: newSectionId, parentId: sectionId })
-          } else {
-            // missing parentElement
-            this.$method('dsElement/attachContent', { contentId, elementId, lang })
-          }
-
-          this.$method('dsWidget/attachItem', { type: 'content', id: contentId })
         }
 
         currentIndex++

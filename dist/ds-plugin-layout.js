@@ -1,4 +1,4 @@
-const E = {
+const b = {
   name: "dsLayout",
   version: 1,
   data: {
@@ -10,25 +10,25 @@ const E = {
     modifiers: {}
   },
   methods: {
-    getComponents(e, { instanceId: t, view: h = "default" }) {
-      return this.components[h + t];
+    getComponents(e, { instanceId: t, view: n = "default" }) {
+      return this.components[n + t];
     },
-    render(e, { id: t, sectionId: h, instanceId: i, view: s = "default", parentElementId: n = "appElement", prefixId: m, lang: l = "default" }) {
-      let d = this.getComponents({}, { instanceId: i, view: s });
+    render(e, { id: t, sectionId: n, instanceId: o, view: s = "default", parentElementId: i = "appElement", prefixId: m, lang: c = "default" }) {
+      let d = this.getComponents({}, { instanceId: o, view: s });
       if (d) {
-        for (let o = 0; o < d.length; o++) {
-          const g = d[o];
-          this._attachComponent(d, g, h, i, s, n, m, l);
+        for (let h = 0; h < d.length; h++) {
+          const g = d[h];
+          this._attachComponent(d, g, n, o, s, i, m, c);
         }
-        this.$method("dsWidget/attachItem", { type: "instance", id: i });
+        this.$method("dsWidget/attachItem", { type: "instance", id: o });
       } else {
-        const o = this._getItem(t), g = this._getHead(t), r = this._getEvent(t);
-        d = this._create(t, o, g, o, r, h, i, n, m, l, s);
+        const h = this._getItem(t), g = this._getHead(t), l = this._getEvent(t);
+        d = this._create(t, h, g, h, l, n, o, i, m, c, s);
         for (let _ = 0; _ < d.length; _++) {
-          const p = d[_];
-          this._attachComponent(d, p, h, i, s, n, m, l);
+          const r = d[_];
+          this._attachComponent(d, r, n, o, s, i, m, c);
         }
-        this._setComponents(i, d, s);
+        this._setComponents(o, d, s);
       }
     },
     setHead(e, t) {
@@ -40,117 +40,88 @@ const E = {
     setItems(e, t) {
       this.items = { ...this.items, ...t };
     },
-    _attachComponent(e, t, h, i, s, n, m, l) {
-      let d = n;
+    _attachComponent(e, t, n, o, s, i, m, c) {
+      let d = i;
       if (t.elementId) {
-        const o = isNaN(t.parentIndex) ? n : e[t.parentIndex].elementId;
+        const h = isNaN(t.parentIndex) ? i : e[t.parentIndex].elementId;
         d = t.elementId, this.$method("dsElement/append", {
-          parentId: o,
+          parentId: h,
           childId: t.elementId
         });
       }
       if (Object.hasOwnProperty.call(t, "contentIndex")) {
-        const o = this.$method("dsWidget/getContentItem", {
-          sectionId: h,
-          instanceId: i,
+        const h = this.$method("dsWidget/getContentItem", {
+          sectionId: n,
+          instanceId: o,
           prefixId: m,
-          parentElementId: n,
+          parentElementId: i,
           view: s,
           index: t.contentIndex
         });
-        if (this.$method("dsElement/getType", o)[0] === "section") {
-          const r = this.$method("dsElement/getValue", { id: o });
+        if (this.$method("dsElement/getType", h)[0] === "section") {
+          const l = this.$method("dsElement/getValue", { id: h });
           this.$method("dsWidget/create", {
-            id: r,
-            parentElementId: n,
+            id: n,
+            parentElementId: i,
             prefixId: m,
-            lang: l,
+            lang: c,
             view: s
-          });
+          }), this.$method("dsWidget/setSectionParentId", { childId: l, parentId: n });
         } else
-          this.$method("dsElement/attachContent", { contentId: o, elementId: d, lang: l });
-        this.$method("dsWidget/attachItem", { type: "content", id: o });
+          this.$method("dsElement/attachContent", { contentId: h, elementId: d, lang: c });
+        this.$method("dsWidget/attachItem", { type: "content", id: h });
       }
     },
-    _create(e, t, h, i, s, n, m, l, d, o, g, r = [], _, p = 0) {
-      let C = [];
-      if (!r.length) {
+    _create(e, t, n, o, s, i, m, c, d, h, g, l = [], _, r = 0) {
+      let $ = [];
+      if (!l.length) {
         for (let f = 0; f < t.length; f++)
-          r.push(m + "_" + f.toString().padStart(4, "0"));
-        _ = r;
+          l.push(m + "_" + f.toString().padStart(4, "0"));
+        _ = l;
       }
-      for (let f = 0; f < h.length; f++) {
-        const c = i[h[f]], u = {};
-        let $ = _[h[f]];
-        if (Object.prototype.hasOwnProperty.call(c, "parentIndex") && (u.parentIndex = c.parentIndex), c.componentId) {
-          const a = this.$method("dsWidget/getLayout", n + m + "_" + g), x = {
-            id: c.componentId
+      for (let f = 0; f < n.length; f++) {
+        const a = o[n[f]], u = {};
+        let x = _[n[f]];
+        if (Object.prototype.hasOwnProperty.call(a, "parentIndex") && (u.parentIndex = a.parentIndex), a.componentId) {
+          const p = this.$method("dsWidget/getLayout", i + m + "_" + g), y = {
+            id: a.componentId
           };
-          this.modifiers[a] && this.modifiers[a][p] && (x.modifierId = this.modifiers[a][p]);
-          const y = this.$method("dsComponent/get", x);
-          if (y.textNode ? this.$method("dsElement/createNode", $) : this.$method("dsElement/createElement", { id: $, sectionId: n, instanceId: m, item: y }), s[p]) {
-            const I = s[p];
-            for (let W = 0; W < I.action.length; W++)
-              this.$method("dsEvent/addListener", { id: $, name: I.on, item: I.action[W] });
+          this.modifiers[p] && this.modifiers[p][r] && (y.modifierId = this.modifiers[p][r]);
+          const O = this.$method("dsComponent/get", y);
+          if (O.textNode ? this.$method("dsElement/createNode", x) : this.$method("dsElement/createElement", { id: x, sectionId: i, instanceId: m, item: O }), s[r]) {
+            const I = s[r];
+            for (let C = 0; C < I.action.length; C++)
+              this.$method("dsEvent/addListener", { id: x, name: I.on, item: I.action[C] });
           }
-          u.elementId = $;
+          u.elementId = x;
         } else
-          $ = l;
-        if (C.push(u), c.children) {
-          const a = this._getSibling(t, c.children, r), x = this._create(
+          x = c;
+        if ($.push(u), a.children) {
+          const p = this._getSibling(t, a.children, l), y = this._create(
             e,
             t,
-            a.head,
-            a.children,
+            p.head,
+            p.children,
             s,
-            n,
+            i,
             m,
-            l,
+            c,
             d,
-            o,
+            h,
             g,
-            r,
-            a.components,
-            ++p
+            l,
+            p.components,
+            ++r
           );
-          if (Object.hasOwnProperty.call(c, "contentIndex")) {
-            const y = this.$method("dsWidget/getContentItem", {
-              sectionId: n,
-              instanceId: m,
-              prefixId: d,
-              parentElementId: l,
-              index: c.contentIndex
-            });
-            u.contentIndex = c.contentIndex, this.$method("dsElement/attachContent", { contentId: y, elementId: $, lang: o }), this.$method("dsWidget/attachItem", { type: "content", id: y });
-          }
-          C = C.concat(x);
-        } else if (Object.hasOwnProperty.call(c, "contentIndex")) {
-          const a = this.$method("dsWidget/getContentItem", {
-            sectionId: n,
-            instanceId: m,
-            prefixId: d,
-            parentElementId: l,
-            index: c.contentIndex
-          });
-          if (u.contentIndex = c.contentIndex, this.$method("dsElement/getType", a)[0] === "section") {
-            const y = this.$method("dsElement/getValue", { id: a });
-            this.$method("dsWidget/create", {
-              id: y,
-              parentElementId: $,
-              prefixId: d,
-              lang: o,
-              view: g
-            }), this.$method("dsWidget/setSectionParentId", { childId: y, parentId: n });
-          } else
-            this.$method("dsElement/attachContent", { contentId: a, elementId: $, lang: o });
-          this.$method("dsWidget/attachItem", { type: "content", id: a });
-        }
-        p++;
+          Object.hasOwnProperty.call(a, "contentIndex") && (u.contentIndex = a.contentIndex), $ = $.concat(y);
+        } else
+          Object.hasOwnProperty.call(a, "contentIndex") && (u.contentIndex = a.contentIndex);
+        r++;
       }
-      return C;
+      return $;
     },
-    _setComponents(e, t, h) {
-      this.components[h + e] = t;
+    _setComponents(e, t, n) {
+      this.components[n + e] = t;
     },
     _getHead(e) {
       return this.head[e] || [0];
@@ -161,20 +132,20 @@ const E = {
     _getItem(e) {
       return this.items[e];
     },
-    _getSibling(e, t, h) {
-      const i = {
+    _getSibling(e, t, n) {
+      const o = {
         head: [],
         children: [],
         components: []
       };
       for (let s = 0; s < t.length; s++) {
-        const n = t[s];
-        i.components.push(h[n]), i.children.push(e[n]), i.head.push(s);
+        const i = t[s];
+        o.components.push(n[i]), o.children.push(e[i]), o.head.push(s);
       }
-      return i;
+      return o;
     }
   }
 };
 export {
-  E as default
+  b as default
 };
