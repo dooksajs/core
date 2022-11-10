@@ -27,6 +27,7 @@ export default {
 
         components = this._create(id, items, head, items, events, sectionId, instanceId, parentElementId, prefixId, lang, view)
 
+        // ISSUE: [DS-810] This is unnecessary loop if _create function can attach components
         for (let i = 0; i < components.length; i++) {
           const component = components[i]
 
