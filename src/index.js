@@ -18,7 +18,7 @@ export default {
     modifiers: {}
   },
   methods: {
-    create (context, {
+    create ({
       id,
       entry,
       sectionId = this.$method('dsUtilities/generateId'),
@@ -238,7 +238,7 @@ export default {
 
             for (let i = 0; i < item.value.length; i++) {
               const [lang, entry] = item.value[i]
-              const [sectionId] = this.create({}, { entry, defaultContent, groupId, view, modifiers })
+              const [sectionId] = this.create({ entry, defaultContent, groupId, view, modifiers })
 
               elementValue[lang] = sectionId
             }
@@ -257,7 +257,7 @@ export default {
         this.$action('dsDatabase/getOne', { collection: 'widgetTemplates', id },
           {
             onSuccess: (record) => {
-              this.set({}, { id: record.id, item: record })
+              this.set({ id: record.id, item: record })
               resolve(record)
             },
             onError: (error) => {
@@ -268,7 +268,7 @@ export default {
         )
       })
     },
-    set (context, { id, item }) {
+    set ({ id, item }) {
       this.entry[id] = item.templateEntry
 
       if (item.template) {
