@@ -38,7 +38,7 @@ export default {
         .then(page => {
           this.$method('dsMetadata/setTheme', page.app.theme)
           this.$method('dsMetadata/setAppId', page.app.id)
-          this.set({}, page)
+          this.set(page)
           // update route if path is a redirect
           if (page.foundPath && page.foundPath !== page.path) {
             return this.$method('dsRouter/navigate', this._cleanPath(page.path))
@@ -50,7 +50,7 @@ export default {
     }
   },
   methods: {
-    getOneById (context, { id, expand }) {
+    getOneById ({ id, expand }) {
       const request = {
         collection: 'pages',
         id
@@ -71,7 +71,7 @@ export default {
           })
       })
     },
-    getOneByPath (context, { path, expand }) {
+    getOneByPath ({ path, expand }) {
       return new Promise((resolve, reject) => {
         const filterPath = `(path='${path}')`
         const options = {
@@ -131,7 +131,7 @@ export default {
         })
       })
     },
-    updateDOM (context, { prevId, nextId }) {
+    updateDOM ({ prevId, nextId }) {
       const prevPage = this.items[prevId]
       const prevPageType = this.types[prevPage.typesId]
       const prevTemplateId = prevPage.templateId || prevPageType.templateId
@@ -169,19 +169,19 @@ export default {
         }
       }
     },
-    set (context, item) {
+    set (item) {
       // break without metadata
       // if (!item.metadata) return
       this.$method('dsRouter/setPath', { pageId: item.id, path: this._cleanPath(item.path) })
       // set actions
       if (item.actions) {
-        this.$action('dsAction/set', item.actions.items)
-        this.$action('dsAction/setConditions', item.actions.conditions)
+        this.$method('dsAction/set', item.actions.items)
+        this.$method('dsAction/setConditions', item.actions.conditions)
       }
       // set params
       if (item.parameters) {
-        this.$action('dsParameter/set', item.parameters.items)
-        this.$action('dsParameter/setUsedBy', item.parameters.usedBy)
+        this.$method('dsParameter/set', item.parameters.items)
+        this.$method('dsParameter/setUsedBy', item.parameters.usedBy)
       }
       // set components
       if (item.components) {
