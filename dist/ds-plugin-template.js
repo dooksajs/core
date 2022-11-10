@@ -14,28 +14,28 @@ const _ = {
     modifiers: {}
   },
   methods: {
-    create(g, {
-      id: i,
+    create({
+      id: d,
       entry: t,
-      sectionId: s = this.$method("dsUtilities/generateId"),
-      instanceId: p,
-      groupId: m = this.$method("dsUtilities/generateId"),
+      sectionId: n = this.$method("dsUtilities/generateId"),
+      instanceId: s,
+      groupId: g = this.$method("dsUtilities/generateId"),
       defaultContent: r,
-      modifiers: c = {},
+      modifiers: u = {},
       view: h = "default",
-      head: v = !1
+      head: m = !1
     }) {
-      let u = this.items[t] || this.items[this.entry[i]];
-      return u ? this._constructor(i, t, u, s, p, m, r, c, h, v) : new Promise((e) => {
-        this._fetch(i).then(() => {
-          t = this.entry[i], u = this.items[t];
-          const n = this._constructor(i, t, u, s, p, m, r, c, h, v);
-          e(n);
+      let y = this.items[t] || this.items[this.entry[d]];
+      return y ? this._constructor(d, t, y, n, s, g, r, u, h, m) : new Promise((p) => {
+        this._fetch(d).then(() => {
+          t = this.entry[d], y = this.items[t];
+          const e = this._constructor(d, t, y, n, s, g, r, u, h, m);
+          p(e);
         });
       });
     },
-    _constructor(g, i, t, s, p, m, r, c, h, v) {
-      let u = "";
+    _constructor(d, t, n, s, g, r, u, h, m, y) {
+      let p = "";
       const e = {
         layoutEntry: "",
         widgets: {
@@ -48,99 +48,99 @@ const _ = {
           type: {}
         }
       };
-      if (v) {
-        const n = t.layouts[0], d = s + p + "_" + h, o = 0;
-        if (t.elements[o]) {
-          const [l, y] = this._createElements(t.elements[o], h, m, r, c), a = i + n;
-          c[a] && (e.widgets.layout = { [d]: c[a] }), e.widgets.content[d] = l, e.elements = y;
+      if (y) {
+        const i = n.layouts[0], c = s + g + "_" + m, o = 0;
+        if (n.elements[o]) {
+          const [l, f] = this._createElements(n.elements[o], m, r, u, h), a = t + i;
+          h[a] && (e.widgets.layout = { [c]: h[a] }), e.widgets.content[c] = l, e.elements = f;
         }
-        if (t.events[o]) {
-          const l = t.events[o];
+        if (n.events[o]) {
+          const l = n.events[o];
           e.events = e.events || {};
-          for (const y in l)
-            if (Object.hasOwnProperty.call(l, y)) {
-              const a = l[y], f = p + "_" + y.padStart(4, "0");
-              e.events[f] ? e.events[f][a.on] = a.action : e.events[f] = {
+          for (const f in l)
+            if (Object.hasOwnProperty.call(l, f)) {
+              const a = l[f], v = g + "_" + f.padStart(4, "0");
+              e.events[v] ? e.events[v][a.on] = a.action : e.events[v] = {
                 [a.on]: a.action
               };
             }
         }
-        u = n, this.$method("dsWidget/setLoaded", { id: d, value: !0 });
+        p = i, this.$method("dsWidget/setLoaded", { id: c, value: !0 });
       } else
-        for (let n = 0; n < t.layouts.length; n++) {
-          const d = t.layouts[n], o = {}, l = this.$method("dsUtilities/generateId"), y = s + l + "_default";
-          if (t.elements && t.elements[n]) {
-            const [a, f] = this._createElements(t.elements[n], h, m, r, c), w = i + d;
-            c[w] && (e.widgets.layout || (e.widgets.layout = {}), e.widgets.layout[s + l + "_default"] = c[w]), e.widgets.content[y] = a, e.elements.value = { ...e.elements.value, ...f.value }, e.elements.type = { ...e.elements.type, ...f.type };
+        for (let i = 0; i < n.layouts.length; i++) {
+          const c = n.layouts[i], o = {}, l = this.$method("dsUtilities/generateId"), f = s + l + "_default";
+          if (n.elements && n.elements[i]) {
+            const [a, v] = this._createElements(n.elements[i], m, r, u, h), w = t + c;
+            h[w] && (e.widgets.layout || (e.widgets.layout = {}), e.widgets.layout[s + l + "_default"] = h[w]), e.widgets.content[f] = a, e.elements.value = { ...e.elements.value, ...v.value }, e.elements.type = { ...e.elements.type, ...v.type };
           }
-          if (t.events[n]) {
-            const a = t.events[n];
+          if (n.events[i]) {
+            const a = n.events[i];
             e.events = e.events || {};
-            for (const f in a)
-              if (Object.hasOwnProperty.call(a, f)) {
-                const w = a[f], $ = l + "_" + f.padStart(4, "0");
+            for (const v in a)
+              if (Object.hasOwnProperty.call(a, v)) {
+                const w = a[v], $ = l + "_" + v.padStart(4, "0");
                 e.events[$] ? e.events[$][w.on] = w.action : e.events[$] = {
                   [w.on]: w.action
                 };
               }
           }
-          o.default = { id: d }, e.widgets.items[s] ? e.widgets.items[s].push({ groupId: m, instanceId: l, layout: o }) : e.widgets.items[s] = [{ groupId: m, instanceId: l, layout: o }], this.$method("dsWidget/setLoaded", { id: y, value: !0 });
+          o.default = { id: c }, e.widgets.items[s] ? e.widgets.items[s].push({ groupId: r, instanceId: l, layout: o }) : e.widgets.items[s] = [{ groupId: r, instanceId: l, layout: o }], this.$method("dsWidget/setLoaded", { id: f, value: !0 });
         }
       if (e.events && this.$method("dsEvent/set", e.events), e.elements && (e.elements.value && this.$method("dsElement/setValues", e.elements.value), e.elements.type && this.$method("dsElement/setTypes", e.elements.type)), e.widgets && (e.widgets.items && this.$method("dsWidget/setItems", e.widgets.items), e.widgets.layout && this.$method("dsWidget/setLayout", e.widgets.layout), e.widgets.content)) {
-        const n = this.$method("dsRouter/getCurrentId");
-        this.$method("dsWidget/setContent", { id: n, items: e.widgets.content });
+        const i = this.$method("dsRouter/getCurrentId");
+        this.$method("dsWidget/setContent", { id: i, items: e.widgets.content });
       }
-      return [s, u, e];
+      return [s, p, e];
     },
-    _createElements(g, i, t, s = [], p) {
-      const m = [], r = {
+    _createElements(d, t, n, s = [], g) {
+      const r = [], u = {
         value: {},
         type: {}
       };
-      for (let c = 0; c < g.length; c++) {
-        const h = g[c], [v, u] = h.type;
-        let e, n;
-        if (s.length && u)
-          for (let d = 0; d < s.length; d++) {
-            const o = s[d], l = this.$method("dsElement/getType", o);
-            if (v === l[0]) {
-              e = o, s.splice(d, 1), n = !0;
+      for (let h = 0; h < d.length; h++) {
+        const m = d[h], [y, p] = m.type;
+        let e, i;
+        if (s.length && p)
+          for (let c = 0; c < s.length; c++) {
+            const o = s[c], l = this.$method("dsElement/getType", o);
+            if (y === l[0]) {
+              e = o, s.splice(c, 1), i = !0;
               break;
             }
           }
         else
           e = this.$method("dsUtilities/generateId");
-        if (m.push(e), !n)
-          if (r.type[e] = [v, u], v === "section") {
-            const d = {};
-            for (let o = 0; o < h.value.length; o++) {
-              const [l, y] = h.value[o], [a] = this.create({}, { entry: y, defaultContent: s, groupId: t, view: i, modifiers: p });
-              d[l] = a;
+        if (r.push(e), !i)
+          if (u.type[e] = [y, p], y === "section") {
+            const c = {};
+            for (let o = 0; o < m.value.length; o++) {
+              const [l, f] = m.value[o], [a] = this.create({ entry: f, defaultContent: s, groupId: n, view: t, modifiers: g });
+              c[l] = a;
             }
-            r.value[e] = d;
+            u.value[e] = c;
           } else
-            r.value[e] = h.value;
+            u.value[e] = m.value;
       }
-      return [m, r, s];
+      return [r, u, s];
     },
-    _fetch(g) {
-      return new Promise((i, t) => {
+    _fetch(d) {
+      return new Promise((t, n) => {
         this.$action(
           "dsDatabase/getOne",
-          { collection: "widgetTemplates", id: g },
+          { collection: "widgetTemplates", id: d },
           {
             onSuccess: (s) => {
-              this.set({}, { id: s.id, item: s }), i(s);
+              this.set({ id: s.id, item: s }), t(s);
             },
             onError: (s) => {
-              console.error(s), t(s);
+              console.error(s), n(s);
             }
           }
         );
       });
     },
-    set(g, { id: i, item: t }) {
-      this.entry[i] = t.templateEntry, t.template && (this.items = { ...this.items, ...t.template }), t.modifiers && (this.modifiers[i] = t.modifiers), t.layouts && (this.$method("dsLayout/setItems", t.layouts.items), t.layouts.head && this.$method("dsLayout/setHead", t.layouts.head)), t.components && this.$method("dsComponent/set", t.components);
+    set({ id: d, item: t }) {
+      this.entry[d] = t.templateEntry, t.template && (this.items = { ...this.items, ...t.template }), t.modifiers && (this.modifiers[d] = t.modifiers), t.layouts && (this.$method("dsLayout/setItems", t.layouts.items), t.layouts.head && this.$method("dsLayout/setHead", t.layouts.head)), t.components && this.$method("dsComponent/set", t.components);
     }
   }
 };
