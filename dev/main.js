@@ -58,8 +58,7 @@ if (dsTemplates) {
       break
     }
 
-    /* eslint no-new-func: 'error' */
-    const metadata = new Function(templateScript.textContent)()
+    const metadata = new Function(templateScript.textContent)() // eslint-disable-line
 
     if (metadata.methods) {
       for (const key in metadata.methods) {
