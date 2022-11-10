@@ -15,7 +15,7 @@ export default {
      * @param {Object} _context - This is the flattened object used within a plugin
      * @param {Object} plugin - This is the original plugin object
      */
-    set (context, { _context, plugin }) {
+    set ({ _context, plugin }) {
       this.items[plugin.name] = _context
       this.plugins.push(plugin.name)
 
@@ -30,7 +30,7 @@ export default {
     getPlugins () {
       return this.plugins
     },
-    getData (context, name) {
+    getData (name) {
       const dataKeys = this.keys[name + '/data'] || []
       const results = {
         name,
@@ -45,10 +45,10 @@ export default {
 
       return results
     },
-    getAll (context, name) {
+    getAll (name) {
       return this.items[name]
     },
-    getItem (context, { name, id }) {
+    getItem ({ name, id }) {
       if (this.items[name] && this.items[name][id]) {
         return this.items[name][id]
       }
