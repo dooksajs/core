@@ -90,7 +90,7 @@ export default {
 
     for (const key in plugins) {
       if (Object.prototype.hasOwnProperty.call(plugins, key)) {
-        this.use({}, { plugin: plugins[key] })
+        this.use({ plugin: plugins[key] })
       }
     }
 
@@ -137,48 +137,46 @@ export default {
      * @param {*} context
      * @returns
      */
-    _action (context) {
-      return (name, params, callback = {}) => {
-        this._callbackWhenAvailable(name, () => {
-          const onSuccess = callback.onSuccess
-          const onError = callback.onError
-          const pluginResult = this._methods[name](context, params)
+    _action (name, params, callback = {}) {
+      this._callbackWhenAvailable(name, () => {
+        const onSuccess = callback.onSuccess
+        const onError = callback.onError
+        const pluginResult = this._methods[name](params)
 
-          if (onError && pluginResult instanceof Error) {
-            if (onError.method) {
-              onError.method({ ...onError.params, results: pluginResult })
-            } else {
-              onError(pluginResult)
-            }
-          } else if (pluginResult instanceof Promise) {
-            Promise.resolve(pluginResult)
-              .then(results => {
-                if (onSuccess) {
-                  if (onSuccess.method) {
-                    onSuccess.method({ ...onSuccess.params, results })
-                  } else {
-                    onSuccess(results)
-                  }
-                }
-              })
-              .catch(error => {
-                if (onError) {
-                  if (onError.method) {
-                    onError.method({ ...onError.params, results: error })
-                  } else {
-                    onError(error)
-                  }
-                }
-              })
-          } else if (onSuccess) {
-            if (onSuccess.method) {
-              onSuccess.method({ ...onSuccess.params, results: pluginResult })
-            } else {
-              onSuccess(pluginResult)
-            }
+        if (onError && pluginResult instanceof Error) {
+          if (onError.method) {
+            onError.method({ ...onError.params, results: pluginResult })
+          } else {
+            onError(pluginResult)
           }
-        })
-      }
+        } else if (pluginResult instanceof Promise) {
+          Promise.resolve(pluginResult)
+            .then(results => {
+              if (onSuccess) {
+                if (onSuccess.method) {
+                  onSuccess.method({ ...onSuccess.params, results })
+                } else {
+                  onSuccess(results)
+                }
+              }
+            })
+            .catch(error => {
+              if (onError) {
+                if (onError.method) {
+                  onError.method({ ...onError.params, results: error })
+                } else {
+                  onError(error)
+                }
+              }
+            })
+        } else if (onSuccess) {
+          if (onSuccess.method) {
+            onSuccess.method({ ...onSuccess.params, results: pluginResult })
+          } else {
+            onSuccess(pluginResult)
+          }
+        }
+      })
     },
     /**
      * Check if plugins method exists
@@ -412,18 +410,16 @@ export default {
      * @param {Object} context
      * @returns
      */
-    _method (context) {
-      return (name, params) => {
-        try {
-          if (this._methods[name]) {
-            return this._methods[name](context, params)
-          } else {
-            // Check if the plugin needs to run setup
-            throw new Error('Method "' + name + '" does not exist')
-          }
-        } catch (error) {
-          console.error(name, error)
+    _method (name, params) {
+      try {
+        if (this._methods[name]) {
+          return this._methods[name](params)
+        } else {
+          // Check if the plugin needs to run setup
+          throw new Error('Method "' + name + '" does not exist')
         }
+      } catch (error) {
+        console.error(name, error)
       }
     },
     /**
