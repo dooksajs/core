@@ -407,8 +407,6 @@ export default {
     },
     /**
      * Higher order function to allow plugins to run other plugins methods
-     * @param {Object} context
-     * @returns
      */
     _method (name, params) {
       try {

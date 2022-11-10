@@ -1,109 +1,105 @@
-const v = (e, t) => {
-  const i = e[t];
-  return i ? typeof i == "function" ? i() : Promise.resolve(i) : new Promise((n, s) => {
-    (typeof queueMicrotask == "function" ? queueMicrotask : setTimeout)(s.bind(null, new Error("Unknown variable dynamic import: " + t)));
+const q = (e, t) => {
+  const s = e[t];
+  return s ? typeof s == "function" ? s() : Promise.resolve(s) : new Promise((n, i) => {
+    (typeof queueMicrotask == "function" ? queueMicrotask : setTimeout)(i.bind(null, new Error("Unknown variable dynamic import: " + t)));
   });
-}, q = {
+}, k = {
   link({
     id: e,
     crossOrigin: t,
-    href: i,
+    href: s,
     media: n,
-    referrerPolicy: s,
+    referrerPolicy: i,
     rel: o = "stylesheet",
-    integrity: r,
-    onSuccess: u = () => {
+    integrity: u,
+    onSuccess: c = () => {
     },
     onError: l = () => {
     }
   }) {
-    const [c, a] = this._exists(e, "link", "href", i);
-    c.onerror = () => l(), c.onload = () => u(), c.id = e, c.rel = o, c.crossOrigin = t || null, n && (c.media = n), s && (c.referrerPolicy = s), r && (c.integrity = r), c.href = i, a || document.head.appendChild(c);
+    const [h, a] = this._exists(e, "link", "href", s);
+    h.onerror = () => l(), h.onload = () => c(), h.id = e, h.rel = o, h.crossOrigin = t || null, n && (h.media = n), i && (h.referrerPolicy = i), u && (h.integrity = u), h.href = s, a || document.head.appendChild(h);
   },
   script({
     id: e,
     async: t,
-    crossOrigin: i,
+    crossOrigin: s,
     defer: n,
-    integrity: s,
+    integrity: i,
     nonce: o,
-    referrerPolicy: r,
-    src: u,
+    referrerPolicy: u,
+    src: c,
     type: l = "text/javascript",
-    nomodule: c,
+    nomodule: h,
     globalVars: a = [],
     onSuccess: y = () => {
     },
     onError: O = () => {
     }
   }) {
-    const [h, P] = this._exists(e, "script", "src", u);
-    h.onerror = () => O(), h.onload = () => {
+    const [r, P] = this._exists(e, "script", "src", c);
+    r.onerror = () => O(), r.onload = () => {
       const f = {};
       for (let d = 0; d < a.length; d++) {
         const _ = a[d];
         f[_] = window[_];
       }
       y(f);
-    }, h.id = e, h.type = l, h.async = t || null, h.crossOrigin = i || null, h.defer = n || null, s && (h.integrity = s), r && (h.referrerPolicy = r), h.nomodule = c || null, h.nonce = o || null, h.src = u, P || document.head.appendChild(h);
+    }, r.id = e, r.type = l, r.async = t || null, r.crossOrigin = s || null, r.defer = n || null, i && (r.integrity = i), u && (r.referrerPolicy = u), r.nomodule = h || null, r.nonce = o || null, r.src = c, P || document.head.appendChild(r);
   },
-  _exists(e, t, i, n) {
-    let s = document.getElementById(e), o = !1;
-    if (s) {
-      if (s[i] === n)
+  _exists(e, t, s, n) {
+    let i = document.getElementById(e), o = !1;
+    if (i) {
+      if (i[s] === n)
         return;
       o = !0;
     } else
-      s = document.createElement(t);
-    return [s, o];
+      i = document.createElement(t);
+    return [i, o];
   }
 };
 function m(e, t = []) {
-  let i = {
+  let s = {
     name: e.name,
     version: e.version
   };
-  this.name = e.name, this.version = e.version, e.data && (i = { ...i, ...e.data });
+  this.name = e.name, this.version = e.version, e.data && (s = { ...s, ...e.data });
   for (let n = 0; n < t.length; n++) {
-    const s = t[n];
-    s.use && s.use.includes(e.name) && (i[s.name] = s.value), s.name === "isDev" && s.value ? (i.isDev = !0, e.name !== "dsDevTool" && i.$action("dsDevTool/set", { _context: i, plugin: e })) : s.dispatch ? i[s.name] = s.value({
-      name: e.name,
-      version: e.version,
-      dependencies: e.dependencies
-    }) : i[s.name] = s.value;
+    const i = t[n];
+    i.use && i.use.includes(e.name) && (s[i.name] = i.value), i.name === "isDev" && i.value ? (s.isDev = !0, e.name !== "dsDevTool" && s.$action("dsDevTool/set", { _context: s, plugin: e })) : s[i.name] = i.value;
   }
-  if (e.dependencies && (this.dependencies = e.dependencies, i.dependencies = e.dependencies), e.methods) {
+  if (e.dependencies && (this.dependencies = e.dependencies, s.dependencies = e.dependencies), e.methods) {
     const n = {};
-    for (const s in e.methods)
-      if (Object.hasOwnProperty.call(e.methods, s)) {
-        const o = e.methods[s];
-        i[s] = o, s.charAt(0) !== "_" && (n[s] = o.bind(i));
+    for (const i in e.methods)
+      if (Object.hasOwnProperty.call(e.methods, i)) {
+        const o = e.methods[i];
+        s[i] = o, i.charAt(0) !== "_" && (n[i] = o.bind(s));
       }
     this.methods = n;
   }
   if (e.tokens) {
     const n = {};
-    for (const s in e.tokens)
-      if (Object.hasOwnProperty.call(e.tokens, s)) {
-        const o = e.tokens[s];
-        i[s] = o, n[s] = o.bind(i);
+    for (const i in e.tokens)
+      if (Object.hasOwnProperty.call(e.tokens, i)) {
+        const o = e.tokens[i];
+        s[i] = o, n[i] = o.bind(s);
       }
     this.tokens = n;
   }
   if (e.components) {
     for (let n = 0; n < e.components.length; n++) {
-      const s = e.components[n];
-      s.lazy && (s.isLazy = !0);
+      const i = e.components[n];
+      i.lazy && (i.isLazy = !0);
     }
     this.components = e.components;
   }
-  e.setup && (this.setup = e.setup.bind(i));
+  e.setup && (this.setup = e.setup.bind(s));
 }
 m.prototype.init = function(e) {
   if (this.setup)
     return this.setup(e);
 };
-const p = "dsManager", g = 1, k = {
+const p = "dsManager", g = 1, v = {
   name: p,
   version: g,
   data: {
@@ -111,12 +107,9 @@ const p = "dsManager", g = 1, k = {
     _tokens: {},
     _components: {},
     buildId: "",
-    additionalPlugins: {},
     plugins: {},
     pluginUseQueue: [],
     appBuildId: "",
-    appPlugins: [],
-    appAdditionalPlugins: [],
     depQueue: {},
     queue: {},
     isLoaded: {},
@@ -129,27 +122,24 @@ const p = "dsManager", g = 1, k = {
   setup({
     buildId: e,
     plugins: t = {},
-    additionalPlugins: i = [],
-    isDev: n
+    isDev: s
   }) {
     this.buildId = e, this.context = [
       {
         name: "$action",
-        dispatch: !0,
         value: this._action.bind(this)
       },
       {
         name: "$method",
-        dispatch: !0,
         value: this._method.bind(this)
       },
       {
         name: "$resource",
-        value: q
+        value: k
       },
       {
         name: "isDev",
-        value: n
+        value: s
       },
       {
         name: "$token",
@@ -168,21 +158,17 @@ const p = "dsManager", g = 1, k = {
         use: this.use
       }
     }), this.isLoaded[p] = !0;
-    for (const s in t)
-      Object.prototype.hasOwnProperty.call(t, s) && this.use({}, { plugin: t[s] });
-    for (let s = 0; s < i.length; s++) {
-      const o = i[s];
-      s === i.length - 1 && (o.lastItem = !0), this.use({}, o);
-    }
-    if (this._processQueue(), n)
+    for (const n in t)
+      Object.prototype.hasOwnProperty.call(t, n) && this.use({ plugin: t[n] });
+    if (this._processQueue(), s)
       return {
         $method: this._method.bind(this)(),
         $action: this._action.bind(this)()
       };
   },
   methods: {
-    use(e, { plugin: t, process: i }) {
-      this._addOptions(t.name, t.options), this.plugins[t.name] = t, this.pluginUseQueue.push(t), this.queue[t.name] = [], this.depQueue[t.name] = [], i && this._processQueue();
+    use({ plugin: e, process: t }) {
+      this._addOptions(e.name, e.options), this.plugins[e.name] = e, this.pluginUseQueue.push(e), this.queue[e.name] = [], this.depQueue[e.name] = [], t && this._processQueue();
     },
     _processQueue() {
       for (let e = 0; e < this.pluginUseQueue.length; e++) {
@@ -193,17 +179,15 @@ const p = "dsManager", g = 1, k = {
         }
       }
     },
-    _action(e) {
-      return (t, i, n = {}) => {
-        this._callbackWhenAvailable(t, () => {
-          const s = n.onSuccess, o = n.onError, r = this._methods[t](e, i);
-          o && r instanceof Error ? o.method ? o.method({ ...o.params, results: r }) : o(r) : r instanceof Promise ? Promise.resolve(r).then((u) => {
-            s && (s.method ? s.method({ ...s.params, results: u }) : s(u));
-          }).catch((u) => {
-            o && (o.method ? o.method({ ...o.params, results: u }) : o(u));
-          }) : s && (s.method ? s.method({ ...s.params, results: r }) : s(r));
-        });
-      };
+    _action(e, t, s = {}) {
+      this._callbackWhenAvailable(e, () => {
+        const n = s.onSuccess, i = s.onError, o = this._methods[e](t);
+        i && o instanceof Error ? i.method ? i.method({ ...i.params, results: o }) : i(o) : o instanceof Promise ? Promise.resolve(o).then((u) => {
+          n && (n.method ? n.method({ ...n.params, results: u }) : n(u));
+        }).catch((u) => {
+          i && (i.method ? i.method({ ...i.params, results: u }) : i(u));
+        }) : n && (n.method ? n.method({ ...n.params, results: o }) : n(o));
+      });
     },
     _actionExists(e) {
       return this._methods[e];
@@ -212,21 +196,21 @@ const p = "dsManager", g = 1, k = {
       if (e.methods) {
         for (const t in e.methods)
           if (Object.hasOwnProperty.call(e.methods, t)) {
-            const i = e.methods[t];
-            this._methods[`${e.name}/${t}`] = i;
+            const s = e.methods[t];
+            this._methods[`${e.name}/${t}`] = s;
           }
       }
       if (e.tokens) {
         for (const t in e.tokens)
           if (Object.hasOwnProperty.call(e.tokens, t)) {
-            const i = e.tokens[t];
-            this._tokens[`${e.name}/${t}`] = i;
+            const s = e.tokens[t];
+            this._tokens[`${e.name}/${t}`] = s;
           }
       }
       if (e.components)
         for (let t = 0; t < e.components.length; t++) {
-          const i = e.components[t];
-          this._components[i.name] = { ...i, plugin: e.name };
+          const s = e.components[t];
+          this._components[s.name] = { ...s, plugin: e.name };
         }
     },
     _addOptions(e, t = {}) {
@@ -235,30 +219,30 @@ const p = "dsManager", g = 1, k = {
     _component(e) {
       if (this._components[e]) {
         const t = this._components[e];
-        if (!this.isLoaded[t.plugin]) {
-          const i = t.plugin, n = this._getOptions(i), s = this.setupOnRequestQueue[i];
-          this._setup(s, n.setup).catch((o) => console.error(o));
+        if (!this.isLoaded[t.plugin] && this.setupOnRequestQueue[t.plugin]) {
+          const s = t.plugin, n = this._getOptions(s), i = this.setupOnRequestQueue[s];
+          this._setup(i, n.setup).catch((o) => console.error(o));
         }
         return t.isLazy && !t.loading && (t.loading = !0, t.lazy().then(() => {
           t.loading = !1;
-        }).catch((i) => console.error(i))), t;
+        }).catch((s) => console.error(s))), t;
       }
     },
     _get(e) {
       return this.plugins[e] ? this.plugins[e].plugin : this.setupOnRequestQueue[e];
     },
     _callbackWhenAvailable(e, t) {
-      const i = e.split("/")[0];
-      if (this.isLoaded[i] && this._actionExists(e))
+      const s = e.split("/")[0];
+      if (this.isLoaded[s] && this._actionExists(e))
         return t();
-      if (this.initialising[i]) {
-        const n = this._getQueue(i);
+      if (this.initialising[s]) {
+        const n = this._getQueue(s);
         Promise.all(n).then(() => {
           this._actionExists(e) ? t() : console.error("action does not exist: " + e);
         });
       } else {
-        const n = this._get(i), s = this._install(i, n, !0);
-        this.queue[i].push(s), s.then(() => {
+        const n = this._get(s), i = this._install(s, n, !0);
+        this.queue[s].push(i), i.then(() => {
           this._actionExists(e) ? t() : console.error("action does not exist: " + e);
         }).catch((o) => console.error(o));
       }
@@ -269,59 +253,57 @@ const p = "dsManager", g = 1, k = {
     _getOptions(e) {
       return this.options[e] || {};
     },
-    _install(e, t, i = !1) {
-      return new Promise((n, s) => {
+    _install(e, t, s = !1) {
+      return new Promise((n, i) => {
         const o = this._getOptions(e);
         if (this.isLoaded[e] = !1, this.initialising[e] = !0, o.import)
-          if (!o.setupOnRequest || i)
-            v(/* @__PURE__ */ Object.assign({ "./plugins/ds-plugin-database.js": () => import("./ds-plugin-database.363af340.js"), "./plugins/ds-plugin-parse.js": () => import("./ds-plugin-parse.924b8708.js"), "./plugins/ds-plugin-template.js": () => import("./ds-plugin-template.3bc1d71c.js"), "./plugins/ds-plugin-utilities.js": () => import("./ds-plugin-utilities.84c17b1f.js") }), `./plugins/${o.import}.js`).then(({ default: r }) => {
-              r.dependencies && this._installDependencies(e, r.dependencies);
-              const u = new m(r, this.context);
-              this._add(u), this._setup(u, o.setup).then(() => n(`Setup import ${e}`)).catch((l) => s(l));
-            }).catch((r) => s(r));
+          if (!o.setupOnRequest || s)
+            q(/* @__PURE__ */ Object.assign({ "./plugins/ds-plugin-database.js": () => import("./ds-plugin-database.69286ba1.js"), "./plugins/ds-plugin-parse.js": () => import("./ds-plugin-parse.3000a30c.js"), "./plugins/ds-plugin-template.js": () => import("./ds-plugin-template.f07c7cf9.js"), "./plugins/ds-plugin-utilities.js": () => import("./ds-plugin-utilities.84c17b1f.js") }), `./plugins/${o.import}.js`).then(({ default: u }) => {
+              u.dependencies && this._installDependencies(e, u.dependencies);
+              const c = new m(u, this.context);
+              this._add(c), this._setup(c, o.setup).then(() => n(`Setup import ${e}`)).catch((l) => i(l));
+            }).catch((u) => i(u));
           else
             return this.initialising[e] = !1, n(`Lazy loading ${e}`);
         else {
-          let r;
-          if (this.setupOnRequestQueue[e] ? r = this.setupOnRequestQueue[e] : (r = new m(t, this.context), this._add(r)), o.setupOnRequest && !i)
-            return this.setupOnRequestQueue[e] = r, this.initialising[e] = !1, n();
-          r.dependencies && this._installDependencies(e, r.dependencies), this._setup(r, o.setup).then(() => n(e)).catch((u) => s(u));
+          let u;
+          if (this.setupOnRequestQueue[e] ? u = this.setupOnRequestQueue[e] : (u = new m(t, this.context), this._add(u)), o.setupOnRequest && !s)
+            return this.setupOnRequestQueue[e] = u, this.initialising[e] = !1, n();
+          u.dependencies && this._installDependencies(e, u.dependencies), this._setup(u, o.setup).then(() => n(e)).catch((c) => i(c));
         }
       });
     },
     _installDependencies(e, t) {
-      for (let i = 0; i < t.length; i++) {
-        const n = t[i];
+      for (let s = 0; s < t.length; s++) {
+        const n = t[s];
         if (!this.isLoaded[n.name]) {
-          const s = this._use({
+          const i = this._use({
             name: n.name,
             options: {
               setupOnRequest: !1
             }
           });
-          this.depQueue[e].push(s);
+          this.depQueue[e].push(i);
         }
       }
     },
-    _method(e) {
-      return (t, i) => {
-        try {
-          if (this._methods[t])
-            return this._methods[t](e, i);
-          throw new Error('Method "' + t + '" does not exist');
-        } catch (n) {
-          console.error(t, n);
-        }
-      };
+    _method(e, t) {
+      try {
+        if (this._methods[e])
+          return this._methods[e](t);
+        throw new Error('Method "' + e + '" does not exist');
+      } catch (s) {
+        console.error(e, s);
+      }
     },
     _setup(e, t = {}) {
-      return new Promise((i, n) => {
-        const s = this.depQueue[e.name];
-        Promise.all(s).then(() => {
+      return new Promise((s, n) => {
+        const i = this.depQueue[e.name];
+        Promise.all(i).then(() => {
           const o = e.init(t);
           o instanceof Promise ? o.then(() => {
-            this.isLoaded[e.name] = !0, this.initialising[e.name] = !1, delete this.setupOnRequestQueue[e.name], console.log("Plugin successfully async loaded: " + e.name), i(e.name);
-          }).catch((r) => n(r)) : (this.isLoaded[e.name] = !0, this.initialising[e.name] = !1, console.log("Plugin successfully loaded: " + e.name), i(e.name));
+            this.isLoaded[e.name] = !0, this.initialising[e.name] = !1, delete this.setupOnRequestQueue[e.name], console.log("Plugin successfully async loaded: " + e.name), s(e.name);
+          }).catch((u) => n(u)) : (this.isLoaded[e.name] = !0, this.initialising[e.name] = !1, console.log("Plugin successfully loaded: " + e.name), s(e.name));
         }).catch((o) => n(o));
       });
     },
@@ -332,10 +314,10 @@ const p = "dsManager", g = 1, k = {
     _use({ name: e, options: t = {} }) {
       if (this.isLoaded[e])
         return Promise.resolve();
-      const i = this._get(e), n = this._getQueue(e);
-      let s = !1;
-      if (!this.initialising[e] && (!this.setupOnRequest[e] || !t.setupOnRequest) && (s = !0), !n || s) {
-        const o = this._install(e, i, s);
+      const s = this._get(e), n = this._getQueue(e);
+      let i = !1;
+      if (!this.initialising[e] && (!this.setupOnRequest[e] || !t.setupOnRequest) && (i = !0), !n || i) {
+        const o = this._install(e, s, i);
         return n.push(o), o;
       }
       return Promise.resolve();
@@ -343,5 +325,5 @@ const p = "dsManager", g = 1, k = {
   }
 };
 export {
-  k as default
+  v as default
 };

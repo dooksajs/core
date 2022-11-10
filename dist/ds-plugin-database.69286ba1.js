@@ -6,7 +6,7 @@ const a = {
   },
   setup({ baseUrl: i = "https://no.dooksa.com", lang: n = "en-US" }) {
     return new Promise((o, c) => {
-      import("./pocketbase.es.1e837222.604a7e27.js").then(({ default: e }) => {
+      import("./pocketbase.es.1e837222.796ea8ec.js").then(({ default: e }) => {
         this.client = new e(i, n), o();
       }).catch((e) => c(e));
     });
