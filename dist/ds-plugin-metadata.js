@@ -1,4 +1,4 @@
-const a = {
+const t = {
   name: "dsMetadata",
   version: 1,
   data: {
@@ -13,17 +13,17 @@ const a = {
     getTheme() {
       return this.theme;
     },
-    setAppId(t, e) {
+    setAppId(e) {
       this.appId = e;
     },
-    setLang(t, e) {
+    setLang(e) {
       this.language = e;
     },
-    setTheme(t, e) {
+    setTheme(e) {
       this.theme = e;
     }
   }
 };
 export {
-  a as default
+  t as default
 };
