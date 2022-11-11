@@ -98,8 +98,8 @@ export default {
 
     if (isDev) {
       return {
-        $method: this._method.bind(this)(),
-        $action: this._action.bind(this)()
+        $method: this._method.bind(this),
+        $action: this._action.bind(this)
       }
     }
   },

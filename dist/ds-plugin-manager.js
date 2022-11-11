@@ -162,8 +162,8 @@ const p = "dsManager", g = 1, v = {
       Object.prototype.hasOwnProperty.call(t, n) && this.use({ plugin: t[n] });
     if (this._processQueue(), s)
       return {
-        $method: this._method.bind(this)(),
-        $action: this._action.bind(this)()
+        $method: this._method.bind(this),
+        $action: this._action.bind(this)
       };
   },
   methods: {
