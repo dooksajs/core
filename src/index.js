@@ -1,3 +1,5 @@
+import PocketBase from 'pocketbase'
+
 export default {
   name: 'dsDatabase',
   version: 1,
@@ -5,14 +7,7 @@ export default {
     client: {}
   },
   setup ({ baseUrl = 'https://no.dooksa.com', lang = 'en-US' }) {
-    return new Promise((resolve, reject) => {
-      import('pocketbase')
-        .then(({ default: PocketBase }) => {
-          this.client = new PocketBase(baseUrl, lang)
-          resolve()
-        })
-        .catch(e => reject(e))
-    })
+    this.client = new PocketBase(baseUrl, lang)
   },
   methods: {
     getList ({ collection, page = 1, perPage = 25, options = {} }) {
