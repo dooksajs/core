@@ -15,12 +15,9 @@ import dsPage from '@dooksa/ds-plugin-page'
 import 'bootstrap/dist/css/bootstrap.css'
 
 export default {
+  DsPlugin,
+  dsManager,
   plugins: {
-    [dsManager.name]: {
-      name: dsManager.name,
-      version: dsManager.version,
-      plugin: dsManager
-    },
     [dsMetadata.name]: {
       name: dsMetadata.name,
       version: dsMetadata.version,
@@ -129,7 +126,8 @@ export default {
     this.plugins[plugin.name] = item
   },
   init ({ prefetchedPage, assetsURL, isDev, rootElementId = 'app' }) {
-    const pluginManager = new DsPlugin(this.plugins[dsManager.name].plugin)
+    const pluginManager = new this.DsPlugin(this.dsManager, [], isDev)
+
     // core plugins options
     this.plugins[dsElement.name].options = {
       setup: { rootElementId }
@@ -137,13 +135,12 @@ export default {
     this.plugins[dsPage.name].options = {
       setup: { prefetchedPage }
     }
-    // Remove manager from plugin list
-    delete this.plugins[dsManager.name]
+
     // start dooksa
     return pluginManager.init({
       build: 1,
       plugins: this.plugins,
-      DsPlugin,
+      DsPlugin: this.DsPlugin,
       isDev
     })
   }
