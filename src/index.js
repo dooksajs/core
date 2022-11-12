@@ -1,3 +1,6 @@
+
+import createProxy from './utils.js/createProxy'
+
 /**
  * @classdesc Plugins are used to extend and customise the Dooksa application builder.
  * @class
@@ -13,8 +16,9 @@
  * @param {Object[]} context - Context is shared data between plugins.
  * @param {string} context.name - The name will be the key used within the plugin, e.g. '$action' = this.$action
  * @param {(string|object)} context.value - The value of the context.
+ * @param {Boolean} isDev - Sets development features
  */
-function Plugin (plugin, context = []) {
+function Plugin (plugin, context = [], isDev) {
   let _context = {
     name: plugin.name,
     version: plugin.version
@@ -27,11 +31,16 @@ function Plugin (plugin, context = []) {
   if (plugin.data) {
     _context = { ..._context, ...plugin.data }
   }
+
+  if (isDev) {
+    _context = createProxy(plugin.name, _context)
+  }
+
   // set context to plugin
   for (let i = 0; i < context.length; i++) {
     const item = context[i]
     // ISSUE: [DS-752] applying context to plugins should be more dynamic
-    if (item.use && item.use.includes(plugin.name)) {
+    if (item.scope && item.scope.includes(plugin.name)) {
       _context[item.name] = item.value
     }
 
@@ -45,6 +54,7 @@ function Plugin (plugin, context = []) {
       _context[item.name] = item.value
     }
   }
+
   // set dependencies
   if (plugin.dependencies) {
     this.dependencies = plugin.dependencies
@@ -95,6 +105,7 @@ function Plugin (plugin, context = []) {
 
     this.components = plugin.components
   }
+
   // set setup function
   if (plugin.setup) {
     this.setup = plugin.setup.bind(_context)
