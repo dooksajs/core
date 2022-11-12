@@ -1,6 +1,6 @@
 import dsApp from '@dooksa/ds-app'
 import dsDevTool from '@dooksa-extra/ds-plugin-devtool'
-import dsPlugin from '@dooksa/plugin'
+import currentDsPlugin from '@dooksa/plugin'
 import dsDependencies from 'dsDependencies'
 import dsTemplates from 'dsTemplates'
 import bootstrapPage from '../data/index.js'
@@ -9,7 +9,7 @@ import dsParse from '@dooksa-extra/ds-plugin-parse'
 const plugins = {
   dsApp,
   dsDevTool,
-  dsPlugin,
+  currentDsPlugin,
   dsParse,
   ...dsDependencies
 }
@@ -21,6 +21,14 @@ for (const key in plugins) {
       plugins.dsApp.use(plugins[key], { setupOnRequest: true })
     }
   }
+}
+
+if (dsDependencies.DsPlugin) {
+  plugins.dsApp.DsPlugin = dsDependencies.DsPlugin
+}
+
+if (dsDependencies.dsManager) {
+  plugins.dsApp.dsManager = dsDependencies.dsManager
 }
 
 // force utilities to load
@@ -85,7 +93,6 @@ if (dsTemplates) {
       },
       {
         onSuccess: (item) => {
-          console.log(item)
           app.$action('dsTemplate/set',
             { id: metadata.id, item },
             {
