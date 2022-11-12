@@ -1,5 +1,4 @@
 import resource from '@dooksa/resource-loader'
-import DsPlugin from '@dooksa/ds-plugin'
 
 const NAME = 'dsManager'
 const VERSION = 1
@@ -12,6 +11,7 @@ export default {
   name: NAME,
   version: VERSION,
   data: {
+    DsPlugin: () => {},
     _methods: {},
     _tokens: {},
     _components: {},
@@ -26,12 +26,12 @@ export default {
     setupOnRequest: {},
     setupOnRequestQueue: {},
     options: {},
-    context: {}
+    context: {},
+    isDev: false
   },
   /**
    * Setup plugin
    * @param {Object} setup - The variables needed to setup the plugin
-   * @param {number} setup.buildId - The build id for the current system
    * @param {Object[]} setup.plugins - A list of base plugins
    * @param {string} setup.plugins[].name - The name of the plugin
    * @param {number} setup.plugins[].version - The version of the plugin
@@ -44,11 +44,11 @@ export default {
    * @returns {Object} Development tools used by browser extension if it is enabled
    */
   setup ({
-    buildId,
+    DsPlugin,
     plugins = {},
-    isDev
+    isDev = false
   }) {
-    this.buildId = buildId
+    this.DsPlugin = DsPlugin
     this.context = [
       {
         name: '$action',
@@ -69,14 +69,17 @@ export default {
       {
         name: '$token',
         value: this._token.bind(this),
-        use: ['dsToken']
+        scope: ['dsToken']
       },
       {
         name: '$component',
         value: this._component.bind(this),
-        use: ['dsComponent', 'dsParse', 'dsElement']
+        scope: ['dsComponent', 'dsParse', 'dsElement']
       }
     ]
+
+    this.isDev = isDev
+
     // add dsManager
     this._add({
       name: NAME,
@@ -340,7 +343,7 @@ export default {
                   this._installDependencies(name, plugin.dependencies)
                 }
 
-                const dsPlugin = new DsPlugin(plugin, this.context)
+                const dsPlugin = new this.DsPlugin(plugin, this.context, this.isDev)
 
                 // add plugin to manager
                 this._add(dsPlugin)
@@ -361,7 +364,8 @@ export default {
           if (this.setupOnRequestQueue[name]) {
             dsPlugin = this.setupOnRequestQueue[name]
           } else {
-            dsPlugin = new DsPlugin(plugin, this.context)
+            dsPlugin = new this.DsPlugin(plugin, this.context, this.isDev)
+
             // add plugin to manager
             this._add(dsPlugin)
           }
