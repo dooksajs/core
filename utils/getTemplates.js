@@ -3,12 +3,14 @@ import path from 'path'
 import fs from 'fs'
 
 export default async (templateDir) => {
+  // check if directory exists
   if (!fs.existsSync(templateDir)) {
-    return
+    return path.resolve(scriptDirectory, 'utils', 'emptyExport.js')
   }
 
   const entry = path.join(templateDir, 'index.js')
 
+  // check if import file exists
   if (!fs.existsSync(entry)) {
     return path.resolve(scriptDirectory, 'utils', 'emptyExport.js')
   }

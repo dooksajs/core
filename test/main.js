@@ -3,49 +3,51 @@ import dsDevTool from '@dooksa-extra/ds-plugin-devtool'
 import currentDsPlugin from '@dooksa/plugin'
 import dsDependencies from 'dsDependencies'
 import dsTemplates from 'dsTemplates'
-import bootstrapPage from '../data/index.js'
+import bootstrapPage from '../../data/index.js'
 import dsParse from '@dooksa-extra/ds-plugin-parse'
 
+let app = dsApp
+
+if (dsDependencies.dsApp) {
+  app = dsDependencies.dsApp
+
+  delete dsDependencies.dsApp
+}
+
+if (dsDependencies.DsPlugin) {
+  app.DsPlugin = dsDependencies.DsPlugin
+
+  delete dsDependencies.DsPlugin
+}
+
+if (dsDependencies.dsManager) {
+  app.dsManager = dsDependencies.dsManager
+
+  delete dsDependencies.dsManager
+}
+
 const plugins = {
-  dsApp,
   dsDevTool,
-  currentDsPlugin,
   dsParse,
-  ...dsDependencies
+  ...dsDependencies,
+  [currentDsPlugin.name]: currentDsPlugin
 }
 
 // load the plugin and dependencies
 for (const key in plugins) {
   if (Object.prototype.hasOwnProperty.call(plugins, key)) {
-    if (key !== 'dsApp') {
-      plugins.dsApp.use(plugins[key], { setupOnRequest: true })
-    }
+    app.use(plugins[key], { setupOnRequest: true })
   }
 }
 
-if (dsDependencies.DsPlugin) {
-  plugins.dsApp.DsPlugin = dsDependencies.DsPlugin
-}
-
-if (dsDependencies.dsManager) {
-  plugins.dsApp.dsManager = dsDependencies.dsManager
-}
-
-// force utilities to load
-dsApp.plugins.dsParse = {
-  name: dsParse.name,
-  version: dsParse.version,
-  plugin: dsParse
-}
-
 // start app
-const app = plugins.dsApp.init({
+const dooksa = app.init({
   appRootElementId: 'app',
   isDev: true,
   prefetchedPage: bootstrapPage
 })
 
-window.dsDevTool = app
+window.dsDevTool = dooksa
 
 // build templates
 if (dsTemplates) {
@@ -72,20 +74,20 @@ if (dsTemplates) {
       for (const key in metadata.methods) {
         if (Object.hasOwnProperty.call(metadata.methods, key)) {
           const items = metadata.methods[key]
-          const item = app.$method('dsParse/toActionSequence', items)
+          const item = dooksa.$method('dsParse/toActionSequence', items)
 
-          app.$method('dsAction/set', item)
+          dooksa.$method('dsAction/set', item)
           // assign the method to a action sequenceId
           metadata.actions = { ...metadata.actions, [key]: item.sequence.id }
 
           if (item.params) {
-            app.$method('dsParameter/set', item.params)
+            dooksa.$method('dsParameter/set', item.params)
           }
         }
       }
     }
 
-    app.$action('dsParse/toWidget',
+    dooksa.$action('dsParse/toWidget',
       {
         rootElement: templateElement.content,
         isTemplate: true,
@@ -93,16 +95,16 @@ if (dsTemplates) {
       },
       {
         onSuccess: (item) => {
-          app.$action('dsTemplate/set',
+          dooksa.$action('dsTemplate/set',
             { id: metadata.id, item },
             {
               onSuccess: () => {
-                app.$method('dsWidget/insert', {
+                dooksa.$method('dsWidget/insert', {
                   id: sectionId,
                   item: {
                     layout: {
                       default: {
-                        id: app.$method('dsUtilities/generateId'),
+                        id: dooksa.$method('dsUtilities/generateId'),
                         templateId: metadata.id
                       }
                     }

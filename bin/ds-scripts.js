@@ -13,7 +13,7 @@ const scripts = {
   dev: true,
   build: true,
   build_lib: true,
-  template: true,
+  test: true,
   // lint: true,
   // update: true,
   dispatch (scriptName) {

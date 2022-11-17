@@ -35,6 +35,8 @@
     "@dooksa-extra/ds-plugin-parse": "bitbucket:dooksa/ds-plugin-parse",
     "@dooksa/ds-app": "bitbucket:dooksa/ds-app",
     "@vitejs/plugin-legacy": "^2.2.0",
+    "cypress": "^11.0.1",
+    "dotenv": "^16.0.3",
     "terser": "^5.15.1",
     "vite": "^3.1.0",
     "vite-plugin-virtual-html": "^0.4.0"

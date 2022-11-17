@@ -14,7 +14,7 @@ import dsHtmlLoader from '../plugin/vite-plugin-ds-html-loader.js'
   const dsDevDependencies = await getDependencies(devDependencies)
 
   const server = await createServer({
-    root: path.resolve(scriptDirectory, 'dev'),
+    root: path.resolve(scriptDirectory, 'entry', 'dev'),
     plugins: [
       dsHtmlLoader()
     ],
