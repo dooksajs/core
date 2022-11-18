@@ -1,8 +1,8 @@
 {
-  "name": "@dooksa-extra/ds-plugin-database",
+  "name": "@dooksa/ds-plugin-database",
   "version": "1.0.0",
   "description": "Dooksa SaaS database plugin",
-  "main": "./dist/ds-plugin-database.js",
+  "main": "./dist/ds-database.js",
   "scripts": {
     "lint": "standard",
     "lint:fix": "standard --fix",
