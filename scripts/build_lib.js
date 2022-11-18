@@ -1,19 +1,18 @@
 import path from 'path'
 import { appDirectory } from '../utils/paths.js'
 import { build } from 'vite'
+import { camelToKebabCase } from '../utils/text.js'
 
 ;(async () => {
   try {
-    const pluginConfigPath = path.join(appDirectory, 'ds.plugin.config.js')
-    const { default: { name, fileName } } = await import(pluginConfigPath)
+    const pluginPath = path.join(appDirectory, 'src', 'index.js')
+    const { default: { name } } = await import(pluginPath)
 
     if (!name) {
-      throw Error(`${pluginConfigPath}: Missing "name"`)
+      throw Error(`${pluginPath}: Missing "name"`)
     }
 
-    if (!fileName) {
-      throw Error(`${pluginConfigPath}: Missing "fileName"`)
-    }
+    const fileName = camelToKebabCase(name)
 
     await build({
       build: {
@@ -26,7 +25,6 @@ import { build } from 'vite'
         emptyOutDir: true,
         outDir: path.resolve(appDirectory, 'dist')
       },
-
       resolve: {
         alias: {
           '@dooksa/plugin': path.resolve(appDirectory, 'src', 'index.js')

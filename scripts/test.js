@@ -2,8 +2,6 @@ import path from 'path'
 import fs from 'fs'
 import { scriptDirectory, appDirectory } from '../utils/paths.js'
 import { createServer } from 'vite'
-import getTemplates from '../utils/getTemplates.js'
-import getDependencies from '../utils/getDependencies.js'
 import dsHtmlLoader from '../plugin/vite-plugin-ds-html-loader.js'
 import cypress from 'cypress'
 import dotenv from 'dotenv'
@@ -49,17 +47,16 @@ function closeServer (server) {
   // exit if spec file does not exists
   checkIfSpecExists(specFile)
 
-  // fetch plugins metadata
-  let { default: { templateDir, devDependencies } } = await import(path.join(appDirectory, 'ds.plugin.config.js'))
-
-  templateDir = templateDir ? path.join(appDirectory, templateDir) : path.join(appDirectory, 'src/templates')
-
-  const dsTemplates = await getTemplates(templateDir)
-  const dsDevDependencies = await getDependencies(devDependencies)
-
   // server h4x0r port
   const port = 1337
   const baseUrl = 'http://localhost:' + port
+  const dsConfigPath = path.join(appDirectory, 'ds.config.js')
+  let dsConfig = '../utils/emptyExport'
+
+  // check if absolute path exists
+  if (fs.existsSync(dsConfigPath)) {
+    dsConfig = dsConfigPath
+  }
 
   const server = await createServer({
     root: path.resolve(scriptDirectory, 'entry', 'test'),
@@ -70,8 +67,7 @@ function closeServer (server) {
     resolve: {
       alias: {
         '@dooksa/plugin': path.resolve(appDirectory, 'src', 'index.js'),
-        dsDependencies: dsDevDependencies,
-        dsTemplates
+        dsConfig
       }
     }
   })
@@ -79,6 +75,7 @@ function closeServer (server) {
   // cypress config
   const config = {
     spec: path.resolve(appDirectory, 'cypress', 'e2e', specFile),
+    configFile: path.resolve(scriptDirectory, 'cypress.config.js'),
     config: {
       e2e: {
         baseUrl,
@@ -106,6 +103,7 @@ function closeServer (server) {
 
     config.record = true
     config.key = CYPRESS_RECORD_KEY
+    config.ciBuildId = process.env.CYPRESS_BUILD_ID || process.env['$CYPRESS_BUILD_ID'] // eslint-disable-line
   }
 
   await server.listen()

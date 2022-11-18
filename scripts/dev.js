@@ -1,17 +1,17 @@
 import path from 'path'
+import fs from 'fs'
 import { scriptDirectory, appDirectory } from '../utils/paths.js'
 import { createServer } from 'vite'
-import getTemplates from '../utils/getTemplates.js'
-import getDependencies from '../utils/getDependencies.js'
 import dsHtmlLoader from '../plugin/vite-plugin-ds-html-loader.js'
 
 ;(async () => {
-  let { default: { templateDir, devDependencies } } = await import(path.join(appDirectory, 'ds.plugin.config.js'))
+  const configPath = path.join(appDirectory, 'ds.config.js')
+  let dsConfig = '../utils/emptyExport'
 
-  templateDir = templateDir ? path.join(appDirectory, templateDir) : path.join(appDirectory, 'src/templates')
-
-  const dsTemplates = await getTemplates(templateDir)
-  const dsDevDependencies = await getDependencies(devDependencies)
+  // check if absolute path exists
+  if (fs.existsSync(configPath)) {
+    dsConfig = configPath
+  }
 
   const server = await createServer({
     root: path.resolve(scriptDirectory, 'entry', 'dev'),
@@ -21,8 +21,7 @@ import dsHtmlLoader from '../plugin/vite-plugin-ds-html-loader.js'
     resolve: {
       alias: {
         '@dooksa/plugin': path.resolve(appDirectory, 'src', 'index.js'),
-        dsDependencies: dsDevDependencies,
-        dsTemplates
+        dsConfig
       }
     }
   })

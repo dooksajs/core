@@ -1,17 +1,17 @@
 import createApp from '../../utils/createApp'
-import dsTemplates from 'dsTemplates'
+import dsConfig from 'dsConfig'
 import buildTemplates from '../../utils/buildTemplates'
 import page from '../../data/index.js'
 
-const app = createApp(page)
+const app = createApp(page, dsConfig.devDependencies)
 
 window.dsDevTool = app
 
 // build templates
-if (dsTemplates) {
+if (dsConfig.templates) {
   const sectionId = page.widgets.head[page.id][0]
 
-  buildTemplates(app, dsTemplates)
+  buildTemplates(app, dsConfig.templates)
     .then(templates => {
       for (let i = 0; i < templates.length; i++) {
         const template = templates[i]
