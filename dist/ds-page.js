@@ -27,7 +27,7 @@ const g = {
     items: {},
     templates: {}
   },
-  setup({ prefetchedPage: t }) {
+  setup({ page: t }) {
     t && Promise.resolve(t).then((e) => {
       if (this.$method("dsMetadata/setTheme", e.app.theme), this.$method("dsMetadata/setAppId", e.app.id), this.set(e), e.foundPath && e.foundPath !== e.path)
         return this.$method("dsRouter/navigate", this._cleanPath(e.path));

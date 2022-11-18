@@ -32,9 +32,9 @@ export default {
     items: {},
     templates: {}
   },
-  setup ({ prefetchedPage }) {
-    if (prefetchedPage) {
-      Promise.resolve(prefetchedPage)
+  setup ({ page }) {
+    if (page) {
+      Promise.resolve(page)
         .then(page => {
           this.$method('dsMetadata/setTheme', page.app.theme)
           this.$method('dsMetadata/setAppId', page.app.id)

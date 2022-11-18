@@ -2,7 +2,7 @@
   "name": "@dooksa/ds-plugin-page",
   "version": "1.0.0",
   "description": "Manage pages",
-  "main": "dist/ds-plugin-page.js",
+  "main": "dist/ds-page.js",
   "scripts": {
     "lint": "standard",
     "lint:fix": "standard --fix",
