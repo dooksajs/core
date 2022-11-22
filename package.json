@@ -31,8 +31,8 @@
     ]
   },
   "dependencies": {
-    "@dooksa-extra/ds-plugin-devtool": "bitbucket:dooksa/ds-plugin-devtool",
-    "@dooksa-extra/ds-plugin-parse": "bitbucket:dooksa/ds-plugin-parse",
+    "@dooksa/ds-plugin-devtool": "bitbucket:dooksa/ds-plugin-devtool",
+    "@dooksa/ds-plugin-parse": "bitbucket:dooksa/ds-plugin-parse",
     "@dooksa/ds-app": "bitbucket:dooksa/ds-app",
     "@vitejs/plugin-legacy": "^2.2.0",
     "cypress": "^11.0.1",
