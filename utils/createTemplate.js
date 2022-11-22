@@ -2,7 +2,7 @@ import path from 'path'
 import fs from 'fs'
 import dsApp from '@dooksa/ds-app'
 import dsDevTool from '@dooksa/ds-plugin-dev-tool'
-import dsParse from '@dooksa-extra/ds-plugin-parse'
+import dsParse from '@dooksa/ds-plugin-parse'
 import modifiers from '../data/tempalte-modifiers.js'
 
 // dummy window
@@ -32,7 +32,7 @@ for (let i = 0; i < devPlugins.length; i++) {
   dsApp.use(devPlugins[i])
 }
 const devApp = dsApp.init({
-  isDev: true,
+  isDev: true
 })
 
 const mergeStrings = (a, b, spacer = ' ') => {
@@ -99,7 +99,7 @@ export const createModifier = (id, index, baseTemplate) => {
         [index]: componentId
       }
     }
- 
+
     return result
   } catch (e) {
     console.error(e)

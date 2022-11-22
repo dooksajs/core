@@ -1,7 +1,7 @@
 import dsApp from '@dooksa/ds-app'
-import dsDevTool from '@dooksa-extra/ds-plugin-devtool'
+import dsDevTool from '@dooksa/ds-plugin-devtool'
 import dsPlugin from '@dooksa/plugin'
-import dsParse from '@dooksa-extra/ds-plugin-parse'
+import dsParse from '@dooksa/ds-plugin-parse'
 
 // start app
 export default (page, { setup = {}, plugins = {} }, pluginSetup = { setupOnRequest: true }) => {
