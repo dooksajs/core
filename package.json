@@ -1,8 +1,8 @@
 {
-  "name": "@dooksa-extra/ds-plugin-template",
+  "name": "@dooksa/ds-plugin-template",
   "version": "1.0.0",
   "description": "Dooksa templates",
-  "main": "dist/ds-plugin-template.js",
+  "main": "dist/ds-template.js",
   "scripts": {
     "dev": "ds-scripts dev",
     "build": "ds-scripts build_lib",
