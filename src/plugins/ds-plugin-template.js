@@ -1,3 +1,3 @@
-import dsTemplate from '@dooksa-extra/ds-plugin-template'
+import dsTemplate from '@dooksa/ds-plugin-template'
 
 export default dsTemplate

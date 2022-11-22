@@ -1,3 +1,3 @@
-import dsDatabase from '@dooksa-extra/ds-plugin-database'
+import dsDatabase from '@dooksa/ds-plugin-database'
 
 export default dsDatabase

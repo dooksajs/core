@@ -1,3 +1,3 @@
-import dsParse from '@dooksa-extra/ds-plugin-parse'
+import dsParse from '@dooksa/ds-plugin-parse'
 
 export default dsParse

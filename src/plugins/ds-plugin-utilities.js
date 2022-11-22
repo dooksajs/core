@@ -1,3 +1,3 @@
-import dsUtilities from '@dooksa-extra/ds-plugin-utilities'
+import dsUtilities from '@dooksa/ds-plugin-utilities'
 
 export default dsUtilities
