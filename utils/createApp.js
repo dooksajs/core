@@ -4,40 +4,44 @@ import dsPlugin from '@dooksa/plugin'
 import dsParse from '@dooksa-extra/ds-plugin-parse'
 
 // start app
-export default (page, devDependencies = {}) => {
+export default (page, { setup = {}, plugins = {} }, pluginSetup = { setupOnRequest: true }) => {
   let app = dsApp
 
-  if (devDependencies.dsApp) {
-    app = devDependencies.dsApp
+  if (plugins.dsApp) {
+    app = plugins.dsApp
 
-    delete devDependencies.dsApp
+    delete plugins.dsApp
   }
 
-  if (devDependencies.DsPlugin) {
-    app.DsPlugin = devDependencies.DsPlugin
+  if (plugins.DsPlugin) {
+    app.DsPlugin = plugins.DsPlugin
 
-    delete devDependencies.DsPlugin
+    delete plugins.DsPlugin
   }
 
-  if (devDependencies.dsManager) {
-    app.dsManager = devDependencies.dsManager
+  if (plugins.dsManager) {
+    app.dsManager = plugins.dsManager
 
-    delete devDependencies.dsManager
+    delete plugins.dsManager
   }
 
-  const plugins = {
+  const pluginsToAdd = {
     dsDevTool,
     dsParse,
-    ...devDependencies,
-    [dsPlugin.name]: dsPlugin
+    ...plugins
   }
 
   // load the plugin and dependencies
-  for (const key in plugins) {
-    if (Object.prototype.hasOwnProperty.call(plugins, key)) {
-      app.use(plugins[key], { setupOnRequest: true })
+  for (const key in pluginsToAdd) {
+    if (Object.prototype.hasOwnProperty.call(pluginsToAdd, key)) {
+      const options = setup[key] || {}
+      app.use(pluginsToAdd[key], options)
     }
   }
+
+  // add current plugin
+  app.use(dsPlugin, pluginSetup)
+
   return app.init({
     appRootElementId: 'app',
     isDev: true,

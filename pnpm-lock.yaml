@@ -14,7 +14,7 @@ specifiers:
 
 dependencies:
   '@dooksa-extra/ds-plugin-devtool': bitbucket.org/dooksa/ds-plugin-devtool/66d66bb47ecd0c87766e31d20ef62fc49c48e43c
-  '@dooksa-extra/ds-plugin-parse': bitbucket.org/dooksa/ds-plugin-parse/507988aeadc540590b6387d2c5dd0bf27283f4ed
+  '@dooksa-extra/ds-plugin-parse': bitbucket.org/dooksa/ds-plugin-parse/6f729b4d16cc90beebd86620e6a66c8d5bfee723
   '@dooksa/ds-app': bitbucket.org/dooksa/ds-app/26bb88d54b22881cc299b0bc66048b218c8ef0de
   '@vitejs/plugin-legacy': 2.3.0_terser@5.15.1+vite@3.2.2
   cypress: 11.0.1
@@ -2831,7 +2831,7 @@ packages:
       '@dooksa/ds-plugin-manager': bitbucket.org/dooksa/ds-plugin-manager/b8e02feda1158da0dacd3b7ee22c5d90708287a7
       '@dooksa/ds-plugin-metadata': bitbucket.org/dooksa/ds-plugin-metadata/db8cd0eb5aef45b695e7ae3c8f75505a18347832
       '@dooksa/ds-plugin-operator': bitbucket.org/dooksa/ds-plugin-operator/8b303542ca6019cdc1ce74c6ab70e87f5d7cfb51
-      '@dooksa/ds-plugin-page': bitbucket.org/dooksa/ds-plugin-page/58935e4fe5e1dec61c05aa925c8b1aef44b7e7ba
+      '@dooksa/ds-plugin-page': bitbucket.org/dooksa/ds-plugin-page/2434395b74a4a2b5983fe9293256e1cab23033c0
       '@dooksa/ds-plugin-parameter': bitbucket.org/dooksa/ds-plugin-parameter/7d06543650bafc36a1a25419c8eb7e29ed32e533
       '@dooksa/ds-plugin-router': bitbucket.org/dooksa/ds-plugin-router/246dd53bdf53fc86783f3444f19759987b2608ab
       '@dooksa/ds-plugin-template': bitbucket.org/dooksa/ds-plugin-template/3eb28752c219c038d9455e0d2009ef1399e1d37e
@@ -2853,9 +2853,9 @@ packages:
     version: 1.0.0
     dev: false
 
-  bitbucket.org/dooksa/ds-plugin-database/49032eea47b1ce6a660b21831e9b5589e17b1d60:
-    resolution: {commit: 49032eea47b1ce6a660b21831e9b5589e17b1d60, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-database.git, type: git}
-    name: '@dooksa-extra/ds-plugin-database'
+  bitbucket.org/dooksa/ds-plugin-database/63cb46b436ad5f2df733e01668af2507f2f9d6fa:
+    resolution: {commit: 63cb46b436ad5f2df733e01668af2507f2f9d6fa, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-database.git, type: git}
+    name: '@dooksa/ds-plugin-database'
     version: 1.0.0
     dev: false
 
@@ -2890,8 +2890,8 @@ packages:
     name: '@dooksa/ds-plugin-manager'
     version: 1.0.0
     dependencies:
-      '@dooksa-extra/ds-plugin-database': bitbucket.org/dooksa/ds-plugin-database/49032eea47b1ce6a660b21831e9b5589e17b1d60
-      '@dooksa-extra/ds-plugin-parse': bitbucket.org/dooksa/ds-plugin-parse/507988aeadc540590b6387d2c5dd0bf27283f4ed
+      '@dooksa-extra/ds-plugin-database': bitbucket.org/dooksa/ds-plugin-database/63cb46b436ad5f2df733e01668af2507f2f9d6fa
+      '@dooksa-extra/ds-plugin-parse': bitbucket.org/dooksa/ds-plugin-parse/6f729b4d16cc90beebd86620e6a66c8d5bfee723
       '@dooksa-extra/ds-plugin-template': bitbucket.org/dooksa/ds-plugin-template/3eb28752c219c038d9455e0d2009ef1399e1d37e
       '@dooksa-extra/ds-plugin-utilities': bitbucket.org/dooksa/ds-plugin-utilities/88d76ed947d088ea76cdfc589af0624bb723aebb
       '@dooksa/ds-plugin': bitbucket.org/dooksa/ds-plugin/597695600fa223e7cba2e580adb65ef91a4a8b2a
@@ -2910,8 +2910,8 @@ packages:
     version: 1.0.0
     dev: false
 
-  bitbucket.org/dooksa/ds-plugin-page/58935e4fe5e1dec61c05aa925c8b1aef44b7e7ba:
-    resolution: {commit: 58935e4fe5e1dec61c05aa925c8b1aef44b7e7ba, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-page.git, type: git}
+  bitbucket.org/dooksa/ds-plugin-page/2434395b74a4a2b5983fe9293256e1cab23033c0:
+    resolution: {commit: 2434395b74a4a2b5983fe9293256e1cab23033c0, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-page.git, type: git}
     name: '@dooksa/ds-plugin-page'
     version: 1.0.0
     dev: false
@@ -2922,9 +2922,9 @@ packages:
     version: 1.0.0
     dev: false
 
-  bitbucket.org/dooksa/ds-plugin-parse/507988aeadc540590b6387d2c5dd0bf27283f4ed:
-    resolution: {commit: 507988aeadc540590b6387d2c5dd0bf27283f4ed, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-parse.git, type: git}
-    name: '@dooksa-extra/ds-plugin-parse'
+  bitbucket.org/dooksa/ds-plugin-parse/6f729b4d16cc90beebd86620e6a66c8d5bfee723:
+    resolution: {commit: 6f729b4d16cc90beebd86620e6a66c8d5bfee723, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-parse.git, type: git}
+    name: '@dooksa/ds-plugin-parse'
     version: 1.0.0
     dependencies:
       object-hash: 3.0.0
