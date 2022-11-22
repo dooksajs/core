@@ -125,7 +125,7 @@ export default {
     // ISSUE: add plugin schema checks
     this.plugins[plugin.name] = item
   },
-  init ({ prefetchedPage, assetsURL, isDev, rootElementId = 'app' }) {
+  init ({ page, assetsURL, isDev, rootElementId = 'app' }) {
     const pluginManager = new this.DsPlugin(this.dsManager, [], isDev)
 
     // core plugins options
@@ -133,7 +133,7 @@ export default {
       setup: { rootElementId }
     }
     this.plugins[dsPage.name].options = {
-      setup: { prefetchedPage }
+      setup: { page }
     }
 
     // start dooksa
