@@ -7,22 +7,22 @@ import { camelToKebabCase } from '../utils/text.js'
 (async () => {
   try {
     const pluginPath = resolve(appDirectory, 'src', 'index.js')
-    let { default: { name } } = await import(pluginPath)
+    let { default: name } = await import(pluginPath)
 
-    if (!name) {
+    if (!name || typeof name !== 'string') {
       const configPath = resolve(appDirectory, 'ds.config.js')
 
       // check ds.config for library name
       if (existsSync(configPath)) {
         const dsConfig = await import(resolve(appDirectory, 'ds.config.js'))
 
-        name = dsConfig.name
+        name = dsConfig.default.name
 
         if (!name) {
-          throw Error(`${configPath}: Missing "name"`)
+          throw Error(`Config file missing the "name" key - ${configPath}`)
         }
       } else {
-        throw Error(`${pluginPath}: Missing "name", optionally, you can include the name inside ds.config.js`)
+        throw Error(`Missing "name" key, optionally, you can include the name inside ds.config.js ${pluginPath}`)
       }
     }
 
