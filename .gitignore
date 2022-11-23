@@ -6,20 +6,8 @@
 # Node artifact files
 node_modules/
 
-# Compiled Java class files
-*.class
-
-# Compiled Python bytecode
-*.py[cod]
-
 # Log files
 *.log
-
-# Package files
-*.jar
-
-# Maven
-target/
 
 # JetBrains IDE
 .idea/
@@ -57,10 +45,3 @@ cypress/integration/[0-9]-*/
 cypress/screenshots/
 cypress/videos/
 cypress/downloads/
-
-# Coverage reporting
-.nyc_output
-coverage/
-
-# Generated Plugin integrity check
-ds.plugin.integrity.js
