@@ -59,7 +59,7 @@ const b = {
           index: e.contentIndex
         });
         if (this.$method("dsElement/getType", d)[0] === "section") {
-          const l = this.$method("dsElement/getValue", { id: d });
+          const l = this.$method("dsElement/getDataValue", { id: d });
           this.$method("dsWidget/create", {
             id: n,
             parentElementId: o,
