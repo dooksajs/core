@@ -141,9 +141,9 @@ const v = {
             break;
           }
         if (L[0] === "section") {
-          const _ = this.$method("dsElement/getValue", { id: p, lang: i });
+          const _ = this.$method("dsElement/getDataValue", { id: p, lang: i });
           this.remove({ sectionId: _, prefixId: n });
-          const V = this.$method("dsElement/getValue", { id: I, lang: i });
+          const V = this.$method("dsElement/getDataValue", { id: I, lang: i });
           this.create({ id: V, parentElementId: $, prefixId: "", lang: i });
         } else
           this.$method("dsElement/detachContent", { contentId: p, elementId: $ }), this.$method("dsElement/attachContent", { contentId: I, elementId: $ });
@@ -227,7 +227,7 @@ const v = {
         if (Object.prototype.hasOwnProperty.call(a, "contentIndex")) {
           const d = this.getContentItem({ sectionId: t, instanceId: e, prefixId: s, index: a.contentIndex });
           if (this.$method("dsElement/getType", d)[0] === "section") {
-            const g = this.$method("dsElement/getValue", { id: d });
+            const g = this.$method("dsElement/getDataValue", { id: d });
             this.remove({ sectionId: g, prefixId: s });
           } else
             this.$method("dsElement/detachContent", { contentId: d, elementId: a.elementId });

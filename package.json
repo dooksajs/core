@@ -2,16 +2,15 @@
   "name": "@dooksa/ds-plugin-widget",
   "version": "1.0.0",
   "description": "Widgets for system for Dooksa",
-  "main": "dist/ds-plugin-widget.js",
+  "main": "dist/ds-widget.js",
   "scripts": {
-    "lint": "standard",
-    "lint:fix": "standard --fix",
-    "build": "ds-scripts build_lib",
     "dev": "ds-scripts dev",
-    "test:unit": "ds-scripts --unit test",
-    "test:unit:record": "ds-scripts --unit --record test",
-    "test:e2e": "ds-scripts --e2e test",
-    "test:e2e:record": "ds-scripts --e2e --record test"
+    "build": "ds-scripts build_lib",
+    "test:open": "ds-scripts --open test",
+    "test:run": "ds-scripts --run test",
+    "test:record": "ds-scripts --run --record test",
+    "lint": "standard",
+    "lint:fix": "standard --fix"
   },
   "type": "module",
   "repository": {
