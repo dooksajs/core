@@ -2,14 +2,15 @@
   "name": "@dooksa/ds-plugin-operator",
   "version": "1.0.0",
   "description": "Ds operators plugin is used to add operators to the ds schema",
-  "main": "dist/ds-plugin-operator.js",
+  "main": "dist/ds-operator.js",
   "scripts": {
-    "lint": "standard",
-    "lint:fix": "standard --fix",
     "dev": "ds-scripts dev",
     "build": "ds-scripts build_lib",
-    "test:unit": "ds-scripts --unit test",
-    "test:unit:record": "ds-scripts --unit --record test"
+    "test:open": "ds-scripts --open test",
+    "test:run": "ds-scripts --run test",
+    "test:record": "ds-scripts --run --record test",
+    "lint": "standard",
+    "lint:fix": "standard --fix"
   },
   "type": "module",
   "repository": {
