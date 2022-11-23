@@ -1,0 +1,26 @@
+{
+  "name": "@dooksa/ds-plugin-view",
+  "version": "1.0.0",
+  "description": "Starter plugin kit",
+  "main": "dist/ds-plugin-view.js",
+  "type": "module",
+  "scripts": {
+    "dev": "ds-scripts dev",
+    "build": "ds-scripts build_lib",
+    "test:open": "ds-scripts --open test",
+    "test:run": "ds-scripts --run test",
+    "test:record": "ds-scripts --run --record test",
+    "lint": "standard",
+    "lint:fix": "standard --fix"
+  },
+  "author": "Thomas David",
+  "license": "MPL-2",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org:dooksa/ds-plugin-view.git"
+  },
+  "devDependencies": {
+    "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts",
+    "standard": "*"
+  }
+}
