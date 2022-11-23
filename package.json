@@ -1,0 +1,27 @@
+{
+  "name": "@dooksa/ds-plugin-content",
+  "version": "1.0.0",
+  "description": "Starter plugin kit",
+  "main": "dist/ds-plugin-text-editor.js",
+  "type": "module",
+  "scripts": {
+    "dev": "ds-scripts dev",
+    "build": "ds-scripts build_lib",
+    "docs": "ds-scripts docs",
+    "test:open": "ds-scripts --open test",
+    "test:run": "ds-scripts --run test",
+    "test:record": "ds-scripts --run --record test",
+    "lint": "standard",
+    "lint:fix": "standard --fix"
+  },
+  "author": "Thomas David",
+  "license": "MPL-2",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org:dooksa/ds-plugin-content.git"
+  },
+  "devDependencies": {
+    "@dooksa/ds-scripts": "link:../ds-scripts",
+    "standard": "*"
+  }
+}
