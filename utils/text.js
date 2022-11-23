@@ -3,7 +3,7 @@ export const camelToKebabCase = str => {
   str = str.charAt(0).toLowerCase() + str.substring(1)
 
   // replace capitalised letters with dashes
-  str.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)
+  str = str.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)
 
   return str
 }
