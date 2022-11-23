@@ -2,16 +2,15 @@
   "name": "@dooksa/ds-plugin-token",
   "version": "0.1.0",
   "description": "Ds tokens plugin is used simple text replacement used with workflow",
-  "main": "dist/ds-plugin-token.js",
+  "main": "dist/ds-token.js",
   "scripts": {
-    "lint": "standard",
-    "lint:fix": "standard --fix",
     "dev": "ds-scripts dev",
     "build": "ds-scripts build_lib",
-    "test:unit": "ds-scripts --unit test",
-    "test:unit:record": "ds-scripts --unit --record test",
-    "test:e2e": "ds-scripts --e2e test",
-    "test:e2e:record": "ds-scripts --e2e --record test"
+    "test:open": "ds-scripts --open test",
+    "test:run": "ds-scripts --run test",
+    "test:record": "ds-scripts --run --record test",
+    "lint": "standard",
+    "lint:fix": "standard --fix"
   },
   "type": "module",
   "repository": {
