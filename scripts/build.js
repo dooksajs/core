@@ -3,8 +3,6 @@ import legacy from '@vitejs/plugin-legacy'
 import { appDirectory } from '../utils/paths.js'
 import { build } from 'vite'
 
-console.log(path.resolve(appDirectory, 'dist'))
-
 ;(async () => {
   await build({
     root: path.resolve(appDirectory, 'build'),

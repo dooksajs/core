@@ -1,15 +1,29 @@
-import path from 'path'
+import { resolve } from 'path'
+import { existsSync } from 'fs'
 import { appDirectory } from '../utils/paths.js'
 import { build } from 'vite'
 import { camelToKebabCase } from '../utils/text.js'
 
-;(async () => {
+(async () => {
   try {
-    const pluginPath = path.join(appDirectory, 'src', 'index.js')
-    const { default: { name } } = await import(pluginPath)
+    const pluginPath = resolve(appDirectory, 'src', 'index.js')
+    let { default: { name } } = await import(pluginPath)
 
     if (!name) {
-      throw Error(`${pluginPath}: Missing "name"`)
+      const configPath = resolve(appDirectory, 'ds.config.js')
+
+      // check ds.config for library name
+      if (existsSync(configPath)) {
+        const dsConfig = await import(resolve(appDirectory, 'ds.config.js'))
+
+        name = dsConfig.name
+
+        if (!name) {
+          throw Error(`${configPath}: Missing "name"`)
+        }
+      } else {
+        throw Error(`${pluginPath}: Missing "name", optionally, you can include the name inside ds.config.js`)
+      }
     }
 
     const fileName = camelToKebabCase(name)
@@ -17,17 +31,17 @@ import { camelToKebabCase } from '../utils/text.js'
     await build({
       build: {
         lib: {
-          entry: path.resolve(appDirectory, 'src'),
+          entry: resolve(appDirectory, 'src'),
           name,
           fileName,
           formats: ['es']
         },
         emptyOutDir: true,
-        outDir: path.resolve(appDirectory, 'dist')
+        outDir: resolve(appDirectory, 'dist')
       },
       resolve: {
         alias: {
-          '@dooksa/plugin': path.resolve(appDirectory, 'src', 'index.js')
+          '@dooksa/plugin': resolve(appDirectory, 'src', 'index.js')
         }
       }
     })

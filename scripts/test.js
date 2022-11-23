@@ -1,5 +1,5 @@
-import path from 'path'
-import fs from 'fs'
+import { resolve } from 'path'
+import { existsSync } from 'fs'
 import { scriptDirectory, appDirectory } from '../utils/paths.js'
 import { createServer } from 'vite'
 import dsHtmlLoader from '../plugin/vite-plugin-ds-html-loader.js'
@@ -7,13 +7,14 @@ import cypress from 'cypress'
 import dotenv from 'dotenv'
 const args = process.argv.slice(2)
 
-dotenv.config({ path: path.join(appDirectory, '.env') })
+dotenv.config({ path: resolve(appDirectory, '.env') })
+
 /**
  * Exit if spec file does not exists
  * @param {string} file spec file name
  */
 function checkIfSpecExists (file) {
-  if (!fs.existsSync(path.join(appDirectory, 'cypress', 'e2e', file))) {
+  if (!existsSync(resolve(appDirectory, 'cypress', 'e2e', file))) {
     console.log(`Spec file does not exist: ${file}`)
     process.exit(0)
   }
@@ -50,23 +51,23 @@ function closeServer (server) {
   // server h4x0r port
   const port = 1337
   const baseUrl = 'http://localhost:' + port
-  const dsConfigPath = path.join(appDirectory, 'ds.config.js')
+  const dsConfigPath = resolve(appDirectory, 'ds.config.js')
   let dsConfig = '../utils/emptyExport'
 
   // check if absolute path exists
-  if (fs.existsSync(dsConfigPath)) {
+  if (existsSync(dsConfigPath)) {
     dsConfig = dsConfigPath
   }
 
   const server = await createServer({
-    root: path.resolve(scriptDirectory, 'entry', 'test'),
+    root: resolve(scriptDirectory, 'entry', 'test'),
     plugins: [
       dsHtmlLoader()
     ],
     server: { port },
     resolve: {
       alias: {
-        '@dooksa/plugin': path.resolve(appDirectory, 'src', 'index.js'),
+        '@dooksa/plugin': resolve(appDirectory, 'src', 'index.js'),
         dsConfig
       }
     }
@@ -74,8 +75,8 @@ function closeServer (server) {
 
   // cypress config
   const config = {
-    spec: path.resolve(appDirectory, 'cypress', 'e2e', specFile),
-    configFile: path.resolve(scriptDirectory, 'cypress.config.js'),
+    spec: resolve(appDirectory, 'cypress', 'e2e', specFile),
+    configFile: resolve(scriptDirectory, 'cypress.config.js'),
     config: {
       e2e: {
         baseUrl,
@@ -113,7 +114,7 @@ function closeServer (server) {
   if (args.includes('--open')) {
     cypressRuntime = 'open'
     // cypress config
-    config.project = path.resolve(appDirectory)
+    config.project = resolve(appDirectory)
     config.browser = 'firefox'
     config.testingType = 'e2e'
   }
