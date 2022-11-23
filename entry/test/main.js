@@ -3,7 +3,9 @@ import dsConfig from 'dsConfig'
 import buildTemplates from '../../utils/buildTemplates'
 import page from '../../data/index.js'
 
-const app = createApp(page, dsConfig.devDependencies, dsConfig.setup)
+const plugins = dsConfig.devDependencies ?? {}
+const setupOptions = dsConfig.setup ?? {}
+const app = createApp(page, plugins, setupOptions)
 
 window.dsApp = app
 window.dsTemplates = {}
