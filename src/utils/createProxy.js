@@ -1,4 +1,4 @@
-import typeCheck from './typeCheck'
+import typeCheck from './typeCheck.js'
 
 /**
  * Proxy to check data integrity on set
@@ -6,7 +6,7 @@ import typeCheck from './typeCheck'
  * @param {any} target - Proxy target
  * @returns {Proxy}
  */
-export default (namespace = '', target) => {
+function createProxy (namespace = '', target) {
   return new Proxy(target, {
     set (target, prop, value) {
       typeCheck(namespace, value, prop)
@@ -15,3 +15,5 @@ export default (namespace = '', target) => {
     }
   })
 }
+
+export default createProxy

@@ -1,12 +1,13 @@
-import checkTypeError from './checkTypeError'
+import checkTypeError from './checkTypeError.js'
 
 /**
  * TypeCheck traverses data to check if it does not contain invalid data
  * @param {string} namespace - The parent location of the data
  * @param {any} data - Data that is used to check if it is not null or undefined
  * @param {string} keys - The keys of the data
+ * @param {string} currentKey - Current key used to access the test value
  */
-export default function typeCheck (namespace, data, keys = '', currentKey = '') {
+function typeCheck (namespace, data, keys = '', currentKey = '') {
   try {
     let currentKeys = ''
 
@@ -41,3 +42,5 @@ export default function typeCheck (namespace, data, keys = '', currentKey = '') 
     console.error(error)
   }
 }
+
+export default typeCheck

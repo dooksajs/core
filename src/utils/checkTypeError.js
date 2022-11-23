@@ -10,10 +10,12 @@
  * @param {string} suffix - The last string that sets the value type e.g. "]" to close an array
  * @returns {Error}
  */
-export default (namespace, data, keys, currentKeys, key, prefix = '', suffix = '') => {
+function checkTypeError (namespace, data, keys, currentKeys, key, prefix = '', suffix = '') {
   if (data === undefined || data === null) {
     const path = keys.substring(0, keys.length - currentKeys.length) + prefix + key + suffix
 
     throw Error(`${namespace}: "${path}" contains ${data}`)
   }
 }
+
+export default checkTypeError

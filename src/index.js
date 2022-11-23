@@ -1,24 +1,16 @@
 
-import createProxy from './utils.js/createProxy'
+import createProxy from './utils/createProxy.js'
 
 /**
- * @classdesc Plugins are used to extend and customise the Dooksa application builder.
+ * Plugins are used to extend and customise the Dooksa application builder.
  * @class
- * @param {Object} plugin - The plugin object used by the Plugin constructor.
- * @param {string} plugin.name - The name of the plugin.
- * @param {number} plugin.version - The version of the plugin.
- * @param {Object[]} plugin.dependencies - List of dependent plugins, e.g. if this plugin x used y by running an action: x.$action('y', params).
- * @param {string} plugin.dependencies[].name - The name of the dependent plugin.
- * @param {number} plugin.dependencies[].version - The version of the dependent plugin.
- * @param {Object} plugin.setup - This .
- * @param {Object.<string, (number|boolean|string|array|object)>} plugin.data - The object that contains plugins data.
- * @param {Object.<string, object>} plugin.methods - The version of the plugin.
+ * @param {DsPlugin} plugin - The plugin object used by the Plugin constructor.
  * @param {Object[]} context - Context is shared data between plugins.
  * @param {string} context.name - The name will be the key used within the plugin, e.g. '$action' = this.$action
  * @param {(string|object)} context.value - The value of the context.
  * @param {Boolean} isDev - Sets development features
  */
-function Plugin (plugin, context = [], isDev) {
+function DsPlugin (plugin, context = [], isDev) {
   let _context = {
     name: plugin.name,
     version: plugin.version
@@ -60,6 +52,7 @@ function Plugin (plugin, context = [], isDev) {
     this.dependencies = plugin.dependencies
     _context.dependencies = plugin.dependencies
   }
+
   // set methods
   if (plugin.methods) {
     const methods = {}
@@ -114,13 +107,13 @@ function Plugin (plugin, context = [], isDev) {
 
 /**
  * Runs the setup function within the plugin if present, this function is intended to be used by the parent plugin
- * @param {Object, <string, (number|boolean|string|array|object)>} params - These are the parameters required by the setup function
+ * @param {Object.<(number|boolean|string|array|object)>} params - These are the parameters required by the setup function
  * @returns {(number|boolean|string|array|object)}
  */
-Plugin.prototype.init = function (params) {
+DsPlugin.prototype.init = function (params) {
   if (this.setup) {
     return this.setup(params)
   }
 }
 
-export default Plugin
+export default DsPlugin
