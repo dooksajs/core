@@ -7,12 +7,12 @@
     "ds-scripts": "./bin/ds-scripts.js"
   },
   "env": {
-    "test:unit": {
+    "test:run": {
       "plugins": [
         "istanbul"
       ]
     },
-    "test:unitrecord": {
+    "test:open": {
       "plugins": [
         "istanbul"
       ]
