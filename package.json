@@ -4,14 +4,13 @@
   "description": "Dooksa SaaS database plugin",
   "main": "./dist/ds-database.js",
   "scripts": {
-    "lint": "standard",
-    "lint:fix": "standard --fix",
     "dev": "ds-scripts dev",
     "build": "ds-scripts build_lib",
-    "test:unit": "ds-scripts --unit test",
-    "test:unit:record": "ds-scripts --unit --record test",
-    "test:e2e": "ds-scripts --e2e test",
-    "test:e2e:record": "ds-scripts --e2e --record test"
+    "test:open": "ds-scripts --open test",
+    "test:run": "ds-scripts --run test",
+    "test:record": "ds-scripts --run --record test",
+    "lint": "standard",
+    "lint:fix": "standard --fix"
   },
   "repository": {
     "type": "git",
