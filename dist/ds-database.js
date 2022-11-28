@@ -1,10 +1,10 @@
-var k = function(o, i) {
-  return k = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(t, e) {
+var E = function(o, i) {
+  return E = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(t, e) {
     t.__proto__ = e;
   } || function(t, e) {
     for (var n in e)
       Object.prototype.hasOwnProperty.call(e, n) && (t[n] = e[n]);
-  }, k(o, i);
+  }, E(o, i);
 };
 function p(o, i) {
   if (typeof i != "function" && i !== null)
@@ -12,15 +12,15 @@ function p(o, i) {
   function t() {
     this.constructor = o;
   }
-  k(o, i), o.prototype = i === null ? Object.create(i) : (t.prototype = i.prototype, new t());
+  E(o, i), o.prototype = i === null ? Object.create(i) : (t.prototype = i.prototype, new t());
 }
-var E = function() {
-  return E = Object.assign || function(o) {
+var T = function() {
+  return T = Object.assign || function(o) {
     for (var i, t = 1, e = arguments.length; t < e; t++)
       for (var n in i = arguments[t])
         Object.prototype.hasOwnProperty.call(i, n) && (o[n] = i[n]);
     return o;
-  }, E.apply(this, arguments);
+  }, T.apply(this, arguments);
 };
 function m(o, i, t, e) {
   return new (t || (t = Promise))(function(n, r) {
@@ -111,21 +111,21 @@ function y(o, i) {
     };
   }
 }
-var N, _ = function(o) {
+var q, x = function(o) {
   function i(t) {
     var e, n = this;
     return (n = o.call(this, "ClientResponseError") || this).url = "", n.status = 0, n.data = {}, n.isAbort = !1, n.originalError = null, Object.setPrototypeOf(n, i.prototype), t instanceof i || (n.originalError = t), t !== null && typeof t == "object" && (n.url = typeof t.url == "string" ? t.url : "", n.status = typeof t.status == "number" ? t.status : 0, n.data = t.data !== null && typeof t.data == "object" ? t.data : {}), typeof DOMException < "u" && t instanceof DOMException && (n.isAbort = !0), n.name = "ClientResponseError " + n.status, n.message = ((e = n.data) === null || e === void 0 ? void 0 : e.message) || "Something went wrong while processing your request.", n;
   }
   return p(i, o), i.prototype.toJSON = function() {
-    return E({}, this);
+    return T({}, this);
   }, i;
-}(Error), C = /^[\u0009\u0020-\u007e\u0080-\u00ff]+$/;
-function x(o, i, t) {
-  var e = Object.assign({}, t || {}), n = e.encode || M;
-  if (!C.test(o))
+}(Error), P = /^[\u0009\u0020-\u007e\u0080-\u00ff]+$/;
+function L(o, i, t) {
+  var e = Object.assign({}, t || {}), n = e.encode || V;
+  if (!P.test(o))
     throw new TypeError("argument name is invalid");
   var r = n(i);
-  if (r && !C.test(r))
+  if (r && !P.test(r))
     throw new TypeError("argument val is invalid");
   var s = o + "=" + r;
   if (e.maxAge != null) {
@@ -135,12 +135,12 @@ function x(o, i, t) {
     s += "; Max-Age=" + Math.floor(a);
   }
   if (e.domain) {
-    if (!C.test(e.domain))
+    if (!P.test(e.domain))
       throw new TypeError("option domain is invalid");
     s += "; Domain=" + e.domain;
   }
   if (e.path) {
-    if (!C.test(e.path))
+    if (!P.test(e.path))
       throw new TypeError("option path is invalid");
     s += "; Path=" + e.path;
   }
@@ -184,16 +184,16 @@ function x(o, i, t) {
     }
   return s;
 }
-function J(o) {
+function M(o) {
   return o.indexOf("%") !== -1 ? decodeURIComponent(o) : o;
 }
-function M(o) {
+function V(o) {
   return encodeURIComponent(o);
 }
-function L(o) {
+function U(o) {
   if (o)
     try {
-      var i = decodeURIComponent(N(o.split(".")[1]).split("").map(function(t) {
+      var i = decodeURIComponent(q(o.split(".")[1]).split("").map(function(t) {
         return "%" + ("00" + t.charCodeAt(0).toString(16)).slice(-2);
       }).join(""));
       return JSON.parse(i) || {};
@@ -201,7 +201,7 @@ function L(o) {
     }
   return {};
 }
-N = typeof atob == "function" ? atob : function(o) {
+q = typeof atob == "function" ? atob : function(o) {
   var i = String(o).replace(/=+$/, "");
   if (i.length % 4 == 1)
     throw new Error("'atob' failed: The string to be decoded is not correctly encoded.");
@@ -209,7 +209,7 @@ N = typeof atob == "function" ? atob : function(o) {
     e = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=".indexOf(e);
   return s;
 };
-var g = function() {
+var w = function() {
   function o(i) {
     i === void 0 && (i = {}), this.load(i || {});
   }
@@ -222,7 +222,7 @@ var g = function() {
   }, o.prototype.export = function() {
     return Object.assign({}, this);
   }, o;
-}(), q = function(o) {
+}(), G = function(o) {
   function i() {
     return o !== null && o.apply(this, arguments) || this;
   }
@@ -234,21 +234,21 @@ var g = function() {
     }
     this["@collectionId"] = t["@collectionId"] !== void 0 ? t["@collectionId"] : "", this["@collectionName"] = t["@collectionName"] !== void 0 ? t["@collectionName"] : "", this["@expand"] = t["@expand"] !== void 0 ? t["@expand"] : {};
   }, i;
-}(g), P = function(o) {
+}(w), j = function(o) {
   function i() {
     return o !== null && o.apply(this, arguments) || this;
   }
   return p(i, o), i.prototype.load = function(t) {
-    o.prototype.load.call(this, t), this.email = typeof t.email == "string" ? t.email : "", this.verified = !!t.verified, this.lastResetSentAt = typeof t.lastResetSentAt == "string" ? t.lastResetSentAt : "", this.lastVerificationSentAt = typeof t.lastVerificationSentAt == "string" ? t.lastVerificationSentAt : "", this.profile = t.profile ? new q(t.profile) : null;
+    o.prototype.load.call(this, t), this.email = typeof t.email == "string" ? t.email : "", this.verified = !!t.verified, this.lastResetSentAt = typeof t.lastResetSentAt == "string" ? t.lastResetSentAt : "", this.lastVerificationSentAt = typeof t.lastVerificationSentAt == "string" ? t.lastVerificationSentAt : "", this.profile = t.profile ? new G(t.profile) : null;
   }, i;
-}(g), T = function(o) {
+}(w), A = function(o) {
   function i() {
     return o !== null && o.apply(this, arguments) || this;
   }
   return p(i, o), i.prototype.load = function(t) {
     o.prototype.load.call(this, t), this.avatar = typeof t.avatar == "number" ? t.avatar : 0, this.email = typeof t.email == "string" ? t.email : "", this.lastResetSentAt = typeof t.lastResetSentAt == "string" ? t.lastResetSentAt : "";
   }, i;
-}(g), V = function() {
+}(w), z = function() {
   function o() {
     this.baseToken = "", this.baseModel = null, this._onChangeCallbacks = [];
   }
@@ -259,11 +259,11 @@ var g = function() {
   }, enumerable: !1, configurable: !0 }), Object.defineProperty(o.prototype, "isValid", { get: function() {
     return !function(i, t) {
       t === void 0 && (t = 0);
-      var e = L(i);
+      var e = U(i);
       return !(Object.keys(e).length > 0 && (!e.exp || e.exp - t > Date.now() / 1e3));
     }(this.token);
   }, enumerable: !1, configurable: !0 }), o.prototype.save = function(i, t) {
-    this.baseToken = i || "", this.baseModel = t !== null && typeof t == "object" ? (t == null ? void 0 : t.verified) !== "undefined" ? new P(t) : new T(t) : null, this.triggerChange();
+    this.baseToken = i || "", this.baseModel = t !== null && typeof t == "object" ? (t == null ? void 0 : t.verified) !== "undefined" ? new j(t) : new A(t) : null, this.triggerChange();
   }, o.prototype.clear = function() {
     this.baseToken = "", this.baseModel = null, this.triggerChange();
   }, o.prototype.loadFromCookie = function(i, t) {
@@ -272,7 +272,7 @@ var g = function() {
       var a = {};
       if (typeof r != "string")
         return a;
-      for (var l = Object.assign({}, s || {}).decode || J, d = 0; d < r.length; ) {
+      for (var l = Object.assign({}, s || {}).decode || M, d = 0; d < r.length; ) {
         var u = r.indexOf("=", d);
         if (u === -1)
           break;
@@ -305,10 +305,10 @@ var g = function() {
   }, o.prototype.exportToCookie = function(i, t) {
     var e, n, r;
     t === void 0 && (t = "pb_auth");
-    var s = { secure: !0, sameSite: !0, httpOnly: !0, path: "/" }, a = L(this.token);
+    var s = { secure: !0, sameSite: !0, httpOnly: !0, path: "/" }, a = U(this.token);
     a != null && a.exp ? s.expires = new Date(1e3 * a.exp) : s.expires = new Date("1970-01-01"), i = Object.assign({}, s, i);
-    var l = { token: this.token, model: ((e = this.model) === null || e === void 0 ? void 0 : e.export()) || null }, d = x(t, JSON.stringify(l), i), u = typeof Blob < "u" ? new Blob([d]).size : d.length;
-    return l.model && u > 4096 && (l.model = { id: (n = l == null ? void 0 : l.model) === null || n === void 0 ? void 0 : n.id, email: (r = l == null ? void 0 : l.model) === null || r === void 0 ? void 0 : r.email }, this.model instanceof P && (l.model.verified = this.model.verified), d = x(t, JSON.stringify(l), i)), d;
+    var l = { token: this.token, model: ((e = this.model) === null || e === void 0 ? void 0 : e.export()) || null }, d = L(t, JSON.stringify(l), i), u = typeof Blob < "u" ? new Blob([d]).size : d.length;
+    return l.model && u > 4096 && (l.model = { id: (n = l == null ? void 0 : l.model) === null || n === void 0 ? void 0 : n.id, email: (r = l == null ? void 0 : l.model) === null || r === void 0 ? void 0 : r.email }, this.model instanceof j && (l.model.verified = this.model.verified), d = L(t, JSON.stringify(l), i)), d;
   }, o.prototype.onChange = function(i, t) {
     var e = this;
     return t === void 0 && (t = !1), this._onChangeCallbacks.push(i), t && i(this.token, this.model), function() {
@@ -322,7 +322,7 @@ var g = function() {
       e && e(this.token, this.model);
     }
   }, o;
-}(), z = function(o) {
+}(), K = function(o) {
   function i(t) {
     t === void 0 && (t = "pocketbase_auth");
     var e = o.call(this) || this;
@@ -332,7 +332,7 @@ var g = function() {
     return (this._storageGet(this.storageKey) || {}).token || "";
   }, enumerable: !1, configurable: !0 }), Object.defineProperty(i.prototype, "model", { get: function() {
     var t, e = this._storageGet(this.storageKey) || {};
-    return e === null || typeof e != "object" || e.model === null || typeof e.model != "object" ? null : ((t = e.model) === null || t === void 0 ? void 0 : t.verified) !== void 0 ? new P(e.model) : new T(e.model);
+    return e === null || typeof e != "object" || e.model === null || typeof e.model != "object" ? null : ((t = e.model) === null || t === void 0 ? void 0 : t.verified) !== void 0 ? new j(e.model) : new A(e.model);
   }, enumerable: !1, configurable: !0 }), i.prototype.save = function(t, e) {
     this._storageSet(this.storageKey, { token: t, model: e }), o.prototype.save.call(this, t, e);
   }, i.prototype.clear = function() {
@@ -359,9 +359,9 @@ var g = function() {
     var e;
     typeof window < "u" && ((e = window == null ? void 0 : window.localStorage) === null || e === void 0 || e.removeItem(t)), delete this.storageFallback[t];
   }, i;
-}(V), j = function(o) {
+}(z), R = function(o) {
   this.client = o;
-}, K = function(o) {
+}, H = function(o) {
   function i() {
     return o !== null && o.apply(this, arguments) || this;
   }
@@ -384,9 +384,9 @@ var g = function() {
       return !0;
     });
   }, i;
-}(j), G = function(o, i, t, e, n) {
+}(R), D = function(o, i, t, e, n) {
   this.page = o > 0 ? o : 1, this.perPage = i >= 0 ? i : 0, this.totalItems = t >= 0 ? t : 0, this.totalPages = e >= 0 ? e : 0, this.items = n || [];
-}, D = function(o) {
+}, F = function(o) {
   function i() {
     return o !== null && o.apply(this, arguments) || this;
   }
@@ -415,7 +415,7 @@ var g = function() {
           l.push(s.decode(h));
         }
       }
-      return new G((a == null ? void 0 : a.page) || 1, (a == null ? void 0 : a.perPage) || 0, (a == null ? void 0 : a.totalItems) || 0, (a == null ? void 0 : a.totalPages) || 0, l);
+      return new D((a == null ? void 0 : a.page) || 1, (a == null ? void 0 : a.perPage) || 0, (a == null ? void 0 : a.totalItems) || 0, (a == null ? void 0 : a.totalPages) || 0, l);
     });
   }, i.prototype._getOne = function(t, e, n) {
     var r = this;
@@ -437,7 +437,7 @@ var g = function() {
       return !0;
     });
   }, i;
-}(j), A = function(o) {
+}(R), I = function(o) {
   function i() {
     return o !== null && o.apply(this, arguments) || this;
   }
@@ -454,12 +454,12 @@ var g = function() {
   }, i.prototype.delete = function(t, e) {
     return e === void 0 && (e = {}), this._delete(this.baseCrudPath(), t, e);
   }, i;
-}(D), H = function(o) {
+}(F), $ = function(o) {
   function i() {
     return o !== null && o.apply(this, arguments) || this;
   }
   return p(i, o), i.prototype.decode = function(t) {
-    return new T(t);
+    return new A(t);
   }, i.prototype.baseCrudPath = function() {
     return "/api/admins";
   }, i.prototype.authResponse = function(t) {
@@ -476,19 +476,19 @@ var g = function() {
   }, i.prototype.confirmPasswordReset = function(t, e, n, r, s) {
     return r === void 0 && (r = {}), s === void 0 && (s = {}), r = Object.assign({ token: t, password: e, passwordConfirm: n }, r), this.client.send(this.baseCrudPath() + "/confirm-password-reset", { method: "POST", params: s, body: r }).then(this.authResponse.bind(this));
   }, i;
-}(A), $ = function(o) {
+}(I), B = function(o) {
   function i() {
     return o !== null && o.apply(this, arguments) || this;
   }
   return p(i, o), i.prototype.load = function(t) {
     o.prototype.load.call(this, t), this.userId = typeof t.userId == "string" ? t.userId : "", this.provider = typeof t.provider == "string" ? t.provider : "", this.providerId = typeof t.providerId == "string" ? t.providerId : "";
   }, i;
-}(g), B = function(o) {
+}(w), Q = function(o) {
   function i() {
     return o !== null && o.apply(this, arguments) || this;
   }
   return p(i, o), i.prototype.decode = function(t) {
-    return new P(t);
+    return new j(t);
   }, i.prototype.baseCrudPath = function() {
     return "/api/users";
   }, i.prototype.authResponse = function(t) {
@@ -528,7 +528,7 @@ var g = function() {
       if (Array.isArray(n))
         for (var s = 0, a = n; s < a.length; s++) {
           var l = a[s];
-          r.push(new $(l));
+          r.push(new B(l));
         }
       return r;
     });
@@ -537,14 +537,14 @@ var g = function() {
       return !0;
     });
   }, i;
-}(A), Q = function() {
+}(I), W = function() {
   function o(i) {
     i === void 0 && (i = {}), this.load(i || {});
   }
   return o.prototype.load = function(i) {
     this.id = i.id !== void 0 ? i.id : "", this.name = i.name !== void 0 ? i.name : "", this.type = i.type !== void 0 ? i.type : "text", this.system = !!i.system, this.required = !!i.required, this.unique = !!i.unique, this.options = typeof i.options == "object" && i.options !== null ? i.options : {};
   }, o;
-}(), W = function(o) {
+}(), X = function(o) {
   function i() {
     return o !== null && o.apply(this, arguments) || this;
   }
@@ -552,15 +552,15 @@ var g = function() {
     o.prototype.load.call(this, t), this.name = typeof t.name == "string" ? t.name : "", this.system = !!t.system, this.listRule = typeof t.listRule == "string" ? t.listRule : null, this.viewRule = typeof t.viewRule == "string" ? t.viewRule : null, this.createRule = typeof t.createRule == "string" ? t.createRule : null, this.updateRule = typeof t.updateRule == "string" ? t.updateRule : null, this.deleteRule = typeof t.deleteRule == "string" ? t.deleteRule : null, t.schema = Array.isArray(t.schema) ? t.schema : [], this.schema = [];
     for (var e = 0, n = t.schema; e < n.length; e++) {
       var r = n[e];
-      this.schema.push(new Q(r));
+      this.schema.push(new W(r));
     }
   }, i;
-}(g), X = function(o) {
+}(w), Y = function(o) {
   function i() {
     return o !== null && o.apply(this, arguments) || this;
   }
   return p(i, o), i.prototype.decode = function(t) {
-    return new W(t);
+    return new X(t);
   }, i.prototype.baseCrudPath = function() {
     return "/api/collections";
   }, i.prototype.import = function(t, e, n) {
@@ -572,12 +572,12 @@ var g = function() {
       });
     });
   }, i;
-}(A), Y = function(o) {
+}(I), Z = function(o) {
   function i() {
     return o !== null && o.apply(this, arguments) || this;
   }
   return p(i, o), i.prototype.decode = function(t) {
-    return new q(t);
+    return new G(t);
   }, i.prototype.baseCrudPath = function(t) {
     return "/api/collections/" + encodeURIComponent(t) + "/records";
   }, i.prototype.getFileUrl = function(t, e, n) {
@@ -608,14 +608,14 @@ var g = function() {
   }, i.prototype.delete = function(t, e, n) {
     return n === void 0 && (n = {}), this._delete(this.baseCrudPath(t), e, n);
   }, i;
-}(D)), U = function(o) {
+}(F)), N = function(o) {
   function i() {
     return o !== null && o.apply(this, arguments) || this;
   }
   return p(i, o), i.prototype.load = function(t) {
     o.prototype.load.call(this, t), t.remoteIp = t.remoteIp || t.ip, this.url = typeof t.url == "string" ? t.url : "", this.method = typeof t.method == "string" ? t.method : "GET", this.status = typeof t.status == "number" ? t.status : 200, this.auth = typeof t.auth == "string" ? t.auth : "guest", this.remoteIp = typeof t.remoteIp == "string" ? t.remoteIp : "", this.userIp = typeof t.userIp == "string" ? t.userIp : "", this.referer = typeof t.referer == "string" ? t.referer : "", this.userAgent = typeof t.userAgent == "string" ? t.userAgent : "", this.meta = typeof t.meta == "object" && t.meta !== null ? t.meta : {};
   }, i;
-}(g), Z = function(o) {
+}(w), tt = function(o) {
   function i() {
     return o !== null && o.apply(this, arguments) || this;
   }
@@ -626,21 +626,21 @@ var g = function() {
         r.items = (r == null ? void 0 : r.items) || [];
         for (var a = 0, l = r.items; a < l.length; a++) {
           var d = l[a];
-          s.push(new U(d));
+          s.push(new N(d));
         }
       }
-      return new G((r == null ? void 0 : r.page) || 1, (r == null ? void 0 : r.perPage) || 0, (r == null ? void 0 : r.totalItems) || 0, (r == null ? void 0 : r.totalPages) || 0, s);
+      return new D((r == null ? void 0 : r.page) || 1, (r == null ? void 0 : r.perPage) || 0, (r == null ? void 0 : r.totalItems) || 0, (r == null ? void 0 : r.totalPages) || 0, s);
     });
   }, i.prototype.getRequest = function(t, e) {
     return e === void 0 && (e = {}), this.client.send("/api/logs/requests/" + encodeURIComponent(t), { method: "GET", params: e }).then(function(n) {
-      return new U(n);
+      return new N(n);
     });
   }, i.prototype.getRequestsStats = function(t) {
     return t === void 0 && (t = {}), this.client.send("/api/logs/requests/stats", { method: "GET", params: t }).then(function(e) {
       return e;
     });
   }, i;
-}(j), tt = function(o) {
+}(R), et = function(o) {
   function i() {
     var t = o !== null && o.apply(this, arguments) || this;
     return t.clientId = "", t.eventSource = null, t.subscriptions = {}, t;
@@ -720,9 +720,9 @@ var g = function() {
       return n.connectHandler(r);
     }), (e = this.eventSource) === null || e === void 0 || e.close(), this.eventSource = null, this.clientId = "";
   }, i;
-}(j), et = function() {
+}(R), nt = function() {
   function o(i, t, e) {
-    i === void 0 && (i = "/"), t === void 0 && (t = "en-US"), this.cancelControllers = {}, this.baseUrl = i, this.lang = t, this.authStore = e || new z(), this.admins = new H(this), this.users = new B(this), this.records = new Y(this), this.collections = new X(this), this.logs = new Z(this), this.settings = new K(this), this.realtime = new tt(this);
+    i === void 0 && (i = "/"), t === void 0 && (t = "en-US"), this.cancelControllers = {}, this.baseUrl = i, this.lang = t, this.authStore = e || new K(), this.admins = new $(this), this.users = new Q(this), this.records = new Z(this), this.collections = new Y(this), this.logs = new tt(this), this.settings = new H(this), this.realtime = new et(this);
   }
   return Object.defineProperty(o.prototype, "AuthStore", { get: function() {
     return this.authStore;
@@ -749,30 +749,30 @@ var g = function() {
   }, o.prototype.send = function(i, t) {
     var e, n, r, s, a, l, d, u, h;
     return m(this, void 0, void 0, function() {
-      var c, f, O, R, w, I, F = this;
-      return y(this, function(nt) {
-        return (c = Object.assign({ method: "GET" }, t)).body && c.body.constructor.name !== "FormData" && (typeof c.body != "string" && (c.body = JSON.stringify(c.body)), ((e = c == null ? void 0 : c.headers) === null || e === void 0 ? void 0 : e["Content-Type"]) === void 0 && (c.headers = Object.assign({}, c.headers, { "Content-Type": "application/json" }))), ((n = c == null ? void 0 : c.headers) === null || n === void 0 ? void 0 : n["Accept-Language"]) === void 0 && (c.headers = Object.assign({}, c.headers, { "Accept-Language": this.lang })), ((r = this.authStore) === null || r === void 0 ? void 0 : r.token) && ((s = c == null ? void 0 : c.headers) === null || s === void 0 ? void 0 : s.Authorization) === void 0 && (f = "Admin", ((a = this.authStore.model) === null || a === void 0 ? void 0 : a.verified) !== void 0 && (f = "User"), c.headers = Object.assign({}, c.headers, { Authorization: f + " " + this.authStore.token })), ((l = c.params) === null || l === void 0 ? void 0 : l.$autoCancel) !== !1 && (O = ((d = c.params) === null || d === void 0 ? void 0 : d.$cancelKey) || (c.method || "GET") + i, this.cancelRequest(O), R = new AbortController(), this.cancelControllers[O] = R, c.signal = R.signal), (u = c.params) === null || u === void 0 || delete u.$autoCancel, (h = c.params) === null || h === void 0 || delete h.$cancelKey, w = this.buildUrl(i), c.params !== void 0 && ((I = this.serializeQueryParams(c.params)) && (w += (w.includes("?") ? "&" : "?") + I), delete c.params), this.beforeSend && (c = Object.assign({}, this.beforeSend(w, c))), [2, fetch(w, c).then(function(v) {
-          return m(F, void 0, void 0, function() {
+      var c, f, C, k, S, _, J = this;
+      return y(this, function(it) {
+        return (c = Object.assign({ method: "GET" }, t)).body && c.body.constructor.name !== "FormData" && (typeof c.body != "string" && (c.body = JSON.stringify(c.body)), ((e = c == null ? void 0 : c.headers) === null || e === void 0 ? void 0 : e["Content-Type"]) === void 0 && (c.headers = Object.assign({}, c.headers, { "Content-Type": "application/json" }))), ((n = c == null ? void 0 : c.headers) === null || n === void 0 ? void 0 : n["Accept-Language"]) === void 0 && (c.headers = Object.assign({}, c.headers, { "Accept-Language": this.lang })), ((r = this.authStore) === null || r === void 0 ? void 0 : r.token) && ((s = c == null ? void 0 : c.headers) === null || s === void 0 ? void 0 : s.Authorization) === void 0 && (f = "Admin", ((a = this.authStore.model) === null || a === void 0 ? void 0 : a.verified) !== void 0 && (f = "User"), c.headers = Object.assign({}, c.headers, { Authorization: f + " " + this.authStore.token })), ((l = c.params) === null || l === void 0 ? void 0 : l.$autoCancel) !== !1 && (C = ((d = c.params) === null || d === void 0 ? void 0 : d.$cancelKey) || (c.method || "GET") + i, this.cancelRequest(C), k = new AbortController(), this.cancelControllers[C] = k, c.signal = k.signal), (u = c.params) === null || u === void 0 || delete u.$autoCancel, (h = c.params) === null || h === void 0 || delete h.$cancelKey, S = this.buildUrl(i), c.params !== void 0 && ((_ = this.serializeQueryParams(c.params)) && (S += (S.includes("?") ? "&" : "?") + _), delete c.params), this.beforeSend && (c = Object.assign({}, this.beforeSend(S, c))), [2, fetch(S, c).then(function(v) {
+          return m(J, void 0, void 0, function() {
             var b;
-            return y(this, function(S) {
-              switch (S.label) {
+            return y(this, function(O) {
+              switch (O.label) {
                 case 0:
-                  b = {}, S.label = 1;
+                  b = {}, O.label = 1;
                 case 1:
-                  return S.trys.push([1, 3, , 4]), [4, v.json()];
+                  return O.trys.push([1, 3, , 4]), [4, v.json()];
                 case 2:
-                  return b = S.sent(), [3, 4];
+                  return b = O.sent(), [3, 4];
                 case 3:
-                  return S.sent(), [3, 4];
+                  return O.sent(), [3, 4];
                 case 4:
                   if (this.afterSend && (b = this.afterSend(v, b)), v.status >= 400)
-                    throw new _({ url: v.url, status: v.status, data: b });
+                    throw new x({ url: v.url, status: v.status, data: b });
                   return [2, b];
               }
             });
           });
         }).catch(function(v) {
-          throw new _(v);
+          throw new x(v);
         })];
       });
     });
@@ -795,43 +795,41 @@ var g = function() {
     return t.join("&");
   }, o;
 }();
-const it = {
+let g;
+const ot = {
   name: "dsDatabase",
   version: 1,
-  data: {
-    client: {}
-  },
   setup({ baseUrl: o = "https://no.dooksa.com", lang: i = "en-US" }) {
-    this.client = new et(o, i);
+    g = new nt(o, i);
   },
   methods: {
     getList({ collection: o, page: i = 1, perPage: t = 25, options: e = {} }) {
       return new Promise((n, r) => {
-        this.client.records.getList(o, i, t, e).then((s) => n(s)).catch((s) => r(s));
+        g.records.getList(o, i, t, e).then((s) => n(s)).catch((s) => r(s));
       });
     },
     getOne({ collection: o, id: i, options: t = {} }) {
       return new Promise((e, n) => {
-        this.client.records.getOne(o, i, t).then((r) => e(r)).catch((r) => n(r));
+        g.records.getOne(o, i, t).then((r) => e(r)).catch((r) => n(r));
       });
     },
     create({ collection: o, data: i, options: t = {} }) {
       return new Promise((e, n) => {
-        this.client.records.create(o, i, t).then((r) => e(r)).catch((r) => n(r));
+        g.records.create(o, i, t).then((r) => e(r)).catch((r) => n(r));
       });
     },
     update({ collection: o, id: i, data: t }) {
       return new Promise((e, n) => {
-        this.client.records.update(o, i, t).then((r) => e(r)).catch((r) => n(r));
+        g.records.update(o, i, t).then((r) => e(r)).catch((r) => n(r));
       });
     },
     delete({ collection: o, id: i }) {
       return new Promise((t, e) => {
-        this.client.records.delete(o, i).then(() => t("OK")).catch((n) => e(n));
+        g.records.delete(o, i).then(() => t("OK")).catch((n) => e(n));
       });
     }
   }
 };
 export {
-  it as default
+  ot as default
 };
