@@ -7,9 +7,9 @@ import { camelToKebabCase } from '../utils/text.js'
 (async () => {
   try {
     const pluginPath = resolve(appDirectory, 'src', 'index.js')
-    let { default: name } = await import(pluginPath)
+    let { default: { name } } = await import(pluginPath)
 
-    if (!name || typeof name !== 'string') {
+    if (!name) {
       const configPath = resolve(appDirectory, 'ds.config.js')
 
       // check ds.config for library name
