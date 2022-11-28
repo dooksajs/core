@@ -24,5 +24,8 @@
   "devDependencies": {
     "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts",
     "standard": "*"
+  },
+  "dependencies": {
+    "iconify-icon": "^1.0.1"
   }
 }
