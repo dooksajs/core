@@ -1,6 +1,13 @@
 /**
- * Dooksa component tools.
- * @module plugin
+ * @typedef {Object} dsComponent - Component schema used to construct an Text node or Element
+ * @property {boolean} Component.textNode - Declares if component is a textNode or not
+ * @property {string} Component.tag - Tag name used to create the node [(tagName)]{@link https://developer.mozilla.org/en-US/docs/Web/API/Element/tagName}
+ * @property {Object.<string, string>} Component.attributes - Element attributes
+ */
+
+/**
+ * Dooksa components
+ * @namespace dsComponent
  */
 export default {
   name: 'dsComponent',
@@ -106,12 +113,14 @@ export default {
       }]
     }
   ],
+  /** @lends dsComponent */
   methods: {
     /**
      * Get the component tag needed to create an element
+     * @param {Object} item
      * @param {String} item.id - The id of the component
      * @param {String} item.modifierId - This might be redundant due to modified components being precompiled
-     * @returns
+     * @returns {dsComponent}
      */
     get ({ id, modifierId }) {
       const component = this.items[id]
@@ -132,6 +141,12 @@ export default {
         }
       }
     },
+    /**
+     * Add component
+     * @param {Object} item
+     * @param {string} item.id - Node name used to create the node [(nodeName)]{@link https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeName}
+     * @param {Object.<string, string>} - Element attributes
+     */
     set (item) {
       this.items = { ...this.items, ...item }
     }
