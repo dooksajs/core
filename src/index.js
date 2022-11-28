@@ -1,6 +1,6 @@
 /**
  * Dooksa action plugin.
- * @module plugin
+ * @namespace dsAction
  */
 export default {
   name: 'dsAction',
@@ -16,6 +16,7 @@ export default {
     sequence: {},
     conditions: {}
   },
+  /** @lends dsAction */
   methods: {
     dispatch ({ sequenceId, payload }) {
       const sequence = this.sequence[sequenceId]
@@ -28,9 +29,6 @@ export default {
         conditions: sequence.conditions || {},
         payload
       })
-    },
-    _getEntryId (item) {
-      return item.entry.map(key => item[key])
     },
     set ({ actions, conditions, sequence }) {
       if (actions) {
@@ -53,6 +51,88 @@ export default {
     },
     setConditions (item) {
       this.conditions = { ...this.conditions, ...item }
+    },
+    _action ({
+      instance,
+      name,
+      type,
+      computedParams,
+      paramType,
+      params,
+      callback = {},
+      entry,
+      parentEntry
+    }) {
+      if (computedParams) {
+        params = this.$method('dsParameter/process', {
+          instance,
+          entry,
+          parentEntry,
+          paramType,
+          params
+        })
+      }
+
+      return this['_process/' + type]({ name, params, callback })
+    },
+    _createActions (entry, actions) {
+      return { entry, ...actions }
+    },
+    _compare (conditions, { instanceId, parentItemId, data }) {
+      let result = false
+      let hasLogicalOperator = false
+      let results = []
+
+      for (let i = 0; i < conditions.length; i++) {
+        const condition = conditions[i]
+        const operator = condition.name
+
+        if (operator === '&&' || operator === '||') {
+          results = [...results, operator]
+          hasLogicalOperator = true
+        } else {
+          const values = []
+          const length = condition.values.length - 1
+
+          for (let i = 0; i < condition.values.length; i++) {
+            const item = condition.values[i]
+            let value = item.value
+
+            if (Object.hasOwnProperty.call(item, 'entry')) {
+              value = this._action({
+                instanceId,
+                entry: item.entry,
+                parentItemId,
+                paramItems: condition.params,
+                data,
+                lastItem: length === i,
+                ...condition.items[item.entry]
+              })
+            }
+
+            values.push(value)
+          }
+
+          const compareResults = this.$method('dsOperators/eval', { name: operator, values })
+
+          results.push(compareResults)
+        }
+      }
+
+      if (hasLogicalOperator) {
+        result = this.$method('dsOperators/compare', results)
+      } else {
+        for (let i = 0; i < results.length; i++) {
+          result = true
+
+          if (!results[i]) {
+            result = false
+            break
+          }
+        }
+      }
+
+      return result
     },
     _dispatch ({
       sequenceId,
@@ -162,32 +242,6 @@ export default {
 
       return results
     },
-    _createActions (entry, actions) {
-      return { entry, ...actions }
-    },
-    _action ({
-      instance,
-      name,
-      type,
-      computedParams,
-      paramType,
-      params,
-      callback = {},
-      entry,
-      parentEntry
-    }) {
-      if (computedParams) {
-        params = this.$method('dsParameter/process', {
-          instance,
-          entry,
-          parentEntry,
-          paramType,
-          params
-        })
-      }
-
-      return this['_process/' + type]({ name, params, callback })
-    },
     /**
      * This callback is used after a rule
      * @callback onEventCallback
@@ -208,63 +262,7 @@ export default {
 
       callback(callbackParams)
     },
-    _compare (conditions, { instanceId, parentItemId, data }) {
-      let result = false
-      let hasLogicalOperator = false
-      let results = []
-
-      for (let i = 0; i < conditions.length; i++) {
-        const condition = conditions[i]
-        const operator = condition.name
-
-        if (operator === '&&' || operator === '||') {
-          results = [...results, operator]
-          hasLogicalOperator = true
-        } else {
-          const values = []
-          const length = condition.values.length - 1
-
-          for (let i = 0; i < condition.values.length; i++) {
-            const item = condition.values[i]
-            let value = item.value
-
-            if (Object.hasOwnProperty.call(item, 'entry')) {
-              value = this._action({
-                instanceId,
-                entry: item.entry,
-                parentItemId,
-                paramItems: condition.params,
-                data,
-                lastItem: length === i,
-                ...condition.items[item.entry]
-              })
-            }
-
-            values.push(value)
-          }
-
-          const compareResults = this.$method('dsOperators/eval', { name: operator, values })
-
-          results.push(compareResults)
-        }
-      }
-
-      if (hasLogicalOperator) {
-        result = this.$method('dsOperators/compare', results)
-      } else {
-        for (let i = 0; i < results.length; i++) {
-          result = true
-
-          if (!results[i]) {
-            result = false
-            break
-          }
-        }
-      }
-
-      return result
-    },
-    '_process/getProcessValue' ({ params, callback }) {
+    '_process/value' ({ params, callback }) {
       const onSuccess = callback.onSuccess
       const onError = callback.onError
       const results = params
@@ -279,10 +277,10 @@ export default {
 
       return results
     },
-    '_process/pluginAction' ({ name, params, callback }) {
+    '_process/action' ({ name, params, callback }) {
       this.$action(name, params, callback)
     },
-    '_process/pluginMethod' ({ name, params, callback }) {
+    '_process/method' ({ name, params, callback }) {
       const onSuccess = callback.onSuccess
       const results = this.$method(name, params)
 
