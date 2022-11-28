@@ -22,10 +22,10 @@
     "email": "tom@mightysmile.com"
   },
   "devDependencies": {
-    "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts",
     "standard": "*"
   },
   "dependencies": {
+    "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts",
     "iconify-icon": "^1.0.1"
   }
 }
