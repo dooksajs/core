@@ -3,6 +3,7 @@ import { existsSync } from 'fs'
 import { scriptDirectory, appDirectory } from '../utils/paths.js'
 import { createServer } from 'vite'
 import dsHtmlLoader from '../plugin/vite-plugin-ds-html-loader.js'
+import basicSsl from '@vitejs/plugin-basic-ssl'
 import cypress from 'cypress'
 import dotenv from 'dotenv'
 const args = process.argv.slice(2)
@@ -48,9 +49,9 @@ function closeServer (server) {
   // exit if spec file does not exists
   checkIfSpecExists(specFile)
 
-  // server h4x0r port
+  // server port
   const port = 1337
-  const baseUrl = 'http://localhost:' + port
+  const baseUrl = 'https://localhost:' + port
   const dsConfigPath = resolve(appDirectory, 'ds.config.js')
   let dsConfig = '../utils/emptyExport'
 
@@ -62,9 +63,10 @@ function closeServer (server) {
   const server = await createServer({
     root: resolve(scriptDirectory, 'entry', 'test'),
     plugins: [
-      dsHtmlLoader()
+      dsHtmlLoader(),
+      basicSsl()
     ],
-    server: { port },
+    server: { port, https: true },
     resolve: {
       alias: {
         '@dooksa/plugin': resolve(appDirectory, 'src', 'index.js'),
