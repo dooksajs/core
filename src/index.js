@@ -38,10 +38,44 @@ export default {
   data: {
     value: {},
     type: {},
-    elements: {}
+    attachedView: {}
   },
-  /** @lends dsContent.prototype */
+  /** @lends dsContent */
   methods: {
+    attachView ({ id, dsViewId }) {
+      const attached = this.attachedView[id] || []
+      const value = this.getValue({ id })
+
+      // Check if item exists
+      if (attached.length) {
+        const index = attached.indexOf(dsViewId)
+
+        if (index === -1) {
+          attached.push(dsViewId)
+        }
+      } else {
+        attached.push(dsViewId)
+      }
+
+      // Update attached view
+      this.attachedView[id] = attached
+      // Attach content to view item
+      this.$method('dsView/attachContent', { id: dsViewId, dsContentId: id })
+
+      if (value) {
+        this.$method('dsView/updateValue', { id: dsViewId, value })
+      }
+
+      // emit on mount event
+      this.$method('dsEvent/emit', {
+        id: dsViewId,
+        on: 'dsContent/attachView',
+        payload: {
+          dsContentId: id,
+          dsViewId
+        }
+      })
+    },
     /**
      * Get content type
      * @param {string} id - Content id
@@ -81,11 +115,13 @@ export default {
     },
     /**
      * Set value
-     * @param {string} id - Content id
+     * @param {dsContentId} id - Content id
      * @param {dsContentValue} value - The value of content
      * @param {string} language - The content language in ISO 639-2 format
      */
-    setValue (id, value, language) {
+    setValue ({ id, value, language }) {
+      language = language || this.$method('dsMetadata/getLanguage')
+
       if (this.value[id]) {
         this.value[id][language] = value
       } else {
@@ -93,6 +129,16 @@ export default {
           [language]: value
         }
       }
+
+      this.$method('dsEvent/emit', {
+        id,
+        on: 'dsContent/setValue',
+        payload: {
+          dsContentId: id,
+          dsContentValue: value,
+          language
+        }
+      })
     },
     /**
      * Set values
