@@ -4,7 +4,7 @@ import dsPlugin from '@dooksa/plugin'
 import dsParse from '@dooksa/ds-plugin-parse'
 
 // start app
-export default (page, { setup = {}, plugins = {} }, pluginSetup = { setupOnRequest: true }) => {
+export default (page, { options, plugins = {} }, currentOptions = {}) => {
   let app = dsApp
 
   if (plugins.dsApp) {
@@ -34,16 +34,18 @@ export default (page, { setup = {}, plugins = {} }, pluginSetup = { setupOnReque
   // load the plugin and dependencies
   for (const key in pluginsToAdd) {
     if (Object.prototype.hasOwnProperty.call(pluginsToAdd, key)) {
-      const options = setup[key] || {}
-      app.use(pluginsToAdd[key], options)
+      const plugin = pluginsToAdd[key]
+      const value = options.find(item => item.name === plugin.name) ?? {}
+
+      app.use(pluginsToAdd[key], value.option)
     }
   }
 
   // add current plugin
-  app.use(dsPlugin, pluginSetup)
+  app.use(dsPlugin, currentOptions)
 
   return app.init({
-    appRootElementId: 'app',
+    rootElementId: 'app',
     isDev: true,
     page
   })
