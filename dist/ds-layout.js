@@ -10,25 +10,24 @@ const b = {
     modifiers: {}
   },
   methods: {
-    getComponents({ instanceId: t, view: e = "default" }) {
+    getComponents({ dsWidgetInstanceId: t, dsWidgetView: e = "default" }) {
       return this.components[e + t];
     },
-    render({ id: t, sectionId: e, instanceId: n, view: h = "default", parentElementId: s = "appElement", prefixId: o, lang: m = "default" }) {
-      let i = this.getComponents({ instanceId: n, view: h });
-      if (i) {
-        for (let a = 0; a < i.length; a++) {
-          const d = i[a];
-          this._attachComponent(i, d, e, n, h, s, o, m);
+    render({ dsLayoutId: t, dsWidgetSectionId: e, dsWidgetInstanceId: n, dsWidgetView: i = "default", dsViewId: s = "appElement", dsWidgetPrefixId: o, language: d = "default" }) {
+      let h = this.getComponents({ dsWidgetInstanceId: n, dsWidgetView: i });
+      if (h)
+        for (let a = 0; a < h.length; a++) {
+          const c = h[a];
+          this._attachComponent(h, c, e, n, i, s, o, d);
         }
-        this.$method("dsWidget/attachItem", { type: "instance", id: n });
-      } else {
-        const a = this._getItem(t), d = this._getHead(t), p = this._getEvent(t);
-        i = this._create(t, a, d, a, p, e, n, s, o, m, h);
-        for (let l = 0; l < i.length; l++) {
-          const $ = i[l];
-          this._attachComponent(i, $, e, n, h, s, o, m);
+      else {
+        const a = this._getItem(t), c = this._getHead(t), _ = this._getEvent(t);
+        h = this._create(t, a, c, a, _, e, n, s, o, d, i);
+        for (let m = 0; m < h.length; m++) {
+          const $ = h[m];
+          this._attachComponent(h, $, e, n, i, s, o, d);
         }
-        this._setComponents(n, i, h);
+        this._setComponents(n, h, i);
       }
     },
     setHead(t) {
@@ -40,85 +39,86 @@ const b = {
     setItems(t) {
       this.items = { ...this.items, ...t };
     },
-    _attachComponent(t, e, n, h, s, o, m, i) {
+    _attachComponent(t, e, n, i, s, o, d, h) {
       let a = o;
-      if (e.elementId) {
-        const d = isNaN(e.parentIndex) ? o : t[e.parentIndex].elementId;
-        a = e.elementId, this.$method("dsElement/append", {
-          parentId: d,
-          childId: e.elementId
+      if (e.viewId && (o = isNaN(e.parentIndex) ? o : t[e.parentIndex].viewId, a = e.viewId, this.$method("dsView/append", {
+        dsViewId: e.viewId,
+        dsViewParentId: o
+      })), !isNaN(e.contentIndex)) {
+        const c = this.$method("dsWidget/getContentItem", {
+          dsWidgetSectionId: n,
+          dsWidgetInstanceId: i,
+          dsWidgetPrefixId: d,
+          dsViewId: o,
+          dsWidgetView: s,
+          contentIndex: e.contentIndex
         });
-      }
-      if (Object.hasOwnProperty.call(e, "contentIndex")) {
-        const d = this.$method("dsWidget/getContentItem", {
-          sectionId: n,
-          instanceId: h,
-          prefixId: m,
-          parentElementId: o,
-          view: s,
-          index: e.contentIndex
-        });
-        if (this.$method("dsElement/getType", d)[0] === "section") {
-          const l = this.$method("dsElement/getDataValue", { id: d });
+        if (this.$method("dsContent/getType", c)[0] === "section") {
+          const m = this.$method("dsContent/getValue", c);
           this.$method("dsWidget/create", {
-            id: n,
-            parentElementId: o,
-            prefixId: m,
-            lang: i,
-            view: s
-          }), this.$method("dsWidget/setSectionParentId", { childId: l, parentId: n });
+            dsWidgetSectionId: n,
+            dsViewId: o,
+            dsWidgetPrefixId: d,
+            language: h,
+            dsWidgetView: s
+          }), this.$method("dsWidget/setSectionParentId", { dsWidgetSectionId: m, dsWidgetSectionParentId: n });
         } else
-          this.$method("dsElement/attachContent", { contentId: d, elementId: a, lang: i });
-        this.$method("dsWidget/attachItem", { type: "content", id: d });
+          this.$method("dsContent/attachView", { dsContentId: c, dsViewId: a });
+        this.$method("dsWidget/attach", { type: "content", id: c });
       }
     },
-    _create(t, e, n, h, s, o, m, i, a, d, p, l = [], $, g = 0) {
-      let y = [];
-      if (!l.length) {
+    _create(t, e, n, i, s, o, d, h, a, c, _, m = [], $, f = 0) {
+      let v = [];
+      if (!m.length) {
         for (let r = 0; r < e.length; r++)
-          l.push(m + "_" + r.toString().padStart(4, "0"));
-        $ = l;
+          m.push(d + "_" + r.toString().padStart(4, "0"));
+        $ = m;
       }
       for (let r = 0; r < n.length; r++) {
-        const c = h[n[r]], _ = {};
-        let u = $[n[r]];
-        if (Object.prototype.hasOwnProperty.call(c, "parentIndex") && (_.parentIndex = c.parentIndex), c.componentId) {
-          const f = this.$method("dsWidget/getLayout", o + m + "_" + p), I = {
-            id: c.componentId
+        const l = i[n[r]], g = {};
+        let C = $[n[r]];
+        if (Object.prototype.hasOwnProperty.call(l, "parentIndex") && (g.parentIndex = l.parentIndex), l.componentId) {
+          const p = this.$method("dsWidget/getLayout", o + d + "_" + _), u = {
+            dsComponentId: l.componentId
           };
-          this.modifiers[f] && this.modifiers[f][g] && (I.modifierId = this.modifiers[f][g]);
-          const O = this.$method("dsComponent/get", I);
-          if (O.textNode ? this.$method("dsElement/createNode", u) : this.$method("dsElement/createElement", { id: u, sectionId: o, instanceId: m, item: O }), s[g]) {
-            const x = s[g];
-            for (let C = 0; C < x.action.length; C++)
-              this.$method("dsEvent/addListener", { id: u, name: x.on, item: x.action[C] });
+          this.modifiers[p] && this.modifiers[p][f] && (u.dsComponentModifierId = this.modifiers[p][f]);
+          const I = this.$method("dsComponent/get", u);
+          if (I.textNode ? this.$method("dsView/createNode", C) : this.$method("dsView/createElement", {
+            dsViewId: C,
+            dsWidgetSectionId: o,
+            dsWidgetInstanceId: d,
+            dsComponent: I
+          }), s[f]) {
+            const x = s[f];
+            for (let y = 0; y < x.action.length; y++)
+              this.$method("dsEvent/addListener", { id: C, name: x.on, dsActionId: x.action[y] });
           }
-          _.elementId = u;
+          g.viewId = C;
         } else
-          u = i;
-        if (y.push(_), c.children) {
-          const f = this._getSibling(e, c.children, l), I = this._create(
+          C = h;
+        if (v.push(g), l.children) {
+          const p = this._getSibling(e, l.children, m), u = this._create(
             t,
             e,
-            f.head,
-            f.children,
+            p.head,
+            p.children,
             s,
             o,
-            m,
-            i,
-            a,
             d,
-            p,
-            l,
-            f.components,
-            ++g
+            h,
+            a,
+            c,
+            _,
+            m,
+            p.components,
+            ++f
           );
-          Object.hasOwnProperty.call(c, "contentIndex") && (_.contentIndex = c.contentIndex), y = y.concat(I);
+          Object.hasOwnProperty.call(l, "contentIndex") && (g.contentIndex = l.contentIndex), v = v.concat(u);
         } else
-          Object.hasOwnProperty.call(c, "contentIndex") && (_.contentIndex = c.contentIndex);
-        g++;
+          Object.hasOwnProperty.call(l, "contentIndex") && (g.contentIndex = l.contentIndex);
+        f++;
       }
-      return y;
+      return v;
     },
     _setComponents(t, e, n) {
       this.components[n + t] = e;
@@ -133,16 +133,16 @@ const b = {
       return this.items[t];
     },
     _getSibling(t, e, n) {
-      const h = {
+      const i = {
         head: [],
         children: [],
         components: []
       };
       for (let s = 0; s < e.length; s++) {
         const o = e[s];
-        h.components.push(n[o]), h.children.push(t[o]), h.head.push(s);
+        i.components.push(n[o]), i.children.push(t[o]), i.head.push(s);
       }
-      return h;
+      return i;
     }
   }
 };

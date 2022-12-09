@@ -14,35 +14,33 @@ export default {
     modifiers: {}
   },
   methods: {
-    getComponents ({ instanceId, view = 'default' }) {
-      return this.components[view + instanceId]
+    getComponents ({ dsWidgetInstanceId, dsWidgetView = 'default' }) {
+      return this.components[dsWidgetView + dsWidgetInstanceId]
     },
-    render ({ id, sectionId, instanceId, view = 'default', parentElementId = 'appElement', prefixId, lang = 'default' }) {
-      let components = this.getComponents({ instanceId, view })
+    render ({ dsLayoutId, dsWidgetSectionId, dsWidgetInstanceId, dsWidgetView = 'default', dsViewId = 'appElement', dsWidgetPrefixId, language = 'default' }) {
+      let components = this.getComponents({ dsWidgetInstanceId, dsWidgetView })
 
       if (!components) {
-        const items = this._getItem(id)
-        const head = this._getHead(id)
-        const events = this._getEvent(id)
+        const items = this._getItem(dsLayoutId)
+        const head = this._getHead(dsLayoutId)
+        const events = this._getEvent(dsLayoutId)
 
-        components = this._create(id, items, head, items, events, sectionId, instanceId, parentElementId, prefixId, lang, view)
+        components = this._create(dsLayoutId, items, head, items, events, dsWidgetSectionId, dsWidgetInstanceId, dsViewId, dsWidgetPrefixId, language, dsWidgetView)
 
         // ISSUE: [DS-810] This is unnecessary loop if _create function can attach components
         for (let i = 0; i < components.length; i++) {
           const component = components[i]
 
-          this._attachComponent(components, component, sectionId, instanceId, view, parentElementId, prefixId, lang)
+          this._attachComponent(components, component, dsWidgetSectionId, dsWidgetInstanceId, dsWidgetView, dsViewId, dsWidgetPrefixId, language)
         }
 
-        this._setComponents(instanceId, components, view)
+        this._setComponents(dsWidgetInstanceId, components, dsWidgetView)
       } else {
         for (let i = 0; i < components.length; i++) {
           const component = components[i]
 
-          this._attachComponent(components, component, sectionId, instanceId, view, parentElementId, prefixId, lang)
+          this._attachComponent(components, component, dsWidgetSectionId, dsWidgetInstanceId, dsWidgetView, dsViewId, dsWidgetPrefixId, language)
         }
-
-        this.$method('dsWidget/attachItem', { type: 'instance', id: instanceId })
       }
     },
     setHead (head) {
@@ -54,53 +52,53 @@ export default {
     setItems (items) {
       this.items = { ...this.items, ...items }
     },
-    _attachComponent (components, component, sectionId, instanceId, view, parentElementId, prefixId, lang) {
-      let elementId = parentElementId
+    _attachComponent (components, component, dsWidgetSectionId, dsWidgetInstanceId, dsWidgetView, dsViewParentId, dsWidgetPrefixId, language) {
+      let dsViewId = dsViewParentId
 
-      if (component.elementId) {
-        const parentId = !isNaN(component.parentIndex) ? components[component.parentIndex].elementId : parentElementId
+      if (component.viewId) {
+        dsViewParentId = !isNaN(component.parentIndex) ? components[component.parentIndex].viewId : dsViewParentId
 
-        elementId = component.elementId
+        dsViewId = component.viewId
 
-        this.$method('dsElement/append', {
-          parentId,
-          childId: component.elementId
+        this.$method('dsView/append', {
+          dsViewId: component.viewId,
+          dsViewParentId
         })
       }
 
-      if (Object.hasOwnProperty.call(component, 'contentIndex')) {
-        const contentId = this.$method('dsWidget/getContentItem', {
-          sectionId,
-          instanceId,
-          prefixId,
-          parentElementId,
-          view,
-          index: component.contentIndex
+      if (!isNaN(component.contentIndex)) {
+        const dsContentId = this.$method('dsWidget/getContentItem', {
+          dsWidgetSectionId,
+          dsWidgetInstanceId,
+          dsWidgetPrefixId,
+          dsViewId: dsViewParentId,
+          dsWidgetView,
+          contentIndex: component.contentIndex
         })
-        const contentType = this.$method('dsElement/getType', contentId)
+        const dsContentType = this.$method('dsContent/getType', dsContentId)
 
-        if (contentType[0] === 'section') {
-          const newSectionId = this.$method('dsElement/getValue', { id: contentId })
+        if (dsContentType[0] === 'section') {
+          const newSectionId = this.$method('dsContent/getValue', dsContentId)
 
           // create a new widget and append it to this element item
           this.$method('dsWidget/create', {
-            id: sectionId,
-            parentElementId,
-            prefixId,
-            lang,
-            view
+            dsWidgetSectionId,
+            dsViewId: dsViewParentId,
+            dsWidgetPrefixId,
+            language,
+            dsWidgetView
           })
 
-          this.$method('dsWidget/setSectionParentId', { childId: newSectionId, parentId: sectionId })
+          this.$method('dsWidget/setSectionParentId', { dsWidgetSectionId: newSectionId, dsWidgetSectionParentId: dsWidgetSectionId })
         } else {
           // missing parentElement
-          this.$method('dsElement/attachContent', { contentId, elementId, lang })
+          this.$method('dsContent/attachView', { dsContentId, dsViewId })
         }
 
-        this.$method('dsWidget/attachItem', { type: 'content', id: contentId })
+        this.$method('dsWidget/attach', { type: 'content', id: dsContentId })
       }
     },
-    _create (id, items, head, children, events, sectionId, instanceId, parentElementId, prefixId, lang, view, components = [], componentChildren, currentIndex = 0) {
+    _create (id, items, head, children, events, sectionId, instanceId, dsViewParentId, dsWidgetPrefixId, lang, view, components = [], componentChildren, currentIndex = 0) {
       // components might make this variable redundant
       // position of components within the layout
       let fragments = []
@@ -116,7 +114,7 @@ export default {
       for (let i = 0; i < head.length; i++) {
         const item = children[head[i]]
         const fragment = {}
-        let elementId = componentChildren[head[i]]
+        let dsViewId = componentChildren[head[i]]
 
         if (Object.prototype.hasOwnProperty.call(item, 'parentIndex')) {
           fragment.parentIndex = item.parentIndex
@@ -125,34 +123,39 @@ export default {
         if (item.componentId) {
           const modifierId = this.$method('dsWidget/getLayout', sectionId + instanceId + '_' + view)
           const payload = {
-            id: item.componentId
+            dsComponentId: item.componentId
           }
 
           if (this.modifiers[modifierId] && this.modifiers[modifierId][currentIndex]) {
-            payload.modifierId = this.modifiers[modifierId][currentIndex]
+            payload.dsComponentModifierId = this.modifiers[modifierId][currentIndex]
           }
 
-          const component = this.$method('dsComponent/get', payload)
+          const dsComponent = this.$method('dsComponent/get', payload)
 
-          if (component.textNode) {
-            this.$method('dsElement/createNode', elementId)
+          if (dsComponent.textNode) {
+            this.$method('dsView/createNode', dsViewId)
           } else {
-            this.$method('dsElement/createElement', { id: elementId, sectionId, instanceId, item: component })
+            this.$method('dsView/createElement', {
+              dsViewId,
+              dsWidgetSectionId: sectionId,
+              dsWidgetInstanceId: instanceId,
+              dsComponent
+            })
           }
           // create parent component
 
-          // add event listener to element
+          // add event listener to node
           if (events[currentIndex]) {
             const event = events[currentIndex]
 
             for (let i = 0; i < event.action.length; i++) {
-              this.$method('dsEvent/addListener', { id: elementId, name: event.on, item: event.action[i] })
+              this.$method('dsEvent/addListener', { id: dsViewId, name: event.on, dsActionId: event.action[i] })
             }
           }
 
-          fragment.elementId = elementId
+          fragment.viewId = dsViewId
         } else {
-          elementId = parentElementId
+          dsViewId = dsViewParentId
         }
 
         fragments.push(fragment)
@@ -167,8 +170,8 @@ export default {
             events,
             sectionId,
             instanceId,
-            parentElementId,
-            prefixId,
+            dsViewParentId,
+            dsWidgetPrefixId,
             lang,
             view,
             components,
