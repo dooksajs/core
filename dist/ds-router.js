@@ -17,8 +17,8 @@ const r = {
     this.currentPath = this.currentPathname(), window.addEventListener("popstate", (e) => {
       this._update(this.currentPath, this.currentPathname(), (t) => {
         this.$method("dsPage/updateDOM", t), this.$action("dsEvent/emit", {
-          id: this.name,
-          name: "navigate",
+          dsEventId: this.getCurrentId(),
+          dsEventOn: "dsRouter/navigate",
           payload: t
         });
       });
@@ -38,8 +38,8 @@ const r = {
     navigate(e) {
       this._update(this.currentPathname(), e, (t) => {
         window.history.pushState(t, "", e), this.currentPath = this.currentPathname(), this.$method("dsPage/updateDOM", t), this.$action("dsEvent/emit", {
-          id: this.name,
-          name: "navigate",
+          dsEventId: this.getCurrentId(),
+          dsEventOn: "dsRouter/navigate",
           payload: t
         });
       });
@@ -49,22 +49,23 @@ const r = {
     },
     _update(e, t, n = () => {
     }) {
-      const a = {
+      const s = {
         nextPath: t,
         prevPath: e,
         nextId: this.items[t],
         prevId: this.items[e]
       };
-      if (this.currentPath = this.currentPathname(), a.nextId)
-        n(a);
-      else {
-        const i = this.cleanPath(t);
-        this.$action("dsPage/getOneByPath", { path: i }, {
-          onSuccess: (s) => {
-            a.nextId = s.id, this.$method("dsPage/set", s), n(a);
+      this.currentPath = this.currentPathname(), s.nextId ? n(s) : this.$action(
+        "dsPage/getOneByPath",
+        {
+          dsPagePath: this.cleanPath(t)
+        },
+        {
+          onSuccess: (a) => {
+            s.nextId = a.id, this.$method("dsPage/set", a), n(s);
           }
-        });
-      }
+        }
+      );
     }
   }
 };

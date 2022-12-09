@@ -25,8 +25,8 @@ export default {
       this._update(this.currentPath, this.currentPathname(), (state) => {
         this.$method('dsPage/updateDOM', state)
         this.$action('dsEvent/emit', {
-          id: this.name,
-          name: 'navigate',
+          dsEventId: this.getCurrentId(),
+          dsEventOn: 'dsRouter/navigate',
           payload: state
         })
       })
@@ -54,8 +54,8 @@ export default {
         this.$method('dsPage/updateDOM', state)
 
         this.$action('dsEvent/emit', {
-          id: this.name,
-          name: 'navigate',
+          dsEventId: this.getCurrentId(),
+          dsEventOn: 'dsRouter/navigate',
           payload: state
         })
       })
@@ -80,9 +80,10 @@ export default {
       this.currentPath = this.currentPathname()
 
       if (!state.nextId) {
-        const path = this.cleanPath(nextPath)
-
-        this.$action('dsPage/getOneByPath', { path }, {
+        this.$action('dsPage/getOneByPath', {
+          dsPagePath: this.cleanPath(nextPath)
+        },
+        {
           onSuccess: (data) => {
             state.nextId = data.id
 
