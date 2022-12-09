@@ -35,7 +35,11 @@ export default (page, { options, plugins = {} }, currentOptions = {}) => {
   for (const key in pluginsToAdd) {
     if (Object.prototype.hasOwnProperty.call(pluginsToAdd, key)) {
       const plugin = pluginsToAdd[key]
-      const value = options.find(item => item.name === plugin.name) ?? {}
+      let value = {}
+
+      if (options) {
+        value = options.find(item => item.name === plugin.name) ?? {}
+      }
 
       app.use(pluginsToAdd[key], value.option)
     }
