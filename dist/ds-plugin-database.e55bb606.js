@@ -1,10 +1,10 @@
-var k = function(o, i) {
-  return k = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(t, e) {
+var E = function(o, i) {
+  return E = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(t, e) {
     t.__proto__ = e;
   } || function(t, e) {
     for (var n in e)
       Object.prototype.hasOwnProperty.call(e, n) && (t[n] = e[n]);
-  }, k(o, i);
+  }, E(o, i);
 };
 function p(o, i) {
   if (typeof i != "function" && i !== null)
@@ -12,42 +12,42 @@ function p(o, i) {
   function t() {
     this.constructor = o;
   }
-  k(o, i), o.prototype = i === null ? Object.create(i) : (t.prototype = i.prototype, new t());
+  E(o, i), o.prototype = i === null ? Object.create(i) : (t.prototype = i.prototype, new t());
 }
-var E = function() {
-  return E = Object.assign || function(o) {
+var T = function() {
+  return T = Object.assign || function(o) {
     for (var i, t = 1, e = arguments.length; t < e; t++)
       for (var n in i = arguments[t])
         Object.prototype.hasOwnProperty.call(i, n) && (o[n] = i[n]);
     return o;
-  }, E.apply(this, arguments);
+  }, T.apply(this, arguments);
 };
-function y(o, i, t, e) {
+function m(o, i, t, e) {
   return new (t || (t = Promise))(function(n, r) {
-    function s(h) {
+    function s(d) {
       try {
-        l(e.next(h));
+        l(e.next(d));
       } catch (u) {
         r(u);
       }
     }
-    function a(h) {
+    function a(d) {
       try {
-        l(e.throw(h));
+        l(e.throw(d));
       } catch (u) {
         r(u);
       }
     }
-    function l(h) {
+    function l(d) {
       var u;
-      h.done ? n(h.value) : (u = h.value, u instanceof t ? u : new t(function(d) {
-        d(u);
+      d.done ? n(d.value) : (u = d.value, u instanceof t ? u : new t(function(h) {
+        h(u);
       })).then(s, a);
     }
     l((e = e.apply(o, i || [])).next());
   });
 }
-function m(o, i) {
+function y(o, i) {
   var t, e, n, r, s = { label: 0, sent: function() {
     if (1 & n[0])
       throw n[1];
@@ -57,7 +57,7 @@ function m(o, i) {
     return this;
   }), r;
   function a(l) {
-    return function(h) {
+    return function(d) {
       return function(u) {
         if (t)
           throw new TypeError("Generator is already executing.");
@@ -99,33 +99,33 @@ function m(o, i) {
                 continue;
             }
             u = i.call(o, s);
-          } catch (d) {
-            u = [6, d], e = 0;
+          } catch (h) {
+            u = [6, h], e = 0;
           } finally {
             t = n = 0;
           }
         if (5 & u[0])
           throw u[1];
         return { value: u[0] ? u[1] : void 0, done: !0 };
-      }([l, h]);
+      }([l, d]);
     };
   }
 }
-var N, _ = function(o) {
+var q, x = function(o) {
   function i(t) {
     var e, n = this;
     return (n = o.call(this, "ClientResponseError") || this).url = "", n.status = 0, n.data = {}, n.isAbort = !1, n.originalError = null, Object.setPrototypeOf(n, i.prototype), t instanceof i || (n.originalError = t), t !== null && typeof t == "object" && (n.url = typeof t.url == "string" ? t.url : "", n.status = typeof t.status == "number" ? t.status : 0, n.data = t.data !== null && typeof t.data == "object" ? t.data : {}), typeof DOMException < "u" && t instanceof DOMException && (n.isAbort = !0), n.name = "ClientResponseError " + n.status, n.message = ((e = n.data) === null || e === void 0 ? void 0 : e.message) || "Something went wrong while processing your request.", n;
   }
   return p(i, o), i.prototype.toJSON = function() {
-    return E({}, this);
+    return T({}, this);
   }, i;
-}(Error), C = /^[\u0009\u0020-\u007e\u0080-\u00ff]+$/;
-function x(o, i, t) {
-  var e = Object.assign({}, t || {}), n = e.encode || M;
-  if (!C.test(o))
+}(Error), P = /^[\u0009\u0020-\u007e\u0080-\u00ff]+$/;
+function L(o, i, t) {
+  var e = Object.assign({}, t || {}), n = e.encode || V;
+  if (!P.test(o))
     throw new TypeError("argument name is invalid");
   var r = n(i);
-  if (r && !C.test(r))
+  if (r && !P.test(r))
     throw new TypeError("argument val is invalid");
   var s = o + "=" + r;
   if (e.maxAge != null) {
@@ -135,12 +135,12 @@ function x(o, i, t) {
     s += "; Max-Age=" + Math.floor(a);
   }
   if (e.domain) {
-    if (!C.test(e.domain))
+    if (!P.test(e.domain))
       throw new TypeError("option domain is invalid");
     s += "; Domain=" + e.domain;
   }
   if (e.path) {
-    if (!C.test(e.path))
+    if (!P.test(e.path))
       throw new TypeError("option path is invalid");
     s += "; Path=" + e.path;
   }
@@ -184,16 +184,16 @@ function x(o, i, t) {
     }
   return s;
 }
-function J(o) {
+function M(o) {
   return o.indexOf("%") !== -1 ? decodeURIComponent(o) : o;
 }
-function M(o) {
+function V(o) {
   return encodeURIComponent(o);
 }
-function L(o) {
+function U(o) {
   if (o)
     try {
-      var i = decodeURIComponent(N(o.split(".")[1]).split("").map(function(t) {
+      var i = decodeURIComponent(q(o.split(".")[1]).split("").map(function(t) {
         return "%" + ("00" + t.charCodeAt(0).toString(16)).slice(-2);
       }).join(""));
       return JSON.parse(i) || {};
@@ -201,7 +201,7 @@ function L(o) {
     }
   return {};
 }
-N = typeof atob == "function" ? atob : function(o) {
+q = typeof atob == "function" ? atob : function(o) {
   var i = String(o).replace(/=+$/, "");
   if (i.length % 4 == 1)
     throw new Error("'atob' failed: The string to be decoded is not correctly encoded.");
@@ -209,7 +209,7 @@ N = typeof atob == "function" ? atob : function(o) {
     e = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=".indexOf(e);
   return s;
 };
-var g = function() {
+var w = function() {
   function o(i) {
     i === void 0 && (i = {}), this.load(i || {});
   }
@@ -222,7 +222,7 @@ var g = function() {
   }, o.prototype.export = function() {
     return Object.assign({}, this);
   }, o;
-}(), q = function(o) {
+}(), G = function(o) {
   function i() {
     return o !== null && o.apply(this, arguments) || this;
   }
@@ -234,21 +234,21 @@ var g = function() {
     }
     this["@collectionId"] = t["@collectionId"] !== void 0 ? t["@collectionId"] : "", this["@collectionName"] = t["@collectionName"] !== void 0 ? t["@collectionName"] : "", this["@expand"] = t["@expand"] !== void 0 ? t["@expand"] : {};
   }, i;
-}(g), O = function(o) {
+}(w), O = function(o) {
   function i() {
     return o !== null && o.apply(this, arguments) || this;
   }
   return p(i, o), i.prototype.load = function(t) {
-    o.prototype.load.call(this, t), this.email = typeof t.email == "string" ? t.email : "", this.verified = !!t.verified, this.lastResetSentAt = typeof t.lastResetSentAt == "string" ? t.lastResetSentAt : "", this.lastVerificationSentAt = typeof t.lastVerificationSentAt == "string" ? t.lastVerificationSentAt : "", this.profile = t.profile ? new q(t.profile) : null;
+    o.prototype.load.call(this, t), this.email = typeof t.email == "string" ? t.email : "", this.verified = !!t.verified, this.lastResetSentAt = typeof t.lastResetSentAt == "string" ? t.lastResetSentAt : "", this.lastVerificationSentAt = typeof t.lastVerificationSentAt == "string" ? t.lastVerificationSentAt : "", this.profile = t.profile ? new G(t.profile) : null;
   }, i;
-}(g), A = function(o) {
+}(w), A = function(o) {
   function i() {
     return o !== null && o.apply(this, arguments) || this;
   }
   return p(i, o), i.prototype.load = function(t) {
     o.prototype.load.call(this, t), this.avatar = typeof t.avatar == "number" ? t.avatar : 0, this.email = typeof t.email == "string" ? t.email : "", this.lastResetSentAt = typeof t.lastResetSentAt == "string" ? t.lastResetSentAt : "";
   }, i;
-}(g), V = function() {
+}(w), z = function() {
   function o() {
     this.baseToken = "", this.baseModel = null, this._onChangeCallbacks = [];
   }
@@ -259,7 +259,7 @@ var g = function() {
   }, enumerable: !1, configurable: !0 }), Object.defineProperty(o.prototype, "isValid", { get: function() {
     return !function(i, t) {
       t === void 0 && (t = 0);
-      var e = L(i);
+      var e = U(i);
       return !(Object.keys(e).length > 0 && (!e.exp || e.exp - t > Date.now() / 1e3));
     }(this.token);
   }, enumerable: !1, configurable: !0 }), o.prototype.save = function(i, t) {
@@ -272,20 +272,20 @@ var g = function() {
       var a = {};
       if (typeof r != "string")
         return a;
-      for (var l = Object.assign({}, s || {}).decode || J, h = 0; h < r.length; ) {
-        var u = r.indexOf("=", h);
+      for (var l = Object.assign({}, s || {}).decode || M, d = 0; d < r.length; ) {
+        var u = r.indexOf("=", d);
         if (u === -1)
           break;
-        var d = r.indexOf(";", h);
-        if (d === -1)
-          d = r.length;
-        else if (d < u) {
-          h = r.lastIndexOf(";", u - 1) + 1;
+        var h = r.indexOf(";", d);
+        if (h === -1)
+          h = r.length;
+        else if (h < u) {
+          d = r.lastIndexOf(";", u - 1) + 1;
           continue;
         }
-        var c = r.slice(h, u).trim();
+        var c = r.slice(d, u).trim();
         if (a[c] === void 0) {
-          var f = r.slice(u + 1, d).trim();
+          var f = r.slice(u + 1, h).trim();
           f.charCodeAt(0) === 34 && (f = f.slice(1, -1));
           try {
             a[c] = l(f);
@@ -293,7 +293,7 @@ var g = function() {
             a[c] = f;
           }
         }
-        h = d + 1;
+        d = h + 1;
       }
       return a;
     }(i || "")[t] || "", n = {};
@@ -305,10 +305,10 @@ var g = function() {
   }, o.prototype.exportToCookie = function(i, t) {
     var e, n, r;
     t === void 0 && (t = "pb_auth");
-    var s = { secure: !0, sameSite: !0, httpOnly: !0, path: "/" }, a = L(this.token);
+    var s = { secure: !0, sameSite: !0, httpOnly: !0, path: "/" }, a = U(this.token);
     a != null && a.exp ? s.expires = new Date(1e3 * a.exp) : s.expires = new Date("1970-01-01"), i = Object.assign({}, s, i);
-    var l = { token: this.token, model: ((e = this.model) === null || e === void 0 ? void 0 : e.export()) || null }, h = x(t, JSON.stringify(l), i), u = typeof Blob < "u" ? new Blob([h]).size : h.length;
-    return l.model && u > 4096 && (l.model = { id: (n = l == null ? void 0 : l.model) === null || n === void 0 ? void 0 : n.id, email: (r = l == null ? void 0 : l.model) === null || r === void 0 ? void 0 : r.email }, this.model instanceof O && (l.model.verified = this.model.verified), h = x(t, JSON.stringify(l), i)), h;
+    var l = { token: this.token, model: ((e = this.model) === null || e === void 0 ? void 0 : e.export()) || null }, d = L(t, JSON.stringify(l), i), u = typeof Blob < "u" ? new Blob([d]).size : d.length;
+    return l.model && u > 4096 && (l.model = { id: (n = l == null ? void 0 : l.model) === null || n === void 0 ? void 0 : n.id, email: (r = l == null ? void 0 : l.model) === null || r === void 0 ? void 0 : r.email }, this.model instanceof O && (l.model.verified = this.model.verified), d = L(t, JSON.stringify(l), i)), d;
   }, o.prototype.onChange = function(i, t) {
     var e = this;
     return t === void 0 && (t = !1), this._onChangeCallbacks.push(i), t && i(this.token, this.model), function() {
@@ -322,7 +322,7 @@ var g = function() {
       e && e(this.token, this.model);
     }
   }, o;
-}(), z = function(o) {
+}(), K = function(o) {
   function i(t) {
     t === void 0 && (t = "pocketbase_auth");
     var e = o.call(this) || this;
@@ -359,7 +359,7 @@ var g = function() {
     var e;
     typeof window < "u" && ((e = window == null ? void 0 : window.localStorage) === null || e === void 0 || e.removeItem(t)), delete this.storageFallback[t];
   }, i;
-}(V), P = function(o) {
+}(z), j = function(o) {
   this.client = o;
 }, H = function(o) {
   function i() {
@@ -384,7 +384,7 @@ var g = function() {
       return !0;
     });
   }, i;
-}(P), G = function(o, i, t, e, n) {
+}(j), D = function(o, i, t, e, n) {
   this.page = o > 0 ? o : 1, this.perPage = i >= 0 ? i : 0, this.totalItems = t >= 0 ? t : 0, this.totalPages = e >= 0 ? e : 0, this.items = n || [];
 }, F = function(o) {
   function i() {
@@ -394,10 +394,10 @@ var g = function() {
     var r = this;
     e === void 0 && (e = 100), n === void 0 && (n = {});
     var s = [], a = function(l) {
-      return y(r, void 0, void 0, function() {
-        return m(this, function(h) {
+      return m(r, void 0, void 0, function() {
+        return y(this, function(d) {
           return [2, this._getList(t, l, e, n).then(function(u) {
-            var d = u, c = d.items, f = d.totalItems;
+            var h = u, c = h.items, f = h.totalItems;
             return s = s.concat(c), c.length && f > s.length ? a(l + 1) : s;
           })];
         });
@@ -410,12 +410,12 @@ var g = function() {
       var l = [];
       if (a != null && a.items) {
         a.items = a.items || [];
-        for (var h = 0, u = a.items; h < u.length; h++) {
-          var d = u[h];
-          l.push(s.decode(d));
+        for (var d = 0, u = a.items; d < u.length; d++) {
+          var h = u[d];
+          l.push(s.decode(h));
         }
       }
-      return new G((a == null ? void 0 : a.page) || 1, (a == null ? void 0 : a.perPage) || 0, (a == null ? void 0 : a.totalItems) || 0, (a == null ? void 0 : a.totalPages) || 0, l);
+      return new D((a == null ? void 0 : a.page) || 1, (a == null ? void 0 : a.perPage) || 0, (a == null ? void 0 : a.totalItems) || 0, (a == null ? void 0 : a.totalPages) || 0, l);
     });
   }, i.prototype._getOne = function(t, e, n) {
     var r = this;
@@ -437,7 +437,7 @@ var g = function() {
       return !0;
     });
   }, i;
-}(P), T = function(o) {
+}(j), I = function(o) {
   function i() {
     return o !== null && o.apply(this, arguments) || this;
   }
@@ -454,7 +454,7 @@ var g = function() {
   }, i.prototype.delete = function(t, e) {
     return e === void 0 && (e = {}), this._delete(this.baseCrudPath(), t, e);
   }, i;
-}(F), K = function(o) {
+}(F), $ = function(o) {
   function i() {
     return o !== null && o.apply(this, arguments) || this;
   }
@@ -476,14 +476,14 @@ var g = function() {
   }, i.prototype.confirmPasswordReset = function(t, e, n, r, s) {
     return r === void 0 && (r = {}), s === void 0 && (s = {}), r = Object.assign({ token: t, password: e, passwordConfirm: n }, r), this.client.send(this.baseCrudPath() + "/confirm-password-reset", { method: "POST", params: s, body: r }).then(this.authResponse.bind(this));
   }, i;
-}(T), $ = function(o) {
+}(I), B = function(o) {
   function i() {
     return o !== null && o.apply(this, arguments) || this;
   }
   return p(i, o), i.prototype.load = function(t) {
     o.prototype.load.call(this, t), this.userId = typeof t.userId == "string" ? t.userId : "", this.provider = typeof t.provider == "string" ? t.provider : "", this.providerId = typeof t.providerId == "string" ? t.providerId : "";
   }, i;
-}(g), B = function(o) {
+}(w), Q = function(o) {
   function i() {
     return o !== null && o.apply(this, arguments) || this;
   }
@@ -528,7 +528,7 @@ var g = function() {
       if (Array.isArray(n))
         for (var s = 0, a = n; s < a.length; s++) {
           var l = a[s];
-          r.push(new $(l));
+          r.push(new B(l));
         }
       return r;
     });
@@ -537,14 +537,14 @@ var g = function() {
       return !0;
     });
   }, i;
-}(T), Q = function() {
+}(I), W = function() {
   function o(i) {
     i === void 0 && (i = {}), this.load(i || {});
   }
   return o.prototype.load = function(i) {
     this.id = i.id !== void 0 ? i.id : "", this.name = i.name !== void 0 ? i.name : "", this.type = i.type !== void 0 ? i.type : "text", this.system = !!i.system, this.required = !!i.required, this.unique = !!i.unique, this.options = typeof i.options == "object" && i.options !== null ? i.options : {};
   }, o;
-}(), W = function(o) {
+}(), X = function(o) {
   function i() {
     return o !== null && o.apply(this, arguments) || this;
   }
@@ -552,32 +552,32 @@ var g = function() {
     o.prototype.load.call(this, t), this.name = typeof t.name == "string" ? t.name : "", this.system = !!t.system, this.listRule = typeof t.listRule == "string" ? t.listRule : null, this.viewRule = typeof t.viewRule == "string" ? t.viewRule : null, this.createRule = typeof t.createRule == "string" ? t.createRule : null, this.updateRule = typeof t.updateRule == "string" ? t.updateRule : null, this.deleteRule = typeof t.deleteRule == "string" ? t.deleteRule : null, t.schema = Array.isArray(t.schema) ? t.schema : [], this.schema = [];
     for (var e = 0, n = t.schema; e < n.length; e++) {
       var r = n[e];
-      this.schema.push(new Q(r));
+      this.schema.push(new W(r));
     }
   }, i;
-}(g), X = function(o) {
+}(w), Y = function(o) {
   function i() {
     return o !== null && o.apply(this, arguments) || this;
   }
   return p(i, o), i.prototype.decode = function(t) {
-    return new W(t);
+    return new X(t);
   }, i.prototype.baseCrudPath = function() {
     return "/api/collections";
   }, i.prototype.import = function(t, e, n) {
-    return e === void 0 && (e = !1), n === void 0 && (n = {}), y(this, void 0, void 0, function() {
-      return m(this, function(r) {
+    return e === void 0 && (e = !1), n === void 0 && (n = {}), m(this, void 0, void 0, function() {
+      return y(this, function(r) {
         return [2, this.client.send(this.baseCrudPath() + "/import", { method: "PUT", params: n, body: { collections: t, deleteMissing: e } }).then(function() {
           return !0;
         })];
       });
     });
   }, i;
-}(T), Y = function(o) {
+}(I), Z = function(o) {
   function i() {
     return o !== null && o.apply(this, arguments) || this;
   }
   return p(i, o), i.prototype.decode = function(t) {
-    return new q(t);
+    return new G(t);
   }, i.prototype.baseCrudPath = function(t) {
     return "/api/collections/" + encodeURIComponent(t) + "/records";
   }, i.prototype.getFileUrl = function(t, e, n) {
@@ -608,14 +608,14 @@ var g = function() {
   }, i.prototype.delete = function(t, e, n) {
     return n === void 0 && (n = {}), this._delete(this.baseCrudPath(t), e, n);
   }, i;
-}(F)), U = function(o) {
+}(F)), N = function(o) {
   function i() {
     return o !== null && o.apply(this, arguments) || this;
   }
   return p(i, o), i.prototype.load = function(t) {
     o.prototype.load.call(this, t), t.remoteIp = t.remoteIp || t.ip, this.url = typeof t.url == "string" ? t.url : "", this.method = typeof t.method == "string" ? t.method : "GET", this.status = typeof t.status == "number" ? t.status : 200, this.auth = typeof t.auth == "string" ? t.auth : "guest", this.remoteIp = typeof t.remoteIp == "string" ? t.remoteIp : "", this.userIp = typeof t.userIp == "string" ? t.userIp : "", this.referer = typeof t.referer == "string" ? t.referer : "", this.userAgent = typeof t.userAgent == "string" ? t.userAgent : "", this.meta = typeof t.meta == "object" && t.meta !== null ? t.meta : {};
   }, i;
-}(g), Z = function(o) {
+}(w), tt = function(o) {
   function i() {
     return o !== null && o.apply(this, arguments) || this;
   }
@@ -625,30 +625,30 @@ var g = function() {
       if (r != null && r.items) {
         r.items = (r == null ? void 0 : r.items) || [];
         for (var a = 0, l = r.items; a < l.length; a++) {
-          var h = l[a];
-          s.push(new U(h));
+          var d = l[a];
+          s.push(new N(d));
         }
       }
-      return new G((r == null ? void 0 : r.page) || 1, (r == null ? void 0 : r.perPage) || 0, (r == null ? void 0 : r.totalItems) || 0, (r == null ? void 0 : r.totalPages) || 0, s);
+      return new D((r == null ? void 0 : r.page) || 1, (r == null ? void 0 : r.perPage) || 0, (r == null ? void 0 : r.totalItems) || 0, (r == null ? void 0 : r.totalPages) || 0, s);
     });
   }, i.prototype.getRequest = function(t, e) {
     return e === void 0 && (e = {}), this.client.send("/api/logs/requests/" + encodeURIComponent(t), { method: "GET", params: e }).then(function(n) {
-      return new U(n);
+      return new N(n);
     });
   }, i.prototype.getRequestsStats = function(t) {
     return t === void 0 && (t = {}), this.client.send("/api/logs/requests/stats", { method: "GET", params: t }).then(function(e) {
       return e;
     });
   }, i;
-}(P), tt = function(o) {
+}(j), et = function(o) {
   function i() {
     var t = o !== null && o.apply(this, arguments) || this;
     return t.clientId = "", t.eventSource = null, t.subscriptions = {}, t;
   }
   return p(i, o), i.prototype.subscribe = function(t, e) {
     var n;
-    return y(this, void 0, void 0, function() {
-      return m(this, function(r) {
+    return m(this, void 0, void 0, function() {
+      return y(this, function(r) {
         switch (r.label) {
           case 0:
             if (!t)
@@ -672,8 +672,8 @@ var g = function() {
     });
   }, i.prototype.unsubscribe = function(t) {
     var e;
-    return y(this, void 0, void 0, function() {
-      return m(this, function(n) {
+    return m(this, void 0, void 0, function() {
+      return y(this, function(n) {
         switch (n.label) {
           case 0:
             if (t) {
@@ -691,8 +691,8 @@ var g = function() {
       });
     });
   }, i.prototype.submitSubscriptions = function() {
-    return y(this, void 0, void 0, function() {
-      return m(this, function(t) {
+    return m(this, void 0, void 0, function() {
+      return y(this, function(t) {
         return this.addSubscriptionListeners(), [2, this.client.send("/api/realtime", { method: "POST", body: { clientId: this.clientId, subscriptions: Object.keys(this.subscriptions) }, params: { $autoCancel: !1 } }).then(function() {
           return !0;
         })];
@@ -720,9 +720,9 @@ var g = function() {
       return n.connectHandler(r);
     }), (e = this.eventSource) === null || e === void 0 || e.close(), this.eventSource = null, this.clientId = "";
   }, i;
-}(P), nt = function() {
+}(j), nt = function() {
   function o(i, t, e) {
-    i === void 0 && (i = "/"), t === void 0 && (t = "en-US"), this.cancelControllers = {}, this.baseUrl = i, this.lang = t, this.authStore = e || new z(), this.admins = new K(this), this.users = new B(this), this.records = new Y(this), this.collections = new X(this), this.logs = new Z(this), this.settings = new H(this), this.realtime = new tt(this);
+    i === void 0 && (i = "/"), t === void 0 && (t = "en-US"), this.cancelControllers = {}, this.baseUrl = i, this.lang = t, this.authStore = e || new K(), this.admins = new $(this), this.users = new Q(this), this.records = new Z(this), this.collections = new Y(this), this.logs = new tt(this), this.settings = new H(this), this.realtime = new et(this);
   }
   return Object.defineProperty(o.prototype, "AuthStore", { get: function() {
     return this.authStore;
@@ -747,32 +747,32 @@ var g = function() {
       this.cancelControllers[i].abort();
     return this.cancelControllers = {}, this;
   }, o.prototype.send = function(i, t) {
-    var e, n, r, s, a, l, h, u, d;
-    return y(this, void 0, void 0, function() {
-      var c, f, R, j, w, I, D = this;
-      return m(this, function(et) {
-        return (c = Object.assign({ method: "GET" }, t)).body && c.body.constructor.name !== "FormData" && (typeof c.body != "string" && (c.body = JSON.stringify(c.body)), ((e = c == null ? void 0 : c.headers) === null || e === void 0 ? void 0 : e["Content-Type"]) === void 0 && (c.headers = Object.assign({}, c.headers, { "Content-Type": "application/json" }))), ((n = c == null ? void 0 : c.headers) === null || n === void 0 ? void 0 : n["Accept-Language"]) === void 0 && (c.headers = Object.assign({}, c.headers, { "Accept-Language": this.lang })), ((r = this.authStore) === null || r === void 0 ? void 0 : r.token) && ((s = c == null ? void 0 : c.headers) === null || s === void 0 ? void 0 : s.Authorization) === void 0 && (f = "Admin", ((a = this.authStore.model) === null || a === void 0 ? void 0 : a.verified) !== void 0 && (f = "User"), c.headers = Object.assign({}, c.headers, { Authorization: f + " " + this.authStore.token })), ((l = c.params) === null || l === void 0 ? void 0 : l.$autoCancel) !== !1 && (R = ((h = c.params) === null || h === void 0 ? void 0 : h.$cancelKey) || (c.method || "GET") + i, this.cancelRequest(R), j = new AbortController(), this.cancelControllers[R] = j, c.signal = j.signal), (u = c.params) === null || u === void 0 || delete u.$autoCancel, (d = c.params) === null || d === void 0 || delete d.$cancelKey, w = this.buildUrl(i), c.params !== void 0 && ((I = this.serializeQueryParams(c.params)) && (w += (w.includes("?") ? "&" : "?") + I), delete c.params), this.beforeSend && (c = Object.assign({}, this.beforeSend(w, c))), [2, fetch(w, c).then(function(v) {
-          return y(D, void 0, void 0, function() {
+    var e, n, r, s, a, l, d, u, h;
+    return m(this, void 0, void 0, function() {
+      var c, f, R, k, S, _, J = this;
+      return y(this, function(it) {
+        return (c = Object.assign({ method: "GET" }, t)).body && c.body.constructor.name !== "FormData" && (typeof c.body != "string" && (c.body = JSON.stringify(c.body)), ((e = c == null ? void 0 : c.headers) === null || e === void 0 ? void 0 : e["Content-Type"]) === void 0 && (c.headers = Object.assign({}, c.headers, { "Content-Type": "application/json" }))), ((n = c == null ? void 0 : c.headers) === null || n === void 0 ? void 0 : n["Accept-Language"]) === void 0 && (c.headers = Object.assign({}, c.headers, { "Accept-Language": this.lang })), ((r = this.authStore) === null || r === void 0 ? void 0 : r.token) && ((s = c == null ? void 0 : c.headers) === null || s === void 0 ? void 0 : s.Authorization) === void 0 && (f = "Admin", ((a = this.authStore.model) === null || a === void 0 ? void 0 : a.verified) !== void 0 && (f = "User"), c.headers = Object.assign({}, c.headers, { Authorization: f + " " + this.authStore.token })), ((l = c.params) === null || l === void 0 ? void 0 : l.$autoCancel) !== !1 && (R = ((d = c.params) === null || d === void 0 ? void 0 : d.$cancelKey) || (c.method || "GET") + i, this.cancelRequest(R), k = new AbortController(), this.cancelControllers[R] = k, c.signal = k.signal), (u = c.params) === null || u === void 0 || delete u.$autoCancel, (h = c.params) === null || h === void 0 || delete h.$cancelKey, S = this.buildUrl(i), c.params !== void 0 && ((_ = this.serializeQueryParams(c.params)) && (S += (S.includes("?") ? "&" : "?") + _), delete c.params), this.beforeSend && (c = Object.assign({}, this.beforeSend(S, c))), [2, fetch(S, c).then(function(v) {
+          return m(J, void 0, void 0, function() {
             var b;
-            return m(this, function(S) {
-              switch (S.label) {
+            return y(this, function(C) {
+              switch (C.label) {
                 case 0:
-                  b = {}, S.label = 1;
+                  b = {}, C.label = 1;
                 case 1:
-                  return S.trys.push([1, 3, , 4]), [4, v.json()];
+                  return C.trys.push([1, 3, , 4]), [4, v.json()];
                 case 2:
-                  return b = S.sent(), [3, 4];
+                  return b = C.sent(), [3, 4];
                 case 3:
-                  return S.sent(), [3, 4];
+                  return C.sent(), [3, 4];
                 case 4:
                   if (this.afterSend && (b = this.afterSend(v, b)), v.status >= 400)
-                    throw new _({ url: v.url, status: v.status, data: b });
+                    throw new x({ url: v.url, status: v.status, data: b });
                   return [2, b];
               }
             });
           });
         }).catch(function(v) {
-          throw new _(v);
+          throw new x(v);
         })];
       });
     });
@@ -795,16 +795,41 @@ var g = function() {
     return t.join("&");
   }, o;
 }();
+let g;
+const ot = {
+  name: "dsDatabase",
+  version: 1,
+  setup({ baseUrl: o = "https://no.dooksa.com", lang: i = "en-US" }) {
+    g = new nt(o, i);
+  },
+  methods: {
+    getList({ collection: o, page: i = 1, perPage: t = 25, options: e = {} }) {
+      return new Promise((n, r) => {
+        g.records.getList(o, i, t, e).then((s) => n(s)).catch((s) => r(s));
+      });
+    },
+    getOne({ collection: o, id: i, options: t = {} }) {
+      return new Promise((e, n) => {
+        g.records.getOne(o, i, t).then((r) => e(r)).catch((r) => n(r));
+      });
+    },
+    create({ collection: o, data: i, options: t = {} }) {
+      return new Promise((e, n) => {
+        g.records.create(o, i, t).then((r) => e(r)).catch((r) => n(r));
+      });
+    },
+    update({ collection: o, id: i, data: t }) {
+      return new Promise((e, n) => {
+        g.records.update(o, i, t).then((r) => e(r)).catch((r) => n(r));
+      });
+    },
+    delete({ collection: o, id: i }) {
+      return new Promise((t, e) => {
+        g.records.delete(o, i).then(() => t("OK")).catch((n) => e(n));
+      });
+    }
+  }
+};
 export {
-  A as Admin,
-  V as BaseAuthStore,
-  _ as ClientResponseError,
-  W as Collection,
-  $ as ExternalAuth,
-  z as LocalAuthStore,
-  U as LogRequest,
-  q as Record,
-  Q as SchemaField,
-  O as User,
-  nt as default
+  ot as default
 };

@@ -1,11 +1,18 @@
 import resource from '@dooksa/resource-loader'
 
+/**
+ * This callback is displayed as part of the Requester class.
+ * @callback actionCallback
+ * @param {number} responseCode
+ * @param {string} responseMessage
+ */
+
 const NAME = 'dsManager'
 const VERSION = 1
 
 /**
  * Ds plugin manager
- * @module DsPlugin
+ * @namespace dsManager
  */
 export default {
   name: NAME,
@@ -15,10 +22,9 @@ export default {
     _methods: {},
     _tokens: {},
     _components: {},
-    buildId: '',
+    buildId: 0,
     plugins: {},
     pluginUseQueue: [],
-    appBuildId: '',
     depQueue: {},
     queue: {},
     isLoaded: {},
@@ -35,13 +41,14 @@ export default {
    * @param {Object[]} setup.plugins - A list of base plugins
    * @param {string} setup.plugins[].name - The name of the plugin
    * @param {number} setup.plugins[].version - The version of the plugin
-   * @param {DsPlugin} setup.plugins[].plugin - The plugin object
+   * @param {dsPlugin} setup.plugins[].plugin - The plugin object
    * @param {Object} setup.plugins[].options - Options used by the plugin
    * @param {boolean} setup.plugins[].options.setupOnRequest - Run the plugins setup function when its methods are used
    * @param {Object} setup.plugins[].options.setup - Params sent to the plugins setup function
    * @param {Object} setup.plugins[].options.script - This is to load an external plugin (refer to {@link https://bitbucket.org/dooksa/resource-loader/src/master/README.md resource-loader})
    * @param {boolean} setup.isDev - Toggle development mode
    * @returns {Object} Development tools used by browser extension if it is enabled
+   * @inner
    */
   setup ({
     DsPlugin,
@@ -74,30 +81,37 @@ export default {
       {
         name: '$component',
         value: this._component.bind(this),
-        scope: ['dsComponent', 'dsParse', 'dsElement']
+        scope: ['dsComponent', 'dsParse', 'dsView']
       }
     ]
 
     this.isDev = isDev
-
-    // add dsManager
-    this._add({
-      name: NAME,
-      version: VERSION,
-      methods: {
-        use: this.use
-      }
-    })
-
     this.isLoaded[NAME] = true
 
+    // add plugins to install queue
     for (const key in plugins) {
       if (Object.prototype.hasOwnProperty.call(plugins, key)) {
-        this.use({ plugin: plugins[key] })
+        const plugin = plugins[key]
+
+        this._addOptions(plugin.name, plugin.options)
+        this.plugins[plugin.name] = plugin
+        this.pluginUseQueue.push(plugin)
+        this.queue[plugin.name] = []
+        this.depQueue[plugin.name] = []
       }
     }
 
-    this._processQueue()
+    // start install process
+    for (let i = 0; i < this.pluginUseQueue.length; i++) {
+      const item = this.pluginUseQueue[i]
+      const queue = this._getQueue(item.name)
+
+      if (!queue.length) {
+        const loadingPlugin = this._install(item.name, item.plugin)
+        // Add to plugin to queue
+        this.queue[item.name] = [loadingPlugin]
+      }
+    }
 
     if (isDev) {
       return {
@@ -106,39 +120,13 @@ export default {
       }
     }
   },
+  /** @lends @dsManager */
   methods: {
     /**
-     * Add plugin to the manager
-     * @param {*} context
-     * @param {Object} item - @see this.setup plugin item
-     */
-    use ({ plugin, process }) {
-      this._addOptions(plugin.name, plugin.options)
-      this.plugins[plugin.name] = plugin
-      this.pluginUseQueue.push(plugin)
-      this.queue[plugin.name] = []
-      this.depQueue[plugin.name] = []
-
-      if (process) {
-        this._processQueue()
-      }
-    },
-    _processQueue () {
-      for (let i = 0; i < this.pluginUseQueue.length; i++) {
-        const item = this.pluginUseQueue[i]
-        const queue = this._getQueue(item.name)
-
-        if (!queue.length) {
-          const loadingPlugin = this._install(item.name, item.plugin)
-          // Add to plugin to queue
-          this.queue[item.name] = [loadingPlugin]
-        }
-      }
-    },
-    /**
-     * Higher order function to allow plugins to run other plugins async methods
-     * @param {*} context
-     * @returns
+     * Execute plugin methods
+     * @param {string} name - Name of method
+     * @param {Object|Array|string|number} params - Parameters for action
+     * @param {}
      */
     _action (name, params, callback = {}) {
       this._callbackWhenAvailable(name, () => {
@@ -194,6 +182,9 @@ export default {
      * @param {DsPlugin} plugin - The plugin object
      */
     _add (plugin) {
+      // add to build Id
+      this.buildId += plugin.version
+
       if (plugin.methods) {
         for (const key in plugin.methods) {
           if (Object.hasOwnProperty.call(plugin.methods, key)) {
