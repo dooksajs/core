@@ -1,4 +1,4 @@
-const g = {
+const y = {
   name: "dsPage",
   version: 1,
   dependencies: [
@@ -15,7 +15,11 @@ const g = {
       version: 1
     },
     {
-      name: "dsElement",
+      name: "dsView",
+      version: 1
+    },
+    {
+      name: "dsContent",
       version: 1
     },
     {
@@ -25,9 +29,10 @@ const g = {
   ],
   data: {
     items: {},
-    templates: {}
+    templates: {},
+    entry: {}
   },
-  setup({ page: t }) {
+  setup({ dsPage: t }) {
     t && Promise.resolve(t).then((e) => {
       if (this.$method("dsMetadata/setTheme", e.app.theme), this.$method("dsMetadata/setAppId", e.app.id), this.set(e), e.foundPath && e.foundPath !== e.path)
         return this.$method("dsRouter/navigate", this._cleanPath(e.path));
@@ -35,103 +40,105 @@ const g = {
     }).catch((e) => console.log(e));
   },
   methods: {
-    getOneById({ id: t, expand: e }) {
-      const s = {
+    getOneById({ dsPageId: t, expand: e }) {
+      const i = {
         collection: "pages",
         id: t
       };
-      return e && (s.options = { expand: e }), new Promise((d) => {
+      return e && (i.options = { expand: e }), new Promise((o) => {
         this.$action(
           "dsDatabase/getOne",
-          s,
+          i,
           {
-            onSuccess: (o) => d(o),
-            onError: (o) => {
-              console.error(o), d(o);
+            onSuccess: (n) => o(n),
+            onError: (n) => {
+              console.error(n), o(n);
             }
           }
         );
       });
     },
-    getOneByPath({ path: t, expand: e }) {
-      return new Promise((s, d) => {
-        const o = `(path='${t}')`, h = {
-          filter: o
+    getOneByPath({ dsPagePath: t, expand: e }) {
+      return new Promise((i, o) => {
+        const n = `(path='${t}')`, a = {
+          filter: n
         };
-        e && (h.expand = e), this.$action(
+        e && (a.expand = e), this.$action(
           "dsDatabase/getList",
           {
             collection: "pages",
-            options: h
+            options: a
           },
           {
-            onSuccess: (a) => {
-              const i = a;
-              i.foundPath = a.path, s(i);
+            onSuccess: (d) => {
+              const h = d;
+              h.foundPath = d.path, i(h);
             },
-            onError: (a) => {
-              if (a.code === 404) {
-                const i = e.split(",");
-                let l = "page";
-                for (let n = 0; n < i.length; n++)
-                  l += ",page." + i[n];
+            onError: (d) => {
+              if (d.code === 404) {
+                const h = e.split(",");
+                let p = "page";
+                for (let s = 0; s < h.length; s++)
+                  p += ",page." + h[s];
                 this.$action(
                   "dsDatabase/getList",
                   {
                     collection: "pagePaths",
                     options: {
-                      filter: o,
-                      expand: l
+                      filter: n,
+                      expand: p
                     }
                   },
                   {
-                    onSuccess: (n) => {
-                      const p = n.items[0]["@expand"].page;
-                      p.foundPath = n.path, s(p);
+                    onSuccess: (s) => {
+                      const m = s.items[0]["@expand"].page;
+                      m.foundPath = s.path, i(m);
                     },
-                    onError: (n) => {
-                      console.error(n), d(n);
+                    onError: (s) => {
+                      console.error(s), o(s);
                     }
                   }
                 );
               } else
-                console.error(a), d(a);
+                console.error(d), o(d);
             }
           }
         );
       });
     },
-    updateDOM({ prevId: t, nextId: e }) {
-      const s = this.items[t], d = this.types[s.typesId], o = s.templateId || d.templateId, h = this.templates[o], a = this.items[e], i = this.types[a.typesId], l = a.templateId || i.templateId, n = this.templates[l], p = n.widgets.length, c = h.widgets.length, u = p > c ? p : c;
-      for (let r = 0; r < u; r++) {
-        const f = n.widgets[r], m = h.widgets[r];
+    updateDOM({ dsPagePrevId: t, dsPageNextId: e }) {
+      const i = this.items[t], o = this.types[i.typesId], n = i.templateId || o.templateId, a = this.templates[n], d = this.items[e], h = this.types[d.typesId], p = d.templateId || h.templateId, s = this.templates[p], m = s.widgets.length, l = a.widgets.length, u = m > l ? m : l;
+      for (let c = 0; c < u; c++) {
+        const f = s.widgets[c], r = a.widgets[c];
         f ? this.$method("dsWidget/update", {
-          parentElementId: "appElement",
-          prevPrefixId: t,
-          prevId: m,
-          nextPrefixId: e,
-          nextId: f
-        }) : m && this.$method("dsWidget/remove", {
-          sectionId: m,
-          prefixId: t
+          dsViewId: this.$method("dsView/getRootViewId"),
+          dsWidgetPrefixId: t,
+          dsWidgetSectionId: r,
+          dsWidgetNextPrefixId: e,
+          dsWidgetNextSectionId: f
+        }) : r && this.$method("dsWidget/remove", {
+          dsWidgetSectionId: r,
+          dsWidgetPrefixId: t
         });
       }
     },
     set(t) {
-      this.$method("dsRouter/setPath", { pageId: t.id, path: this._cleanPath(t.path) }), t.actions && (this.$method("dsAction/set", t.actions.items), this.$method("dsAction/setConditions", t.actions.conditions)), t.parameters && (this.$method("dsParameter/set", t.parameters.items), this.$method("dsParameter/setUsedBy", t.parameters.usedBy)), t.components && this.$method("dsComponent/set", t.components), t.layouts && (t.layouts.items && this.$method("dsLayout/setItems", t.layouts.items), t.layouts.head && this.$method("dsLayout/setHead", t.layouts.head), t.layouts.modifiers && this.$method("dsLayout/setModifiers", t.layouts.modifiers)), t.elements && (t.elements.value && this.$method("dsElement/setValues", t.elements.value), t.elements.attributes && this.$method("dsElement/setAttributes", t.elements.attributes), t.elements.type && this.$method("dsElement/setTypes", t.elements.type)), t.widgets && this.$method("dsWidget/set", { pageId: t.id, payload: t.widgets }), this._setItem(t.id, t.metadata), this._setTemplate(t.templates);
+      this.$method("dsRouter/setPath", { pageId: t.id, path: this._cleanPath(t.path) }), t.actions && this.$method("dsAction/set", t.actions), t.parameters && (this.$method("dsParameter/set", t.parameters.items), this.$method("dsParameter/setUsedBy", t.parameters.usedBy)), t.components && this.$method("dsComponent/set", t.components), t.layouts && (t.layouts.items && this.$method("dsLayout/setItems", t.layouts.items), t.layouts.head && this.$method("dsLayout/setHead", t.layouts.head), t.layouts.modifiers && this.$method("dsLayout/setModifiers", t.layouts.modifiers)), t.content && (t.content.value && this.$method("dsContent/setValues", t.content.value), t.content.type && this.$method("dsContent/setTypes", t.content.type)), t.widgets && this.$method("dsWidget/set", { dsPageId: t.id, payload: t.widgets }), this._setItem(t.id, t.metadata), this._setTemplate(t.templates);
     },
     _cleanPath(t) {
       const e = t.split("/");
       return e.shift(), "/" + e.join("/");
     },
     _render(t) {
-      const e = this.$method("dsWidget/getHead", t);
-      for (let s = 0; s < e.length; s++)
+      const e = this.$method("dsView/getRootViewId"), i = this.$method("dsWidget/getEntry", t);
+      for (let o = 0; o < i.length; o++) {
+        const n = i[o];
         this.$method("dsWidget/create", {
-          parentElementId: "appElement",
+          dsViewId: e,
           prefixId: t,
-          id: e[s]
+          dsWidgetSectionId: n
         });
+      }
     },
     _setItem(t, e) {
       this.items[t] = e;
@@ -142,5 +149,5 @@ const g = {
   }
 };
 export {
-  g as default
+  y as default
 };

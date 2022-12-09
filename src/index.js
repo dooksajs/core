@@ -20,7 +20,11 @@ export default {
       version: 1
     },
     {
-      name: 'dsElement',
+      name: 'dsView',
+      version: 1
+    },
+    {
+      name: 'dsContent',
       version: 1
     },
     {
@@ -30,11 +34,12 @@ export default {
   ],
   data: {
     items: {},
-    templates: {}
+    templates: {},
+    entry: {}
   },
-  setup ({ page }) {
-    if (page) {
-      Promise.resolve(page)
+  setup ({ dsPage }) {
+    if (dsPage) {
+      Promise.resolve(dsPage)
         .then(page => {
           this.$method('dsMetadata/setTheme', page.app.theme)
           this.$method('dsMetadata/setAppId', page.app.id)
@@ -50,10 +55,10 @@ export default {
     }
   },
   methods: {
-    getOneById ({ id, expand }) {
+    getOneById ({ dsPageId, expand }) {
       const request = {
         collection: 'pages',
-        id
+        id: dsPageId
       }
 
       if (expand) {
@@ -71,9 +76,9 @@ export default {
           })
       })
     },
-    getOneByPath ({ path, expand }) {
+    getOneByPath ({ dsPagePath, expand }) {
       return new Promise((resolve, reject) => {
-        const filterPath = `(path='${path}')`
+        const filterPath = `(path='${dsPagePath}')`
         const options = {
           filter: filterPath
         }
@@ -131,13 +136,13 @@ export default {
         })
       })
     },
-    updateDOM ({ prevId, nextId }) {
-      const prevPage = this.items[prevId]
+    updateDOM ({ dsPagePrevId, dsPageNextId }) {
+      const prevPage = this.items[dsPagePrevId]
       const prevPageType = this.types[prevPage.typesId]
       const prevTemplateId = prevPage.templateId || prevPageType.templateId
       const prevTemplate = this.templates[prevTemplateId]
       // next page
-      const nextPage = this.items[nextId]
+      const nextPage = this.items[dsPageNextId]
       const nextPageType = this.types[nextPage.typesId]
       const nextTemplateId = nextPage.templateId || nextPageType.templateId
       const nextTemplate = this.templates[nextTemplateId]
@@ -150,78 +155,79 @@ export default {
       const renderLength = nextLength > prevLength ? nextLength : prevLength
 
       for (let i = 0; i < renderLength; i++) {
-        const nextSectionId = nextTemplate.widgets[i]
-        const prevSectionId = prevTemplate.widgets[i]
+        const dsWidgetNextSectionId = nextTemplate.widgets[i]
+        const dsWidgetSectionId = prevTemplate.widgets[i]
 
-        if (nextSectionId) {
+        if (dsWidgetNextSectionId) {
           this.$method('dsWidget/update', {
-            parentElementId: 'appElement',
-            prevPrefixId: prevId,
-            prevId: prevSectionId,
-            nextPrefixId: nextId,
-            nextId: nextSectionId
+            dsViewId: this.$method('dsView/getRootViewId'),
+            dsWidgetPrefixId: dsPagePrevId,
+            dsWidgetSectionId,
+            dsWidgetNextPrefixId: dsPageNextId,
+            dsWidgetNextSectionId
           })
-        } else if (prevSectionId) {
+        } else if (dsWidgetSectionId) {
           this.$method('dsWidget/remove', {
-            sectionId: prevSectionId,
-            prefixId: prevId
+            dsWidgetSectionId,
+            dsWidgetPrefixId: dsPagePrevId
           })
         }
       }
     },
-    set (item) {
+    set (dsPage) {
       // break without metadata
       // if (!item.metadata) return
-      this.$method('dsRouter/setPath', { pageId: item.id, path: this._cleanPath(item.path) })
+      this.$method('dsRouter/setPath', { pageId: dsPage.id, path: this._cleanPath(dsPage.path) })
       // set actions
-      if (item.actions) {
-        this.$method('dsAction/set', item.actions.items)
-        this.$method('dsAction/setConditions', item.actions.conditions)
+      if (dsPage.actions) {
+        this.$method('dsAction/set', dsPage.actions)
       }
       // set params
-      if (item.parameters) {
-        this.$method('dsParameter/set', item.parameters.items)
-        this.$method('dsParameter/setUsedBy', item.parameters.usedBy)
+      if (dsPage.parameters) {
+        this.$method('dsParameter/set', dsPage.parameters.items)
+        this.$method('dsParameter/setUsedBy', dsPage.parameters.usedBy)
       }
       // set components
-      if (item.components) {
-        this.$method('dsComponent/set', item.components)
+      if (dsPage.components) {
+        this.$method('dsComponent/set', dsPage.components)
       }
       // set layouts
-      if (item.layouts) {
-        if (item.layouts.items) {
-          this.$method('dsLayout/setItems', item.layouts.items)
+      if (dsPage.layouts) {
+        if (dsPage.layouts.items) {
+          this.$method('dsLayout/setItems', dsPage.layouts.items)
         }
 
-        if (item.layouts.head) {
-          this.$method('dsLayout/setHead', item.layouts.head)
+        if (dsPage.layouts.head) {
+          this.$method('dsLayout/setHead', dsPage.layouts.head)
         }
 
-        if (item.layouts.modifiers) {
-          this.$method('dsLayout/setModifiers', item.layouts.modifiers)
+        if (dsPage.layouts.modifiers) {
+          this.$method('dsLayout/setModifiers', dsPage.layouts.modifiers)
         }
       }
-      // set element content
-      if (item.elements) {
-        if (item.elements.value) {
-          this.$method('dsElement/setValues', item.elements.value)
+
+      // set content
+      if (dsPage.content) {
+        if (dsPage.content.value) {
+          this.$method('dsContent/setValues', dsPage.content.value)
         }
 
-        if (item.elements.attributes) {
-          this.$method('dsElement/setAttributes', item.elements.attributes)
-        }
+        // if (item.elements.attributes) {
+        //   this.$method('dsElement/setAttributes', item.elements.attributes)
+        // }
 
-        if (item.elements.type) {
-          this.$method('dsElement/setTypes', item.elements.type)
+        if (dsPage.content.type) {
+          this.$method('dsContent/setTypes', dsPage.content.type)
         }
       }
       // set widgets
-      if (item.widgets) {
-        this.$method('dsWidget/set', { pageId: item.id, payload: item.widgets })
+      if (dsPage.widgets) {
+        this.$method('dsWidget/set', { dsPageId: dsPage.id, payload: dsPage.widgets })
       }
       // set page
-      this._setItem(item.id, item.metadata)
-      this._setTemplate(item.templates)
+      // ISSUE: this data needs to be refactored
+      this._setItem(dsPage.id, dsPage.metadata)
+      this._setTemplate(dsPage.templates)
     },
     _cleanPath (path) {
       const cleanPath = path.split('/')
@@ -230,20 +236,21 @@ export default {
 
       return '/' + cleanPath.join('/')
     },
-    _render (id) {
+    _render (dsPageId) {
       // this function could be moved to widgets
       // todo: build metadata
       // add attributes to appElement
       // this.$method('dsElement/attachContent', { contentId: pageType.templateId, elementId: 'appElement' })
-      const widgetEntries = this.$method('dsWidget/getHead', id)
+      const dsViewId = this.$method('dsView/getRootViewId')
+      const dsWidgetSections = this.$method('dsWidget/getEntry', dsPageId)
 
-      for (let i = 0; i < widgetEntries.length; i++) {
+      for (let i = 0; i < dsWidgetSections.length; i++) {
+        const dsWidgetSectionId = dsWidgetSections[i]
         // ISSUE: Create a way to determine what language the current user is
         this.$method('dsWidget/create', {
-          parentElementId: 'appElement',
-          prefixId: id,
-          id: widgetEntries[i]
-          // lang: this.lang
+          dsViewId,
+          prefixId: dsPageId,
+          dsWidgetSectionId
         })
       }
     },
