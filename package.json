@@ -1,8 +1,8 @@
 {
   "name": "@dooksa/ds-plugin-content",
   "version": "1.0.0",
-  "description": "Starter plugin kit",
-  "main": "dist/ds-plugin-text-editor.js",
+  "description": "Dooksa content management",
+  "main": "dist/ds-content.js",
   "type": "module",
   "scripts": {
     "dev": "ds-scripts dev",
