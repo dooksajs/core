@@ -1,4 +1,4 @@
-const n = {
+const s = {
   name: "dsContent",
   version: 1,
   data: {
@@ -7,11 +7,26 @@ const n = {
     attachedView: {}
   },
   methods: {
-    attachView({ id: t, dsViewId: e }) {
-      const s = this.attachedView[t] || [], h = this.getValue({ id: t });
-      s.length ? s.indexOf(e) === -1 && s.push(e) : s.push(e), this.attachedView[t] = s, this.$method("dsView/attachContent", { id: e, dsContentId: t }), h && this.$method("dsView/updateValue", { id: e, value: h }), this.$method("dsEvent/emit", {
-        id: e,
-        on: "dsContent/attachView",
+    attachView({ dsContentId: t, dsViewId: e }) {
+      const h = this.attachedView[t] || [], i = this.getValue({ dsContentId: t });
+      h.length ? h.indexOf(e) === -1 && h.push(e) : h.push(e), this.attachedView[t] = h, this.$method("dsView/attachContent", { dsViewId: e, dsContentId: t }), i && this.$method("dsView/updateValue", { dsViewId: e, value: i }), this.$method("dsEvent/emit", {
+        dsEventId: e,
+        dsEventOn: "dsContent/attachView",
+        payload: {
+          dsContentId: t,
+          dsViewId: e
+        }
+      });
+    },
+    detachView({ dsContentId: t, dsViewId: e }) {
+      const h = this.attachedView[t] || [];
+      if (h.length) {
+        const i = h.indexOf(e);
+        i > -1 && h.splice(i, 1);
+      }
+      this.attachedView[t] = h, this.$method("dsView/detachContent", e), this.$method("dsEvent/emit", {
+        dsEventId: e,
+        dsEventOn: "dsContent/detachView",
         payload: {
           dsContentId: t,
           dsViewId: e
@@ -21,22 +36,22 @@ const n = {
     getType(t) {
       return this.type[t];
     },
-    getValue({ id: t, language: e }) {
+    getValue({ dsContentId: t, language: e }) {
       return e || (e = this.$method("dsMetadata/getLanguage")), this.value[t] ? this.value[t][e] ? this.value[t][e] : this.value[t][e] : "";
     },
     setTypes(t) {
       this.type = { ...this.type, ...t };
     },
-    setValue({ id: t, value: e, language: s }) {
-      s = s || this.$method("dsMetadata/getLanguage"), this.value[t] ? this.value[t][s] = e : this.value[t] = {
-        [s]: e
+    setValue({ dsContentId: t, dsContentValue: e, language: h }) {
+      h = h || this.$method("dsMetadata/getLanguage"), this.value[t] ? this.value[t][h] = e : this.value[t] = {
+        [h]: e
       }, this.$method("dsEvent/emit", {
-        id: t,
-        on: "dsContent/setValue",
+        dsEventId: t,
+        dsEventOn: "dsContent/setValue",
         payload: {
           dsContentId: t,
           dsContentValue: e,
-          language: s
+          language: h
         }
       });
     },
@@ -46,5 +61,5 @@ const n = {
   }
 };
 export {
-  n as default
+  s as default
 };

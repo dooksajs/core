@@ -16,12 +16,6 @@
  */
 
 /**
- * @typedef {string} dsContentLanguage - Content language in ISO 639-2 format
- * @example
- * 'en'
- */
-
-/**
  * @typedef dsContentType - Headless content type
  * @property {Array.<string, boolean>} dsContentType - Array of the type and a boolean that determines if the content is permanent
  * @example
@@ -42,9 +36,15 @@ export default {
   },
   /** @lends dsContent */
   methods: {
-    attachView ({ id, dsViewId }) {
-      const attached = this.attachedView[id] || []
-      const value = this.getValue({ id })
+    /**
+     * Attach content to a view item
+     * @param {Object} param
+     * @param {dsContentId} param.dsContentId - dsContent id
+     * @param {dsViewId} param.dsViewId - dsView id
+     */
+    attachView ({ dsContentId, dsViewId }) {
+      const attached = this.attachedView[dsContentId] || []
+      const value = this.getValue({ dsContentId })
 
       // Check if item exists
       if (attached.length) {
@@ -58,49 +58,82 @@ export default {
       }
 
       // Update attached view
-      this.attachedView[id] = attached
+      this.attachedView[dsContentId] = attached
       // Attach content to view item
-      this.$method('dsView/attachContent', { id: dsViewId, dsContentId: id })
+      this.$method('dsView/attachContent', { dsViewId, dsContentId })
 
       if (value) {
-        this.$method('dsView/updateValue', { id: dsViewId, value })
+        this.$method('dsView/updateValue', { dsViewId, value })
       }
 
       // emit on mount event
       this.$method('dsEvent/emit', {
-        id: dsViewId,
-        on: 'dsContent/attachView',
+        dsEventId: dsViewId,
+        dsEventOn: 'dsContent/attachView',
         payload: {
-          dsContentId: id,
+          dsContentId,
+          dsViewId
+        }
+      })
+    },
+    /**
+     * Detach content from view item
+     * @param {Object} param
+     * @param {dsContentId} param.dsContentId - dsContent id
+     * @param {dsViewId} param.dsViewId - dsView id
+     */
+    detachView ({ dsContentId, dsViewId }) {
+      const attached = this.attachedView[dsContentId] || []
+
+      // Check if item exists
+      if (attached.length) {
+        const index = attached.indexOf(dsViewId)
+
+        if (index > -1) {
+          attached.splice(index, 1)
+        }
+      }
+
+      // Update attached view
+      this.attachedView[dsContentId] = attached
+      // detach content from view item
+      this.$method('dsView/detachContent', dsViewId)
+
+      // emit on mount event
+      this.$method('dsEvent/emit', {
+        dsEventId: dsViewId,
+        dsEventOn: 'dsContent/detachView',
+        payload: {
+          dsContentId,
           dsViewId
         }
       })
     },
     /**
      * Get content type
-     * @param {string} id - Content id
+     * @param {dsContentId} id - Content id
      * @returns {dsContentType} An array that contains the content type and a boolean used to indicate if the content is permanent
      */
-    getType (id) {
-      return this.type[id]
+    getType (dsContentId) {
+      return this.type[dsContentId]
     },
     /**
      * Get content value
-     * @param {string} id - Content id
-     * @param {dsContentLanguage} language - Language in ISO 639-2
+     * @param {string} dsContentId - Content id
+     * @param {language} language - Language in ISO 639-2
      * @returns {dsContentValue}
      */
-    getValue ({ id, language }) {
+    getValue ({ dsContentId, language }) {
       if (!language) {
         language = this.$method('dsMetadata/getLanguage')
       }
 
-      if (this.value[id]) {
-        if (this.value[id][language]) {
-          return this.value[id][language]
+      if (this.value[dsContentId]) {
+        if (this.value[dsContentId][language]) {
+          return this.value[dsContentId][language]
         }
 
-        return this.value[id][language]
+        return this.value[dsContentId][language]
       }
 
       // ISSUE: this should throw an error
@@ -119,23 +152,23 @@ export default {
      * @param {dsContentValue} value - The value of content
      * @param {string} language - The content language in ISO 639-2 format
      */
-    setValue ({ id, value, language }) {
+    setValue ({ dsContentId, dsContentValue, language }) {
       language = language || this.$method('dsMetadata/getLanguage')
 
-      if (this.value[id]) {
-        this.value[id][language] = value
+      if (this.value[dsContentId]) {
+        this.value[dsContentId][language] = dsContentValue
       } else {
-        this.value[id] = {
-          [language]: value
+        this.value[dsContentId] = {
+          [language]: dsContentValue
         }
       }
 
       this.$method('dsEvent/emit', {
-        id,
-        on: 'dsContent/setValue',
+        dsEventId: dsContentId,
+        dsEventOn: 'dsContent/setValue',
         payload: {
-          dsContentId: id,
-          dsContentValue: value,
+          dsContentId,
+          dsContentValue,
           language
         }
       })
@@ -144,8 +177,8 @@ export default {
      * Set values
      * @param {dsContentValue[]} values - The collection dsContentValues
      */
-    setValues (values) {
-      this.value = { ...this.value, ...values }
+    setValues (dsContentValues) {
+      this.value = { ...this.value, ...dsContentValues }
     }
   }
 }
