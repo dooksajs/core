@@ -2,7 +2,7 @@
   "name": "@dooksa/ds-plugin-devtool",
   "version": "1.0.0",
   "description": "Development tools for Dooksa",
-  "main": "dist/ds-devtool.js",
+  "main": "dist/ds-dev-tool.js",
   "scripts": {
     "dev": "ds-scripts dev",
     "build": "ds-scripts build_lib",
