@@ -2,7 +2,6 @@ import DsPlugin from '@dooksa/ds-plugin'
 import dsMetadata from '@dooksa/ds-plugin-metadata'
 import dsAction from '@dooksa/ds-plugin-action'
 import dsWidget from '@dooksa/ds-plugin-widget'
-import dsElement from '@dooksa/ds-plugin-element'
 import dsOperator from '@dooksa/ds-plugin-operator'
 import dsEvent from '@dooksa/ds-plugin-event'
 import dsParameter from '@dooksa/ds-plugin-parameter'
@@ -12,6 +11,8 @@ import dsLayout from '@dooksa/ds-plugin-layout'
 import dsToken from '@dooksa/ds-plugin-token'
 import dsManager from '@dooksa/ds-plugin-manager'
 import dsPage from '@dooksa/ds-plugin-page'
+import dsView from '@dooksa/ds-plugin-view'
+import dsContent from '@dooksa/ds-plugin-content'
 import 'bootstrap/dist/css/bootstrap.css'
 
 export default {
@@ -33,15 +34,20 @@ export default {
       version: dsRouter.version,
       plugin: dsRouter
     },
-    [dsElement.name]: {
-      name: dsElement.name,
-      version: dsElement.version,
-      plugin: dsElement
-    },
     [dsComponent.name]: {
       name: dsComponent.name,
       version: dsComponent.version,
       plugin: dsComponent
+    },
+    [dsView.name]: {
+      name: dsView.name,
+      version: dsView.version,
+      plugin: dsView
+    },
+    [dsContent.name]: {
+      name: dsContent.name,
+      version: dsContent.version,
+      plugin: dsContent
     },
     [dsLayout.name]: {
       name: dsLayout.name,
@@ -125,15 +131,21 @@ export default {
     // ISSUE: add plugin schema checks
     this.plugins[plugin.name] = item
   },
-  init ({ page, assetsURL, isDev, rootElementId = 'app' }) {
+  init ({ dsPage, assetsURL, isDev, rootElementId = 'app' }) {
     const pluginManager = new this.DsPlugin(this.dsManager, [], isDev)
 
-    // core plugins options
-    this.plugins[dsElement.name].options = {
-      setup: { rootElementId }
-    }
-    this.plugins[dsPage.name].options = {
-      setup: { page }
+    if (dsPage) {
+      if (this.plugins.dsPage.options) {
+        if (this.plugins.dsPage.options.setup) {
+          this.plugins.dsPage.options = { ...this.plugins.dsPage.options.setup, dsPage }
+        } else {
+          this.plugins.dsPage.options = { ...this.plugins.dsPage.options, setup: { dsPage } }
+        }
+      } else {
+        this.plugins.dsPage.options = {
+          setup: { dsPage }
+        }
+      }
     }
 
     // start dooksa
