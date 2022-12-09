@@ -1,4 +1,4 @@
-const n = {
+const l = {
   name: "dsEvent",
   version: 1,
   dependencies: [
@@ -8,48 +8,41 @@ const n = {
     }
   ],
   data: {
-    handlers: {},
-    items: {}
+    listeners: {}
   },
   methods: {
-    addListener({ id: e, on: t, action: s }) {
-      this.items[e] ? this.items[e][t] ? this.items[e][t].push(s) : this.items[e][t] = [s] : this.items[e] = {
-        [t]: [s]
-      };
+    addListener({ dsEventId: e, dsEventOn: s, dsActionId: r }) {
+      const t = this._id(e, s);
+      this.listeners[t] ? this.listeners[t].push(r) : this.listeners[t] = [r];
     },
-    emit({ id: e, on: t, payload: s }) {
-      const h = this.getListener({ id: e, on: t });
-      for (let i = 0; i < h.length; i++)
-        this.$method("dsAction/dispatch", { sequenceId: h[i], payload: s });
-    },
-    removeListener({ id: e, on: t, value: s }) {
-      if (this.items[e] && this.items[e][t]) {
-        const h = this.items[e][t], i = [];
-        for (let r = 0; r < h.length; r++)
-          h[r] !== s && i.push(h[r]);
-        i.length ? this.items[e][t] = i : delete this.items[e][t];
+    emit({ dsEventId: e, dsEventOn: s, payload: r }) {
+      const t = this._id(e, s), i = this._getListener(t);
+      for (let n = 0; n < i.length; n++) {
+        const h = i[n];
+        this.$method("dsAction/dispatch", { dsActionId: h, payload: r });
       }
     },
-    getListener({ id: e, on: t }) {
-      return this.items[e] ? this.items[e][t] ? this.items[e][t] : [] : [];
-    },
-    getHandler(e) {
-      return this.handler[e];
-    },
-    addHandler(e, t) {
-      this.handler[e] = t;
-    },
-    removeHandler(e) {
-      delete this.handler[e];
+    removeListener({ dsEventId: e, dsEventOn: s, dsActionId: r }) {
+      const t = this._id(e, s), i = this._getListener(t);
+      if (i.length) {
+        const n = [];
+        for (let h = 0; h < i.length; h++)
+          i[h] !== r && n.push(i[h]);
+        n.length ? this.listeners[t] = n : delete this.listeners[t];
+      }
     },
     set(e) {
-      this.items = { ...this.items, ...e };
+      this.listeners = { ...this.listeners, ...e };
     },
-    _name(e, t) {
-      return e + "/" + t;
+    _getListener(e) {
+      var s;
+      return (s = this.listeners[e]) != null ? s : [];
+    },
+    _id(e, s) {
+      return e + "_" + s;
     }
   }
 };
 export {
-  n as default
+  l as default
 };

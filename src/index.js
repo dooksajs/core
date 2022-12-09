@@ -1,6 +1,14 @@
 /**
+ * @typedef {string} dsEventId - Event id is the listener reference item
+ */
+
+/**
+ * @typedef {string} dsEventOn - Event fired "on" an event name
+ */
+
+/**
  * Dooksa event plugin.
- * @module plugin
+ * @namespace dsEvent
  */
 export default {
   name: 'dsEvent',
@@ -12,73 +20,80 @@ export default {
     }
   ],
   data: {
-    handlers: {},
-    items: {}
+    listeners: {}
   },
+  /** @lends dsEvent */
   methods: {
-    addListener ({ id, on, action }) {
-      if (this.items[id]) {
-        if (this.items[id][on]) {
-          this.items[id][on].push(action)
-        } else {
-          this.items[id][on] = [action]
-        }
+    /**
+     * Add listener
+     * @param {Object} param
+     * @param {dsEventId} param.dsEventId - Event id is the listener reference item
+     * @param {dsEventOn} param.dsEventOn - Event fired "on" an event name
+     * @param {dsActionId} param.dsActionId - The action that runs on the event
+     */
+    addListener ({ dsEventId, dsEventOn, dsActionId }) {
+      const id = this._id(dsEventId, dsEventOn)
+
+      if (this.listeners[id]) {
+        this.listeners[id].push(dsActionId)
       } else {
-        this.items[id] = {
-          [on]: [action]
-        }
+        this.listeners[id] = [dsActionId]
       }
     },
-    emit ({ id, on, payload }) {
-      // not sure why we need the context name
-      // const eventName = this._name(context.name, on)
-      const listeners = this.getListener({ id, on })
+    /**
+     * Emit event
+     * @param {Object} param
+     * @param {dsEventId} param.dsEventId - Event id is the listener reference item
+     * @param {dsEventOn} param.dsEventOn - Event fired "on" an event name
+     * @param {Object.<string, any>} param.payload - The action that runs on the event
+     */
+    emit ({ dsEventId, dsEventOn, payload }) {
+      const id = this._id(dsEventId, dsEventOn)
+      const listeners = this._getListener(id)
 
       for (let i = 0; i < listeners.length; i++) {
-        this.$method('dsAction/dispatch', { sequenceId: listeners[i], payload })
+        const dsActionId = listeners[i]
+
+        this.$method('dsAction/dispatch', { dsActionId, payload })
       }
     },
-    removeListener ({ id, on, value }) {
-      if (this.items[id]) {
-        if (this.items[id][on]) {
-          const items = this.items[id][on]
-          const list = []
+    /**
+     * Remove listener
+     * @param {Object} param
+     * @param {dsEventIYou cannot open the zip file directly in vscode, itnId} param.dsActionId - The action that runs on the event
+     */
+    removeListener ({ dsEventId, dsEventOn, dsActionId }) {
+      const id = this._id(dsEventId, dsEventOn)
+      const listeners = this._getListener(id)
 
-          for (let i = 0; i < items.length; i++) {
-            if (items[i] !== value) {
-              list.push(items[i])
-            }
-          }
+      if (listeners.length) {
+        const list = []
 
-          if (!list.length) {
-            delete this.items[id][on]
-          } else {
-            this.items[id][on] = list
+        for (let i = 0; i < listeners.length; i++) {
+          if (listeners[i] !== dsActionId) {
+            list.push(listeners[i])
           }
+        }
+
+        if (!list.length) {
+          delete this.listeners[id]
+        } else {
+          this.listeners[id] = list
         }
       }
     },
-    getListener ({ id, on }) {
-      if (this.items[id]) {
-        return this.items[id][on] ? this.items[id][on] : []
-      }
-
-      return []
+    /**
+     * Set listeners
+     * @param {Object} listener
+     */
+    set (listener) {
+      this.listeners = { ...this.listeners, ...listener }
     },
-    getHandler (id) {
-      return this.handler[id]
+    _getListener (dsEventId) {
+      return this.listeners[dsEventId] ?? []
     },
-    addHandler (id, callback) {
-      this.handler[id] = callback
-    },
-    removeHandler (id) {
-      delete this.handler[id]
-    },
-    set (item) {
-      this.items = { ...this.items, ...item }
-    },
-    _name (contextName, name) {
-      return contextName + '/' + name
+    _id (id, on) {
+      return id + '_' + on
     }
   }
 }
