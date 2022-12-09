@@ -11,7 +11,7 @@ export default {
     theme: ''
   },
   methods: {
-    getLang () {
+    getLanguage () {
       return this.language
     },
     getTheme () {
@@ -28,7 +28,7 @@ export default {
      * Set the apps language
      * @param {string} value - name of theme
      */
-    setLang (value) {
+    setLanguage (value) {
       this.language = value
     },
     /**

@@ -7,7 +7,7 @@ const t = {
     theme: ""
   },
   methods: {
-    getLang() {
+    getLanguage() {
       return this.language;
     },
     getTheme() {
@@ -16,7 +16,7 @@ const t = {
     setAppId(e) {
       this.appId = e;
     },
-    setLang(e) {
+    setLanguage(e) {
       this.language = e;
     },
     setTheme(e) {
