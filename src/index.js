@@ -117,13 +117,13 @@ export default {
   methods: {
     /**
      * Get the component tag needed to create an element
-     * @param {Object} item
-     * @param {String} item.id - The id of the component
-     * @param {String} item.modifierId - This might be redundant due to modified components being precompiled
+     * @param {Object} param
+     * @param {String} param.dsComponentId - The id of the component
+     * @param {String} param.dsComponentModifierId - This might be redundant due to modified components being precompiled
      * @returns {dsComponent}
      */
-    get ({ id, modifierId }) {
-      const component = this.items[id]
+    get ({ dsComponentId, dsComponentModifierId }) {
+      const component = this.items[dsComponentId]
 
       if (component.id === 'text') {
         return {
@@ -147,8 +147,8 @@ export default {
      * @param {string} item.id - Node name used to create the node [(nodeName)]{@link https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeName}
      * @param {Object.<string, string>} - Element attributes
      */
-    set (item) {
-      this.items = { ...this.items, ...item }
+    set (dsComponent) {
+      this.items = { ...this.items, ...dsComponent }
     }
   }
 }

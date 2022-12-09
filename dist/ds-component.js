@@ -103,7 +103,7 @@ const i = {
     }
   ],
   methods: {
-    get({ id: t, modifierId: a }) {
+    get({ dsComponentId: t, dsComponentModifierId: a }) {
       const e = this.items[t];
       if (e.id === "text")
         return {
