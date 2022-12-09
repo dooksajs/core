@@ -11,7 +11,7 @@ window.dsDevTool = app
 
 // build templates
 if (dsConfig.templates) {
-  const sectionId = page.widgets.head[page.id][0]
+  const dsWidgetSectionId = page.widgets.entry[page.id][0]
 
   buildTemplates(app, dsConfig.templates)
     .then(templates => {
@@ -19,8 +19,8 @@ if (dsConfig.templates) {
         const template = templates[i]
 
         app.$method('dsWidget/insert', {
-          id: sectionId,
-          item: template.item
+          dsWidgetSectionId,
+          dsWidgetItem: template.item
         })
       }
     })

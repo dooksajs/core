@@ -45,8 +45,7 @@ export default (page, { options, plugins = {} }, currentOptions = {}) => {
   app.use(dsPlugin, currentOptions)
 
   return app.init({
-    rootElementId: 'app',
     isDev: true,
-    page
+    dsPage: page
   })
 }

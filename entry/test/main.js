@@ -15,7 +15,7 @@ if (dsConfig.templates) {
   buildTemplates(app, dsConfig.templates)
     .then(templates => {
       window.dsTemplates = {
-        sectionId: page.widgets.head[page.id][0],
+        sectionId: page.widgets.entry[page.id][0],
         items: templates
       }
     })

@@ -30,7 +30,7 @@ const buildTemplates = (app, templates) => {
 
             app.$method('dsAction/set', item)
             // assign the method to a action sequenceId
-            metadata.actions = { ...metadata.actions, [key]: item.sequence.id }
+            metadata.actions = { ...metadata.actions, [key]: item.dsActionSequence.id }
 
             if (item.params) {
               app.$method('dsParameter/set', item.params)
