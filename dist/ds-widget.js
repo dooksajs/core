@@ -1,21 +1,26 @@
-const v = {
+const C = {
   name: "dsWidget",
   version: 1,
   dependencies: [
     {
-      name: "dsElement",
+      name: "dsView",
+      version: 1
+    },
+    {
+      name: "dsContent",
       version: 1
     }
   ],
   data: {
-    head: {},
-    items: {},
+    entry: {},
     content: {},
     loaded: {},
     view: {},
     templates: {},
     layout: {},
-    sectionParents: {},
+    sections: {},
+    sectionParent: {},
+    sectionView: {},
     attached: {
       section: {},
       instance: {},
@@ -28,230 +33,175 @@ const v = {
     }
   },
   methods: {
-    create({ id: t, parentElementId: e, prefixId: n, lang: o }) {
-      const [s, i] = this._getItems(t, n);
-      let h = this._getSectionView(i);
-      for (let a = 0; a < s.length; a++) {
-        const d = s[a];
-        h = this._getInstanceView(h, d.layout), this._createInstance(i, d.instanceId, d.groupId, d.layout, h, e, n, o);
+    attach({ type: t, id: e }) {
+      this.attached[t][e] = !0;
+    },
+    create({ dsWidgetSectionId: t, dsViewId: e, prefixId: s, language: o }) {
+      const [n, i] = this._getSections(t, s);
+      let c = this._getSectionView(i);
+      this.sectionView[t] = e;
+      for (let a = 0; a < n.length; a++) {
+        const r = n[a];
+        c = this._getInstanceView(c, r.layout), this._createInstance(i, r.instanceId, r.groupId, r.layout, c, e, s, o);
       }
-      this.attachItem({ type: "section", id: i });
+      this.attach({ type: "section", id: i });
     },
-    insert({ id: t, index: e, item: n }) {
-      if (this.items[t]) {
-        n.groupId = this.$method("dsUtilities/generateId"), n.instanceId = this.$method("dsUtilities/generateId"), Number.isNaN(e) ? this.items[t].push(n) : this.items[t].splice(e, 0, n);
-        let o = this._getSectionView(t);
-        o = this._getInstanceView(o, n.layout);
-        const s = this.$method("dsRouter/getCurrentId");
-        this._createInstance(t, n.instanceId, n.groupId, n.layout, o, "appElement", s);
+    getContentItem({ dsWidgetSectionId: t, dsWidgetInstanceId: e, dsWidgetPrefixId: s, contentIndex: o, dsWidgetView: n }) {
+      n || (n = this._getSectionView(t));
+      const i = t + e + "_" + n;
+      if (this.content[s] && this.content[s][i])
+        return this.content[s][i][o];
+      {
+        const c = this.sections[t].find((r) => r.instanceId === e);
+        if (!c.layout[n])
+          return this.getContentItem({ dsWidgetSectionId: t, dsWidgetInstanceId: e, dsWidgetPrefixId: s, contentIndex: o, view: "default", head: !1 });
+        if (this._templateExists(t, e, c.layout, n))
+          this._loadTemplate(t, e, c.groupId, c.layout, s, n, () => this.getContentItem({ dsWidgetSectionId: t, dsWidgetInstanceId: e, dsWidgetPrefixId: s, contentIndex: o, head: !1 }));
+        else
+          return this.getContentItem({ dsWidgetSectionId: t, dsWidgetInstanceId: e, dsWidgetPrefixId: s, contentIndex: o, head: !1 });
       }
     },
-    setSectionParentId({ childId: t, parentId: e }) {
-      this.sectionParents[t] = e;
-    },
-    getSectionParentId(t) {
-      return this.sectionParents[t];
-    },
-    _getSectionView(t) {
-      return this.view[t] || "default";
-    },
-    _getInstanceView(t, e) {
-      return e[t] ? t : "default";
-    },
-    setLayout(t) {
-      this.layout = { ...this.layout, ...t };
+    getEntry(t) {
+      return this.entry[t];
     },
     getLayout(t) {
       return this.layout[t];
     },
-    getHead(t) {
-      return this.head[t];
+    getSectionParentId(t) {
+      return this.sectionParent[t];
     },
-    set({ pageId: t, payload: e }) {
-      e.items && this.setItems(e.items), e.content && this.setContent({ id: t, items: e.content }), e.loaded && (this.loaded = { ...this.loaded, ...e.loaded }), e.head && (this.head = { ...this.head, ...e.head }), e.layout && (this.layout = { ...this.layout, ...e.layout }), e.templates && (this.templates = { ...this.templates, ...e.templates });
+    insert({ dsWidgetSectionId: t, dsWidgetItem: e, index: s }) {
+      if (this.sections[t]) {
+        e.groupId = this.$method("dsUtilities/generateId"), e.instanceId = this.$method("dsUtilities/generateId"), Number.isNaN(s) ? this.sections[t].push(e) : this.sections[t].splice(s, 0, e);
+        let o = this._getSectionView(t);
+        o = this._getInstanceView(o, e.layout);
+        const n = this.$method("dsRouter/getCurrentId"), i = this.sectionView[t];
+        this._createInstance(t, e.instanceId, e.groupId, e.layout, o, i, n);
+      }
+    },
+    remove({ dsWidgetSectionId: t, dsWidgetPrefixId: e = "" }) {
+      const [s, o] = this._getSections(t, e);
+      let n = this._getSectionView(o);
+      for (let i = 0; i < s.length; i++) {
+        const c = s[i];
+        let a = c.layout[n];
+        c.layout[n] || (a = c.layout.default, n = "default"), this._detachInstance(o, c.instanceId, a.id, n, e);
+      }
+      this._detachItem("section", t);
+    },
+    set({ dsPageId: t, payload: e }) {
+      e.sections && this.setSections(e.sections), e.content && this.setContent({ dsPageId: t, items: e.content }), e.loaded && (this.loaded = { ...this.loaded, ...e.loaded }), e.entry && (this.entry = { ...this.entry, ...e.entry }), e.layout && (this.layout = { ...this.layout, ...e.layout }), e.templates && (this.templates = { ...this.templates, ...e.templates });
+    },
+    setContent({ dsPageId: t, items: e }) {
+      this.content[t] = { ...this.content[t], ...e };
+    },
+    setSections(t) {
+      this.sections = { ...this.sections, ...t };
+    },
+    setLayout(t) {
+      this.layout = { ...this.layout, ...t };
     },
     setLoaded({ id: t, value: e }) {
       this.loaded[t] = e;
     },
-    _templateExists(t, e, n, o) {
-      let s = t + e + "_" + o;
-      return !this.loaded[s] && !n[o] && (s = t + e + "_default", o = "default"), !!this.loaded[s];
+    setSectionParentId({ dsWidgetSectionId: t, dsWidgetSectionParentId: e }) {
+      this.sectionParent[t] = e;
     },
-    _loadTemplate(t, e, n, o, s, i, h) {
-      const d = this._getContent(s)[t + "_" + e + "_default"] || [], u = this.templates[o[i].modifierId];
-      this.$action("dsTemplate/create", {
-        id: o[i].templateId,
-        sectionId: t,
-        instanceId: e,
-        groupId: n,
-        defaultContent: d,
-        modifiers: u,
-        view: i,
-        head: !0
-      }, {
-        onSuccess: (g) => {
-          h(g[1]);
-        },
-        onError: (g) => console.log(g)
-      });
+    update({ dsWidgetSectionId: t, dsWidgetPrefixId: e, dsWidgetNextSectionId: s, dsWidgetNextPrefixId: o, dsViewId: n }) {
+      const i = this.$method("dsMetadata/getLang");
+      n || (n = this.sectionView[t] || this.$method("dsView/getRootViewId"));
+      const [c, a] = this._getSections(t, e), [r, u] = this._getSections(s, o), f = r.length > c.length ? r.length : c.length, y = [], p = [];
+      for (let l = 0; l < f; l++) {
+        const h = c[l], m = r[l];
+        let _ = this._getSectionView(a);
+        if (m) {
+          const w = this._getSectionView(u);
+          if (h) {
+            _ = this._getInstanceView(_, h.layout);
+            const g = h.layout[_];
+            p.push({
+              sectionId: a,
+              instanceId: h.instanceId,
+              layout: g,
+              view: _
+            }), y.push({
+              instanceId: m.instanceId,
+              groupId: m.groupId,
+              dsViewId: n,
+              layout: m.layout,
+              view: w
+            });
+          } else
+            y.push({
+              sectionId: u,
+              instanceId: m.instanceId,
+              dsViewId: n,
+              layout: m.layout,
+              view: w
+            });
+        } else {
+          _ = this._getInstanceView(_, h.layout);
+          const w = h.layout[_];
+          p.push({ sectionId: a, instanceId: h.instanceId, layout: w, view: _ });
+        }
+      }
+      if (p.length) {
+        for (let l = 0; l < p.length; l++) {
+          const h = p[l];
+          this._detachInstance(h.sectionId, h.instanceId, h.layout.id, h.view, e);
+        }
+        this._detachItem("section", a);
+      }
+      if (y.length) {
+        this.attach({ type: "section", id: u });
+        for (let l = 0; l < y.length; l++) {
+          const h = y[l], m = h.layout[h.view] ? h.view : "default";
+          this._createInstance(u, h.instanceId, h.groupId, h.layout, m, h.dsViewId, o, i);
+        }
+      }
     },
-    _createInstance(t, e, n, o, s, i, h, a) {
-      if (this._getAttachedItem("instance", e))
+    _createInstance(t, e, s, o, n, i, c, a) {
+      if (this._getAttached("instance", e))
         return;
-      this._templateExists(t, e, o, s) ? this._renderLayout(o[s].id, t, e, h, a, s, i) : this._loadTemplate(t, e, n, o, h, s, (u) => {
-        this._renderLayout(u, t, e, h, a, s, i);
+      this._templateExists(t, e, o, n) ? this._renderLayout(o[n].id, t, e, c, a, n, i) : this._loadTemplate(t, e, s, o, c, n, (u) => {
+        this._renderLayout(u, t, e, c, a, n, i);
       });
     },
-    _renderLayout(t, e, n, o, s, i, h) {
-      this.$method("dsLayout/render", {
-        id: t,
-        sectionId: e,
-        instanceId: n,
-        prefixId: o,
-        lang: s,
-        view: i,
-        parentElementId: h
-      }), this.$method("dsWidget/attachItem", { type: "instance", id: n });
+    _detachInstance(t, e, s, o, n) {
+      const i = this.$method("dsLayout/getComponents", {
+        dsWidgetInstanceId: e,
+        dsWidgetView: o
+      });
+      for (let c = 0; c < i.length; c++) {
+        const a = i[c];
+        if (Object.prototype.hasOwnProperty.call(a, "contentIndex")) {
+          const r = this.getContentItem({ dsWidgetSectionId: t, dsWidgetInstanceId: e, dsWidgetPrefixId: n, contentIndex: a.contentIndex });
+          if (this.$method("dsContent/getType", r)[0] === "section") {
+            const f = this.$method("dsContent/getValue", { dsContentId: r });
+            this.remove({ dsWidgetSectionId: f, dsWidgetPrefixId: n });
+          }
+          this._detachItem("content", r);
+        }
+        a.dsViewId && this.$method("dsView/remove", a.dsViewId);
+      }
+      this._detachItem("instance", e);
     },
-    _getAttachedItem(t, e) {
+    _getAttached(t, e) {
       return this.attached[t][e];
-    },
-    attachItem({ type: t, id: e }) {
-      this.attached[t][e] = !0;
     },
     _detachItem(t, e) {
       this.attached[t][e] && (this.attached[t][e] = !1);
     },
-    _getLayoutId(t, e, n = "default") {
-      const o = this.items[t] || [];
-      for (let s = 0; s < o.length; s++) {
-        const i = o[s];
+    _getLayoutId(t, e, s = "default") {
+      const o = this.sections[t] || [];
+      for (let n = 0; n < o.length; n++) {
+        const i = o[n];
         if (i.instanceId === e)
-          return i.layout[n] || i.layout.default;
-      }
-    },
-    update({ parentElementId: t, prevId: e, prevPrefixId: n, nextId: o, nextPrefixId: s }) {
-      const i = this.$method("dsMetadata/getLang"), h = this._getContent(s), a = this._getRenderQueue(h);
-      for (let l = 0; l < a.content.length; l++) {
-        const [c, m, r, I] = a.content[l], p = this.getContentItem({ sectionId: n, instanceId: m, parentElementId: t, index: r }), L = this.$method("dsElement/getType", I), S = this._getLayoutId(c, m), E = this.$method("dsLayout/getComponents", { id: S.id, sectionId: c, instanceId: m });
-        let $ = "";
-        for (let _ = 0; _ < E.length; _++)
-          if (E[_].contentIndex === r) {
-            $ = m + "_" + _.toString().padStart(4, "0");
-            break;
-          }
-        if (L[0] === "section") {
-          const _ = this.$method("dsElement/getDataValue", { id: p, lang: i });
-          this.remove({ sectionId: _, prefixId: n });
-          const V = this.$method("dsElement/getDataValue", { id: I, lang: i });
-          this.create({ id: V, parentElementId: $, prefixId: "", lang: i });
-        } else
-          this.$method("dsElement/detachContent", { contentId: p, elementId: $ }), this.$method("dsElement/attachContent", { contentId: I, elementId: $ });
-        this._detachItem("content", p);
-      }
-      const [d, u] = this._getItems(e, n), [g, C] = this._getItems(o, s), w = g.length > d.length ? g.length : d.length, f = [], y = [];
-      for (let l = 0; l < w; l++) {
-        const c = d[l], m = g[l];
-        let r = this._getSectionView(u);
-        if (m) {
-          const I = this._getSectionView(C);
-          if (c) {
-            r = this._getInstanceView(r, c.layout);
-            const p = c.layout[r];
-            y.push({
-              sectionId: u,
-              instanceId: c.instanceId,
-              layout: p,
-              view: r
-            }), f.push({
-              instanceId: m.instanceId,
-              groupId: m.groupId,
-              parentElementId: t,
-              layout: m.layout,
-              view: I
-            });
-          } else
-            f.push({
-              sectionId: C,
-              instanceId: m.instanceId,
-              parentElementId: t,
-              layout: m.layout,
-              view: I
-            });
-        } else {
-          r = this._getInstanceView(r, c.layout);
-          const I = c.layout[r];
-          y.push({ sectionId: u, instanceId: c.instanceId, layout: I, view: r });
-        }
-      }
-      if (y.length) {
-        for (let l = 0; l < y.length; l++) {
-          const c = y[l];
-          this._detachInstance(c.sectionId, c.instanceId, c.layout.id, c.view, n);
-        }
-        this._detachItem("section", u);
-      }
-      if (f.length) {
-        this.attachItem({ type: "section", id: C });
-        for (let l = 0; l < f.length; l++) {
-          const c = f[l], m = c.layout[c.view] ? c.view : "default";
-          this._createInstance(C, c.instanceId, c.groupId, c.layout, m, c.parentElementId, s, i);
-        }
-      }
-    },
-    getContentItem({ sectionId: t, instanceId: e, prefixId: n, parentElementId: o, index: s, view: i }) {
-      i || (i = this._getSectionView(t));
-      const h = t + e + "_" + i;
-      if (this.content[n] && this.content[n][h])
-        return this.content[n][h][s];
-      {
-        const a = this.items[t].find((u) => u.instanceId === e);
-        if (!a.layout[i])
-          return this.getContentItem({ sectionId: t, instanceId: e, prefixId: n, parentElementId: o, index: s, view: "default", head: !1 });
-        if (this._templateExists(t, e, a.layout, i))
-          this._loadTemplate(t, e, a.groupId, a.layout, n, i, () => this.getContentItem({ sectionId: t, instanceId: e, prefixId: n, parentElementId: o, index: s, head: !1 }));
-        else
-          return this.getContentItem({ sectionId: t, instanceId: e, prefixId: n, parentElementId: o, index: s, head: !1 });
+          return i.layout[s] || i.layout.default;
       }
     },
     _getContent(t) {
       return this.content[t];
-    },
-    _detachInstance(t, e, n, o, s) {
-      const i = this.$method("dsLayout/getComponents", {
-        instanceId: e,
-        view: o
-      });
-      for (let h = 0; h < i.length; h++) {
-        const a = i[h];
-        if (Object.prototype.hasOwnProperty.call(a, "contentIndex")) {
-          const d = this.getContentItem({ sectionId: t, instanceId: e, prefixId: s, index: a.contentIndex });
-          if (this.$method("dsElement/getType", d)[0] === "section") {
-            const g = this.$method("dsElement/getDataValue", { id: d });
-            this.remove({ sectionId: g, prefixId: s });
-          } else
-            this.$method("dsElement/detachContent", { contentId: d, elementId: a.elementId });
-          this._detachItem("content", d);
-        }
-        a.elementId && this.$method("dsElement/detachElement", a.elementId);
-      }
-      this._detachItem("instance", e);
-    },
-    remove({ sectionId: t, prefixId: e = "" }) {
-      const [n, o] = this._getItems(t, e);
-      let s = this._getSectionView(o);
-      for (let i = 0; i < n.length; i++) {
-        const h = n[i];
-        let a = h.layout[s];
-        h.layout[s] || (a = h.layout.default, s = "default"), this._detachInstance(o, h.instanceId, a.id, s, e);
-      }
-      this._detachItem("section", t);
-    },
-    setItems(t) {
-      this.items = { ...this.items, ...t };
-    },
-    setContent({ id: t, items: e }) {
-      this.content[t] = { ...this.content[t], ...e };
     },
     _getRenderQueue(t) {
       const e = {
@@ -259,36 +209,75 @@ const v = {
         instance: {},
         content: []
       };
-      for (const n in t)
-        if (Object.prototype.hasOwnProperty.bind(t, n)) {
-          const o = n.slice(0, 23);
+      for (const s in t)
+        if (Object.prototype.hasOwnProperty.bind(t, s)) {
+          const o = s.slice(0, 23);
           if (!this.attached.section[o])
             e.section[o] = !0;
           else {
-            const s = n.slice(23, 46);
-            if (!this.attached.instance[s])
-              e.instance[s] = !0;
+            const n = s.slice(23, 46);
+            if (!this.attached.instance[n])
+              e.instance[n] = !0;
             else
-              for (let i = 0; i < t[n].length; i++) {
-                const h = t[n][i];
-                this.attached.content[h] || e.content.push([o, s, i, h]);
+              for (let i = 0; i < t[s].length; i++) {
+                const c = t[s][i];
+                this.attached.content[c] || e.content.push([o, n, i, c]);
               }
           }
         }
       return e;
     },
-    _getItemByInstanceId(t, e, n) {
-      const [o, s] = this._getItems(t, e);
+    _getItemByInstanceId(t, e, s) {
+      const [o, n] = this._getSections(t, e);
       for (let i = 0; i < o.length; i++)
-        if (o[i].instanceId === n)
-          return [o[i], s];
+        if (o[i].instanceId === s)
+          return [o[i], n];
     },
-    _getItems(t, e) {
-      const n = e + "_" + t;
-      return this.items[n] ? [this.items[n], n, !0] : [this.items[t] || [], t, !1];
+    _getSections(t, e) {
+      const s = e + "_" + t;
+      return this.sections[s] ? [this.sections[s], s, !0] : [this.sections[t] || [], t, !1];
+    },
+    _getSectionView(t) {
+      return this.view[t] || "default";
+    },
+    _getInstanceView(t, e) {
+      return e[t] ? t : "default";
+    },
+    _loadTemplate(t, e, s, o, n, i, c) {
+      const r = this._getContent(n)[t + "_" + e + "_default"] || [], u = this.templates[o[i].modifierId];
+      this.$action("dsTemplate/create", {
+        id: o[i].templateId,
+        sectionId: t,
+        instanceId: e,
+        groupId: s,
+        defaultContent: r,
+        modifiers: u,
+        view: i,
+        head: !0
+      }, {
+        onSuccess: (f) => {
+          c(f[1]);
+        },
+        onError: (f) => console.log(f)
+      });
+    },
+    _renderLayout(t, e, s, o, n, i, c) {
+      this.$method("dsLayout/render", {
+        dsLayoutId: t,
+        dsWidgetSectionId: e,
+        dsWidgetInstanceId: s,
+        dsWidgetPrefixId: o,
+        lang: n,
+        view: i,
+        dsViewId: c
+      }), this.attach({ type: "instance", id: s });
+    },
+    _templateExists(t, e, s, o) {
+      let n = t + e + "_" + o;
+      return !this.loaded[n] && !s[o] && (n = t + e + "_default", o = "default"), !!this.loaded[n];
     }
   }
 };
 export {
-  v as default
+  C as default
 };
