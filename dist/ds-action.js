@@ -13,103 +13,100 @@ const _ = {
     conditions: {}
   },
   methods: {
-    dispatch({ sequenceId: e, payload: s }) {
-      const t = this.sequence[e];
+    dispatch({ dsActionId: o, payload: e }) {
+      const t = this.sequence[o];
       !t || this._dispatch({
-        sequenceId: e,
+        sequenceId: o,
         actions: t.actions,
         conditions: t.conditions || {},
-        payload: s
+        payload: e
       });
     },
-    set({ actions: e, conditions: s, sequence: t }) {
-      e && (this.actions = { ...this.actions, ...e }), s && (this.conditions = { ...this.conditions, ...s }), t && (this.sequence[t.id] = {
+    set({ dsActionItems: o, dsActionConditions: e, dsActionSequence: t }) {
+      o && (this.actions = { ...this.actions, ...o }), e && (this.conditions = { ...this.conditions, ...e }), t && (this.sequence[t.id] = {
         actions: t.actions
       }, t.conditions && (this.sequence[t.id].conditions = t.conditions));
     },
-    setConditions(e) {
-      this.conditions = { ...this.conditions, ...e };
-    },
     _action({
-      instance: e,
-      name: s,
+      instance: o,
+      name: e,
       type: t,
-      computedParams: o,
-      paramType: i,
+      computedParams: s,
+      paramType: r,
       params: d,
       callback: a = {},
       entry: n,
       parentEntry: c
     }) {
-      return o && (d = this.$method("dsParameter/process", {
-        instance: e,
-        entry: n,
-        parentEntry: c,
-        paramType: i,
-        params: d
-      })), this["_process/" + t]({ name: s, params: d, callback: a });
+      return s && (d = this.$method("dsParameter/process", {
+        dsActionInstance: o,
+        dsActionEntry: n,
+        dsActionEntryParent: c,
+        dsParameterType: r,
+        dsParameterItem: d
+      })), this["_process/" + t]({ name: e, params: d, callback: a });
     },
-    _createActions(e, s) {
-      return { entry: e, ...s };
+    _createActions(o, e) {
+      return { entry: o, ...e };
     },
-    _compare(e, { instanceId: s, parentItemId: t, data: o }) {
-      let i = !1, d = !1, a = [];
-      for (let n = 0; n < e.length; n++) {
-        const c = e[n], l = c.name;
+    _compare(o, { instanceId: e, parentItemId: t, data: s }) {
+      let r = !1, d = !1, a = [];
+      for (let n = 0; n < o.length; n++) {
+        const c = o[n], l = c.name;
         if (l === "&&" || l === "||")
           a = [...a, l], d = !0;
         else {
-          const r = [], h = c.values.length - 1;
+          const i = [], h = c.values.length - 1;
           for (let m = 0; m < c.values.length; m++) {
             const u = c.values[m];
             let f = u.value;
             Object.hasOwnProperty.call(u, "entry") && (f = this._action({
-              instanceId: s,
+              instanceId: e,
               entry: u.entry,
               parentItemId: t,
               paramItems: c.params,
-              data: o,
+              data: s,
               lastItem: h === m,
               ...c.items[u.entry]
-            })), r.push(f);
+            })), i.push(f);
           }
-          const p = this.$method("dsOperators/eval", { name: l, values: r });
+          const p = this.$method("dsOperators/eval", { name: l, values: i });
           a.push(p);
         }
       }
       if (d)
-        i = this.$method("dsOperators/compare", a);
+        r = this.$method("dsOperators/compare", a);
       else
         for (let n = 0; n < a.length; n++)
-          if (i = !0, !a[n]) {
-            i = !1;
+          if (r = !0, !a[n]) {
+            r = !1;
             break;
           }
-      return i;
+      return r;
     },
     _dispatch({
-      sequenceId: e,
-      instance: s = {
+      sequenceId: o,
+      instance: e = {
         iteration: {},
         results: {}
       },
       parentEntry: t,
-      actions: o = {},
-      conditions: i = {},
+      actions: s = {},
+      conditions: r = {},
       payload: d,
       results: a = {}
     }) {
       let n = !0;
-      s.payload = d, t && (s.results[t] = a), i.length && (n = this._compare(i, {
+      e.payload = d, t && (e.results[t] = a), r.length && (n = this._compare(r, {
         parentEntry: t,
-        instance: s
+        instance: e
       }));
-      for (let c = 0; c < o.entry.length; c++) {
-        const l = o.entry[c], r = o[l];
-        let h = r;
-        if (r._$id && (h = this.actions[r._$id]), r.conditions && (n = this._compare(r.conditions, {
+      for (let c = 0; c < s.entry.length; c++) {
+        const l = s.entry[c], i = s[l];
+        let h = i;
+        if (i._$id && (h = this.actions[i._$id]), i.conditions && (n = this._compare(i.conditions, {
           parentEntry: t,
-          instance: s
+          instance: e
         })), Object.hasOwnProperty.call(h, "when") && n !== h.when)
           return;
         if (Object.hasOwnProperty.call(h, "value"))
@@ -118,32 +115,32 @@ const _ = {
           onSuccess: null,
           onError: null
         };
-        Object.hasOwnProperty.call(r, "onSuccess") && (p.onSuccess = {
+        Object.hasOwnProperty.call(i, "onSuccess") && (p.onSuccess = {
           params: {
             parentEntry: l,
             actions: {
-              entry: r.onSuccess,
-              ...o
+              entry: i.onSuccess,
+              ...s
             },
-            instance: s
+            instance: e
           },
           method: this._dispatch.bind(this)
-        }), Object.hasOwnProperty.call(r, "onError") && (p.onError = {
+        }), Object.hasOwnProperty.call(i, "onError") && (p.onError = {
           params: {
             parentEntry: l,
             actions: {
-              entry: r.onError,
-              ...o
+              entry: i.onError,
+              ...s
             },
-            instance: s
+            instance: e
           },
           method: this._dispatch.bind(this)
         });
         const m = this._action({
-          instance: s,
+          instance: e,
           entry: l,
-          actions: o,
-          conditions: r.conditions,
+          actions: s,
+          conditions: i.conditions,
           parentEntry: t,
           name: h.name,
           type: h.type,
@@ -156,20 +153,20 @@ const _ = {
       }
       return a;
     },
-    _onEvent(e, s, t) {
-      let o = t;
-      s && (o = { ...s, result: t }), e(o);
+    _onEvent(o, e, t) {
+      let s = t;
+      e && (s = { ...e, result: t }), o(s);
     },
-    "_process/value"({ params: e, callback: s }) {
-      const t = s.onSuccess, o = s.onError, i = e;
-      return t && this._onEvent(t.method || t, t.params, i), o && this._onEvent(o.method || o, o.params), i;
+    "_process/value"({ params: o, callback: e }) {
+      const t = e.onSuccess, s = e.onError, r = o;
+      return t && this._onEvent(t.method || t, t.params, r), s && this._onEvent(s.method || s, s.params), r;
     },
-    "_process/action"({ name: e, params: s, callback: t }) {
-      this.$action(e, s, t);
+    "_process/action"({ name: o, params: e, callback: t }) {
+      this.$action(o, e, t);
     },
-    "_process/method"({ name: e, params: s, callback: t }) {
-      const o = t.onSuccess, i = this.$method(e, s);
-      o && this._onEvent(o.method || o, o.params, i);
+    "_process/method"({ name: o, params: e, callback: t }) {
+      const s = t.onSuccess, r = this.$method(o, e);
+      s && this._onEvent(s.method || s, s.params, r);
     }
   }
 };

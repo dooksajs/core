@@ -1,4 +1,44 @@
 /**
+ * @typedef {String} dsActionId - The entry action id
+ */
+
+/**
+ * @typedef {Object} dsActionItem - Parameters for dsAction
+ * @property {boolean} dsActionItem._$computedParams - Declares the params data type is computed
+ * @property {string} dsActionItem.type - Parameter process type
+ * @property {string} dsActionItem.name - Name of parameter computed process
+ * @property {string} dsActionItem.paramType - Data type of parameter that will be computed
+ * @property {number} dsActionItem.version - Version of dependent action
+ * @property {(dsParameterItem|Array.<string, dsParameterItem>|dsParameterItem[]|string|number)} dsAction.params - dsParameter to pass to current named computed process
+ */
+
+/**
+ * @typedef {Object} dsActionCondition
+ * @property {boolean} dsActionCondition._$computed - Declares the parameter is computed
+ * @property {string} dsActionCondition.name - Name of condition operator
+ * @property {dsParameterItem[]} dsActionCondition.values - dsParameter to compute values
+ */
+
+/**
+ * @typedef {Object} dsActionSequence - Action sequence is a linked list to execute actions
+ * @property {Array.<string>} dsActionSequence.entry - List of links to action
+ */
+
+/**
+ * @typedef {Object} dsActionInstance - Scoped data for action
+ * @property {Object} dsActionInstance.results - The result value of each action
+ * @property {Object} dsActionInstance.iteration
+ */
+
+/**
+ * @typedef {string} dsActionEntry - The start point of an action
+ */
+
+/**
+ * @typedef {string} dsActionEntryParent - The previous action set
+ */
+
+/**
  * Dooksa action plugin.
  * @namespace dsAction
  */
@@ -16,41 +56,51 @@ export default {
     sequence: {},
     conditions: {}
   },
-  /** @lends dsAction */
+  /** @lends DsAction */
   methods: {
-    dispatch ({ sequenceId, payload }) {
-      const sequence = this.sequence[sequenceId]
+    /**
+     * Dispatch an action
+     * @param {Object} param
+     * @param {dsActionId} param.dsActionId - The entry action id
+     * @param {Object} param.payload - The data to pass to the action
+     */
+    dispatch ({ dsActionId, payload }) {
+      const sequence = this.sequence[dsActionId]
 
       if (!sequence) return
 
       this._dispatch({
-        sequenceId,
+        sequenceId: dsActionId,
         actions: sequence.actions,
         conditions: sequence.conditions || {},
         payload
       })
     },
-    set ({ actions, conditions, sequence }) {
-      if (actions) {
-        this.actions = { ...this.actions, ...actions }
+    /**
+     * Set actions
+     * @param {Object} param
+     * @param {Object.<string, dsActionItem>} param.dsActionItems
+     * @param {Object.<string, dsActionConditions>} param.dsActionConditions
+     * @param {Object.<string, dsActionSequences>} param.dsActionSequences
+     */
+    set ({ dsActionItems, dsActionConditions, dsActionSequence }) {
+      if (dsActionItems) {
+        this.actions = { ...this.actions, ...dsActionItems }
       }
 
-      if (conditions) {
-        this.conditions = { ...this.conditions, ...conditions }
+      if (dsActionConditions) {
+        this.conditions = { ...this.conditions, ...dsActionConditions }
       }
 
-      if (sequence) {
-        this.sequence[sequence.id] = {
-          actions: sequence.actions
+      if (dsActionSequence) {
+        this.sequence[dsActionSequence.id] = {
+          actions: dsActionSequence.actions
         }
 
-        if (sequence.conditions) {
-          this.sequence[sequence.id].conditions = sequence.conditions
+        if (dsActionSequence.conditions) {
+          this.sequence[dsActionSequence.id].conditions = dsActionSequence.conditions
         }
       }
-    },
-    setConditions (item) {
-      this.conditions = { ...this.conditions, ...item }
     },
     _action ({
       instance,
@@ -65,11 +115,11 @@ export default {
     }) {
       if (computedParams) {
         params = this.$method('dsParameter/process', {
-          instance,
-          entry,
-          parentEntry,
-          paramType,
-          params
+          dsActionInstance: instance,
+          dsActionEntry: entry,
+          dsActionEntryParent: parentEntry,
+          dsParameterType: paramType,
+          dsParameterItem: params
         })
       }
 
@@ -243,7 +293,7 @@ export default {
       return results
     },
     /**
-     * This callback is used after a rule
+     * This callback is used after an action
      * @callback onEventCallback
      */
 
@@ -252,6 +302,7 @@ export default {
      * @param {onEventCallback} callback - This callback is expected to be a rule or another function within the workflow scope
      * @param {Object} params - An object that are params for the rules callback
      * @param {*} result - The result from the parent function to pass onto the callback
+     * @private
      */
     _onEvent (callback, params, result) {
       let callbackParams = result
