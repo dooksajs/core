@@ -1,6 +1,5 @@
 /**
- * Ds Plugin.
- * @module plugin
+ * @namespace dsTemplate
  */
 export default {
   name: 'dsTemplate',
@@ -17,6 +16,7 @@ export default {
     components: {},
     modifiers: {}
   },
+  /** @lends dsTemplate */
   methods: {
     create ({
       id,
@@ -57,7 +57,7 @@ export default {
           content: {},
           layout: {}
         },
-        elements: {
+        content: {
           value: {},
           type: {}
         }
@@ -68,16 +68,16 @@ export default {
         const itemId = sectionId + instanceId + '_' + view
         const i = 0
 
-        if (item.elements[i]) {
-          const [content, elements] = this._createElements(item.elements[i], view, groupId, defaultContent, modifiers)
+        if (item.content[i]) {
+          const [contentRefs, content] = this._createContent(item.content[i], view, groupId, defaultContent, modifiers)
           const modifierId = entry + layoutId
 
           if (modifiers[modifierId]) {
             result.widgets.layout = { [itemId]: modifiers[modifierId] }
           }
 
-          result.widgets.content[itemId] = content
-          result.elements = elements
+          result.widgets.content[itemId] = contentRefs
+          result.content = content
         }
 
         // add events
@@ -91,12 +91,12 @@ export default {
               const event = events[key]
               const eventId = instanceId + '_' + key.padStart(4, '0')
 
-              if (!result.events[eventId]) {
-                result.events[eventId] = {
-                  [event.on]: event.action
+              for (const key in event) {
+                if (Object.hasOwnProperty.call(event, key)) {
+                  const actions = event[key]
+
+                  result.events[eventId + '_' + key] = actions
                 }
-              } else {
-                result.events[eventId][event.on] = event.action
               }
             }
           }
@@ -113,9 +113,9 @@ export default {
           const instanceId = this.$method('dsUtilities/generateId')
           const itemId = sectionId + instanceId + '_default'
 
-          // create elements
-          if (item.elements && item.elements[i]) {
-            const [content, elements] = this._createElements(item.elements[i], view, groupId, defaultContent, modifiers)
+          // create content
+          if (item.content && item.content[i]) {
+            const [contentRefs, content] = this._createContent(item.content[i], view, groupId, defaultContent, modifiers)
 
             const modifierId = entry + layoutId
 
@@ -127,9 +127,9 @@ export default {
               result.widgets.layout[sectionId + instanceId + '_default'] = modifiers[modifierId]
             }
 
-            result.widgets.content[itemId] = content
-            result.elements.value = { ...result.elements.value, ...elements.value }
-            result.elements.type = { ...result.elements.type, ...elements.type }
+            result.widgets.content[itemId] = contentRefs
+            result.content.value = { ...result.content.value, ...content.value }
+            result.content.type = { ...result.content.type, ...content.type }
           }
 
           // add events
@@ -141,15 +141,9 @@ export default {
             for (const key in events) {
               if (Object.hasOwnProperty.call(events, key)) {
                 const event = events[key]
-                const eventId = instanceId + '_' + key.padStart(4, '0')
+                const eventId = instanceId + '_' + key.padStart(4, '0') + '_' + event.on
 
-                if (!result.events[eventId]) {
-                  result.events[eventId] = {
-                    [event.on]: event.action
-                  }
-                } else {
-                  result.events[eventId][event.on] = event.action
-                }
+                result.events[eventId] = event.action
               }
             }
           }
@@ -157,10 +151,10 @@ export default {
           // Is this set to default because of the depth?
           layout.default = { id: layoutId }
 
-          if (!result.widgets.items[sectionId]) {
-            result.widgets.items[sectionId] = [{ groupId, instanceId, layout }]
+          if (!result.widgets.sections[sectionId]) {
+            result.widgets.sections[sectionId] = [{ groupId, instanceId, layout }]
           } else {
-            result.widgets.items[sectionId].push({ groupId, instanceId, layout })
+            result.widgets.sections[sectionId].push({ groupId, instanceId, layout })
           }
 
           this.$method('dsWidget/setLoaded', { id: itemId, value: true })
@@ -171,20 +165,21 @@ export default {
         this.$method('dsEvent/set', result.events)
       }
 
-      // Set element content
-      if (result.elements) {
-        if (result.elements.value) {
-          this.$method('dsElement/setValues', result.elements.value)
+      // Set content
+      if (result.content) {
+        if (result.content.value) {
+          this.$method('dsContent/setValues', result.content.value)
         }
 
-        if (result.elements.type) {
-          this.$method('dsElement/setTypes', result.elements.type)
+        if (result.content.type) {
+          this.$method('dsContent/setTypes', result.content.type)
         }
       }
+
       // Set widgets
       if (result.widgets) {
-        if (result.widgets.items) {
-          this.$method('dsWidget/setItems', result.widgets.items)
+        if (result.widgets.sections) {
+          this.$method('dsWidget/setSection', result.widgets.sections)
         }
 
         if (result.widgets.layout) {
@@ -192,17 +187,17 @@ export default {
         }
 
         if (result.widgets.content) {
-          const id = this.$method('dsRouter/getCurrentId')
+          const dsPageId = this.$method('dsRouter/getCurrentId')
 
-          this.$method('dsWidget/setContent', { id, items: result.widgets.content })
+          this.$method('dsWidget/setContent', { dsPageId, items: result.widgets.content })
         }
       }
 
       return [sectionId, layoutEntry, result]
     },
-    _createElements (items, view, groupId, defaultContent = [], modifiers) {
-      const content = []
-      const elements = {
+    _createContent (items, view, groupId, defaultContent = [], modifiers) {
+      const contentRefs = []
+      const content = {
         value: {},
         type: {}
       }
@@ -215,7 +210,7 @@ export default {
         if (defaultContent.length && isPermanent) {
           for (let i = 0; i < defaultContent.length; i++) {
             const contentId = defaultContent[i]
-            const contentType = this.$method('dsElement/getType', contentId)
+            const contentType = this.$method('dsContent/getType', contentId)
 
             if (type === contentType[0]) {
               id = contentId
@@ -228,29 +223,29 @@ export default {
           id = this.$method('dsUtilities/generateId')
         }
 
-        content.push(id)
+        contentRefs.push(id)
 
         if (!exists) {
-          elements.type[id] = [type, isPermanent]
+          content.type[id] = [type, isPermanent]
 
           if (type === 'section') {
-            const elementValue = {}
+            const contentValue = {}
 
             for (let i = 0; i < item.value.length; i++) {
               const [lang, entry] = item.value[i]
               const [sectionId] = this.create({ entry, defaultContent, groupId, view, modifiers })
 
-              elementValue[lang] = sectionId
+              contentValue[lang] = sectionId
             }
 
-            elements.value[id] = elementValue
+            content.value[id] = contentValue
           } else {
-            elements.value[id] = item.value
+            content.value[id] = item.value
           }
         }
       }
 
-      return [content, elements, defaultContent]
+      return [contentRefs, content, defaultContent]
     },
     _fetch (id) {
       return new Promise((resolve, reject) => {
