@@ -4,7 +4,7 @@
   "description": "Dooksa app",
   "main": "src/index.js",
   "scripts": {
-    "build": "ds-scripts build_lib",
+    "build": "ds-scripts build",
     "test:open": "ds-scripts --open test",
     "test:run": "ds-scripts --run test",
     "test:record": "ds-scripts --run --record test",
@@ -42,6 +42,6 @@
     "@dooksa/ds-plugin-view": "bitbucket:dooksa/ds-plugin-view",
     "@dooksa/ds-plugin-widget": "bitbucket:dooksa/ds-plugin-widget",
     "@popperjs/core": "^2.11.6",
-    "bootstrap": "^5.2.2"
+    "bootstrap": "^5.2.3"
   }
 }
