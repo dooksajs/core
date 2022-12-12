@@ -13,7 +13,7 @@ specifiers:
   vite: ^3.1.0
 
 dependencies:
-  '@dooksa/ds-app': bitbucket.org/dooksa/ds-app/353a9b0b3391347e155a5c834fc1b7f1d1b8fc72
+  '@dooksa/ds-app': bitbucket.org/dooksa/ds-app/be2e74d69b76de7f5151707be27e19247c4e394c
   '@dooksa/ds-plugin-devtool': bitbucket.org/dooksa/ds-plugin-devtool/4ec922dcb888902760e8abfb25370e5c01f98e8e
   '@dooksa/ds-plugin-parse': bitbucket.org/dooksa/ds-plugin-parse/5f3025687b6f37c6f9af1b1be07d39ca300aa76d
   '@vitejs/plugin-basic-ssl': 0.1.2_vite@3.2.2
@@ -2767,8 +2767,8 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  bitbucket.org/dooksa/ds-app/353a9b0b3391347e155a5c834fc1b7f1d1b8fc72:
-    resolution: {commit: 353a9b0b3391347e155a5c834fc1b7f1d1b8fc72, repo: git+ssh://git@bitbucket.org/dooksa/ds-app.git, type: git}
+  bitbucket.org/dooksa/ds-app/be2e74d69b76de7f5151707be27e19247c4e394c:
+    resolution: {commit: be2e74d69b76de7f5151707be27e19247c4e394c, repo: git+ssh://git@bitbucket.org/dooksa/ds-app.git, type: git}
     name: '@dooksa/ds-app'
     version: 1.0.0
     dependencies:
