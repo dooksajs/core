@@ -44,7 +44,7 @@ export default {
      */
     attachView ({ dsContentId, dsViewId }) {
       const attached = this.attachedView[dsContentId] || []
-      const value = this.getValue({ dsContentId })
+      const dsContentValue = this.getValue({ dsContentId })
 
       // Check if item exists
       if (attached.length) {
@@ -62,8 +62,8 @@ export default {
       // Attach content to view item
       this.$method('dsView/attachContent', { dsViewId, dsContentId })
 
-      if (value) {
-        this.$method('dsView/updateValue', { dsViewId, value })
+      if (dsContentValue) {
+        this.$method('dsView/updateValue', { dsViewId, dsContentValue })
       }
 
       // emit on mount event

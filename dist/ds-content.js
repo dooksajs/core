@@ -9,7 +9,7 @@ const s = {
   methods: {
     attachView({ dsContentId: t, dsViewId: e }) {
       const h = this.attachedView[t] || [], i = this.getValue({ dsContentId: t });
-      h.length ? h.indexOf(e) === -1 && h.push(e) : h.push(e), this.attachedView[t] = h, this.$method("dsView/attachContent", { dsViewId: e, dsContentId: t }), i && this.$method("dsView/updateValue", { dsViewId: e, value: i }), this.$method("dsEvent/emit", {
+      h.length ? h.indexOf(e) === -1 && h.push(e) : h.push(e), this.attachedView[t] = h, this.$method("dsView/attachContent", { dsViewId: e, dsContentId: t }), i && this.$method("dsView/updateValue", { dsViewId: e, dsContentValue: i }), this.$method("dsEvent/emit", {
         dsEventId: e,
         dsEventOn: "dsContent/attachView",
         payload: {
