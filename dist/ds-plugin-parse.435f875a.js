@@ -1003,6 +1003,8 @@ const ce = ue.exports, le = {
           d.push(k), p[k] = _;
         }
       }
+      if (!d.length)
+        return { item: g, params: p };
       const U = { ...g };
       let N;
       for (let B = 0; B < h.length; B++)

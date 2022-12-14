@@ -210,7 +210,7 @@ const y = (e, t) => {
         const o = this._getOptions(e);
         if (this.isLoaded[e] = !1, this.initialising[e] = !0, o.import)
           if (!o.setupOnRequest || i)
-            y(/* @__PURE__ */ Object.assign({ "./plugins/ds-plugin-database.js": () => import("./ds-plugin-database.e55bb606.js"), "./plugins/ds-plugin-parse.js": () => import("./ds-plugin-parse.9f9c58d8.js"), "./plugins/ds-plugin-template.js": () => import("./ds-plugin-template.5bfc34cc.js"), "./plugins/ds-plugin-utilities.js": () => import("./ds-plugin-utilities.e40685ea.js") }), `./plugins/${o.import}.js`).then(({ default: u }) => {
+            y(/* @__PURE__ */ Object.assign({ "./plugins/ds-plugin-database.js": () => import("./ds-plugin-database.e55bb606.js"), "./plugins/ds-plugin-parse.js": () => import("./ds-plugin-parse.435f875a.js"), "./plugins/ds-plugin-template.js": () => import("./ds-plugin-template.5bfc34cc.js"), "./plugins/ds-plugin-utilities.js": () => import("./ds-plugin-utilities.e40685ea.js") }), `./plugins/${o.import}.js`).then(({ default: u }) => {
               u.dependencies && this._installDependencies(e, u.dependencies);
               const l = new this.DsPlugin(u, this.context, this.isDev);
               this._add(l), this._setup(l, o.setup).then(() => n(`Setup import ${e}`)).catch((c) => s(c));
