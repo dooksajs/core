@@ -4,7 +4,7 @@ import buildTemplates from '../../utils/buildTemplates'
 import page from '../../data/index.js'
 
 const plugins = dsConfig.devDependencies ?? { options: [], plugins: {} }
-const setupOptions = dsConfig.setup ?? []
+const setupOptions = dsConfig.options ?? {}
 const app = createApp(page, plugins, setupOptions)
 
 window.dsDevTool = app

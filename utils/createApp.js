@@ -1,6 +1,7 @@
 import dsApp from '@dooksa/ds-app'
 import dsDevTool from '@dooksa/ds-plugin-devtool'
 import dsPlugin from '@dooksa/plugin'
+import dsTemplate from '@dooksa/ds-plugin-template'
 import dsParse from '@dooksa/ds-plugin-parse'
 
 // start app
@@ -28,6 +29,7 @@ export default (page, { options, plugins = {} }, currentOptions = {}) => {
   const pluginsToAdd = {
     dsDevTool,
     dsParse,
+    dsTemplate,
     ...plugins
   }
 
