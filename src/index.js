@@ -131,7 +131,7 @@ export default {
         this._updateText(process, item, item.value, start, end, updateText)
 
         item.processed = true
-        valueLength = item.value.length
+        valueLength = item.value.toString().length
       }
 
       return valueLength
@@ -140,7 +140,7 @@ export default {
       return string.slice(0, start) + insert + string.slice(end)
     },
     _updateText (process, item, insert, start, end, updateText) {
-      item.valueLength = insert.length
+      item.valueLength = insert.toString().length
       process.text = this._splice(process.text, start, end, insert)
 
       updateText(process.text)

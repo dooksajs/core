@@ -1,4 +1,4 @@
-const c = {
+const g = {
   name: "dsToken",
   version: 1,
   data: {
@@ -29,13 +29,13 @@ const c = {
       const i = this.process[s];
       for (let l = 0; l < i.text.length; l++)
         if (i.text[l] === "[") {
-          let h = "";
+          let o = "";
           for (let e = l + 1; e < i.text.length; e++) {
-            const o = i.text[e];
-            if (o === "]") {
+            const h = i.text[e];
+            if (h === "]") {
               let u = 0;
-              h.length > 1 && (i.list[a] = {
-                id: h,
+              o.length > 1 && (i.list[a] = {
+                id: o,
                 processed: !1,
                 value: "",
                 start: l
@@ -44,36 +44,36 @@ const c = {
                 s,
                 i,
                 a,
-                h.split(":"),
+                o.split(":"),
                 l,
                 e + 1,
                 t
               ), a++), l = l + u;
               break;
             }
-            h += o;
+            o += h;
           }
         }
     },
-    _get(s, n, t, a, i, l, r, h) {
+    _get(s, n, t, a, i, l, r, o) {
       const e = t.list[a];
-      let o = 0;
+      let h = 0;
       return e.value = this.$token(i[0] + "/" + i[1], i), e.value === void 0 && (e.value = "[" + i.join(":") + "]"), e.value instanceof Promise ? (e.value.then((u) => {
         for (let d = 0; d < a; d++) {
           const f = t.list[d];
           f.processed && (l += f.valueLength);
         }
-        this._updateText(t, e, u, l, l, h), e.processed = !0;
-      }), this._updateText(t, e, "", l, r, h)) : (this._updateText(t, e, e.value, l, r, h), e.processed = !0, o = e.value.length), o;
+        this._updateText(t, e, u, l, l, o), e.processed = !0;
+      }), this._updateText(t, e, "", l, r, o)) : (this._updateText(t, e, e.value, l, r, o), e.processed = !0, h = e.value.toString().length), h;
     },
     _splice(s, n, t, a = "") {
       return s.slice(0, n) + a + s.slice(t);
     },
     _updateText(s, n, t, a, i, l) {
-      n.valueLength = t.length, s.text = this._splice(s.text, a, i, t), l(s.text);
+      n.valueLength = t.toString().length, s.text = this._splice(s.text, a, i, t), l(s.text);
     }
   }
 };
 export {
-  c as default
+  g as default
 };
