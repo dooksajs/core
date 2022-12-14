@@ -9,10 +9,10 @@ const u = {
     nodes: {},
     parentNode: {}
   },
-  setup({ rootElementId: e = "root" }) {
-    const t = document.getElementById(e);
-    if (!t)
-      throw new Error("Could not find root element: ", t);
+  setup({ rootElementId: t = "root" }) {
+    const e = document.getElementById(t);
+    if (!e)
+      throw new Error("Could not find root element: ", e);
     this.rootViewId = "appElement", this.createElement({
       dsViewId: this.rootViewId,
       dsComponent: {
@@ -20,63 +20,63 @@ const u = {
       }
     });
     const o = this.get(this.rootViewId);
-    t.parentElement.replaceChild(o, t);
+    e.parentElement.replaceChild(o, e);
   },
   methods: {
-    append({ dsViewId: e, dsViewParentId: t }) {
-      const o = this.get(t), n = this.get(e);
+    append({ dsViewId: t, dsViewParentId: e }) {
+      const o = this.get(e), n = this.get(t);
       o.appendChild(n), this.$method("dsEvent/emit", {
-        dsEventId: e,
+        dsEventId: t,
         dsEventOn: "dsView/mount",
         payload: {
-          dsViewParentId: t,
-          dsViewId: e
+          dsViewParentId: e,
+          dsViewId: t
         }
-      }), this._setParent(e, t);
+      }), this._setParent(t, e);
     },
-    attachContent({ dsViewId: e, dsContentId: t }) {
-      this.content[e] = t;
+    attachContent({ dsViewId: t, dsContentId: e }) {
+      this.content[t] = e;
     },
-    createElement({ dsViewId: e, dsComponent: t, dsWidgetSectionId: o, dsWidgetInstanceId: n }) {
-      const i = document.createElement(t.tag);
-      this.isDev && (i.id = e), i.dsViewId = e, this._set(e, i), t.attributes && this._setAttributes(e, t.attributes);
+    createElement({ dsViewId: t, dsComponent: e, dsWidgetSectionId: o, dsWidgetInstanceId: n }) {
+      const i = document.createElement(e.tag);
+      this.isDev && (i.id = t), i.dsViewId = t, this._set(t, i), e.attributes && this._setAttributes(t, e.attributes);
       const s = this.$component(i.tagName.toLowerCase());
       if (s && s.events)
         for (let r = 0; r < s.events.length; r++) {
-          const a = s.events[r], h = (l) => {
+          const a = s.events[r], l = (h) => {
             this.$method("dsEvent/emit", {
-              dsEventId: e,
+              dsEventId: t,
               dsEventOn: a,
               payload: {
-                dsViewId: e,
-                dsContentId: this._getContent(e),
+                dsViewId: t,
+                dsContentId: this._getContent(t),
                 dsWidgetInstanceId: n,
                 dsWidgetSectionId: o,
-                event: l
+                event: h
               }
             });
           };
-          i.addEventListener(a, h), this._setHander(e, h);
+          i.addEventListener(a, l), this._setHander(t, l);
         }
     },
-    createNode(e) {
-      const t = document.createTextNode("");
-      t.dsViewId = e, this._set(e, t);
+    createNode(t) {
+      const e = document.createTextNode("");
+      e.dsViewId = t, this._set(t, e);
     },
-    get(e) {
-      return this.nodes[e];
+    get(t) {
+      return this.nodes[t];
     },
-    getParent(e) {
-      return this.parentNode[e];
+    getParent(t) {
+      return this.parentNode[t];
     },
-    getValue(e) {
-      const t = this.get(e), o = t.nodeName.toLowerCase(), n = this.$component(o);
+    getValue(t) {
+      const e = this.get(t), o = e.nodeName.toLowerCase(), n = this.$component(o);
       if (n && n.get) {
         if (n.get.type)
-          return this[`_getValueBy/${n.get.type}`](t, n.get.value);
+          return this[`_getValueBy/${n.get.type}`](e, n.get.value);
         let i;
         for (let s = 0; s < n.getter.length; s++) {
-          const r = n.get[s], a = this[`_getValueBy/${r.type}`](t, r.value);
+          const r = n.get[s], a = this[`_getValueBy/${r.type}`](e, r.value);
           i = { ...i, ...a };
         }
         return i;
@@ -85,116 +85,122 @@ const u = {
     getRootViewId() {
       return this.rootViewId;
     },
-    remove(e) {
-      const t = this.get(e);
-      t && (delete this.content[e], this._unmount(e), this._removeHanders(e), t.remove());
+    remove(t) {
+      const e = this.get(t);
+      e && (delete this.content[t], this._unmount(t), this._removeHanders(t), e.remove());
     },
-    removeChildren(e) {
-      const t = this.get(e);
-      if (t && t.lastChild) {
-        for (; t.lastChild; )
-          this._unmount(t.lastChild.dsViewId), this._removeHanders(t.lastChild.dsViewId), t.removeChild(t.lastChild);
+    removeChildren(t) {
+      const e = this.get(t);
+      if (e && e.lastChild) {
+        for (; e.lastChild; )
+          this._unmount(e.lastChild.dsViewId), this._removeHanders(e.lastChild.dsViewId), e.removeChild(e.lastChild);
         this.$method("dsEvent/emit", {
-          dsEventId: e,
+          dsEventId: t,
           dsEventOn: "dsView/removeChildren",
-          payload: { dsViewId: e }
+          payload: { dsViewId: t }
         });
       }
     },
-    replace({ dsViewParentId: e, dsViewId: t, prevDsViewId: o, childIndex: n }) {
-      const i = this.get(t);
+    replace({ dsViewParentId: t, dsViewId: e, prevDsViewId: o, childIndex: n }) {
+      const i = this.get(e);
       let s, r;
-      o ? (s = this.get(o), r = s.parentElement) : isNaN(n) || (r = this.get(e), s = r.childNodes[n]), s && (s.replaceWidth(i), this._unmount(s.dsViewId), this.$method("dsEvent/emit", {
-        dsEventId: t,
+      o ? (s = this.get(o), r = s.parentElement) : isNaN(n) || (r = this.get(t), s = r.childNodes[n]), s && (s.replaceWidth(i), this._unmount(s.dsViewId), this.$method("dsEvent/emit", {
+        dsEventId: e,
         dsEventOn: "dsView/mount",
         payload: {
-          dsViewId: t
+          dsViewId: e
         }
-      }), this._setParent(t, r.dsViewId));
+      }), this._setParent(e, r.dsViewId));
     },
-    updateValue({ dsViewId: e, dsContentValue: t, language: o }) {
-      const n = this.get(e), i = n.nodeName.toLowerCase();
+    updateValue({ dsViewId: t, dsContentId: e, language: o }) {
+      const n = this.get(t), i = n.nodeName.toLowerCase(), s = this.$method("dsContent/getValue", { dsContentId: e });
       if (i === "#text") {
-        if (t.token)
-          return this.$method("dsToken/textContent", { instanceId: e, text: t.text, updateText: n.textContent });
-        n.textContent = t.text;
+        if (s.token)
+          return this.$method("dsToken/textContent", {
+            instanceId: t,
+            text: s.text,
+            updateText: (a) => {
+              n.textContent = a;
+            }
+          });
+        n.textContent = s.text;
         return;
       }
-      const s = this.$component(i);
-      if (s && s.setter) {
-        if (s.setter.type)
-          return this[`_setValueBy/${s.setter.type}`](n, s.setter.value, t);
-        for (let r = 0; r < s.setter.length; r++) {
-          const a = s.setter[r];
-          this[`_setValueBy/${a.type}`](n, a.value, t);
+      const r = this.$component(i);
+      if (r && r.setter) {
+        if (r.setter.type)
+          return this[`_setValueBy/${r.setter.type}`](n, r.setter.value, s);
+        for (let a = 0; a < r.setter.length; a++) {
+          const l = r.setter[a];
+          this[`_setValueBy/${l.type}`](n, l.value, s);
         }
       }
     },
-    _getContent(e) {
-      return this.content[e];
+    _getContent(t) {
+      return this.content[t];
     },
-    "_getValueBy/attribute"(e, t) {
-      if (typeof t == "string")
-        return e.getAttribute(t);
+    "_getValueBy/attribute"(t, e) {
+      if (typeof e == "string")
+        return t.getAttribute(e);
       const o = {};
-      for (let n = 0; n < t.length; n++) {
-        const { name: i, key: s } = t[n];
-        o[s] = e.getAttribute(i);
+      for (let n = 0; n < e.length; n++) {
+        const { name: i, key: s } = e[n];
+        o[s] = t.getAttribute(i);
       }
       return o;
     },
-    "_getValueBy/getter"(e, t) {
-      if (typeof t == "string")
-        return e.__lookupGetter__(t) ? e[t] : "";
+    "_getValueBy/getter"(t, e) {
+      if (typeof e == "string")
+        return t.__lookupGetter__(e) ? t[e] : "";
       {
         const o = {};
-        for (let n = 0; n < t.length; n++) {
-          const { name: i, key: s } = t[n];
-          e.__lookupGetter__(t) ? o[s] = e[i] : o[s] = "";
+        for (let n = 0; n < e.length; n++) {
+          const { name: i, key: s } = e[n];
+          t.__lookupGetter__(e) ? o[s] = t[i] : o[s] = "";
         }
         return o;
       }
     },
-    _removeHanders(e) {
-      delete this.handlers[e];
+    _removeHanders(t) {
+      delete this.handlers[t];
     },
-    _set(e, t) {
-      this.nodes[e] = t;
+    _set(t, e) {
+      this.nodes[t] = e;
     },
-    _setAttributes(e, t) {
-      const o = this.get(e);
-      for (const n in t)
-        Object.prototype.hasOwnProperty.call(t, n) && o.setAttribute(n, t[n]);
+    _setAttributes(t, e) {
+      const o = this.get(t);
+      for (const n in e)
+        Object.prototype.hasOwnProperty.call(e, n) && o.setAttribute(n, e[n]);
     },
-    _setHander(e, t) {
-      this.handlers[e] ? this.handlers[e].push(t) : this.handlers[e] = [t];
+    _setHander(t, e) {
+      this.handlers[t] ? this.handlers[t].push(e) : this.handlers[t] = [e];
     },
-    _setParent(e, t) {
-      this.parentNode[t] = e;
+    _setParent(t, e) {
+      this.parentNode[e] = t;
     },
-    "_setValueBy/attribute"(e, t, o) {
-      if (typeof t == "string")
-        return e.setAttribute(t, o);
-      for (let n = 0; n < t.length; n++) {
-        const { name: i, key: s } = t[n];
-        e.setAttribute(i, o[s]);
+    "_setValueBy/attribute"(t, e, o) {
+      if (typeof e == "string")
+        return t.setAttribute(e, o);
+      for (let n = 0; n < e.length; n++) {
+        const { name: i, key: s } = e[n];
+        t.setAttribute(i, o[s]);
       }
     },
-    "_setValueBy/setter"(e, t, o) {
-      if (typeof t == "string")
-        e.__lookupSetter__(t) && (e[t] = o);
+    "_setValueBy/setter"(t, e, o) {
+      if (typeof e == "string")
+        t.__lookupSetter__(e) && (t[e] = o);
       else
-        for (let n = 0; n < t.length; n++) {
-          const { name: i, key: s } = t[n];
-          e.__lookupSetter__(i) && (e[i] = o[s]);
+        for (let n = 0; n < e.length; n++) {
+          const { name: i, key: s } = e[n];
+          t.__lookupSetter__(i) && (t[i] = o[s]);
         }
     },
-    _unmount(e) {
+    _unmount(t) {
       this.$method("dsEvent/emit", {
-        dsEventId: e,
+        dsEventId: t,
         dsEventOn: "dsView/unmount",
-        payload: { dsViewId: e }
-      }), this._setParent(e, "");
+        payload: { dsViewId: t }
+      }), this._setParent(t, "");
     }
   }
 };

@@ -282,14 +282,21 @@ export default {
      * @param {dsContentValue} node.value - dsContent value
      * @param {dsContentLanguage} node.language - dsContent language code
      */
-    updateValue ({ dsViewId, dsContentValue, language }) {
+    updateValue ({ dsViewId, dsContentId, language }) {
       const node = this.get(dsViewId)
       const nodeName = node.nodeName.toLowerCase()
+      const dsContentValue = this.$method('dsContent/getValue', { dsContentId })
 
       // ISSUE: [DS-760] move setters to general actions
       if (nodeName === '#text') {
         if (dsContentValue.token) {
-          return this.$method('dsToken/textContent', { instanceId: dsViewId, text: dsContentValue.text, updateText: node.textContent })
+          return this.$method('dsToken/textContent', {
+            instanceId: dsViewId,
+            text: dsContentValue.text,
+            updateText: (value) => {
+              node.textContent = value
+            }
+          })
         }
 
         node.textContent = dsContentValue.text
