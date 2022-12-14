@@ -63,7 +63,7 @@ export default {
       this.$method('dsView/attachContent', { dsViewId, dsContentId })
 
       if (dsContentValue) {
-        this.$method('dsView/updateValue', { dsViewId, dsContentValue })
+        this.$method('dsView/updateValue', { dsViewId, dsContentId })
       }
 
       // emit on mount event
