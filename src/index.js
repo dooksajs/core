@@ -21,7 +21,80 @@ function DsPlugin (plugin, context = [], isDev) {
 
   // set data to context
   if (plugin.data) {
-    _context = { ..._context, ...plugin.data }
+    let customGetters = []
+    let customSetters = []
+    const privateData = {}
+    const data = []
+
+    // process data
+    for (const key in plugin.data) {
+      if (Object.hasOwnProperty.call(plugin.data, key)) {
+        const item = plugin.data[key]
+
+        if (item.private) {
+          privateData[key] = item.value
+        } else {
+          data.push({
+            key,
+            value: item.value,
+            type: item.type
+          })
+        }
+
+        if (item.get) {
+          customGetters = customGetters.concat(item.get.map(x => ({
+            ...x,
+            key: item.key,
+            type: item.type
+          })))
+        }
+
+        if (item.set) {
+          customSetters = customSetters.concat(item.set.map(x => ({
+            ...x,
+            key: item.key,
+            type: item.type
+          })))
+        }
+      }
+    }
+
+    // set private date to local scope
+    _context = { ..._context, ...privateData }
+
+    if (data.length) {
+      this.data = data
+    }
+
+    if (customGetters.length) {
+      this.getters = []
+
+      for (let i = 0; i < customGetters.length; i++) {
+        const getter = customGetters[i]
+
+        this.getters.push({
+          key: getter.key,
+          name: getter.name,
+          type: getter.type,
+          get: getter.get(_context, data)
+        })
+      }
+    }
+
+    if (customSetters.length) {
+      this.setters = []
+
+      for (let i = 0; i < customSetters.length; i++) {
+        const setter = customSetters[i]
+
+        this.setters.push({
+          key: setter.key,
+          name: setter.name,
+          type: setter.type,
+          get: setter.get(_context, data)
+        })
+      }
+    }
   }
 
   if (isDev) {
