@@ -4,12 +4,6 @@
  */
 
 /**
- * Data id, it is a combination of the plugin name and data key
- * @typedef {Object} dsDataPayload
- * @param {string} dsDataPayload.key - 
- */
-
-/**
  * This callback is executed when a given function succeeds
  * @callback onSuccess
  * @param {*} result - The result of the parent function
@@ -172,8 +166,8 @@ export default {
     },
     /**
      * Check if data to be set is the expected type
-     * @param {dsDataId} id 
-     * @param {*} value 
+     * @param {dsDataId} id
+     * @param {*} value
      * @returns {boolean}
      */
     _checkType (id, value) {
@@ -189,7 +183,7 @@ export default {
     },
     /**
      * Process the getter to get value by data type
-     * @param {dsDataId} id 
+     * @param {dsDataId} id
      * @param {string} name - Name of getter
      * @param {Object.<*>} query - Query data to send to the getter
      * @returns {*}
@@ -207,9 +201,9 @@ export default {
     },
     /**
      * Process listeners on update event
-     * @param {dsDataId} id 
-     * @param {string} key - Data key 
-     * @param {(string|number|boolean|Object|Array)} value - Value that is being set 
+     * @param {dsDataId} id
+     * @param {string} key - Data key
+     * @param {(string|number|boolean|Object|Array)} value - Value that is being set
      */
     _onUpdate (id, key, value) {
       const listeners = this['data/update/listeners'][id][key]
@@ -224,8 +218,8 @@ export default {
     },
     /**
      * Process listeners on delete event
-     * @param {dsDataId} id 
-     * @param {string} key - Data key 
+     * @param {dsDataId} id
+     * @param {string} key - Data key
      * @param {(string|number|boolean|Object|Array)} value - Value that is being deleted
      */
     _onDelete (id, key, value) {
@@ -241,9 +235,9 @@ export default {
     },
     /**
      * Getter by key
-     * @param {dsDataId} id 
-     * @param {Object} payload 
-     * @param {Object} payload.key - Object key 
+     * @param {dsDataId} id
+     * @param {Object} payload
+     * @param {Object} payload.key - Object key
      * @returns {*}
      */
     '_processGetter/object/keyValue' (id, payload) {
@@ -251,9 +245,9 @@ export default {
     },
     /**
      * Set key value
-     * @param {dsDataId} id 
-     * @param {Object} payload 
-     * @param {Object} payload.key - Object key 
+     * @param {dsDataId} id
+     * @param {Object} payload
+     * @param {Object} payload.key - Object key
      * @param {(Object|Array|number|string|boolean)} payload.value - Value to be set
      */
     '_processSetter/object/keyValue' (id, payload) {
@@ -268,8 +262,8 @@ export default {
     },
     /**
      * Merge object setter
-     * @param {dsDataId} id 
-     * @param {Object} payload 
+     * @param {dsDataId} id
+     * @param {Object} payload
      */
     '_processSetter/object/merge' (id, payload) {
       const dataValue = this.values[id]
@@ -289,8 +283,8 @@ export default {
     },
     /**
      * Set value using a process setter or custom setter
-     * @param {dsDataId} id 
-     * @param {string} name - Name of setter 
+     * @param {dsDataId} id
+     * @param {string} name - Name of setter
      * @param {*} payload - Argument for setter and or value
      */
     _setValue (id, name, payload) {
