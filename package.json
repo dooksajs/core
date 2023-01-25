@@ -1,0 +1,33 @@
+{
+  "name": "@dooksa/ds-plugin-data",
+  "version": "1.0.0",
+  "description": "Dooksa data management",
+  "main": "dist/ds-data.js",
+  "type": "module",
+  "scripts": {
+    "dev": "ds-scripts dev",
+    "build": "ds-scripts build_lib",
+    "test:open": "ds-scripts --open test",
+    "test:run": "ds-scripts --run test",
+    "test:record": "ds-scripts --run --record test",
+    "lint": "standard",
+    "lint:fix": "standard --fix"
+  },
+  "author": "Thomas David",
+  "license": "MPL-2",
+  "standard": {
+    "env": [
+      "browser",
+      "mocha"
+    ],
+    "globals": [
+      "cy",
+      "expect",
+      "assert"
+    ]
+  },
+  "devDependencies": {
+    "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts",
+    "standard": "*"
+  }
+}
