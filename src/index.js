@@ -56,6 +56,7 @@ export default {
       type: 'object'
     }
   },
+  /** @lends @dsData */
   methods: {
     /**
      * Add data and its data type
