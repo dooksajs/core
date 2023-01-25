@@ -18,22 +18,86 @@ export default {
   name: NAME,
   version: VERSION,
   data: {
-    DsPlugin: () => {},
-    _methods: {},
-    _tokens: {},
-    _components: {},
-    buildId: 0,
-    plugins: {},
-    pluginUseQueue: [],
-    depQueue: {},
-    queue: {},
-    isLoaded: {},
-    initialising: {},
-    setupOnRequest: {},
-    setupOnRequestQueue: {},
-    options: {},
-    context: {},
-    isDev: false
+    DsPlugin: {
+      private: true,
+      value: () => {},
+      type: 'function'
+    },
+    methods: {
+      private: true,
+      value: {},
+      type: 'object'
+    },
+    tokens: {
+      private: true,
+      value: {},
+      type: 'object'
+    },
+    components: {
+      private: true,
+      value: {},
+      type: 'object'
+    },
+    buildId: {
+      private: true,
+      value: 0,
+      type: 'number'
+    },
+    plugins: {
+      private: true,
+      value: {},
+      type: 'object'
+    },
+    pluginUseQueue: {
+      private: true,
+      value: [],
+      type: 'array'
+    },
+    depQueue: {
+      private: true,
+      value: {},
+      type: 'object'
+    },
+    queue: {
+      private: true,
+      value: {},
+      type: 'object'
+    },
+    isLoaded: {
+      private: true,
+      value: {},
+      type: 'object'
+    },
+    initialising: {
+      private: true,
+      value: {},
+      type: 'object'
+    },
+    setupOnRequest: {
+      private: true,
+      value: {},
+      type: 'object'
+    },
+    setupOnRequestQueue: {
+      private: true,
+      value: {},
+      type: 'object'
+    },
+    options: {
+      private: true,
+      value: {},
+      type: 'object'
+    },
+    context: {
+      private: true,
+      value: {},
+      type: 'object'
+    },
+    isDev: {
+      private: true,
+      value: false,
+      type: 'boolean'
+    }
   },
   /**
    * Setup plugin
@@ -82,6 +146,30 @@ export default {
         name: '$component',
         value: this._component.bind(this),
         scope: ['dsComponent', 'dsParse', 'dsView']
+      },
+      {
+        name: '$addDataListener',
+        value: this._contextMethod('dsData/addListener').bind(this)
+      },
+      {
+        name: '$removeDataListener',
+        value: this._contextMethod('dsData/removeListener').bind(this)
+      },
+      {
+        name: '$getDataValue',
+        value: this._contextMethod('dsData/get').bind(this)
+      },
+      {
+        name: '$setDataValue',
+        value: this._contextMethod('dsData/set').bind(this)
+      },
+      {
+        name: '$deleteDataValue',
+        value: this._contextMethod('dsData/delete').bind(this)
+      },
+      {
+        name: '$emit',
+        value: this._contextMethod('dsEvent/emit').bind(this)
       }
     ]
 
@@ -123,6 +211,16 @@ export default {
   /** @lends @dsManager */
   methods: {
     /**
+     * Wrapper for plugin contexts to call a method
+     * @param {string} name - The name of the method
+     * @returns {function}
+     */
+    _contextMethod (name) {
+      return (params) => {
+        return this.methods[name](params)
+      }
+    },
+    /**
      * Execute plugin methods
      * @param {string} name - Name of method
      * @param {Object|Array|string|number} params - Parameters for action
@@ -132,7 +230,7 @@ export default {
       this._callbackWhenAvailable(name, () => {
         const onSuccess = callback.onSuccess
         const onError = callback.onError
-        const pluginResult = this._methods[name](params)
+        const pluginResult = this.methods[name](params)
 
         if (onError && pluginResult instanceof Error) {
           if (onError.method) {
@@ -175,7 +273,7 @@ export default {
      * @returns boolean based on if the request plugin exists
      */
     _actionExists (name) {
-      return (this._methods[name])
+      return (this.methods[name])
     },
     /**
      * Adds the plugins methods to the manager
@@ -190,7 +288,7 @@ export default {
           if (Object.hasOwnProperty.call(plugin.methods, key)) {
             const method = plugin.methods[key]
 
-            this._methods[`${plugin.name}/${key}`] = method
+            this.methods[`${plugin.name}/${key}`] = method
           }
         }
       }
@@ -200,7 +298,7 @@ export default {
           if (Object.hasOwnProperty.call(plugin.tokens, key)) {
             const token = plugin.tokens[key]
 
-            this._tokens[`${plugin.name}/${key}`] = token
+            this.tokens[`${plugin.name}/${key}`] = token
           }
         }
       }
@@ -210,7 +308,44 @@ export default {
         for (let i = 0; i < plugin.components.length; i++) {
           const component = plugin.components[i]
 
-          this._components[component.name] = { ...component, plugin: plugin.name }
+          this.components[component.name] = { ...component, plugin: plugin.name }
+        }
+      }
+
+      // add getter/setters to data
+      if (plugin.data) {
+        for (let i = 0; i < plugin.data.length; i++) {
+          const data = plugin.data[i]
+
+          this.methods['dsData/add']({
+            id: plugin.name + '/' + data.key,
+            value: data.value,
+            type: data.type
+          })
+        }
+      }
+
+      // add custom getters to manager
+      if (plugin.getters) {
+        for (let i = 0; i < plugin.getters.length; i++) {
+          const item = plugin.getters[i]
+
+          this.methods['dsData/addGetter']({
+            id: plugin.name + '/' + item.key,
+            item: item.get
+          })
+        }
+      }
+
+      // add custom setters to manager
+      if (plugin.setters) {
+        for (let i = 0; i < plugin.setters.length; i++) {
+          const item = plugin.setters[i]
+
+          this.methods['dsData/addSetter']({
+            id: plugin.name + '/' + item.key,
+            item: item.set
+          })
         }
       }
     },
@@ -225,8 +360,8 @@ export default {
       this.options[name] = options
     },
     _component (name) {
-      if (this._components[name]) {
-        const component = this._components[name]
+      if (this.components[name]) {
+        const component = this.components[name]
 
         // setup on request
         if (!this.isLoaded[component.plugin] && this.setupOnRequestQueue[component.plugin]) {
@@ -405,8 +540,8 @@ export default {
      */
     _method (name, params) {
       try {
-        if (this._methods[name]) {
-          return this._methods[name](params)
+        if (this.methods[name]) {
+          return this.methods[name](params)
         } else {
           // Check if the plugin needs to run setup
           throw new Error('Method "' + name + '" does not exist')
@@ -454,8 +589,8 @@ export default {
       })
     },
     _token (name, params) {
-      if (this._tokens[name]) {
-        return this._tokens[name](params)
+      if (this.tokens[name]) {
+        return this.tokens[name](params)
       }
     },
     /**
