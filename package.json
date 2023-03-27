@@ -29,5 +29,8 @@
   "devDependencies": {
     "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts",
     "standard": "*"
+  },
+  "dependencies": {
+    "nanoid": "^3.3.4"
   }
 }
