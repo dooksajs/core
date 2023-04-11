@@ -109,49 +109,36 @@ export default {
     },
     /**
      * Add data listener
-     * @param {dsDataId} param.id - Data id
+     * @param {dsDataName} param.name - Data collection name
      * @param {string} param.on - Event name, currently, update or delete
-     * @param {string} param.key - Observable key
-     * @param {Object} param.payload
-     * @param {Object.<*>} param.payload.arguments - Arguments to pass to the listener function
-     * @param {function} param.payload.action - The listener function to run when event is fired
+     * @param {dsDataId} param.id - Data collection id
+     * @param {function} param.listener - The listener function to run when event is fired
      */
-    addListener ({ id, on, payload }) {
-      const event = this['data/' + on + '/listeners']
+    addListener ({ name, on, id, listener }) {
+      const listenerName = 'data/' + on + '/listeners'
+      let listeners = this[listenerName]
 
-      if (!event) {
+      if (!listeners) {
         throw new Error('Data event type does not exist: "' + on + '"')
       }
 
-      // observe by key
-      if (payload.key) {
-        const key = payload.key
-        const listeners = event[id][key]
-        const listenerRefs = this['data/' + on + '/refs'][id][key]
+      const listenerRefs = this['data/' + on + '/refs'][name]
+      listeners = listeners[name]
 
-        // add listener
-        if (!listeners) {
-          event[id][key] = [payload.action]
-          listenerRefs[payload.id] = true
-        } else {
-          // Avoid listener duplications
-          if (!listenerRefs[id][key][payload.id]) {
-            listeners.push(payload.action)
-          }
-        }
+      if (!listeners) {
+        throw new Error('Data event name does not exist: "' + name + '"')
+      }
+
+      listeners = listeners[id]
+
+      // add listener
+      if (!listeners) {
+        this[listenerName][name][id] = [listener]
+        listenerRefs[id] = true
       } else {
-        const listeners = event[id]
-        const listenerRefs = this['data/' + on + '/refs'][id]
-
-        // add listener
-        if (!listeners) {
-          event[id] = [payload.action]
-          listenerRefs[payload.id] = true
-        } else {
-          // Avoid listener duplications
-          if (!listenerRefs[id][payload.id]) {
-            listeners.push(payload.action)
-          }
+        // Avoid listener duplications
+        if (!listenerRefs[id]) {
+          listeners.push(listener)
         }
       }
     },
@@ -160,66 +147,91 @@ export default {
      * @returns {string}
      */
     generateId () {
-      return '_' + nanoid()
+      return '_' + nanoid() + '_'
     },
-    get ({ name, id, options }) {
-      const item = { id, empty: true }
+    /**
+     * Get data value
+     * @param {Object} param
+     * @param {string} param.name - Data collection name
+     * @param {string} param.id - Data collection document id
+     * @param {prefixId} param.id - Data collection document prefix
+     * @param {suffixId} param.id - Data collection document suffix
+     * @param {Object} param.options - Options
+     * @param {Object} param.options.position - Data collection document suffix
+     * @returns
+     */
+    get ({ name, id, prefixId, suffixId, options }) {
+      const item = { isEmpty: false }
       const schema = this.schema[name]
 
       if (id) {
-        item.value = this.values[name][id]
+        item.isAffixEmpty = true
+
+        // find document using custom affixes
+        if (prefixId || suffixId) {
+          let itemId
+
+          if (prefixId && suffixId) {
+            const prefix = this._affixId(prefixId)
+            const suffix = this._affixId(suffixId)
+
+            itemId = prefix + id + suffix
+          } else if (prefixId) {
+            const prefix = this._affixId(prefixId)
+
+            itemId = prefix + id
+          } else if (suffixId) {
+            const suffix = this._affixId(suffixId)
+
+            itemId = id + suffix
+          }
+
+          if (!this._nullish(this.values[name][itemId])) {
+            item.isAffixEmpty = false
+            item.value = this.values[name][itemId]
+          }
+        }
+
+        if (item.isAffixEmpty) {
+          item.id = id
+          item.value = this.values[name][item.id]
+
+          // find document using default affixes
+          if (this._nullish(item.value) && schema.id) {
+            let itemId
+
+            if (schema.id.prefix && schema.id.suffix) {
+              const prefix = this._affixId(schema.id.prefix)
+              const suffix = this._affixId(schema.id.suffix)
+
+              itemId = prefix + item.id + suffix
+            } else if (schema.id.prefix) {
+              const prefix = this._affixId(schema.id.prefix)
+
+              itemId = prefix + item.id
+            } else {
+              const suffix = this._affixId(schema.id.suffix)
+
+              itemId = item.id + suffix
+            }
+
+            item.id = itemId
+            item.value = this.values[name][itemId]
+
+            if (this._nullish(item.value)) {
+              item.isEmpty = true
+            }
+          }
+        }
       } else {
         item.value = this.values[name]
       }
 
       if (options) {
-        if (options.id && id) {
-          const collection = this.collection[name] || {}
-          const prefix = options.id.prefix || collection.prefixId || ''
-          const suffix = options.id.suffix || collection.suffixId || ''
-          let itemId = prefix + id + '_' + suffix
-
-          if (this.values[name][itemId]) {
-            item.idPreSuffix = true
-            item.value = this.values[name][itemId]
-          } else {
-            itemId = id + '_' + suffix
-
-            if (this.values[name][itemId]) {
-              item.idSuffix = true
-              item.value = this.values[name][itemId]
-            } else if (collection.suffixId) {
-              itemId = id + '_' + collection.suffixId
-
-              if (this.values[name][itemId]) {
-                item.idSuffix = true
-                item.value = this.values[name][itemId]
-              }
-            }
-          }
-        }
-
-        if (options.expand) {
-          item.expand = []
-
-          for (let i = 0; i < options.expand.length; i++) {
-            const relationField = options.expand[i]
-            const relationId = item.value[relationField.name]
-            const relationCollection = this.relation[name][relationField.name]
-            const expandData = this.values[relationCollection][relationId]
-
-            if (relationField.key) {
-              item.expand.push(expandData[relationField.key])
-            } else {
-              item.expand.push(expandData)
-            }
-          }
-        }
-
-        if (Number.isInteger(options.index)) {
+        if (Number.isInteger(options.position)) {
           // check if index is within range
-          if (options.index < item.value.length && options.index > -1) {
-            item.value = item.value[options.index]
+          if (options.position < item.value.length && options.position > -1) {
+            item.value = item.value[options.position]
           } else {
             throw new Error('Get data value by index was out of range')
           }
@@ -227,9 +239,10 @@ export default {
       }
 
       if (this._nullish(item.value)) {
+        item.isEmpty = true
+
         return item
       } else {
-        item.empty = false
         // create copy
         const unfreezeName = '_unfreeze' + schema.type
 
@@ -274,7 +287,7 @@ export default {
         Object.freeze(this.values[name])
 
         // notify listeners
-        // this._onUpdate(name, result.value, result.path)
+        this._onUpdate(name, result.value, result.id)
 
         return result
       } catch (errorMessage) {
@@ -306,6 +319,13 @@ export default {
           this.relation[item.id] = item.relation
         }
       }
+    },
+    _affixId (affix) {
+      if (typeof affix === 'function') {
+        return affix()
+      }
+
+      return affix || ''
     },
     /**
      * Change the target the source will be applied to
@@ -388,39 +408,29 @@ export default {
     },
     _createCollectionId (name, option) {
       const schema = this.schema[name]
-      let id = ''
+      const id = option.id || ''
+      let prefix = option.prefixId ?? ''
+      let suffix = option.suffixId ?? ''
 
-      if (option.prefixId) {
-        id = option.prefixId
-      } else if (schema.id && schema.id.prefix) {
-        id = schema.id.prefix
+      if (schema.id) {
+        if (!prefix && schema.id.prefix) {
+          prefix = this._affixId(schema.id.prefix)
+        }
 
-        if (typeof schema.id.prefix === 'function') {
-          id = schema.id.prefix()
+        if (!suffix && schema.id.suffix) {
+          suffix = this._affixId(schema.id.suffix)
+        }
+
+        if (!id) {
+          if (schema.id.default) {
+            return prefix + this._affixId(schema.id.default) + suffix
+          } else {
+            return prefix + this.generateId() + suffix
+          }
         }
       }
 
-      if (option.id) {
-        id += option.id
-      } else if (schema.id && schema.id.default) {
-        if (typeof schema.id.default === 'function') {
-          id += schema.id.default()
-        } else {
-          id += schema.id.default
-        }
-      }
-
-      if (option.suffixId) {
-        id += option.suffixId
-      } else if (schema.id && schema.id.suffix) {
-        if (typeof schema.id.suffix === 'function') {
-          id += '_' + schema.id.suffix()
-        } else {
-          id += '_' + schema.id.suffix
-        }
-      }
-
-      return id
+      return prefix + id + suffix
     },
     /**
      * Check data type
@@ -477,27 +487,15 @@ export default {
         let suffix = ''
 
         if (schema.id.prefix) {
-          prefix = schema.id.prefix
-
-          if (typeof schema.id.prefix === 'function') {
-            prefix = schema.id.prefix()
-          }
+          prefix = this._affixId(schema.id.prefix)
         }
 
         if (schema.id.suffix) {
-          suffix = '_' + schema.id.suffix
-
-          if (typeof schema.id.suffix === 'function') {
-            suffix = '_' + schema.id.suffix()
-          }
+          suffix = '_' + this._affixId(schema.id.suffix)
         }
 
         if (schema.id.default) {
-          if (typeof schema.id.default === 'function') {
-            return prefix + schema.id.default() + suffix
-          }
-
-          return prefix + schema.id.default + suffix
+          return prefix + this._affixId(schema.id.default) + suffix
         } else {
           return prefix + this.generateId() + suffix
         }
@@ -522,7 +520,7 @@ export default {
         for (let i = 0; i < listeners.length; i++) {
           const listener = listeners[i]
 
-          listener.action(listener.arguments, value)
+          listener.action(value)
         }
       }
     },
