@@ -52,9 +52,102 @@ export default {
     }
   ],
   data: {
-    actions: {},
-    sequence: {},
-    conditions: {}
+    actions: {
+      default: {},
+      schema: {
+        type: 'collection',
+        items: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'string'
+            },
+            name: {
+              type: 'string'
+            },
+            version: {
+              type: 'number'
+            }
+          }
+        }
+      }
+    },
+    conditions: {
+      default: {},
+      schema: {
+        type: 'collection',
+        items: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'string'
+            },
+            name: {
+              type: 'string'
+            },
+            version: {
+              type: 'number'
+            }
+          }
+        }
+      }
+    },
+    sequenceActions: {
+      default: {},
+      schema: {
+        type: 'collection',
+        items: {
+          type: 'object',
+          patternProperties: {
+            '(^_|[0-9]){3}': {
+              type: 'object',
+              properties: {
+                _$id: {
+                  type: 'string',
+                  relation: 'dsAction/actions'
+                }
+              }
+            }
+          },
+          properties: {
+            entry: {
+              type: 'array',
+              items: {
+                type: 'string'
+              }
+            }
+          }
+        }
+      }
+    },
+    sequenceConditions: {
+      default: {},
+      schema: {
+        type: 'collection',
+        items: {
+          type: 'object',
+          patternProperties: {
+            '(^_|[0-9]){3}': {
+              type: 'object',
+              properties: {
+                _$id: {
+                  type: 'string',
+                  relation: 'dsAction/conditions'
+                }
+              }
+            }
+          },
+          properties: {
+            entry: {
+              type: 'array',
+              items: {
+                type: 'string'
+              }
+            }
+          }
+        }
+      }
+    }
   },
   /** @lends DsAction */
   methods: {
@@ -65,42 +158,23 @@ export default {
      * @param {Object} param.payload - The data to pass to the action
      */
     dispatch ({ dsActionId, payload }) {
-      const sequence = this.sequence[dsActionId]
+      const sequenceActions = this.$getDataValue({
+        name: 'dsAction/sequenceActions',
+        id: dsActionId
+      })
 
-      if (!sequence) return
+      if (sequenceActions.isEmpty) return
+
+      const sequenceConditions = this.$getDataValue({
+        name: 'dsAction/sequenceConditions',
+        id: dsActionId
+      })
 
       this._dispatch({
-        sequenceId: dsActionId,
-        actions: sequence.actions,
-        conditions: sequence.conditions || {},
+        sequenceActions: sequenceActions.value,
+        sequenceConditions: sequenceConditions.value,
         payload
       })
-    },
-    /**
-     * Set actions
-     * @param {Object} param
-     * @param {Object.<string, dsActionItem>} param.dsActionItems
-     * @param {Object.<string, dsActionConditions>} param.dsActionConditions
-     * @param {Object.<string, dsActionSequences>} param.dsActionSequences
-     */
-    set ({ dsActionItems, dsActionConditions, dsActionSequence }) {
-      if (dsActionItems) {
-        this.actions = { ...this.actions, ...dsActionItems }
-      }
-
-      if (dsActionConditions) {
-        this.conditions = { ...this.conditions, ...dsActionConditions }
-      }
-
-      if (dsActionSequence) {
-        this.sequence[dsActionSequence.id] = {
-          actions: dsActionSequence.actions
-        }
-
-        if (dsActionSequence.conditions) {
-          this.sequence[dsActionSequence.id].conditions = dsActionSequence.conditions
-        }
-      }
     },
     _action ({
       instance,
@@ -185,14 +259,13 @@ export default {
       return result
     },
     _dispatch ({
-      sequenceId,
       instance = {
         iteration: {},
         results: {}
       },
       parentEntry,
-      actions = {},
-      conditions = {},
+      sequenceActions = {},
+      sequenceConditions = {},
       payload,
       results = {}
     }) {
@@ -204,20 +277,23 @@ export default {
         instance.results[parentEntry] = results
       }
 
-      if (conditions.length) {
-        valid = this._compare(conditions, {
+      if (sequenceConditions.length) {
+        valid = this._compare(sequenceConditions, {
           parentEntry,
           instance
         })
       }
 
-      for (let i = 0; i < actions.entry.length; i++) {
-        const entry = actions.entry[i]
-        const item = actions[entry]
+      for (let i = 0; i < sequenceActions.entry.length; i++) {
+        const entry = sequenceActions.entry[i]
+        const item = sequenceActions[entry]
         let action = item
 
         if (item._$id) {
-          action = this.actions[item._$id]
+          action = this.$getDataValue({
+            name: 'dsAction/actions',
+            id: item._$id
+          }).value
         }
 
         if (item.conditions) {
@@ -246,9 +322,9 @@ export default {
           callback.onSuccess = {
             params: {
               parentEntry: entry,
-              actions: {
+              sequenceActions: {
                 entry: item.onSuccess,
-                ...actions
+                ...sequenceActions
               },
               instance
             },
@@ -261,9 +337,9 @@ export default {
           callback.onError = {
             params: {
               parentEntry: entry,
-              actions: {
+              sequenceActions: {
                 entry: item.onError,
-                ...actions
+                ...sequenceActions
               },
               instance
             },
@@ -274,8 +350,8 @@ export default {
         const result = this._action({
           instance,
           entry,
-          actions,
-          conditions: item.conditions,
+          sequenceActions,
+          sequenceConditions: item.conditions,
           parentEntry,
           name: action.name,
           type: action.type,
