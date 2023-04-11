@@ -47,6 +47,10 @@ export default {
       private: true,
       default: {}
     },
+    'data/delete/refs': {
+      private: true,
+      default: {}
+    },
     values: {
       private: true,
       default: {}
@@ -99,7 +103,9 @@ export default {
 
       // prepare listeners
       this['data/update/listeners'][data.id] = {}
+      this['data/update/refs'][data.id] = {}
       this['data/delete/listeners'][data.id] = {}
+      this['data/delete/refs'][data.id] = {}
     },
     /**
      * Add data listener
