@@ -13,7 +13,15 @@ export default {
   name: 'dsComponent',
   version: 1,
   data: {
-    items: {}
+    items: {
+      default: {},
+      schema: {
+        type: 'collection',
+        items: {
+          type: 'object'
+        }
+      }
+    }
   },
   components: [
     {
@@ -75,16 +83,48 @@ export default {
       events: ['click']
     },
     {
+      name: 'h1',
+      type: 'text',
+      get: {
+        type: 'getter',
+        value: [
+          {
+            name: 'textContent',
+            key: 'text'
+          }
+        ]
+      },
+      set: {
+        type: 'setter',
+        value: [
+          {
+            name: 'textContent',
+            key: 'text'
+          }
+        ]
+      }
+    },
+    {
       name: 'input',
       type: 'text',
       events: ['input'],
       get: {
         type: 'getter',
-        value: 'value'
+        value: [
+          {
+            name: 'value',
+            key: 'text'
+          }
+        ]
       },
       set: {
         type: 'setter',
-        value: 'value'
+        value: [
+          {
+            name: 'value',
+            key: 'text'
+          }
+        ]
       }
     },
     {
@@ -113,17 +153,12 @@ export default {
       }]
     }
   ],
-  /** @lends dsComponent */
   methods: {
-    /**
-     * Get the component tag needed to create an element
-     * @param {Object} param
-     * @param {String} param.dsComponentId - The id of the component
-     * @param {String} param.dsComponentModifierId - This might be redundant due to modified components being precompiled
-     * @returns {dsComponent}
-     */
-    get ({ dsComponentId, dsComponentModifierId }) {
-      const component = this.items[dsComponentId]
+    fetch (id) {
+      const component = this.$getDataValue({
+        name: 'dsComponent/items',
+        id
+      })
 
       if (component.id === 'text') {
         return {
@@ -134,21 +169,12 @@ export default {
       // The component is lazy loaded
       const webComponent = this.$component(component.id)
 
-      if (document.createElement(component.id).constructor.name !== 'HTMLUnknownElement' || webComponent.isLazy) {
+      if (webComponent.isLazy || document.createElement(component.id).constructor.name !== 'HTMLUnknownElement') {
         return {
           tag: component.id,
           attributes: component.attributes
         }
       }
-    },
-    /**
-     * Add component
-     * @param {Object} item
-     * @param {string} item.id - Node name used to create the node [(nodeName)]{@link https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeName}
-     * @param {Object.<string, string>} - Element attributes
-     */
-    set (dsComponent) {
-      this.items = { ...this.items, ...dsComponent }
     }
   }
 }
