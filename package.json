@@ -2,11 +2,10 @@
   "name": "@dooksa/ds-plugin-view",
   "version": "1.0.0",
   "description": "Dooksa view management",
-  "main": "dist/ds-view.js",
+  "main": "src/index.js",
   "type": "module",
   "scripts": {
     "dev": "ds-scripts dev",
-    "build": "ds-scripts build_lib",
     "test:open": "ds-scripts --open test",
     "test:run": "ds-scripts --run test",
     "test:record": "ds-scripts --run --record test",
@@ -14,7 +13,7 @@
     "lint:fix": "standard --fix"
   },
   "author": "Thomas David",
-  "license": "MPL-2",
+  "license": "GPL-3",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@bitbucket.org:dooksa/ds-plugin-view.git"
