@@ -2,10 +2,16 @@ export default {
   name: 'dsToken',
   version: 1,
   data: {
-    process: {},
+    process: {
+      private: true,
+      default: {}
+    },
     values: {
-      heading: {
-        default: 'Add title'
+      private: true,
+      default: {
+        heading: {
+          default: 'Add title'
+        }
       }
     }
   },
@@ -14,11 +20,11 @@ export default {
       return ''
     },
     placeholder (args) {
-      const lang = this.$method('dsMetadata/getLang')
+      const language = this.$getDataValue({ name: 'dsMetadata/language' })
       const heading = this.values[args[2]]
 
-      if (heading[lang]) {
-        return heading[lang]
+      if (heading[language.value]) {
+        return heading[language.value]
       }
 
       return heading.default
@@ -27,22 +33,22 @@ export default {
   methods: {
     /**
      * Convert tokens to related string and update the element that the content is attached to
-     * @param {string} param.instanceId An ID related to the content and the target, usually the element ID
+     * @param {string} param.dsViewId An ID related to the content and the target, usually the element ID
      * @param {string} param.text The original text that includes the tokens
      * @param {Function} param.updateText This the function that updates the element, e.g. element.textContent
      */
-    textContent ({ instanceId, text, updateText }) {
+    textContent ({ dsViewId, text, updateText }) {
       let tokenIndex = 0
       // create new process if text is different or no process exists
-      if (!this.process[instanceId] || this.process[instanceId].tokens !== text) {
-        this.process[instanceId] = {
+      if (!this.process[dsViewId] || this.process[dsViewId].tokens !== text) {
+        this.process[dsViewId] = {
           list: {},
           text,
           tokens: text
         }
       }
 
-      const item = this.process[instanceId]
+      const item = this.process[dsViewId]
 
       for (let i = 0; i < item.text.length; i++) {
         const bracketLeft = item.text[i]
@@ -66,7 +72,7 @@ export default {
                 // get token
                 valueLength = this._get(
                   'values',
-                  instanceId,
+                  dsViewId,
                   item,
                   tokenIndex,
                   token.split(':'),
@@ -91,7 +97,7 @@ export default {
     /**
      * Retrieve a token
      * @param {string} type The expected value to be returned by the token
-     * @param {string} instanceId An ID related to the content and the target, usually the element ID
+     * @param {dsViewId} dsViewId An ID related to the content and the target, usually the element ID
      * @param {Object} process Temporary information about the current token being processed
      * @param {number} index The index of the current token within the process
      * @param {string} token The token without the brackets, e.g. placeholder:empty
@@ -100,7 +106,7 @@ export default {
      * @param {Function} param.updateText This the function that updates the element, for example: element.textContent
      * @returns {number} The length of the value retrieved
      */
-    _get (type, instanceId, process, index, token, start, end, updateText) {
+    _get (type, dsViewId, process, index, token, start, end, updateText) {
       const item = process.list[index]
       let valueLength = 0
 
