@@ -2,10 +2,9 @@
   "name": "@dooksa/ds-plugin-devtool",
   "version": "1.0.0",
   "description": "Development tools for Dooksa",
-  "main": "dist/ds-dev-tool.js",
+  "main": "src/index.js",
   "scripts": {
     "dev": "ds-scripts dev",
-    "build": "ds-scripts build_lib",
     "test:open": "ds-scripts --open test",
     "test:run": "ds-scripts --run test",
     "test:record": "ds-scripts --run --record test",
