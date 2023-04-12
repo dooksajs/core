@@ -1,5 +1,6 @@
 
 import createProxy from './utils/createProxy.js'
+import dsSchema from './utils/schema.js'
 
 /**
  * Plugins are used to extend and customise the Dooksa application builder.
@@ -25,9 +26,6 @@ function DsPlugin (plugin, context = [], isDev) {
 
   // set data to context
   if (plugin.data) {
-    let customGetters = []
-    let customSetters = []
-    const privateData = {}
     const data = []
 
     // process data
@@ -36,73 +34,24 @@ function DsPlugin (plugin, context = [], isDev) {
         const item = plugin.data[key]
 
         if (item.private) {
-          privateData[key] = item.value
+          _context[key] = item.default
         } else {
-          data.push({
-            key,
-            value: item.value,
-            type: item.type
-          })
-        }
+          const dataEntry = {}
+          const item = plugin.data[key]
+          const schema = item.schema
 
-        if (item.get) {
-          customGetters = customGetters.concat(item.get.map(x => ({
-            ...x,
-            key: item.key,
-            type: item.type
-          })))
-        }
+          dataEntry.id = plugin.name + '/' + key
+          dataEntry.default = item.default
+          dataEntry.schema = dsSchema.process(_context, dataEntry.id, schema, [], true)
 
-        if (item.set) {
-          customSetters = customSetters.concat(item.set.map(x => ({
-            ...x,
-            key: item.key,
-            type: item.type
-          })))
+          data.push(dataEntry)
         }
       }
     }
-
-    // set private date to local scope
-    _context = { ..._context, ...privateData }
 
     if (data.length) {
       this.data = data
     }
-
-    if (customGetters.length) {
-      this.getters = []
-
-      for (let i = 0; i < customGetters.length; i++) {
-        const getter = customGetters[i]
-
-        this.getters.push({
-          key: getter.key,
-          name: getter.name,
-          type: getter.type,
-          get: getter.get(_context, data)
-        })
-      }
-    }
-
-    if (customSetters.length) {
-      this.setters = []
-
-      for (let i = 0; i < customSetters.length; i++) {
-        const setter = customSetters[i]
-
-        this.setters.push({
-          key: setter.key,
-          name: setter.name,
-          type: setter.type,
-          get: setter.get(_context, data)
-        })
-      }
-    }
-  }
-
-  if (isDev) {
-    _context = createProxy(plugin.name, _context)
   }
 
   // set context to plugin
@@ -148,6 +97,7 @@ function DsPlugin (plugin, context = [], isDev) {
 
     this.methods = methods
   }
+
   // set tokens
   if (plugin.tokens) {
     const tokens = {}
