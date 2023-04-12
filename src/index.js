@@ -1,24 +1,39 @@
 import PocketBase from 'pocketbase'
 
-let client
-
+/**
+ * @namespace dsDatabase
+ */
 export default {
   name: 'dsDatabase',
   version: 1,
-  setup ({ baseUrl = 'https://no.dooksa.com', lang = 'en-US' }) {
-    client = new PocketBase(baseUrl, lang)
+  data: {
+    client: {
+      private: true,
+      default: {}
+    }
   },
+  setup ({ baseUrl = 'https://no.dooksa.com', lang = 'en-US' }) {
+    this.client = new PocketBase(baseUrl, lang)
+  },
+  /** @lends dsDatabase */
   methods: {
+    /**
+     * Get a list of documents
+     * @param {Object} param 
+     * @param {string} param.collection - ID or name of the records' collection.
+     * @param {number} param.page - The page (aka. offset) of the paginated list (default to 1).
+     * @param {number} param.perPage - The max returned records per page (default to 25).
+     */
     getList ({ collection, page = 1, perPage = 25, options = {} }) {
       return new Promise((resolve, reject) => {
-        client.records.getList(collection, page, perPage, options)
+        this.client.records.getList(collection, page, perPage, options)
           .then(records => resolve(records))
           .catch(error => reject(error))
       })
     },
     getOne ({ collection, id, options = {} }) {
       return new Promise((resolve, reject) => {
-        client.records.getOne(collection, id, options)
+        this.client.records.getOne(collection, id, options)
           .then(record => resolve(record))
           .catch(error => reject(error))
       })
@@ -26,7 +41,7 @@ export default {
     create ({ collection, data, options = {} }) {
       // add a modal check
       return new Promise((resolve, reject) => {
-        client.records.create(collection, data, options)
+        this.client.records.create(collection, data, options)
           .then(record => resolve(record))
           .catch(error => reject(error))
       })
@@ -34,14 +49,14 @@ export default {
     update ({ collection, id, data }) {
       // add a modal check
       return new Promise((resolve, reject) => {
-        client.records.update(collection, id, data)
+        this.client.records.update(collection, id, data)
           .then(record => resolve(record))
           .catch(error => reject(error))
       })
     },
     delete ({ collection, id }) {
       return new Promise((resolve, reject) => {
-        client.records.delete(collection, id)
+        this.client.records.delete(collection, id)
           .then(() => resolve('OK'))
           .catch(error => reject(error))
       })
