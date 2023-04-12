@@ -6,9 +6,18 @@ export default {
   name: 'dsDevTool',
   version: 1,
   data: {
-    items: {},
-    plugins: [],
-    keys: {}
+    items: {
+      private: true,
+      default: {}
+    },
+    plugins: {
+      private: true,
+      default: []
+    },
+    keys: {
+      private: true,
+      default: {}
+    }
   },
   methods: {
     /**
