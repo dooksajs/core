@@ -5,46 +5,44 @@ import dsTemplate from '@dooksa/ds-plugin-template'
 import dsParse from '@dooksa/ds-plugin-parse'
 
 // start app
-export default (page, { options, plugins = {} }, currentOptions = {}) => {
-  let app = dsApp
-
-  if (plugins.dsApp) {
-    app = plugins.dsApp
-
-    delete plugins.dsApp
+export default (
+  page, {
+    options,
+    app = dsApp,
+    plugins = [],
+    pluginConstructor,
+    pluginManager
+  },
+  currentOptions = {}
+) => {
+  if (pluginConstructor) {
+    app.DsPlugin = pluginConstructor
   }
 
-  if (plugins.DsPlugin) {
-    app.DsPlugin = plugins.DsPlugin
-
-    delete plugins.DsPlugin
+  if (pluginManager) {
+    app.dsManager = pluginManager
   }
 
-  if (plugins.dsManager) {
-    app.dsManager = plugins.dsManager
-
-    delete plugins.dsManager
-  }
-
-  const pluginsToAdd = {
-    dsDevTool,
-    dsParse,
-    dsTemplate,
-    ...plugins
-  }
+  const requiredPluginNames = ['dsDevTool', 'dsParse', 'dsTemplate']
+  const requiredPlugins = { dsDevTool, dsParse, dsTemplate }
 
   // load the plugin and dependencies
-  for (const key in pluginsToAdd) {
-    if (Object.prototype.hasOwnProperty.call(pluginsToAdd, key)) {
-      const plugin = pluginsToAdd[key]
-      let value = {}
+  for (let i = 0; i < plugins.length; i++) {
+    const item = plugins[i]
+    const options = item.options ?? {}
+    const pluginIndex = requiredPluginNames.indexOf(item.name)
 
-      if (options) {
-        value = options.find(item => item.name === plugin.name) ?? {}
-      }
-
-      app.use(pluginsToAdd[key], value.option)
+    if (pluginIndex > -1) {
+      requiredPluginNames.splice(pluginIndex, 1)
     }
+
+    app.use(item.plugin, options)
+  }
+
+  for (let i = 0; i < requiredPluginNames.length; i++) {
+    const name = requiredPluginNames[i]
+
+    app.use(requiredPlugins[name], {})
   }
 
   // add current plugin
