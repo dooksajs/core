@@ -11,7 +11,6 @@ export default {
     entry: {
       ve0qktek9pig0iz: ['_dvhwaiuq2xvu9fd_id$001']
     },
-    content: {},
     sections: {
       _dvhwaiuq2xvu9fd_id$001: []
     }
