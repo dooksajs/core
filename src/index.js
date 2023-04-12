@@ -12,21 +12,43 @@ export default {
     }
   ],
   data: {
-    currentPath: '',
-    state: {},
-    searchParams: false,
-    items: {}
+    path: {
+      default: {},
+      schema: {
+        type: 'collection',
+        items: {
+          type: 'string'
+        }
+      }
+    },
+    currentPath: {
+      private: true,
+      default: ''
+    },
+    state: {
+      private: true,
+      default: {}
+    },
+    items: {
+      default: {},
+      schema: {
+        type: 'collection',
+        items: {
+          type: 'object'
+        }
+      }
+    }
   },
   setup () {
     // set current path
     this.currentPath = this.currentPathname()
 
-    window.addEventListener('popstate', event => {
+    window.addEventListener('popstate', () => {
       this._update(this.currentPath, this.currentPathname(), (state) => {
         this.$method('dsPage/updateDOM', state)
-        this.$action('dsEvent/emit', {
-          dsEventId: this.getCurrentId(),
-          dsEventOn: 'dsRouter/navigate',
+        this.$emit({
+          id: this.getCurrentId(),
+          on: 'dsRouter/navigate',
           payload: state
         })
       })
@@ -41,9 +63,6 @@ export default {
     currentPathname () {
       return window.location.pathname
     },
-    setPath ({ pageId, path }) {
-      this.items[path] = pageId
-    },
     navigate (nextPath) {
       this._update(this.currentPathname(), nextPath, (state) => {
         // update history
@@ -52,10 +71,9 @@ export default {
         this.currentPath = this.currentPathname()
 
         this.$method('dsPage/updateDOM', state)
-
-        this.$action('dsEvent/emit', {
-          dsEventId: this.getCurrentId(),
-          dsEventOn: 'dsRouter/navigate',
+        this.$emit({
+          id: this.getCurrentId(),
+          on: 'dsRouter/navigate',
           payload: state
         })
       })
