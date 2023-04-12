@@ -30,155 +30,34 @@ export default {
   name: 'dsContent',
   version: 1,
   data: {
-    value: {},
-    type: {},
-    attachedView: {}
-  },
-  /** @lends dsContent */
-  methods: {
-    /**
-     * Attach content to a view item
-     * @param {Object} param
-     * @param {dsContentId} param.dsContentId - dsContent id
-     * @param {dsViewId} param.dsViewId - dsView id
-     */
-    attachView ({ dsContentId, dsViewId }) {
-      const attached = this.attachedView[dsContentId] || []
-      const dsContentValue = this.getValue({ dsContentId })
-
-      // Check if item exists
-      if (attached.length) {
-        const index = attached.indexOf(dsViewId)
-
-        if (index === -1) {
-          attached.push(dsViewId)
-        }
-      } else {
-        attached.push(dsViewId)
-      }
-
-      // Update attached view
-      this.attachedView[dsContentId] = attached
-      // Attach content to view item
-      this.$method('dsView/attachContent', { dsViewId, dsContentId })
-
-      if (dsContentValue) {
-        this.$method('dsView/updateValue', { dsViewId, dsContentId })
-      }
-
-      // emit on mount event
-      this.$method('dsEvent/emit', {
-        dsEventId: dsViewId,
-        dsEventOn: 'dsContent/attachView',
-        payload: {
-          dsContentId,
-          dsViewId
-        }
-      })
-    },
-    /**
-     * Detach content from view item
-     * @param {Object} param
-     * @param {dsContentId} param.dsContentId - dsContent id
-     * @param {dsViewId} param.dsViewId - dsView id
-     */
-    detachView ({ dsContentId, dsViewId }) {
-      const attached = this.attachedView[dsContentId] || []
-
-      // Check if item exists
-      if (attached.length) {
-        const index = attached.indexOf(dsViewId)
-
-        if (index > -1) {
-          attached.splice(index, 1)
+    value: {
+      default: {},
+      schema: {
+        type: 'collection',
+        suffixId () {
+          return this.$getDataValue({ name: 'dsMetadata/language' }).value
+        },
+        items: {
+          type: 'object'
         }
       }
-
-      // Update attached view
-      this.attachedView[dsContentId] = attached
-      // detach content from view item
-      this.$method('dsView/detachContent', dsViewId)
-
-      // emit on mount event
-      this.$method('dsEvent/emit', {
-        dsEventId: dsViewId,
-        dsEventOn: 'dsContent/detachView',
-        payload: {
-          dsContentId,
-          dsViewId
-        }
-      })
     },
-    /**
-     * Get content type
-     * @param {dsContentId} id - Content id
-     * @returns {dsContentType} An array that contains the content type and a boolean used to indicate if the content is permanent
-     */
-    getType (dsContentId) {
-      return this.type[dsContentId]
-    },
-    /**
-     * Get content value
-     * @param {string} dsContentId - Content id
-     * @param {language} language - Language in ISO 639-2
-     * @returns {dsContentValue}
-     */
-    getValue ({ dsContentId, language }) {
-      if (!language) {
-        language = this.$method('dsMetadata/getLanguage')
-      }
-
-      if (this.value[dsContentId]) {
-        if (this.value[dsContentId][language]) {
-          return this.value[dsContentId][language]
-        }
-
-        return this.value[dsContentId][language]
-      }
-
-      // ISSUE: this should throw an error
-      return ''
-    },
-    /**
-     * Set types
-     * @param {dsContentType[]} types - A collection of types
-     */
-    setTypes (types) {
-      this.type = { ...this.type, ...types }
-    },
-    /**
-     * Set value
-     * @param {dsContentId} id - Content id
-     * @param {dsContentValue} value - The value of content
-     * @param {string} language - The content language in ISO 639-2 format
-     */
-    setValue ({ dsContentId, dsContentValue, language }) {
-      language = language || this.$method('dsMetadata/getLanguage')
-
-      if (this.value[dsContentId]) {
-        this.value[dsContentId][language] = dsContentValue
-      } else {
-        this.value[dsContentId] = {
-          [language]: dsContentValue
+    type: {
+      default: {},
+      schema: {
+        type: 'collection',
+        items: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string'
+            },
+            isTemporary: {
+              type: 'boolean'
+            }
+          }
         }
       }
-
-      this.$method('dsEvent/emit', {
-        dsEventId: dsContentId,
-        dsEventOn: 'dsContent/setValue',
-        payload: {
-          dsContentId,
-          dsContentValue,
-          language
-        }
-      })
-    },
-    /**
-     * Set values
-     * @param {dsContentValue[]} values - The collection dsContentValues
-     */
-    setValues (dsContentValues) {
-      this.value = { ...this.value, ...dsContentValues }
     }
   }
 }
