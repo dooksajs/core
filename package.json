@@ -2,11 +2,10 @@
   "name": "@dooksa/ds-plugin-content",
   "version": "1.0.0",
   "description": "Dooksa content management",
-  "main": "dist/ds-content.js",
+  "main": "src/index.js",
   "type": "module",
   "scripts": {
     "dev": "ds-scripts dev",
-    "build": "ds-scripts build_lib",
     "docs": "ds-scripts docs",
     "test:open": "ds-scripts --open test",
     "test:run": "ds-scripts --run test",
