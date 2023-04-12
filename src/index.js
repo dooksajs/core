@@ -20,83 +20,67 @@ export default {
   data: {
     DsPlugin: {
       private: true,
-      value: () => {},
-      type: 'function'
+      default: () => {}
     },
     methods: {
       private: true,
-      value: {},
-      type: 'object'
+      default: {}
     },
     tokens: {
       private: true,
-      value: {},
-      type: 'object'
+      default: {}
     },
     components: {
       private: true,
-      value: {},
-      type: 'object'
+      default: {}
     },
     buildId: {
       private: true,
-      value: 0,
-      type: 'number'
+      default: 0
     },
     plugins: {
       private: true,
-      value: {},
-      type: 'object'
+      default: {}
     },
     pluginUseQueue: {
       private: true,
-      value: [],
-      type: 'array'
+      default: []
     },
     depQueue: {
       private: true,
-      value: {},
-      type: 'object'
+      default: {}
     },
     queue: {
       private: true,
-      value: {},
-      type: 'object'
+      default: {}
     },
     isLoaded: {
       private: true,
-      value: {},
-      type: 'object'
+      default: {}
     },
     initialising: {
       private: true,
-      value: {},
-      type: 'object'
+      default: {}
     },
     setupOnRequest: {
       private: true,
-      value: {},
-      type: 'object'
+      default: {}
     },
     setupOnRequestQueue: {
       private: true,
-      value: {},
-      type: 'object'
+      default: {}
     },
     options: {
       private: true,
-      value: {},
-      type: 'object'
+      default: {}
     },
     context: {
       private: true,
-      value: {},
-      type: 'object'
+      default: {}
     },
     isDev: {
       private: true,
-      value: false,
-      type: 'boolean'
+      default: false
     }
   },
   /**
@@ -160,12 +144,12 @@ export default {
         value: this._contextMethod('dsData/get').bind(this)
       },
       {
-        name: '$setDataValue',
-        value: this._contextMethod('dsData/set').bind(this)
+        name: '$removeDataValue',
+        value: this._contextMethod('dsData/remove').bind(this)
       },
       {
-        name: '$deleteDataValue',
-        value: this._contextMethod('dsData/delete').bind(this)
+        name: '$setDataValue',
+        value: this._contextMethod('dsData/set').bind(this)
       },
       {
         name: '$emit',
@@ -175,7 +159,14 @@ export default {
 
     this.isDev = isDev
     this.isLoaded[NAME] = true
+    // ISSUE: should import dsData
+    this._addOptions(plugins.dsData.name, plugins.dsData.options)
+    this.plugins[plugins.dsData.name] = plugins.dsData
+    this.pluginUseQueue.push(plugins.dsData)
+    this.queue[plugins.dsData.name] = []
+    this.depQueue[plugins.dsData.name] = []
 
+    delete plugins.dsData
     // add plugins to install queue
     for (const key in plugins) {
       if (Object.prototype.hasOwnProperty.call(plugins, key)) {
@@ -204,7 +195,9 @@ export default {
     if (isDev) {
       return {
         $method: this._method.bind(this),
-        $action: this._action.bind(this)
+        $action: this._action.bind(this),
+        $setDataValue: this._contextMethod('dsData/set').bind(this),
+        $getDataValue: this._contextMethod('dsData/get').bind(this)
       }
     }
   },
@@ -317,35 +310,7 @@ export default {
         for (let i = 0; i < plugin.data.length; i++) {
           const data = plugin.data[i]
 
-          this.methods['dsData/add']({
-            id: plugin.name + '/' + data.key,
-            value: data.value,
-            type: data.type
-          })
-        }
-      }
-
-      // add custom getters to manager
-      if (plugin.getters) {
-        for (let i = 0; i < plugin.getters.length; i++) {
-          const item = plugin.getters[i]
-
-          this.methods['dsData/addGetter']({
-            id: plugin.name + '/' + item.key,
-            item: item.get
-          })
-        }
-      }
-
-      // add custom setters to manager
-      if (plugin.setters) {
-        for (let i = 0; i < plugin.setters.length; i++) {
-          const item = plugin.setters[i]
-
-          this.methods['dsData/addSetter']({
-            id: plugin.name + '/' + item.key,
-            item: item.set
-          })
+          this.methods['dsData/add'](data)
         }
       }
     },
