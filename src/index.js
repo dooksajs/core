@@ -1,4 +1,5 @@
 import DsPlugin from '@dooksa/ds-plugin'
+import dsData from '@dooksa/ds-plugin-data'
 import dsMetadata from '@dooksa/ds-plugin-metadata'
 import dsAction from '@dooksa/ds-plugin-action'
 import dsWidget from '@dooksa/ds-plugin-widget'
@@ -19,6 +20,11 @@ export default {
   DsPlugin,
   dsManager,
   plugins: {
+    [dsData.name]: {
+      name: dsData.name,
+      version: dsData.version,
+      plugin: dsData
+    },
     [dsMetadata.name]: {
       name: dsMetadata.name,
       version: dsMetadata.version,
