@@ -1,0 +1,24 @@
+{
+  "name": "object-hash",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "files": ["dist"],
+  "main": "./dist/object-hash.umd.cjs",
+  "module": "./dist/object-hash.js",
+  "exports": {
+    ".": {
+      "import": "./dist/object-hash.js",
+      "require": "./dist/object-hash.cjs"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "standard": "^17.0.0",
+    "vite": "^4.2.0"
+  }
+}
