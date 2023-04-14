@@ -3,7 +3,9 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "main": "./dist/object-hash.umd.cjs",
   "module": "./dist/object-hash.js",
   "exports": {
@@ -20,5 +22,8 @@
   "devDependencies": {
     "standard": "^17.0.0",
     "vite": "^4.2.0"
+  },
+  "dependencies": {
+    "crypto-js": "^4.1.1"
   }
 }
