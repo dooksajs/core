@@ -1,7 +1,6 @@
 {
-  "name": "object-hash",
-  "private": true,
-  "version": "0.0.0",
+  "name": "@dooksa/object-hash",
+  "version": "1.0.0",
   "type": "module",
   "files": [
     "dist"
@@ -11,7 +10,7 @@
   "exports": {
     ".": {
       "import": "./dist/object-hash.js",
-      "require": "./dist/object-hash.cjs"
+      "require": "./dist/object-hash.umd.cjs"
     }
   },
   "scripts": {
