@@ -695,6 +695,11 @@ var $ = {}, tr = {
   });
 })(tr);
 const er = $, nr = {
+  /**
+   * Create MD5 base64 string from object
+   * @param {Object} source - The original object used to create the hash
+   * @returns {string} - MD5 base64 string
+   */
   process(h) {
     try {
       const d = {};
@@ -703,20 +708,33 @@ const er = $, nr = {
       console.error(d);
     }
   },
+  /**
+   * Sort source by data type
+   * @private
+   * @param {Object} target - Alphanumerically sorted object
+   * @param {*} source - Current value
+   * @returns
+   */
   _sortType(h, d) {
     if (this._nullish(d))
       throw new Error("objectHash: value cannot be undefined");
     return Array.isArray(d) ? d = this._array(h, d) : typeof d == "object" ? d = this._object(h, d) : typeof d == "function" && (d = d.toString()), d;
   },
   /**
-     * Check if value is undefined or null
-     * @private
-     * @param {*} value - Any value
-     * @returns {boolean}
-     */
+   * Check if value is undefined or null
+   * @private
+   * @param {*} value - Any value
+   * @returns {boolean}
+   */
   _nullish(h) {
     return h == null;
   },
+  /**
+   * Sort array alphanumerically
+   * @param {Object} target - Alphanumerically sorted object
+   * @param {Array} source - Current nested array
+   * @returns {Array}
+   */
   _array(h, d) {
     d = d.splice(), d.sort();
     for (let g = 0; g < d.length; g++) {
@@ -725,6 +743,13 @@ const er = $, nr = {
     }
     return d;
   },
+  /**
+   * Sort object keys alphanumerically
+   * @private
+   * @param {Object} target - Alphanumerically sorted object
+   * @param {Object} source - Current nested object
+   * @returns {Object}
+   */
   _object(h, d) {
     const g = Object.keys(d);
     g.sort();
@@ -738,3 +763,4 @@ const er = $, nr = {
 export {
   nr as default
 };
+//# sourceMappingURL=object-hash.js.map
