@@ -31,7 +31,8 @@ export default {
       schema: {
         type: 'collection',
         items: {
-          type: 'object'
+          type: 'string',
+          relation: 'dsContent/value'
         }
       }
     },
