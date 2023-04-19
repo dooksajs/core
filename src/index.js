@@ -30,6 +30,10 @@ export default {
       private: true,
       default: {}
     },
+    tokenListeners: {
+      private: true,
+      default: {}
+    },
     components: {
       private: true,
       default: {}
@@ -291,7 +295,12 @@ export default {
           if (Object.hasOwnProperty.call(plugin.tokens, key)) {
             const token = plugin.tokens[key]
 
-            this.tokens[`${plugin.name}/${key}`] = token
+            if (token.get) {
+              this.tokens[`${plugin.name}/${key}`] = token.get
+              this.tokenListeners[`${plugin.name}/${key}`] = token.data
+            } else {
+              this.tokens[`${plugin.name}/${key}`] = token
+            }
           }
         }
       }
@@ -553,9 +562,20 @@ export default {
           .catch(e => reject(e))
       })
     },
-    _token (name, params) {
+    _token (name, dsViewId, value) {
       if (this.tokens[name]) {
-        return this.tokens[name](params)
+        if (this.tokenListeners[name]) {
+          this.methods['dsData/addListener']({
+            name: this.tokenListeners[name],
+            on: 'update',
+            refId: dsViewId,
+            listener: () => {
+              this.methods['dsView/updateValue']({ dsViewId })
+            }
+          })
+        }
+
+        return this.tokens[name](value)
       }
     },
     /**
