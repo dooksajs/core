@@ -133,11 +133,11 @@ export default {
 
       if (id) {
         refId = id + refId
-      listeners = listeners[id]
+        listeners = listeners[id]
 
-      // add listener
-      if (!listeners) {
-        this[listenerName][name][id] = [listener]
+        // add listener
+        if (!listeners) {
+          this[listenerName][name][id] = [listener]
           listenerRefs[refId] = true
         } else if (!listenerRefs[refId]) {
           listeners.push(listener)
@@ -406,6 +406,8 @@ export default {
       for (const key in source) {
         if (Object.hasOwnProperty.call(source, key)) {
           const element = source[key]
+          this._checkType(name, element, schema.type)
+
           target[key] = this.defaultTypes[schema.type]()
           target[key] = this[setDataName](data, name, target[key], element)
         }
