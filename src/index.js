@@ -39,16 +39,53 @@ export default {
      */
     textContent ({ dsViewId, text, updateText }) {
       let tokenIndex = 0
+
       // create new process if text is different or no process exists
       if (!this.process[dsViewId] || this.process[dsViewId].tokens !== text) {
         this.process[dsViewId] = {
           list: {},
           text,
+          tokenised: false,
           tokens: text
         }
       }
 
       const item = this.process[dsViewId]
+
+      if (item.tokenised) {
+        item.text = text
+        let valuePadding = 0
+
+        for (const tokenIndex in item.list) {
+          if (Object.hasOwnProperty.call(item.list, tokenIndex)) {
+            const token = item.list[tokenIndex]
+            const prevLength = token.valueLength
+
+            if (valuePadding) {
+              token.start = token.start + valuePadding
+              token.end = token.end + valuePadding
+            }
+
+            const nextLength = this._get(
+              'values',
+              dsViewId,
+              item,
+              tokenIndex,
+              token.id,
+              token.args,
+              token.start,
+              token.end,
+              updateText
+            )
+
+            if (prevLength !== nextLength) {
+              valuePadding = nextLength - prevLength
+            }
+          }
+        }
+
+        return
+      }
 
       for (let i = 0; i < item.text.length; i++) {
         const bracketLeft = item.text[i]
@@ -63,11 +100,17 @@ export default {
               let valueLength = 0
               // token found
               if (token.length > 1) {
+                const tokenArgs = token.split(':')
+                const tokenId = tokenArgs[0] + '/' + tokenArgs[1]
+                const end = j + 1
+
                 item.list[tokenIndex] = {
-                  id: token,
+                  id: tokenId,
                   processed: false,
+                  args: tokenArgs,
                   value: '',
-                  start: i
+                  start: i,
+                  end
                 }
                 // get token
                 valueLength = this._get(
@@ -75,9 +118,10 @@ export default {
                   dsViewId,
                   item,
                   tokenIndex,
-                  token.split(':'),
+                  tokenId,
+                  tokenArgs,
                   i,
-                  j + 1,
+                  end,
                   updateText
                 )
                 // increment token process index
@@ -93,6 +137,8 @@ export default {
           }
         }
       }
+
+      item.tokenised = true
     },
     /**
      * Retrieve a token
@@ -106,11 +152,11 @@ export default {
      * @param {Function} param.updateText This the function that updates the element, for example: element.textContent
      * @returns {number} The length of the value retrieved
      */
-    _get (type, dsViewId, process, index, token, start, end, updateText) {
+    _get (type, dsViewId, process, index, tokenId, token, start, end, updateText) {
       const item = process.list[index]
       let valueLength = 0
 
-      item.value = this.$token(token[0] + '/' + token[1], token)
+      item.value = this.$token(tokenId, dsViewId, token)
       // check if token exists
       if (item.value === undefined) {
         item.value = '[' + token.join(':') + ']'
