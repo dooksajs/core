@@ -98,13 +98,13 @@ export default {
     // replace root element with new app element
     rootElement.parentElement.replaceChild(viewItem.value, rootElement)
   },
-  /** @lends dsView */
+  /** @lends dsView.prototype */
   methods: {
     /**
      * Adds a node to the end of the list of children of a specified parent node
-     * @param {Object} node
-     * @param {dsViewId} node.dsViewParentId - Parent dsView node id
-     * @param {dsViewId} node.dsViewId - Child dsView node id
+     * @param {Object} item
+     * @param {dsViewId} item.dsViewId - Child dsView node id
+     * @param {dsViewId} item.dsViewParentId - Parent dsView node id
      */
     append ({ dsViewId, dsViewParentId }) {
       const parentItem = this.$getDataValue({
@@ -220,7 +220,7 @@ export default {
     },
     /**
      * Creates text nodes
-     * @param {dsViewId} id - Node id
+     * @param {dsViewId} dsViewId - dsView node id
      */
     createNode (dsViewId) {
       const textNode = document.createTextNode('')
