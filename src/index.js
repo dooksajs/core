@@ -181,18 +181,36 @@ export default {
         options: {
           position: component.contentIndex
         }
-      })
-
+      }).value
       const dsContentType = this.$getDataValue({
         name: 'dsContent/type',
-        id: dsContentId.value
+        id: dsContentId
+      }).value
+
+      // Associate dsContent with dsView item
+      this.$setDataValue({
+        name: 'dsView/content',
+        source: dsContentId,
+        options: {
+          id: dsViewId
+        }
+      })
+      // Update view item if content value changes
+      this.$addDataListener({
+        name: 'dsContent/value',
+        on: 'update',
+        id: dsContentId,
+        refId: dsViewId,
+        listener: (value) => {
+          this.$method('dsView/updateValue', { dsViewId, language })
+        }
       })
 
       if (dsContentType.name === 'section') {
         const dsWidgetSectionId = this.$getDataValue({
           name: 'dsContent/value',
-          id: dsContentId.value
-        })
+          id: dsContentId
+        }).value
 
         // create a new widget and append it to this element item
         this.$method('dsWidget/attachSection', {
@@ -203,23 +221,14 @@ export default {
         })
       } else {
         // missing parentElement
-        this.$method('dsView/updateValue', { dsViewId, dsContentId: dsContentId.value })
-
-        this.$addDataListener({
-          name: 'dsContent/value',
-          on: 'update',
-          id: dsContentId.value,
-          listener: () => {
-            this.$method('dsView/updateValue', { dsViewId, dsContentId: dsContentId.value })
-          }
-        })
-
+        this.$method('dsView/updateValue', { dsViewId, language })
         this.$emit({
           id: dsViewId,
-          on: 'dsContent/attachView',
+          on: 'dsContent/attach',
           payload: {
-            dsContentId: dsContentId.value,
-            dsViewId
+            dsContentId,
+            dsViewId,
+            language
           }
         })
       }
