@@ -102,9 +102,11 @@ export default {
       Object.freeze(this.values[data.id])
 
       // prepare listeners
-      this['data/update/listeners'][data.id] = {}
+      const listenerType = data.collection ? {} : []
+
+      this['data/update/listeners'][data.id] = listenerType
       this['data/update/refs'][data.id] = {}
-      this['data/delete/listeners'][data.id] = {}
+      this['data/delete/listeners'][data.id] = listenerType
       this['data/delete/refs'][data.id] = {}
     },
     /**
@@ -114,7 +116,7 @@ export default {
      * @param {dsDataId} param.id - Data collection id
      * @param {function} param.listener - The listener function to run when event is fired
      */
-    addListener ({ name, on, id, listener }) {
+    addListener ({ name, on, id, refId, listener }) {
       const listenerName = 'data/' + on + '/listeners'
       let listeners = this[listenerName]
 
@@ -129,17 +131,22 @@ export default {
         throw new Error('Data event name does not exist: "' + name + '"')
       }
 
+      if (id) {
+        refId = id + refId
       listeners = listeners[id]
 
       // add listener
       if (!listeners) {
         this[listenerName][name][id] = [listener]
-        listenerRefs[id] = true
-      } else {
-        // Avoid listener duplications
-        if (!listenerRefs[id]) {
+          listenerRefs[refId] = true
+        } else if (!listenerRefs[refId]) {
           listeners.push(listener)
+          listenerRefs[refId] = true
         }
+      } else if (!listenerRefs[refId]) {
+        // add listener
+        listeners.push(listener)
+        listenerRefs[refId] = true
       }
     },
     /**
@@ -519,8 +526,7 @@ export default {
       if (listeners) {
         for (let i = 0; i < listeners.length; i++) {
           const listener = listeners[i]
-
-          listener.action(value)
+          listener(value)
         }
       }
     },
