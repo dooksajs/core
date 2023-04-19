@@ -4,7 +4,7 @@ import dsSchema from './utils/schema.js'
 
 /**
  * Plugins are used to extend and customise the Dooksa application builder.
- * @class
+ * @interface
  * @param {DsPlugin} plugin - The plugin object used by the Plugin constructor.
  * @param {Object[]} context - Context is shared data between plugins.
  * @param {string} context.name - The name will be the key used within the plugin, e.g. '$action' = this.$action
@@ -43,6 +43,7 @@ function DsPlugin (plugin, context = [], isDev) {
           dataEntry.id = plugin.name + '/' + key
           dataEntry.default = item.default
           dataEntry.schema = dsSchema.process(_context, dataEntry.id, schema, [], true)
+          dataEntry.collection = schema.type === 'collection'
 
           data.push(dataEntry)
         }
@@ -107,7 +108,13 @@ function DsPlugin (plugin, context = [], isDev) {
         const item = plugin.tokens[key]
 
         _context[key] = item
-        tokens[key] = item.bind(_context)
+        tokens[key] = item
+
+        if (item.get) {
+          tokens[key].get = item.get.bind(_context)
+        } else {
+          tokens[key] = item.bind(_context)
+        }
       }
     }
 
