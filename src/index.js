@@ -131,6 +131,7 @@ export default {
         name: 'dsView/items',
         on: 'delete',
         id: dsViewId,
+        refId: dsViewId,
         listener: () => {
           this.$deleteDataValue({
             name: 'dsView/items',
