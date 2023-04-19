@@ -68,8 +68,6 @@ export default {
    * Setup plugin
    * @param {Object} options
    * @param {string} options.rootElementId - Root element id
-   * @memberof dsView
-   * @inner
    */
   setup ({ rootElementId = 'root' }) {
     // get root element from the DOM
@@ -377,7 +375,7 @@ export default {
      * @param {dsContentValue} node.value - dsContent value
      * @param {dsContentLanguage} node.language - dsContent language code
      */
-    updateValue ({ dsViewId, dsContentId, language }) {
+    updateValue ({ dsViewId, language }) {
       const viewItem = this.$getDataValue({
         name: 'dsView/items',
         id: dsViewId
@@ -387,8 +385,19 @@ export default {
         throw Error('No view item found')
       }
 
+      const dsContent = this.$getDataValue({
+        name: 'dsView/content',
+        id: dsViewId
+      })
+
+      if (dsContent.isEmpty) {
+        throw Error('No content attached to view item')
+      }
+
       const node = viewItem.value
       const nodeName = node.nodeName.toLowerCase()
+
+      const dsContentId = dsContent.value
       const dsContentValue = this.$getDataValue({
         name: 'dsContent/value',
         id: dsContentId,
@@ -396,7 +405,7 @@ export default {
       })
 
       // ISSUE: [DS-760] move setters to general actions
-      if (nodeName === '#text') {
+      if (dsContentValue.value?.text) {
         if (dsContentValue.value.token) {
           return this.$method('dsToken/textContent', {
             dsViewId,
