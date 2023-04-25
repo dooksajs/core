@@ -1,7 +1,7 @@
 import { customAlphabet } from 'nanoid'
 
 const alphabet = '123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz$'
-const nanoid = customAlphabet(alphabet, 22)
+const nanoid = customAlphabet(alphabet, 15)
 
 function SchemaException (details) {
   this.details = details
