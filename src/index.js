@@ -968,7 +968,7 @@ export default {
       return Object.assign({}, value)
     },
     '_unfreeze/array' (value) {
-      return value.splice()
+      return value.slice()
     }
   }
 }
