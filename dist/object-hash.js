@@ -94,7 +94,7 @@ const i = {
    * @returns {Array}
    */
   _array(n, t) {
-    t = t.splice(0), t.sort();
+    t = t.slice(), t.sort();
     for (let e = 0; e < t.length; e++) {
       const r = t[e];
       t[e] = this._sortType(n, r);
