@@ -10,26 +10,26 @@ const i = {
    * @param {Object} source - The original object used to create the hash
    * @returns {string} - Adler 32 hex string
    */
-  process(n) {
+  process(e) {
     try {
       const t = {};
-      this._sortType(t, n);
-      const e = new TextEncoder(), r = JSON.stringify(t), o = e.encode(r);
+      this._sortType(t, e);
+      const n = new TextEncoder(), r = JSON.stringify(t), o = n.encode(r);
       return this._adler(o);
     } catch (t) {
       console.error(t);
     }
   },
-  _defaultType(n) {
-    const t = n.constructor.name;
+  _defaultType(e) {
+    const t = e.constructor.name;
     return i[t]();
   },
-  _adler(n) {
-    let e = 1, r = 0;
-    n = new Uint8Array(n);
-    for (let o = 0; o < n.length; o++)
-      e += n[o], r += e;
-    return e %= 65521, r %= 65521, this._hex((r << 16 | e) >>> 0, 8);
+  _adler(e) {
+    let n = 1, r = 0;
+    e = new Uint8Array(e);
+    for (let o = 0; o < e.length; o++)
+      n += e[o], r += n;
+    return n %= 65521, r %= 65521, this._hex((r << 16 | n) >>> 0, 8);
   },
   /**
    * Translates a character into an ordinal.
@@ -41,13 +41,13 @@ const i = {
    * // returns 97
    * this._.ord('a');
    */
-  _ord(n) {
-    if (n.length === 2) {
-      const t = n.charCodeAt(0), e = n.charCodeAt(1);
-      if (t >= 55296 && t < 56320 && e >= 56320 && e < 57344)
-        return (t - 55296) * 1024 + e - 56320 + 65536;
+  _ord(e) {
+    if (e.length === 2) {
+      const t = e.charCodeAt(0), n = e.charCodeAt(1);
+      if (t >= 55296 && t < 56320 && n >= 56320 && n < 57344)
+        return (t - 55296) * 1024 + n - 56320 + 65536;
     }
-    return n.charCodeAt(0);
+    return e.charCodeAt(0);
   },
   /**
    * Converts a character or number to its hex representation.
@@ -63,8 +63,8 @@ const i = {
    * // returns "6e"
    * this._hex(110)
    */
-  _hex(n, t = 2) {
-    return n = typeof n == "string" ? this._ord(n) : n, n.toString(16).padStart(t, "0");
+  _hex(e, t = 2) {
+    return e = typeof e == "string" ? this._ord(e) : e, e.toString(16).padStart(t, "0");
   },
   /**
    * Sort source by data type
@@ -73,10 +73,10 @@ const i = {
    * @param {*} source - Current value
    * @returns
    */
-  _sortType(n, t) {
+  _sortType(e, t) {
     if (this._nullish(t))
       throw new Error("objectHash: value cannot be undefined");
-    return Array.isArray(t) ? t = this._array(n, t) : typeof t == "object" ? t = this._object(n, t) : typeof t == "function" && (t = t.toString()), t;
+    return Array.isArray(t) ? t = this._array(e, t) : typeof t == "object" ? t = this._object(e, t) : typeof t == "function" && (t = t.toString()), t;
   },
   /**
    * Check if value is undefined or null
@@ -84,8 +84,8 @@ const i = {
    * @param {*} value - Any value
    * @returns {boolean}
    */
-  _nullish(n) {
-    return n == null;
+  _nullish(e) {
+    return e == null;
   },
   /**
    * Sort array alphanumerically
@@ -93,11 +93,11 @@ const i = {
    * @param {Array} source - Current nested array
    * @returns {Array}
    */
-  _array(n, t) {
-    t = t.slice(), t.sort();
-    for (let e = 0; e < t.length; e++) {
-      const r = t[e];
-      t[e] = this._sortType(n, r);
+  _array(e, t) {
+    t = t.slice();
+    for (let n = 0; n < t.length; n++) {
+      const r = t[n];
+      t[n] = this._sortType(e, r);
     }
     return t;
   },
@@ -108,14 +108,14 @@ const i = {
    * @param {Object} source - Current nested object
    * @returns {Object}
    */
-  _object(n, t) {
-    const e = Object.keys(t);
-    e.sort();
-    for (let r = 0; r < e.length; r++) {
-      const o = e[r];
-      n[o] = this._defaultType(t[o]), n[o] = this._sortType(n[o], t[o]);
+  _object(e, t) {
+    const n = Object.keys(t);
+    n.sort();
+    for (let r = 0; r < n.length; r++) {
+      const o = n[r];
+      e[o] = this._defaultType(t[o]), e[o] = this._sortType(e[o], t[o]);
     }
-    return n;
+    return e;
   }
 };
 export {
