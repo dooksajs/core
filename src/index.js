@@ -334,30 +334,31 @@ export default {
       this.options[name] = options
     },
     _component (name) {
-      if (this.components[name]) {
-        const component = this.components[name]
+      const component = this.components[name]
 
-        // setup on request
-        if (!this.isLoaded[component.plugin] && this.setupOnRequestQueue[component.plugin]) {
-          const pluginName = component.plugin
-          const options = this._getOptions(pluginName)
-          const plugin = this.setupOnRequestQueue[pluginName]
-
-          this._setup(plugin, options.setup)
-            .catch((e) => console.error(e))
-        }
-
-        if (component.isLazy && !component.loading) {
-          component.loading = true
-          component.lazy()
-            .then(() => {
-              component.loading = false
-            })
-            .catch(e => console.error(e))
-        }
-
-        return component
+      if (!component) {
+        throw Error('No component found my this name: ' + name)
       }
+
+      // setup on request
+      if (!this.isLoaded[component.plugin] && this.setupOnRequestQueue[component.plugin]) {
+        const pluginName = component.plugin
+        const options = this._getOptions(pluginName)
+        const plugin = this.setupOnRequestQueue[pluginName]
+
+        this._setup(plugin, options.setup)
+          .catch((e) => console.error(e))
+      }
+
+      // lazy load component
+      if (component.isLazy && !component.isLoaded) {
+        component.isLoaded = true
+
+        component.lazy()
+          .catch(e => console.error(e))
+      }
+
+      return component
     },
     /**
      * Get plugin
