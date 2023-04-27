@@ -97,18 +97,18 @@ export default {
         id: dsTemplateId
       })
 
-      const item = this.$getDataValue({
+      const template = this.$getDataValue({
         name: 'dsTemplate/items',
-        id: entryId.value
+        id: entryId.item
       })
       // get template
       // const item = this.items[dsTemplateEntryId] || this.items[this.entry[dsTemplateId]]
 
-      if (!item.isEmpty) {
+      if (!template.isEmpty) {
         return this._constructor(
           dsTemplateId,
           dsTemplateEntryId,
-          item.value,
+          template.item,
           dsWidgetSectionId,
           dsWidgetPrefixId,
           dsWidgetInstanceId,
@@ -134,7 +134,7 @@ export default {
             const result = this._constructor(
               dsTemplateId,
               dsTemplateEntryId,
-              item,
+              template.item,
               dsWidgetSectionId,
               dsWidgetPrefixId,
               dsWidgetInstanceId,
@@ -288,7 +288,7 @@ export default {
       if (result.content) {
         if (result.content.value) {
           this.$setDataValue({
-            name: 'dsContent/value',
+            name: 'dsContent/items',
             source: result.content.value,
             options: {
               source: {
@@ -356,7 +356,7 @@ export default {
               id: contentId
             })
 
-            if (type === dsContentType.value) {
+            if (type === dsContentType.item) {
               id = contentId
               defaultContent.splice(i, 1)
               exists = true
