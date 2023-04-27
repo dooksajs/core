@@ -40,7 +40,7 @@ if (dsConfig.templates) {
 
       app.$method('dsWidget/attachSection', {
         dsWidgetSectionId,
-        dsViewId: rootViewId.value
+        dsViewId: rootViewId.item
       })
     })
 }
