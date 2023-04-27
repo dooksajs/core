@@ -305,7 +305,7 @@ export default {
       if (dsPage.content) {
         if (dsPage.content.value) {
           this.$setDataValue({
-            name: 'dsContent/value',
+            name: 'dsContent/items',
             source: dsPage.content.value,
             options: {
               source: {
