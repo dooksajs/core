@@ -60,7 +60,7 @@ export default {
       }
     }
   },
-  /** @lends dsLayout */
+  /** @lends dsLayout.prototype */
   methods: {
     attach ({
       dsLayoutId,
@@ -82,6 +82,12 @@ export default {
           name: 'dsWidget/sectionView',
           id: dsWidgetSectionId
         })
+
+        if (dsViewId.isEmpty) {
+          throw new Error('No dsView item found')
+        }
+
+        dsViewId = dsViewId.item
       }
 
       if (components.isEmpty) {
@@ -100,15 +106,15 @@ export default {
 
         components = this._create(
           dsLayoutId,
-          items.value,
-          entry.value,
-          items.value,
-          events.value,
+          items.item,
+          entry.item,
+          items.item,
+          events.item,
           dsWidgetSectionId,
           dsWidgetInstanceId,
           dsViewId,
           dsWidgetPrefixId,
-          language.value,
+          language.item,
           dsWidgetMode
         )
 
@@ -124,7 +130,7 @@ export default {
             dsWidgetMode,
             dsViewId,
             dsWidgetPrefixId,
-            language.value
+            language.item
           )
         }
 
@@ -181,11 +187,11 @@ export default {
         options: {
           position: component.contentIndex
         }
-      }).value
+      }).item
       const dsContentType = this.$getDataValue({
         name: 'dsContent/type',
         id: dsContentId
-      }).value
+      }).item
 
       // Associate dsContent with dsView item
       this.$setDataValue({
@@ -197,7 +203,7 @@ export default {
       })
       // Update view item if content value changes
       this.$addDataListener({
-        name: 'dsContent/value',
+        name: 'dsContent/items',
         on: 'update',
         id: dsContentId,
         refId: dsViewId,
@@ -208,9 +214,9 @@ export default {
 
       if (dsContentType.name === 'section') {
         const dsWidgetSectionId = this.$getDataValue({
-          name: 'dsContent/value',
+          name: 'dsContent/items',
           id: dsContentId
-        }).value
+        }).item
 
         // create a new widget and append it to this element item
         this.$method('dsWidget/attachSection', {
@@ -223,8 +229,8 @@ export default {
         // missing parentElement
         this.$method('dsView/updateValue', { dsViewId, language })
         this.$emit({
+          name: 'dsContent/mount',
           id: dsViewId,
-          on: 'dsContent/attach',
           payload: {
             dsContentId,
             dsViewId,
@@ -285,14 +291,14 @@ export default {
             id: item.componentId
           })
 
-          if (dsComponent.value.id === 'text') {
+          if (dsComponent.item.id === 'text') {
             this.$method('dsView/createNode', dsViewId)
           } else {
             this.$method('dsView/createElement', {
               dsViewId,
               dsWidgetSectionId,
               dsWidgetInstanceId,
-              dsComponent: dsComponent.value
+              dsComponent: dsComponent.item
             })
           }
 
