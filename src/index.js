@@ -168,11 +168,11 @@ export default {
      * @returns
      */
     get ({ name, id, prefixId, suffixId, options }) {
-      const item = { isEmpty: false }
+      const result = { isEmpty: false }
       const schema = this.schema[name]
 
       if (id) {
-        item.isAffixEmpty = true
+        result.isAffixEmpty = true
 
         // find document using custom affixes
         if (prefixId || suffixId) {
@@ -194,71 +194,71 @@ export default {
           }
 
           if (!this._nullish(this.values[name][itemId])) {
-            item.isAffixEmpty = false
-            item.value = this.values[name][itemId]
+            result.isAffixEmpty = false
+            result.item = this.values[name][itemId]
           }
         }
 
-        if (item.isAffixEmpty) {
-          item.id = id
-          item.value = this.values[name][item.id]
+        if (result.isAffixEmpty) {
+          result.id = id
+          result.item = this.values[name][result.id]
 
           // find document using default affixes
-          if (this._nullish(item.value) && schema.id) {
+          if (this._nullish(result.item) && schema.id) {
             let itemId
 
             if (schema.id.prefix && schema.id.suffix) {
               const prefix = this._affixId(schema.id.prefix)
               const suffix = this._affixId(schema.id.suffix)
 
-              itemId = prefix + item.id + suffix
+              itemId = prefix + result.id + suffix
             } else if (schema.id.prefix) {
               const prefix = this._affixId(schema.id.prefix)
 
-              itemId = prefix + item.id
+              itemId = prefix + result.id
             } else {
               const suffix = this._affixId(schema.id.suffix)
 
-              itemId = item.id + suffix
+              itemId = result.id + suffix
             }
 
-            item.id = itemId
-            item.value = this.values[name][itemId]
+            result.id = itemId
+            result.item = this.values[name][itemId]
 
-            if (this._nullish(item.value)) {
-              item.isEmpty = true
+            if (this._nullish(result.item)) {
+              result.isEmpty = true
             }
           }
         }
       } else {
-        item.value = this.values[name]
+        result.item = this.values[name]
       }
 
       if (options) {
         if (Number.isInteger(options.position)) {
           // check if index is within range
-          if (options.position < item.value.length && options.position > -1) {
-            item.value = item.value[options.position]
+          if (options.position < result.item.length && options.position > -1) {
+            result.item = result.item[options.position]
           } else {
             throw new Error('Get data value by index was out of range')
           }
         }
       }
 
-      if (this._nullish(item.value)) {
-        item.isEmpty = true
+      if (this._nullish(result.item)) {
+        result.isEmpty = true
 
-        return item
+        return result
       } else {
         // create copy
         const unfreezeName = '_unfreeze' + schema.type
 
         if (this[unfreezeName]) {
-          item.value = this[unfreezeName](item.value)
+          result.item = this[unfreezeName](result.item)
         }
       }
 
-      return item
+      return result
     },
     set ({ name, source, options }) {
       try {
@@ -291,10 +291,12 @@ export default {
 
         // set new value
         this.values[name] = result.target
+
+        // freeze collection
         Object.freeze(this.values[name])
 
         // notify listeners
-        this._onUpdate(name, result.value, result.id)
+        this._onUpdate(name, result.item, result.id)
 
         return result
       } catch (errorMessage) {
@@ -723,10 +725,10 @@ export default {
 
           if (data.id) {
             result.id = data.id
-            result.value = data.rootTarget[data.id]
+            result.item = data.rootTarget[data.id]
 
             // freeze value
-            Object.freeze(data.rootTarget[data.id])
+              Object.freeze(data.rootTarget[data.id])
           }
 
           return result
@@ -755,7 +757,7 @@ export default {
 
       if (data.id) {
         result.id = data.id
-        result.value = data.rootTarget[data.id]
+        result.item = data.rootTarget[data.id]
       }
 
       return result
