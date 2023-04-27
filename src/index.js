@@ -30,7 +30,7 @@ export default {
   name: 'dsContent',
   version: 1,
   data: {
-    value: {
+    items: {
       default: {},
       schema: {
         type: 'collection',
