@@ -47,8 +47,8 @@ export default {
       this._update(this.currentPath, this.currentPathname(), (state) => {
         this.$method('dsPage/updateDOM', state)
         this.$emit({
+          name: 'dsRouter/navigate',
           id: this.getCurrentId(),
-          on: 'dsRouter/navigate',
           payload: state
         })
       })
@@ -72,8 +72,8 @@ export default {
 
         this.$method('dsPage/updateDOM', state)
         this.$emit({
+          name: 'dsRouter/navigate',
           id: this.getCurrentId(),
-          on: 'dsRouter/navigate',
           payload: state
         })
       })
