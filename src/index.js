@@ -37,43 +37,18 @@ export default {
      * @param {dsEventOn} param.on - Event fired "on" an event name
      * @param {Object.<string, any>} param.payload - The action that runs on the event
      */
-    emit ({ id, on, payload }) {
+    emit ({ name, on, payload }) {
       const listeners = this.$getDataValue({
         name: 'dsEvent/listeners',
-        id: id + '_' + on
+        id: name + '_' + on
       })
 
       if (!listeners.isEmpty) {
-        for (let i = 0; i < listeners.value.length; i++) {
+        for (let i = 0; i < listeners.item.length; i++) {
           this.$method('dsAction/dispatch', {
-            dsActionId: listeners.value[i],
+            dsActionId: listeners.item[i],
             payload
           })
-        }
-      }
-    },
-    /**
-     * Remove listener
-     * @param {Object} param
-     * @param {dsActionId} param.dsActionId - The action that runs on the event
-     */
-    removeListener ({ dsEventId, dsEventOn, dsActionId }) {
-      const id = this._id(dsEventId, dsEventOn)
-      const listeners = this._getListener(id)
-
-      if (listeners.length) {
-        const list = []
-
-        for (let i = 0; i < listeners.length; i++) {
-          if (listeners[i] !== dsActionId) {
-            list.push(listeners[i])
-          }
-        }
-
-        if (!list.length) {
-          delete this.listeners[id]
-        } else {
-          this.listeners[id] = list
         }
       }
     }
