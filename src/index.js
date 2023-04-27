@@ -337,7 +337,7 @@ export default {
       const component = this.components[name]
 
       if (!component) {
-        throw Error('No component found my this name: ' + name)
+        throw Error('No component found by the name of: ' + name)
       }
 
       // setup on request
