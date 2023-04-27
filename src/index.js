@@ -27,7 +27,7 @@ export default {
     {
       name: 'button',
       type: 'button',
-      events: ['click']
+      events: ['click', 'hover']
     },
     {
       name: 'a',
@@ -142,6 +142,7 @@ export default {
     },
     {
       name: 'iconify-icon',
+      type: 'icon',
       lazy: () => import('iconify-icon'),
       set: [{
         type: 'attribute',
