@@ -39,7 +39,7 @@ export default {
         prefixId () {
           return this.$getDataValue({
             name: 'dsWidget/uniqueIdentifier'
-          }).value
+          }).item
         },
         items: {
           type: 'object',
@@ -64,7 +64,7 @@ export default {
           type: 'array',
           items: {
             type: 'string',
-            relation: 'dsContent/value'
+            relation: 'dsContent/items'
           }
         },
         suffixId: 'default'
@@ -115,7 +115,7 @@ export default {
         prefixId () {
           return this.$getDataValue({
             name: 'dsWidget/uniqueIdentifier'
-          }).value
+          }).item
         },
         items: {
           type: 'array',
@@ -191,7 +191,7 @@ export default {
       }
 
       this.$action('dsTemplate/create', {
-        dsTemplateId: dsTemplateId.value,
+        dsTemplateId: dsTemplateId.item,
         dsWidgetSectionId,
         dsWidgetInstanceId,
         dsWidgetMode
@@ -207,7 +207,7 @@ export default {
             dsWidgetSectionId,
             dsWidgetInstanceId,
             dsWidgetMode,
-            dsViewId: dsViewId.value
+            dsViewId: dsViewId.item
           })
         },
         onError: (e) => console.log(e)
@@ -238,8 +238,8 @@ export default {
         }
       })
 
-      for (let i = 0; i < section.value.length; i++) {
-        const dsWidgetInstanceId = section.value[i]
+      for (let i = 0; i < section.item.length; i++) {
+        const dsWidgetInstanceId = section.item[i]
 
         this.attachInstance({
           dsWidgetSectionId,
@@ -277,7 +277,7 @@ export default {
         name: 'dsWidget/instanceGroups',
         source: instance.id,
         options: {
-          id: instance.value.groupId,
+          id: instance.item.groupId,
           source: {
             push: true
           }
