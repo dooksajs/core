@@ -171,8 +171,8 @@ export default {
       })
 
       this._dispatch({
-        sequenceActions: sequenceActions.value,
-        sequenceConditions: sequenceConditions.value,
+        sequenceActions: sequenceActions.item,
+        sequenceConditions: sequenceConditions.item,
         payload
       })
     },
@@ -293,7 +293,7 @@ export default {
           action = this.$getDataValue({
             name: 'dsAction/actions',
             id: item._$id
-          }).value
+          }).item
         }
 
         if (item.conditions) {
