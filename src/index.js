@@ -728,7 +728,9 @@ export default {
             result.item = data.rootTarget[data.id]
 
             // freeze value
+            if (!schema.options?.mutable) {
               Object.freeze(data.rootTarget[data.id])
+            }
           }
 
           return result
