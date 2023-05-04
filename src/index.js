@@ -92,19 +92,30 @@ export default {
       modifiers = {},
       head = true
     }) {
-      const entryId = this.$getDataValue({
-        name: 'dsTemplate/entry',
-        id: dsTemplateId
-      })
+      if (!dsTemplateEntryId) {
+        const entryId = this.$getDataValue({
+          name: 'dsTemplate/entry',
+          id: dsTemplateId
+        })
+
+        if (entryId.isEmpty) {
+          throw new Error('No template entry found')
+        }
+
+        dsTemplateEntryId = entryId.item
+      }
 
       const template = this.$getDataValue({
         name: 'dsTemplate/items',
-        id: entryId.item
+        id: dsTemplateEntryId
       })
+
       // get template
       // const item = this.items[dsTemplateEntryId] || this.items[this.entry[dsTemplateId]]
 
       if (!template.isEmpty) {
+        dsTemplateId = dsTemplateId || template.id
+
         return this._constructor(
           dsTemplateId,
           dsTemplateEntryId,
@@ -163,6 +174,7 @@ export default {
       head
     ) {
       let dsLayoutEntryId = ''
+      let hasSections = false
       const result = {
         layoutEntry: '',
         widgets: {
@@ -220,6 +232,12 @@ export default {
         dsLayoutEntryId = layoutId
         layout[view] = { id: layoutId }
       } else {
+        if (!hasSections) {
+          hasSections = true
+          result.widgets.sections = {}
+        }
+
+        // these are new instances
         for (let i = 0; i < item.layouts.length; i++) {
           const layoutId = item.layouts[i]
           const layout = {}
@@ -234,10 +252,49 @@ export default {
 
             this.$setDataValue({
               name: 'dsWidget/instanceContent',
-              payload: result.widgets.content,
+              source: contentRefs,
               options: {
                 id: instanceId,
-                suffixId: 'default'
+                suffixId: dsWidgetPrefixId
+              }
+            })
+
+            this.$setDataValue({
+              name: 'dsWidget/instanceLayouts',
+              source: layoutId,
+              options: {
+                id: instanceId,
+                suffixId: dsWidgetPrefixId
+              }
+            })
+
+            this.$setDataValue({
+              name: 'dsWidget/instances',
+              source: {
+                groupId
+              },
+              options: {
+                id: instanceId,
+                suffixId: dsWidgetPrefixId
+              }
+            })
+
+            this.$setDataValue({
+              name: 'dsWidget/instanceGroups',
+              source: instanceId,
+              options: {
+                id: groupId,
+                source: {
+                  push: true
+                }
+              }
+            })
+
+            this.$setDataValue({
+              name: 'dsWidget/sectionParent',
+              source: dsWidgetSectionId,
+              options: {
+                id: instanceId
               }
             })
 
@@ -373,12 +430,10 @@ export default {
           content.type[id] = { name: type, isTemporary }
 
           if (type === 'section') {
-            for (let i = 0; i < item.value.length; i++) {
-              const [lang, dsTemplateEntryId] = item.value[i]
-              const [sectionId] = this.create({ dsTemplateEntryId, defaultContent, dsWidgetGroupId, dsWidgetMode, modifiers, head: false })
+            const dsTemplateEntryId = item.value
+            const { dsWidgetSectionId } = this.create({ dsTemplateEntryId, defaultContent, dsWidgetGroupId, dsWidgetMode, modifiers, head: false })
 
-              content.value[id + lang] = sectionId
-            }
+            content.value[id + dsWidgetMode] = { value: dsWidgetSectionId }
           } else {
             content.value[id + dsWidgetMode] = item.value
           }
