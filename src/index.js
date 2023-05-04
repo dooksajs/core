@@ -220,8 +220,8 @@ export default {
 
         // create a new widget and append it to this element item
         this.$method('dsWidget/attachSection', {
-          dsWidgetSectionId,
-          dsViewId: dsViewParentId,
+          dsWidgetSectionId: dsWidgetSectionId.value,
+          dsViewId,
           dsWidgetPrefixId,
           dsWidgetMode
         })
