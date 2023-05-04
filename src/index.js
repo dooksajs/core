@@ -85,24 +85,128 @@ export default {
     {
       name: 'h1',
       type: 'text',
-      get: {
-        type: 'getter',
-        value: [
-          {
-            name: 'textContent',
-            key: 'text'
-          }
-        ]
-      },
+
       set: {
         type: 'setter',
         value: [
           {
             name: 'textContent',
-            key: 'text'
+            key: 'value'
           }
         ]
       }
+    },
+    {
+      name: 'h2',
+      type: 'text',
+      set: {
+        type: 'setter',
+        value: [
+          {
+            name: 'textContent',
+            key: 'value'
+          }
+        ]
+      }
+    },
+    {
+      name: 'h5',
+      type: 'text',
+      set: {
+        type: 'setter',
+        value: [
+          {
+            name: 'textContent',
+            key: 'value'
+          }
+        ]
+      }
+    },
+    {
+      name: 'h6',
+      type: 'text',
+      set: {
+        type: 'setter',
+        value: [
+          {
+            name: 'textContent',
+            key: 'value'
+          }
+        ]
+      }
+    },
+    {
+      name: 'label',
+      type: 'text',
+      set: {
+        type: 'setter',
+        value: [
+          {
+            name: 'textContent',
+            key: 'value'
+          }
+        ]
+      }
+    },
+    {
+      name: 'small',
+      type: 'text',
+      set: {
+        type: 'setter',
+        value: [
+          {
+            name: 'textContent',
+            key: 'value'
+          }
+        ]
+      }
+    },
+    {
+      name: 'p',
+      type: 'text',
+      set: {
+        type: 'setter',
+        value: [
+          {
+            name: 'textContent',
+            key: 'value'
+          }
+        ]
+      }
+    },
+    {
+      name: 'span',
+      set: {
+        type: 'setter',
+        value: [
+          {
+            name: 'textContent',
+            key: 'value'
+          }
+        ]
+      }
+    },
+    {
+      name: 'nav',
+      type: 'text',
+      set: {
+        type: 'setter',
+        value: [
+          {
+            name: 'textContent',
+            key: 'value'
+          }
+        ]
+      }
+    },
+    {
+      name: 'ul'
+    },
+    {
+      name: 'li'
+    },
+    {
+      name: 'hr'
     },
     {
       name: 'input',
@@ -113,7 +217,7 @@ export default {
         value: [
           {
             name: 'value',
-            key: 'text'
+            key: 'value'
           }
         ]
       },
@@ -122,7 +226,7 @@ export default {
         value: [
           {
             name: 'value',
-            key: 'text'
+            key: 'value'
           }
         ]
       }
@@ -135,7 +239,7 @@ export default {
         value: [
           {
             name: 'textContent',
-            key: 'text'
+            key: 'value'
           }
         ]
       }
