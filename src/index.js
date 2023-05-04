@@ -95,6 +95,17 @@ export default {
         }
       }
     },
+    instanceLayouts: {
+      description: 'layouts related to the instance',
+      default: {},
+      schema: {
+        type: 'collection',
+        suffixId: 'default',
+        items: {
+          type: 'string'
+        }
+      }
+    },
     instanceTemplates: {
       description: 'Templates used by instances sorted by modes',
       default: {},
@@ -180,37 +191,58 @@ export default {
       dsWidgetInstanceId,
       dsWidgetMode
     }) {
-      const dsTemplateId = this.$getDataValue({
-        name: 'dsWidget/instanceTemplates',
-        id: dsWidgetInstanceId,
-        suffixId: dsWidgetMode
+      const layout = this.$getDataValue({
+        name: 'dsWidget/instanceLayouts',
+        id: dsWidgetInstanceId
       })
 
-      if (dsTemplateId.isEmpty) {
-        return
+      // if layout is empty, attempt to load template
+      if (layout.isEmpty) {
+        const dsTemplateId = this.$getDataValue({
+          name: 'dsWidget/instanceTemplates',
+          id: dsWidgetInstanceId,
+          suffixId: dsWidgetMode
+        })
+
+        if (dsTemplateId.isEmpty) {
+          return
+        }
+
+        this.$action('dsTemplate/create', {
+          dsTemplateId: dsTemplateId.item,
+          dsWidgetSectionId,
+          dsWidgetInstanceId,
+          dsWidgetMode
+        }, {
+          onSuccess: (result) => {
+            const dsViewId = this.$getDataValue({
+              name: 'dsWidget/sectionView',
+              id: dsWidgetSectionId
+            })
+
+            this.$method('dsLayout/attach', {
+              dsLayoutId: result.dsLayoutEntryId,
+              dsWidgetSectionId,
+              dsWidgetInstanceId,
+              dsWidgetMode,
+              dsViewId: dsViewId.item
+            })
+          },
+          onError: (e) => console.log(e)
+        })
       }
 
-      this.$action('dsTemplate/create', {
-        dsTemplateId: dsTemplateId.item,
+      const dsViewId = this.$getDataValue({
+        name: 'dsWidget/sectionView',
+        id: dsWidgetSectionId
+      })
+
+      this.$method('dsLayout/attach', {
+        dsLayoutId: layout.item,
         dsWidgetSectionId,
         dsWidgetInstanceId,
-        dsWidgetMode
-      }, {
-        onSuccess: (result) => {
-          const dsViewId = this.$getDataValue({
-            name: 'dsWidget/sectionView',
-            id: dsWidgetSectionId
-          })
-
-          this.$method('dsLayout/attach', {
-            dsLayoutId: result.dsLayoutEntryId,
-            dsWidgetSectionId,
-            dsWidgetInstanceId,
-            dsWidgetMode,
-            dsViewId: dsViewId.item
-          })
-        },
-        onError: (e) => console.log(e)
+        dsWidgetMode,
+        dsViewId: dsViewId.item
       })
     },
     attachSection ({
