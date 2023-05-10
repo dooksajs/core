@@ -216,14 +216,12 @@ export default {
           for (const key in events) {
             if (Object.hasOwnProperty.call(events, key)) {
               const event = events[key]
-              const eventId = instanceId + key.padStart(4, '0') + '_'
+              const eventId = instanceId + key.padStart(4, '0')
 
-              for (const key in event) {
-                if (Object.hasOwnProperty.call(event, key)) {
-                  const actions = event[key]
+              for (let i = 0; i < event.length; i++) {
+                const item = event[i]
 
-                  result.events[eventId + key] = actions
-                }
+                result.events[eventId + item.on] = item.actions
               }
             }
           }
@@ -311,9 +309,13 @@ export default {
             for (const key in events) {
               if (Object.hasOwnProperty.call(events, key)) {
                 const event = events[key]
-                const eventId = instanceId + key.padStart(4, '0') + '_' + event.on
+                const eventId = instanceId + key.padStart(4, '0')
 
-                result.events[eventId] = event.action
+                for (let i = 0; i < event.length; i++) {
+                  const item = event[i]
+
+                  result.events[eventId + item.on] = item.actions
+                }
               }
             }
           }
@@ -485,6 +487,18 @@ export default {
                   }
                 }
               })
+
+              if (record.layouts.events) {
+                this.$setDataValue({
+                  name: 'dsLayout/events',
+                  source: record.layouts.events,
+                  options: {
+                    source: {
+                      merge: true
+                    }
+                  }
+                })
+              }
 
               this.$setDataValue({
                 name: 'dsComponent/items',
