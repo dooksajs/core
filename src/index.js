@@ -229,7 +229,7 @@ export default {
         // missing parentElement
         this.$method('dsView/updateValue', { dsViewId, language })
         this.$emit({
-          name: 'dsContent/mount',
+          name: 'dsContent/mounted',
           id: dsViewId,
           payload: {
             dsContentId,
