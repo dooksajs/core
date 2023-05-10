@@ -37,10 +37,10 @@ export default {
      * @param {dsEventOn} param.on - Event fired "on" an event name
      * @param {Object.<string, any>} param.payload - The action that runs on the event
      */
-    emit ({ name, on, payload }) {
+    emit ({ name, id, payload }) {
       const listeners = this.$getDataValue({
         name: 'dsEvent/listeners',
-        id: name + '_' + on
+        id: id + '_' + name
       })
 
       if (!listeners.isEmpty) {
