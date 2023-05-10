@@ -304,12 +304,12 @@ export default {
 
           // add event listener to node
           if (events[currentIndex]) {
-            const event = events[currentIndex]
+            for (let i = 0; i < events[currentIndex].length; i++) {
+              const event = events[currentIndex][i]
 
-            for (let i = 0; i < event.action.length; i++) {
               this.$setDataValue({
                 name: 'dsEvent/listeners',
-                source: event.action[i],
+                source: event.actions,
                 options: {
                   id: dsViewId,
                   suffixId: event.on
