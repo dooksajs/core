@@ -122,7 +122,8 @@ const buildTemplates = (app, templates) => {
           if (Object.hasOwnProperty.call(templateGroup, key)) {
             const items = templateGroup[key]
             const instance = {
-              templates: []
+              templates: [],
+              sectionTemplates: []
             }
 
             for (let i = 0; i < items.length; i++) {
@@ -182,6 +183,8 @@ const buildTemplates = (app, templates) => {
                 id: item.templateEntry,
                 mode: dsWidgetMode
               })
+
+              instance.sectionTemplates = [...instance.sectionTemplates, ...item.sectionTemplates]
 
               // append template metadata
               instance.metadata = metadata

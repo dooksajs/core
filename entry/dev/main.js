@@ -34,6 +34,19 @@ if (dsConfig.templates) {
             }
           })
         }
+
+        for (let i = 0; i < instance.sectionTemplates.length; i++) {
+          const template = instance.sectionTemplates[i]
+
+          app.$setDataValue({
+            name: 'dsWidget/instanceTemplates',
+            source: template.templateId,
+            options: {
+              id: template.id,
+              suffixId: template.suffixId
+            }
+          })
+        }
       }
 
       const rootViewId = app.$getDataValue({ name: 'dsView/rootViewId' })
