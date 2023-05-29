@@ -15,7 +15,7 @@ pipelines:
           - pnpm install
           - pnpm ls
           - pnpm run lint
-          - pnpm run test:record
+          - pnpm dlx cypress run --browser firefox --record --key $CYPRESS_REPORT_ID
           - pnpm dlx nyc report --reporter=text-summary
           - pnpm run build
         artifacts:
