@@ -1,124 +1,62 @@
-const i = {
+const f = (n) => {
+  let t = 1, r = 0;
+  n = new Uint8Array(n);
+  for (let o = 0; o < n.length; o++)
+    t += n[o], r += t;
+  return t %= 65521, r %= 65521, s((r << 16 | t) >>> 0, 8);
+}, y = (n) => {
+  if (n.length === 2) {
+    const t = n.charCodeAt(0), r = n.charCodeAt(1);
+    if (t >= 55296 && t < 56320 && r >= 56320 && r < 57344)
+      return (t - 55296) * 1024 + r - 56320 + 65536;
+  }
+  return n.charCodeAt(0);
+}, s = (n, t = 2) => (n = typeof n == "string" ? y(n) : n, n.toString(16).padStart(t, "0")), l = [];
+for (let n = 0; n < 256; ++n)
+  l.push((n + 256).toString(16).slice(1));
+typeof crypto < "u" && crypto.randomUUID && crypto.randomUUID.bind(crypto);
+const a = (n) => {
+  const t = new TextEncoder(), r = typeof n != "string" ? JSON.stringify(n) : n, o = t.encode(r);
+  return f(o);
+}, d = {
   Object,
   Array,
   Number,
   Boolean,
   String
-}, s = {
-  /**
-   * Create Adler 32 hex string from object
-   * @param {Object} source - The original object used to create the hash
-   * @returns {string} - Adler 32 hex string
-   */
-  process(e) {
-    try {
-      const t = {};
-      this._sortType(t, e);
-      const n = new TextEncoder(), r = JSON.stringify(t), o = n.encode(r);
-      return this._adler(o);
-    } catch (t) {
-      console.error(t);
-    }
-  },
-  _defaultType(e) {
-    const t = e.constructor.name;
-    return i[t]();
-  },
-  _adler(e) {
-    let n = 1, r = 0;
-    e = new Uint8Array(e);
-    for (let o = 0; o < e.length; o++)
-      n += e[o], r += n;
-    return n %= 65521, r %= 65521, this._hex((r << 16 | n) >>> 0, 8);
-  },
-  /**
-   * Translates a character into an ordinal.
-   *
-   * @param {char} c
-   * @returns {number}
-   *
-   * @example
-   * // returns 97
-   * this._.ord('a');
-   */
-  _ord(e) {
-    if (e.length === 2) {
-      const t = e.charCodeAt(0), n = e.charCodeAt(1);
-      if (t >= 55296 && t < 56320 && n >= 56320 && n < 57344)
-        return (t - 55296) * 1024 + n - 56320 + 65536;
-    }
-    return e.charCodeAt(0);
-  },
-  /**
-   * Converts a character or number to its hex representation.
-   *
-   * @param {char|number} c
-   * @param {number} [length=2] - The width of the resulting hex number.
-   * @returns {string}
-   *
-   * @example
-   * // returns "6e"
-   * this._hex("n")
-   *
-   * // returns "6e"
-   * this._hex(110)
-   */
-  _hex(e, t = 2) {
-    return e = typeof e == "string" ? this._ord(e) : e, e.toString(16).padStart(t, "0");
-  },
-  /**
-   * Sort source by data type
-   * @private
-   * @param {Object} target - Alphanumerically sorted object
-   * @param {*} source - Current value
-   * @returns
-   */
-  _sortType(e, t) {
-    if (this._nullish(t))
-      throw new Error("objectHash: value cannot be undefined");
-    return Array.isArray(t) ? t = this._array(e, t) : typeof t == "object" ? t = this._object(e, t) : typeof t == "function" && (t = t.toString()), t;
-  },
-  /**
-   * Check if value is undefined or null
-   * @private
-   * @param {*} value - Any value
-   * @returns {boolean}
-   */
-  _nullish(e) {
-    return e == null;
-  },
-  /**
-   * Sort array alphanumerically
-   * @param {Object} target - Alphanumerically sorted object
-   * @param {Array} source - Current nested array
-   * @returns {Array}
-   */
-  _array(e, t) {
-    t = t.slice();
-    for (let n = 0; n < t.length; n++) {
-      const r = t[n];
-      t[n] = this._sortType(e, r);
-    }
-    return t;
-  },
-  /**
-   * Sort object keys alphanumerically
-   * @private
-   * @param {Object} target - Alphanumerically sorted object
-   * @param {Object} source - Current nested object
-   * @returns {Object}
-   */
-  _object(e, t) {
-    const n = Object.keys(t);
-    n.sort();
-    for (let r = 0; r < n.length; r++) {
-      const o = n[r];
-      e[o] = this._defaultType(t[o]), e[o] = this._sortType(e[o], t[o]);
-    }
-    return e;
+}, b = (n) => {
+  try {
+    if (!n)
+      throw new Error("source is undefined");
+    const t = {};
+    return i(t, n), a(t);
+  } catch (t) {
+    console.error(t);
   }
+}, c = (n) => {
+  const t = n == null ? void 0 : n.constructor.name;
+  return d[t]();
+}, i = (n, t) => {
+  if (t == null)
+    throw new Error("objectHash: value cannot be undefined");
+  return Array.isArray(t) ? t = p(n, t) : typeof t == "object" ? t = h(n, t) : typeof t == "function" && (t = t.toString()), t;
+}, p = (n, t) => {
+  t = t.slice();
+  for (let r = 0; r < t.length; r++) {
+    const o = t[r];
+    n = c(o), t[r] = i(n, o);
+  }
+  return t;
+}, h = (n, t) => {
+  const r = Object.keys(t);
+  r.sort();
+  for (let o = 0; o < r.length; o++) {
+    const e = r[o];
+    n[e] = c(t[e]), n[e] = i(n[e], t[e]);
+  }
+  return n;
 };
 export {
-  s as default
+  b as default
 };
 //# sourceMappingURL=object-hash.js.map
