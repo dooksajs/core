@@ -36,6 +36,7 @@
   },
   "devDependencies": {
     "cypress": "^12.13.0",
+    "standard": "^17.0.0",
     "vite": "^4.3.2"
   },
   "dependencies": {
