@@ -6,11 +6,10 @@ pipelines:
         name: Build and Test
         max-time: 5
         caches:
+          - pnpm
           - node
           - cypress
         script:
-          - npm install -g npm@latest
-          - npm --version
           - npm install -g pnpm
           - pnpm --version
           - pnpm install
