@@ -20,6 +20,7 @@
     "preview": "vite preview",
     "test:open": "cypress open",
     "test:run": "cypress run",
+    "test:record": "cypress run --browser firefox --record --key $CYPRESS_REPORT_ID",
     "lint": "standard ./lib/main.js"
   },
   "standard": {
