@@ -11,12 +11,9 @@ pipelines:
           - cypress
         script:
           - npm install -g pnpm
-          - pnpm --version
           - pnpm install
-          - pnpm ls
           - pnpm run lint
           - pnpm dlx cypress run --browser firefox --record --key $CYPRESS_REPORT_ID
-          - pnpm dlx nyc report --reporter=text-summary
           - pnpm run build
         artifacts:
           # store any generates images and videos as artifacts
