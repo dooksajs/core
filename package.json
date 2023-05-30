@@ -1,0 +1,13 @@
+{
+  "name": "dooksa-framework",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "license": "MPL-2.0",
+  "packageManager": "pnpm@8.6.0",
+  "engines": {
+    "node": ">=16.10.0"
+  }
+}
