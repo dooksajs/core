@@ -1,0 +1,34 @@
+#  NodeJS build with cypress
+# Test only of code. No actual deployment
+
+image: cypress/base:16.5.0
+
+pipelines:
+  default:
+    - step:
+        name: Build and Test
+        max-time: 5
+        caches:
+          - node
+          - cypress
+        script:
+          - node --version
+          - npm --version
+          - npm install
+          - npx cypress install
+          - npm ls
+          - npm run lint
+          - npm run test:unitrecord -- --key $CYPRESS_REPORT_ID
+          - npm run dev &
+          - PATH=$PATH:$BITBUCKET_CLONE_DIR/dev
+          - npm run e2e:record -- --key $CYPRESS_REPORT_ID
+          # temp disabled- npx nyc report --reporter=text-summary
+        artifacts:
+          # store any generates images and videos as artifacts
+          - cypress/screenshots/**
+          - cypress/videos/**
+          - coverage/**
+          - .nyc_output/**
+definitions:
+  caches:
+    cypress: $HOME/.cache/Cypress
