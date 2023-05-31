@@ -1,0 +1,48 @@
+{
+  "name": "@dooksa/ds-app",
+  "version": "1.0.0",
+  "description": "Dooksa app",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "ds-scripts build",
+    "test:open": "ds-scripts --open test",
+    "test:run": "ds-scripts --run test",
+    "test:record": "ds-scripts --run --record test",
+    "lint": "standard",
+    "lint:fix": "standard --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org:dooksa/ds-app.git"
+  },
+  "author": {
+    "name": "Thomas David",
+    "email": "tom@mightysmile.com"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts",
+    "standard": "*"
+  },
+  "dependencies": {
+    "@dooksa/ds-plugin": "bitbucket:dooksa/ds-plugin",
+    "@dooksa/ds-plugin-action": "bitbucket:dooksa/ds-plugin-action",
+    "@dooksa/ds-plugin-component": "bitbucket:dooksa/ds-plugin-component",
+    "@dooksa/ds-plugin-content": "bitbucket:dooksa/ds-plugin-content",
+    "@dooksa/ds-plugin-data": "bitbucket:dooksa/ds-plugin-data",
+    "@dooksa/ds-plugin-event": "bitbucket:dooksa/ds-plugin-event",
+    "@dooksa/ds-plugin-layout": "bitbucket:dooksa/ds-plugin-layout",
+    "@dooksa/ds-plugin-manager": "bitbucket:dooksa/ds-plugin-manager",
+    "@dooksa/ds-plugin-metadata": "bitbucket:dooksa/ds-plugin-metadata",
+    "@dooksa/ds-plugin-operator": "bitbucket:dooksa/ds-plugin-operator",
+    "@dooksa/ds-plugin-page": "bitbucket:dooksa/ds-plugin-page",
+    "@dooksa/ds-plugin-parameter": "bitbucket:dooksa/ds-plugin-parameter",
+    "@dooksa/ds-plugin-router": "bitbucket:dooksa/ds-plugin-router",
+    "@dooksa/ds-plugin-template": "bitbucket:dooksa/ds-plugin-template",
+    "@dooksa/ds-plugin-token": "bitbucket:dooksa/ds-plugin-token",
+    "@dooksa/ds-plugin-view": "bitbucket:dooksa/ds-plugin-view",
+    "@dooksa/ds-plugin-widget": "bitbucket:dooksa/ds-plugin-widget",
+    "@popperjs/core": "^2.11.6",
+    "bootstrap": "^5.2.3"
+  }
+}

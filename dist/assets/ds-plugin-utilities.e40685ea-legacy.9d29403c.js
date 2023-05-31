@@ -1,0 +1,2 @@
+System.register([],(function(e,t){"use strict";return{execute:function(){let t=e=>crypto.getRandomValues(new Uint8Array(e));const n=((e,n=21)=>((e,t,n)=>{let r=(2<<Math.log(e.length-1)/Math.LN2)-1,l=-~(1.6*r*t/e.length);return(i=t)=>{let o="";for(;;){let t=n(l),s=l;for(;s--;)if(o+=e[t[s]&r]||"",o.length===i)return o}}})(e,n,t))("123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_$",22);e("default",{name:"dsUtilities",version:1,methods:{generateId:()=>"_"+n()}})}}}));
+//# sourceMappingURL=ds-plugin-utilities.e40685ea-legacy.9d29403c.js.map

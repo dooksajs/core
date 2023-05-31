@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.c158559d.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dooksa</title>
+    <script>
+      // Fetch current page document
+      window.dsInitPage = () => {
+        return new Promise((resolve, reject) => {
+          fetch(`https://no.dooksa.com/api/collections/pages/records?filter=(path='${window.location.pathname}' && host ~ ${window.location.host})&expand=app`)
+            .then(response => response.json())
+            .then(pages => {
+              if (pages.code) {
+                throw new Error(pages.message);
+              }
+              
+              // search possible redirects
+              if (!pages.items.length) {
+                fetch(`https://no.dooksa.com/api/collections/pagePaths/records?filter=path='${appId}${window.location.pathname}'&expand=page,page.app`)
+                  .then(response => response.json())
+                  .then(pages => {
+                    if (pages.code) {
+                      throw new Error(pages.message);
+                    }
+
+                    const page = pages.items[0]['@expand'].page
+                    page.app = page['@expand'].app
+                    page.foundPath = pages.items[0].path
+                    resolve(page)
+                  })
+                  .catch(e => reject(e))
+              }
+
+              const page = pages.items[0]
+              page.app = page['@expand'].app
+              resolve(page)
+            })
+            .catch(e => reject(e))
+        })
+      }
+    </script>
+    <script type="module" crossorigin src="/assets/index.8cef76bb.js"></script>
+    <link rel="stylesheet" href="/assets/index.c752a603.css">
+    <script type="module">try{import.meta.url;import("_").catch(()=>1);}catch(e){}window.__vite_is_modern_browser=true;</script>
+    <script type="module">!function(){if(window.__vite_is_modern_browser)return;console.warn("vite: loading legacy build because dynamic import or import.meta.url is unsupported, syntax error above should be ignored");var e=document.getElementById("vite-legacy-polyfill"),n=document.createElement("script");n.src=e.src,n.onload=function(){System.import(document.getElementById('vite-legacy-entry').getAttribute('data-src'))},document.body.appendChild(n)}();</script>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    
+    <script nomodule>!function(){var e=document,t=e.createElement("script");if(!("noModule"in t)&&"onbeforeload"in t){var n=!1;e.addEventListener("beforeload",(function(e){if(e.target===t)n=!0;else if(!e.target.hasAttribute("nomodule")||!n)return;e.preventDefault()}),!0),t.type="module",t.src=".",e.head.appendChild(t),t.remove()}}();</script>
+    <script nomodule crossorigin id="vite-legacy-polyfill" src="/assets/polyfills-legacy.2e510d23.js"></script>
+    <script nomodule crossorigin id="vite-legacy-entry" data-src="/assets/index-legacy.1c9eb6b2.js">System.import(document.getElementById('vite-legacy-entry').getAttribute('data-src'))</script>
+  </body>
+</html>
