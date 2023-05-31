@@ -1,7 +1,10 @@
 {
   "name": "@dooksa/ds-app",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "Dooksa app",
+  "author": "Thomas David",
+  "type": "module",
+  "repository": "git@github.com:dooksajs/dooksa.git",
   "main": "src/index.js",
   "scripts": {
     "build": "ds-scripts build",
@@ -11,37 +14,27 @@
     "lint": "standard",
     "lint:fix": "standard --fix"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@bitbucket.org:dooksa/ds-app.git"
-  },
-  "author": {
-    "name": "Thomas David",
-    "email": "tom@mightysmile.com"
-  },
-  "type": "module",
   "devDependencies": {
-    "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts",
+    "@dooksa/ds-scripts": "workspace:^",
     "standard": "*"
   },
   "dependencies": {
-    "@dooksa/ds-plugin": "bitbucket:dooksa/ds-plugin",
-    "@dooksa/ds-plugin-action": "bitbucket:dooksa/ds-plugin-action",
-    "@dooksa/ds-plugin-component": "bitbucket:dooksa/ds-plugin-component",
-    "@dooksa/ds-plugin-content": "bitbucket:dooksa/ds-plugin-content",
-    "@dooksa/ds-plugin-data": "bitbucket:dooksa/ds-plugin-data",
-    "@dooksa/ds-plugin-event": "bitbucket:dooksa/ds-plugin-event",
-    "@dooksa/ds-plugin-layout": "bitbucket:dooksa/ds-plugin-layout",
-    "@dooksa/ds-plugin-manager": "bitbucket:dooksa/ds-plugin-manager",
-    "@dooksa/ds-plugin-metadata": "bitbucket:dooksa/ds-plugin-metadata",
-    "@dooksa/ds-plugin-operator": "bitbucket:dooksa/ds-plugin-operator",
-    "@dooksa/ds-plugin-page": "bitbucket:dooksa/ds-plugin-page",
-    "@dooksa/ds-plugin-parameter": "bitbucket:dooksa/ds-plugin-parameter",
-    "@dooksa/ds-plugin-router": "bitbucket:dooksa/ds-plugin-router",
-    "@dooksa/ds-plugin-template": "bitbucket:dooksa/ds-plugin-template",
-    "@dooksa/ds-plugin-token": "bitbucket:dooksa/ds-plugin-token",
-    "@dooksa/ds-plugin-view": "bitbucket:dooksa/ds-plugin-view",
-    "@dooksa/ds-plugin-widget": "bitbucket:dooksa/ds-plugin-widget",
+    "@dooksa/ds-plugin": "workspace:^",
+    "@dooksa/ds-plugin-action": "workspace:^",
+    "@dooksa/ds-plugin-component": "workspace:^",
+    "@dooksa/ds-plugin-content": "workspace:^",
+    "@dooksa/ds-plugin-data": "workspace:^",
+    "@dooksa/ds-plugin-event": "workspace:^",
+    "@dooksa/ds-plugin-layout": "workspace:^",
+    "@dooksa/ds-plugin-manager": "workspace:^",
+    "@dooksa/ds-plugin-metadata": "workspace:^",
+    "@dooksa/ds-plugin-operator": "workspace:^",
+    "@dooksa/ds-plugin-page": "workspace:^",
+    "@dooksa/ds-plugin-router": "workspace:^",
+    "@dooksa/ds-plugin-template": "workspace:^",
+    "@dooksa/ds-plugin-token": "workspace:^",
+    "@dooksa/ds-plugin-view": "workspace:^",
+    "@dooksa/ds-plugin-widget": "workspace:^",
     "@popperjs/core": "^2.11.6",
     "bootstrap": "^5.2.3"
   }
