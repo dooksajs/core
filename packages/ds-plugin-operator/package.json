@@ -1,7 +1,8 @@
 {
   "name": "@dooksa/ds-plugin-operator",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "Ds operators plugin is used to add operators to the ds schema",
+  "author": "Thomas David",
   "main": "src/index.js",
   "scripts": {
     "dev": "ds-scripts dev",
@@ -16,11 +17,6 @@
     "type": "git",
     "url": "git+ssh://git@bitbucket.org:dooksa/ds-plugin-operators.git"
   },
-  "author": {
-    "name": "Thomas David",
-    "email": "tom@mightysmile.com"
-  },
-
   "devDependencies": {
     "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts",
     "standard": "*"
