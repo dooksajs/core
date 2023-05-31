@@ -1,8 +1,9 @@
 {
   "name": "@dooksa/ds-plugin-widget",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "Widgets for system for Dooksa",
   "main": "src/index.js",
+  "author": "Thomas David",
   "scripts": {
     "dev": "ds-scripts dev",
     "build": "ds-scripts build_lib",
@@ -16,10 +17,6 @@
   "repository": {
     "type": "git",
     "url": "git+ssh://git@bitbucket.org:dooksa/ds-plugin-widget.git"
-  },
-  "author": {
-    "name": "Thomas David",
-    "email": "tom@mightysmile.com"
   },
   "devDependencies": {
     "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts",
