@@ -4,6 +4,7 @@
   "description": "Dooksa data management",
   "main": "src/index.js",
   "type": "module",
+  "author": "Thomas David",
   "scripts": {
     "dev": "ds-scripts dev",
     "test:open": "ds-scripts --open test",
@@ -12,8 +13,6 @@
     "lint": "standard",
     "lint:fix": "standard --fix"
   },
-  "author": "Thomas David",
-  "license": "MPL-2",
   "standard": {
     "env": [
       "browser",
