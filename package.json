@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "name": "dooksa-framework",
   "private": true,
   "type": "module",
@@ -9,5 +10,31 @@
   "packageManager": "pnpm@8.6.0",
   "engines": {
     "node": ">=16.10.0"
+=======
+  "name": "@dooksa/ds-plugin-devtool",
+  "version": "1.0.0",
+  "description": "Development tools for Dooksa",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "ds-scripts dev",
+    "test:open": "ds-scripts --open test",
+    "test:run": "ds-scripts --run test",
+    "test:record": "ds-scripts --run --record test",
+    "lint": "standard",
+    "lint:fix": "standard --fix"
+  },
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org:dooksa/ds-plugin-devtool.git"
+  },
+  "author": {
+    "name": "Thomas David",
+    "email": "tom@mightysmile.com"
+  },
+  "devDependencies": {
+    "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts",
+    "standard": "*"
+>>>>>>> ds-plugin-devtool/master
   }
 }
