@@ -1,0 +1,391 @@
+[
+  {
+    "$comment": "FIX this with a proper $schema URI"
+  },
+  {
+    "operator": "arrayFindByKeyValue",
+    "list": 
+    [
+      {
+        "a": "stuff" 
+      }
+    ],
+    "key": "a",
+    "valueIndex": ["stuff", 0],
+    "expectedResult": [0, 0]
+  },
+  {
+    "operator": "arrayFindByKeyValue",
+    "list": 
+    [
+      {
+        "a": "stuff" 
+      },
+      {
+        "x": {
+          "a": "stuff"
+        }
+      }
+    ],
+    "key": "a",
+    "valueIndex": ["stuff", 0],
+    "expectedResult": [0, 0]
+  },
+  {
+    "operator": "arrayFindByKeyValue",
+    "list": 
+    [
+      {
+        "a": "stuff" 
+      }
+    ],
+    "key": "x",
+    "valueIndex": ["stuff", 0],
+    "expectedResult": "undefined"
+  },
+  {
+    "operator": "arrayFindByKeyValue",
+    "list": 
+    [
+      {
+        "a": "otherstuff" 
+      },
+      {
+        "a": "stuff" 
+      }
+    ],
+    "key": "a",
+    "valueIndex": ["stuff", 0],
+    "expectedResult": [1, 1]
+  },
+  {
+    "operator": "arrayFindByKeyValue",
+    "list": 
+    [
+      {
+        "a": "otherstuff" 
+      },
+      {
+        "a": "stuff" 
+      }
+    ],
+    "key": "a",
+    "valueIndex": ["stuff", 1],
+    "expectedResult": [1, 1]
+  },
+  {
+    "operator": "arrayFindByKeyValue",
+    "list": 
+    [
+      {
+        "a": "stuff",
+        "x": "otherstuff"
+      }
+    ],
+    "key": "x",
+    "valueIndex": ["otherstuff", 0],
+    "expectedResult": [0, 0]
+  },
+  {
+    "operator": "arrayFindByKeyValue",
+    "list": 
+    [
+      {
+        "a": "stuff",
+        "x": "otherstuff"
+      }
+    ],
+    "key": "x",
+    "valueIndex": ["fluffybunnies", 0],
+    "expectedResult": "undefined"
+  },
+  {
+    "operator": "arrayFindByKeyValue",
+    "list": 
+    [
+      {
+        "a": "stuff",
+        "x": "otherstuff"
+      },
+      {
+        "a": "stuff",
+        "x": "otherstuff"
+      },
+      {
+         "a": "stuff"
+      }
+    ],
+    "key": "x",
+    "valueIndex": ["otherstuff", 0],
+    "expectedResult": [0, 1]
+  },
+  {
+    "operator": "arrayFindByKeyValue",
+    "list": 
+    [
+      {
+        "a": "stuff",
+        "x": "otherstuff"
+      },
+      {
+        "a": "stuff",
+        "x": "otherstuff"
+      },
+      {
+         "a": "stuff"
+      }
+    ],
+    "key": "a",
+    "valueIndex": ["stuff", 1],
+    "expectedResult": [0, 2]
+  },
+  {
+    "operator": "arrayFindByKeyValue",
+    "list": 
+    [
+      {
+        "a": "stuff",
+        "x": "otherstuff"
+      },
+      {
+        "a": "stuff",
+        "x": "otherstuff"
+      },
+      {
+         "x": "otherstuff"
+      },
+      {
+         "a": "stuff"
+      }
+    ],
+    "key": "a",
+    "valueIndex": ["stuff", 1],
+    "expectedResult": [0, 1]
+  },
+
+  {
+    "operator": "arrayFindByKeyValue",
+    "list": 
+    [
+      {
+        "a": "stuff",
+        "x": "otherstuff"
+      },
+      {
+        "a": "stuff",
+        "x": "otherstuff"
+      },
+      {
+         "x": "otherstuff"
+      },
+      {
+         "a": "stuff"
+      }
+    ],
+    "key": "a",
+    "valueIndex": ["stuff", 2],
+    "expectedResult": "3,3"
+  },
+  {
+    "operator": "arrayFindByKeyValue",
+    "list": 
+    [
+      {
+        "a": "stuff",
+        "x": "otherstuff"
+      },
+      {
+        "a": "stuff",
+        "x": "otherstuff"
+      }
+    ],
+    "key": "a",
+    "valueIndex": ["otherstuff", 0],
+    "expectedResult": "undefined"
+  },
+  {
+    "operator": "arrayFindByKeyValue",
+    "list": 
+    [
+      {
+        "a": "stuff",
+        "x": "otherstuff"
+      },
+      {
+        "a": "stuff",
+        "x": "otherstuff"
+      },
+      {
+        "a": "stuff",
+        "x": "otherstuff"
+      }
+    ],
+    "key": "a",
+    "valueIndex": ["stuff", 0],
+    "expectedResult": [0, 2]
+  },
+  {
+    "operator": "arrayFindByKeyValue",
+    "list": 
+    [
+      {
+        "a": "stuff",
+        "x": "otherstuff"
+      },
+      {
+        "a": "stuff",
+        "x": "otherstuff"
+      },
+      {
+        "a": "stuff",
+        "x": "otherstuff"
+      }
+    ],
+    "key": "a",
+    "valueIndex": ["stuff", 2],
+    "expectedResult": [0, 2]
+  },
+  {
+    "operator": "arrayFindByKeyValue",
+    "list": 
+    [
+      {
+        "a": "stuff",
+        "x": "otherstuff"
+      },
+      {
+        "a": "stuff",
+        "x": "otherstuff"
+      },
+      {
+        "a": "stuff",
+        "x": "otherstuff"
+      }
+    ],
+    "key": "a",
+    "valueIndex": ["stuff", 1],
+    "expectedResult": [0, 2]
+  },
+  {
+    "operator": "arrayFindByKeyValue",
+    "$comment": "**FIXME** awaiting response from @Thomas David",
+    "list": 
+    [
+      {
+        "a": {
+          "a": "stuff",
+          "x": "otherstuff"
+        }
+      },
+      {
+        "a": "stuff",
+        "x": "otherstuff"
+      }
+    ],
+    "key": "x",
+    "valueIndex": ["otherstuff", 0],
+    "expectedResult": [0, 1]
+  },
+  {
+    "operator": "arrayFindByKeyValue",
+    "list": 
+    [
+      {
+        "a": {
+          "a": "stuff",
+          "x": "otherstuff"
+        }
+      },
+      {
+        "a": "stuff",
+        "x": "otherstuff"
+      },
+      {
+        "a": {
+          "a": "stuff",
+          "x": "otherstuff"
+        }
+      }
+    ],
+    "key": "x",
+    "valueIndex": ["otherstuff", 0],
+    "expectedResult": [1, 1]
+  },
+  {
+    "operator": "arrayFindByKeyValue",
+    "list": 
+    [
+      {
+        "a": {
+          "a": "stuff",
+          "x": "otherstuff"
+        }
+      },
+      {
+        "a": "stuff",
+        "x": "otherstuff"
+      },
+      {
+        "a": {
+          "a": "stuff",
+          "x": "otherstuff"
+        }
+      }
+    ],
+    "key": "a",
+    "valueIndex": ["otherstuff", 0],
+    "expectedResult": "undefined"
+  },
+  {
+    "operator": "arrayFindByKeyValue",
+    "list": 
+    [
+      {
+        "a": "stuff",
+        "x": "otherstuff"
+      },
+      {
+      }
+    ],
+    "key": "x",
+    "valueIndex": ["otherstuff", 0],
+    "expectedResult": [0, 0]
+  },
+  {
+    "operator": "arrayRemove",
+    "list": 
+    [
+      1
+    ],
+    "items": [
+      4
+    ],
+    "expectedResult": 1
+  },
+  {
+    "operator": "arrayRemove",
+    "list": 
+    [
+      1
+    ],
+    "items": [
+      0
+    ],
+    "expectedResult": ""
+  },
+  {
+    "operator": "arrayRemove",
+    "list": 
+    [
+      "a",
+      "b",
+      "c"
+    ],
+    "items": 
+    [
+      0,
+      2
+    ],
+    "expectedResult": "b"
+  }
+]
