@@ -32,9 +32,8 @@
     ]
   },
   "dependencies": {
-    "@dooksa/ds-app": "bitbucket:dooksa/ds-app",
-    "@dooksa/ds-plugin-devtool": "bitbucket:dooksa/ds-plugin-devtool",
-    "@dooksa/ds-plugin-parse": "bitbucket:dooksa/ds-plugin-parse",
+    "@dooksa/ds-app": "workspace:^",
+    "@dooksa/ds-plugin-devtool": "workspace:^",
     "@dooksa/ds-plugin-template": "bitbucket:dooksa/ds-plugin-template",
     "@vitejs/plugin-basic-ssl": "^1.0.1",
     "@vitejs/plugin-legacy": "^4.0.2",
