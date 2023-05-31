@@ -17,8 +17,6 @@ packages/*/LICENSE
 
 # Generated dirs
 dist
-.nuxt
-.nuxt-*
 .output
 .gen
 
