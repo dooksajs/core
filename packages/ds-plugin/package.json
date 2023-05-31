@@ -16,10 +16,7 @@
     "type": "git",
     "url": "git+ssh://git@bitbucket.org:dooksa/ds-plugin.git"
   },
-  "author": {
-    "name": "Thomas David",
-    "email": "tom@mightysmile.com"
-  },
+  "author": "Thomas David",
   "devDependencies": {
     "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts",
     "standard": "*"
