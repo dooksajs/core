@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Advanced layout builder for Dooksa",
   "main": "src/index.js",
+  "author": "Thomas David",
   "scripts": {
     "dev": "ds-scripts dev",
     "test:open": "ds-scripts --open test",
@@ -12,15 +13,11 @@
     "lint:fix": "standard --fix"
   },
   "type": "module",
-  "license": "MPL-2.0",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@bitbucket.org:dooksa/ds-plugin-layout.git"
   },
-  "author": {
-    "name": "Thomas David",
-    "email": "tom@mightysmile.com"
-  },
+
   "devDependencies": {
     "@dooksa/ds-scripts": "workspace:^",
     "standard": "*"
