@@ -1,8 +1,9 @@
 {
   "name": "@dooksa/ds-plugin-event",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "Events plugin management system for Dooksa",
   "main": "src/index.js",
+  "author": "Thomas David",
   "scripts": {
     "dev": "ds-scripts dev",
     "test:open": "ds-scripts --open test",
@@ -15,10 +16,6 @@
   "repository": {
     "type": "git",
     "url": "git+ssh://git@bitbucket.org:dooksa/ds-plugin-event.git"
-  },
-  "author": {
-    "name": "Thomas David",
-    "email": "tom@mightysmile.com"
   },
   "devDependencies": {
     "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts",
