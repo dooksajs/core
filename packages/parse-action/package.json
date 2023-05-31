@@ -1,17 +1,18 @@
 {
-  "name": "@dooksa/object-hash",
-  "version": "1.0.0",
+  "name": "@dooksa/parse-action",
+  "private": true,
+  "version": "0.0.0",
   "type": "module",
   "author": "Thomas David",
   "files": [
     "dist"
   ],
-  "main": "./dist/object-hash.umd.cjs",
-  "module": "./dist/object-hash.js",
+  "main": "./dist/parse-action.umd.cjs",
+  "module": "./dist/parse-action.js",
   "exports": {
     ".": {
-      "import": "./dist/object-hash.js",
-      "require": "./dist/object-hash.umd.cjs"
+      "import": "./dist/parse-action.js",
+      "require": "./dist/parse-action.umd.cjs"
     }
   },
   "scripts": {
@@ -36,10 +37,9 @@
   },
   "devDependencies": {
     "cypress": "^12.13.0",
-    "standard": "^17.0.0",
-    "vite": "^4.2.0"
+    "vite": "^4.3.2"
   },
   "dependencies": {
-    "@dooksa/crypto": "bitbucket:dooksa/crypto"
+    "@dooksa/object-hash": "workspace:^"
   }
 }

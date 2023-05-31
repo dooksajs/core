@@ -1,0 +1,41 @@
+[
+  {
+    "dsAction": "set/dataValue",
+    "dsParams": {
+      "name": "dsContent/item",
+      "source": {
+        "token": false,
+        "value": "Hello world!"
+      },
+      "options": {
+        "id": {
+          "dsAction": "get/eventValue",
+          "dsParams": {
+            "key": "dsContentId"
+          }
+        }
+      }
+    }
+  },
+  {
+    "dsAction": "set/dataValue",
+    "dsParams": {
+      "name": "dsContent/item",
+      "source": {
+        "token": false,
+        "value": "I waited to say hello!"
+      },
+      "options": {
+        "id": {
+          "dsAction": "get/resultValue",
+          "dsParams": {
+            "index": 0,
+            "value": {
+              "key": "id"
+            }
+          }
+        }
+      }
+    }
+  }
+]
