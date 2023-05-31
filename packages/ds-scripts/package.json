@@ -2,6 +2,7 @@
   "name": "@dooksa/ds-scripts",
   "private": true,
   "version": "1.0.0",
+  "author": "Thomas David",
   "type": "module",
   "bin": {
     "ds-scripts": "./bin/ds-scripts.js"
