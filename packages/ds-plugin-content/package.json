@@ -4,6 +4,7 @@
   "description": "Dooksa content management",
   "main": "src/index.js",
   "type": "module",
+  "author": "Thomas David",
   "scripts": {
     "dev": "ds-scripts dev",
     "docs": "ds-scripts docs",
@@ -13,8 +14,6 @@
     "lint": "standard",
     "lint:fix": "standard --fix"
   },
-  "author": "Thomas David",
-  "license": "MPL-2",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@bitbucket.org:dooksa/ds-plugin-content.git"
