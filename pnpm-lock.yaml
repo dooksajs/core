@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-lockfileVersion: '6.1'
-
-settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false
-
-importers:
-
-  .: {}
-=======
 lockfileVersion: 5.4
 
 specifiers:
@@ -2169,4 +2158,3 @@ packages:
     name: '@dooksa/resource-loader'
     version: 1.0.0
     dev: true
->>>>>>> ds-plugin-devtool/master
