@@ -1,0 +1,35 @@
+{
+  "name": "@dooksa/ds-plugin-manager",
+  "version": "1.0.0",
+  "description": "Plugin manager for Dooksa",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "ds-scripts dev",
+    "test:open": "ds-scripts --open test",
+    "test:run": "ds-scripts --run test",
+    "test:record": "ds-scripts --run --record test",
+    "lint": "standard",
+    "lint:fix": "standard --fix"
+  },
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org:dooksa/ds-plugin-manager.git"
+  },
+  "author": {
+    "name": "Thomas David",
+    "email": "tom@mightysmile.com"
+  },
+  "devDependencies": {
+    "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts",
+    "standard": "*"
+  },
+  "dependencies": {
+    "@dooksa/ds-plugin-database": "bitbucket:dooksa/ds-plugin-database",
+    "@dooksa/ds-plugin-parse": "bitbucket:dooksa/ds-plugin-parse",
+    "@dooksa/ds-plugin-template": "bitbucket:dooksa/ds-plugin-template",
+    "@dooksa/ds-plugin-utilities": "bitbucket:dooksa/ds-plugin-utilities",
+    "@dooksa/resource-loader": "bitbucket:dooksa/resource-loader",
+    "@dooksa/ds-plugin": "bitbucket:dooksa/ds-plugin"
+  }
+}

@@ -6,20 +6,8 @@
 # Node artifact files
 node_modules/
 
-# Compiled Java class files
-*.class
-
-# Compiled Python bytecode
-*.py[cod]
-
 # Log files
 *.log
-
-# Package files
-*.jar
-
-# Maven
-target/
 
 # JetBrains IDE
 .idea/
@@ -56,6 +44,7 @@ cypress/integration/[0-9]-*/
 #Cypress recordings
 cypress/screenshots/
 cypress/videos/
+<<<<<<< HEAD:packages/ds-plugin-component/.gitignore
 cypress/downloads/
 
 # Coverage reporting
@@ -64,3 +53,6 @@ coverage/
 
 # Generated Plugin integrity check
 ds.plugin.integrity.js
+=======
+cypress/downloads/
+>>>>>>> ds-plugin-manager/master:.gitignore
