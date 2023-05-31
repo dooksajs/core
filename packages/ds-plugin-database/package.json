@@ -1,7 +1,9 @@
 {
   "name": "@dooksa/ds-plugin-database",
-  "version": "1.0.0",
-  "description": "Dooksa SaaS database plugin",
+  "version": "0.0.0",
+  "description": "Dooksa database plugin",
+  "author": "Thomas David",
+  "type": "module",
   "main": "src/index.js",
   "scripts": {
     "dev": "ds-scripts dev",
@@ -15,8 +17,6 @@
     "type": "git",
     "url": "git+ssh://git@bitbucket.org:dooksa/ds-plugin-database.git"
   },
-  "author": "Thomas David",
-  "type": "module",
   "devDependencies": {
     "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts",
     "pocketbase": "^0.7.1"
