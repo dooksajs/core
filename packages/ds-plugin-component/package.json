@@ -17,8 +17,7 @@
     "lint:fix": "standard --fix"
   },
   "devDependencies": {
-    "@dooksa/ds-scripts": "workspace:^",
-    "standard": "*"
+    "@dooksa/ds-scripts": "workspace:^"
   },
   "dependencies": {
     "iconify-icon": "^1.0.1"

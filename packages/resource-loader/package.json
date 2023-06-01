@@ -19,7 +19,6 @@
     "test:e2e:record": "ds-scripts --e2e --record test"
   },
   "devDependencies": {
-    "@dooksa/ds-scripts": "workspace:^",
-    "standard": "*"
+    "@dooksa/ds-scripts": "workspace:^"
   }
 }

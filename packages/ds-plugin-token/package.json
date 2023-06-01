@@ -17,7 +17,6 @@
     "lint:fix": "standard --fix"
   },
   "devDependencies": {
-    "standard": "*",
     "@dooksa/ds-scripts": "workspace:^"
   }
 }

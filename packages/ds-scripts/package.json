@@ -42,9 +42,6 @@
     "terser": "^5.16.9",
     "vite": "^4.2.1"
   },
-  "devDependencies": {
-    "standard": "^17.0.0"
-  },
   "pnpm": {
     "overrides": {
       "json5@<1.0.2": ">=1.0.2"

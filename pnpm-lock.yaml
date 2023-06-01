@@ -6,7 +6,11 @@ settings:
 
 importers:
 
-  .: {}
+  .:
+    devDependencies:
+      standard:
+        specifier: ^17.1.0
+        version: 17.1.0
 
   packages/crypto:
     dependencies:
@@ -17,9 +21,6 @@ importers:
       cypress:
         specifier: ^12.13.0
         version: 12.13.0
-      standard:
-        specifier: ^17.0.0
-        version: 17.0.0
       vite:
         specifier: ^4.3.2
         version: 4.3.2(terser@5.16.9)
@@ -84,27 +85,18 @@ importers:
       '@dooksa/ds-scripts':
         specifier: workspace:^
         version: link:../ds-scripts
-      standard:
-        specifier: '*'
-        version: 17.0.0
 
   packages/ds-plugin:
     devDependencies:
       '@dooksa/ds-scripts':
         specifier: workspace:^
         version: link:../ds-scripts
-      standard:
-        specifier: '*'
-        version: 17.0.0
 
   packages/ds-plugin-action:
     devDependencies:
       '@dooksa/ds-scripts':
         specifier: workspace:^
         version: link:../ds-scripts
-      standard:
-        specifier: '*'
-        version: 17.0.0
 
   packages/ds-plugin-component:
     dependencies:
@@ -115,18 +107,12 @@ importers:
       '@dooksa/ds-scripts':
         specifier: workspace:^
         version: link:../ds-scripts
-      standard:
-        specifier: '*'
-        version: 17.0.0
 
   packages/ds-plugin-content:
     devDependencies:
       '@dooksa/ds-scripts':
         specifier: workspace:^
         version: link:../ds-scripts
-      standard:
-        specifier: '*'
-        version: 17.0.0
 
   packages/ds-plugin-data:
     dependencies:
@@ -137,9 +123,6 @@ importers:
       '@dooksa/ds-scripts':
         specifier: workspace:^
         version: link:../ds-scripts
-      standard:
-        specifier: '*'
-        version: 17.0.0
 
   packages/ds-plugin-database:
     devDependencies:
@@ -155,27 +138,18 @@ importers:
       '@dooksa/ds-scripts':
         specifier: workspace:^
         version: link:../ds-scripts
-      standard:
-        specifier: '*'
-        version: 17.0.0
 
   packages/ds-plugin-event:
     devDependencies:
       '@dooksa/ds-scripts':
         specifier: workspace:^
         version: link:../ds-scripts
-      standard:
-        specifier: '*'
-        version: 17.0.0
 
   packages/ds-plugin-layout:
     devDependencies:
       '@dooksa/ds-scripts':
         specifier: workspace:^
         version: link:../ds-scripts
-      standard:
-        specifier: '*'
-        version: 17.0.0
 
   packages/ds-plugin-manager:
     dependencies:
@@ -195,81 +169,54 @@ importers:
       '@dooksa/ds-scripts':
         specifier: workspace:^
         version: link:../ds-scripts
-      standard:
-        specifier: '*'
-        version: 17.0.0
 
   packages/ds-plugin-metadata:
     devDependencies:
       '@dooksa/ds-scripts':
         specifier: workspace:^
         version: link:../ds-scripts
-      standard:
-        specifier: '*'
-        version: 17.0.0
 
   packages/ds-plugin-operator:
     devDependencies:
       '@dooksa/ds-scripts':
         specifier: workspace:^
         version: link:../ds-scripts
-      standard:
-        specifier: '*'
-        version: 17.0.0
 
   packages/ds-plugin-page:
     devDependencies:
       '@dooksa/ds-scripts':
         specifier: workspace:^
         version: link:../ds-scripts
-      standard:
-        specifier: '*'
-        version: 17.0.0
 
   packages/ds-plugin-router:
     devDependencies:
       '@dooksa/ds-scripts':
         specifier: workspace:^
         version: link:../ds-scripts
-      standard:
-        specifier: '*'
-        version: 17.0.0
 
   packages/ds-plugin-template:
     devDependencies:
       '@dooksa/ds-scripts':
         specifier: workspace:^
         version: link:../ds-scripts
-      standard:
-        specifier: '*'
-        version: 17.0.0
 
   packages/ds-plugin-token:
     devDependencies:
       '@dooksa/ds-scripts':
         specifier: workspace:^
         version: link:../ds-scripts
-      standard:
-        specifier: '*'
-        version: 17.0.0
 
   packages/ds-plugin-view:
     devDependencies:
       '@dooksa/ds-scripts':
         specifier: workspace:^
         version: link:../ds-scripts
-      standard:
-        specifier: '*'
-        version: 17.0.0
 
   packages/ds-plugin-widget:
     devDependencies:
       '@dooksa/ds-scripts':
         specifier: workspace:^
         version: link:../ds-scripts
-      standard:
-        specifier: '*'
-        version: 17.0.0
 
   packages/ds-scripts:
     dependencies:
@@ -300,10 +247,6 @@ importers:
       vite:
         specifier: ^4.2.1
         version: 4.3.2(terser@5.16.9)
-    devDependencies:
-      standard:
-        specifier: ^17.0.0
-        version: 17.0.0
 
   packages/object-hash:
     dependencies:
@@ -314,9 +257,6 @@ importers:
       cypress:
         specifier: ^12.13.0
         version: 12.13.0
-      standard:
-        specifier: ^17.0.0
-        version: 17.0.0
       vite:
         specifier: ^4.2.0
         version: 4.3.2(terser@5.16.9)
@@ -334,14 +274,27 @@ importers:
         specifier: ^4.3.2
         version: 4.3.2(terser@5.16.9)
 
+  packages/parse-template:
+    dependencies:
+      '@dooksa/crypto':
+        specifier: workspace:^
+        version: link:../crypto
+      '@dooksa/object-hash':
+        specifier: workspace:^
+        version: link:../object-hash
+    devDependencies:
+      cypress:
+        specifier: ^12.13.0
+        version: 12.13.0
+      vite:
+        specifier: ^4.3.2
+        version: 4.3.2(terser@5.16.9)
+
   packages/resource-loader:
     devDependencies:
       '@dooksa/ds-scripts':
         specifier: workspace:^
         version: link:../ds-scripts
-      standard:
-        specifier: '*'
-        version: 17.0.0
 
 packages:
 
@@ -2647,12 +2600,13 @@ packages:
       eslint-plugin-react: 7.32.2(eslint@8.41.0)
     dev: true
 
-  /eslint-config-standard@17.0.0(eslint-plugin-import@2.27.5)(eslint-plugin-n@15.7.0)(eslint-plugin-promise@6.1.1)(eslint@8.41.0):
-    resolution: {integrity: sha512-/2ks1GKyqSOkH7JFvXJicu0iMpoojkwB+f5Du/1SC0PtBL+s8v30k9njRZ21pm2drKYm2342jFnGWzttxPmZVg==}
+  /eslint-config-standard@17.1.0(eslint-plugin-import@2.27.5)(eslint-plugin-n@15.7.0)(eslint-plugin-promise@6.1.1)(eslint@8.41.0):
+    resolution: {integrity: sha512-IwHwmaBNtDK4zDHQukFDW5u/aTb8+meQWZvNFWkiGmbWjD6bqyuSSBxxXKkCftCUzc1zwCH2m/baCNDLGmuO5Q==}
+    engines: {node: '>=12.0.0'}
     peerDependencies:
       eslint: ^8.0.1
       eslint-plugin-import: ^2.25.2
-      eslint-plugin-n: ^15.0.0
+      eslint-plugin-n: '^15.0.0 || ^16.0.0 '
       eslint-plugin-promise: ^6.0.0
     dependencies:
       eslint: 8.41.0
@@ -4128,19 +4082,20 @@ packages:
       xdg-basedir: 4.0.0
     dev: true
 
-  /standard@17.0.0:
-    resolution: {integrity: sha512-GlCM9nzbLUkr+TYR5I2WQoIah4wHA2lMauqbyPLV/oI5gJxqhHzhjl9EG2N0lr/nRqI3KCbCvm/W3smxvLaChA==}
+  /standard@17.1.0:
+    resolution: {integrity: sha512-jaDqlNSzLtWYW4lvQmU0EnxWMUGQiwHasZl5ZEIwx3S/ijZDjZOzs1y1QqKwKs5vqnFpGtizo4NOYX2s0Voq/g==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     hasBin: true
     dependencies:
       eslint: 8.41.0
-      eslint-config-standard: 17.0.0(eslint-plugin-import@2.27.5)(eslint-plugin-n@15.7.0)(eslint-plugin-promise@6.1.1)(eslint@8.41.0)
+      eslint-config-standard: 17.1.0(eslint-plugin-import@2.27.5)(eslint-plugin-n@15.7.0)(eslint-plugin-promise@6.1.1)(eslint@8.41.0)
       eslint-config-standard-jsx: 11.0.0(eslint-plugin-react@7.32.2)(eslint@8.41.0)
       eslint-plugin-import: 2.27.5(eslint@8.41.0)
       eslint-plugin-n: 15.7.0(eslint@8.41.0)
       eslint-plugin-promise: 6.1.1(eslint@8.41.0)
       eslint-plugin-react: 7.32.2(eslint@8.41.0)
       standard-engine: 15.1.0
+      version-guard: 1.1.1
     transitivePeerDependencies:
       - '@typescript-eslint/parser'
       - eslint-import-resolver-typescript
@@ -4401,6 +4356,11 @@ packages:
       assert-plus: 1.0.0
       core-util-is: 1.0.2
       extsprintf: 1.3.0
+
+  /version-guard@1.1.1:
+    resolution: {integrity: sha512-MGQLX89UxmYHgDvcXyjBI0cbmoW+t/dANDppNPrno64rYr8nH4SHSuElQuSYdXGEs0mUzdQe1BY+FhVPNsAmJQ==}
+    engines: {node: '>=0.10.48'}
+    dev: true
 
   /vite@4.3.2(terser@5.16.9):
     resolution: {integrity: sha512-9R53Mf+TBoXCYejcL+qFbZde+eZveQLDYd9XgULILLC1a5ZwPaqgmdVpL8/uvw2BM/1TzetWjglwm+3RO+xTyw==}

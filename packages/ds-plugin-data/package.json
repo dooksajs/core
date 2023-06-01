@@ -28,8 +28,7 @@
     ]
   },
   "devDependencies": {
-    "@dooksa/ds-scripts": "workspace:^",
-    "standard": "*"
+    "@dooksa/ds-scripts": "workspace:^"
   },
   "dependencies": {
     "@dooksa/crypto": "workspace:^"
