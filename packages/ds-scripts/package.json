@@ -2,7 +2,8 @@
   "name": "@dooksa/ds-scripts",
   "private": true,
   "version": "1.0.0",
-  "author": "Thomas David",
+  "author": "Thomas David <tom@mightysmile.com>",
+  "repository": "git@github.com:dooksajs/dooksa.git",
   "type": "module",
   "bin": {
     "ds-scripts": "./bin/ds-scripts.js"
@@ -34,7 +35,7 @@
   "dependencies": {
     "@dooksa/ds-app": "workspace:^",
     "@dooksa/ds-plugin-devtool": "workspace:^",
-    "@dooksa/ds-plugin-template": "bitbucket:dooksa/ds-plugin-template",
+    "@dooksa/ds-plugin-template": "workspace:^",
     "@vitejs/plugin-basic-ssl": "^1.0.1",
     "@vitejs/plugin-legacy": "^4.0.2",
     "cypress": "^11.2.0",
