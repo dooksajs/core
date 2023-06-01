@@ -79,7 +79,7 @@ export default {
       }
     }
   },
-  /** @lends @dsData */
+  /** @lends dsData */
   methods: {
     /**
      * Add data and its data type
