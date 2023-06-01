@@ -123,7 +123,7 @@ export default {
       const property = properties[i]
       const name = property.name
 
-      if (options && options.required && options.required.includes(name)) {
+      if (Array.isArray(options?.required) && options.required.includes(name)) {
         property.required = true
       }
 
@@ -139,7 +139,7 @@ export default {
         }
       }
 
-      if (property.options && property.options.relation) {
+      if (typeof property.options === 'object' && property.options.relation) {
         hasRelation = true
         relation.push([name, property.options.relation])
       }
@@ -190,7 +190,7 @@ export default {
 
       const entry = { id, entry: item.entry }
 
-      if (item.entry.options && item.entry.options.relation) {
+      if (typeof item.entry.options === 'object' && item.entry.options.relation) {
         entry.relation = [item.entry.options.relation]
       }
 
@@ -198,7 +198,7 @@ export default {
     } else {
       const entry = { id, entry: item.entry }
 
-      if (item.entry.options && item.entry.options.relation) {
+      if (typeof item.entry.options === 'object' && item.entry.options.relation) {
         entry.relation = [item.entry.options.relation]
       }
 
