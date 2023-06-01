@@ -1,6 +1,5 @@
 {
   "name": "@dooksa/ds-scripts",
-  "private": true,
   "version": "0.0.0",
   "author": "Thomas David <tom@mightysmile.com>",
   "repository": "git@github.com:dooksajs/dooksa.git",

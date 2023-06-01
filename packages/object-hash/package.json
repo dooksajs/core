@@ -40,6 +40,6 @@
     "vite": "^4.2.0"
   },
   "dependencies": {
-    "@dooksa/crypto": "bitbucket:dooksa/crypto"
+    "@dooksa/crypto": "workspace:^"
   }
 }

@@ -19,7 +19,7 @@
     "url": "git+ssh://git@bitbucket.org:dooksa/ds-plugin-template.git"
   },
   "devDependencies": {
-    "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts",
+    "@dooksa/ds-scripts": "workspace:^",
     "standard": "*"
   }
 }

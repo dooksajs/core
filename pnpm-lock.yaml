@@ -100,8 +100,8 @@ importers:
   packages/ds-plugin-action:
     devDependencies:
       '@dooksa/ds-scripts':
-        specifier: bitbucket:dooksa/ds-scripts
-        version: bitbucket.org/dooksa/ds-scripts/985823804192193e2b2114edc5eeab88f9784121
+        specifier: workspace:^
+        version: link:../ds-scripts
       standard:
         specifier: '*'
         version: 17.0.0
@@ -113,8 +113,8 @@ importers:
         version: 1.0.1
     devDependencies:
       '@dooksa/ds-scripts':
-        specifier: bitbucket:dooksa/ds-scripts
-        version: bitbucket.org/dooksa/ds-scripts/985823804192193e2b2114edc5eeab88f9784121
+        specifier: workspace:^
+        version: link:../ds-scripts
       standard:
         specifier: '*'
         version: 17.0.0
@@ -122,8 +122,8 @@ importers:
   packages/ds-plugin-content:
     devDependencies:
       '@dooksa/ds-scripts':
-        specifier: bitbucket:dooksa/ds-scripts
-        version: bitbucket.org/dooksa/ds-scripts/985823804192193e2b2114edc5eeab88f9784121
+        specifier: workspace:^
+        version: link:../ds-scripts
       standard:
         specifier: '*'
         version: 17.0.0
@@ -135,8 +135,8 @@ importers:
         version: 3.3.4
     devDependencies:
       '@dooksa/ds-scripts':
-        specifier: bitbucket:dooksa/ds-scripts
-        version: bitbucket.org/dooksa/ds-scripts/985823804192193e2b2114edc5eeab88f9784121
+        specifier: workspace:^
+        version: link:../ds-scripts
       standard:
         specifier: '*'
         version: 17.0.0
@@ -144,8 +144,8 @@ importers:
   packages/ds-plugin-database:
     devDependencies:
       '@dooksa/ds-scripts':
-        specifier: bitbucket:dooksa/ds-scripts
-        version: bitbucket.org/dooksa/ds-scripts/985823804192193e2b2114edc5eeab88f9784121
+        specifier: workspace:^
+        version: link:../ds-scripts
       pocketbase:
         specifier: ^0.7.1
         version: 0.7.1
@@ -153,8 +153,8 @@ importers:
   packages/ds-plugin-devtool:
     devDependencies:
       '@dooksa/ds-scripts':
-        specifier: bitbucket:dooksa/ds-scripts
-        version: bitbucket.org/dooksa/ds-scripts/985823804192193e2b2114edc5eeab88f9784121
+        specifier: workspace:^
+        version: link:../ds-scripts
       standard:
         specifier: '*'
         version: 17.0.0
@@ -162,8 +162,8 @@ importers:
   packages/ds-plugin-event:
     devDependencies:
       '@dooksa/ds-scripts':
-        specifier: bitbucket:dooksa/ds-scripts
-        version: bitbucket.org/dooksa/ds-scripts/985823804192193e2b2114edc5eeab88f9784121
+        specifier: workspace:^
+        version: link:../ds-scripts
       standard:
         specifier: '*'
         version: 17.0.0
@@ -180,20 +180,14 @@ importers:
   packages/ds-plugin-manager:
     dependencies:
       '@dooksa/ds-plugin':
-        specifier: bitbucket:dooksa/ds-plugin
-        version: bitbucket.org/dooksa/ds-plugin/ab985cd56c93b2008537e3b307d14c3eb7bfedd6
+        specifier: workspace:^
+        version: link:../ds-plugin
       '@dooksa/ds-plugin-database':
-        specifier: bitbucket:dooksa/ds-plugin-database
-        version: bitbucket.org/dooksa/ds-plugin-database/c94cf52717c2c478aa83d6a33e4bf232e93c3569
-      '@dooksa/ds-plugin-parse':
-        specifier: bitbucket:dooksa/ds-plugin-parse
-        version: bitbucket.org/dooksa/ds-plugin-parse/1ccab572ec5ccd37b3ad191eda38e688fffb0d78
+        specifier: workspace:^
+        version: link:../ds-plugin-database
       '@dooksa/ds-plugin-template':
-        specifier: bitbucket:dooksa/ds-plugin-template
-        version: bitbucket.org/dooksa/ds-plugin-template/8c7b9103d57b984eca4a7e399fa2d2a59a13728b
-      '@dooksa/ds-plugin-utilities':
-        specifier: bitbucket:dooksa/ds-plugin-utilities
-        version: bitbucket.org/dooksa/ds-plugin-utilities/3e8b07837eb6183c070c3d98345ca6938bde498b
+        specifier: workspace:^
+        version: link:../ds-plugin-template
       '@dooksa/resource-loader':
         specifier: bitbucket:dooksa/resource-loader
         version: bitbucket.org/dooksa/resource-loader/62193df21e23aa45401b4700574dbdae85b7b80f
@@ -208,8 +202,8 @@ importers:
   packages/ds-plugin-metadata:
     devDependencies:
       '@dooksa/ds-scripts':
-        specifier: bitbucket:dooksa/ds-scripts
-        version: bitbucket.org/dooksa/ds-scripts/985823804192193e2b2114edc5eeab88f9784121
+        specifier: workspace:^
+        version: link:../ds-scripts
       standard:
         specifier: '*'
         version: 17.0.0
@@ -217,8 +211,8 @@ importers:
   packages/ds-plugin-operator:
     devDependencies:
       '@dooksa/ds-scripts':
-        specifier: bitbucket:dooksa/ds-scripts
-        version: bitbucket.org/dooksa/ds-scripts/985823804192193e2b2114edc5eeab88f9784121
+        specifier: workspace:^
+        version: link:../ds-scripts
       standard:
         specifier: '*'
         version: 17.0.0
@@ -226,8 +220,8 @@ importers:
   packages/ds-plugin-page:
     devDependencies:
       '@dooksa/ds-scripts':
-        specifier: bitbucket:dooksa/ds-scripts
-        version: bitbucket.org/dooksa/ds-scripts/985823804192193e2b2114edc5eeab88f9784121
+        specifier: workspace:^
+        version: link:../ds-scripts
       standard:
         specifier: '*'
         version: 17.0.0
@@ -235,8 +229,8 @@ importers:
   packages/ds-plugin-router:
     devDependencies:
       '@dooksa/ds-scripts':
-        specifier: bitbucket:dooksa/ds-scripts
-        version: bitbucket.org/dooksa/ds-scripts/985823804192193e2b2114edc5eeab88f9784121
+        specifier: workspace:^
+        version: link:../ds-scripts
       standard:
         specifier: '*'
         version: 17.0.0
@@ -244,8 +238,8 @@ importers:
   packages/ds-plugin-template:
     devDependencies:
       '@dooksa/ds-scripts':
-        specifier: bitbucket:dooksa/ds-scripts
-        version: bitbucket.org/dooksa/ds-scripts/985823804192193e2b2114edc5eeab88f9784121
+        specifier: workspace:^
+        version: link:../ds-scripts
       standard:
         specifier: '*'
         version: 17.0.0
@@ -253,8 +247,8 @@ importers:
   packages/ds-plugin-token:
     devDependencies:
       '@dooksa/ds-scripts':
-        specifier: bitbucket:dooksa/ds-scripts
-        version: bitbucket.org/dooksa/ds-scripts/985823804192193e2b2114edc5eeab88f9784121
+        specifier: workspace:^
+        version: link:../ds-scripts
       standard:
         specifier: '*'
         version: 17.0.0
@@ -262,8 +256,8 @@ importers:
   packages/ds-plugin-view:
     devDependencies:
       '@dooksa/ds-scripts':
-        specifier: bitbucket:dooksa/ds-scripts
-        version: bitbucket.org/dooksa/ds-scripts/985823804192193e2b2114edc5eeab88f9784121
+        specifier: workspace:^
+        version: link:../ds-scripts
       standard:
         specifier: '*'
         version: 17.0.0
@@ -4362,6 +4356,7 @@ packages:
     version: 0.0.0
     dependencies:
       uuid: 9.0.0
+    dev: true
 
   bitbucket.org/dooksa/ds-app/86a9db95649619e794b8620547b8e01823b65887:
     resolution: {commit: 86a9db95649619e794b8620547b8e01823b65887, repo: git+ssh://git@bitbucket.org/dooksa/ds-app.git, type: git}
@@ -4421,6 +4416,7 @@ packages:
     resolution: {commit: c94cf52717c2c478aa83d6a33e4bf232e93c3569, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-database.git, type: git}
     name: '@dooksa/ds-plugin-database'
     version: 1.0.0
+    dev: true
 
   bitbucket.org/dooksa/ds-plugin-devtool/008ad625dffaaa423b0834de50b5fec208c48e58:
     resolution: {commit: 008ad625dffaaa423b0834de50b5fec208c48e58, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-devtool.git, type: git}
@@ -4483,6 +4479,7 @@ packages:
     version: 1.0.0
     dependencies:
       '@dooksa/object-hash': bitbucket.org/dooksa/object-hash/45be671c84168080d15595e15fdc36f09cd2bf4e
+    dev: true
 
   bitbucket.org/dooksa/ds-plugin-router/b64297405c62343d12cdb9fea683510b477e5dd3:
     resolution: {commit: b64297405c62343d12cdb9fea683510b477e5dd3, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-router.git, type: git}
@@ -4494,6 +4491,7 @@ packages:
     resolution: {commit: 8c7b9103d57b984eca4a7e399fa2d2a59a13728b, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-template.git, type: git}
     name: '@dooksa/ds-plugin-template'
     version: 1.0.0
+    dev: true
 
   bitbucket.org/dooksa/ds-plugin-token/97d3366a691683e8c3b0d5e81c7605d6b7791529:
     resolution: {commit: 97d3366a691683e8c3b0d5e81c7605d6b7791529, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-token.git, type: git}
@@ -4507,6 +4505,7 @@ packages:
     version: 1.0.0
     dependencies:
       nanoid: 3.3.6
+    dev: true
 
   bitbucket.org/dooksa/ds-plugin-view/d47c41a078657d25f3dcec8e07571ec49bae90c3:
     resolution: {commit: d47c41a078657d25f3dcec8e07571ec49bae90c3, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-view.git, type: git}
@@ -4524,6 +4523,7 @@ packages:
     resolution: {commit: ab985cd56c93b2008537e3b307d14c3eb7bfedd6, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin.git, type: git}
     name: '@dooksa/ds-plugin'
     version: 1.0.0
+    dev: true
 
   bitbucket.org/dooksa/ds-scripts/985823804192193e2b2114edc5eeab88f9784121:
     resolution: {commit: 985823804192193e2b2114edc5eeab88f9784121, repo: git+ssh://git@bitbucket.org/dooksa/ds-scripts.git, type: git}
@@ -4556,6 +4556,7 @@ packages:
     version: 1.0.0
     dependencies:
       '@dooksa/crypto': bitbucket.org/dooksa/crypto/03f5287a1534d9ee73292adc9e18826de73410fb
+    dev: true
 
   bitbucket.org/dooksa/resource-loader/62193df21e23aa45401b4700574dbdae85b7b80f:
     resolution: {tarball: https://bitbucket.org/dooksa/resource-loader/get/62193df21e23aa45401b4700574dbdae85b7b80f.tar.gz}

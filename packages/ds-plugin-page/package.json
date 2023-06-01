@@ -19,6 +19,6 @@
   },
   "devDependencies": {
     "standard": "*",
-    "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts"
+    "@dooksa/ds-scripts": "workspace:^"
   }
 }

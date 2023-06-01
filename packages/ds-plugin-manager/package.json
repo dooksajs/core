@@ -22,11 +22,9 @@
     "standard": "*"
   },
   "dependencies": {
-    "@dooksa/ds-plugin-database": "bitbucket:dooksa/ds-plugin-database",
-    "@dooksa/ds-plugin-parse": "bitbucket:dooksa/ds-plugin-parse",
-    "@dooksa/ds-plugin-template": "bitbucket:dooksa/ds-plugin-template",
-    "@dooksa/ds-plugin-utilities": "bitbucket:dooksa/ds-plugin-utilities",
+    "@dooksa/ds-plugin-database": "workspace:^",
+    "@dooksa/ds-plugin-template": "workspace:^",
     "@dooksa/resource-loader": "bitbucket:dooksa/resource-loader",
-    "@dooksa/ds-plugin": "bitbucket:dooksa/ds-plugin"
+    "@dooksa/ds-plugin": "workspace:^"
   }
 }

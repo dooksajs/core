@@ -21,7 +21,7 @@
     "email": "tom@mightysmile.com"
   },
   "devDependencies": {
-    "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts",
+    "@dooksa/ds-scripts": "workspace:^",
     "standard": "*"
   }
 }
