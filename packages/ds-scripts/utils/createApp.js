@@ -2,7 +2,6 @@ import dsApp from '@dooksa/ds-app'
 import dsDevTool from '@dooksa/ds-plugin-devtool'
 import dsPlugin from '@dooksa/plugin'
 import dsTemplate from '@dooksa/ds-plugin-template'
-import dsParse from '@dooksa/ds-plugin-parse'
 
 // start app
 export default (
@@ -23,8 +22,8 @@ export default (
     app.dsManager = pluginManager
   }
 
-  const requiredPluginNames = ['dsDevTool', 'dsParse', 'dsTemplate']
-  const requiredPlugins = { dsDevTool, dsParse, dsTemplate }
+  const requiredPluginNames = ['dsDevTool', 'dsTemplate']
+  const requiredPlugins = { dsDevTool, dsTemplate }
 
   // load the plugin and dependencies
   for (let i = 0; i < plugins.length; i++) {
