@@ -1,7 +1,12 @@
 {
   "name": "@dooksa/resource-loader",
+  "private": true,
   "version": "1.0.0",
   "description": "Resource loader provides a convenient wrapper to add scripts or link ot the DOM",
+  "author": "Thomas David <tom@mightysmile.com>",
+  "repository": "git@github.com:dooksajs/dooksa.git",
+  "license": "MPL-2.0",
+  "type": "module",
   "main": "dist/ds-plugin-resource.js",
   "scripts": {
     "lint": "standard",
@@ -13,18 +18,8 @@
     "test:e2e": "ds-scripts --e2e test",
     "test:e2e:record": "ds-scripts --e2e --record test"
   },
-  "type": "module",
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@bitbucket.org/dooksa/resource-loader.git"
-  },
-  "author": {
-    "name": "Thomas David",
-    "email": "tom@mightysmile.com"
-  },
-  "homepage": "https://bitbucket.org/dooksa/resource-loader#readme",
   "devDependencies": {
-    "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts",
+    "@dooksa/ds-scripts": "workspace:^",
     "standard": "*"
   }
 }
