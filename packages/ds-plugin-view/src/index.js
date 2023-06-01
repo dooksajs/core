@@ -356,7 +356,7 @@ export default {
 
         // emit new child mount
         this.$emit({
-          name: 'dsView/append',
+          name: 'dsView/mounted',
           id: dsViewId,
           payload: { dsViewId }
         })
