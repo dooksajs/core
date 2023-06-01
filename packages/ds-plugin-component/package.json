@@ -1,9 +1,11 @@
 {
   "name": "@dooksa/ds-plugin-component",
-  "description": "Components for Dooksa",
+  "private": true,
   "version": "0.0.0",
+  "description": "Components for Dooksa",
   "author": "Thomas David <tom@mightysmile.com>",
   "repository": "git@github.com:dooksajs/dooksa.git",
+  "license": "MPL-2.0",
   "type": "module",
   "main": "src/index.js",
   "scripts": {

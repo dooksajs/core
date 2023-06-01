@@ -1,9 +1,13 @@
 {
   "name": "@dooksa/ds-plugin-widget",
+  "private": true,
   "version": "0.0.0",
   "description": "Widgets for system for Dooksa",
+  "author": "Thomas David <tom@mightysmile.com>",
+  "repository": "git@github.com:dooksajs/dooksa.git",
+  "license": "MPL-2.0",
+  "type": "module",
   "main": "src/index.js",
-  "author": "Thomas David",
   "scripts": {
     "dev": "ds-scripts dev",
     "build": "ds-scripts build_lib",
@@ -12,11 +16,6 @@
     "test:record": "ds-scripts --run --record test",
     "lint": "standard",
     "lint:fix": "standard --fix"
-  },
-  "type": "module",
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@bitbucket.org:dooksa/ds-plugin-widget.git"
   },
   "devDependencies": {
     "@dooksa/ds-scripts": "workspace:^",

@@ -2,10 +2,10 @@
   "name": "@dooksa/ds-app",
   "version": "0.0.0",
   "description": "Dooksa app",
-  "author": "Thomas David",
-  "type": "module",
+  "author": "Thomas David <tom@mightysmile.com>",
   "repository": "git@github.com:dooksajs/dooksa.git",
   "license": "MPL-2.0",
+  "type": "module",
   "main": "src/index.js",
   "scripts": {
     "build": "ds-scripts build",

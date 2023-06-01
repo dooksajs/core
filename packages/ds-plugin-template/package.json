@@ -1,8 +1,12 @@
 {
   "name": "@dooksa/ds-plugin-template",
+  "private": true,
   "version": "0.0.0",
   "description": "Dooksa templates",
-  "author": "Thomas David",
+  "author": "Thomas David <tom@mightysmile.com>",
+  "repository": "git@github.com:dooksajs/dooksa.git",
+  "license": "MPL-2.0",
+  "type": "module",
   "main": "src/index.js",
   "scripts": {
     "dev": "ds-scripts dev",
@@ -12,11 +16,6 @@
     "test:e2e:record": "ds-scripts --e2e --record test",
     "lint": "standard",
     "lint:fix": "standard --fix"
-  },
-  "type": "module",
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@bitbucket.org:dooksa/ds-plugin-template.git"
   },
   "devDependencies": {
     "@dooksa/ds-scripts": "workspace:^",

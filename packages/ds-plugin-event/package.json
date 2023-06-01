@@ -1,9 +1,13 @@
 {
   "name": "@dooksa/ds-plugin-event",
+  "private": true,
   "version": "0.0.0",
   "description": "Events plugin management system for Dooksa",
   "main": "src/index.js",
-  "author": "Thomas David",
+  "author": "Thomas David <tom@mightysmile.com>",
+  "repository": "git@github.com:dooksajs/dooksa.git",
+  "license": "MPL-2.0",
+  "type": "module",
   "scripts": {
     "dev": "ds-scripts dev",
     "test:open": "ds-scripts --open test",
@@ -11,11 +15,6 @@
     "test:record": "ds-scripts --run --record test",
     "lint": "standard",
     "lint:fix": "standard --fix"
-  },
-  "type": "module",
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@bitbucket.org:dooksa/ds-plugin-event.git"
   },
   "devDependencies": {
     "@dooksa/ds-scripts": "workspace:^",

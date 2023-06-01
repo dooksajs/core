@@ -1,11 +1,12 @@
 {
   "name": "@dooksa/ds-plugin",
+  "private": true,
   "version": "0.0.0",
   "description": "The plugin library for Dooksa CMS",
   "author": "Thomas David <tom@mightysmile.com>",
   "repository": "git@github.com:dooksajs/dooksa.git",
-  "type": "module",
   "license": "MPL-2.0",
+  "type": "module",
   "main": "src/index.js",
   "scripts": {
     "dev": "ds-scripts dev",

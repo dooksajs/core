@@ -1,10 +1,13 @@
 {
   "name": "@dooksa/ds-plugin-data",
-  "version": "1.0.0",
+  "private": true,
+  "version": "0.0.0",
   "description": "Dooksa data management",
-  "main": "src/index.js",
+  "author": "Thomas David <tom@mightysmile.com>",
+  "repository": "git@github.com:dooksajs/dooksa.git",
+  "license": "MPL-2.0",
   "type": "module",
-  "author": "Thomas David",
+  "main": "src/index.js",
   "scripts": {
     "dev": "ds-scripts dev",
     "test:open": "ds-scripts --open test",

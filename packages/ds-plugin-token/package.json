@@ -1,8 +1,12 @@
 {
   "name": "@dooksa/ds-plugin-token",
-  "version": "0.1.0",
+  "private": true,
+  "version": "0.0.0",
   "description": "Ds tokens plugin is used simple text replacement used with workflow",
-  "author": "Thomas David",
+  "author": "Thomas David <tom@mightysmile.com>",
+  "repository": "git@github.com:dooksajs/dooksa.git",
+  "license": "MPL-2.0",
+  "type": "module",
   "main": "src/index.js",
   "scripts": {
     "dev": "ds-scripts dev",
@@ -11,11 +15,6 @@
     "test:record": "ds-scripts --run --record test",
     "lint": "standard",
     "lint:fix": "standard --fix"
-  },
-  "type": "module",
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@bitbucket.org:dooksa/ds-plugin-token.git"
   },
   "devDependencies": {
     "standard": "*",
