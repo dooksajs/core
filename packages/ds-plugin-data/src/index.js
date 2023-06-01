@@ -1,7 +1,4 @@
-import { customAlphabet } from 'nanoid'
-
-const alphabet = '123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz$'
-const nanoid = customAlphabet(alphabet, 15)
+import { uuid } from '@dooksa/crypto'
 
 function SchemaException (details) {
   this.details = details
@@ -154,7 +151,7 @@ export default {
      * @returns {string}
      */
     generateId () {
-      return '_' + nanoid() + '_'
+      return '_' + uuid() + '_'
     },
     /**
      * Get data value
