@@ -465,6 +465,10 @@ export default {
           if (this.setupOnRequestQueue[name]) {
             dsPlugin = this.setupOnRequestQueue[name]
           } else {
+            if (!plugin) {
+              throw new Error('Plugin not found: "' + name + '"')
+            }
+
             dsPlugin = new this.DsPlugin(plugin, this.context, this.isDev)
 
             // add plugin to manager
