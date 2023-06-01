@@ -190,7 +190,7 @@ export default {
             itemId = id + suffix
           }
 
-          if (!this._nullish(this.values[name][itemId])) {
+          if (this.values[name][itemId] != null) {
             result.isAffixEmpty = false
             result.item = this.values[name][itemId]
           }
@@ -201,7 +201,7 @@ export default {
           result.item = this.values[name][result.id]
 
           // find document using default affixes
-          if (this._nullish(result.item) && schema.id) {
+          if (result.item == null && schema.id) {
             let itemId
 
             if (schema.id.prefix && schema.id.suffix) {
@@ -222,7 +222,7 @@ export default {
             result.id = itemId
             result.item = this.values[name][itemId]
 
-            if (this._nullish(result.item)) {
+            if (result.item == null) {
               result.isEmpty = true
             }
           }
@@ -242,7 +242,7 @@ export default {
         }
       }
 
-      if (this._nullish(result.item)) {
+      if (result.item == null) {
         result.isEmpty = true
 
         return result
@@ -267,7 +267,7 @@ export default {
 
         let target = this.values[name]
 
-        if (!this._nullish(target)) {
+        if (target != null) {
           const unfreeze = this['_unfreeze/' + schema.type]
 
           if (unfreeze) {
@@ -449,7 +449,7 @@ export default {
      * @returns {boolean}
      */
     _checkType (name, value, type) {
-      if (!this._nullish(value)) {
+      if (value !== null) {
         if (type === 'node') {
           if (value.nodeName && Object.isFrozen(value.nodeName)) {
             return true
@@ -547,15 +547,6 @@ export default {
           listener.action(listener.arguments, value)
         }
       }
-    },
-    /**
-     * Check if value is undefined or null
-     * @private
-     * @param {*} value - Any value
-     * @returns {boolean}
-     */
-    _nullish (value) {
-      return (value === undefined || value === null)
     },
     '_option/array' (data, name, option, schema, target, source) {
       // change target
@@ -878,7 +869,7 @@ export default {
         const value = source[property.name]
 
         // check if field is required
-        if (propertyOptions.required && this._nullish(value)) {
+        if (propertyOptions.required && value == null) {
           throw new SchemaException({
             schemaPath: name,
             keyword: 'required',
@@ -886,7 +877,7 @@ export default {
           })
         }
 
-        if (this._nullish(value) && !propertyOptions.default) {
+        if (value == null && !propertyOptions.default) {
           propertiesChecked.push(property.name)
         } else {
           if (property.type !== 'number' && !value && propertyOptions.default) {
