@@ -5,7 +5,6 @@ import dsAction from '@dooksa/ds-plugin-action'
 import dsWidget from '@dooksa/ds-plugin-widget'
 import dsOperator from '@dooksa/ds-plugin-operator'
 import dsEvent from '@dooksa/ds-plugin-event'
-import dsParameter from '@dooksa/ds-plugin-parameter'
 import dsRouter from '@dooksa/ds-plugin-router'
 import dsComponent from '@dooksa/ds-plugin-component'
 import dsLayout from '@dooksa/ds-plugin-layout'
@@ -29,6 +28,11 @@ export default {
       name: dsMetadata.name,
       version: dsMetadata.version,
       plugin: dsMetadata
+    },
+    [dsAction.name]: {
+      name: dsAction.name,
+      version: dsAction.version,
+      plugin: dsAction
     },
     [dsToken.name]: {
       name: dsToken.name,
@@ -65,20 +69,10 @@ export default {
       version: dsWidget.version,
       plugin: dsWidget
     },
-    [dsAction.name]: {
-      name: dsAction.name,
-      version: dsAction.version,
-      plugin: dsAction
-    },
     [dsEvent.name]: {
       name: dsEvent.name,
       version: dsEvent.version,
       plugin: dsEvent
-    },
-    [dsParameter.name]: {
-      name: dsParameter.name,
-      version: dsParameter.version,
-      plugin: dsParameter
     },
     [dsOperator.name]: {
       name: dsOperator.name,
@@ -89,14 +83,6 @@ export default {
       name: dsPage.name,
       version: dsPage.version,
       plugin: dsPage
-    },
-    dsParse: {
-      name: 'dsParse',
-      version: 1,
-      options: {
-        import: 'ds-plugin-parse',
-        setupOnRequest: true
-      }
     },
     dsDatabase: {
       name: 'dsDatabase',
@@ -111,14 +97,6 @@ export default {
       version: 1,
       options: {
         import: 'ds-plugin-template',
-        setupOnRequest: true
-      }
-    },
-    dsUtilities: {
-      name: 'dsUtilities',
-      version: 1,
-      options: {
-        import: 'ds-plugin-utilities',
         setupOnRequest: true
       }
     }
