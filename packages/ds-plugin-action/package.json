@@ -2,8 +2,11 @@
   "name": "@dooksa/ds-plugin-action",
   "version": "0.0.0",
   "description": "Action system to execute functions for Dooksa",
+  "author": "Thomas David <tom@mightysmile.com>",
+  "repository": "git@github.com:dooksajs/dooksa.git",
+  "type": "module",
+  "license": "MPL-2.0",
   "main": "src/index.js",
-  "author": "Thomas David",
   "scripts": {
     "dev": "ds-scripts dev",
     "test:open": "ds-scripts --open test",
@@ -12,13 +15,8 @@
     "lint": "standard",
     "lint:fix": "standard --fix"
   },
-  "type": "module",
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@bitbucket.org:dooksa/ds-plugin-action.git"
-  },
   "devDependencies": {
-    "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts",
+    "@dooksa/ds-scripts": "workspace:^",
     "standard": "*"
   }
 }
