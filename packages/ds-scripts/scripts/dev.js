@@ -7,7 +7,7 @@ import basicSsl from '@vitejs/plugin-basic-ssl'
 
 ;(async () => {
   const configPath = resolve(appDirectory, 'ds.config.js')
-  let dsConfig = '../utils/emptyExport'
+  let dsConfig = '../../utils/emptyExport'
 
   // check if absolute path exists
   if (existsSync(configPath)) {

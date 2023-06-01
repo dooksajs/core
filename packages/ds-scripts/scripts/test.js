@@ -53,7 +53,7 @@ function closeServer (server) {
   const port = 1337
   const baseUrl = 'https://localhost:' + port
   const dsConfigPath = resolve(appDirectory, 'ds.config.js')
-  let dsConfig = '../utils/emptyExport'
+  let dsConfig = '../../utils/emptyExport'
 
   // check if absolute path exists
   if (existsSync(dsConfigPath)) {
