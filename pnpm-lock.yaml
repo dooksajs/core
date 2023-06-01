@@ -91,8 +91,8 @@ importers:
   packages/ds-plugin:
     devDependencies:
       '@dooksa/ds-scripts':
-        specifier: bitbucket:dooksa/ds-scripts
-        version: bitbucket.org/dooksa/ds-scripts/985823804192193e2b2114edc5eeab88f9784121
+        specifier: workspace:^
+        version: link:../ds-scripts
       standard:
         specifier: '*'
         version: 17.0.0
@@ -3507,6 +3507,7 @@ packages:
     resolution: {integrity: sha512-MqBkQh/OHTS2egovRtLk45wEyNXwF+cokD+1YPf9u5VfJiRdAiRwB2froX5Co9Rh20xs4siNPm8naNotSD6RBw==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
+    dev: false
 
   /nanoid@3.3.6:
     resolution: {integrity: sha512-BGcqMMJuToF7i1rt+2PWSNVnWIkGCU78jBG3RxO/bZlnZPK2Cmi2QaffxGO/2RvWi9sL+FAiRiXMgsyxQ1DIDA==}
@@ -4413,7 +4414,7 @@ packages:
     name: '@dooksa/ds-plugin-data'
     version: 1.0.0
     dependencies:
-      nanoid: 3.3.4
+      nanoid: 3.3.6
     dev: true
 
   bitbucket.org/dooksa/ds-plugin-database/c94cf52717c2c478aa83d6a33e4bf232e93c3569:
@@ -4505,7 +4506,7 @@ packages:
     name: '@dooksa/ds-plugin-utilities'
     version: 1.0.0
     dependencies:
-      nanoid: 3.3.4
+      nanoid: 3.3.6
 
   bitbucket.org/dooksa/ds-plugin-view/d47c41a078657d25f3dcec8e07571ec49bae90c3:
     resolution: {commit: d47c41a078657d25f3dcec8e07571ec49bae90c3, repo: git+ssh://git@bitbucket.org/dooksa/ds-plugin-view.git, type: git}

@@ -2,6 +2,9 @@
   "name": "@dooksa/ds-plugin",
   "version": "1.0.0",
   "description": "The plugin library for Dooksa CMS",
+  "author": "Thomas David <tom@mightysmile.com>",
+  "repository": "git@github.com:dooksajs/dooksa.git",
+  "type": "module",
   "main": "src/index.js",
   "scripts": {
     "dev": "ds-scripts dev",
@@ -11,14 +14,8 @@
     "lint": "standard",
     "lint:fix": "standard --fix"
   },
-  "type": "module",
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@bitbucket.org:dooksa/ds-plugin.git"
-  },
-  "author": "Thomas David",
   "devDependencies": {
-    "@dooksa/ds-scripts": "bitbucket:dooksa/ds-scripts",
+    "@dooksa/ds-scripts": "workspace:^",
     "standard": "*"
   }
 }
