@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-import { uuid, checksum } from '../../lib/main'
+import { uuid, checksum } from '../../src/main'
 
 describe('crypto uuid', function () {
   it('should generate uuid', function () {
