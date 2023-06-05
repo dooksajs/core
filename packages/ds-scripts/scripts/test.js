@@ -59,18 +59,18 @@ function closeServer (server) {
     specFile = 'ds-plugin.cy.js'
 
     const configPath = resolve(appDirectory, 'ds.config.js')
-    const dsConfig = '../../utils/emptyExport'
 
     root = resolve(scriptDirectory, 'entry', 'dev')
     plugins.push(dsHtmlLoader)
 
     resolveConfig.alias = {
-      '@dooksa/plugin': resolve(appDirectory, 'src', 'index.js')
+      '@dooksa/plugin': resolve(appDirectory, 'src', 'index.js'),
+      dsConfig: '../../utils/emptyExport'
     }
 
     // check if absolute path exists
     if (existsSync(configPath)) {
-      resolveConfig.alias.dsConfig = dsConfig
+      resolveConfig.alias.dsConfig = configPath
     }
   }
 
