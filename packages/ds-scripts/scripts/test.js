@@ -65,7 +65,7 @@ function closeServer (server) {
 
     resolveConfig.alias = {
       '@dooksa/plugin': resolve(appDirectory, 'src', 'index.js'),
-      dsConfig: '../../utils/emptyExport'
+      dsConfig: resolve(scriptDirectory, 'utils', 'emptyExport')
     }
 
     // check if absolute path exists
