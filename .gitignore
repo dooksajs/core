@@ -60,3 +60,12 @@ Temporary Items
 .build-*
 .env
 .netlify
+
+# Cypress
+screenshots
+videos
+out.js
+snapshots.js
+.nyc_output
+coverage
+test-data.json
