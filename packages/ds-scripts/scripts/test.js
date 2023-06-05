@@ -43,37 +43,46 @@ function closeServer (server) {
 }
 
 ;(async () => {
-  // setup vite server to run integration tests
-  const specFile = 'ds-plugin.cy.js'
-
-  // exit if spec file does not exists
-  checkIfSpecExists(specFile)
-
+  const plugins = [basicSsl()]
+  const resolveConfig = {}
+  let specFile
+  let root
   // server port
   const port = 1337
   const baseUrl = 'https://localhost:' + port
-  const dsConfigPath = resolve(appDirectory, 'ds.config.js')
-  let dsConfig = '../../utils/emptyExport'
 
-  // check if absolute path exists
-  if (existsSync(dsConfigPath)) {
-    dsConfig = dsConfigPath
+  if (args.includes('--lib')) {
+    specFile = 'spec.cy.js'
+    root = resolve(appDirectory, 'src')
+  } else {
+    // setup vite server to run integration tests
+    specFile = 'ds-plugin.cy.js'
+
+    const configPath = resolve(appDirectory, 'ds.config.js')
+    const dsConfig = '../../utils/emptyExport'
+
+    root = resolve(scriptDirectory, 'entry', 'dev')
+    plugins.push(dsHtmlLoader)
+
+    resolveConfig.alias = {
+      '@dooksa/plugin': resolve(appDirectory, 'src', 'index.js')
+    }
+
+    // check if absolute path exists
+    if (existsSync(configPath)) {
+      resolveConfig.alias.dsConfig = dsConfig
+    }
   }
 
   const server = await createServer({
-    root: resolve(scriptDirectory, 'entry', 'test'),
-    plugins: [
-      dsHtmlLoader(),
-      basicSsl()
-    ],
+    root,
+    plugins,
     server: { port, https: true },
-    resolve: {
-      alias: {
-        '@dooksa/plugin': resolve(appDirectory, 'src', 'index.js'),
-        dsConfig
-      }
-    }
+    resolve: resolveConfig
   })
+
+  // exit if spec file does not exists
+  checkIfSpecExists(specFile)
 
   // cypress config
   const config = {

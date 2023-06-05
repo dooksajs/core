@@ -4,32 +4,40 @@ import { scriptDirectory, appDirectory } from '../utils/paths.js'
 import { createServer } from 'vite'
 import dsHtmlLoader from '../plugin/vite-plugin-ds-html-loader.js'
 import basicSsl from '@vitejs/plugin-basic-ssl'
+const args = process.argv.slice(2)
+const plugins = [basicSsl()]
+const resolveConfig = {}
+let root
 
-;(async () => {
+if (args.includes('--lib')) {
+  root = resolve(appDirectory, 'src')
+} else {
   const configPath = resolve(appDirectory, 'ds.config.js')
-  let dsConfig = '../../utils/emptyExport'
+  const dsConfig = '../../utils/emptyExport'
+
+  root = resolve(scriptDirectory, 'entry', 'dev')
+  plugins.push(dsHtmlLoader)
+
+  resolveConfig.alias = {
+    '@dooksa/plugin': resolve(appDirectory, 'src', 'index.js')
+  }
 
   // check if absolute path exists
   if (existsSync(configPath)) {
-    dsConfig = configPath
+    resolveConfig.alias.dsConfig = dsConfig
   }
+}
 
-  const server = await createServer({
-    root: resolve(scriptDirectory, 'entry', 'dev'),
-    plugins: [
-      dsHtmlLoader(),
-      basicSsl()
-    ],
-    server: {
-      https: true
-    },
-    resolve: {
-      alias: {
-        '@dooksa/plugin': resolve(appDirectory, 'src', 'index.js'),
-        dsConfig
-      }
-    }
-  })
+const server = await createServer({
+  root,
+  plugins,
+  server: {
+    https: true
+  },
+  resolve: resolveConfig
+})
+
+;(async () => {
   await server.listen()
 
   server.printUrls()

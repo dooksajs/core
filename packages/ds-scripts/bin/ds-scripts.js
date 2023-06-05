@@ -11,7 +11,6 @@ const scriptName = args[args.length - 1]
 const scripts = {
   dev: true,
   build: true,
-  build_lib: true,
   test: true,
   dispatch (scriptName) {
     import('../scripts/' + scriptName + '.js')
