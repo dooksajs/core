@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-import objectHash from '../../lib/main'
+import objectHash from '../../src/main'
 
 describe('objectHash', function () {
   it('should generate checksum', function () {

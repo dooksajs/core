@@ -9,21 +9,14 @@
   "files": [
     "dist"
   ],
-  "main": "./dist/object-hash.umd.cjs",
-  "module": "./dist/object-hash.js",
-  "exports": {
-    ".": {
-      "import": "./dist/object-hash.js",
-      "require": "./dist/object-hash.umd.cjs"
-    }
-  },
+  "main": "./src/main.js",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "test:open": "cypress open",
-    "test:run": "cypress run",
-    "lint": "standard ./lib/main.js"
+    "dev": "ds-scripts --lib dev ",
+    "test:open": "ds-scripts --open --lib test",
+    "test:run": "ds-scripts --run --lib test",
+    "test:record": "ds-scripts --run --record --lib test",
+    "lint": "standard",
+    "lint:fix": "standard --fix"
   },
   "standard": {
     "env": [
@@ -37,11 +30,10 @@
       "assert"
     ]
   },
-  "devDependencies": {
-    "cypress": "^12.13.0",
-    "vite": "^4.2.0"
-  },
   "dependencies": {
     "@dooksa/crypto": "workspace:^"
+  },
+  "devDependencies": {
+    "@dooksa/ds-scripts": "workspace:^"
   }
 }
