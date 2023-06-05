@@ -30,7 +30,7 @@ export default (source) => {
 
   for (let i = 0; i < actions.length; i++) {
     const action = actions[i]
-    const id = objectHash.process(action.source)
+    const id = objectHash(action.source)
     const item = {
       path: action.path,
       id
@@ -78,7 +78,7 @@ export default (source) => {
     items[id] = action.source
   }
 
-  const sequenceId = objectHash.process(sequence)
+  const sequenceId = objectHash(sequence)
 
   return { items, sequence, sequenceId }
 }

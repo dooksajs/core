@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-import parseAction from '../../lib/main'
+import parseAction from '../../src/main'
 
 describe('Parse action', function () {
   beforeEach(() => {

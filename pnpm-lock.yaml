@@ -267,28 +267,19 @@ importers:
         specifier: workspace:^
         version: link:../object-hash
     devDependencies:
-      cypress:
-        specifier: ^12.13.0
-        version: 12.13.0
-      vite:
-        specifier: ^4.3.2
-        version: 4.3.2(terser@5.16.9)
+      '@dooksa/ds-scripts':
+        specifier: workspace:^
+        version: link:../ds-scripts
 
   packages/parse-template:
     dependencies:
-      '@dooksa/crypto':
-        specifier: workspace:^
-        version: link:../crypto
       '@dooksa/object-hash':
         specifier: workspace:^
         version: link:../object-hash
     devDependencies:
-      cypress:
-        specifier: ^12.13.0
-        version: 12.13.0
-      vite:
-        specifier: ^4.3.2
-        version: 4.3.2(terser@5.16.9)
+      '@dooksa/ds-scripts':
+        specifier: workspace:^
+        version: link:../ds-scripts
 
   packages/resource-loader:
     devDependencies:
