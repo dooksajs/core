@@ -15,7 +15,7 @@ if (args.includes('--lib')) {
   const configPath = resolve(appDirectory, 'ds.config.js')
 
   root = resolve(scriptDirectory, 'entry', 'dev')
-  plugins.push(dsHtmlLoader)
+  plugins.push(dsHtmlLoader())
 
   resolveConfig.alias = {
     '@dooksa/plugin': resolve(appDirectory, 'src', 'index.js'),
