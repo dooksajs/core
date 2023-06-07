@@ -416,7 +416,7 @@ export default {
     },
     _createCollectionId (name, option) {
       const schema = this.schema[name]
-      const id = option.id || ''
+      const id = option.id ? '_' + option.id + '_' : ''
       let prefix = option.prefixId ?? ''
       let suffix = option.suffixId ?? ''
 
