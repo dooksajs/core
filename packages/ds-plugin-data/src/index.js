@@ -485,20 +485,22 @@ export default {
      * Generate the default id for a collection
      * @private
      * @param {string} name - Collection schema path
+     * @param {Object} option - Collection id prefix or suffix options
+     * @param {string} option.prefixId - Prefix to add to the id
+     * @param {string} option.suffixId - Suffix to add to the id
      * @returns {string}
      */
-    _defaultCollectionId (name) {
+    _defaultCollectionId (name, option = {}) {
       const schema = this.schema[name]
+      let prefix = option.prefixId ?? ''
+      let suffix = option.suffixId ?? ''
 
       if (schema.id) {
-        let prefix = ''
-        let suffix = ''
-
-        if (schema.id.prefix) {
+        if (!prefix && schema.id.prefix) {
           prefix = this._affixId(schema.id.prefix)
         }
 
-        if (schema.id.suffix) {
+        if (!suffix && schema.id.suffix) {
           suffix = '_' + this._affixId(schema.id.suffix)
         }
 
@@ -509,7 +511,7 @@ export default {
         }
       }
 
-      return this.generateId()
+      return prefix + this.generateId() + suffix
     },
     /**
      * Process listeners on update event
@@ -798,7 +800,7 @@ export default {
       if (options) {
         // generate id
         if (!options.id) {
-          const id = this._defaultCollectionId(name)
+          const id = this._defaultCollectionId(name, options)
 
           // update export data
           data.id = id
