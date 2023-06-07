@@ -171,6 +171,16 @@ export default {
       if (id) {
         result.isAffixEmpty = true
 
+        // add prefix padding to custom id
+        if (id[0] !== '_') {
+          id = '_' + id
+        }
+
+        // add suffix padding to custom id
+        if (id[id.length - 1] !== '_') {
+          id = id + '_'
+        }
+
         // find document using custom affixes
         if (prefixId || suffixId) {
           let itemId
