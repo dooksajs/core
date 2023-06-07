@@ -426,9 +426,21 @@ export default {
     },
     _createCollectionId (name, option) {
       const schema = this.schema[name]
-      const id = option.id ? '_' + option.id + '_' : ''
+      let id = option.id || ''
       let prefix = option.prefixId ?? ''
       let suffix = option.suffixId ?? ''
+
+      if (option.id) {
+        // add prefix padding to custom id
+        if (option.id[0] !== '_') {
+          id = '_' + id
+        }
+
+        // add suffix padding to custom id
+        if (option.id[option.id.length - 1] !== '_') {
+          id = id + '_'
+        }
+      }
 
       if (schema.id) {
         if (!prefix && schema.id.prefix) {
