@@ -19,9 +19,7 @@ const objectHash = (source) => {
       throw new Error('source is undefined')
     }
 
-    const target = {}
-
-    sortType(target, source)
+    const target = sortType(defaultType(source), source)
 
     return checksum(target)
   } catch (e) {
@@ -34,6 +32,7 @@ const defaultType = (value) => {
 
   return TYPES[name]()
 }
+
 /**
  * Sort source by data type
  * @private
@@ -65,16 +64,16 @@ const sortType = (target, source) => {
  */
 const array = (target, source) => {
   // make a copy
-  source = source.slice()
+  target = source.slice()
 
-  for (let i = 0; i < source.length; i++) {
-    const value = source[i]
+  for (let i = 0; i < target.length; i++) {
+    const value = target[i]
 
-    target = defaultType(value)
-    source[i] = sortType(target, value)
+    const targetValue = defaultType(value)
+    target[i] = sortType(targetValue, value)
   }
 
-  return source
+  return target
 }
 
 /**

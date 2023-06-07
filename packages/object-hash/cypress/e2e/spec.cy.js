@@ -57,6 +57,12 @@ describe('objectHash', function () {
     expect(checksumOne).to.have.equal(checksumTwo)
   })
 
+  it('should checksum an array', function () {
+    const checksumArray = objectHash([1, 2, 3])
+
+    expect(checksumArray).to.have.equal('069501a7')
+  })
+
   it('should preserve array order', function () {
     const checksumOne = objectHash({ a: [3, 2, 1] })
     const checksumTwo = objectHash({ a: [1, 2, 3] })
