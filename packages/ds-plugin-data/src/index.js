@@ -168,7 +168,11 @@ export default {
       const result = { isEmpty: false }
       const schema = this.schema[name]
 
-      if (id) {
+      if (Object.prototype.hasOwnProperty.call(arguments[0], 'id') && !id) {
+        result.isEmpty = true
+
+        return result
+      } else if (id) {
         result.isAffixEmpty = true
 
         // find document using custom affixes
