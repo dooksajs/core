@@ -171,16 +171,6 @@ export default {
       if (id) {
         result.isAffixEmpty = true
 
-        // add prefix padding to custom id
-        if (id[0] !== '_') {
-          id = '_' + id
-        }
-
-        // add suffix padding to custom id
-        if (id[id.length - 1] !== '_') {
-          id = id + '_'
-        }
-
         // find document using custom affixes
         if (prefixId || suffixId) {
           let itemId
@@ -426,21 +416,9 @@ export default {
     },
     _createCollectionId (name, option) {
       const schema = this.schema[name]
-      let id = option.id || ''
+      const id = option.id || ''
       let prefix = option.prefixId ?? ''
       let suffix = option.suffixId ?? ''
-
-      if (option.id) {
-        // add prefix padding to custom id
-        if (option.id[0] !== '_') {
-          id = '_' + id
-        }
-
-        // add suffix padding to custom id
-        if (option.id[option.id.length - 1] !== '_') {
-          id = id + '_'
-        }
-      }
 
       if (schema.id) {
         if (!prefix && schema.id.prefix) {
