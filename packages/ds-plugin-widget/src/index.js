@@ -91,8 +91,8 @@ export default {
         }
       }
     },
-    instanceTemplates: {
-      description: 'Templates used by instances sorted by modes',
+    templates: {
+      description: 'Templates used by section sorted by modes',
       default: {},
       schema: {
         type: 'collection',
