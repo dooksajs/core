@@ -32,9 +32,6 @@ export default {
           }).item
         },
         items: {
-          type: 'object',
-          properties: {
-            groupId: {
               type: 'string',
               relation: 'dsWidget/instanceGroups',
               default () {
@@ -42,8 +39,6 @@ export default {
               }
             }
           }
-        }
-      }
     },
     instanceContent: {
       description: 'Content references used by an instance',
