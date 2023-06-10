@@ -192,6 +192,10 @@ importers:
         version: link:../ds-scripts
 
   packages/ds-plugin-template:
+    dependencies:
+      '@dooksa/parse-template':
+        specifier: workspace:^
+        version: link:../parse-template
     devDependencies:
       '@dooksa/ds-scripts':
         specifier: workspace:^
@@ -217,6 +221,9 @@ importers:
 
   packages/ds-scripts:
     dependencies:
+      '@dooksa/crypto':
+        specifier: workspace:^
+        version: link:../crypto
       '@dooksa/ds-app':
         specifier: workspace:^
         version: link:../ds-app
@@ -226,6 +233,12 @@ importers:
       '@dooksa/ds-plugin-template':
         specifier: workspace:^
         version: link:../ds-plugin-template
+      '@dooksa/parse-action':
+        specifier: workspace:^
+        version: link:../parse-action
+      '@dooksa/parse-template':
+        specifier: workspace:^
+        version: link:../parse-template
       '@vitejs/plugin-basic-ssl':
         specifier: ^1.0.1
         version: 1.0.1(vite@4.3.2)

@@ -1,20 +1,22 @@
+import { parseHTML, getNodeValue } from '@dooksa/parse-template'
+
 /**
  * @namespace dsTemplate
  */
 export default {
   name: 'dsTemplate',
   version: 1,
-  data: {
-    entry: {
-      default: {},
-      schema: {
-        type: 'collection',
-        items: {
-          type: 'string',
-          relation: 'dsTemplate/items'
-        }
-      }
+  dependencies: [
+    {
+      name: 'dsLayout',
+      version: 1
     },
+    {
+      name: 'dsWidget',
+      version: 1
+    }
+  ],
+  data: {
     items: {
       default: {},
       schema: {
@@ -22,55 +24,66 @@ export default {
         items: {
           type: 'object',
           properties: {
-            events: {
-              type: 'object',
-              patternProperties: {
-                '^[0-9]+$': {
+            content: {
+              type: 'array',
+              items: {
+                type: 'array',
+                items: {
                   type: 'object',
-                  patternProperties: {
-                    '^[0-9]+$': {
-                      type: 'object',
-                      properties: {
-                        click: {
-                          type: 'array',
-                          items: {
-                            type: 'string',
-                            relation: 'dsAction/sequenceActions'
-                          }
-                        }
-                      }
+                  properties: {
+                    type: {
+                      type: 'string'
                     }
                   }
                 }
               }
             },
-            layouts: {
+            event: {
               type: 'array',
               items: {
-                type: 'string',
-                relation: 'dsLayout/items'
-              }
-            },
-            content: {
-              type: 'object',
-              patternProperties: {
-                '^[0-9]+$': {
-                  type: 'array',
-                  items: {
+                type: 'object',
+                patternProperties: {
+                  '[0-9]': {
                     type: 'object',
                     properties: {
-                      value: {
-                        type: 'object'
+                      name: {
+                        type: 'string'
                       },
-                      type: {
+                      value: {
                         type: 'array',
-                        item: {
+                        items: {
                           type: 'string'
                         }
                       }
                     }
                   }
                 }
+              }
+            },
+            layout: {
+              type: 'array',
+              items: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    componentId: {
+                      type: 'string'
+                    },
+                    contentIndex: {
+                      type: 'number'
+                    },
+                    parentIndex: {
+                      type: 'number'
+                    }
+                  }
+                }
+              }
+            },
+            layoutId: {
+              type: 'array',
+              items: {
+                type: 'string'
               }
             }
           }
@@ -81,444 +94,258 @@ export default {
   /** @lends dsTemplate */
   methods: {
     create ({
-      dsTemplateId,
-      dsTemplateEntryId,
-      dsWidgetPrefixId,
-      dsWidgetSectionId = this.$method('dsData/generateId'),
-      dsWidgetInstanceId = this.$method('dsData/generateId'),
-      dsWidgetGroupId = this.$method('dsData/generateId'),
-      dsWidgetMode = 'default',
-      dsWidgetContent,
-      modifiers = {},
-      head = true
+      id,
+      mode = 'default',
+      language,
+      dsWidgetSectionId
     }) {
-      if (!dsTemplateEntryId) {
-        const entryId = this.$getDataValue({
-          name: 'dsTemplate/entry',
-          id: dsTemplateId
-        })
-
-        if (entryId.isEmpty) {
-          throw new Error('No template entry found')
-        }
-
-        dsTemplateEntryId = entryId.item
-      }
-
       const template = this.$getDataValue({
         name: 'dsTemplate/items',
-        id: dsTemplateEntryId
+        id
       })
 
-      // get template
-      // const item = this.items[dsTemplateEntryId] || this.items[this.entry[dsTemplateId]]
-
-      if (!template.isEmpty) {
-        dsTemplateId = dsTemplateId || template.id
-
-        return this._constructor(
-          dsTemplateId,
-          dsTemplateEntryId,
-          template.item,
-          dsWidgetSectionId,
-          dsWidgetPrefixId,
-          dsWidgetInstanceId,
-          dsWidgetGroupId,
-          dsWidgetContent,
-          modifiers,
-          dsWidgetMode,
-          head
-        )
+      if (template.isEmpty) {
+        return
       }
 
-      return new Promise(resolve => {
-        this._fetch(dsTemplateId)
-          .then(() => {
-            this.$setDataValue({
-              name: 'dsTemplates/entry',
-              source: dsTemplateId,
-              options: {
-                id: dsTemplateId
-              }
-            })
+      // set default values here to avoid exec unnecessary functions if there is no template found
+      language = language || this.$getDataValue({ name: 'dsMetadata/language' }).item
+      dsWidgetSectionId = dsWidgetSectionId || this.$method('dsData/generateId')
 
-            const result = this._constructor(
-              dsTemplateId,
-              dsTemplateEntryId,
-              template.item,
-              dsWidgetSectionId,
-              dsWidgetPrefixId,
-              dsWidgetInstanceId,
-              dsWidgetGroupId,
-              dsWidgetContent,
-              modifiers,
-              dsWidgetMode,
-              head
-            )
+      const dsWidgetItems = []
+      const dsWidgetGroupId = this.$method('dsData/generateId')
 
-            resolve(result)
-          })
-      })
-    },
-    _constructor (
-      id,
-      entry,
-      item,
-      dsWidgetSectionId,
-      dsWidgetPrefixId,
-      instanceId,
-      groupId,
-      defaultContent,
-      modifiers,
-      view,
-      head
-    ) {
-      let dsLayoutEntryId = ''
-      let hasSections = false
-      const result = {
-        layoutEntry: '',
-        widgets: {
-          items: {},
-          content: {}
-        },
-        content: {
-          value: {},
-          type: {}
+      this.$setDataValue({
+        name: 'dsWidget/templates',
+        source: id,
+        options: {
+          id: dsWidgetSectionId,
+          suffixId: mode
         }
-      }
+      })
 
-      if (head) {
-        const layoutId = item.layouts[0]
-        const layout = {}
-        const i = 0
+      this.$setDataValue({
+        name: 'dsWidget/sectionMode',
+        source: mode,
+        options: {
+          id: dsWidgetSectionId
+        }
+      })
 
-        if (item.content[i]) {
-          const [contentRefs, content] = this._createContent(item.content[i], view, groupId, defaultContent, modifiers)
-          const instanceContent = this.$setDataValue({
-            name: 'dsWidget/instanceContent',
-            source: contentRefs,
+      for (let i = 0; i < template.item.layoutId.length; i++) {
+        const contentItems = template.item.content[i]
+        const widget = {
+          instanceId: this.$method('dsData/generateId'),
+          content: [],
+          layout: template.item.layoutId[i]
+        }
+
+        dsWidgetItems.push(widget)
+
+        for (let j = 0; j < contentItems.length; j++) {
+          const content = contentItems[j]
+          const dsContent = this.$setDataValue({
+            name: 'dsContent/items',
+            source: content.item,
             options: {
-              id: instanceId,
-              suffixId: dsWidgetPrefixId
+              suffixId: language
             }
           })
 
-          result.widgets.content[instanceContent.id] = contentRefs
-          result.content = content
+          this.$setDataValue({
+            name: 'dsContent/type',
+            source: {
+              name: content.type
+            },
+            options: {
+              id: dsContent.id
+            }
+          })
+
+          widget.content.push(dsContent.id)
         }
 
-        // add events
-        if (item.events[i]) {
-          const events = item.events[i]
+        // set widget content
+        this.$setDataValue({
+          name: 'dsWidget/instanceContent',
+          source: widget.content,
+          options: {
+            id: widget.instanceId,
+            suffixId: mode
+          }
+        })
 
-          result.events = result.events || {}
+        // add widget instance to group
+        this.$setDataValue({
+          name: 'dsWidget/instanceGroups',
+          source: widget.instanceId,
+          options: {
+            id: dsWidgetGroupId,
+            source: {
+              push: true
+            }
+          }
+        })
+
+        // set widget instance
+        this.$setDataValue({
+          name: 'dsWidget/instances',
+          source: dsWidgetGroupId,
+          options: {
+            id: widget.instanceId
+          }
+        })
+
+        this.$setDataValue({
+          name: 'dsWidget/instanceMode',
+          source: mode,
+          options: {
+            id: widget.instanceId
+          }
+        })
+
+        this.$setDataValue({
+          name: 'dsWidget/instanceLayouts',
+          source: widget.layout,
+          options: {
+            id: widget.instanceId,
+            suffixId: mode
+          }
+        })
+      }
+
+      const rootSectionInstances = []
+      const usedInstances = []
+
+      for (let i = 0; i < template.item.section.length; i++) {
+        const instanceId = dsWidgetItems[i].instanceId
+        const sections = template.item.section[i]
+
+        if (sections.length) {
+          const dsWidgetSections = []
+
+          for (let j = 0; j < sections.length; j++) {
+            const index = sections[j]
+            const instanceId = dsWidgetItems[index].instanceId
+
+            // include instance in current section
+            dsWidgetSections.push(instanceId)
+            // mark instance as used
+            usedInstances.push(instanceId)
+          }
+
+          this.$setDataValue({
+            name: 'dsWidget/sections',
+            source: dsWidgetSections,
+            options: {
+              id: instanceId,
+              mode
+            }
+          })
+
+          this.$setDataValue({
+            name: 'dsWidget/sectionMode',
+            source: mode,
+            options: {
+              id: instanceId
+            }
+          })
+        }
+
+        if (!usedInstances.includes(instanceId)) {
+          rootSectionInstances.push(instanceId)
+        }
+      }
+
+      this.$setDataValue({
+        name: 'dsWidget/sections',
+        source: rootSectionInstances,
+        options: {
+          id: dsWidgetSectionId,
+          mode
+        }
+      })
+      console.log(template)
+      return dsWidgetSectionId
+    },
+    parseHTML ({ html, actions }) {
+      const template = parseHTML(html, this.$componentGetters, this.$componentIgnoreAttr)
+
+      for (let i = 0; i < template.content.length; i++) {
+        const items = template.content[i]
+
+        for (let j = 0; j < items.length; j++) {
+          const node = items[j]
+          const nodeName = node.nodeName.toLowerCase()
+          const getter = this.$componentGetters[nodeName]
+
+          items[j] = {
+            item: getNodeValue(getter.type, node, getter.value),
+            type: this.$component(nodeName).type
+          }
+        }
+      }
+
+      // add layouts
+      for (let i = 0; i < template.layout.length; i++) {
+        const layout = template.layout[i]
+        const layoutId = template.layoutId[i]
+
+        this.$setDataValue({
+          name: 'dsLayout/items',
+          source: layout,
+          options: {
+            id: layoutId
+          }
+        })
+      }
+
+      // match action reference to events
+      if (actions) {
+        for (let i = 0; i < template.event.length; i++) {
+          const events = template.event[i]
 
           for (const key in events) {
             if (Object.hasOwnProperty.call(events, key)) {
               const event = events[key]
-              const eventId = instanceId + key.padStart(4, '0')
 
-              for (let i = 0; i < event.length; i++) {
-                const item = event[i]
+              for (let i = 0; i < event.value.length; i++) {
+                const key = event.value[i]
 
-                result.events[eventId + item.on] = item.actions
-              }
-            }
-          }
-        }
-
-        dsLayoutEntryId = layoutId
-        layout[view] = { id: layoutId }
-      } else {
-        if (!hasSections) {
-          hasSections = true
-          result.widgets.sections = {}
-        }
-
-        // these are new instances
-        for (let i = 0; i < item.layouts.length; i++) {
-          const layoutId = item.layouts[i]
-          const layout = {}
-          const instanceId = this.$method('dsData/generateId')
-          const itemId = instanceId + 'default'
-
-          // create content
-          if (item.content && item.content[i]) {
-            const [contentRefs, content] = this._createContent(item.content[i], view, groupId, defaultContent, modifiers)
-
-            result.widgets.content[itemId] = contentRefs
-
-            this.$setDataValue({
-              name: 'dsWidget/instanceContent',
-              source: contentRefs,
-              options: {
-                id: instanceId,
-                suffixId: dsWidgetPrefixId
-              }
-            })
-
-            this.$setDataValue({
-              name: 'dsWidget/instanceLayouts',
-              source: layoutId,
-              options: {
-                id: instanceId,
-                suffixId: dsWidgetPrefixId
-              }
-            })
-
-            this.$setDataValue({
-              name: 'dsWidget/instances',
-              source: {
-                groupId
-              },
-              options: {
-                id: instanceId,
-                suffixId: dsWidgetPrefixId
-              }
-            })
-
-            this.$setDataValue({
-              name: 'dsWidget/instanceGroups',
-              source: instanceId,
-              options: {
-                id: groupId,
-                source: {
-                  push: true
-                }
-              }
-            })
-
-            this.$setDataValue({
-              name: 'dsWidget/sectionParent',
-              source: dsWidgetSectionId,
-              options: {
-                id: instanceId
-              }
-            })
-
-            result.content.value = { ...result.content.value, ...content.value }
-            result.content.type = { ...result.content.type, ...content.type }
-          }
-
-          // add events
-          if (item.events[i]) {
-            const events = item.events[i]
-
-            result.events = result.events || {}
-
-            for (const key in events) {
-              if (Object.hasOwnProperty.call(events, key)) {
-                const event = events[key]
-                const eventId = instanceId + key.padStart(4, '0')
-
-                for (let i = 0; i < event.length; i++) {
-                  const item = event[i]
-
-                  result.events[eventId + item.on] = item.actions
+                if (actions[key]) {
+                  event.value[i] = actions[key]
                 }
               }
             }
           }
-
-          // Is this set to default because of the depth?
-          layout.default = { id: layoutId }
-
-          if (!result.widgets.sections[dsWidgetSectionId]) {
-            result.widgets.sections[dsWidgetSectionId] = [instanceId]
-          } else {
-            result.widgets.sections[dsWidgetSectionId].push(instanceId)
-          }
         }
       }
 
-      if (result.events) {
-        this.$setDataValue({
-          name: 'dsEvent/listeners',
-          source: result.events,
-          options: {
-            source: {
-              merge: true
-            }
-          }
-        })
-      }
-
-      // Set content
-      if (result.content) {
-        if (result.content.value) {
-          this.$setDataValue({
-            name: 'dsContent/items',
-            source: result.content.value,
-            options: {
-              source: {
-                merge: true
-              }
-            }
-          })
-        }
-
-        if (result.content.type) {
-          this.$setDataValue({
-            name: 'dsContent/type',
-            source: result.content.type,
-            options: {
-              source: {
-                merge: true
-              }
-            }
-          })
-        }
-      }
-
-      // Set widgets
-      if (result.widgets.sections) {
-        this.$setDataValue({
-          name: 'dsWidget/sections',
-          source: result.widgets.sections,
-          options: {
-            source: {
-              merge: true
-            }
-          }
-        })
-      }
-
-      return {
-        dsWidgetSectionId,
-        dsLayoutEntryId,
-        result
-      }
-    },
-    _createContent (
-      items,
-      dsWidgetMode = 'default',
-      dsWidgetGroupId,
-      defaultContent = [],
-      modifiers
-    ) {
-      const contentRefs = []
-      const content = {
-        value: {},
-        type: {}
-      }
-
-      for (let i = 0; i < items.length; i++) {
-        const item = items[i]
-        const [type, isTemporary] = item.type
-        let id, exists
-
-        if (defaultContent.length && !isTemporary) {
-          for (let i = 0; i < defaultContent.length; i++) {
-            const contentId = defaultContent[i]
-            const dsContentType = this.$getDataValue({
-              name: 'dsContent/type',
-              id: contentId
-            })
-
-            if (type === dsContentType.item) {
-              id = contentId
-              defaultContent.splice(i, 1)
-              exists = true
-              break
-            }
-          }
-        } else {
-          id = this.$method('dsData/generateId')
-        }
-
-        contentRefs.push(id)
-
-        if (!exists) {
-          content.type[id] = { name: type, isTemporary }
-
-          if (type === 'section') {
-            const dsTemplateEntryId = item.value
-            const { dsWidgetSectionId } = this.create({ dsTemplateEntryId, defaultContent, dsWidgetGroupId, dsWidgetMode, modifiers, head: false })
-
-            content.value[id + dsWidgetMode] = { value: dsWidgetSectionId }
-          } else {
-            content.value[id + dsWidgetMode] = item.value
+      this.$setDataValue({
+        name: 'dsComponent/items',
+        source: template.component,
+        options: {
+          source: {
+            merge: true
           }
         }
-      }
-
-      return [contentRefs, content, defaultContent]
-    },
-    _fetch (id) {
-      return new Promise((resolve, reject) => {
-        this.$action('dsDatabase/getOne', { collection: 'widgetTemplates', id },
-          {
-            onSuccess: (record) => {
-              // add templates
-              this.$setDataValue({
-                name: 'dsTemplate/entry',
-                source: record.templateEntry,
-                options: {
-                  id: record.templateEntry
-                }
-              })
-
-              this.$setDataValue({
-                name: 'dsTemplate/items',
-                source: record.template,
-                options: {
-                  source: {
-                    merge: true
-                  }
-                }
-              })
-
-              this.$setDataValue({
-                name: 'dsLayout/items',
-                source: record.layouts.items,
-                options: {
-                  source: {
-                    merge: true
-                  }
-                }
-              })
-
-              this.$setDataValue({
-                name: 'dsLayout/entry',
-                source: record.layouts.head,
-                options: {
-                  source: {
-                    merge: true
-                  }
-                }
-              })
-
-              if (record.layouts.events) {
-                this.$setDataValue({
-                  name: 'dsLayout/events',
-                  source: record.layouts.events,
-                  options: {
-                    source: {
-                      merge: true
-                    }
-                  }
-                })
-              }
-
-              this.$setDataValue({
-                name: 'dsComponent/items',
-                source: record.components,
-                options: {
-                  source: {
-                    merge: true
-                  }
-                }
-              })
-
-              resolve(record)
-            },
-            onError: (error) => {
-              console.error(error)
-              reject(error)
-            }
-          }
-        )
       })
+
+      const result = this.$setDataValue({
+        name: 'dsTemplate/items',
+        source: {
+          content: template.content,
+          event: template.event,
+          layout: template.layout,
+          section: template.section,
+          layoutId: template.layoutId
+        },
+        options: {
+          id: template.id
+        }
+      })
+
+      return { id: result.id, mode: template.mode }
     }
   }
 }
