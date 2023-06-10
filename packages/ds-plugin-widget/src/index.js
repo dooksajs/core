@@ -13,16 +13,6 @@
 export default {
   name: 'dsWidget',
   version: 1,
-  dependencies: [
-    {
-      name: 'dsView',
-      version: 1
-    },
-    {
-      name: 'dsContent',
-      version: 1
-    }
-  ],
   data: {
     uniqueIdentifier: {
       description: 'Unique identifier used to allow instances to be shared but contain different related content',
