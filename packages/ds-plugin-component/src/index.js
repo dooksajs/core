@@ -63,175 +63,201 @@ export default {
     {
       name: 'a',
       type: 'link',
-      set: {
-        type: 'attribute',
-        value: 'href'
-      },
-      get: {
-        type: 'attribute',
-        value: 'href'
+      content: {
+        set: {
+          type: 'attribute',
+          value: 'href'
+        },
+        get: {
+          type: 'attribute',
+          value: 'href'
+        }
       },
       events: ['click', 'hover']
     },
     {
       name: 'img',
       type: 'image',
-      set: {
-        type: 'attribute',
-        value: [
-          {
-            name: 'src',
-            key: 'src'
-          },
-          {
-            name: 'alt',
-            key: 'alt'
-          }
-        ]
-      },
-      get: {
-        type: 'attribute',
-        value: [
-          {
-            name: 'src',
-            key: 'src'
-          },
-          {
-            name: 'alt',
-            key: 'alt'
-          }
-        ]
+      content: {
+        set: {
+          type: 'attribute',
+          value: [
+            {
+              name: 'src',
+              key: 'src'
+            },
+            {
+              name: 'alt',
+              key: 'alt'
+            }
+          ]
+        },
+        get: {
+          type: 'attribute',
+          value: [
+            {
+              name: 'src',
+              key: 'src'
+            },
+            {
+              name: 'alt',
+              key: 'alt'
+            }
+          ]
+        }
       },
       events: ['click']
     },
     {
       name: 'div',
       type: 'html',
-      set: {
-        type: 'setter',
-        value: 'innerHTML'
+      content: {
+        set: {
+          type: 'setter',
+          value: 'innerHTML'
+        }
       },
       events: ['click']
     },
     {
       name: 'h1',
       type: 'text',
-
-      set: {
-        type: 'setter',
-        value: [
-          {
-            name: 'textContent',
-            key: 'value'
-          }
-        ]
+      content: {
+        set: {
+          type: 'setter',
+          value: [
+            {
+              name: 'textContent',
+              key: 'value'
+            }
+          ]
+        }
       }
     },
     {
       name: 'h2',
       type: 'text',
-      set: {
-        type: 'setter',
-        value: [
-          {
-            name: 'textContent',
-            key: 'value'
-          }
-        ]
+      content: {
+        set: {
+          type: 'setter',
+          value: [
+            {
+              name: 'textContent',
+              key: 'value'
+            }
+          ]
+        }
       }
     },
     {
       name: 'h5',
       type: 'text',
-      set: {
-        type: 'setter',
-        value: [
-          {
-            name: 'textContent',
-            key: 'value'
-          }
-        ]
+      content: {
+        set: {
+          type: 'setter',
+          value: [
+            {
+              name: 'textContent',
+              key: 'value'
+            }
+          ]
+        }
       }
     },
     {
       name: 'h6',
       type: 'text',
-      set: {
-        type: 'setter',
-        value: [
-          {
-            name: 'textContent',
-            key: 'value'
-          }
-        ]
+      content: {
+        set: {
+          type: 'setter',
+          value: [
+            {
+              name: 'textContent',
+              key: 'value'
+            }
+          ]
+        }
       }
     },
     {
       name: 'label',
       type: 'text',
-      set: {
-        type: 'setter',
-        value: [
-          {
-            name: 'textContent',
-            key: 'value'
-          }
-        ]
+      content: {
+        set: {
+          type: 'setter',
+          value: [
+            {
+              name: 'textContent',
+              key: 'value'
+            }
+          ]
+        }
       }
     },
     {
       name: 'small',
       type: 'text',
-      set: {
-        type: 'setter',
-        value: [
-          {
-            name: 'textContent',
-            key: 'value'
-          }
-        ]
+      content: {
+        set: {
+          type: 'setter',
+          value: [
+            {
+              name: 'textContent',
+              key: 'value'
+            }
+          ]
+        }
       }
     },
     {
       name: 'p',
       type: 'text',
-      set: {
-        type: 'setter',
-        value: [
-          {
-            name: 'textContent',
-            key: 'value'
-          }
-        ]
+      content: {
+        set: {
+          type: 'setter',
+          value: [
+            {
+              name: 'textContent',
+              key: 'value'
+            }
+          ]
+        }
       }
     },
     {
       name: 'span',
-      set: {
-        type: 'setter',
-        value: [
-          {
-            name: 'textContent',
-            key: 'value'
-          }
-        ]
+      content: {
+        set: {
+          type: 'setter',
+          value: [
+            {
+              name: 'textContent',
+              key: 'value'
+            }
+          ]
+        }
       }
     },
     {
       name: 'nav',
       type: 'text',
-      set: {
-        type: 'setter',
-        value: [
-          {
-            name: 'textContent',
-            key: 'value'
-          }
-        ]
+      content: {
+        set: {
+          type: 'setter',
+          value: [
+            {
+              name: 'textContent',
+              key: 'value'
+            }
+          ]
+        }
       }
     },
     {
       name: 'ul'
+    },
+    {
+      name: 'section'
     },
     {
       name: 'li'
@@ -243,50 +269,56 @@ export default {
       name: 'input',
       type: 'text',
       events: ['input'],
-      get: {
-        type: 'getter',
-        value: [
-          {
-            name: 'value',
-            key: 'value'
-          }
-        ]
-      },
-      set: {
-        type: 'setter',
-        value: [
-          {
-            name: 'value',
-            key: 'value'
-          }
-        ]
+      content: {
+        get: {
+          type: 'getter',
+          value: [
+            {
+              name: 'value',
+              key: 'value'
+            }
+          ]
+        },
+        set: {
+          type: 'setter',
+          value: [
+            {
+              name: 'value',
+              key: 'value'
+            }
+          ]
+        }
       }
     },
     {
       name: '#text',
       type: 'text',
-      get: {
-        type: 'getter',
-        value: [
-          {
-            name: 'textContent',
-            key: 'value'
-          }
-        ]
+      content: {
+        get: {
+          type: 'getter',
+          value: [
+            {
+              name: 'textContent',
+              key: 'value'
+            }
+          ]
+        }
       }
     },
     {
       name: 'iconify-icon',
       type: 'icon',
       lazy: () => import('iconify-icon'),
-      set: [{
-        type: 'attribute',
-        value: 'icon'
-      }],
-      get: [{
-        type: 'attribute',
-        value: 'icon'
-      }]
+      content: {
+        set: [{
+          type: 'attribute',
+          value: 'icon'
+        }],
+        get: [{
+          type: 'attribute',
+          value: 'icon'
+        }]
+      }
     }
   ],
   methods: {
