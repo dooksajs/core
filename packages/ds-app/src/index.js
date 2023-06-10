@@ -115,7 +115,7 @@ export default {
     // ISSUE: add plugin schema checks
     this.plugins[plugin.name] = item
   },
-  init ({ dsPage, assetsURL, isDev, rootElementId = 'app' }) {
+  init ({ dsPage, assetsURL, isDev }) {
     const pluginManager = new this.DsPlugin(this.dsManager, [], isDev)
 
     if (dsPage) {
