@@ -31,7 +31,21 @@ export default {
       schema: {
         type: 'collection',
         items: {
-          type: 'object'
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string'
+            },
+            attributes: {
+              type: 'array',
+              items: {
+                array: 'array',
+                items: {
+                  type: 'string'
+                }
+              }
+            }
+          }
         }
       }
     }
