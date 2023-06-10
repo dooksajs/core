@@ -401,8 +401,7 @@ export default {
 
       let dsContent = this.$getDataValue({
         name: 'dsContent/items',
-        id: dsContentId,
-        prefixId: language
+        id: dsContentId
       })
 
       // exit if content is empty
