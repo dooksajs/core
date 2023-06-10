@@ -32,13 +32,13 @@ export default {
           }).item
         },
         items: {
-              type: 'string',
-              relation: 'dsWidget/instanceGroups',
-              default () {
-                return this.$method('dsData/generateId')
-              }
-            }
+          type: 'string',
+          relation: 'dsWidget/instanceGroups',
+          default () {
+            return this.$method('dsData/generateId')
           }
+        }
+      }
     },
     instanceContent: {
       description: 'Content references used by an instance',
@@ -113,6 +113,7 @@ export default {
             name: 'dsWidget/uniqueIdentifier'
           }).item
         },
+        suffixId: 'default',
         items: {
           type: 'array',
           items: {
@@ -171,185 +172,51 @@ export default {
   },
   /** @lends dsWidget */
   methods: {
-    attachInstance ({
+    create ({
       dsWidgetSectionId,
-      dsWidgetInstanceId,
-      dsWidgetMode
+      dsViewId = this.$getDataValue({ name: 'dsView/rootViewId' }).item
     }) {
-      const layout = this.$getDataValue({
-        name: 'dsWidget/instanceLayouts',
-        id: dsWidgetInstanceId
-      })
-
-      // if layout is empty, attempt to load template
-      if (layout.isEmpty) {
-        const dsTemplateId = this.$getDataValue({
-          name: 'dsWidget/instanceTemplates',
-          id: dsWidgetInstanceId,
-          suffixId: dsWidgetMode
-        })
-
-        if (dsTemplateId.isEmpty) {
-          return
-        }
-
-        this.$action('dsTemplate/create', {
-          dsTemplateId: dsTemplateId.item,
-          dsWidgetSectionId,
-          dsWidgetInstanceId,
-          dsWidgetMode
-        }, {
-          onSuccess: (result) => {
-            const dsViewId = this.$getDataValue({
-              name: 'dsWidget/sectionView',
-              id: dsWidgetSectionId
-            })
-
-            this.$method('dsLayout/attach', {
-              dsLayoutId: result.dsLayoutEntryId,
-              dsWidgetSectionId,
-              dsWidgetInstanceId,
-              dsWidgetMode,
-              dsViewId: dsViewId.item
-            })
-          },
-          onError: (e) => console.log(e)
-        })
-      }
-
-      const dsViewId = this.$getDataValue({
-        name: 'dsWidget/sectionView',
-        id: dsWidgetSectionId
-      })
-
-      this.$method('dsLayout/attach', {
-        dsLayoutId: layout.item,
-        dsWidgetSectionId,
-        dsWidgetInstanceId,
-        dsWidgetMode,
-        dsViewId: dsViewId.item
-      })
-    },
-    attachSection ({
-      dsWidgetSectionId,
-      dsWidgetMode,
-      dsWidgetPrefixId,
-      dsViewId
-    }) {
-      const section = this.$getDataValue({
-        name: 'dsWidget/sections',
+      const dsWidgetPrefixId = this.$getDataValue({
+        name: 'dsWidget/uniqueIdentifier'
+      }).item
+      const sectionMode = this.$getDataValue({
+        name: 'dsWidget/sectionMode',
         id: dsWidgetSectionId,
         prefixId: dsWidgetPrefixId
+      }).item
+
+      const dsWidgetSection = this.$getDataValue({
+        name: 'dsWidget/sections',
+        id: dsWidgetSectionId,
+        prefixId: dsWidgetPrefixId,
+        suffixId: sectionMode
       })
 
-      if (section.isEmpty || !dsViewId) {
-        return
-      }
-
-      this.$setDataValue({
-        name: 'dsWidget/sectionView',
-        source: dsViewId,
-        options: {
-          id: dsWidgetSectionId,
+      for (let i = 0; i < dsWidgetSection.item.length; i++) {
+        const dsWidgetInstanceId = dsWidgetSection.item[i]
+        const instanceMode = this.$getDataValue({
+          name: 'dsWidget/instanceMode',
+          id: dsWidgetInstanceId,
           prefixId: dsWidgetPrefixId
-        }
-      })
+        }).item
+        const dsWidgetMode = instanceMode !== 'default' ? instanceMode : sectionMode
 
-      for (let i = 0; i < section.item.length; i++) {
-        const dsWidgetInstanceId = section.item[i]
+        const dsLayoutId = this.$getDataValue({
+          name: 'dsWidget/instanceLayouts',
+          id: dsWidgetInstanceId,
+          suffixId: instanceMode,
+          prefixId: dsWidgetPrefixId
+        }).item
 
-        this.attachInstance({
+        this.$method('dsLayout/create', {
+          dsLayoutId,
           dsWidgetSectionId,
           dsWidgetInstanceId,
           dsWidgetPrefixId,
-          dsWidgetMode
+          dsWidgetMode,
+          dsViewId
         })
       }
-    },
-    /**
-     * Insert widget within a section
-     * @param {Object} param
-     * @param {dsWidgetSectionId} param.dsWidgetSectionId - widget section id
-     * @param {dsWidgetItem} param.dsWidgetItem - widget item
-     * @param {number} position - The position to insert within the section
-     */
-    insertInstance ({
-      dsWidgetSectionId,
-      dsWidgetInstanceId,
-      dsWidgetTemplateId,
-      dsWidgetGroupId,
-      position
-    }) {
-      const instance = this.$setDataValue({
-        name: 'dsWidget/instances',
-        source: {
-          groupId: dsWidgetGroupId
-        },
-        options: {
-          id: dsWidgetInstanceId
-        }
-      })
-
-      this.$setDataValue({
-        name: 'dsWidget/instanceGroups',
-        source: instance.id,
-        options: {
-          id: instance.item.groupId,
-          source: {
-            push: true
-          }
-        }
-      })
-
-      const sectionData = {
-        name: 'dsWidget/sections',
-        source: instance.id,
-        options: {
-          id: dsWidgetSectionId,
-          source: {
-            push: true
-          }
-        }
-      }
-
-      if (Number.isInteger(position)) {
-        sectionData.options.source = {
-          splice: {
-            start: position
-          }
-        }
-      }
-
-      this.$setDataValue(sectionData)
-
-      return instance.id
-    },
-    /**
-     * Remove section
-     * @param {Object} param
-     * @param {dsWidgetSectionId} - Widget section id
-     * @param {dsWidgetPrefixId} - Widget prefix
-     */
-    removeSection ({ dsWidgetSectionId, dsWidgetPrefixId = '' }) {
-      const [items, currentId] = this._getSections(dsWidgetSectionId, dsWidgetPrefixId)
-      let view = this._getSectionView(currentId)
-
-      for (let i = 0; i < items.length; i++) {
-        const item = items[i]
-        let layout = item.layout[view]
-
-        if (!item.layout[view]) {
-          layout = item.layout.default
-          view = 'default'
-        }
-
-        this._detachInstance(currentId, item.instanceId, layout.id, view, dsWidgetPrefixId)
-      }
-
-      this._detachItem('section', dsWidgetSectionId)
-    },
-    sectionView (dsWidgetNextSectionId) {
-
     }
   }
 }
