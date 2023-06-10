@@ -12,7 +12,7 @@ export default {
   version: 1,
   data: {
     rootViewId: {
-      default: 'app-' + Math.random().toString().substring(2),
+      default: '',
       schema: {
         type: 'string'
       }
@@ -78,20 +78,20 @@ export default {
       throw new Error('Could not find root element: ', rootElement)
     }
 
-    const rootViewId = this.$getDataValue({ name: 'dsView/rootViewId' })
-
     // Set root element
-    this.createElement({
-      dsViewId: rootViewId.item,
-      dsComponent: {
-        id: 'div'
-      }
+    const dsViewId = this.createNode({
+      dsComponentId: '181103cb'
+    })
+
+    this.$setDataValue({
+      name: 'dsView/rootViewId',
+      source: dsViewId
     })
 
     // get root element
     const dsView = this.$getDataValue({
       name: 'dsView/items',
-      id: rootViewId.item
+      id: dsViewId
     })
 
     // replace root element with new app element
@@ -149,15 +149,32 @@ export default {
       })
     },
     /**
-     * Creates element
+     * Creates node
      * @param {Object} item
-     * @param {dsViewId} item.dsViewId - dsView node id
-     * @param {dsComponent} item.dsComponent - Component from dsComponent
+     * @param {dsComponent} item.dsComponentId - Component id
      * @param {string} item.dsWidgetSectionId - Section id from dsWidget
      * @param {string} item.dsWidgetInstanceId - Instance id from dsWidget
      */
-    createElement ({ dsViewId, dsComponent, dsWidgetSectionId, dsWidgetInstanceId }) {
-      const element = document.createElement(dsComponent.id)
+    createNode ({ dsComponentId, dsWidgetSectionId, dsWidgetInstanceId }) {
+      let dsComponent = this.$getDataValue({
+        name: 'dsComponent/items',
+        id: dsComponentId
+      })
+
+      if (dsComponent.isEmpty) {
+        return
+      }
+
+      dsComponent = dsComponent.item
+
+      const dsViewId = this.$method('dsData/generateId')
+      let element
+
+      if (dsComponent.id === 'text') {
+        element = document.createTextNode('')
+      } else {
+        element = document.createElement(dsComponent.id)
+      }
       // ISSUE: [DS-758] Remove dev code during build (using rollup)
       // Add view node id to the node
       if (this.isDev) {
@@ -178,7 +195,7 @@ export default {
         this._setAttributes(element, dsComponent.attributes)
       }
 
-      const component = this.$component(element.tagName.toLowerCase())
+      const component = this.$component(dsComponent.id)
 
       // ISSUE: [DS-889] Only add events if in edit mode
       if (component && component.events) {
@@ -218,23 +235,8 @@ export default {
           })
         }
       }
-    },
-    /**
-     * Creates text nodes
-     * @param {dsViewId} dsViewId - dsView node id
-     */
-    createNode (dsViewId) {
-      const textNode = document.createTextNode('')
 
-      textNode.dsViewId = dsViewId
-
-      this.$setDataValue({
-        name: 'dsView/items',
-        source: textNode,
-        options: {
-          id: dsViewId
-        }
-      })
+      return dsViewId
     },
     /**
      * Get value from node item
@@ -437,13 +439,15 @@ export default {
 
       const dsComponent = this.$component(nodeName)
 
-      if (dsComponent && dsComponent.set) {
-        if (dsComponent.set.type) {
-          return this[`_setValueBy/${dsComponent.set.type}`](node, dsComponent.set.value, dsContent.value)
+      if (dsComponent && dsComponent.content && dsComponent.content.set) {
+        const contentSetter = dsComponent.content.set
+
+        if (contentSetter.type) {
+          return this[`_setValueBy/${contentSetter.type}`](node, contentSetter.value, dsContent.value)
         }
 
-        for (let i = 0; i < dsComponent.set.length; i++) {
-          const setter = dsComponent.set[i]
+        for (let i = 0; i < contentSetter.length; i++) {
+          const setter = contentSetter[i]
 
           this[`_setValueBy/${setter.type}`](node, setter.value, dsContent.value)
         }
@@ -516,11 +520,10 @@ export default {
      * @private
      */
     _setAttributes (element, attributes) {
-      for (const key in attributes) {
-        if (Object.prototype.hasOwnProperty.call(attributes, key)) {
-          // check if setter exists on element
-          element.setAttribute(key, attributes[key])
-        }
+      for (let i = 0; i < attributes.length; i++) {
+        const [name, value] = attributes[i]
+
+        element.setAttribute(name, value)
       }
     },
     /**
