@@ -13,7 +13,7 @@ export default {
       }
     },
     language: {
-      default: 'default',
+      default: 'en',
       schema: {
         type: 'string'
       }
