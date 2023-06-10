@@ -265,7 +265,7 @@ export default {
           mode
         }
       })
-      console.log(template)
+
       return dsWidgetSectionId
     },
     parseHTML ({ html, actions }) {
