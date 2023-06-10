@@ -12,48 +12,21 @@ window.dsDevTool = app
 
 // build templates
 if (dsConfig.templates) {
-  const dsWidgetSectionId = page.widgets.entry[page.id][0]
+  const template = buildTemplates(dsConfig.templates, app.components)
 
-  buildTemplates(app, dsConfig.templates)
-    .then(instances => {
-      for (let i = 0; i < instances.length; i++) {
-        const instance = instances[i]
-
-        for (let i = 0; i < instance.templates.length; i++) {
-          const template = instance.templates[i]
-          const instanceId = app.$method('dsWidget/insertInstance', {
-            dsWidgetSectionId
-          })
-
-          app.$setDataValue({
-            name: 'dsWidget/instanceTemplates',
-            source: template.id,
-            options: {
-              id: instanceId,
-              suffixId: template.mode
-            }
-          })
-        }
-
-        for (let i = 0; i < instance.sectionTemplates.length; i++) {
-          const template = instance.sectionTemplates[i]
-
-          app.$setDataValue({
-            name: 'dsWidget/instanceTemplates',
-            source: template.templateId,
-            options: {
-              id: template.id,
-              suffixId: template.suffixId
-            }
-          })
-        }
-      }
-
-      const rootViewId = app.$getDataValue({ name: 'dsView/rootViewId' })
-
-      app.$method('dsWidget/attachSection', {
-        dsWidgetSectionId,
-        dsViewId: rootViewId.item
-      })
+  for (let i = 0; i < template.elements.length; i++) {
+    const element = template.elements[i]
+    const result = app.$method('dsTemplate/parseHTML', {
+      html: element,
+      actions: template.actionSequenceRef
     })
+
+    const dsWidgetSectionId = app.$method('dsTemplate/create', {
+      id: result.id,
+      mode: result.mode,
+      language: result.lang
+    })
+
+    app.$action('dsWidget/create', { dsWidgetSectionId })
+  }
 }

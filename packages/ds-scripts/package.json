@@ -32,9 +32,12 @@
     ]
   },
   "dependencies": {
+    "@dooksa/crypto": "workspace:^",
     "@dooksa/ds-app": "workspace:^",
     "@dooksa/ds-plugin-devtool": "workspace:^",
     "@dooksa/ds-plugin-template": "workspace:^",
+    "@dooksa/parse-action": "workspace:^",
+    "@dooksa/parse-template": "workspace:^",
     "@vitejs/plugin-basic-ssl": "^1.0.1",
     "@vitejs/plugin-legacy": "^4.0.2",
     "cypress": "^11.2.0",
