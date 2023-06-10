@@ -52,6 +52,10 @@ export default {
   },
   components: [
     {
+      name: 'text',
+      type: 'text'
+    },
+    {
       name: 'button',
       type: 'button',
       events: ['click', 'hover']
