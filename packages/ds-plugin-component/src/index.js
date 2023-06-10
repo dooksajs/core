@@ -14,7 +14,20 @@ export default {
   version: 1,
   data: {
     items: {
-      default: {},
+      default: {
+        13610321: {
+          id: 'h1'
+        },
+        '106802e9': {
+          id: 'a'
+        },
+        '1ced044d': {
+          id: 'text'
+        },
+        '181103cb': {
+          id: 'div'
+        }
+      },
       schema: {
         type: 'collection',
         items: {
