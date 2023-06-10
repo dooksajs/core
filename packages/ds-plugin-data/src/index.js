@@ -505,7 +505,7 @@ export default {
         }
 
         if (!suffix && schema.id.suffix) {
-          suffix = '_' + this._affixId(schema.id.suffix)
+          suffix = this._affixId(schema.id.suffix)
         }
 
         if (schema.id.default) {
