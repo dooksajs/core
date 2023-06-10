@@ -118,7 +118,7 @@ export default {
       parentView.item.appendChild(childView.item)
 
       this.$emit({
-        name: 'dsView/mounted',
+        name: 'dsView/mount',
         id: dsViewId,
         payload: {
           dsViewParentId,
@@ -356,7 +356,7 @@ export default {
 
         // emit new child mount
         this.$emit({
-          name: 'dsView/mounted',
+          name: 'dsView/mount',
           id: dsViewId,
           payload: { dsViewId }
         })
