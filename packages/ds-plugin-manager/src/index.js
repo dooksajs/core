@@ -38,6 +38,14 @@ export default {
       private: true,
       default: {}
     },
+    componentGetters: {
+      private: true,
+      default: {}
+    },
+    componentIgnoreAttr: {
+      private: true,
+      default: {}
+    },
     buildId: {
       private: true,
       default: 0
@@ -133,7 +141,17 @@ export default {
       {
         name: '$component',
         value: this._component.bind(this),
-        scope: ['dsComponent', 'dsParse', 'dsView']
+        scope: ['dsComponent', 'dsView']
+      },
+      {
+        name: '$componentGetters',
+        value: this.componentGetters,
+        scope: ['dsTemplate']
+      },
+      {
+        name: '$componentIgnoreAttr',
+        value: this.componentIgnoreAttr,
+        scope: ['dsTemplate']
       },
       {
         name: '$addDataListener',
@@ -198,6 +216,7 @@ export default {
 
     if (isDev) {
       return {
+        components: this.components,
         $method: this._method.bind(this),
         $action: this._action.bind(this),
         $setDataValue: this._contextMethod('dsData/set').bind(this),
@@ -309,8 +328,22 @@ export default {
       if (plugin.components) {
         for (let i = 0; i < plugin.components.length; i++) {
           const component = plugin.components[i]
+          const id = component.name
 
-          this.components[component.name] = { ...component, plugin: plugin.name }
+          this.components[id] = component
+          this.components[id].plugin = plugin.name
+
+          if (component.content && component.content.get) {
+            this.componentGetters[id] = component.content.get
+
+            if (component.content.get.type === 'attribute') {
+              this.componentIgnoreAttr[id] = component.content.get.value
+
+              if (typeof component.content.get.value === 'string') {
+                this.componentIgnoreAttr[id] = [component.content.get.value]
+              }
+            }
+          }
         }
       }
 
