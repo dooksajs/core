@@ -11,7 +11,23 @@ export default {
       schema: {
         type: 'collection',
         items: {
-          type: 'object'
+          type: 'object',
+          patternProperties: {
+            '[0-9]': {
+              type: 'object',
+              properties: {
+                name: {
+                  type: 'string'
+                },
+                value: {
+                  type: 'array',
+                  items: {
+                    type: 'string'
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },
