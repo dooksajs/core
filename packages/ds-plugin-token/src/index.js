@@ -20,7 +20,7 @@ export default {
       return ''
     },
     placeholder (args) {
-      const language = this.$getDataValue({ name: 'dsMetadata/language' })
+      const language = this.$getDataValue('dsMetadata/language')
       const heading = this.values[args[2]]
 
       if (heading[language.item]) {

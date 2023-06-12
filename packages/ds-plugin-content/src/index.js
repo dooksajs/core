@@ -35,7 +35,7 @@ export default {
       schema: {
         type: 'collection',
         suffixId () {
-          return this.$getDataValue({ name: 'dsMetadata/language' }).item
+          return this.$getDataValue('dsMetadata/language').item
         },
         items: {
           type: 'object'
@@ -53,6 +53,7 @@ export default {
               type: 'string'
             },
             isTemporary: {
+              default: false,
               type: 'boolean'
             }
           }

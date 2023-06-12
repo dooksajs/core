@@ -27,9 +27,7 @@ export default {
       schema: {
         type: 'collection',
         prefixId () {
-          return this.$getDataValue({
-            name: 'dsWidget/uniqueIdentifier'
-          }).item
+          return this.$getDataValue('dsWidget/uniqueIdentifier').item
         },
         items: {
           type: 'string',
@@ -109,9 +107,7 @@ export default {
       schema: {
         type: 'collection',
         prefixId () {
-          return this.$getDataValue({
-            name: 'dsWidget/uniqueIdentifier'
-          }).item
+          return this.$getDataValue('dsWidget/uniqueIdentifier').item
         },
         suffixId: 'default',
         items: {
@@ -174,19 +170,15 @@ export default {
   methods: {
     create ({
       dsWidgetSectionId,
-      dsViewId = this.$getDataValue({ name: 'dsView/rootViewId' }).item
+      dsViewId = this.$getDataValue('dsView/rootViewId').item
     }) {
-      const dsWidgetPrefixId = this.$getDataValue({
-        name: 'dsWidget/uniqueIdentifier'
-      }).item
-      const sectionMode = this.$getDataValue({
-        name: 'dsWidget/sectionMode',
+      const dsWidgetPrefixId = this.$getDataValue('dsWidget/uniqueIdentifier').item
+      const sectionMode = this.$getDataValue('dsWidget/sectionMode', {
         id: dsWidgetSectionId,
         prefixId: dsWidgetPrefixId
       }).item
 
-      const dsWidgetSection = this.$getDataValue({
-        name: 'dsWidget/sections',
+      const dsWidgetSection = this.$getDataValue('dsWidget/sections', {
         id: dsWidgetSectionId,
         prefixId: dsWidgetPrefixId,
         suffixId: sectionMode
@@ -194,15 +186,13 @@ export default {
 
       for (let i = 0; i < dsWidgetSection.item.length; i++) {
         const dsWidgetInstanceId = dsWidgetSection.item[i]
-        const instanceMode = this.$getDataValue({
-          name: 'dsWidget/instanceMode',
+        const instanceMode = this.$getDataValue('dsWidget/instanceMode', {
           id: dsWidgetInstanceId,
           prefixId: dsWidgetPrefixId
         }).item
         const dsWidgetMode = instanceMode !== 'default' ? instanceMode : sectionMode
 
-        const dsLayoutId = this.$getDataValue({
-          name: 'dsWidget/instanceLayouts',
+        const dsLayoutId = this.$getDataValue('dsWidget/instanceLayouts', {
           id: dsWidgetInstanceId,
           suffixId: instanceMode,
           prefixId: dsWidgetPrefixId

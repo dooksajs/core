@@ -25,8 +25,7 @@ if (dsConfig.templates) {
             dsWidgetSectionId
           })
 
-          app.$setDataValue({
-            name: 'dsWidget/instanceTemplates',
+          app.$setDataValue('dsWidget/instanceTemplates', {
             source: template.id,
             options: {
               id: instanceId,
@@ -36,7 +35,7 @@ if (dsConfig.templates) {
         }
       }
 
-      const rootViewId = app.$getDataValue({ name: 'dsView/rootViewId' })
+      const rootViewId = app.$getDataValue('dsView/rootViewId')
 
       app.$method('dsWidget/attachSection', {
         dsWidgetSectionId,

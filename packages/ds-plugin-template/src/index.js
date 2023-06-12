@@ -99,24 +99,20 @@ export default {
       language,
       dsWidgetSectionId
     }) {
-      const template = this.$getDataValue({
-        name: 'dsTemplate/items',
-        id
-      })
+      const template = this.$getDataValue('dsTemplate/items', { id })
 
       if (template.isEmpty) {
         return
       }
 
       // set default values here to avoid exec unnecessary functions if there is no template found
-      language = language || this.$getDataValue({ name: 'dsMetadata/language' }).item
+      language = language || this.$getDataValue('dsMetadata/language').item
       dsWidgetSectionId = dsWidgetSectionId || this.$method('dsData/generateId')
 
       const dsWidgetItems = []
       const dsWidgetGroupId = this.$method('dsData/generateId')
 
-      this.$setDataValue({
-        name: 'dsWidget/templates',
+      this.$setDataValue('dsWidget/templates', {
         source: id,
         options: {
           id: dsWidgetSectionId,
@@ -124,8 +120,7 @@ export default {
         }
       })
 
-      this.$setDataValue({
-        name: 'dsWidget/sectionMode',
+      this.$setDataValue('dsWidget/sectionMode', {
         source: mode,
         options: {
           id: dsWidgetSectionId
@@ -144,16 +139,14 @@ export default {
 
         for (let j = 0; j < contentItems.length; j++) {
           const content = contentItems[j]
-          const dsContent = this.$setDataValue({
-            name: 'dsContent/items',
+          const dsContent = this.$setDataValue('dsContent/items', {
             source: content.item,
             options: {
               suffixId: language
             }
           })
 
-          this.$setDataValue({
-            name: 'dsContent/type',
+          this.$setDataValue('dsContent/type', {
             source: {
               name: content.type
             },
@@ -166,8 +159,7 @@ export default {
         }
 
         // set widget content
-        this.$setDataValue({
-          name: 'dsWidget/instanceContent',
+        this.$setDataValue('dsWidget/instanceContent', {
           source: widget.content,
           options: {
             id: widget.instanceId,
@@ -176,8 +168,7 @@ export default {
         })
 
         // add widget instance to group
-        this.$setDataValue({
-          name: 'dsWidget/instanceGroups',
+        this.$setDataValue('dsWidget/instanceGroups', {
           source: widget.instanceId,
           options: {
             id: dsWidgetGroupId,
@@ -188,24 +179,21 @@ export default {
         })
 
         // set widget instance
-        this.$setDataValue({
-          name: 'dsWidget/instances',
+        this.$setDataValue('dsWidget/instances', {
           source: dsWidgetGroupId,
           options: {
             id: widget.instanceId
           }
         })
 
-        this.$setDataValue({
-          name: 'dsWidget/instanceMode',
+        this.$setDataValue('dsWidget/instanceMode', {
           source: mode,
           options: {
             id: widget.instanceId
           }
         })
 
-        this.$setDataValue({
-          name: 'dsWidget/instanceLayouts',
+        this.$setDataValue('dsWidget/instanceLayouts', {
           source: widget.layout,
           options: {
             id: widget.instanceId,
@@ -234,8 +222,7 @@ export default {
             usedInstances.push(instanceId)
           }
 
-          this.$setDataValue({
-            name: 'dsWidget/sections',
+          this.$setDataValue('dsWidget/sections', {
             source: dsWidgetSections,
             options: {
               id: instanceId,
@@ -243,8 +230,7 @@ export default {
             }
           })
 
-          this.$setDataValue({
-            name: 'dsWidget/sectionMode',
+          this.$setDataValue('dsWidget/sectionMode', {
             source: mode,
             options: {
               id: instanceId
@@ -257,8 +243,7 @@ export default {
         }
       }
 
-      this.$setDataValue({
-        name: 'dsWidget/sections',
+      this.$setDataValue('dsWidget/sections', {
         source: rootSectionInstances,
         options: {
           id: dsWidgetSectionId,
@@ -286,13 +271,27 @@ export default {
         }
       }
 
+      for (let i = 0; i < template.event.length; i++) {
+        const events = template.event[i]
+        const hasEvents = !!Object.keys(events).length
+
+        if (hasEvents) {
+          const layoutId = template.layoutId[i]
+
+          this.$setDataValue('dsLayout/events', {
+            source: events,
+            options: {
+              id: layoutId
+            }
+          })
+        }
+      }
       // add layouts
       for (let i = 0; i < template.layout.length; i++) {
         const layout = template.layout[i]
         const layoutId = template.layoutId[i]
 
-        this.$setDataValue({
-          name: 'dsLayout/items',
+        this.$setDataValue('dsLayout/items', {
           source: layout,
           options: {
             id: layoutId
@@ -321,8 +320,7 @@ export default {
         }
       }
 
-      this.$setDataValue({
-        name: 'dsComponent/items',
+      this.$setDataValue('dsComponent/items', {
         source: template.component,
         options: {
           source: {
@@ -331,8 +329,7 @@ export default {
         }
       })
 
-      const result = this.$setDataValue({
-        name: 'dsTemplate/items',
+      const result = this.$setDataValue('dsTemplate/items', {
         source: {
           content: template.content,
           event: template.event,

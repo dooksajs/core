@@ -323,10 +323,7 @@ export default {
   ],
   methods: {
     fetch (id) {
-      const component = this.$getDataValue({
-        name: 'dsComponent/items',
-        id
-      })
+      const component = this.$getDataValue('dsComponent/items', { id })
 
       if (component.id === 'text') {
         return {

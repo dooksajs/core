@@ -14,6 +14,33 @@ window.dsDevTool = app
 if (dsConfig.templates) {
   const template = buildTemplates(dsConfig.templates, app.components)
 
+  app.$setDataValue('dsAction/items', {
+    source: template.actions.items,
+    options: {
+      source: {
+        merge: true
+      }
+    }
+  })
+
+  app.$setDataValue('dsAction/sequence', {
+    source: template.actions.sequence,
+    options: {
+      source: {
+        merge: true
+      }
+    }
+  })
+
+  app.$setDataValue('dsAction/sequenceEntry', {
+    source: template.actions.sequenceEntry,
+    options: {
+      source: {
+        merge: true
+      }
+    }
+  })
+
   for (let i = 0; i < template.elements.length; i++) {
     const element = template.elements[i]
     const result = app.$method('dsTemplate/parseHTML', {

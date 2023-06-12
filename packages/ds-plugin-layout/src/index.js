@@ -51,8 +51,7 @@ export default {
       dsWidgetMode,
       dsViewId
     }) {
-      const layout = this.$getDataValue({
-        name: 'dsLayout/items',
+      const layout = this.$getDataValue('dsLayout/items', {
         id: dsLayoutId
       })
 
@@ -90,8 +89,7 @@ export default {
         item.dsViewId = childViewId
 
         if (Number.isInteger(contentIndex)) {
-          const dsContentId = this.$getDataValue({
-            name: 'dsWidget/instanceContent',
+          const dsContentId = this.$getDataValue('dsWidget/instanceContent', {
             id: dsWidgetInstanceId,
             prefixId: dsWidgetPrefixId,
             suffixId: dsWidgetMode,
@@ -101,8 +99,7 @@ export default {
           }).item
 
           // Associate dsContent with dsView item
-          this.$setDataValue({
-            name: 'dsView/content',
+          this.$setDataValue('dsView/content', {
             source: dsContentId,
             options: {
               id: childViewId
@@ -112,8 +109,7 @@ export default {
           this.$method('dsView/updateValue', { dsViewId: childViewId })
 
           // Update view item if content value changes
-          this.$addDataListener({
-            name: 'dsContent/items',
+          this.$addDataListener('dsContent/items', {
             on: 'update',
             id: dsContentId,
             refId: dsViewId,
@@ -125,8 +121,7 @@ export default {
 
         if (Number.isInteger(sectionIndex)) {
           // get next widget section id
-          sectionId = this.$getDataValue({
-            name: 'dsWidget/sections',
+          sectionId = this.$getDataValue('dsWidget/sections', {
             id: dsWidgetSectionId,
             prefixId: dsWidgetPrefixId,
             suffixId: dsWidgetMode,

@@ -46,8 +46,7 @@ export default {
     window.addEventListener('popstate', () => {
       this._update(this.currentPath, this.currentPathname(), (state) => {
         this.$method('dsPage/updateDOM', state)
-        this.$emit({
-          name: 'dsRouter/navigate',
+        this.$emit('dsRouter/navigate', {
           id: this.getCurrentId(),
           payload: state
         })
@@ -71,8 +70,7 @@ export default {
         this.currentPath = this.currentPathname()
 
         this.$method('dsPage/updateDOM', state)
-        this.$emit({
-          name: 'dsRouter/navigate',
+        this.$emit('dsRouter/navigate', {
           id: this.getCurrentId(),
           payload: state
         })

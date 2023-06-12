@@ -83,14 +83,12 @@ export default {
       dsComponentId: '181103cb'
     })
 
-    this.$setDataValue({
-      name: 'dsView/rootViewId',
+    this.$setDataValue('dsView/rootViewId', {
       source: dsViewId
     })
 
     // get root element
-    const dsView = this.$getDataValue({
-      name: 'dsView/items',
+    const dsView = this.$getDataValue('dsView/items', {
       id: dsViewId
     })
 
@@ -106,19 +104,16 @@ export default {
      * @param {dsViewId} item.dsViewParentId - Parent dsView node id
      */
     append ({ dsViewId, dsViewParentId }) {
-      const parentView = this.$getDataValue({
-        name: 'dsView/items',
+      const parentView = this.$getDataValue('dsView/items', {
         id: dsViewParentId
       })
-      const childView = this.$getDataValue({
-        name: 'dsView/items',
+      const childView = this.$getDataValue('dsView/items', {
         id: dsViewId
       })
 
       parentView.item.appendChild(childView.item)
 
-      this.$emit({
-        name: 'dsView/mount',
+      this.$emit('dsView/mount', {
         id: dsViewId,
         payload: {
           dsViewParentId,
@@ -126,22 +121,19 @@ export default {
         }
       })
 
-      this.$addDataListener({
-        name: 'dsView/items',
+      this.$addDataListener('dsView/items', {
         on: 'delete',
         id: dsViewId,
         refId: dsViewId,
         listener: () => {
-          this.$deleteDataValue({
-            name: 'dsView/items',
+          this.$deleteDataValue('dsView/items', {
             id: dsViewId
           })
         }
       })
 
       // update parents
-      this.$setDataValue({
-        name: 'dsView/itemParent',
+      this.$setDataValue('dsView/itemParent', {
         source: dsViewParentId,
         options: {
           id: dsViewId
@@ -156,8 +148,7 @@ export default {
      * @param {string} item.dsWidgetInstanceId - Instance id from dsWidget
      */
     createNode ({ dsComponentId, dsWidgetSectionId, dsWidgetInstanceId }) {
-      let dsComponent = this.$getDataValue({
-        name: 'dsComponent/items',
+      let dsComponent = this.$getDataValue('dsComponent/items', {
         id: dsComponentId
       })
 
@@ -183,8 +174,7 @@ export default {
 
       element.dsViewId = dsViewId
 
-      this.$setDataValue({
-        name: 'dsView/items',
+      this.$setDataValue('dsView/items', {
         source: element,
         options: {
           id: dsViewId
@@ -203,8 +193,7 @@ export default {
           const name = component.events[i]
 
           const handler = (event) => {
-            const dsContentId = this.$getDataValue({
-              name: 'dsView/content',
+            const dsContentId = this.$getDataValue('dsView/content', {
               id: dsViewId
             })
 
@@ -223,8 +212,7 @@ export default {
 
           element.addEventListener(name, handler)
 
-          this.$setDataValue({
-            name: 'dsView/handlers',
+          this.$setDataValue('dsView/handlers', {
             source: handler,
             options: {
               id: dsViewId,
@@ -244,8 +232,7 @@ export default {
      * @returns {string|Object} - Either a string or Object based on the components getter
      */
     getValue (dsViewId) {
-      const dsView = this.$getDataValue({
-        name: 'dsView/items',
+      const dsView = this.$getDataValue('dsView/items', {
         id: dsViewId
       })
 
@@ -278,8 +265,7 @@ export default {
      * @param {dsViewId} dsViewId - dsView node id
      */
     remove (dsViewId) {
-      const dsView = this.$getDataValue({
-        name: 'dsView/items',
+      const dsView = this.$getDataValue('dsView/items', {
         id: dsViewId
       })
 
@@ -296,8 +282,7 @@ export default {
      * @param {dsViewId} dsViewId - dsView node id
      */
     removeChildren (dsViewId) {
-      const dsView = this.$getDataValue({
-        name: 'dsView/items',
+      const dsView = this.$getDataValue('dsView/items', {
         id: dsViewId
       })
 
@@ -311,8 +296,7 @@ export default {
           node.removeChild(node.lastChild)
         }
 
-        this.$emit({
-          name: 'dsView/unmount',
+        this.$emit('dsView/unmount', {
           id: dsViewId,
           payload: { dsViewId }
         })
@@ -327,22 +311,19 @@ export default {
      * @param {number} node.childIndex - Index of replacement child
      */
     replace ({ dsViewParentId, dsViewId, dsViewIdPrev, childIndex }) {
-      const dsViewChild = this.$getDataValue({
-        name: 'dsView/items',
+      const dsViewChild = this.$getDataValue('dsView/items', {
         id: dsViewId
       })
 
       let dsViewPrevChild, dsViewParent
 
       if (dsViewIdPrev) {
-        dsViewPrevChild = this.$getDataValue({
-          name: 'dsView/items',
+        dsViewPrevChild = this.$getDataValue('dsView/items', {
           id: dsViewIdPrev
         })
         dsViewParent = dsViewPrevChild.item.parentElement
       } else if (!isNaN(childIndex)) {
-        dsViewParent = this.$getDataValue({
-          name: 'dsView/items',
+        dsViewParent = this.$getDataValue('dsView/items', {
           id: dsViewParentId
         })
 
@@ -357,15 +338,13 @@ export default {
         this._unmount(dsViewPrevChild.item.dsViewId)
 
         // emit new child mount
-        this.$emit({
-          name: 'dsView/mount',
+        this.$emit('dsView/mount', {
           id: dsViewId,
           payload: { dsViewId }
         })
 
         // update parents
-        this.$setDataValue({
-          name: 'dsView/itemParent',
+        this.$setDataValue('dsView/itemParent', {
           source: dsViewParent.item.dsViewId,
           options: {
             id: dsViewId
@@ -381,8 +360,7 @@ export default {
      * @param {dsContentLanguage} node.language - dsContent language code
      */
     updateValue ({ dsViewId, language }) {
-      const dsView = this.$getDataValue({
-        name: 'dsView/items',
+      const dsView = this.$getDataValue('dsView/items', {
         id: dsViewId
       })
 
@@ -390,8 +368,7 @@ export default {
         throw Error('No view item found')
       }
 
-      let dsContentId = this.$getDataValue({
-        name: 'dsView/content',
+      let dsContentId = this.$getDataValue('dsView/content', {
         id: dsViewId
       })
 
@@ -401,8 +378,7 @@ export default {
 
       dsContentId = dsContentId.item
 
-      let dsContent = this.$getDataValue({
-        name: 'dsContent/items',
+      let dsContent = this.$getDataValue('dsContent/items', {
         id: dsContentId
       })
 
@@ -413,8 +389,7 @@ export default {
 
       dsContent = dsContent.item
 
-      const dsContentType = this.$getDataValue({
-        name: 'dsContent/type',
+      const dsContentType = this.$getDataValue('dsContent/type', {
         id: dsContentId
       })
       const node = dsView.item
@@ -585,14 +560,12 @@ export default {
      * @private
      */
     _unmount (dsViewId) {
-      this.$emit({
-        name: 'dsView/unmount',
+      this.$emit('dsView/unmount', {
         id: dsViewId,
         payload: { dsViewId }
       })
 
-      this.$removeDataValue({
-        name: 'dsView/itemParent',
+      this.$removeDataValue('dsView/itemParent', {
         id: dsViewId
       })
     }

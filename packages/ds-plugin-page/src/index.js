@@ -50,8 +50,8 @@ export default {
     if (dsPage) {
       Promise.resolve(dsPage)
         .then(page => {
-          this.$setDataValue({ name: 'dsMetadata/appId', source: page.app.id })
-          this.$setDataValue({ name: 'dsMetadata/theme', source: page.app.theme })
+          this.$setDataValue('dsMetadata/appId', { source: page.app.id })
+          this.$setDataValue('dsMetadata/theme', { source: page.app.theme })
 
           this.set(page)
           // update route if path is a redirect
@@ -170,7 +170,7 @@ export default {
 
         if (dsWidgetNextSectionId) {
           this.$method('dsWidget/update', {
-            dsViewId: this.$getDataValue({ name: 'dsView/rootViewId' }),
+            dsViewId: this.$getDataValue('dsView/rootViewId'),
             dsWidgetPrefixId: dsPagePrevId,
             dsWidgetSectionId,
             dsWidgetNextPrefixId: dsPageNextId,
@@ -187,8 +187,7 @@ export default {
     set (dsPage) {
       // break without metadata
       // if (!item.metadata) return
-      this.$setDataValue({
-        name: 'dsRouter/path',
+      this.$setDataValue('dsRouter/path', {
         source: dsPage.id,
         options: {
           id: this._cleanPath(dsPage.path)
@@ -197,8 +196,7 @@ export default {
 
       // set actions
       if (dsPage.actions) {
-        this.$setDataValue({
-          name: 'dsAction/actions',
+        this.$setDataValue('dsAction/actions', {
           source: dsPage.dsActions.actions,
           options: {
             source: {
@@ -207,8 +205,7 @@ export default {
           }
         })
 
-        this.$setDataValue({
-          name: 'dsAction/conditions',
+        this.$setDataValue('dsAction/conditions', {
           source: dsPage.dsActions.conditions,
           options: {
             source: {
@@ -217,8 +214,7 @@ export default {
           }
         })
 
-        this.$setDataValue({
-          name: 'dsAction/sequenceActions',
+        this.$setDataValue('dsAction/sequenceActions', {
           source: dsPage.dsActions.sequenceActions,
           options: {
             source: {
@@ -227,8 +223,7 @@ export default {
           }
         })
 
-        this.$setDataValue({
-          name: 'dsAction/sequenceConditions',
+        this.$setDataValue('dsAction/sequenceConditions', {
           source: dsPage.dsActions.sequenceConditions,
           options: {
             source: {
@@ -237,31 +232,10 @@ export default {
           }
         })
       }
-      // set params
-      if (dsPage.parameters) {
-        this.$setDataValue({
-          name: 'dsParameter/items',
-          source: dsPage.parameters.items,
-          options: {
-            source: {
-              merge: true
-            }
-          }
-        })
-        this.$setDataValue({
-          name: 'dsParameter/usedBy',
-          source: dsPage.parameters.usedBy,
-          options: {
-            source: {
-              merge: true
-            }
-          }
-        })
-      }
+
       // set components
       if (dsPage.components) {
-        this.$setDataValue({
-          name: 'dsComponent/item',
+        this.$setDataValue('dsComponent/item', {
           source: dsPage.components,
           options: {
             source: {
@@ -273,8 +247,7 @@ export default {
       // set layouts
       if (dsPage.layouts) {
         if (dsPage.layouts.items) {
-          this.$setDataValue({
-            name: 'dsLayout/items',
+          this.$setDataValue('dsLayout/items', {
             source: dsPage.layouts.items,
             options: {
               source: {
@@ -285,8 +258,7 @@ export default {
         }
 
         if (dsPage.layouts.head) {
-          this.$setDataValue({
-            name: 'dsLayout/entry',
+          this.$setDataValue('dsLayout/entry', {
             source: dsPage.layouts.head,
             options: {
               source: {
@@ -295,17 +267,12 @@ export default {
             }
           })
         }
-
-        if (dsPage.layouts.modifiers) {
-          this.$method('dsLayout/setModifiers', dsPage.layouts.modifiers)
-        }
       }
 
       // set content
       if (dsPage.content) {
         if (dsPage.content.value) {
-          this.$setDataValue({
-            name: 'dsContent/items',
+          this.$setDataValue('dsContent/items', {
             source: dsPage.content.value,
             options: {
               source: {
@@ -320,8 +287,7 @@ export default {
         // }
 
         if (dsPage.content.type) {
-          this.$setDataValue({
-            name: 'dsContent/type',
+          this.$setDataValue('dsContent/type', {
             source: dsPage.content.type,
             options: {
               source: {
@@ -334,8 +300,7 @@ export default {
       // set widgets
       if (dsPage.widgets) {
         if (dsPage.widgets.content) {
-          this.$setDataValue({
-            name: 'dsWidget/instanceContent',
+          this.$setDataValue('dsWidget/instanceContent', {
             source: dsPage.widgets.content,
             options: {
               source: {
@@ -346,8 +311,7 @@ export default {
         }
 
         if (dsPage.widgets.entry) {
-          this.$setDataValue({
-            name: 'dsWidget/sectionEntry',
+          this.$setDataValue('dsWidget/sectionEntry', {
             source: dsPage.widgets.entry,
             options: {
               source: {
@@ -358,8 +322,7 @@ export default {
         }
 
         if (dsPage.widgets.sections) {
-          this.$setDataValue({
-            name: 'dsWidget/sections',
+          this.$setDataValue('dsWidget/sections', {
             source: dsPage.widgets.sections,
             options: {
               source: {
@@ -386,9 +349,8 @@ export default {
       // todo: build metadata
       // add attributes to appElement
       // this.$method('dsElement/attachContent', { contentId: pageType.templateId, elementId: 'appElement' })
-      const dsViewId = this.$getDataValue({ name: 'dsView/rootViewId' })
-      const dsWidgetSections = this.$getDataValue({
-        name: 'dsWidget/sectionEntry',
+      const dsViewId = this.$getDataValue('dsView/rootViewId')
+      const dsWidgetSections = this.$getDataValue('dsWidget/sectionEntry', {
         id: dsPageId
       })
 

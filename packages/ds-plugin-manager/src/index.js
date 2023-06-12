@@ -232,8 +232,8 @@ export default {
      * @returns {function}
      */
     _contextMethod (name) {
-      return (params) => {
-        return this.methods[name](params)
+      return (context, options = {}) => {
+        return this.methods[name](context, options)
       }
     },
     /**

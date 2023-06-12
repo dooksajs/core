@@ -113,7 +113,7 @@ export default {
      * @param {dsDataId} param.id - Data collection id
      * @param {function} param.listener - The listener function to run when event is fired
      */
-    addListener ({ name, on, id, refId, listener }) {
+    addListener (name, { on, id, refId, listener }) {
       const listenerName = 'data/' + on + '/listeners'
       let listeners = this[listenerName]
 
@@ -164,7 +164,7 @@ export default {
      * @param {Object} param.options.position - Data collection document suffix
      * @returns
      */
-    get ({ name, id, prefixId, suffixId, options }) {
+    get (name, { id, prefixId, suffixId, options }) {
       const result = { isEmpty: false }
       const schema = this.schema[name]
 
@@ -261,7 +261,7 @@ export default {
 
       return result
     },
-    set ({ name, source, options }) {
+    set (name, { source, options }) {
       try {
         const schema = this.schema[name]
 

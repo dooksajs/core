@@ -4,7 +4,7 @@ import { uuid } from '@dooksa/crypto'
 export default (html) => {
   const actionSequenceRef = {}
   const actions = {
-    sequences: {},
+    sequenceEntry: {},
     sequence: {},
     items: {}
   }
@@ -40,13 +40,13 @@ export default (html) => {
           const sequenceId = uuid()
 
           actionSequenceRef[key] = sequenceId
-          actions.sequences[sequenceId] = []
+          actions.sequenceEntry[sequenceId] = []
 
           for (let i = 0; i < actionTemplates.length; i++) {
             const actionTemplate = actionTemplates[i]
             const action = parseAction(actionTemplate)
 
-            actions.sequences[sequenceId].push(action.sequenceId)
+            actions.sequenceEntry[sequenceId].push(action.sequenceId)
             actions.sequence[action.sequenceId] = action.sequence
             actions.items = { ...action.items, ...action.item }
           }
