@@ -1,4 +1,3 @@
-
 import createProxy from './utils/createProxy.js'
 import dsSchema from './utils/schema.js'
 
@@ -83,20 +82,31 @@ function DsPlugin (plugin, context = [], isDev) {
   // set methods
   if (plugin.methods) {
     const methods = {}
+    const contextMethods = {}
 
     for (const key in plugin.methods) {
       if (Object.hasOwnProperty.call(plugin.methods, key)) {
         const item = plugin.methods[key]
         // Add method
         _context[key] = item
+        const firstChar = key.charAt(0)
+
+        // catch global methods
+        if (firstChar === '$') {
+          contextMethods[key] = item.bind(_context)
+
+          continue
+        }
+
         // Catch the public method
-        if (key.charAt(0) !== '_') {
+        if (firstChar !== '_') {
           methods[key] = item.bind(_context)
         }
       }
     }
 
     this.methods = methods
+    this.contextMethods = contextMethods
   }
 
   // set tokens

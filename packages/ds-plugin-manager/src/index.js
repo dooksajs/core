@@ -26,6 +26,10 @@ export default {
       private: true,
       default: {}
     },
+    contextMethods: {
+      private: true,
+      default: {}
+    },
     tokens: {
       private: true,
       default: {}
@@ -155,27 +159,27 @@ export default {
       },
       {
         name: '$addDataListener',
-        value: this._contextMethod('dsData/addListener').bind(this)
+        value: this._contextMethod('dsData/$addListener').bind(this)
       },
       {
         name: '$removeDataListener',
-        value: this._contextMethod('dsData/removeListener').bind(this)
+        value: this._contextMethod('dsData/$removeListener').bind(this)
       },
       {
         name: '$getDataValue',
-        value: this._contextMethod('dsData/get').bind(this)
+        value: this._contextMethod('dsData/$get').bind(this)
       },
       {
         name: '$removeDataValue',
-        value: this._contextMethod('dsData/remove').bind(this)
+        value: this._contextMethod('dsData/$remove').bind(this)
       },
       {
         name: '$setDataValue',
-        value: this._contextMethod('dsData/set').bind(this)
+        value: this._contextMethod('dsData/$set').bind(this)
       },
       {
         name: '$emit',
-        value: this._contextMethod('dsEvent/emit').bind(this)
+        value: this._contextMethod('dsEvent/$emit').bind(this)
       }
     ]
 
@@ -219,8 +223,8 @@ export default {
         components: this.components,
         $method: this._method.bind(this),
         $action: this._action.bind(this),
-        $setDataValue: this._contextMethod('dsData/set').bind(this),
-        $getDataValue: this._contextMethod('dsData/get').bind(this)
+        $setDataValue: this._contextMethod('dsData/$set').bind(this),
+        $getDataValue: this._contextMethod('dsData/$get').bind(this)
       }
     }
   },
@@ -233,7 +237,7 @@ export default {
      */
     _contextMethod (name) {
       return (context, options = {}) => {
-        return this.methods[name](context, options)
+        return this.contextMethods[name](context, options)
       }
     },
     /**
@@ -305,6 +309,16 @@ export default {
             const method = plugin.methods[key]
 
             this.methods[`${plugin.name}/${key}`] = method
+          }
+        }
+      }
+
+      if (plugin.contextMethods) {
+        for (const key in plugin.contextMethods) {
+          if (Object.hasOwnProperty.call(plugin.contextMethods, key)) {
+            const method = plugin.contextMethods[key]
+
+            this.contextMethods[`${plugin.name}/${key}`] = method
           }
         }
       }
