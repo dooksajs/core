@@ -82,31 +82,6 @@ export default {
   /** @lends dsData */
   methods: {
     /**
-     * Add data and its data type
-     * @param {Object} data
-     * @param {dsDataId} data.id - Data id
-     * @param {string} data.default - Data value
-     * @param {string} data.type - Data type
-     */
-    add (data) {
-      if (data.schema) {
-        this._addSchema(data.schema)
-      }
-
-      // add values
-      this.values[data.id] = data.default ?? this.defaultTypes[data.type]()
-
-      Object.freeze(this.values[data.id])
-
-      // prepare listeners
-      const listenerType = data.collection ? {} : []
-
-      this['data/update/listeners'][data.id] = listenerType
-      this['data/update/refs'][data.id] = {}
-      this['data/delete/listeners'][data.id] = listenerType
-      this['data/delete/refs'][data.id] = {}
-    },
-    /**
      * Add data listener
      * @param {dsDataName} param.name - Data collection name
      * @param {string} param.on - Event name, currently, update or delete
@@ -145,13 +120,6 @@ export default {
         listeners.push(listener)
         listenerRefs[refId] = true
       }
-    },
-    /**
-     * Generate a unique id
-     * @returns {string}
-     */
-    generateId () {
-      return '_' + uuid() + '_'
     },
     /**
      * Get data value
@@ -318,6 +286,38 @@ export default {
           }
         }
       }
+    },
+    /**
+     * Add data and its data type
+     * @param {Object} data
+     * @param {dsDataId} data.id - Data id
+     * @param {string} data.default - Data value
+     * @param {string} data.type - Data type
+     */
+    add (data) {
+      if (data.schema) {
+        this._addSchema(data.schema)
+      }
+
+      // add values
+      this.values[data.id] = data.default ?? this.defaultTypes[data.type]()
+
+      Object.freeze(this.values[data.id])
+
+      // prepare listeners
+      const listenerType = data.collection ? {} : []
+
+      this['data/update/listeners'][data.id] = listenerType
+      this['data/update/refs'][data.id] = {}
+      this['data/delete/listeners'][data.id] = listenerType
+      this['data/delete/refs'][data.id] = {}
+    },
+    /**
+     * Generate a unique id
+     * @returns {string}
+     */
+    generateId () {
+      return '_' + uuid() + '_'
     },
     _addSchema (schema) {
       for (let i = 0; i < schema.length; i++) {
