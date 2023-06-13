@@ -267,7 +267,11 @@ export default {
         // notify listeners
         this._onUpdate(name, result.item, result.id)
 
-        return result
+        return {
+          id: result.id,
+          item: result.item,
+          valid: true
+        }
       } catch (errorMessage) {
         console.error(errorMessage)
 
