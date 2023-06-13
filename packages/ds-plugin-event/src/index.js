@@ -39,7 +39,8 @@ export default {
      */
     $emit (name, { id, payload }) {
       const listeners = this.$getDataValue('dsEvent/listeners', {
-        id: id + '_' + name
+        id,
+        suffixId: name
       })
 
       if (!listeners.isEmpty) {
