@@ -195,12 +195,12 @@ export default {
           const name = component.events[i]
 
           const handler = (event) => {
+            event.preventDefault()
             const dsContentId = this.$getDataValue('dsView/content', {
               id: dsViewId
             })
 
-            this.$emit({
-              name,
+            this.$emit(name, {
               id: dsViewId,
               payload: {
                 dsViewId,
