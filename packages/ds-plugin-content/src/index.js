@@ -34,9 +34,6 @@ export default {
       default: {},
       schema: {
         type: 'collection',
-        suffixId () {
-          return this.$getDataValue('dsMetadata/language').item
-        },
         items: {
           type: 'object'
         }
