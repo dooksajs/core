@@ -48,7 +48,7 @@ export default (html) => {
 
             actions.sequenceEntry[sequenceId].push(action.sequenceId)
             actions.sequence[action.sequenceId] = action.sequence
-            actions.items = { ...action.items, ...action.item }
+            actions.items = Object.assign(actions.items, action.items)
           }
         }
       }
