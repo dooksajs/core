@@ -210,6 +210,13 @@ export const getNodeValue = (type, node, getter) => {
   return _getNodeValueByGetter(node, getter)
 }
 
+/**
+ * Get value from element it's attribute
+ * @param {Object} node - Element
+ * @param {dsComponentGet} getter - Getters used to fetch the value from the element
+ * @returns {string}
+ * @private
+ */
 const _getNodeValueByAttribute = (node, getter) => {
   if (typeof getter === 'string') {
     return { value: node.getAttribute(getter) }
@@ -226,6 +233,13 @@ const _getNodeValueByAttribute = (node, getter) => {
   return value
 }
 
+/**
+ * Get value from element using a getter
+ * @param {Object} node - Text or Element node
+ * @param {dsComponentGet} getter - Getters used to fetch the value from the element
+ * @returns {string}
+ * @private
+ */
 const _getNodeValueByGetter = (node, getter) => {
   const value = {}
 
