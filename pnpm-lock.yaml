@@ -208,6 +208,10 @@ importers:
         version: link:../ds-scripts
 
   packages/ds-plugin-view:
+    dependencies:
+      '@dooksa/parse-template':
+        specifier: workspace:^
+        version: link:../parse-template
     devDependencies:
       '@dooksa/ds-scripts':
         specifier: workspace:^

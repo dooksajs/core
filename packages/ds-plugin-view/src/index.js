@@ -1,3 +1,5 @@
+import { getNodeValue } from '@dooksa/parse-template'
+
 /**
  * @typedef {string} dsViewId - dsView node id
  * @example <caption>Example of string value</caption>
