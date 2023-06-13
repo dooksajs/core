@@ -243,20 +243,17 @@ export default {
       }
 
       const nodeName = dsView.item.nodeName.toLowerCase()
-      const dsComponent = this.$component(nodeName)
+      const getters = this.$componentGetters[nodeName]
 
-      if (dsComponent && dsComponent.get) {
-        if (dsComponent.get.type) {
-          return this[`_getValueBy/${dsComponent.get.type}`](dsView.item, dsComponent.get.value)
-        }
+      if (getters) {
+        const dsComponent = this.$component(nodeName)
+        let value = {}
 
-        let value
+        // get node value
+        for (let i = 0; i < getters.length; i++) {
+          const getter = getters[i]
 
-        for (let i = 0; i < dsComponent.getter.length; i++) {
-          const getter = dsComponent.get[i]
-          const newValue = this[`_getValueBy/${getter.type}`](dsView.item, getter.value)
-
-          value = { ...value, ...newValue }
+          value = Object.assign(value, getNodeValue(getter.type, dsComponent, getter.value))
         }
 
         return value
@@ -414,72 +411,15 @@ export default {
         return
       }
 
-      const dsComponent = this.$component(nodeName)
+      this.$component(nodeName)
+      const setters = this.$componentSetters[nodeName]
 
-      if (dsComponent && dsComponent.content && dsComponent.content.set) {
-        const contentSetter = dsComponent.content.set
+      if (setters) {
+        for (let i = 0; i < setters.length; i++) {
+          const setter = setters[i]
 
-        if (contentSetter.type) {
-          return this[`_setValueBy/${contentSetter.type}`](node, contentSetter.value, dsContent.value)
+          this[`_setValueBy/${setter.type}`](node, setter.value, dsContent)
         }
-
-        for (let i = 0; i < contentSetter.length; i++) {
-          const setter = contentSetter[i]
-
-          this[`_setValueBy/${setter.type}`](node, setter.value, dsContent.value)
-        }
-      }
-    },
-    /**
-     * Get value from element it's attribute
-     * @param {Object} node - Element
-     * @param {dsComponentGet} getter - Getters used to fetch the value from the element
-     * @returns {string}
-     * @private
-     */
-    '_getValueBy/attribute' (element, getter) {
-      if (typeof getter === 'string') {
-        return element.getAttribute(getter)
-      }
-
-      const value = {}
-
-      for (let i = 0; i < getter.length; i++) {
-        const { name, key } = getter[i]
-
-        value[key] = element.getAttribute(name)
-      }
-
-      return value
-    },
-    /**
-     * Get value from element using a getter
-     * @param {Object} node - Text or Element node
-     * @param {dsComponentGet} getter - Getters used to fetch the value from the element
-     * @returns {string}
-     * @private
-     */
-    '_getValueBy/getter' (node, getter) {
-      if (typeof getter === 'string') {
-        if (node.__lookupGetter__(getter)) {
-          return node[getter]
-        } else {
-          return ''
-        }
-      } else {
-        const value = {}
-
-        for (let i = 0; i < getter.length; i++) {
-          const { name, key } = getter[i]
-
-          if (node.__lookupGetter__(getter)) {
-            value[key] = node[name]
-          } else {
-            value[key] = ''
-          }
-        }
-
-        return value
       }
     },
     /**
@@ -520,38 +460,38 @@ export default {
      * Set element value using a attribute
      * @param {Object} node - Text or Element node
      * @param {dsComponentSet} setter - Setters used to update the elements value
-     * @param {(string|Object)} value
+     * @param {(string|Object)} content - dsContent object
      * @private
      */
-    '_setValueBy/attribute' (node, setter, value) {
+    '_setValueBy/attribute' (node, setter, content) {
       if (typeof setter === 'string') {
-        return node.setAttribute(setter, value)
+        return node.setAttribute(setter, content.value)
       }
 
       for (let i = 0; i < setter.length; i++) {
         const { name, key } = setter[i]
 
-        node.setAttribute(name, value[key])
+        node.setAttribute(name, content[key])
       }
     },
     /**
      * Set element value using a attribute
      * @param {Object} node - Text or Element node
      * @param {dsComponentSet} setter - Setters used to update the elements value
-     * @param {(string|Object)} value
+     * @param {(string|Object)} content - dsContent object
      * @private
      */
-    '_setValueBy/setter' (node, setter, value) {
+    '_setValueBy/setter' (node, setter, content) {
       if (typeof setter === 'string') {
         if (node.__lookupSetter__(setter)) {
-          node[setter] = value
+          node[setter] = content.value
         }
       } else {
         for (let i = 0; i < setter.length; i++) {
           const { name, key } = setter[i]
 
           if (node.__lookupSetter__(name)) {
-            node[name] = value[key]
+            node[name] = content[key]
           }
         }
       }

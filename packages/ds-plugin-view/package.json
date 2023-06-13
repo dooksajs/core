@@ -18,5 +18,8 @@
   },
   "devDependencies": {
     "@dooksa/ds-scripts": "workspace:^"
+  },
+  "dependencies": {
+    "@dooksa/parse-template": "workspace:^"
   }
 }

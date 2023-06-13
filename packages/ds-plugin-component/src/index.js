@@ -64,14 +64,14 @@ export default {
       name: 'a',
       type: 'link',
       content: {
-        set: {
+        set: [{
           type: 'attribute',
           value: 'href'
-        },
-        get: {
+        }],
+        get: [{
           type: 'attribute',
           value: 'href'
-        }
+        }]
       },
       events: ['click', 'hover']
     },
@@ -79,32 +79,34 @@ export default {
       name: 'img',
       type: 'image',
       content: {
-        set: {
+        set: [{
           type: 'attribute',
-          value: [
-            {
-              name: 'src',
-              key: 'src'
-            },
-            {
-              name: 'alt',
-              key: 'alt'
-            }
-          ]
+          value: {
+            name: 'src',
+            key: 'src'
+          }
         },
-        get: {
+        {
           type: 'attribute',
-          value: [
-            {
-              name: 'src',
-              key: 'src'
-            },
-            {
-              name: 'alt',
-              key: 'alt'
-            }
-          ]
-        }
+          value: {
+            name: 'alt',
+            key: 'alt'
+          }
+        }],
+        get: [{
+          type: 'attribute',
+          value: {
+            name: 'src',
+            key: 'src'
+          }
+        },
+        {
+          type: 'attribute',
+          value: {
+            name: 'alt',
+            key: 'alt'
+          }
+        }]
       },
       events: ['click']
     },
@@ -112,10 +114,10 @@ export default {
       name: 'div',
       type: 'html',
       content: {
-        set: {
+        set: [{
           type: 'setter',
           value: 'innerHTML'
-        }
+        }]
       },
       events: ['click']
     },
@@ -123,134 +125,109 @@ export default {
       name: 'h1',
       type: 'text',
       content: {
-        set: {
+        set: [{
           type: 'setter',
-          value: [
-            {
-              name: 'textContent',
-              key: 'value'
-            }
-          ]
-        }
+          value: 'textContent'
+        }]
       }
     },
     {
       name: 'h2',
       type: 'text',
       content: {
-        set: {
+        set: [{
           type: 'setter',
-          value: [
-            {
-              name: 'textContent',
-              key: 'value'
-            }
-          ]
-        }
+          value: 'textContent'
+        }]
+      }
+    },
+    {
+      name: 'h3',
+      type: 'text',
+      content: {
+        set: [{
+          type: 'setter',
+          value: 'textContent'
+        }]
+      }
+    },
+    {
+      name: 'h4',
+      type: 'text',
+      content: {
+        set: [{
+          type: 'setter',
+          value: 'textContent'
+        }]
       }
     },
     {
       name: 'h5',
       type: 'text',
       content: {
-        set: {
+        set: [{
           type: 'setter',
-          value: [
-            {
-              name: 'textContent',
-              key: 'value'
-            }
-          ]
-        }
+          value: 'textContent'
+        }]
       }
     },
     {
       name: 'h6',
       type: 'text',
       content: {
-        set: {
+        set: [{
           type: 'setter',
-          value: [
-            {
-              name: 'textContent',
-              key: 'value'
-            }
-          ]
-        }
+          value: 'textContent'
+        }]
       }
     },
     {
       name: 'label',
       type: 'text',
       content: {
-        set: {
+        set: [{
           type: 'setter',
-          value: [
-            {
-              name: 'textContent',
-              key: 'value'
-            }
-          ]
-        }
+          value: 'textContent'
+        }]
       }
     },
     {
       name: 'small',
       type: 'text',
       content: {
-        set: {
+        set: [{
           type: 'setter',
-          value: [
-            {
-              name: 'textContent',
-              key: 'value'
-            }
-          ]
-        }
+          value: 'textContent'
+        }]
       }
     },
     {
       name: 'p',
       type: 'text',
       content: {
-        set: {
+        set: [{
           type: 'setter',
-          value: [
-            {
-              name: 'textContent',
-              key: 'value'
-            }
-          ]
-        }
+          value: 'textContent'
+        }]
       }
     },
     {
       name: 'span',
       content: {
-        set: {
+        set: [{
           type: 'setter',
-          value: [
-            {
-              name: 'textContent',
-              key: 'value'
-            }
-          ]
-        }
+          value: 'textContent'
+        }]
       }
     },
     {
       name: 'nav',
       type: 'text',
       content: {
-        set: {
+        set: [{
           type: 'setter',
-          value: [
-            {
-              name: 'textContent',
-              key: 'value'
-            }
-          ]
-        }
+          value: 'textContent'
+        }]
       }
     },
     {
@@ -266,43 +243,55 @@ export default {
       name: 'hr'
     },
     {
+      name: 'i'
+    },
+    {
       name: 'input',
       type: 'text',
       events: ['input'],
       content: {
-        get: {
+        get: [{
           type: 'getter',
-          value: [
-            {
-              name: 'value',
-              key: 'value'
-            }
-          ]
-        },
-        set: {
+          value: 'value'
+        }],
+        set: [{
           type: 'setter',
-          value: [
-            {
-              name: 'value',
-              key: 'value'
-            }
-          ]
-        }
+          value: 'value'
+        }]
+      }
+    },
+    {
+      name: 'select',
+      type: 'select',
+      content: {
+        get: [{
+          type: 'getter',
+          value: 'value'
+        }]
+      }
+    },
+    {
+      name: 'option',
+      type: 'option',
+      content: {
+        get: [{
+          type: 'getter',
+          value: 'value'
+        }],
+        set: [{
+          type: 'setter',
+          value: 'value'
+        }]
       }
     },
     {
       name: '#text',
       type: 'text',
       content: {
-        get: {
+        get: [{
           type: 'getter',
-          value: [
-            {
-              name: 'textContent',
-              key: 'value'
-            }
-          ]
-        }
+          value: 'textContent'
+        }]
       }
     },
     {

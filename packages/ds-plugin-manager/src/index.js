@@ -46,6 +46,10 @@ export default {
       private: true,
       default: {}
     },
+    componentSetters: {
+      private: true,
+      default: {}
+    },
     componentIgnoreAttr: {
       private: true,
       default: {}
@@ -150,7 +154,12 @@ export default {
       {
         name: '$componentGetters',
         value: this.componentGetters,
-        scope: ['dsTemplate']
+        scope: ['dsTemplate', 'dsView']
+      },
+      {
+        name: '$componentSetters',
+        value: this.componentSetters,
+        scope: ['dsView']
       },
       {
         name: '$componentIgnoreAttr',
@@ -347,15 +356,30 @@ export default {
           this.components[id] = component
           this.components[id].plugin = plugin.name
 
-          if (component.content && component.content.get) {
-            this.componentGetters[id] = component.content.get
+          if (component.content) {
+            if (component.content.get) {
+              const ignoreAttributes = []
+              this.componentGetters[id] = component.content.get
 
-            if (component.content.get.type === 'attribute') {
-              this.componentIgnoreAttr[id] = component.content.get.value
+              for (let i = 0; i < component.content.get.length; i++) {
+                const getter = component.content.get[i]
 
-              if (typeof component.content.get.value === 'string') {
-                this.componentIgnoreAttr[id] = [component.content.get.value]
+                if (getter.type === 'attribute') {
+                  if (getter.value.name) {
+                    ignoreAttributes.push(getter.value.name)
+                  } else {
+                    ignoreAttributes.push(getter.value)
+                  }
+                }
               }
+
+              if (ignoreAttributes.length) {
+                this.componentIgnoreAttr[id] = ignoreAttributes
+              }
+            }
+
+            if (component.content.set) {
+              this.componentSetters[id] = component.content.set
             }
           }
         }

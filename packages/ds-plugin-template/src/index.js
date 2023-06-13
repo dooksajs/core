@@ -262,30 +262,23 @@ export default {
         for (let j = 0; j < items.length; j++) {
           const node = items[j]
           const nodeName = node.nodeName.toLowerCase()
-          const getter = this.$componentGetters[nodeName]
+          const getters = this.$componentGetters[nodeName]
+          let value = {}
+
+          // get node value
+          for (let i = 0; i < getters.length; i++) {
+            const getter = getters[i]
+
+            value = Object.assign(value, getNodeValue(getter.type, node, getter.value))
+          }
 
           items[j] = {
-            item: getNodeValue(getter.type, node, getter.value),
+            item: value,
             type: this.$component(nodeName).type
           }
         }
       }
 
-      for (let i = 0; i < template.event.length; i++) {
-        const events = template.event[i]
-        const hasEvents = !!Object.keys(events).length
-
-        if (hasEvents) {
-          const layoutId = template.layoutId[i]
-
-          this.$setDataValue('dsLayout/events', {
-            source: events,
-            options: {
-              id: layoutId
-            }
-          })
-        }
-      }
       // add layouts
       for (let i = 0; i < template.layout.length; i++) {
         const layout = template.layout[i]
