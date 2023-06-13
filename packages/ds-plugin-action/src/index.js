@@ -3,153 +3,70 @@
  */
 
 /**
- * @typedef {Object} dsActionItem - Parameters for dsAction
- * @property {boolean} dsActionItem._$computedParams - Declares the params data type is computed
- * @property {string} dsActionItem.type - Parameter process type
- * @property {string} dsActionItem.name - Name of parameter computed process
- * @property {string} dsActionItem.paramType - Data type of parameter that will be computed
- * @property {number} dsActionItem.version - Version of dependent action
- * @property {(dsParameterItem|Array.<string, dsParameterItem>|dsParameterItem[]|string|number)} dsAction.params - dsParameter to pass to current named computed process
- */
-
-/**
- * @typedef {Object} dsActionCondition
- * @property {boolean} dsActionCondition._$computed - Declares the parameter is computed
- * @property {string} dsActionCondition.name - Name of condition operator
- * @property {dsParameterItem[]} dsActionCondition.values - dsParameter to compute values
- */
-
-/**
- * @typedef {Object} dsActionSequence - Action sequence is a linked list to execute actions
- * @property {Array.<string>} dsActionSequence.entry - List of links to action
- */
-
-/**
- * @typedef {Object} dsActionInstance - Scoped data for action
- * @property {Object} dsActionInstance.results - The result value of each action
- * @property {Object} dsActionInstance.iteration
- */
-
-/**
- * @typedef {string} dsActionEntry - The start point of an action
- */
-
-/**
- * @typedef {string} dsActionEntryParent - The previous action set
- */
-
-/**
  * Dooksa action plugin.
  * @namespace dsAction
  */
 export default {
   name: 'dsAction',
   version: 1,
-  dependencies: [
-    {
-      name: 'dsParameter',
-      version: 1
-    }
-  ],
   data: {
-    actions: {
+    items: {
       default: {},
       schema: {
         type: 'collection',
         items: {
           type: 'object',
           properties: {
-            type: {
+            _$a: {
               type: 'string'
-            },
-            name: {
-              type: 'string'
-            },
-            version: {
-              type: 'number'
             }
           }
         }
       }
     },
-    conditions: {
+    sequence: {
       default: {},
       schema: {
         type: 'collection',
         items: {
-          type: 'object',
-          properties: {
-            type: {
-              type: 'string'
-            },
-            name: {
-              type: 'string'
-            },
-            version: {
-              type: 'number'
-            }
-          }
-        }
-      }
-    },
-    sequenceActions: {
-      default: {},
-      schema: {
-        type: 'collection',
-        items: {
-          type: 'object',
-          patternProperties: {
-            '(^_|[0-9]){3}': {
-              type: 'object',
-              properties: {
-                _$id: {
-                  type: 'string',
-                  relation: 'dsAction/actions'
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: {
+                type: 'string'
+              },
+              path: {
+                type: 'array',
+                items: {
+                  type: 'string'
+                }
+              },
+              children: {
+                type: 'array',
+                items: {
+                  type: 'string'
                 }
               }
             }
-          },
-          properties: {
-            entry: {
-              type: 'array',
-              items: {
-                type: 'string'
-              }
-            }
           }
         }
       }
     },
-    sequenceConditions: {
+    sequenceEntry: {
       default: {},
       schema: {
         type: 'collection',
         items: {
-          type: 'object',
-          patternProperties: {
-            '(^_|[0-9]){3}': {
-              type: 'object',
-              properties: {
-                _$id: {
-                  type: 'string',
-                  relation: 'dsAction/conditions'
-                }
-              }
-            }
-          },
-          properties: {
-            entry: {
-              type: 'array',
-              items: {
-                type: 'string'
-              }
-            }
+          type: 'array',
+          items: {
+            type: 'string'
           }
         }
       }
     }
   },
-  /** @lends DsAction */
+  /** @lends dsAction */
   methods: {
     /**
      * Dispatch an action
@@ -158,49 +75,214 @@ export default {
      * @param {Object} param.payload - The data to pass to the action
      */
     dispatch ({ dsActionId, payload }) {
-      const sequenceActions = this.$getDataValue({
-        name: 'dsAction/sequenceActions',
+      const sequences = this.$getDataValue('dsAction/sequenceEntry', {
         id: dsActionId
       })
 
-      if (sequenceActions.isEmpty) return
+      if (sequences.isEmpty) return
 
-      const sequenceConditions = this.$getDataValue({
-        name: 'dsAction/sequenceConditions',
-        id: dsActionId
-      })
+      const result = {}
 
-      this._dispatch({
-        sequenceActions: sequenceActions.item,
-        sequenceConditions: sequenceConditions.item,
-        payload
-      })
-    },
-    _action ({
-      instance,
-      name,
-      type,
-      computedParams,
-      paramType,
-      params,
-      callback = {},
-      entry,
-      parentEntry
-    }) {
-      if (computedParams) {
-        params = this.$method('dsParameter/process', {
-          dsActionInstance: instance,
-          dsActionEntry: entry,
-          dsActionEntryParent: parentEntry,
-          dsParameterType: paramType,
-          dsParameterItem: params
+      for (let i = 0; i < sequences.item.length; i++) {
+        const sequenceId = sequences.item[i]
+        const sequence = this.$getDataValue('dsAction/sequence', {
+          id: sequenceId
         })
+
+        if (sequence.isEmpty) return
+
+        result[i] = this._processSequence(
+          sequence.item,
+          payload,
+          result
+        )
+      }
+    },
+    _processSequence (sequence, payload, results = {}) {
+      const sequenceEnd = sequence.length - 1
+      const actionData = {}
+
+      for (let i = 0; i < sequenceEnd; i++) {
+        const item = sequence[i]
+        const action = this._processAction(item, actionData)
+        const methodName = '_process/' + action.name
+
+        if (this[methodName]) {
+          actionData[i] = {
+            item: this[methodName](action.params, payload, actionData, results),
+            path: item.path
+          }
+        } else {
+          actionData[i] = {
+            item: this.$method(action.name, action.params),
+            path: item.path
+          }
+        }
       }
 
-      return this['_process/' + type]({ name, params, callback })
+      // process last action
+      const action = this._processAction(sequence[sequenceEnd], actionData)
+
+      if (action.async) {
+        this.$action(action.name, action.params, (result) => {
+          actionData[sequenceEnd] = result
+        })
+      } else {
+        const methodName = '_process/' + action.name
+
+        if (this[methodName]) {
+          return this[methodName](action.params, payload, actionData, results)
+        } else {
+          return this.$method(action.name, action.params)
+        }
+      }
     },
-    _createActions (entry, actions) {
-      return { entry, ...actions }
+    _processAction (item, data) {
+      const action = this.$getDataValue('dsAction/items', {
+        id: item.id
+      })
+
+      if (action.isEmpty) {
+        throw new Error('No action found: ' + item.id)
+      }
+
+      let paramNode = action.item._$p
+
+      if (item.children) {
+        for (let i = 0; i < item.children.length; i++) {
+          const child = data[item.children[i]]
+          const lastChildIndex = child.path.length - 1
+
+          for (let i = item.path.length + 1; i < lastChildIndex; i++) {
+            const path = child.path[i]
+
+            paramNode = paramNode[path]
+          }
+
+          paramNode[child.path[lastChildIndex]] = child.item
+        }
+      }
+
+      return {
+        async: action.item.async,
+        name: action.item._$a,
+        params: action.item._$p
+      }
+    },
+    '_process/get/eventValue' (params, payload, actionData, results) {
+      return this._getValue(payload, params)
+    },
+    '_process/get/sequenceValue' (params, payload, actionData, results) {
+      return this._getValue(results, params)
+    },
+    '_process/get/dataValue' (data, item) {
+      const result = this.$getDataValue(item.name, item)
+
+      if (!result.isEmpty) {
+        return result.item
+      }
+    },
+    '_process/set/dataValue' (data) {
+      return this.$setDataValue(data.name, data)
+    },
+    _getDataByKey (data, key) {
+      const dotNotations = key.split('.')
+      let result = data
+
+      for (let i = 0; i < dotNotations.length; i++) {
+        const key = dotNotations[i]
+
+        if (Object.hasOwnProperty.call(data, key)) {
+          result = data[key]
+        } else {
+          return { result, key }
+        }
+      }
+
+      return result
+    },
+    /**
+     * Get result value
+     * @private
+     * @param {*} data
+     * @param {Object} item
+     * @param {string} item.$key - Request to return a specific key/value, dot notations are permitted
+     * @param {number} item.$index - Request to return specific indexes from an array
+     * @returns {*}
+     */
+    _getValue (data, value) {
+      // const data = item.data
+      // const value = item.value
+      if (!value) {
+        return data
+      }
+
+      if (Object.hasOwnProperty.call(data, value)) {
+        return data[value]
+      }
+
+      if (Object.hasOwnProperty.call(data, '$keys')) {
+        const keys = data.$keys
+        const result = {}
+
+        for (const key in keys) {
+          if (Object.hasOwnProperty.call(keys, key)) {
+            const item = keys[key]
+            const dataKey = this._getDataByKey(data, item)
+
+            result[dataKey.key] = dataKey.result
+          }
+        }
+
+        return result
+      }
+
+      if (Object.hasOwnProperty.call(data, '$index')) {
+        const [index, keys] = data.$index
+        const dataItem = data[index]
+
+        if (keys) {
+          const result = {}
+
+          for (let i = 0; i < keys.length; i++) {
+            const key = keys[i]
+            const dataKey = this._getDataByKey(data, key)
+
+            result[dataKey.key] = dataKey.result
+          }
+
+          return result
+        }
+        return dataItem
+      }
+
+      if (Object.hasOwnProperty.call(data, '$indexes')) {
+        const result = []
+
+        for (let i = 0; i < data.$indexes.length; i++) {
+          const [index, key] = data[i]
+          const dataItem = data[index]
+
+          if (key) {
+            const dataKey = this._getDataByKey(dataItem, key)
+
+            result.push(dataKey.result)
+          } else {
+            result.push(dataItem)
+          }
+        }
+
+        return result
+      }
+
+      const result = {}
+
+      for (let i = 0; i < data.length; i++) {
+        const key = data[i]
+        result[key] = data[key]
+      }
+
+      return result
     },
     _compare (conditions, { instanceId, parentItemId, data }) {
       let result = false
@@ -257,163 +339,6 @@ export default {
       }
 
       return result
-    },
-    _dispatch ({
-      instance = {
-        iteration: {},
-        results: {}
-      },
-      parentEntry,
-      sequenceActions = {},
-      sequenceConditions = {},
-      payload,
-      results = {}
-    }) {
-      let valid = true
-
-      instance.payload = payload
-
-      if (parentEntry) {
-        instance.results[parentEntry] = results
-      }
-
-      if (sequenceConditions.length) {
-        valid = this._compare(sequenceConditions, {
-          parentEntry,
-          instance
-        })
-      }
-
-      for (let i = 0; i < sequenceActions.entry.length; i++) {
-        const entry = sequenceActions.entry[i]
-        const item = sequenceActions[entry]
-        let action = item
-
-        if (item._$id) {
-          action = this.$getDataValue({
-            name: 'dsAction/actions',
-            id: item._$id
-          }).item
-        }
-
-        if (item.conditions) {
-          valid = this._compare(item.conditions, {
-            parentEntry,
-            instance
-          })
-        }
-
-        if (Object.hasOwnProperty.call(action, 'when') && valid !== action.when) {
-          return
-        }
-
-        // Check if item has a literal value
-        if (Object.hasOwnProperty.call(action, 'value')) {
-          return [action.value]
-        }
-
-        const callback = {
-          onSuccess: null,
-          onError: null
-        }
-
-        // Setup onSuccess callback
-        if (Object.hasOwnProperty.call(item, 'onSuccess')) {
-          callback.onSuccess = {
-            params: {
-              parentEntry: entry,
-              sequenceActions: {
-                entry: item.onSuccess,
-                ...sequenceActions
-              },
-              instance
-            },
-            method: this._dispatch.bind(this)
-          }
-        }
-
-        // Setup onError callback
-        if (Object.hasOwnProperty.call(item, 'onError')) {
-          callback.onError = {
-            params: {
-              parentEntry: entry,
-              sequenceActions: {
-                entry: item.onError,
-                ...sequenceActions
-              },
-              instance
-            },
-            method: this._dispatch.bind(this)
-          }
-        }
-
-        const result = this._action({
-          instance,
-          entry,
-          sequenceActions,
-          sequenceConditions: item.conditions,
-          parentEntry,
-          name: action.name,
-          type: action.type,
-          computedParams: action._$computedParams,
-          paramType: action.paramType,
-          params: action.params,
-          callback
-        })
-
-        if (result) {
-          results[entry] = result
-        }
-      }
-
-      return results
-    },
-    /**
-     * This callback is used after an action
-     * @callback onEventCallback
-     */
-
-    /**
-     * Event callback
-     * @param {onEventCallback} callback - This callback is expected to be a rule or another function within the workflow scope
-     * @param {Object} params - An object that are params for the rules callback
-     * @param {*} result - The result from the parent function to pass onto the callback
-     * @private
-     */
-    _onEvent (callback, params, result) {
-      let callbackParams = result
-
-      if (params) {
-        callbackParams = { ...params, result }
-      }
-
-      callback(callbackParams)
-    },
-    '_process/value' ({ params, callback }) {
-      const onSuccess = callback.onSuccess
-      const onError = callback.onError
-      const results = params
-
-      if (onSuccess) {
-        this._onEvent(onSuccess.method || onSuccess, onSuccess.params, results)
-      }
-
-      if (onError) {
-        this._onEvent(onError.method || onError, onError.params)
-      }
-
-      return results
-    },
-    '_process/action' ({ name, params, callback }) {
-      this.$action(name, params, callback)
-    },
-    '_process/method' ({ name, params, callback }) {
-      const onSuccess = callback.onSuccess
-      const results = this.$method(name, params)
-
-      if (onSuccess) {
-        this._onEvent(onSuccess.method || onSuccess, onSuccess.params, results)
-      }
     }
   }
 }
