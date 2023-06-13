@@ -6,31 +6,6 @@ export default {
   name: 'dsLayout',
   version: 1,
   data: {
-    events: {
-      default: {},
-      schema: {
-        type: 'collection',
-        items: {
-          type: 'object',
-          patternProperties: {
-            '[0-9]': {
-              type: 'object',
-              properties: {
-                name: {
-                  type: 'string'
-                },
-                value: {
-                  type: 'array',
-                  items: {
-                    type: 'string'
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     items: {
       default: {},
       schema: {
@@ -55,6 +30,13 @@ export default {
           }
         }
       }
+    },
+    eventNames: {
+      private: true,
+      default: {
+        mount: 'dsView/mount',
+        unmount: 'dsView/unmount'
+      }
     }
   },
   /** @lends dsLayout */
@@ -70,11 +52,16 @@ export default {
       const layout = this.$getDataValue('dsLayout/items', {
         id: dsLayoutId
       })
+      const events = this.$getDataValue('dsWidget/instanceEvents', {
+        id: dsWidgetInstanceId,
+        suffixId: dsWidgetMode
+      }).item || {}
 
       const layoutItems = []
 
       for (let i = 0; i < layout.item.length; i++) {
         const { componentId, contentIndex, sectionIndex, parentIndex } = layout.item[i]
+        const event = events[i]
         const item = {}
         let parentViewId = dsViewId
         let sectionId = dsWidgetSectionId
@@ -149,6 +136,19 @@ export default {
           this.$method('dsWidget/create', {
             dsWidgetSectionId: sectionId,
             dsViewId: childViewId
+          })
+        }
+
+        if (event) {
+          // match core event names with namespaced core plugins
+          const eventName = this.eventNames[event.name] || event.name
+
+          this.$setDataValue('dsEvent/listeners', {
+            source: event.value,
+            options: {
+              id: childViewId,
+              suffixId: eventName
+            }
           })
         }
       }

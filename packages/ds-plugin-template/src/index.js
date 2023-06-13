@@ -95,6 +95,7 @@ export default {
   methods: {
     create ({
       id,
+      events = {},
       mode = 'default',
       language,
       dsWidgetSectionId
@@ -129,6 +130,7 @@ export default {
 
       for (let i = 0; i < template.item.layoutId.length; i++) {
         const contentItems = template.item.content[i]
+        const events = template.item.event[i]
         const widget = {
           instanceId: this.$method('dsData/generateId'),
           content: [],
@@ -136,6 +138,16 @@ export default {
         }
 
         dsWidgetItems.push(widget)
+
+        // add events to instance
+        if (Object.keys(events).length) {
+          this.$setDataValue('dsWidget/instanceEvents', {
+            source: events,
+            options: {
+              id: widget.instanceId
+            }
+          })
+        }
 
         for (let j = 0; j < contentItems.length; j++) {
           const content = contentItems[j]
@@ -207,13 +219,13 @@ export default {
 
       for (let i = 0; i < template.item.section.length; i++) {
         const instanceId = dsWidgetItems[i].instanceId
-        const sections = template.item.section[i]
+        const sectionIndexes = template.item.section[i]
 
-        if (sections.length) {
+        if (sectionIndexes.length) {
           const dsWidgetSections = []
 
-          for (let j = 0; j < sections.length; j++) {
-            const index = sections[j]
+          for (let j = 0; j < sectionIndexes.length; j++) {
+            const index = sectionIndexes[j]
             const instanceId = dsWidgetItems[index].instanceId
 
             // include instance in current section
@@ -226,7 +238,7 @@ export default {
             source: dsWidgetSections,
             options: {
               id: instanceId,
-              mode
+              suffixId: mode
             }
           })
 
@@ -302,10 +314,10 @@ export default {
               const event = events[key]
 
               for (let i = 0; i < event.value.length; i++) {
-                const key = event.value[i]
+                const eventId = event.value[i]
 
-                if (actions[key]) {
-                  event.value[i] = actions[key]
+                if (actions[eventId]) {
+                  event.value[i] = actions[eventId]
                 }
               }
             }
