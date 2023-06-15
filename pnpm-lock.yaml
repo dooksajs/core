@@ -1,4 +1,4 @@
-lockfileVersion: '6.1'
+lockfileVersion: '6.0'
 
 settings:
   autoInstallPeers: true
@@ -245,10 +245,10 @@ importers:
         version: link:../parse-template
       '@vitejs/plugin-basic-ssl':
         specifier: ^1.0.1
-        version: 1.0.1(vite@4.3.2)
+        version: 1.0.1(vite@4.3.9)
       '@vitejs/plugin-legacy':
         specifier: ^4.0.2
-        version: 4.0.2(terser@5.16.9)(vite@4.3.2)
+        version: 4.0.2(terser@5.16.9)(vite@4.3.9)
       cypress:
         specifier: ^11.2.0
         version: 11.2.0
@@ -259,8 +259,8 @@ importers:
         specifier: ^5.16.9
         version: 5.16.9
       vite:
-        specifier: ^4.2.1
-        version: 4.3.2(terser@5.16.9)
+        specifier: ^4.3.9
+        version: 4.3.9(terser@5.16.9)
 
   packages/object-hash:
     dependencies:
@@ -1909,16 +1909,16 @@ packages:
     dev: false
     optional: true
 
-  /@vitejs/plugin-basic-ssl@1.0.1(vite@4.3.2):
+  /@vitejs/plugin-basic-ssl@1.0.1(vite@4.3.9):
     resolution: {integrity: sha512-pcub+YbFtFhaGRTo1832FQHQSHvMrlb43974e2eS8EKleR3p1cDdkJFPci1UhwkEf1J9Bz+wKBSzqpKp7nNj2A==}
     engines: {node: '>=14.6.0'}
     peerDependencies:
       vite: ^3.0.0 || ^4.0.0
     dependencies:
-      vite: 4.3.2(terser@5.16.9)
+      vite: 4.3.9(terser@5.16.9)
     dev: false
 
-  /@vitejs/plugin-legacy@4.0.2(terser@5.16.9)(vite@4.3.2):
+  /@vitejs/plugin-legacy@4.0.2(terser@5.16.9)(vite@4.3.9):
     resolution: {integrity: sha512-ivnt9sCkgwJTYTWLjuvY6H/HTuiQC1EgzAPkiAvi0yNAssiqOJjyjhG3hAK5LFUUorE0w9kGxn8K0f/74DlbxQ==}
     engines: {node: ^14.18.0 || >=16.0.0}
     peerDependencies:
@@ -1933,7 +1933,7 @@ packages:
       regenerator-runtime: 0.13.11
       systemjs: 6.14.1
       terser: 5.16.9
-      vite: 4.3.2(terser@5.16.9)
+      vite: 4.3.9(terser@5.16.9)
     transitivePeerDependencies:
       - supports-color
     dev: false
@@ -4473,8 +4473,8 @@ packages:
     engines: {node: '>=0.10.48'}
     dev: true
 
-  /vite@4.3.2(terser@5.16.9):
-    resolution: {integrity: sha512-9R53Mf+TBoXCYejcL+qFbZde+eZveQLDYd9XgULILLC1a5ZwPaqgmdVpL8/uvw2BM/1TzetWjglwm+3RO+xTyw==}
+  /vite@4.3.9(terser@5.16.9):
+    resolution: {integrity: sha512-qsTNZjO9NoJNW7KnOrgYwczm0WctJ8m/yqYAMAK9Lxt4SoySUfS5S8ia9K7JHpa3KEeMfyF8LoJ3c5NeBJy6pg==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
     peerDependencies:
