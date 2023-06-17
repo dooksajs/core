@@ -634,9 +634,9 @@ export default {
               this.initialising[plugin.name] = false
 
               if (this.isDev) {
-                console.log('Plugin successfully async loaded: ' + plugin.name)
+                console.log('Plugin successfully loaded: ' + plugin.name)
               }
-              
+
               resolve(plugin.name)
             }
           })
