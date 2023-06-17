@@ -114,6 +114,21 @@ export default {
         }
       }
     },
+    instanceSections: {
+      description: 'References to sections',
+      default: {},
+      schema: {
+        type: 'collection',
+        suffixId: 'default',
+        items: {
+          type: 'array',
+          items: {
+            type: 'string',
+            relation: 'dsContent/items'
+          }
+        }
+      }
+    },
     templates: {
       description: 'Templates used by section sorted by modes',
       default: {},

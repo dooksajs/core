@@ -15,13 +15,14 @@ export const parseHTML = (
     lang: '',
     id: '',
     component: {},
-    event: [],
     content: [],
-    section: [],
     layout: [],
     layoutId: [],
     layoutEntry: [],
-    index: 0
+    widgetEvent: [],
+    widgetSection: [],
+    widgetInstanceSection: [],
+    layoutIndex: 0
   },
   head = true
 ) => {
@@ -42,19 +43,19 @@ export const parseHTML = (
     }
   }
 
-  const section = []
-  const event = {}
   const content = []
   const layoutNodes = []
   const layout = []
   const layoutEntry = []
-  let layoutIndex = 0
+  const widgetEvent = {}
+  const widgetInstanceSection = []
+  let sectionIndex = 0
 
-  data.section[data.index] = section
-  data.event[data.index] = event
-  data.content[data.index] = content
-  data.layout[data.index] = layout
-  data.layoutEntry[data.index] = layoutEntry
+  data.content[data.layoutIndex] = content
+  data.layout[data.layoutIndex] = layout
+  data.layoutEntry[data.layoutIndex] = layoutEntry
+  data.widgetEvent[data.layoutIndex] = widgetEvent
+  data.widgetInstanceSection[data.layoutIndex] = widgetInstanceSection
 
   for (let i = 0; i < nodeLists.length; i++) {
     const nodeList = nodeLists[i]
@@ -67,6 +68,9 @@ export const parseHTML = (
         const item = {}
         const component = {}
 
+        layoutNodes.push(node)
+        layout.push(item)
+
         if (node.parentElement) {
           const parentIndex = layoutNodes.indexOf(node.parentElement)
 
@@ -74,7 +78,7 @@ export const parseHTML = (
             item.parentIndex = parentIndex
           }
         } else {
-          layoutEntry.push(layoutIndex)
+          layoutEntry.push(data.layoutIndex)
         }
 
         if (isTextNode) {
@@ -97,7 +101,7 @@ export const parseHTML = (
             const result = parseAttributes(node.attributes, ignoreAttributes[component.id])
 
             if (result.bind.on) {
-              event[layoutIndex] = result.bind.on
+              widgetEvent[data.layoutIndex] = result.bind.on
             }
 
             hasSection = result.bind.hasSection
@@ -110,23 +114,30 @@ export const parseHTML = (
           // prepare child nodes
           if (node.childNodes.length) {
             if (hasSection) {
-              // add section
-              item.sectionIndex = data.index
+              // data.layoutIndex++
+              const sections = []
+              data.widgetSection.push(sections)
+              // add instance to new section
+              // data.widgetInstanceSection[data.layoutIndex] = []
+              // add section index to component
+              item.sectionIndex = sectionIndex
+              widgetInstanceSection.push(data.widgetSection.length - 1)
 
+              // collect instances inside a section
               for (let i = 0; i < node.childNodes.length; i++) {
                 const childNode = node.childNodes[i]
 
-                if (childNode.nodeName === '#text' && !childNode.textContent.trim()) {
-                  continue
+                if (!childNode.nodeName === '#text' || childNode.textContent.trim()) {
+                  // increase the data index to exclude the children from the current section
+                  ++data.layoutIndex
+
+                  sections.push(data.layoutIndex)
+                  // create new instance
+                  parseHTML([childNode], contentTypes, ignoreAttributes, data, false)
                 }
-
-                // increase the data index to exclude the children from the current section
-                ++data.index
-                // add instance to new section
-                section.push(data.index)
-
-                parseHTML([childNode], contentTypes, ignoreAttributes, data, false)
               }
+
+              ++sectionIndex
             } else {
               nodeLists.push(node.childNodes)
             }
@@ -137,15 +148,9 @@ export const parseHTML = (
 
         item.componentId = componentId
         data.component[componentId] = component
-
-        ++layoutIndex
-
-        layout.push(item)
-        layoutNodes.push(node)
       }
     }
   }
-
   // create layout ids
   if (head) {
     for (let i = 0; i < data.layout.length; i++) {
@@ -169,27 +174,25 @@ const parseAttributes = (attributes, ignore = []) => {
     const name = attribute.name
     const value = attribute.value
 
-    if (ignore.includes(name)) {
-      continue
-    }
+    if (!ignore.includes(name)) {
+      if (name === 'class') {
+        const classList = value.split(' ').sort()
 
-    if (name === 'class') {
-      const classList = value.split(' ').sort()
+        item.attributes.push([name, classList.join(' ')])
+      } else if (name.substring(0, 3) === 'ds-') {
+        const bind = name.split('-')
 
-      item.attributes.push([name, classList.join(' ')])
-    } else if (name.substring(0, 3) === 'ds-') {
-      const bind = name.split('-')
-
-      if (bind[1] === 'on') {
-        item.bind.on = {
-          name: bind.slice(2).join('-'),
-          value: value.split(' ')
+        if (bind[1] === 'on') {
+          item.bind.on = {
+            name: bind.slice(2).join('-'),
+            value: value.split(' ')
+          }
+        } else if (bind[1] === 'section') {
+          item.bind.hasSection = true
         }
-      } else if (bind[1] === 'section') {
-        item.bind.hasSection = true
+      } else {
+        item.attributes.push([name, value])
       }
-    } else {
-      item.attributes.push([name, value])
     }
   }
 

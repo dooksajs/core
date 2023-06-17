@@ -38,28 +38,6 @@ export default {
                 }
               }
             },
-            event: {
-              type: 'array',
-              items: {
-                type: 'object',
-                patternProperties: {
-                  '[0-9]': {
-                    type: 'object',
-                    properties: {
-                      name: {
-                        type: 'string'
-                      },
-                      value: {
-                        type: 'array',
-                        items: {
-                          type: 'string'
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            },
             layout: {
               type: 'array',
               items: {
@@ -84,6 +62,46 @@ export default {
               type: 'array',
               items: {
                 type: 'string'
+              }
+            },
+            widgetEvent: {
+              type: 'array',
+              items: {
+                type: 'object',
+                patternProperties: {
+                  '[0-9]': {
+                    type: 'object',
+                    properties: {
+                      name: {
+                        type: 'string'
+                      },
+                      value: {
+                        type: 'array',
+                        items: {
+                          type: 'string'
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            widgetInstanceSection: {
+              type: 'array',
+              items: {
+                type: 'array',
+                items: {
+                  type: 'number'
+                }
+              }
+            },
+            widgetSection: {
+              type: 'array',
+              items: {
+                type: 'array',
+                items: {
+                  type: 'number'
+                }
               }
             }
           }
@@ -130,7 +148,7 @@ export default {
 
       for (let i = 0; i < template.item.layoutId.length; i++) {
         const contentItems = template.item.content[i]
-        const events = template.item.event[i]
+        const events = template.item.widgetEvent[i]
         const widget = {
           instanceId: this.$method('dsData/generateId'),
           content: [],
@@ -217,25 +235,37 @@ export default {
       const rootSectionInstances = []
       const usedInstances = []
 
-      for (let i = 0; i < template.item.section.length; i++) {
+      // sort sections
+      for (let i = 0; i < template.item.widgetInstanceSection.length; i++) {
+        const sectionIndexes = template.item.widgetInstanceSection[i]
         const instanceId = dsWidgetItems[i].instanceId
-        const sectionIndexes = template.item.section[i]
 
         if (sectionIndexes.length) {
-          const dsWidgetSections = []
+          const instanceSection = []
 
-          for (let j = 0; j < sectionIndexes.length; j++) {
-            const index = sectionIndexes[j]
-            const instanceId = dsWidgetItems[index].instanceId
+          for (let i = 0; i < sectionIndexes.length; i++) {
+            const index = sectionIndexes[i]
+            const widgetSection = template.item.widgetSection[index]
+            const dsWidgetSections = []
 
-            // include instance in current section
-            dsWidgetSections.push(instanceId)
-            // mark instance as used
-            usedInstances.push(instanceId)
+            for (let i = 0; i < widgetSection.length; i++) {
+              const index = widgetSection[i]
+              const instanceId = dsWidgetItems[index].instanceId
+              // include instance in current section
+              dsWidgetSections.push(instanceId)
+              // mark instance as used
+              usedInstances.push(instanceId)
+            }
+
+            const section = this.$setDataValue('dsWidget/sections', {
+              source: dsWidgetSections
+            })
+
+            instanceSection.push(section.id)
           }
 
-          this.$setDataValue('dsWidget/sections', {
-            source: dsWidgetSections,
+          this.$setDataValue('dsWidget/instanceSections', {
+            source: instanceSection,
             options: {
               id: instanceId,
               suffixId: mode
@@ -306,8 +336,8 @@ export default {
 
       // match action reference to events
       if (actions) {
-        for (let i = 0; i < template.event.length; i++) {
-          const events = template.event[i]
+        for (let i = 0; i < template.widgetEvent.length; i++) {
+          const events = template.widgetEvent[i]
 
           for (const key in events) {
             if (Object.hasOwnProperty.call(events, key)) {
@@ -337,10 +367,11 @@ export default {
       const result = this.$setDataValue('dsTemplate/items', {
         source: {
           content: template.content,
-          event: template.event,
           layout: template.layout,
-          section: template.section,
-          layoutId: template.layoutId
+          layoutId: template.layoutId,
+          widgetEvent: template.widgetEvent,
+          widgetInstanceSection: template.widgetInstanceSection,
+          widgetSection: template.widgetSection
         },
         options: {
           id: template.id

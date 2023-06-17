@@ -124,8 +124,8 @@ export default {
 
         if (Number.isInteger(sectionIndex)) {
           // get next widget section id
-          sectionId = this.$getDataValue('dsWidget/sections', {
-            id: dsWidgetSectionId,
+          sectionId = this.$getDataValue('dsWidget/instanceSections', {
+            id: dsWidgetInstanceId,
             prefixId: dsWidgetPrefixId,
             suffixId: dsWidgetMode,
             options: {
