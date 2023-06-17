@@ -6,13 +6,5 @@ export default {
     theme: 'bootstrap'
   },
   template: 'uti2pklgnca9dot',
-  path: 'dvhwaiuq2xvu9fd/',
-  widgets: {
-    entry: {
-      ve0qktek9pig0iz: ['_dvhwaiuq2xvu9fd_id$001']
-    },
-    sections: {
-      _dvhwaiuq2xvu9fd_id$001: []
-    }
-  }
+  path: '/'
 }
