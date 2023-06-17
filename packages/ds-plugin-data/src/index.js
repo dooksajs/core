@@ -268,9 +268,6 @@ export default {
         // set new value
         this.values[name] = result.target
 
-        // freeze collection
-        Object.freeze(this.values[name])
-
         // notify listeners
         this._onUpdate(name, result.item, result.id)
 
@@ -312,8 +309,6 @@ export default {
 
       // add values
       this.values[data.id] = data.default ?? this.defaultTypes[data.type]()
-
-      Object.freeze(this.values[data.id])
 
       // prepare listeners
       const listenerType = data.collection ? {} : []
@@ -972,11 +967,17 @@ export default {
 
       return source
     },
-    '_unfreeze/collection' (value) {
-      return Object.assign({}, value)
+    '_unfreeze/collection' (source) {
+      return source
     },
-    '_unfreeze/object' (value) {
-      return Object.assign({}, value)
+    '_unfreeze/object' (source) {
+      const target = {}
+
+      for (const key in source) {
+        target[key] = source[key]
+      }
+
+      return target
     },
     '_unfreeze/array' (value) {
       return value.slice()
