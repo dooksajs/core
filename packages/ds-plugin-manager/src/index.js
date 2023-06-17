@@ -622,7 +622,9 @@ export default {
                   // remove from setup queue
                   delete this.setupOnRequestQueue[plugin.name]
 
-                  console.log('Plugin successfully async loaded: ' + plugin.name)
+                  if (this.isDev) {
+                    console.log('Plugin successfully async loaded: ' + plugin.name)
+                  }
 
                   resolve(plugin.name)
                 })
@@ -631,7 +633,10 @@ export default {
               this.isLoaded[plugin.name] = true
               this.initialising[plugin.name] = false
 
-              console.log('Plugin successfully loaded: ' + plugin.name)
+              if (this.isDev) {
+                console.log('Plugin successfully async loaded: ' + plugin.name)
+              }
+              
               resolve(plugin.name)
             }
           })
