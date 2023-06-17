@@ -1,5 +1,3 @@
-import { uuid } from '@dooksa/crypto'
-
 function SchemaException (details) {
   this.details = details
   this.name = 'SchemaException'
@@ -68,6 +66,10 @@ export default {
       private: true,
       default: {}
     },
+    id: {
+      private: true,
+      default: 0
+    },
     defaultTypes: {
       private: true,
       default: {
@@ -77,6 +79,11 @@ export default {
         array: Array,
         boolean: Boolean
       }
+    }
+  },
+  setup ({ id }) {
+    if (id) {
+      this.id = id
     }
   },
   /** @lends dsData */
@@ -321,7 +328,9 @@ export default {
      * @returns {string}
      */
     generateId () {
-      return '_' + uuid() + '_'
+      this.id = this.id + 1
+
+      return '_' + this.id + '_'
     },
     _addSchema (schema) {
       for (let i = 0; i < schema.length; i++) {
