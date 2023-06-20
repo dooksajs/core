@@ -257,7 +257,6 @@ export default {
             const unfreeze = this['_unfreeze/' + schema.type]
 
             if (unfreeze) {
-              // @ISSUE: find a better way to make all data types immutable
               target = unfreeze(target)
             }
           } else {
@@ -983,9 +982,6 @@ export default {
         }
       }
 
-      return source
-    },
-    '_unfreeze/collection' (source) {
       return source
     },
     '_unfreeze/object' (source) {
