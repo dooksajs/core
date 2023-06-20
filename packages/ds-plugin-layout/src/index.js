@@ -92,7 +92,8 @@ export default {
         item.dsViewId = childViewId
 
         if (Number.isInteger(contentIndex)) {
-          const dsContentId = this.$getDataValue('dsWidget/instanceContent', {
+          const language = this.$getDataValue('dsMetadata/language').item
+          const instanceContentId = this.$getDataValue('dsWidget/instanceContent', {
             id: dsWidgetInstanceId,
             prefixId: dsWidgetPrefixId,
             suffixId: dsWidgetMode,
@@ -100,6 +101,10 @@ export default {
               position: contentIndex
             }
           }).item
+          const dsContentId = this.$getDataValue('dsContent/items', {
+            id: instanceContentId,
+            suffixId: language
+          }).id
 
           // Associate dsContent with dsView item
           this.$setDataValue('dsView/content', {

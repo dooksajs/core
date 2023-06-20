@@ -185,7 +185,10 @@ export default {
             }
           })
 
-          widget.content.push(dsContent.id)
+          // remove language suffix to allow other language overrides
+          const contentId = dsContent.id.substring(0, dsContent.id.length - language.length)
+
+          widget.content.push(contentId)
         }
 
         // set widget content
