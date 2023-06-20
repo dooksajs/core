@@ -235,7 +235,7 @@ export default {
 
       return result
     },
-    $set (name, { source, options }) {
+    $set (name, { source, options, typeCheck = true }) {
       try {
         const schema = this.schema[name]
 
@@ -243,6 +243,14 @@ export default {
           throw new Error('Schema not found "' + name + '"')
         }
 
+        let result = {}
+
+        if (!typeCheck && options && options.id) {
+          result.item = source
+          result.id = options.id
+
+          this.values[name][options.id] = source
+        } else {
         let target = this.values[name]
 
         if (target != null) {
@@ -257,7 +265,7 @@ export default {
           target = this.defaultTypes[schema.type]()
         }
 
-        const result = this._setData(
+          result = this._setData(
           name,
           source,
           target,
@@ -266,6 +274,7 @@ export default {
 
         // set new value
         this.values[name] = result.target
+        }
 
         // notify listeners
         this._onUpdate(name, result.item, result.id)
