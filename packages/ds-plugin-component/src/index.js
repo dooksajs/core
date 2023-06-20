@@ -15,16 +15,10 @@ export default {
   data: {
     items: {
       default: {
-        13610321: {
-          id: 'h1'
-        },
-        '106802e9': {
-          id: 'a'
-        },
-        '1ced044d': {
+        '0f64a9b82c6f98f7': {
           id: 'text'
         },
-        '181103cb': {
+        '43f4f4c34d66e648': {
           id: 'div'
         }
       },
