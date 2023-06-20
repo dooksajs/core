@@ -58,7 +58,7 @@ export default {
         let valuePadding = 0
 
         for (const tokenIndex in item.list) {
-          if (Object.hasOwnProperty.call(item.list, tokenIndex)) {
+          if (Object.hasOwn(item.list, tokenIndex)) {
             const token = item.list[tokenIndex]
             const prevLength = token.valueLength
 

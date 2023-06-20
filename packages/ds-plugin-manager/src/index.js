@@ -204,7 +204,7 @@ export default {
     delete plugins.dsData
     // add plugins to install queue
     for (const key in plugins) {
-      if (Object.prototype.hasOwnProperty.call(plugins, key)) {
+      if (Object.hasOwn(plugins, key)) {
         const plugin = plugins[key]
 
         this._addOptions(plugin.name, plugin.options)
@@ -314,7 +314,7 @@ export default {
 
       if (plugin.methods) {
         for (const key in plugin.methods) {
-          if (Object.hasOwnProperty.call(plugin.methods, key)) {
+          if (Object.hasOwn(plugin.methods, key)) {
             const method = plugin.methods[key]
 
             this.methods[`${plugin.name}/${key}`] = method
@@ -324,7 +324,7 @@ export default {
 
       if (plugin.contextMethods) {
         for (const key in plugin.contextMethods) {
-          if (Object.hasOwnProperty.call(plugin.contextMethods, key)) {
+          if (Object.hasOwn(plugin.contextMethods, key)) {
             const method = plugin.contextMethods[key]
 
             this.contextMethods[`${plugin.name}/${key}`] = method
@@ -334,7 +334,7 @@ export default {
 
       if (plugin.tokens) {
         for (const key in plugin.tokens) {
-          if (Object.hasOwnProperty.call(plugin.tokens, key)) {
+          if (Object.hasOwn(plugin.tokens, key)) {
             const token = plugin.tokens[key]
 
             if (token.get) {

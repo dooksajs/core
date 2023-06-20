@@ -29,7 +29,7 @@ function DsPlugin (plugin, context = [], isDev) {
 
     // process data
     for (const key in plugin.data) {
-      if (Object.hasOwnProperty.call(plugin.data, key)) {
+      if (Object.hasOwn(plugin.data, key)) {
         const item = plugin.data[key]
 
         if (item.private) {
@@ -85,7 +85,7 @@ function DsPlugin (plugin, context = [], isDev) {
     const contextMethods = {}
 
     for (const key in plugin.methods) {
-      if (Object.hasOwnProperty.call(plugin.methods, key)) {
+      if (Object.hasOwn(plugin.methods, key)) {
         const item = plugin.methods[key]
         // Add method
         _context[key] = item
@@ -114,7 +114,7 @@ function DsPlugin (plugin, context = [], isDev) {
     const tokens = {}
 
     for (const key in plugin.tokens) {
-      if (Object.hasOwnProperty.call(plugin.tokens, key)) {
+      if (Object.hasOwn(plugin.tokens, key)) {
         const item = plugin.tokens[key]
 
         _context[key] = item

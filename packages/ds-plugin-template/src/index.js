@@ -343,7 +343,7 @@ export default {
           const events = template.widgetEvent[i]
 
           for (const key in events) {
-            if (Object.hasOwnProperty.call(events, key)) {
+            if (Object.hasOwn(events, key)) {
               const event = events[key]
 
               for (let i = 0; i < event.value.length; i++) {

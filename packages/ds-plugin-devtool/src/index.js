@@ -69,7 +69,7 @@ export default {
       const keys = []
 
       for (const key in data) {
-        if (Object.prototype.hasOwnProperty.call(data, key)) {
+        if (Object.hasOwn(data, key)) {
           keys.push(key)
         }
       }

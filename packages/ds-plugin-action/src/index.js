@@ -192,7 +192,7 @@ export default {
       for (let i = 0; i < dotNotations.length; i++) {
         const key = dotNotations[i]
 
-        if (Object.hasOwnProperty.call(data, key)) {
+        if (Object.hasOwn(data, key)) {
           result = data[key]
         } else {
           return { result, key }
@@ -217,16 +217,16 @@ export default {
         return data
       }
 
-      if (Object.hasOwnProperty.call(data, value)) {
+      if (Object.hasOwn(data, value)) {
         return data[value]
       }
 
-      if (Object.hasOwnProperty.call(data, '$keys')) {
+      if (Object.hasOwn(data, '$keys')) {
         const keys = data.$keys
         const result = {}
 
         for (const key in keys) {
-          if (Object.hasOwnProperty.call(keys, key)) {
+          if (Object.hasOwn(keys, key)) {
             const item = keys[key]
             const dataKey = this._getDataByKey(data, item)
 
@@ -237,7 +237,7 @@ export default {
         return result
       }
 
-      if (Object.hasOwnProperty.call(data, '$index')) {
+      if (Object.hasOwn(data, '$index')) {
         const [index, keys] = data.$index
         const dataItem = data[index]
 
@@ -256,7 +256,7 @@ export default {
         return dataItem
       }
 
-      if (Object.hasOwnProperty.call(data, '$indexes')) {
+      if (Object.hasOwn(data, '$indexes')) {
         const result = []
 
         for (let i = 0; i < data.$indexes.length; i++) {
@@ -304,7 +304,7 @@ export default {
             const item = condition.values[i]
             let value = item.value
 
-            if (Object.hasOwnProperty.call(item, 'entry')) {
+            if (Object.hasOwn(item, 'entry')) {
               value = this._action({
                 instanceId,
                 entry: item.entry,

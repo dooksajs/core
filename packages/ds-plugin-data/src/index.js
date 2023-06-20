@@ -141,7 +141,7 @@ export default {
       const result = { isEmpty: false }
       const schema = this.schema[name]
 
-      if (Object.prototype.hasOwnProperty.call(arguments[0], 'id') && !id) {
+      if (Object.hasOwn(arguments[0], 'id') && !id) {
         result.isEmpty = true
 
         return result
@@ -408,7 +408,7 @@ export default {
 
       if (!this[setDataName]) {
         for (const key in source) {
-          if (Object.hasOwnProperty.call(source, key)) {
+          if (Object.hasOwn(source, key)) {
             const element = source[key]
 
             this._checkType(name, element, schema.type)
@@ -421,7 +421,7 @@ export default {
       }
 
       for (const key in source) {
-        if (Object.hasOwnProperty.call(source, key)) {
+        if (Object.hasOwn(source, key)) {
           const element = source[key]
           this._checkType(name, element, schema.type)
 
@@ -676,7 +676,7 @@ export default {
           const additionalKeys = []
 
           for (const key in source) {
-            if (Object.hasOwnProperty.call(source, key)) {
+            if (Object.hasOwn(source, key)) {
               // check if key can exist
               if (!schema.options.additionalProperties.includes(key)) {
                 additionalKeys.push(key)
@@ -933,7 +933,7 @@ export default {
         const property = patternProperties[i]
 
         for (const key in source) {
-          if (Object.hasOwnProperty.call(source, key)) {
+          if (Object.hasOwn(source, key)) {
             if (!propertiesChecked.includes(key)) {
               const regex = new RegExp(property.name)
 
