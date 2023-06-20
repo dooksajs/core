@@ -137,6 +137,7 @@ export default {
       // update parents
       this.$setDataValue('dsView/itemParent', {
         source: dsViewParentId,
+        typeCheck: false,
         options: {
           id: dsViewId
         }
@@ -178,6 +179,7 @@ export default {
 
       this.$setDataValue('dsView/items', {
         source: element,
+        typeCheck: false,
         options: {
           id: dsViewId
         }
