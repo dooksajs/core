@@ -176,11 +176,25 @@ export default {
       return this._getValue(results, params)
     },
     '_process/get/dataValue' (data, item) {
-      const result = this.$getDataValue(data.name, data)
+      let result = this.$getDataValue(data.name, {
+        id: data.id,
+        prefixId: data.prefixId,
+        suffixId: data.suffixId,
+        options: data.options
+      })
 
-      if (!result.isEmpty) {
-        return result.item
+      if (result.isEmpty) {
+        return
       }
+
+      result = result.item
+
+      // reshape the result
+      if (data.map) {
+        result = this._getValue(result, data.map)
+      }
+
+      return result
     },
     '_process/set/dataValue' (data) {
       return this.$setDataValue(data.name, data)
