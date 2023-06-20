@@ -14,7 +14,7 @@ export default {
   version: 1,
   data: {
     rootViewId: {
-      default: '',
+      default: 'rootElement',
       schema: {
         type: 'string'
       }
@@ -82,7 +82,8 @@ export default {
 
     // Set root element
     const dsViewId = this.createNode({
-      dsComponentId: '181103cb'
+      dsViewId: 'rootElement',
+      dsComponentId: '43f4f4c34d66e648'
     })
 
     this.$setDataValue('dsView/rootViewId', {
