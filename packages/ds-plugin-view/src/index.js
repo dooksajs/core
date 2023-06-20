@@ -151,7 +151,12 @@ export default {
      * @param {string} item.dsWidgetSectionId - Section id from dsWidget
      * @param {string} item.dsWidgetInstanceId - Instance id from dsWidget
      */
-    createNode ({ dsComponentId, dsWidgetSectionId, dsWidgetInstanceId }) {
+    createNode ({
+      dsViewId,
+      dsComponentId,
+      dsWidgetSectionId,
+      dsWidgetInstanceId
+    }) {
       let dsComponent = this.$getDataValue('dsComponent/items', {
         id: dsComponentId
       })
@@ -162,7 +167,7 @@ export default {
 
       dsComponent = dsComponent.item
 
-      const dsViewId = this.$method('dsData/generateId')
+      dsViewId = dsViewId || this.$method('dsData/generateId')
       let element
 
       if (dsComponent.id === 'text') {
