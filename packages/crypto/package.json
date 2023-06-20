@@ -34,6 +34,7 @@
     "@dooksa/ds-scripts": "workspace:^"
   },
   "dependencies": {
-    "nanoid": "^4.0.2"
+    "nanoid": "^4.0.2",
+    "xxhash-wasm": "^1.0.2"
   }
 }

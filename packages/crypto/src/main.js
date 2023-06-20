@@ -1,6 +1,7 @@
-import adler from './adler'
+import xxhash from 'xxhash-wasm'
 import { customAlphabet } from 'nanoid'
 
+const { h64ToString } = await xxhash()
 const nanoId = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$-', 17)
 
 export const uuid = () => {
@@ -8,9 +9,7 @@ export const uuid = () => {
 }
 
 export const checksum = (value) => {
-  const encoder = new TextEncoder()
   const string = typeof value !== 'string' ? JSON.stringify(value) : value
-  const buffer = encoder.encode(string)
 
-  return adler(buffer)
+  return h64ToString(string)
 }
