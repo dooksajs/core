@@ -251,29 +251,29 @@ export default {
 
           this.values[name][options.id] = source
         } else {
-        let target = this.values[name]
+          let target = this.values[name]
 
-        if (target != null) {
-          const unfreeze = this['_unfreeze/' + schema.type]
+          if (target != null) {
+            const unfreeze = this['_unfreeze/' + schema.type]
 
-          if (unfreeze) {
-            // @ISSUE: find a better way to make all data types immutable
-            target = unfreeze(target)
+            if (unfreeze) {
+              // @ISSUE: find a better way to make all data types immutable
+              target = unfreeze(target)
+            }
+          } else {
+            // set default value
+            target = this.defaultTypes[schema.type]()
           }
-        } else {
-          // set default value
-          target = this.defaultTypes[schema.type]()
-        }
 
           result = this._setData(
-          name,
-          source,
-          target,
-          options
-        )
+            name,
+            source,
+            target,
+            options
+          )
 
-        // set new value
-        this.values[name] = result.target
+          // set new value
+          this.values[name] = result.target
         }
 
         // notify listeners
@@ -979,8 +979,10 @@ export default {
     '_unfreeze/object' (source) {
       const target = {}
 
-      for (const key in source) {
-        target[key] = source[key]
+      for (const prop in source) {
+        if (Object.hasOwn(source, prop)) {
+          target[prop] = source[prop]
+        }
       }
 
       return target
