@@ -32,7 +32,5 @@ Changes that are cosmetic in nature and do not add anything substantial to the s
 
 #### **Do you want to contribute to the Dooksa documentation?**
 
-* Please read [Contributing to the Rails Documentation](https://edgeguides.rubyonrails.org/contributing_to_ruby_on_rails.html#contributing-to-the-rails-documentation).
-
-Once we have a forum for discussion of such things, there will be a process created to marshall these
+Once we have a forum for discussion of such things, there will be a process created to organise prospective documentation contributions
 Dooksa Team
