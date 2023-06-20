@@ -635,6 +635,18 @@ export default {
       // update target with source
       if (option.source) {
         if (option.source.merge) {
+          // merge collection item
+          if (option.id) {
+            for (const key in source) {
+              if (Object.hasOwn(source, key)) {
+                target[key] = source[key]
+              }
+            }
+
+            return true
+          }
+
+          // merge collection
           this._checkCollectionItems(data, name + '/items', target, source)
 
           return true
