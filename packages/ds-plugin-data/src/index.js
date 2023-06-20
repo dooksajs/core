@@ -169,6 +169,7 @@ export default {
 
           if (this.values[name][itemId] != null) {
             result.isAffixEmpty = false
+            result.id = itemId
             result.item = this.values[name][itemId]
           }
         }
