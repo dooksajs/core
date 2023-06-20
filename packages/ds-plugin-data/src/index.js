@@ -1,3 +1,5 @@
+import { uuid } from '@dooksa/crypto'
+
 function SchemaException (details) {
   this.details = details
   this.name = 'SchemaException'
@@ -65,10 +67,6 @@ export default {
     collection: {
       private: true,
       default: {}
-    },
-    id: {
-      private: true,
-      default: 0
     },
     defaultTypes: {
       private: true,
@@ -323,9 +321,7 @@ export default {
      * @returns {string}
      */
     generateId () {
-      this.id = this.id + 1
-
-      return '_' + this.id + '_'
+      return '_' + uuid() + '_'
     },
     _addSchema (schema) {
       for (let i = 0; i < schema.length; i++) {

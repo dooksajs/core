@@ -1,12 +1,10 @@
 import adler from './adler'
-import { v4 as uuidv4 } from 'uuid'
+import { customAlphabet } from 'nanoid'
+
+const nanoId = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$-', 17)
 
 export const uuid = () => {
-  const uuid = uuidv4()
-  const encoder = new TextEncoder()
-  const buffer = encoder.encode(uuid)
-
-  return adler(buffer)
+  return nanoId()
 }
 
 export const checksum = (value) => {
