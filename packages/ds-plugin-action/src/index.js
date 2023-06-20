@@ -176,7 +176,7 @@ export default {
       return this._getValue(results, params)
     },
     '_process/get/dataValue' (data, item) {
-      const result = this.$getDataValue(item.name, item)
+      const result = this.$getDataValue(data.name, data)
 
       if (!result.isEmpty) {
         return result.item
