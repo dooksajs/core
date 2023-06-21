@@ -10,7 +10,6 @@ import dsComponent from '@dooksa/ds-plugin-component'
 import dsLayout from '@dooksa/ds-plugin-layout'
 import dsToken from '@dooksa/ds-plugin-token'
 import dsManager from '@dooksa/ds-plugin-manager'
-import dsPage from '@dooksa/ds-plugin-page'
 import dsView from '@dooksa/ds-plugin-view'
 import dsContent from '@dooksa/ds-plugin-content'
 import 'bootstrap/dist/css/bootstrap.css'
@@ -79,11 +78,6 @@ export default {
       version: dsOperator.version,
       plugin: dsOperator
     },
-    [dsPage.name]: {
-      name: dsPage.name,
-      version: dsPage.version,
-      plugin: dsPage
-    },
     dsDatabase: {
       name: 'dsDatabase',
       version: 1,
@@ -119,17 +113,7 @@ export default {
     const pluginManager = new this.DsPlugin(this.dsManager, [], isDev)
 
     if (dsPage) {
-      if (this.plugins.dsPage.options) {
-        if (this.plugins.dsPage.options.setup) {
-          this.plugins.dsPage.options = { ...this.plugins.dsPage.options.setup, dsPage }
-        } else {
-          this.plugins.dsPage.options = { ...this.plugins.dsPage.options, setup: { dsPage } }
-        }
-      } else {
-        this.plugins.dsPage.options = {
-          setup: { dsPage }
-        }
-      }
+      // load page
     }
 
     // start dooksa

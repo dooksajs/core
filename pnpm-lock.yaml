@@ -57,9 +57,6 @@ importers:
       '@dooksa/ds-plugin-operator':
         specifier: workspace:^
         version: link:../ds-plugin-operator
-      '@dooksa/ds-plugin-page':
-        specifier: workspace:^
-        version: link:../ds-plugin-page
       '@dooksa/ds-plugin-router':
         specifier: workspace:^
         version: link:../ds-plugin-router

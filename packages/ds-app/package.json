@@ -29,7 +29,6 @@
     "@dooksa/ds-plugin-manager": "workspace:^",
     "@dooksa/ds-plugin-metadata": "workspace:^",
     "@dooksa/ds-plugin-operator": "workspace:^",
-    "@dooksa/ds-plugin-page": "workspace:^",
     "@dooksa/ds-plugin-router": "workspace:^",
     "@dooksa/ds-plugin-template": "workspace:^",
     "@dooksa/ds-plugin-token": "workspace:^",
