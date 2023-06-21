@@ -35,7 +35,7 @@
     "@dooksa/ds-plugin-token": "workspace:^",
     "@dooksa/ds-plugin-view": "workspace:^",
     "@dooksa/ds-plugin-widget": "workspace:^",
-    "@popperjs/core": "^2.11.6",
-    "bootstrap": "^5.2.3"
+    "@popperjs/core": "^2.11.8",
+    "bootstrap": "^5.3.0"
   }
 }

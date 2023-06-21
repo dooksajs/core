@@ -76,11 +76,11 @@ importers:
         specifier: workspace:^
         version: link:../ds-plugin-widget
       '@popperjs/core':
-        specifier: ^2.11.6
-        version: 2.11.6
+        specifier: ^2.11.8
+        version: 2.11.8
       bootstrap:
-        specifier: ^5.2.3
-        version: 5.2.3(@popperjs/core@2.11.6)
+        specifier: ^5.3.0
+        version: 5.3.0(@popperjs/core@2.11.8)
     devDependencies:
       '@dooksa/ds-scripts':
         specifier: workspace:^
@@ -1884,8 +1884,8 @@ packages:
       fastq: 1.15.0
     dev: true
 
-  /@popperjs/core@2.11.6:
-    resolution: {integrity: sha512-50/17A98tWUfQ176raKiOGXuYpLyyVMkxxG6oylzL3BPOlA6ADGdK7EYunSa4I064xerltq9TGXs8HmOk5E+vw==}
+  /@popperjs/core@2.11.8:
+    resolution: {integrity: sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==}
     dev: false
 
   /@types/json5@0.0.29:
@@ -2155,12 +2155,12 @@ packages:
     resolution: {integrity: sha512-XpNj6GDQzdfW+r2Wnn7xiSAd7TM3jzkxGXBGTtWKuSXv1xUV+azxAm8jdWZN06QTQk+2N2XB9jRDkvbmQmcRtg==}
     dev: false
 
-  /bootstrap@5.2.3(@popperjs/core@2.11.6):
-    resolution: {integrity: sha512-cEKPM+fwb3cT8NzQZYEu4HilJ3anCrWqh3CHAok1p9jXqMPsPTBhU25fBckEJHJ/p+tTxTFTsFQGM+gaHpi3QQ==}
+  /bootstrap@5.3.0(@popperjs/core@2.11.8):
+    resolution: {integrity: sha512-UnBV3E3v4STVNQdms6jSGO2CvOkjUMdDAVR2V5N4uCMdaIkaQjbcEAMqRimDHIs4uqBYzDAKCQwCB+97tJgHQw==}
     peerDependencies:
-      '@popperjs/core': ^2.11.6
+      '@popperjs/core': ^2.11.7
     dependencies:
-      '@popperjs/core': 2.11.6
+      '@popperjs/core': 2.11.8
     dev: false
 
   /brace-expansion@1.1.11:
