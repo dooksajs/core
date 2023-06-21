@@ -100,7 +100,7 @@ const findActions = ({
     source._$a = source.dsAction
     delete source.dsAction
 
-    if (source.dsParams) {
+    if (source.dsParams != null) {
       source._$p = source.dsParams
       delete source.dsParams
     }
