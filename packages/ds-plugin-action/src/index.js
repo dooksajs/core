@@ -175,26 +175,22 @@ export default {
     '_process/get/sequenceValue' (params, payload, actionData, results) {
       return this._getValue(results, params)
     },
-    '_process/get/dataValue' (data, item) {
-      let result = this.$getDataValue(data.name, {
-        id: data.id,
-        prefixId: data.prefixId,
-        suffixId: data.suffixId,
-        options: data.options
+    '_process/get/dataValue' (params) {
+      const result = this.$getDataValue(params.name, {
+        id: params.id,
+        prefixId: params.prefixId,
+        suffixId: params.suffixId,
+        options: params.options
       })
 
       if (result.isEmpty) {
         return
       }
 
-      result = result.item
-
-      // reshape the result
-      if (data.map) {
-        result = this._getValue(result, data.map)
-      }
-
-      return result
+      return result.item
+    },
+    '_process/map/actionValue' (params) {
+      return this._getValue(params.value, params.map)
     },
     '_process/set/dataValue' (data) {
       return this.$setDataValue(data.name, data)
@@ -227,7 +223,7 @@ export default {
     _getValue (data, value) {
       // const data = item.data
       // const value = item.value
-      if (!value) {
+      if (value == null) {
         return data
       }
 
@@ -255,19 +251,20 @@ export default {
         const [index, keys] = data.$index
         const dataItem = data[index]
 
-        if (keys) {
-          const result = {}
-
-          for (let i = 0; i < keys.length; i++) {
-            const key = keys[i]
-            const dataKey = this._getDataByKey(data, key)
-
-            result[dataKey.key] = dataKey.result
-          }
-
-          return result
+        if (!keys) {
+          return dataItem
         }
-        return dataItem
+
+        const result = {}
+
+        for (let i = 0; i < keys.length; i++) {
+          const key = keys[i]
+          const dataKey = this._getDataByKey(data, key)
+
+          result[dataKey.key] = dataKey.result
+        }
+
+        return result
       }
 
       if (Object.hasOwn(data, '$indexes')) {
