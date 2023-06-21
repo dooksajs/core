@@ -254,14 +254,19 @@ export default {
       const getters = this.$componentGetters[nodeName]
 
       if (getters) {
-        const dsComponent = this.$component(nodeName)
+        const node = this.$component(nodeName)
         let value = {}
 
+        if (node.nodeName === '#text') {
+          value = getNodeValue(getters[0].type, node, getters[0].value)
+        } else {
         // get node value
         for (let i = 0; i < getters.length; i++) {
           const getter = getters[i]
+            const result = getNodeValue(getter.type, node, getter.value)
 
-          value = Object.assign(value, getNodeValue(getter.type, dsComponent, getter.value))
+            value[result.key] = result.value
+          }
         }
 
         return value
@@ -476,11 +481,7 @@ export default {
         return node.setAttribute(setter, content.value)
       }
 
-      for (let i = 0; i < setter.length; i++) {
-        const { name, key } = setter[i]
-
-        node.setAttribute(name, content[key])
-      }
+      node.setAttribute(setter.name, content[setter.key])
     },
     /**
      * Set element value using a attribute
@@ -494,14 +495,8 @@ export default {
         if (node.__lookupSetter__(setter)) {
           node[setter] = content.value
         }
-      } else {
-        for (let i = 0; i < setter.length; i++) {
-          const { name, key } = setter[i]
-
-          if (node.__lookupSetter__(name)) {
-            node[name] = content[key]
-          }
-        }
+      } else if (node.__lookupSetter__(setter.name)) {
+        node[setter.name] = content[setter.key]
       }
     },
     /**

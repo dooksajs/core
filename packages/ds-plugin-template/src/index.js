@@ -310,11 +310,16 @@ export default {
           const getters = this.$componentGetters[nodeName]
           let value = {}
 
+          if (node.nodeName === '#text') {
+            value = getNodeValue(getters[0].type, node, getters[0].value)
+          } else {
           // get node value
           for (let i = 0; i < getters.length; i++) {
             const getter = getters[i]
+              const result = getNodeValue(getter.type, node, getter.value)
 
-            value = Object.assign(value, getNodeValue(getter.type, node, getter.value))
+              value[result.key] = result.value
+            }
           }
 
           items[j] = {

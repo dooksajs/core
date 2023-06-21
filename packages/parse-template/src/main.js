@@ -222,18 +222,16 @@ export const getNodeValue = (type, node, getter) => {
  */
 const _getNodeValueByAttribute = (node, getter) => {
   if (typeof getter === 'string') {
-    return { value: node.getAttribute(getter) }
+    return {
+      key: 'value',
+      value: node.getAttribute(getter)
+    }
   }
 
-  const value = {}
-
-  for (let i = 0; i < getter.length; i++) {
-    const { name, key } = getter[i]
-
-    value[key] = node.getAttribute(name)
+  return {
+    key: getter.key,
+    value: node.getAttribute(getter.name)
   }
-
-  return value
 }
 
 /**
@@ -244,26 +242,22 @@ const _getNodeValueByAttribute = (node, getter) => {
  * @private
  */
 const _getNodeValueByGetter = (node, getter) => {
-  const value = {}
-
   if (typeof getter === 'string') {
+    const result = { key: 'value', value: '' }
+
     if (node.__lookupGetter__(getter)) {
-      return { value: node[getter] }
-    } else {
-      return { value: '' }
+      result.value = node[getter]
     }
+
+    return result
   } else {
-    for (let i = 0; i < getter.length; i++) {
-      const { name, key } = getter[i]
+    const result = { key: getter.key, value: '' }
 
-      if (node.__lookupGetter__(name)) {
-        value[key] = node[name]
-      } else {
-        value[key] = ''
-      }
+    if (node.__lookupGetter__(getter.name)) {
+      result.value = node[getter.name]
     }
 
-    return value
+    return result
   }
 }
 
