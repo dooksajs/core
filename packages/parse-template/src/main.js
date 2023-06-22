@@ -101,7 +101,7 @@ export const parseHTML = (
             const result = parseAttributes(node.attributes, ignoreAttributes[component.id])
 
             if (result.bind.on) {
-              widgetEvent[data.layoutIndex] = result.bind.on
+              widgetEvent[j] = result.bind.on
             }
 
             hasSection = result.bind.hasSection
