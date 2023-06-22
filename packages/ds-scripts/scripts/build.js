@@ -1,7 +1,8 @@
 import path from 'path'
-import legacy from '@vitejs/plugin-legacy'
 import { appDirectory } from '../utils/paths.js'
 import { build } from 'vite'
+import wasm from 'vite-plugin-wasm'
+import topLevelAwait from 'vite-plugin-top-level-await'
 
 ;(async () => {
   await build({
@@ -12,9 +13,8 @@ import { build } from 'vite'
       sourcemap: true
     },
     plugins: [
-      legacy({
-        targets: ['defaults', 'not IE 11']
-      })
+      wasm(),
+      topLevelAwait()
     ],
     resolve: {
       alias: {

@@ -21,6 +21,7 @@
     "@dooksa/ds-scripts": "workspace:^"
   },
   "dependencies": {
+    "@dooksa/crypto": "workspace:^",
     "@dooksa/parse-template": "workspace:^"
   }
 }
