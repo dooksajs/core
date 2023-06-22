@@ -169,7 +169,7 @@ export default {
         params: action.item._$p
       }
     },
-    '_process/get/eventValue' (params, payload, actionData, results) {
+    '_process/get/eventValue' (params, payload) {
       return this._getValue(payload, params)
     },
     '_process/get/sequenceValue' (params, payload, actionData, results) {
