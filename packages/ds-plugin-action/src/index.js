@@ -221,8 +221,6 @@ export default {
      * @returns {*}
      */
     _getValue (data, value) {
-      // const data = item.data
-      // const value = item.value
       if (value == null) {
         return data
       }
