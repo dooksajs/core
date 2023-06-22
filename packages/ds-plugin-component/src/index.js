@@ -231,6 +231,9 @@ export default {
       name: 'section'
     },
     {
+      name: 'footer'
+    },
+    {
       name: 'li'
     },
     {
