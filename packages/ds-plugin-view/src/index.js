@@ -42,6 +42,7 @@ export default {
       default: {},
       schema: {
         type: 'collection',
+        uniqueItems: true,
         items: {
           type: 'array'
         }
