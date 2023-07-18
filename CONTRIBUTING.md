@@ -4,7 +4,7 @@
 #### **Did you find a bug?**
 
 * **Do not open up a complete GitHub issue if the bug is a security vulnerability
-  in Dooksa*, just open an issue with no details and we can take it from there** Note that this a placeholder while we create a complete security policy. We do not details of vulnerabilities published publically until the threat is properly addressed,
+  in Dooksa*, just email [Support](mailto:support@dooksa.com) and we can take it from there** Note that this a placeholder while we create a complete security policy. We do not publish details of vulnerabilities publically until the threat is properly addressed,
 
 * **Ensure the bug was not already reported** by searching on GitHub under [Issues](https://github.com/dooksajs/dooksa/issues).
 
