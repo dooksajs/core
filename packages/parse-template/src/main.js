@@ -20,8 +20,8 @@ export const parseHTML = (
     layoutId: [],
     layoutEntry: [],
     widgetEvent: [],
+    section: [],
     widgetSection: [],
-    widgetInstanceSection: [],
     layoutIndex: 0
   },
   head = true
@@ -48,14 +48,14 @@ export const parseHTML = (
   const layout = []
   const layoutEntry = []
   const widgetEvent = {}
-  const widgetInstanceSection = []
+  const widgetSection = []
   let sectionIndex = 0
 
   data.content[data.layoutIndex] = content
   data.layout[data.layoutIndex] = layout
   data.layoutEntry[data.layoutIndex] = layoutEntry
   data.widgetEvent[data.layoutIndex] = widgetEvent
-  data.widgetInstanceSection[data.layoutIndex] = widgetInstanceSection
+  data.widgetSection[data.layoutIndex] = widgetSection
 
   for (let i = 0; i < nodeLists.length; i++) {
     const nodeList = nodeLists[i]
@@ -116,12 +116,12 @@ export const parseHTML = (
             if (hasSection) {
               // data.layoutIndex++
               const sections = []
-              data.widgetSection.push(sections)
+              data.section.push(sections)
               // add instance to new section
-              // data.widgetInstanceSection[data.layoutIndex] = []
+              // data.widgetSection[data.layoutIndex] = []
               // add section index to component
               item.sectionIndex = sectionIndex
-              widgetInstanceSection.push(data.widgetSection.length - 1)
+              widgetSection.push(data.section.length - 1)
 
               // collect instances inside a section
               for (let i = 0; i < node.childNodes.length; i++) {

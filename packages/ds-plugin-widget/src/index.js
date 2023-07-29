@@ -1,9 +1,5 @@
 /**
- * @typedef {string} dsWidgetSectionId - Id for a collection of widgets
- */
-
-/**
- * @typedef {string} dsWidgetInstanceId - Instance id for a widget
+ * @typedef {string} dsWidgetId - Instance id for a widget
  */
 
 /**
@@ -14,31 +10,31 @@ export default {
   name: 'dsWidget',
   version: 1,
   data: {
-    uniqueIdentifier: {
+    uniqueId: {
       description: 'Unique identifier used to allow instances to be shared but contain different related content',
       default: '',
       schema: {
         type: 'string'
       }
     },
-    instances: {
+    items: {
       description: 'Widget instance',
       default: {},
       schema: {
         type: 'collection',
         prefixId () {
-          return this.$getDataValue('dsWidget/uniqueIdentifier').item
+          return this.$getDataValue('dsWidget/uniqueId').item
         },
         items: {
           type: 'string',
-          relation: 'dsWidget/instanceGroups',
+          relation: 'dsWidget/groups',
           default () {
             return this.$method('dsData/generateId')
           }
         }
       }
     },
-    instanceContent: {
+    content: {
       description: 'Content references used by an instance',
       default: {},
       schema: {
@@ -53,7 +49,7 @@ export default {
         suffixId: 'default'
       }
     },
-    instanceEvents: {
+    events: {
       default: {},
       schema: {
         type: 'collection',
@@ -78,7 +74,7 @@ export default {
         }
       }
     },
-    instanceGroups: {
+    groups: {
       description: 'Group instances',
       default: {},
       schema: {
@@ -87,13 +83,13 @@ export default {
           type: 'array',
           items: {
             type: 'string',
-            relation: 'dsWidget/instances'
+            relation: 'dsWidget/items'
           },
           uniqueItems: true
         }
       }
     },
-    instanceMode: {
+    mode: {
       description: 'Current instance template mode',
       default: {},
       schema: {
@@ -103,7 +99,7 @@ export default {
         }
       }
     },
-    instanceLayouts: {
+    layouts: {
       description: 'layouts related to the instance',
       default: {},
       schema: {
@@ -114,7 +110,7 @@ export default {
         }
       }
     },
-    instanceSections: {
+    sections: {
       description: 'References to sections',
       default: {},
       schema: {
@@ -124,9 +120,24 @@ export default {
           type: 'array',
           items: {
             type: 'string',
-            relation: 'dsContent/items'
+            relation: 'dsSection/items'
           }
         }
+      }
+    },
+    view: {
+      description: 'View references used by an instance',
+      default: {},
+      schema: {
+        type: 'collection',
+        items: {
+          type: 'array',
+          items: {
+            type: 'string',
+            relation: 'dsView/items'
+          }
+        },
+        suffixId: 'default'
       }
     },
     templates: {
@@ -139,113 +150,6 @@ export default {
           type: 'string',
           relation: 'dsTemplate/items'
         }
-      }
-    },
-    sections: {
-      description: 'Collection of widget instances',
-      default: {},
-      schema: {
-        type: 'collection',
-        prefixId () {
-          return this.$getDataValue('dsWidget/uniqueIdentifier').item
-        },
-        suffixId: 'default',
-        items: {
-          type: 'array',
-          items: {
-            type: 'string',
-            relation: 'dsWidget/instances'
-          }
-        }
-      }
-    },
-    sectionEntry: {
-      description: 'The entry section, e.g. a page top entry sections',
-      default: {},
-      schema: {
-        type: 'collection',
-        items: {
-          type: 'array',
-          items: {
-            type: 'string',
-            relation: 'dsWidget/sections'
-          }
-        }
-      }
-    },
-    sectionMode: {
-      description: 'Current template mode for the section',
-      default: {},
-      schema: {
-        type: 'collection',
-        items: {
-          type: 'string'
-        }
-      }
-    },
-    sectionParent: {
-      description: 'The parent section to a section',
-      default: {},
-      schema: {
-        type: 'collection',
-        items: {
-          type: 'string',
-          relation: 'dsWidget/sections'
-        }
-      }
-    },
-    sectionView: {
-      description: 'The node which the section is attached',
-      default: {},
-      schema: {
-        type: 'collection',
-        items: {
-          type: 'string',
-          relation: 'dsView/items'
-        }
-      }
-    }
-  },
-  /** @lends dsWidget */
-  methods: {
-    create ({
-      dsWidgetSectionId,
-      dsViewId = this.$getDataValue('dsView/rootViewId').item
-    }) {
-      const dsWidgetPrefixId = this.$getDataValue('dsWidget/uniqueIdentifier').item
-      const sectionMode = this.$getDataValue('dsWidget/sectionMode', {
-        id: dsWidgetSectionId,
-        prefixId: dsWidgetPrefixId
-      }).item
-
-      const dsWidgetSection = this.$getDataValue('dsWidget/sections', {
-        id: dsWidgetSectionId,
-        prefixId: dsWidgetPrefixId,
-        suffixId: sectionMode
-      })
-
-      for (let i = 0; i < dsWidgetSection.item.length; i++) {
-        const dsWidgetInstanceId = dsWidgetSection.item[i]
-        const instanceMode = this.$getDataValue('dsWidget/instanceMode', {
-          id: dsWidgetInstanceId,
-          prefixId: dsWidgetPrefixId
-        }).item
-        const dsWidgetMode = instanceMode !== 'default' ? instanceMode : sectionMode
-
-        const dsLayoutId = this.$getDataValue('dsWidget/instanceLayouts', {
-          id: dsWidgetInstanceId,
-          suffixId: instanceMode,
-          prefixId: dsWidgetPrefixId
-        }).item
-
-        this.$method('dsLayout/create', {
-          dsLayoutId,
-          dsWidgetSectionId,
-          dsWidgetInstanceId,
-          dsWidgetPrefixId,
-          dsWidgetMode,
-          dsViewId
-        })
       }
     }
   }

@@ -86,7 +86,7 @@ export default {
                 }
               }
             },
-            widgetInstanceSection: {
+            widgetSection: {
               type: 'array',
               items: {
                 type: 'array',
@@ -95,7 +95,7 @@ export default {
                 }
               }
             },
-            widgetSection: {
+            section: {
               type: 'array',
               items: {
                 type: 'array',
@@ -116,7 +116,7 @@ export default {
       events = {},
       mode = 'default',
       language,
-      dsWidgetSectionId
+      dsSectionId
     }) {
       const template = this.$getDataValue('dsTemplate/items', { id })
 
@@ -126,7 +126,7 @@ export default {
 
       // set default values here to avoid exec unnecessary functions if there is no template found
       language = language || this.$getDataValue('dsMetadata/language').item
-      dsWidgetSectionId = dsWidgetSectionId || this.$method('dsData/generateId')
+      dsSectionId = dsSectionId || this.$method('dsData/generateId')
 
       const dsWidgetItems = []
       const dsWidgetGroupId = this.$method('dsData/generateId')
@@ -134,15 +134,15 @@ export default {
       this.$setDataValue('dsWidget/templates', {
         source: id,
         options: {
-          id: dsWidgetSectionId,
+          id: dsSectionId,
           suffixId: mode
         }
       })
 
-      this.$setDataValue('dsWidget/sectionMode', {
+      this.$setDataValue('dsSection/mode', {
         source: mode,
         options: {
-          id: dsWidgetSectionId
+          id: dsSectionId
         }
       })
 
@@ -150,7 +150,7 @@ export default {
         const contentItems = template.item.content[i]
         const events = template.item.widgetEvent[i]
         const widget = {
-          instanceId: this.$method('dsData/generateId'),
+          id: this.$method('dsData/generateId'),
           content: [],
           layout: template.item.layoutId[i]
         }
@@ -159,10 +159,11 @@ export default {
 
         // add events to instance
         if (Object.keys(events).length) {
-          this.$setDataValue('dsWidget/instanceEvents', {
+          this.$setDataValue('dsWidget/events', {
             source: events,
             options: {
-              id: widget.instanceId
+              id: widget.id,
+              suffixId: mode
             }
           })
         }
@@ -186,23 +187,23 @@ export default {
           })
 
           // remove language suffix to allow other language overrides
-          const contentId = dsContent.id.substring(0, dsContent.id.length - language.length)
+          const contentId = dsContent.noAffixId
 
           widget.content.push(contentId)
         }
 
         // set widget content
-        this.$setDataValue('dsWidget/instanceContent', {
+        this.$setDataValue('dsWidget/content', {
           source: widget.content,
           options: {
-            id: widget.instanceId,
+            id: widget.id,
             suffixId: mode
           }
         })
 
         // add widget instance to group
-        this.$setDataValue('dsWidget/instanceGroups', {
-          source: widget.instanceId,
+        this.$setDataValue('dsWidget/groups', {
+          source: widget.id,
           options: {
             id: dsWidgetGroupId,
             source: {
@@ -212,91 +213,95 @@ export default {
         })
 
         // set widget instance
-        this.$setDataValue('dsWidget/instances', {
+        this.$setDataValue('dsWidget/items', {
           source: dsWidgetGroupId,
           options: {
-            id: widget.instanceId
+            id: widget.id
           }
         })
 
-        this.$setDataValue('dsWidget/instanceMode', {
+        this.$setDataValue('dsWidget/mode', {
           source: mode,
           options: {
-            id: widget.instanceId
+            id: widget.id
           }
         })
 
-        this.$setDataValue('dsWidget/instanceLayouts', {
+        this.$setDataValue('dsWidget/layouts', {
           source: widget.layout,
           options: {
-            id: widget.instanceId,
+            id: widget.id,
             suffixId: mode
           }
         })
       }
 
-      const rootSectionInstances = []
-      const usedInstances = []
+      const rootSection = []
+      const usedWidgets = []
 
       // sort sections
-      for (let i = 0; i < template.item.widgetInstanceSection.length; i++) {
-        const sectionIndexes = template.item.widgetInstanceSection[i]
-        const instanceId = dsWidgetItems[i].instanceId
+      for (let i = 0; i < template.item.widgetSection.length; i++) {
+        const sectionIndexes = template.item.widgetSection[i]
+        const dsWidgetId = dsWidgetItems[i].id
 
+        // get section within widget
         if (sectionIndexes.length) {
-          const instanceSection = []
+          const dsWidgetSection = []
 
           for (let i = 0; i < sectionIndexes.length; i++) {
             const index = sectionIndexes[i]
-            const widgetSection = template.item.widgetSection[index]
-            const dsWidgetSections = []
+            const templateSection = template.item.section[index]
+            const dsSection = []
 
-            for (let i = 0; i < widgetSection.length; i++) {
-              const index = widgetSection[i]
-              const instanceId = dsWidgetItems[index].instanceId
+            for (let i = 0; i < templateSection.length; i++) {
+              const index = templateSection[i]
+              const dsWidgetId = dsWidgetItems[index].id
               // include instance in current section
-              dsWidgetSections.push(instanceId)
+              dsSection.push(dsWidgetId)
               // mark instance as used
-              usedInstances.push(instanceId)
+              usedWidgets.push(dsWidgetId)
             }
 
-            const section = this.$setDataValue('dsWidget/sections', {
-              source: dsWidgetSections
+            const section = this.$setDataValue('dsSection/items', {
+              source: dsSection,
+              options: {
+                suffixId: mode
+              }
             })
 
-            instanceSection.push(section.id)
+            dsWidgetSection.push(section.noAffixId)
+
+            this.$setDataValue('dsSection/mode', {
+              source: mode,
+              options: {
+                id: section.noAffixId
+              }
+            })
           }
 
-          this.$setDataValue('dsWidget/instanceSections', {
-            source: instanceSection,
+          this.$setDataValue('dsWidget/sections', {
+            source: dsWidgetSection,
             options: {
-              id: instanceId,
+              id: dsWidgetId,
               suffixId: mode
             }
           })
-
-          this.$setDataValue('dsWidget/sectionMode', {
-            source: mode,
-            options: {
-              id: instanceId
-            }
-          })
         }
 
-        if (!usedInstances.includes(instanceId)) {
-          rootSectionInstances.push(instanceId)
+        if (!usedWidgets.includes(dsWidgetId)) {
+          rootSection.push(dsWidgetId)
         }
       }
 
-      this.$setDataValue('dsWidget/sections', {
-        source: rootSectionInstances,
+      this.$setDataValue('dsSection/items', {
+        source: rootSection,
         options: {
-          id: dsWidgetSectionId,
+          id: dsSectionId,
           mode
         }
       })
 
-      return dsWidgetSectionId
+      return dsSectionId
     },
     parseHTML ({ html, actions }) {
       const template = parseHTML(html, this.$componentGetters, this.$componentIgnoreAttr)
@@ -313,9 +318,9 @@ export default {
           if (node.nodeName === '#text') {
             value = getNodeValue(getters[0].type, node, getters[0].value)
           } else {
-          // get node value
-          for (let i = 0; i < getters.length; i++) {
-            const getter = getters[i]
+            // get node value
+            for (let i = 0; i < getters.length; i++) {
+              const getter = getters[i]
               const result = getNodeValue(getter.type, node, getter.value)
 
               value[result.key] = result.value
@@ -378,8 +383,8 @@ export default {
           layout: template.layout,
           layoutId: template.layoutId,
           widgetEvent: template.widgetEvent,
-          widgetInstanceSection: template.widgetInstanceSection,
-          widgetSection: template.widgetSection
+          widgetSection: template.widgetSection,
+          section: template.section
         },
         options: {
           id: template.id

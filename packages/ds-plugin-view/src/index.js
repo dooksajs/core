@@ -149,14 +149,14 @@ export default {
      * Creates node
      * @param {Object} item
      * @param {dsComponent} item.dsComponentId - Component id
-     * @param {string} item.dsWidgetSectionId - Section id from dsWidget
-     * @param {string} item.dsWidgetInstanceId - Instance id from dsWidget
+     * @param {string} item.dsSectionId - Section id from dsWidget
+     * @param {string} item.dsWidgetId - Instance id from dsWidget
      */
     createNode ({
       dsViewId,
       dsComponentId,
-      dsWidgetSectionId,
-      dsWidgetInstanceId
+      dsSectionId,
+      dsWidgetId
     }) {
       let dsComponent = this.$getDataValue('dsComponent/items', {
         id: dsComponentId
@@ -214,8 +214,8 @@ export default {
               payload: {
                 dsViewId,
                 dsContentId: dsContentId.item,
-                dsWidgetInstanceId,
-                dsWidgetSectionId,
+                dsWidgetId,
+                dsSectionId,
                 event
               }
             })
@@ -236,6 +236,13 @@ export default {
       }
 
       return dsViewId
+    },
+    detach (id) {
+      const dsView = this.$getDataValue('dsView/items', { id })
+
+      if (!dsView.isEmpty) {
+        dsView.item.remove()
+      }
     },
     /**
      * Get value from node item
@@ -261,9 +268,9 @@ export default {
         if (node.nodeName === '#text') {
           value = getNodeValue(getters[0].type, node, getters[0].value)
         } else {
-        // get node value
-        for (let i = 0; i < getters.length; i++) {
-          const getter = getters[i]
+          // get node value
+          for (let i = 0; i < getters.length; i++) {
+            const getter = getters[i]
             const result = getNodeValue(getter.type, node, getter.value)
 
             value[result.key] = result.value
