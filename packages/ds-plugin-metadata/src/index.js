@@ -18,6 +18,15 @@ export default {
         type: 'string'
       }
     },
+    languages: {
+      default: ['en'],
+      schema: {
+        type: 'array',
+        items: {
+          type: 'string'
+        }
+      }
+    },
     theme: {
       default: '',
       schema: {
