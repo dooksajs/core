@@ -6,7 +6,7 @@ function SchemaException (details) {
 }
 
 /**
- * Data id, it is a combination of the plugin name and data key
+ * Data app id, it is a combination of the plugin name and data key
  * @typedef {string} dsDataId
  */
 
@@ -79,11 +79,6 @@ export default {
       }
     }
   },
-  setup ({ id }) {
-    if (id) {
-      this.id = id
-    }
-  },
   /** @lends dsData */
   methods: {
     /**
@@ -141,12 +136,27 @@ export default {
       const result = { isEmpty: false }
       const schema = this.schema[name]
 
-      if (Object.hasOwn(arguments[0], 'id') && !id) {
+      if (Object.hasOwn(arguments[0], 'id') && id == null) {
         result.isEmpty = true
 
         return result
-      } else if (id) {
+      } else if (id != null) {
         result.isAffixEmpty = true
+
+        // Better off creating a result constructor
+        Object.defineProperty(result, 'noAffixId', {
+          get () {
+            let noAffixId = this.id.split('_')
+
+            if (noAffixId.length === 3) {
+              noAffixId = '_' + noAffixId[1] + '_'
+            } else {
+              noAffixId = this.id
+            }
+
+            return noAffixId
+          }
+        })
 
         // find document using custom affixes
         if (prefixId || suffixId) {
@@ -280,21 +290,22 @@ export default {
 
         return {
           id: result.id,
+          noAffixId: result.noAffixId,
           item: result.item,
-          valid: true
+          isValid: true
         }
       } catch (errorMessage) {
         console.error(errorMessage)
 
         if (errorMessage.name === 'SchemaException') {
           return {
-            valid: false,
+            isValid: false,
             error: errorMessage
           }
         }
 
         return {
-          valid: false,
+          isValid: false,
           error: {
             details: errorMessage,
             name: 'Error'
@@ -522,13 +533,28 @@ export default {
         }
 
         if (schema.id.default) {
-          return prefix + this._affixId(schema.id.default) + suffix
+          const id = this._affixId(schema.id.default)
+
+          return {
+            id: prefix + id + suffix,
+            noAffixId: id
+          }
         } else {
-          return prefix + this.generateId() + suffix
+          const id = this.generateId()
+
+          return {
+            id: prefix + id + suffix,
+            noAffixId: id
+          }
         }
       }
 
-      return prefix + this.generateId() + suffix
+      const id = this.generateId()
+
+      return {
+        id: prefix + id + suffix,
+        noAffixId: id
+      }
     },
     /**
      * Process listeners on update event
@@ -736,7 +762,7 @@ export default {
 
         if (end) {
           const result = {
-            valid: true,
+            isValid: true,
             target: data.rootTarget,
             value: data.rootTarget,
             name: data.name
@@ -770,7 +796,7 @@ export default {
       }
 
       const result = {
-        valid: true,
+        isValid: true,
         target: data.rootTarget,
         value: data.rootTarget,
         name: data.name
@@ -778,6 +804,7 @@ export default {
 
       if (data.id) {
         result.id = data.id
+        result.noAffixId = data.noAffixId
         result.item = data.rootTarget[data.id]
       }
 
@@ -829,28 +856,29 @@ export default {
       if (options) {
         // generate id
         if (!options.id) {
-          const id = this._defaultCollectionId(name, options)
+          const collectionId = this._defaultCollectionId(name, options)
 
           // update export data
-          data.id = id
-          data.name = name + '/' + id
+          data.id = collectionId.id
+          data.noAffixId = collectionId.noAffixId
+          data.name = name + '/' + collectionId.id
 
-          target[id] = source
+          target[collectionId.id] = source
         }
 
         hasOptions = options.depth === depth || (depth === 1 && !options.depth)
       } else {
-        // generate id
-        const id = this._defaultCollectionId(name)
+        const collectionId = this._defaultCollectionId(name)
 
         // update export data
-        data.id = id
-        data.name = name + '/' + id
+        data.id = collectionId.id
+        data.noAffixId = collectionId.noAffixId
+        data.name = name + '/' + collectionId.id
 
-        target[id] = source
+        target[collectionId.id] = source
 
         // change target
-        target = target[id]
+        target = target[collectionId.id]
       }
 
       if (schema.options || hasOptions) {
@@ -986,6 +1014,10 @@ export default {
     },
     '_unfreeze/object' (source) {
       const target = {}
+
+      if (source.constructor.name !== 'Object') {
+        return source
+      }
 
       for (const prop in source) {
         if (Object.hasOwn(source, prop)) {
