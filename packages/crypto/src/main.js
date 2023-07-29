@@ -1,5 +1,5 @@
-import checksum from './hasher'
-import uuid from './uuid'
+import checksum from './hasher.js'
+import uuid from './uuid.js'
 
 export {
   checksum,
