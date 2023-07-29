@@ -112,8 +112,7 @@ export default {
           type: 'setter',
           value: 'innerHTML'
         }]
-      },
-      events: ['click']
+      }
     },
     {
       name: 'h1',
