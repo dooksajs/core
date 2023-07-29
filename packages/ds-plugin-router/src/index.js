@@ -1,38 +1,18 @@
 /**
  * Dooksa widget plugin.
- * @module plugin
+ * @namespace dsRouter
  */
 export default {
   name: 'dsRouter',
   version: 1,
-  dependencies: [
-    {
-      name: 'dsEvent',
-      version: 1
-    }
-  ],
   data: {
-    path: {
+    sections: {
       default: {},
       schema: {
         type: 'collection',
-        items: {
-          type: 'string'
-        }
-      }
-    },
-    currentPath: {
-      private: true,
-      default: ''
-    },
-    state: {
-      private: true,
-      default: {}
-    },
-    items: {
-      default: {},
-      schema: {
-        type: 'collection',
+        defaultId () {
+          return this.$method('dsRouter/currentPath')
+        },
         items: {
           type: 'object'
         }
@@ -40,41 +20,67 @@ export default {
     }
   },
   setup () {
-    // set current path
-    this.currentPath = this.currentPathname()
-
-    window.addEventListener('popstate', () => {
-      this._update(this.currentPath, this.currentPathname(), (state) => {
-        this.$method('dsPage/updateDOM', state)
-        this.$emit('dsRouter/navigate', {
-          id: this.getCurrentId(),
-          payload: state
-        })
-      })
+    window.addEventListener('popstate', (event) => {
+      console.log(
+        `location: ${document.location}, state: ${JSON.stringify(event.state)}`
+      )
     })
+    // window.addEventListener('popstate', () => {
+    //   console.log(this.currentPath())
+    //   // this._update(this.currentPath, this.currentPathname(), (state) => {
+    //   //   this.$emit('dsRouter/navigate', {
+    //   //     id: this.getCurrentId(),
+    //   //     payload: state
+    //   //   })
+    //   // })
+    // })
   },
+  /** @lends dsRouter */
   methods: {
-    getCurrentId () {
-      const currentPathname = this.currentPathname()
+    navigate ({ to }) {
+      const from = this.currentPath()
 
-      return this.items[currentPathname]
-    },
-    currentPathname () {
-      return window.location.pathname
-    },
-    navigate (nextPath) {
-      this._update(this.currentPathname(), nextPath, (state) => {
-        // update history
-        window.history.pushState(state, '', nextPath)
-        // update current path
-        this.currentPath = this.currentPathname()
+      // exit if path is the same as current path
+      if (to === from) {
+        return
+      }
+      const fromSections = this.$getDataValue('dsPage/sections', { id: from })
+      const toSections = this.$getDataValue('dsPage/sections', { id: to })
 
-        this.$method('dsPage/updateDOM', state)
-        this.$emit('dsRouter/navigate', {
-          id: this.getCurrentId(),
-          payload: state
-        })
-      })
+      if (toSections.isEmpty) {
+        // get data
+      }
+      debugger
+      for (const dsSectionId in toSections.item) {
+        if (Object.hasOwn(toSections.item, dsSectionId)) {
+          const toViewId = toSections.item[dsSectionId]
+          const fromViewId = fromSections.item[dsSectionId]
+
+          if (!fromViewId) {
+            //
+          } else if (fromViewId !== toViewId) {
+            const dsWidgetViewId = this.$getDataValue('ds')
+            this.$method('dsView/detach', fromViewId)
+          }
+        }
+      }
+
+      for (const dsSectionId in fromSections.item) {
+        if (Object.hasOwn(fromSections.item, dsSectionId)) {
+          const toViewId = toSections.item[dsSectionId]
+          const fromViewId = fromSections.item[dsSectionId]
+
+          if (!toViewId) {
+            this.$method('dsView/detach', fromViewId)
+          }
+        }
+      }
+
+      // update history
+      window.history.pushState({ to, from }, '', to)
+    },
+    currentPath () {
+      return this.cleanPath(window.location.pathname) || '/'
     },
     cleanPath (value) {
       const text = value.toString().trim().toLocaleLowerCase('en-US')
@@ -84,33 +90,6 @@ export default {
         .replace(/[+]/g, '-') // Replace + with '-'
         .replace(/[^\w-]+/g, '') // Remove all non-word chars
         .replace(/--+/g, '-') // Replace multiple - with single -
-    },
-    _update (prevPath, nextPath, callback = () => {}) {
-      const state = {
-        nextPath,
-        prevPath,
-        nextId: this.items[nextPath],
-        prevId: this.items[prevPath]
-      }
-      // update current path
-      this.currentPath = this.currentPathname()
-
-      if (!state.nextId) {
-        this.$action('dsPage/getOneByPath', {
-          dsPagePath: this.cleanPath(nextPath)
-        },
-        {
-          onSuccess: (data) => {
-            state.nextId = data.id
-
-            this.$method('dsPage/set', data)
-
-            callback(state)
-          }
-        })
-      } else {
-        callback(state)
-      }
     }
   }
 }
