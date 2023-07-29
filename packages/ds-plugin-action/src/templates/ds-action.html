@@ -1,0 +1,101 @@
+<template ds-id="navbar">
+  <nav class="navbar navbar-expand-sm bg-body-tertiary mb-5">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">
+        <img src="https://getbootstrap.com/docs/5.3/assets/brand/bootstrap-logo.svg" alt="Logo" width="30" height="24" class="d-inline-block align-text-top">
+        Dooksa
+      </a>
+
+      <button class="navbar-toggler" type="button" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav" ds-section>
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/" ds-on-click="link">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/features" ds-on-click="link">Features</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/pricing" ds-on-click="link">Pricing</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</template>
+
+<template ds-id="main">
+  <div class="container" ds-section>
+    <h1>Render test</h1>
+
+    <div class="card mb-3">
+      <img src="https://picsum.photos/800/900" class="card-img-top" alt="...">
+      <div class="card-body">
+        <h5 class="card-title">Card title</h5>
+        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+        <a ds-on-click="link" href="/go-somewhere" class="btn btn-primary">Go somewhere</a>
+      </div>
+    </div>
+
+    <div class="card mb-3">
+      <img src="https://picsum.photos/600" class="card-img-top" alt="...">
+      <div class="card-body">
+        <h5 class="card-title">Card title</h5>
+        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+        <a class="btn btn-primary">Go somewhere</a>
+      </div>
+    </div>
+
+    <div class="card mb-3">
+      <img src="https://picsum.photos/800/300" class="card-img-top" alt="...">
+      <div class="card-body">
+        <h5 class="card-title">Card title</h5>
+        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+        <a class="btn btn-primary">Go somewhere</a>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template ds-id="footer">
+  <footer class="bg-dark py-3 text-light sticky-lg-bottom">
+    <div class="container">
+      This is a footer message
+    </div>
+  </footer>
+</template>
+
+<script>
+  return {
+    name: 'Actions',
+    description: 'test actions',
+    version: 1,
+    actions: {
+      link: [
+        {
+          dsAction: 'dsRouter/navigate',
+          dsParams: {
+            to: {
+              dsAction: 'map/actionValue',
+              dsParams: {
+                map: 'value',
+                value: {
+                  dsAction: 'get/dataValue',
+                  dsParams: {
+                    name: 'dsContent/items',
+                    id: {
+                      dsAction: 'get/eventValue',
+                      dsParams: 'dsContentId'
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+    }
+  }
+</script>
