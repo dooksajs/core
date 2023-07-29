@@ -1,3 +1,4 @@
+import dsData from '@dooksa/ds-plugin-data'
 import resource from '@dooksa/resource-loader'
 
 /**
@@ -194,20 +195,22 @@ export default {
 
     this.isDev = isDev
     this.isLoaded[NAME] = true
-    // ISSUE: should import dsData
-    this._addOptions(plugins.dsData.name, plugins.dsData.options)
-    this.plugins[plugins.dsData.name] = plugins.dsData
-    this.pluginUseQueue.push(plugins.dsData)
-    this.queue[plugins.dsData.name] = []
-    this.depQueue[plugins.dsData.name] = []
+    // add dsData
+    this.plugins[dsData.name] = dsData
+    this.pluginUseQueue.push({
+      name: dsData.name,
+      plugin: dsData
+    })
+    this.queue[dsData.name] = []
+    this.depQueue[dsData.name] = []
 
-    delete plugins.dsData
     // add plugins to install queue
     for (const key in plugins) {
       if (Object.hasOwn(plugins, key)) {
         const plugin = plugins[key]
 
         this._addOptions(plugin.name, plugin.options)
+
         this.plugins[plugin.name] = plugin
         this.pluginUseQueue.push(plugin)
         this.queue[plugin.name] = []
@@ -227,14 +230,12 @@ export default {
       }
     }
 
-    if (isDev) {
-      return {
-        components: this.components,
-        $method: this._method.bind(this),
-        $action: this._action.bind(this),
-        $setDataValue: this._contextMethod('dsData/$set').bind(this),
-        $getDataValue: this._contextMethod('dsData/$get').bind(this)
-      }
+    return {
+      components: this.components,
+      $method: this._method.bind(this),
+      $action: this._action.bind(this),
+      $setDataValue: this._contextMethod('dsData/$set').bind(this),
+      $getDataValue: this._contextMethod('dsData/$get').bind(this)
     }
   },
   /** @lends @dsManager */

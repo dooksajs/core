@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@dooksa/ds-plugin": "workspace:^",
-    "@dooksa/ds-plugin-database": "workspace:^",
+    "@dooksa/ds-plugin-data": "workspace:^",
     "@dooksa/ds-plugin-template": "workspace:^",
     "@dooksa/resource-loader": "bitbucket:dooksa/resource-loader"
   }
