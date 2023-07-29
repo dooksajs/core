@@ -1,0 +1,28 @@
+{
+  "name": "@dooksa/ds-server-plugin-web-server",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Web server for a Dooksa app",
+  "author": "Thomas David <tom@mightysmile.com>",
+  "repository": "git@github.com:dooksajs/dooksa.git",
+  "license": "MPL-2.0",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "ds-scripts dev",
+    "test:open": "ds-scripts --open test",
+    "test:run": "ds-scripts --run test",
+    "test:record": "ds-scripts --run --record test",
+    "lint": "standard",
+    "lint:fix": "standard --fix"
+  },
+  "devDependencies": {
+    "@dooksa/ds-scripts": "workspace:^",
+    "pino-pretty": "^10.1.0"
+  },
+  "dependencies": {
+    "@fastify/cookie": "^8.3.0",
+    "@fastify/helmet": "^11.0.0",
+    "fastify": "^4.19.2"
+  }
+}
