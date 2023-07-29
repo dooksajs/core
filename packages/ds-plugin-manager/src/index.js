@@ -575,11 +575,19 @@ export default {
         const plugin = dependencies[i]
         // Check if plugin is loaded
         if (!this.isLoaded[plugin.name]) {
+          let options = this._getOptions(plugin.name)
+
+          if (plugin.options) {
+            options = Object.assign(options, plugin.options)
+          }
+
+          options.setupOnRequest = false
+
+          this._addOptions(plugin.name, options)
+
           const depPlugin = this._use({
             name: plugin.name,
-            options: {
-              setupOnRequest: false
-            }
+            options
           })
           // Add to plugin loading queue
           this.depQueue[name].push(depPlugin)
