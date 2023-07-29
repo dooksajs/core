@@ -1,0 +1,39 @@
+{
+  "name": "@dooksa/ds-app-client",
+  "version": "0.0.0",
+  "description": "Dooksa client app",
+  "author": "Thomas David <tom@mightysmile.com>",
+  "repository": "git@github.com:dooksajs/dooksa.git",
+  "license": "MPL-2.0",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "ds-scripts build",
+    "test:open": "ds-scripts --open test",
+    "test:run": "ds-scripts --run test",
+    "test:record": "ds-scripts --run --record test",
+    "lint": "standard",
+    "lint:fix": "standard --fix"
+  },
+  "devDependencies": {
+    "@dooksa/ds-scripts": "workspace:^"
+  },
+  "dependencies": {
+    "@dooksa/create-app": "workspace:^",
+    "@dooksa/ds-plugin-action": "workspace:^",
+    "@dooksa/ds-plugin-component": "workspace:^",
+    "@dooksa/ds-plugin-content": "workspace:^",
+    "@dooksa/ds-plugin-database": "workspace:^",
+    "@dooksa/ds-plugin-event": "workspace:^",
+    "@dooksa/ds-plugin-layout": "workspace:^",
+    "@dooksa/ds-plugin-metadata": "workspace:^",
+    "@dooksa/ds-plugin-operator": "workspace:^",
+    "@dooksa/ds-plugin-page": "workspace:^",
+    "@dooksa/ds-plugin-router": "workspace:^",
+    "@dooksa/ds-plugin-section": "workspace:^",
+    "@dooksa/ds-plugin-template": "workspace:^",
+    "@dooksa/ds-plugin-token": "workspace:^",
+    "@dooksa/ds-plugin-view": "workspace:^",
+    "@dooksa/ds-plugin-widget": "workspace:^"
+  }
+}
