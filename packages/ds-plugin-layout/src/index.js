@@ -43,28 +43,40 @@ export default {
   methods: {
     create ({
       dsLayoutId,
-      dsWidgetSectionId,
-      dsWidgetInstanceId,
-      dsWidgetPrefixId,
+      dsSectionId,
+      dsSectionUniqueId,
+      dsWidgetId,
       dsWidgetMode,
       dsViewId
     }) {
       const layout = this.$getDataValue('dsLayout/items', {
         id: dsLayoutId
       })
-      const events = this.$getDataValue('dsWidget/instanceEvents', {
-        id: dsWidgetInstanceId,
+
+      const events = this.$getDataValue('dsWidget/events', {
+        id: dsWidgetId,
         suffixId: dsWidgetMode
       }).item || {}
 
       const layoutItems = []
+      let viewItems = this.$getDataValue('dsWidget/view', {
+        id: dsWidgetId,
+        suffixId: dsWidgetMode
+      })
+      const isViewItemsEmpty = viewItems.isEmpty
+
+      if (isViewItemsEmpty) {
+        viewItems = []
+      } else {
+        viewItems = viewItems.item
+      }
 
       for (let i = 0; i < layout.item.length; i++) {
         const { componentId, contentIndex, sectionIndex, parentIndex } = layout.item[i]
         const event = events[i]
         const item = {}
         let parentViewId = dsViewId
-        let sectionId = dsWidgetSectionId
+        let sectionId = dsSectionId
 
         layoutItems.push(item)
 
@@ -79,8 +91,9 @@ export default {
         }
 
         const childViewId = this.$method('dsView/createNode', {
-          dsWidgetSectionId: sectionId,
-          dsWidgetInstanceId,
+          dsViewId: viewItems[i],
+          dsSectionId: sectionId,
+          dsWidgetId,
           dsComponentId: componentId
         })
 
@@ -89,20 +102,25 @@ export default {
           dsViewParentId: parentViewId
         })
 
+        // collect new view ids for instance
+        if (isViewItemsEmpty) {
+          viewItems.push(childViewId)
+        }
+
         item.dsViewId = childViewId
 
         if (Number.isInteger(contentIndex)) {
           const language = this.$getDataValue('dsMetadata/language').item
-          const instanceContentId = this.$getDataValue('dsWidget/instanceContent', {
-            id: dsWidgetInstanceId,
-            prefixId: dsWidgetPrefixId,
+          const contentId = this.$getDataValue('dsWidget/content', {
+            id: dsWidgetId,
+            prefixId: dsSectionUniqueId,
             suffixId: dsWidgetMode,
             options: {
               position: contentIndex
             }
           }).item
           const dsContentId = this.$getDataValue('dsContent/items', {
-            id: instanceContentId,
+            id: contentId,
             suffixId: language
           }).id
 
@@ -129,17 +147,17 @@ export default {
 
         if (Number.isInteger(sectionIndex)) {
           // get next widget section id
-          sectionId = this.$getDataValue('dsWidget/instanceSections', {
-            id: dsWidgetInstanceId,
-            prefixId: dsWidgetPrefixId,
+          sectionId = this.$getDataValue('dsWidget/sections', {
+            id: dsWidgetId,
+            prefixId: dsSectionUniqueId,
             suffixId: dsWidgetMode,
             options: {
               position: sectionIndex
             }
           }).item
 
-          this.$method('dsWidget/create', {
-            dsWidgetSectionId: sectionId,
+          this.$method('dsSection/create', {
+            dsSectionId: sectionId,
             dsViewId: childViewId
           })
         }
@@ -148,14 +166,34 @@ export default {
           // match core event names with namespaced core plugins
           const eventName = this.eventNames[event.name] || event.name
 
-          this.$setDataValue('dsEvent/listeners', {
+          const dsEvent = this.$setDataValue('dsEvent/listeners', {
             source: event.value,
             options: {
               id: childViewId,
               suffixId: eventName
             }
           })
+
+          this.$setDataValue('dsPage/events', {
+            source: dsEvent.id,
+            options: {
+              id: this.$method('dsRouter/currentPath'),
+              source: {
+                push: true
+              }
+            }
+          })
         }
+      }
+
+      // set view items used with widget instance
+      if (isViewItemsEmpty) {
+        this.$setDataValue('dsWidget/view', {
+          source: viewItems,
+          options: {
+            id: dsWidgetId
+          }
+        })
       }
     }
   }
