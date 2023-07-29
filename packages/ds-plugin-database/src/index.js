@@ -1,5 +1,3 @@
-import PocketBase from 'pocketbase'
-
 /**
  * @namespace dsDatabase
  */
@@ -7,59 +5,130 @@ export default {
   name: 'dsDatabase',
   version: 1,
   data: {
-    client: {
+    adapter: {
       private: true,
-      default: {}
+      default: 'dsDatabaseLocal'
+    },
+    createName: {
+      private: true,
+      default: 'create'
+    },
+    deleteName: {
+      private: true,
+      default: 'delete'
+    },
+    getListName: {
+      private: true,
+      default: 'getList'
+    },
+    getOneName: {
+      private: true,
+      default: 'getOne'
+    },
+    updateName: {
+      private: true,
+      default: 'update'
     }
   },
-  setup ({ baseUrl = 'https://no.dooksa.com', lang = 'en-US' }) {
-    this.client = new PocketBase(baseUrl, lang)
+  setup ({ adapter }) {
+    if (adapter) {
+      this.adapter = adapter
+    }
+
+    // this._updateNames()
   },
   /** @lends dsDatabase */
   methods: {
     /**
      * Get a list of documents
-     * @param {Object} param 
+     * @param {Object} param
      * @param {string} param.collection - ID or name of the records' collection.
      * @param {number} param.page - The page (aka. offset) of the paginated list (default to 1).
      * @param {number} param.perPage - The max returned records per page (default to 25).
      */
     getList ({ collection, page = 1, perPage = 25, options = {} }) {
       return new Promise((resolve, reject) => {
-        this.client.records.getList(collection, page, perPage, options)
-          .then(records => resolve(records))
-          .catch(error => reject(error))
+        this.$action(this.getListName,
+          { collection, page, perPage, options },
+          {
+            onSuccess: (result) => resolve(result),
+            onError: (error) => reject(error)
+          })
       })
     },
     getOne ({ collection, id, options = {} }) {
       return new Promise((resolve, reject) => {
-        this.client.records.getOne(collection, id, options)
-          .then(record => resolve(record))
-          .catch(error => reject(error))
+        this.$action(this.getOneName, {
+          collection,
+          id,
+          options
+        },
+        {
+          onSuccess: (result) => resolve(result),
+          onError: (error) => reject(error)
+        })
       })
     },
-    create ({ collection, data, options = {} }) {
-      // add a modal check
+    create ({ collection, id, data, options = {} }) {
       return new Promise((resolve, reject) => {
-        this.client.records.create(collection, data, options)
-          .then(record => resolve(record))
-          .catch(error => reject(error))
+        this.getOne({ collection, id, options })
+          .then(response => {
+            this.update({
+              collection,
+              id: response.id,
+              data,
+              options
+            })
+              .then((result) => resolve(result))
+              .catch((error) => reject(error))
+          })
+          .catch(response => {
+            if (response.code === 404) {
+              // create new entry
+              this.$action(this.createName, {
+                collection,
+                data,
+                options
+              },
+              {
+                onSuccess: (result) => resolve(result),
+                onError: (error) => reject(error)
+              })
+            }
+          })
       })
     },
     update ({ collection, id, data }) {
-      // add a modal check
       return new Promise((resolve, reject) => {
-        this.client.records.update(collection, id, data)
-          .then(record => resolve(record))
-          .catch(error => reject(error))
+        this.$action(this.updateName, {
+          collection,
+          id,
+          data
+        },
+        {
+          onSuccess: (result) => resolve(result),
+          onError: (error) => reject(error)
+        })
       })
     },
     delete ({ collection, id }) {
       return new Promise((resolve, reject) => {
-        this.client.records.delete(collection, id)
-          .then(() => resolve('OK'))
-          .catch(error => reject(error))
+        this.$action(this.deleteName, {
+          collection,
+          id
+        },
+        {
+          onSuccess: (result) => resolve(result),
+          onError: (error) => reject(error)
+        })
       })
+    },
+    _updateNames () {
+      this.createName = this.adapter + '/' + this.createName
+      this.deleteName = this.adapter + '/' + this.deleteName
+      this.getListName = this.adapter + '/' + this.getListName
+      this.getOneName = this.adapter + '/' + this.getOneName
+      this.updateName = this.adapter + '/' + this.updateName
     }
   }
 }

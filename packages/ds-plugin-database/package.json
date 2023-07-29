@@ -2,7 +2,7 @@
   "name": "@dooksa/ds-plugin-database",
   "private": true,
   "version": "0.0.0",
-  "description": "Dooksa database plugin",
+  "description": "Dooksa database client plugin",
   "author": "Thomas David <tom@mightysmile.com>",
   "repository": "git@github.com:dooksajs/dooksa.git",
   "license": "MPL-2.0",
@@ -17,7 +17,6 @@
     "lint:fix": "standard --fix"
   },
   "devDependencies": {
-    "@dooksa/ds-scripts": "workspace:^",
-    "pocketbase": "^0.7.1"
+    "@dooksa/ds-scripts": "workspace:^"
   }
 }
