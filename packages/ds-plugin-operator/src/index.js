@@ -26,6 +26,15 @@ export default {
     }
   },
   methods: {
+    iterate ({ item, dsActionId }) {
+      for (const key in item) {
+        if (Object.hasOwn(item, key)) {
+          const value = item[key]
+
+          this.$method('dsAction/dispatch', { dsActionId, payload: { key, value } })
+        }
+      }
+    },
     /**
      * Evaluate two values
      * @param {Object} eval - The Object containing the data to evaluate two values
