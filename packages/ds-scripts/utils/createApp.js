@@ -1,54 +1,46 @@
-import dsApp from '@dooksa/ds-app'
+import dsAppClient from '@dooksa/ds-app-client'
 import dsDevTool from '@dooksa/ds-plugin-devtool'
-import dsPlugin from '@dooksa/plugin'
 import dsTemplate from '@dooksa/ds-plugin-template'
+import dsPlugin from '@dooksa/plugin'
 
 // start app
 export default (
-  page, {
-    options,
-    app = dsApp,
-    plugins = [],
-    pluginConstructor,
-    pluginManager
+  {
+    dsApp = dsAppClient,
+    plugins = []
   },
-  currentOptions = {}
+  options = {}
 ) => {
-  if (pluginConstructor) {
-    app.DsPlugin = pluginConstructor
-  }
-
-  if (pluginManager) {
-    app.dsManager = pluginManager
-  }
-
-  const requiredPluginNames = ['dsDevTool', 'dsTemplate']
-  const requiredPlugins = { dsDevTool, dsTemplate }
+  dsApp.use({
+    name: dsDevTool.name,
+    version: dsDevTool.version,
+    plugin: dsDevTool,
+    options
+  })
+  dsApp.use({
+    name: dsTemplate.name,
+    version: dsTemplate.version,
+    plugin: dsTemplate,
+    options
+  })
 
   // load the plugin and dependencies
   for (let i = 0; i < plugins.length; i++) {
     const item = plugins[i]
-    const options = item.options ?? {}
-    const pluginIndex = requiredPluginNames.indexOf(item.name)
+    const options = item.options || {}
 
-    if (pluginIndex > -1) {
-      requiredPluginNames.splice(pluginIndex, 1)
-    }
-
-    app.use(item.plugin, options)
+    dsApp.use(item.plugin, options)
   }
 
-  for (let i = 0; i < requiredPluginNames.length; i++) {
-    const name = requiredPluginNames[i]
+  dsApp.use({
+    name: dsPlugin.name,
+    version: dsPlugin.version,
+    plugin: dsPlugin,
+    options
+  })
 
-    app.use(requiredPlugins[name], {})
-  }
-
-  // add current plugin
-  app.use(dsPlugin, currentOptions)
-
-  return app.init({
+  return dsApp.start({
     isDev: true,
-    dsPage: page
+    options
   })
 }

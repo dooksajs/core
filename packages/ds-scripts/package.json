@@ -32,8 +32,9 @@
     ]
   },
   "dependencies": {
+    "@dooksa/create-app": "workspace:^",
     "@dooksa/crypto": "workspace:^",
-    "@dooksa/ds-app": "workspace:^",
+    "@dooksa/ds-app-client": "workspace:^",
     "@dooksa/ds-plugin-devtool": "workspace:^",
     "@dooksa/ds-plugin-template": "workspace:^",
     "@dooksa/parse-action": "workspace:^",

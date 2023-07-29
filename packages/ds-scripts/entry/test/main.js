@@ -12,7 +12,7 @@ window.dsApp = app
 
 // build templates
 if (dsConfig.templates) {
-  const dsWidgetSectionId = page.widgets.entry[page.id][0]
+  const dsSectionId = page.widgets.entry[page.id][0]
 
   buildTemplates(app, dsConfig.templates)
     .then(instances => {
@@ -22,10 +22,10 @@ if (dsConfig.templates) {
         for (let i = 0; i < instance.templates.length; i++) {
           const template = instance.templates[i]
           const instanceId = app.$method('dsWidget/insertInstance', {
-            dsWidgetSectionId
+            dsSectionId
           })
 
-          app.$setDataValue('dsWidget/instanceTemplates', {
+          app.$setDataValue('dsWidget/templates', {
             source: template.id,
             options: {
               id: instanceId,
@@ -38,7 +38,7 @@ if (dsConfig.templates) {
       const rootViewId = app.$getDataValue('dsView/rootViewId')
 
       app.$method('dsWidget/attachSection', {
-        dsWidgetSectionId,
+        dsSectionId,
         dsViewId: rootViewId.item
       })
     })

@@ -1,12 +1,11 @@
 import createApp from '../../utils/createApp'
 import dsConfig from 'dsConfig'
 import buildTemplates from '../../utils/buildTemplates'
-import page from '../../data/index.js'
 
 const plugins = dsConfig.devDependencies ?? { options: [], plugins: {} }
 const options = dsConfig.options ?? {}
 const setup = dsConfig.setup ?? {}
-const app = createApp(page, plugins, { ...options, setup })
+const app = createApp(plugins, { ...options, setup })
 
 window.dsDevTool = app
 
@@ -41,6 +40,9 @@ if (dsConfig.templates) {
     }
   })
 
+  const dsSections = []
+  const widgetLoaded = []
+
   for (let i = 0; i < template.elements.length; i++) {
     const element = template.elements[i]
     const result = app.$method('dsTemplate/parseHTML', {
@@ -48,12 +50,29 @@ if (dsConfig.templates) {
       actions: template.actionSequenceRef
     })
 
-    const dsWidgetSectionId = app.$method('dsTemplate/create', {
+    const dsSectionId = app.$method('dsTemplate/create', {
       id: result.id,
       mode: result.mode,
       language: result.lang
     })
 
-    app.$action('dsWidget/create', { dsWidgetSectionId })
+    dsSections.push(dsSectionId)
+
+    widgetLoaded.push(new Promise(resolve => {
+      app.$action('dsSection/create', { dsSectionId }, {
+        onSuccess: () => resolve()
+      })
+    }))
   }
+
+  app.$setDataValue('dsPage/sectionEntry', {
+    source: dsSections,
+    options: {
+      id: app.$method('dsRouter/currentPath')
+    }
+  })
+
+  Promise.all(widgetLoaded).then(() => {
+    app.$action('dsPage/save')
+  })
 }
