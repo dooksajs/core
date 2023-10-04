@@ -1,6 +1,5 @@
 import dsAppClient from '@dooksa/ds-app-client'
 import dsDevTool from '@dooksa/ds-plugin-devtool'
-import dsTemplate from '@dooksa/ds-plugin-template'
 import dsPlugin from '@dooksa/plugin'
 
 // start app
@@ -11,33 +10,19 @@ export default (
   },
   options = {}
 ) => {
-  dsApp.use({
+  plugins.push({
     name: dsDevTool.name,
     version: dsDevTool.version,
-    plugin: dsDevTool,
+    value: dsDevTool,
     options
-  })
-  dsApp.use({
-    name: dsTemplate.name,
-    version: dsTemplate.version,
-    plugin: dsTemplate,
-    options
-  })
-
-  // load the plugin and dependencies
-  for (let i = 0; i < plugins.length; i++) {
-    const item = plugins[i]
-    const options = item.options || {}
-
-    dsApp.use(item.plugin, options)
-  }
-
-  dsApp.use({
+  }, {
     name: dsPlugin.name,
     version: dsPlugin.version,
-    plugin: dsPlugin,
+    value: dsPlugin,
     options
   })
+
+  dsApp.use(plugins)
 
   return dsApp.start({
     isDev: true,
