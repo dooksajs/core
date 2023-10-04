@@ -1,3 +1,4 @@
+import dsData from '@dooksa/ds-plugin-data'
 import dssUser from '@dooksa/ds-server-plugin-user'
 import dssComponents from '@dooksa/ds-server-plugin-component'
 import dssSection from '@dooksa/ds-server-plugin-section'
@@ -13,64 +14,69 @@ import dssWebServer from '@dooksa/ds-server-plugin-web-server'
 
 const plugins = [
   {
+    name: dsData.name,
+    version: dsData.version,
+    value: dsData
+  },
+  {
     name: dssDatabase.name,
     version: dssDatabase.version,
-    plugin: dssDatabase
-  },
-  {
-    name: dssContent.name,
-    version: dssContent.version,
-    plugin: dssContent
-  },
-  {
-    name: dssPage.name,
-    version: dssPage.version,
-    plugin: dssPage
-  },
-  {
-    name: dssEvent.name,
-    version: dssEvent.version,
-    plugin: dssEvent
-  },
-  {
-    name: dssLayout.name,
-    version: dssLayout.version,
-    plugin: dssLayout
-  },
-  {
-    name: dssTemplate.name,
-    version: dssTemplate.version,
-    plugin: dssTemplate
-  },
-  {
-    name: dssAction.name,
-    version: dssAction.version,
-    plugin: dssAction
-  },
-  {
-    name: dssWidget.name,
-    version: dssWidget.version,
-    plugin: dssWidget
-  },
-  {
-    name: dssSection.name,
-    version: dssSection.version,
-    plugin: dssSection
-  },
-  {
-    name: dssComponents.name,
-    version: dssComponents.version,
-    plugin: dssComponents
-  },
-  {
-    name: dssUser.name,
-    version: dssUser.version,
-    plugin: dssUser
+    value: dssDatabase
   },
   {
     name: dssWebServer.name,
     version: dssWebServer.version,
-    plugin: dssWebServer
+    value: dssWebServer
+  },
+  {
+    name: dssContent.name,
+    version: dssContent.version,
+    value: dssContent
+  },
+  {
+    name: dssPage.name,
+    version: dssPage.version,
+    value: dssPage
+  },
+  {
+    name: dssEvent.name,
+    version: dssEvent.version,
+    value: dssEvent
+  },
+  {
+    name: dssLayout.name,
+    version: dssLayout.version,
+    value: dssLayout
+  },
+  {
+    name: dssTemplate.name,
+    version: dssTemplate.version,
+    value: dssTemplate
+  },
+  {
+    name: dssAction.name,
+    version: dssAction.version,
+    value: dssAction
+  },
+  {
+    name: dssWidget.name,
+    version: dssWidget.version,
+    value: dssWidget
+  },
+  {
+    name: dssSection.name,
+    version: dssSection.version,
+    value: dssSection
+  },
+  {
+    name: dssComponents.name,
+    version: dssComponents.version,
+    value: dssComponents
+  },
+  {
+    name: dssUser.name,
+    version: dssUser.version,
+    value: dssUser
   }
 ]
 

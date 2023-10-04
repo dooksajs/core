@@ -1,3 +1,4 @@
+import dsData from '@dooksa/ds-plugin-data'
 import dsMetadata from '@dooksa/ds-plugin-metadata'
 import dsAction from '@dooksa/ds-plugin-action'
 import dsSection from '@dooksa/ds-plugin-section'
@@ -15,74 +16,79 @@ import dsDatabase from '@dooksa/ds-plugin-database'
 
 const plugins = [
   {
+    name: dsData.name,
+    version: dsData.version,
+    value: dsData
+  },
+  {
     name: dsMetadata.name,
     version: dsMetadata.version,
-    plugin: dsMetadata
+    value: dsMetadata
   },
   {
     name: dsAction.name,
     version: dsAction.version,
-    plugin: dsAction
+    value: dsAction
   },
   {
     name: dsToken.name,
     version: dsToken.version,
-    plugin: dsToken
+    value: dsToken
   },
   {
     name: dsRouter.name,
     version: dsRouter.version,
-    plugin: dsRouter
+    value: dsRouter
   },
   {
     name: dsComponent.name,
     version: dsComponent.version,
-    plugin: dsComponent
+    value: dsComponent
   },
   {
     name: dsView.name,
     version: dsView.version,
-    plugin: dsView
+    value: dsView
   },
   {
     name: dsContent.name,
     version: dsContent.version,
-    plugin: dsContent
+    value: dsContent
   },
   {
     name: dsLayout.name,
     version: dsLayout.version,
-    plugin: dsLayout
+    value: dsLayout
   },
   {
     name: dsWidget.name,
     version: dsWidget.version,
-    plugin: dsWidget
+    value: dsWidget
   },
   {
     name: dsSection.name,
     version: dsSection.version,
-    plugin: dsSection
+    value: dsSection
   },
   {
     name: dsEvent.name,
     version: dsEvent.version,
-    plugin: dsEvent
+    value: dsEvent
   },
   {
     name: dsOperator.name,
     version: dsOperator.version,
-    plugin: dsOperator
+    value: dsOperator
   },
   {
     name: dsPage.name,
     version: dsPage.version,
-    plugin: dsPage
+    value: dsPage
   },
   {
     name: dsDatabase.name,
     version: dsDatabase.version,
-    plugin: dsDatabase
+    value: dsDatabase
   },
   {
     name: 'dsTemplate',

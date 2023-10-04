@@ -2,11 +2,11 @@ import dsApp from '../src/index.js'
 import dsDevTool from '@dooksa/ds-plugin-devtool'
 import logger from 'sequelize-pretty-logger'
 
-dsApp.use({
+dsApp.use([{
   name: dsDevTool.name,
   version: dsDevTool.version,
-  plugin: dsDevTool
-})
+  value: dsDevTool
+}])
 
 const app = dsApp.start({
   isDev: true,
@@ -14,7 +14,7 @@ const app = dsApp.start({
     {
       name: 'dssWebServer',
       setup: {
-        secret: 'RTRe50oe-wX8gd9qzrWUY71W4yGob10c'
+        cookieSecret: 'RTRe50oe-wX8gd9qzrWUY71W4yGob10c'
       }
     },
     {
@@ -31,6 +31,5 @@ const app = dsApp.start({
     }
   ]
 })
-
-app.$action('dssWebServer/start')
-app.$action('dssDatabase/start')
+    app.$action('dssWebServer/start')
+    app.$action('dssDatabase/start')

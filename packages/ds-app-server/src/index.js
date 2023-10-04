@@ -4,10 +4,6 @@ import plugins from './plugins'
 const dsApp = createApp()
 
 // add plugins
-for (let i = 0; i < plugins.length; i++) {
-  const plugin = plugins[i]
-
-  dsApp.use(plugin)
-}
+dsApp.use(plugins)
 
 export default dsApp

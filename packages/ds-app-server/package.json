@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@dooksa/create-app": "workspace:^",
+    "@dooksa/ds-plugin-data": "workspace:^",
     "@dooksa/ds-server-plugin-action": "workspace:^",
     "@dooksa/ds-server-plugin-component": "workspace:^",
     "@dooksa/ds-server-plugin-content": "workspace:^",

@@ -23,6 +23,7 @@
     "@dooksa/ds-plugin-action": "workspace:^",
     "@dooksa/ds-plugin-component": "workspace:^",
     "@dooksa/ds-plugin-content": "workspace:^",
+    "@dooksa/ds-plugin-data": "workspace:^",
     "@dooksa/ds-plugin-database": "workspace:^",
     "@dooksa/ds-plugin-event": "workspace:^",
     "@dooksa/ds-plugin-layout": "workspace:^",
