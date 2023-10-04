@@ -1,5 +1,25 @@
 import { Sequelize, DataTypes, Op } from 'sequelize'
 
+function BulkData () {
+  this.isValid = true
+  this.value = []
+}
+
+BulkData.prototype.setError = function (message) {
+  this.isValid = false
+  this.error = message
+}
+
+BulkData.prototype.id = (string) => {
+  const id = string.split('_')
+
+  return {
+    default: '_' + id[1] + '_',
+    prefix: id[0],
+    suffix: id[2]
+  }
+}
+
 /**
  * @namespace dssDatabase
  */
@@ -17,6 +37,7 @@ export default {
       }
     },
     models: {
+      private: true,
       default: {},
       schema: {
         type: 'collection',
@@ -94,23 +115,29 @@ export default {
   },
   /** @lends dssDatabase */
   methods: {
+    $getModel (name) {
+      return this.model[name]
+    },
     association (item) {
       if (!this.associationTypes[item.type]) {
         throw new Error('No association type found')
       }
 
-      const source = this.$getDataValue('dssDatabase/models', { id: item.source })
+      const sourceModel = this.models[item.source]
 
-      if (source.isEmpty) {
+      if (!sourceModel) {
         throw new Error('Association source model not found: "' + item.source + '"')
       }
-      const target = this.$getDataValue('dssDatabase/models', { id: item.target })
+      const targetModel = this.models[item.target]
 
-      if (target.isEmpty) {
+      if (!targetModel) {
         throw new Error('Association target model not found: "' + item.target + '"')
       }
 
-      source.item[item.type](target.item, item.options || {})
+      sourceModel[item.type](targetModel, item.options || {})
+    },
+    bulkData () {
+      return new BulkData()
     },
     model ({ name, fields }) {
       const options = {}
@@ -134,13 +161,7 @@ export default {
       }
       const Model = this.sequelize.define(name, options)
 
-      this.$setDataValue('dssDatabase/models', {
-        source: Model,
-        options: {
-          id: name
-        },
-        typeCheck: false
-      })
+      this.models[name] = Model
     },
     start () {
       return new Promise((resolve, reject) => {
