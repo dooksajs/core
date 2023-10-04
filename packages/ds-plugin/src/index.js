@@ -1,4 +1,3 @@
-import createProxy from './utils/createProxy.js'
 import dsSchema from './utils/schema.js'
 
 /**
@@ -18,10 +17,6 @@ function DsPlugin (plugin, context = [], isDev) {
 
   this.name = plugin.name
   this.version = plugin.version
-
-  if (isDev) {
-    _context = createProxy(plugin.name, _context)
-  }
 
   // set data to context
   if (plugin.data) {
