@@ -10,7 +10,7 @@ import dsSchema from './utils/schema.js'
  * @param {Boolean} isDev - Sets development features
  */
 function DsPlugin (plugin, context = [], isDev) {
-  let _context = {
+  const _context = {
     name: plugin.name,
     version: plugin.version
   }
@@ -77,18 +77,24 @@ function DsPlugin (plugin, context = [], isDev) {
   // set methods
   if (plugin.methods) {
     const methods = {}
-    const contextMethods = {}
+    const contextMethods = []
 
     for (const key in plugin.methods) {
       if (Object.hasOwn(plugin.methods, key)) {
         const item = plugin.methods[key]
-        // Add method
-        _context[key] = item
         const firstChar = key.charAt(0)
+
+        // Add method to context
+        _context[key] = item
 
         // catch global methods
         if (firstChar === '$') {
-          contextMethods[key] = item.bind(_context)
+          contextMethods.push({
+            name: key,
+            value: item.value ? item.value.bind(_context) : item.bind(_context),
+            scope: item.scope || false,
+            export: !!item.export
+          })
 
           continue
         }
@@ -101,7 +107,10 @@ function DsPlugin (plugin, context = [], isDev) {
     }
 
     this.methods = methods
-    this.contextMethods = contextMethods
+
+    if (contextMethods.length) {
+      this.contextMethods = contextMethods
+    }
   }
 
   // set tokens
