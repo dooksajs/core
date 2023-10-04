@@ -58,11 +58,11 @@ function DsPlugin (plugin, context = [], isDev) {
     }
 
     if (item.name === 'isDev' && item.value) {
-      _context.isDev = true
+      // _context.isDev = true
 
-      if (plugin.name !== 'dsDevTool') {
-        _context.$action('dsDevTool/set', { _context, plugin })
-      }
+      // if (plugin.name !== 'dsDevTool') {
+      //   _context.$action('dsDevTool/set', { _context, plugin })
+      // }
     } else {
       _context[item.name] = item.value
     }
