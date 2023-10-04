@@ -1,5 +1,7 @@
-import Fastify from 'fastify'
-import cookie from '@fastify/cookie'
+import express from 'express'
+import helmet from 'helmet'
+import logger from 'pino-http'
+import cookieParser from 'cookie-parser'
 
 /**
  * Dooksa webserver.
@@ -9,45 +11,88 @@ export default {
   name: 'dssWebServer',
   version: 1,
   data: {
-    server: {
+    cookieSecret: {
+      private: true,
+      default: ''
+    },
+    app: {
       private: true,
       default: () => {}
+    },
+    routes: {
+      private: true,
+      default: {}
+    },
+    routeTypes: {
+      private: true,
+      default: {
+        get: true,
+        post: true,
+        put: true,
+        delete: true
+      }
     }
   },
-  setup ({ secret }) {
-    if (!secret || secret.length < 32) {
-      throw new Error('Invalid secret length; secret must be at 32 characters')
+  setup ({ cookieSecret, apiSuffix = '/api' }) {
+    if (!cookieSecret || cookieSecret.length < 32) {
+      throw new Error('Invalid cookie secret length; secret must be at 32 characters')
     }
 
-    this.server = Fastify({
-      logger: {
-        transport: {
-          target: 'pino-pretty',
-          options: {
-            translateTime: 'HH:MM:ss Z',
-            ignore: 'pid,hostname'
-          }
-        }
-      }
-    })
+    this.app = express()
+    this.cookieSecret = cookieSecret
 
-    this.server.register(cookie, {
-      secret,
+    // setup plugins
+    this.app.use(helmet())
+    this.app.use(express.json())
+    this.app.use(cookieParser(cookieSecret, {
       httpOnly: true,
       sameSite: true,
       secure: !this.isDev
-    })
+    }))
+
+    if (this.isDev) {
+      this.app.use(logger())
+    }
+
+    this.router = express.Router()
+
+    this.app.use(apiSuffix, this.router)
   },
   methods: {
-    route ({ method = 'get', path, handler }) {
-      this.server.route({ method, path, handler })
+    $getCookieSecret: {
+      value () {
+        return this.cookieParser
+      },
+      scope: ['dssUser']
+    },
+    /**
+     * Add a route to the server
+     * @param {string} path - path
+     * @param {Object} options - Extra options
+     * @param {string} options.method - HTTP method type
+     * @param {Array} options.handlers - List of callbacks
+     */
+    $addRoute (
+      path = '',
+      {
+        method = 'get',
+        handlers = []
+      }
+    ) {
+      if (!this.routeTypes[method]) {
+        return
+      }
+
+      // add forward slash
+      if (path[0] !== '/') {
+        path = '/' + path
+      }
+      
+      this.router[method](path, ...handlers)
     },
     start (port = 3000) {
-      this.server.listen({ port }, (err, address) => {
-        if (err) {
-          this.server.log.error(err.message)
-        }
-        // Server is now listening on ${address}
+      this.app.listen(port, () => {
+        console.log('Listening on port: ' + port)
       })
     }
   }
