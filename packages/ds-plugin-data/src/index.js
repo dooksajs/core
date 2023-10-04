@@ -88,7 +88,7 @@ export default {
      * @param {dsDataId} param.id - Data collection id
      * @param {function} param.listener - The listener function to run when event is fired
      */
-    $addListener (name, { on, id, refId, listener }) {
+    $addDataListener (name, { on, id, refId, listener }) {
       const listenerName = 'data/' + on + '/listeners'
       let listeners = this[listenerName]
 
@@ -121,197 +121,205 @@ export default {
         listenerRefs[refId] = true
       }
     },
-    /**
-     * Get data value
-     * @param {Object} param
-     * @param {string} param.name - Data collection name
-     * @param {string} param.id - Data collection document id
-     * @param {prefixId} param.id - Data collection document prefix
-     * @param {suffixId} param.id - Data collection document suffix
-     * @param {Object} param.options - Options
-     * @param {Object} param.options.position - Data collection document suffix
-     * @returns
-     */
-    $get (name, { id, prefixId, suffixId, options }) {
-      const result = { isEmpty: false }
-      const schema = this.schema[name]
-
-      if (Object.hasOwn(arguments[0], 'id') && id == null) {
-        result.isEmpty = true
-
-        return result
-      } else if (id != null) {
-        result.isAffixEmpty = true
-
-        // Better off creating a result constructor
-        Object.defineProperty(result, 'noAffixId', {
-          get () {
-            let noAffixId = this.id.split('_')
-
-            if (noAffixId.length === 3) {
-              noAffixId = '_' + noAffixId[1] + '_'
-            } else {
-              noAffixId = this.id
-            }
-
-            return noAffixId
-          }
-        })
-
-        // find document using custom affixes
-        if (prefixId || suffixId) {
-          let itemId
-
-          if (prefixId && suffixId) {
-            const prefix = this._affixId(prefixId)
-            const suffix = this._affixId(suffixId)
-
-            itemId = prefix + id + suffix
-          } else if (prefixId) {
-            const prefix = this._affixId(prefixId)
-
-            itemId = prefix + id
-          } else if (suffixId) {
-            const suffix = this._affixId(suffixId)
-
-            itemId = id + suffix
-          }
-
-          if (this.values[name][itemId] != null) {
-            result.isAffixEmpty = false
-            result.id = itemId
-            result.item = this.values[name][itemId]
-          }
-        }
-
-        if (result.isAffixEmpty) {
-          result.id = id
-          result.item = this.values[name][result.id]
-
-          // find document using default affixes
-          if (result.item == null && schema.id) {
-            let itemId
-
-            if (schema.id.prefix && schema.id.suffix) {
-              const prefix = this._affixId(schema.id.prefix)
-              const suffix = this._affixId(schema.id.suffix)
-
-              itemId = prefix + result.id + suffix
-            } else if (schema.id.prefix) {
-              const prefix = this._affixId(schema.id.prefix)
-
-              itemId = prefix + result.id
-            } else {
-              const suffix = this._affixId(schema.id.suffix)
-
-              itemId = result.id + suffix
-            }
-
-            result.id = itemId
-            result.item = this.values[name][itemId]
-
-            if (result.item == null) {
-              result.isEmpty = true
-            }
-          }
-        }
-      } else {
-        result.item = this.values[name]
-      }
-
-      if (options) {
-        if (Number.isInteger(options.position)) {
-          // check if index is within range
-          if (options.position < result.item.length && options.position > -1) {
-            result.item = result.item[options.position]
-          } else {
-            throw new Error('Get data value by index was out of range')
-          }
-        }
-      }
-
-      if (result.item == null) {
-        result.isEmpty = true
-
-        return result
-      } else {
-        // create copy
-        const unfreezeName = '_unfreeze' + schema.type
-
-        if (this[unfreezeName]) {
-          result.item = this[unfreezeName](result.item)
-        }
-      }
-
-      return result
-    },
-    $set (name, { source, options, typeCheck = true }) {
-      try {
+    $getDataValue: {
+      /**
+       * Get data value
+       * @name $getDataValue
+       * @memberof dsData#
+       * @param {Object} param
+       * @param {string} param.name - Data collection name
+       * @param {string} param.id - Data collection document id
+       * @param {prefixId} param.id - Data collection document prefix
+       * @param {suffixId} param.id - Data collection document suffix
+       * @param {Object} param.options - Options
+       * @param {Object} param.options.position - Data collection document suffix
+       * @returns {Object}
+       */
+      value (name, { id, prefixId, suffixId, options }) {
+        const result = { isEmpty: false }
         const schema = this.schema[name]
 
-        if (!schema) {
-          throw new Error('Schema not found "' + name + '"')
-        }
+        if (Object.hasOwn(arguments[0], 'id') && id == null) {
+          result.isEmpty = true
 
-        let result = {}
+          return result
+        } else if (id != null) {
+          result.isAffixEmpty = true
 
-        if (!typeCheck && options && options.id) {
-          result.item = source
-          result.id = options.id
+          // Better off creating a result constructor
+          Object.defineProperty(result, 'noAffixId', {
+            get () {
+              let noAffixId = this.id.split('_')
 
-          this.values[name][options.id] = source
-        } else {
-          let target = this.values[name]
+              if (noAffixId.length === 3) {
+                noAffixId = '_' + noAffixId[1] + '_'
+              } else {
+                noAffixId = this.id
+              }
 
-          if (target != null) {
-            const unfreeze = this['_unfreeze/' + schema.type]
-
-            if (unfreeze) {
-              target = unfreeze(target)
+              return noAffixId
             }
-          } else {
-            // set default value
-            target = this.defaultTypes[schema.type]()
+          })
+
+          // find document using custom affixes
+          if (prefixId || suffixId) {
+            let itemId
+
+            if (prefixId && suffixId) {
+              const prefix = this._affixId(prefixId)
+              const suffix = this._affixId(suffixId)
+
+              itemId = prefix + id + suffix
+            } else if (prefixId) {
+              const prefix = this._affixId(prefixId)
+
+              itemId = prefix + id
+            } else if (suffixId) {
+              const suffix = this._affixId(suffixId)
+
+              itemId = id + suffix
+            }
+
+            if (this.values[name][itemId] != null) {
+              result.isAffixEmpty = false
+              result.id = itemId
+              result.item = this.values[name][itemId]
+            }
           }
 
-          result = this._setData(
-            name,
-            source,
-            target,
-            options
-          )
+          if (result.isAffixEmpty) {
+            result.id = id
+            result.item = this.values[name][result.id]
 
-          // set new value
-          this.values[name] = result.target
+            // find document using default affixes
+            if (result.item == null && schema.id) {
+              let itemId
+
+              if (schema.id.prefix && schema.id.suffix) {
+                const prefix = this._affixId(schema.id.prefix)
+                const suffix = this._affixId(schema.id.suffix)
+
+                itemId = prefix + result.id + suffix
+              } else if (schema.id.prefix) {
+                const prefix = this._affixId(schema.id.prefix)
+
+                itemId = prefix + result.id
+              } else {
+                const suffix = this._affixId(schema.id.suffix)
+
+                itemId = result.id + suffix
+              }
+
+              result.id = itemId
+              result.item = this.values[name][itemId]
+
+              if (result.item == null) {
+                result.isEmpty = true
+              }
+            }
+          }
+        } else {
+          result.item = this.values[name]
         }
 
-        // notify listeners
-        this._onUpdate(name, result.item, result.id)
-
-        return {
-          id: result.id,
-          noAffixId: result.noAffixId,
-          item: result.item,
-          isValid: true
+        if (options) {
+          if (Number.isInteger(options.position)) {
+            // check if index is within range
+            if (options.position < result.item.length && options.position > -1) {
+              result.item = result.item[options.position]
+            } else {
+              throw new Error('Get data value by index was out of range')
+            }
+          }
         }
-      } catch (errorMessage) {
-        console.error(errorMessage)
 
-        if (errorMessage.name === 'SchemaException') {
+        if (result.item == null) {
+          result.isEmpty = true
+
+          return result
+        } else {
+          // create copy
+          const unfreezeName = '_unfreeze' + schema.type
+
+          if (this[unfreezeName]) {
+            result.item = this[unfreezeName](result.item)
+          }
+        }
+
+        return result
+      },
+      export: true
+    },
+    $setDataValue: {
+      value (name, { source, options, typeCheck = true }) {
+        try {
+          const schema = this.schema[name]
+
+          if (!schema) {
+            throw new Error('Schema not found "' + name + '"')
+          }
+
+          let result = {}
+
+          if (!typeCheck && options && options.id) {
+            result.item = source
+            result.id = options.id
+
+            this.values[name][options.id] = source
+          } else {
+            let target = this.values[name]
+
+            if (target != null) {
+              const unfreeze = this['_unfreeze/' + schema.type]
+
+              if (unfreeze) {
+                target = unfreeze(target)
+              }
+            } else {
+              // set default value
+              target = this.defaultTypes[schema.type]()
+            }
+
+            result = this._setData(
+              name,
+              source,
+              target,
+              options
+            )
+
+            // set new value
+            this.values[name] = result.target
+          }
+
+          // notify listeners
+          this._onUpdate(name, result.item, result.id)
+
+          return {
+            id: result.id,
+            noAffixId: result.noAffixId,
+            item: result.item,
+            isValid: true
+          }
+        } catch (errorMessage) {
+          console.error(errorMessage)
+
+          if (errorMessage.name === 'SchemaException') {
+            return {
+              isValid: false,
+              error: errorMessage
+            }
+          }
+
           return {
             isValid: false,
-            error: errorMessage
+            error: {
+              details: errorMessage,
+              name: 'Error'
+            }
           }
         }
-
-        return {
-          isValid: false,
-          error: {
-            details: errorMessage,
-            name: 'Error'
-          }
-        }
-      }
+      },
+      export: true
     },
     /**
      * Add data and its data type
