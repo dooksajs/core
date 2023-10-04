@@ -1,4 +1,5 @@
-import dsData from '@dooksa/ds-plugin-data'
+import DsPlugin from '@dooksa/ds-plugin'
+import dsLoader from '@dooksa/ds-plugin-loader'
 import resource from '@dooksa/resource-loader'
 
 /**
@@ -19,15 +20,7 @@ export default {
   name: NAME,
   version: VERSION,
   data: {
-    DsPlugin: {
-      private: true,
-      default: () => {}
-    },
     methods: {
-      private: true,
-      default: {}
-    },
-    contextMethods: {
       private: true,
       default: {}
     },
@@ -59,49 +52,13 @@ export default {
       private: true,
       default: 0
     },
-    plugins: {
-      private: true,
-      default: {}
-    },
-    pluginUseQueue: {
-      private: true,
-      default: []
-    },
-    depQueue: {
-      private: true,
-      default: {}
-    },
-    queue: {
-      private: true,
-      default: {}
-    },
-    isLoaded: {
-      private: true,
-      default: {}
-    },
-    initialising: {
-      private: true,
-      default: {}
-    },
-    setupOnRequest: {
-      private: true,
-      default: {}
-    },
-    setupOnRequestQueue: {
-      private: true,
-      default: {}
-    },
-    options: {
-      private: true,
-      default: {}
-    },
-    context: {
-      private: true,
-      default: {}
-    },
     isDev: {
       private: true,
       default: false
+    },
+    dsLoader: {
+      private: true,
+      default: {}
     }
   },
   /**
@@ -110,29 +67,26 @@ export default {
    * @param {Object[]} setup.plugins - A list of base plugins
    * @param {string} setup.plugins[].name - The name of the plugin
    * @param {number} setup.plugins[].version - The version of the plugin
-   * @param {dsPlugin} setup.plugins[].plugin - The plugin object
-   * @param {Object} setup.plugins[].options - Options used by the plugin
-   * @param {boolean} setup.plugins[].options.setupOnRequest - Run the plugins setup function when its methods are used
-   * @param {Object} setup.plugins[].options.setup - Params sent to the plugins setup function
-   * @param {Object} setup.plugins[].options.script - This is to load an external plugin (refer to {@link https://bitbucket.org/dooksa/resource-loader/src/master/README.md resource-loader})
+   * @param {dsPlugin} setup.plugins[].item - The plugin object
+   * @param {DsPluginOptions} setup.plugins[].options - Options used by the plugin
    * @param {boolean} setup.isDev - Toggle development mode
    * @returns {Object} Development tools used by browser extension if it is enabled
    * @inner
    */
   setup ({
-    DsPlugin,
-    plugins = {},
+    plugins = [],
     isDev = false
   }) {
-    this.DsPlugin = DsPlugin
-    this.context = [
+    const context = [
       {
         name: '$action',
-        value: this._action.bind(this)
+        value: this._action.bind(this),
+        export: true
       },
       {
         name: '$method',
-        value: this._method.bind(this)
+        value: this._method.bind(this),
+        export: true
       },
       {
         name: '$resource',
@@ -140,7 +94,8 @@ export default {
       },
       {
         name: 'isDev',
-        value: isDev
+        value: isDev,
+        export: true
       },
       {
         name: '$token',
@@ -166,90 +121,38 @@ export default {
         name: '$componentIgnoreAttr',
         value: this.componentIgnoreAttr,
         scope: ['dsTemplate']
-      },
-      {
-        name: '$addDataListener',
-        value: this._contextMethod('dsData/$addListener').bind(this)
-      },
-      {
-        name: '$removeDataListener',
-        value: this._contextMethod('dsData/$removeListener').bind(this)
-      },
-      {
-        name: '$getDataValue',
-        value: this._contextMethod('dsData/$get').bind(this)
-      },
-      {
-        name: '$removeDataValue',
-        value: this._contextMethod('dsData/$remove').bind(this)
-      },
-      {
-        name: '$setDataValue',
-        value: this._contextMethod('dsData/$set').bind(this)
-      },
-      {
-        name: '$emit',
-        value: this._contextMethod('dsEvent/$emit').bind(this)
       }
     ]
 
-    this.isDev = isDev
-    this.isLoaded[NAME] = true
-    // add dsData
-    this.plugins[dsData.name] = dsData
-    this.pluginUseQueue.push({
-      name: dsData.name,
-      plugin: dsData
+    this.dsLoader = new DsPlugin(dsLoader, context, isDev)
+
+    // add dsPlugin
+    this.dsLoader.init({
+      plugins,
+      context,
+      callback: this._add.bind(this)
     })
-    this.queue[dsData.name] = []
-    this.depQueue[dsData.name] = []
+      
 
-    // add plugins to install queue
-    for (const key in plugins) {
-      if (Object.hasOwn(plugins, key)) {
-        const plugin = plugins[key]
-
-        this._addOptions(plugin.name, plugin.options)
-
-        this.plugins[plugin.name] = plugin
-        this.pluginUseQueue.push(plugin)
-        this.queue[plugin.name] = []
-        this.depQueue[plugin.name] = []
+    // export global functions
+    if (isDev) {
+      const result = {
+        components: this.components
       }
-    }
 
-    // start install process
-    for (let i = 0; i < this.pluginUseQueue.length; i++) {
-      const item = this.pluginUseQueue[i]
-      const queue = this._getQueue(item.name)
+      for (let i = 0; i < context.length; i++) {
+        const method = context[i]
 
-      if (!queue.length) {
-        const loadingPlugin = this._install(item.name, item.plugin)
-        // Add to plugin to queue
-        this.queue[item.name] = [loadingPlugin]
+        if (method.export) {
+          result[method.name] = method.value
+        }
       }
-    }
 
-    return {
-      components: this.components,
-      $method: this._method.bind(this),
-      $action: this._action.bind(this),
-      $setDataValue: this._contextMethod('dsData/$set').bind(this),
-      $getDataValue: this._contextMethod('dsData/$get').bind(this)
+      return result
     }
   },
   /** @lends @dsManager */
   methods: {
-    /**
-     * Wrapper for plugin contexts to call a method
-     * @param {string} name - The name of the method
-     * @returns {function}
-     */
-    _contextMethod (name) {
-      return (context, options = {}) => {
-        return this.contextMethods[name](context, options)
-      }
-    },
     /**
      * Execute plugin methods
      * @param {string} name - Name of method
@@ -303,7 +206,7 @@ export default {
      * @returns boolean based on if the request plugin exists
      */
     _actionExists (name) {
-      return (this.methods[name])
+      return !!this.methods[name]
     },
     /**
      * Adds the plugins methods to the manager
@@ -319,16 +222,6 @@ export default {
             const method = plugin.methods[key]
 
             this.methods[`${plugin.name}/${key}`] = method
-          }
-        }
-      }
-
-      if (plugin.contextMethods) {
-        for (const key in plugin.contextMethods) {
-          if (Object.hasOwn(plugin.contextMethods, key)) {
-            const method = plugin.contextMethods[key]
-
-            this.contextMethods[`${plugin.name}/${key}`] = method
           }
         }
       }
@@ -395,16 +288,6 @@ export default {
         }
       }
     },
-    /**
-     * Store plugins setup options
-     * @param {string} name - Name of the plugin
-     * @param {Object} options - Setup object @see this.setup setup option
-     */
-    _addOptions (name, options = {}) {
-      this.setupOnRequest[name] = !!options.setupOnRequest
-      this.isLoaded[name] = false
-      this.options[name] = options
-    },
     _component (name) {
       const component = this.components[name]
 
@@ -433,166 +316,33 @@ export default {
       return component
     },
     /**
-     * Get plugin
-     * @param {string} - Name of plugin
-     * @returns {DsPlugin} - Plugin object
-     */
-    _get (name) {
-      return this.plugins[name] ? this.plugins[name].plugin : this.setupOnRequestQueue[name]
-    },
-    /**
      * Find and load plugin used by the @see action function
      * @param {string} name - Name of method
      * @param {function} callback - Callback used to run after loading the requested plugin
      * @returns returns callback return value if it is not async
      */
     _callbackWhenAvailable (name, callback) {
-      const pluginName = name.split('/')[0]
-
-      if (this.isLoaded[pluginName] && this._actionExists(name)) {
+      if (this._actionExists(name)) {
         return callback()
       }
 
-      if (!this.initialising[pluginName]) {
-        const plugin = this._get(pluginName)
-        const loadingPlugin = this._install(pluginName, plugin, true)
-        // add to loading queue
-        this.queue[pluginName].push(loadingPlugin)
+      const pluginName = name.split('/')[0]
 
-        loadingPlugin
-          .then(() => {
-            if (this._actionExists(name)) {
-              callback()
-            } else {
-              console.error('action does not exist: ' + name)
-            }
-          })
-          .catch(e => console.error(e))
-      } else {
-        // wait for installation to finish
-        const queue = this._getQueue(pluginName)
+      this.dsLoader.methods.load(pluginName)
+        .then((plugins) => {
+          for (let i = 0; i < plugins.length; i++) {
+            this._add(plugins[i])
+          }
 
-        Promise.all(queue)
-          .then(() => {
-            if (this._actionExists(name)) {
-              callback()
-            } else {
-              console.error('action does not exist: ' + name)
-            }
-          })
-      }
-    },
-    _getQueue (name) {
-      return this.queue[name] || []
-    },
-    /**
-     * Get plugins setup options
-     * @param {string} name - Name of plugin
-     * @returns Setup options @see this.setup
-     */
-    _getOptions (name) {
-      return this.options[name] || {}
-    },
-    /**
-     * Install plugin and its dependencies
-     * @param {string} name - Name of plugin
-     * @param {DsPlugin} plugin - Dooksa plugin object
-     * @param {Boolean} forceSetup - Force to run the plugins setup method
-     * @returns Promise
-     */
-    _install (name, plugin, forceSetup = false) {
-      return new Promise((resolve, reject) => {
-        const options = this._getOptions(name)
-        // set plugin loading process
-        this.isLoaded[name] = false
-        this.initialising[name] = true
-
-        // lazy load plugin
-        if (options.import) {
-          if (!options.setupOnRequest || forceSetup) {
-            import(`./plugins/${options.import}.js`)
-              .then(({ default: plugin }) => {
-                if (plugin.dependencies) {
-                  this._installDependencies(name, plugin.dependencies)
-                }
-
-                const dsPlugin = new this.DsPlugin(plugin, this.context, this.isDev)
-
-                // add plugin to manager
-                this._add(dsPlugin)
-
-                // run plugins setup
-                this._setup(dsPlugin, options.setup)
-                  .then(() => resolve(`Setup import ${name}`))
-                  .catch((e) => reject(e))
-              })
-              .catch(e => reject(e))
+          if (this._actionExists(name)) {
+            callback()
           } else {
-            this.initialising[name] = false
-            return resolve(`Lazy loading ${name}`)
+            throw new Error('action does not exist: ' + name)
           }
-        } else {
-          let dsPlugin
-          // fetch setup on request plugin
-          if (this.setupOnRequestQueue[name]) {
-            dsPlugin = this.setupOnRequestQueue[name]
-          } else {
-            if (!plugin) {
-              throw new Error('Plugin not found: "' + name + '"')
-            }
-
-            dsPlugin = new this.DsPlugin(plugin, this.context, this.isDev)
-
-            // add plugin to manager
-            this._add(dsPlugin)
-          }
-
-          if (options.setupOnRequest && !forceSetup) {
-            this.setupOnRequestQueue[name] = dsPlugin
-            this.initialising[name] = false
-
-            return resolve()
-          }
-
-          // install dependencies
-          if (dsPlugin.dependencies) {
-            this._installDependencies(name, dsPlugin.dependencies)
-          }
-
-          this._setup(dsPlugin, options.setup)
-            .then(() => resolve(name))
-            .catch((e) => reject(e))
-        }
-      })
-    },
-    /**
-     * Install plugins dependencies
-     * @param {string} name - Name of plugin
-     * @param {Object[]} dependencies - A list of plugin dependencies
-     */
-    _installDependencies (name, dependencies) {
-      for (let i = 0; i < dependencies.length; i++) {
-        const plugin = dependencies[i]
-        // Check if plugin is loaded
-        if (!this.isLoaded[plugin.name]) {
-          let options = this._getOptions(plugin.name)
-
-          if (plugin.options) {
-            options = Object.assign(options, plugin.options)
-          }
-
-          options.setupOnRequest = false
-
-          this._addOptions(plugin.name, options)
-
-          const depPlugin = this._use({
-            name: plugin.name,
-            options
-          })
-          // Add to plugin loading queue
-          this.depQueue[name].push(depPlugin)
-        }
-      }
+        })
+        .catch((error) => {
+          console.error(error)
+        })
     },
     /**
      * Higher order function to allow plugins to run other plugins methods
@@ -609,49 +359,6 @@ export default {
         console.error(name, error)
       }
     },
-    /**
-     * Run plugins setup function
-     * @param {DsPlugin} plugin - DsPlugin object
-     * @param {Object} options - Plugins setup options
-     * @returns Promise
-     */
-    _setup (plugin, options = {}) {
-      return new Promise((resolve, reject) => {
-        const queue = this.depQueue[plugin.name]
-
-        Promise.all(queue)
-          .then(() => {
-            const setup = plugin.init(options)
-
-            if (setup instanceof Promise) {
-              setup
-                .then(() => {
-                  this.isLoaded[plugin.name] = true
-                  this.initialising[plugin.name] = false
-                  // remove from setup queue
-                  delete this.setupOnRequestQueue[plugin.name]
-
-                  if (this.isDev) {
-                    console.log('Plugin successfully async loaded: ' + plugin.name)
-                  }
-
-                  resolve(plugin.name)
-                })
-                .catch(e => reject(e))
-            } else {
-              this.isLoaded[plugin.name] = true
-              this.initialising[plugin.name] = false
-
-              if (this.isDev) {
-                console.log('Plugin successfully loaded: ' + plugin.name)
-              }
-
-              resolve(plugin.name)
-            }
-          })
-          .catch(e => reject(e))
-      })
-    },
     _token (name, dsViewId, value) {
       if (this.tokens[name]) {
         if (this.tokenListeners[name]) {
@@ -667,38 +374,6 @@ export default {
 
         return this.tokens[name](value)
       }
-    },
-    /**
-     * Initialise the plugin installation
-     * @param {Object} plugin
-     * @param {string} plugin.name - Name of plugin
-     * @param {object} plugin.option - Setup options for plugin
-     * @returns Promise
-     */
-    _use ({ name, options = {} }) {
-      // Return if plugin is loaded
-      if (this.isLoaded[name]) {
-        return Promise.resolve()
-      }
-
-      const plugin = this._get(name)
-      const queue = this._getQueue(name)
-      let forceSetup = false
-
-      // Check if plugin is in loading queue and can run setup
-      if (!this.initialising[name] && (!this.setupOnRequest[name] || !options.setupOnRequest)) {
-        forceSetup = true
-      }
-
-      if (!queue || forceSetup) {
-        const loadingPlugin = this._install(name, plugin, forceSetup)
-
-        queue.push(loadingPlugin)
-
-        return loadingPlugin
-      }
-
-      return Promise.resolve()
     }
   }
 }
