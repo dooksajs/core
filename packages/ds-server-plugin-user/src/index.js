@@ -10,6 +10,9 @@ export default {
   dependencies: [
     {
       name: 'dssDatabase'
+    },
+    {
+      name: 'dssWebServer'
     }
   ],
   data: {
@@ -69,22 +72,29 @@ export default {
       ]
     })
 
-    this.$method('dssWebServer/route', {
-      path: '/user/register',
+    this.$addRoute('user/register', {
       method: 'post',
-      handler: this._register.bind(this)
+      handlers: [(request, response) => {
+        this._register(request, response)
+      }]
     })
 
-    this.$method('dssWebServer/route', {
-      path: '/user/login',
+    this.$addRoute('user/login', {
       method: 'post',
-      handler: this._login.bind(this)
+      handlers: [(request, response) => {
+        this._login(request, response)
+      }]
     })
 
-    this.$method('dssWebServer/route', {
-      path: '/user/delete',
+    this.$addRoute('user/register', {
       method: 'delete',
-      handler: this._delete.bind(this)
+      handlers: [
+        (request, response, next) => {
+          this.$auth(request, response, next)
+        },
+        (request, response) => {
+          this._delete(request, response)
+        }]
     })
   },
   /** @lends dssUser */
