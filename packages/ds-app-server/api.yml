@@ -1,0 +1,1081 @@
+openapi: '3.1.0'
+info:
+  title: Dooksa
+  description: Backend api for dooksa
+  license:
+    name:  MPL-2.0
+    url: https://github.com/dooksajs/dooksa/blob/main/LICENSE
+  version: 0.0.1
+servers:
+  - url: https://localhost:3000/api/v1
+tags:
+  - name: action
+    description: Single action
+  - name: content
+    description: Content item
+  - name: component
+    description: HTML element and attributes or text node
+  - name: layout
+    description: The render order of HTML elements, text nodes and dooksa content 
+  - name: widget
+    description: collection of content, events and layouts
+  - name: user
+    description: Operations about user
+paths:
+  /action:
+    post:
+      tags:
+        - action
+      summary: Add action
+      description: Add action
+      operationId: action/create
+      requestBody:
+        description: Create action
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Action'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+        '405':
+          description: Invalid input
+      security:
+        - cookieAuth: []
+    put:
+      tags:
+        - action
+      summary: Update existing action
+      description: Update an existing action by Id
+      operationId: action/update
+      requestBody:
+        description: Update action
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Action'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Content not found
+        '405':
+          description: Validation exception
+      security:
+        - cookieAuth: []
+    get:
+      tags:
+        - action
+      summary: Returns a list of action
+      description: Returns a list of action
+      operationId: action/getById
+      parameters:
+        - name: actionId
+          in: query
+          description: Id of action to return
+          required: true
+          schema:
+            type: array
+            items: 
+              type: string
+          explode: true
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Action'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Content not found
+    delete:
+      tags:
+        - action
+      summary: Delete action
+      description: Delete action
+      operationId: action/delete
+      parameters:
+        - name: actionId
+          in: query
+          description: Id of action to return
+          required: true
+          schema:
+            type: array
+            items: 
+              type: string
+          explode: true
+      responses:
+        '400':
+          description: Invalid layout value
+      security:
+        - cookieAuth: []
+  /action/sequence:
+    post:
+      tags:
+        - action
+      summary: Add action sequence
+      description: Add action sequence
+      operationId: action/createSequence
+      requestBody:
+        description: Create action sequence
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Sequence'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+        '405':
+          description: Invalid input
+      security:
+        - cookieAuth: []
+    put:
+      tags:
+        - action
+      summary: Update existing action sequence
+      description: Update an existing action sequence by Id
+      operationId: action/updateSequence
+      requestBody:
+        description: Update action
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Sequence'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Content not found
+        '405':
+          description: Validation exception
+      security:
+        - cookieAuth: []
+    get:
+      tags:
+        - action
+      summary: Returns a list of action sequences
+      description: Returns a list of action sequences
+      operationId: action/getSequenceById
+      parameters:
+        - name: sequenceId
+          in: query
+          description: Id of action sequence to return
+          required: true
+          schema:
+            type: array
+            items: 
+              type: string
+          explode: true
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Sequence'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Content not found
+    delete:
+      tags:
+        - action
+      summary: Delete action sequence
+      description: Delete action sequence
+      operationId: action/deleteSequence
+      parameters:
+        - name: sequenceId
+          in: query
+          description: Id of action to return
+          required: true
+          schema:
+            type: array
+            items: 
+              type: string
+          explode: true
+      responses:
+        '400':
+          description: Invalid sequence value
+      security:
+        - cookieAuth: []
+  /action/recipe:
+    post:
+      tags:
+        - action
+      summary: Add action sequence entries
+      description: Add action sequence entries
+      operationId: action/createSequenceEntry
+      requestBody:
+        description: Create action sequence entries
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/SequenceEntry'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+        '405':
+          description: Invalid input
+      security:
+        - cookieAuth: []
+    put:
+      tags:
+        - action
+      summary: Update existing action sequence entries
+      description: Update an existing action sequence entry by Id
+      operationId: action/updateSequenceEntry
+      requestBody:
+        description: Update action sequence entries
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/SequenceEntry'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Content not found
+        '405':
+          description: Validation exception
+      security:
+        - cookieAuth: []
+    get:
+      tags:
+        - action
+      summary: Returns a list of action sequence entries
+      description: Returns a list of action sequence entries
+      operationId: action/getSequenceEntryById
+      parameters:
+        - name: sequenceEntryId
+          in: query
+          description: Id of action sequence entries to return
+          required: true
+          schema:
+            type: array
+            items: 
+              type: string
+          explode: true
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SequenceEntry'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Content not found
+    delete:
+      tags:
+        - action
+      summary: Delete action sequence entries
+      description: Delete action sequence entries
+      operationId: action/deleteSequenceEntry
+      parameters:
+        - name: sequenceId
+          in: query
+          description: Id of action to return
+          required: true
+          schema:
+            type: array
+            items: 
+              type: string
+          explode: true
+      responses:
+        '400':
+          description: Invalid sequence value
+      security:
+        - cookieAuth: []
+  /content:
+    post:
+      tags:
+        - content
+      summary: Add content
+      description: Add content
+      operationId: content/create
+      requestBody:
+        description: Create content
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Content'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+        '405':
+          description: Invalid input
+      security:
+        - cookieAuth: []
+    put:
+      tags:
+        - content
+      summary: Update existing content
+      description: Update an existing content by Id
+      operationId: content/update
+      requestBody:
+        description: Update content
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Content'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Content not found
+        '405':
+          description: Validation exception
+      security:
+        - cookieAuth: []
+    get:
+      tags:
+        - content
+      summary: Returns a list of content
+      description: Returns a list of content
+      operationId: content/getById
+      parameters:
+        - name: contentId
+          in: query
+          description: Id of content to return
+          required: true
+          schema:
+            type: array
+            items: 
+              type: string
+          explode: true
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Content'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Content not found
+    delete:
+      tags:
+        - content
+      summary: Delete content
+      description: Delete content
+      operationId: content/delete
+      parameters:
+        - name: contentId
+          in: query
+          description: Id of content to return
+          required: true
+          schema:
+            type: array
+            items: 
+              type: string
+          explode: true
+      responses:
+        '400':
+          description: Invalid layout value
+      security:
+        - cookieAuth: []
+  /component:
+    post:
+      tags:
+        - component
+      summary: Add components
+      description: Add component
+      operationId: component/create
+      requestBody:
+        description: Create content
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Component'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+        '405':
+          description: Invalid input
+      security:
+        - cookieAuth: []
+    put:
+      tags:
+        - component
+      summary: Update existing components
+      description: Update an existing component by Id
+      operationId: component/update
+      requestBody:
+        description: Update components
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Component'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Content not found
+        '405':
+          description: Validation exception
+      security:
+        - cookieAuth: []
+    get:
+      tags:
+        - component
+      summary: Returns a list of components
+      description: Returns a list of components
+      operationId: component/getById
+      parameters:
+        - name: componentId
+          in: query
+          description: Id of component to return
+          required: true
+          schema:
+            type: array
+            items: 
+              type: string
+          explode: true
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Layout'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Content not found
+    delete:
+      tags:
+        - component
+      description: Returns a list of components
+      operationId: component/delete
+      parameters:
+        - name: componentId
+          in: query
+          description: Id of component to delete
+          required: true
+          schema:
+            type: array
+            items: 
+              type: string
+          explode: true
+      responses:
+        '400':
+          description: Invalid layout value
+      security:
+        - cookieAuth: []
+  /layout:
+    post:
+      tags:
+        - layout
+      summary: Add layouts
+      description: Add layouts
+      operationId: layout/create
+      requestBody:
+        description: Create content
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Layout'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+        '405':
+          description: Invalid input
+      security:
+        - cookieAuth: []
+    put:
+      tags:
+        - layout
+      summary: Update existing layouts
+      description: Update an existing layout by Id
+      operationId: layout/update
+      requestBody:
+        description: Update layout
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Layout'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Content not found
+        '405':
+          description: Validation exception
+      security:
+        - cookieAuth: []
+    get:
+      tags:
+        - layout
+      summary: Returns a list of layout
+      description: Returns a list of layout
+      operationId: layout/getById
+      parameters:
+        - name: layoutId
+          in: query
+          description: Id of layout to return
+          required: true
+          schema:
+            type: array
+            items: 
+              type: string
+          explode: true
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Layout'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Content not found
+    delete:
+      tags:
+        - layout
+      description: Returns a list of layout
+      operationId: layout/delete
+      parameters:
+        - name: layoutId
+          in: query
+          description: Id of layout to return
+          required: true
+          schema:
+            type: array
+            items: 
+              type: string
+          explode: true
+      responses:
+        '400':
+          description: Invalid layout value
+      security:
+        - cookieAuth: []
+  /widget:
+    put:
+      tags:
+        - widget
+      summary: Update an existing widget
+      description: Update an existing widget by Id
+      operationId: updateWidget
+      requestBody:
+        description: Update a widget
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Widget'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Widget not found
+        '405':
+          description: Validation exception
+      security:
+        - cookieAuth: []
+    post:
+      tags:
+        - widget
+      summary: Add a new widget
+      description: Add a new widget
+      operationId: createWidget
+      requestBody:
+        description: Create a new widget
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Widget'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+        '405':
+          description: Invalid input
+      security:
+        - cookieAuth: []
+    get:
+      tags:
+        - widget
+      summary: Returns a list of widgets
+      description: Returns a list of widgets
+      operationId: widget/get
+      parameters:
+        - name: widgetId
+          in: query
+          description: Id of widget to return
+          required: true
+          schema:
+            type: array
+            items: 
+              type: string
+          explode: true
+        - name: expand
+          in: query
+          description: Expand associated data
+          schema: 
+            type: boolean
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+                schema:
+                  type: object
+                  properties:
+                    widgets:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/Widget'
+                    content:
+                      type: array
+                      items: 
+                        $ref: '#/components/schemas/Content'
+                    layout:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/Layout'
+                    components:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/Component'
+                    actions:
+                      type: object
+                      properties:
+                        items:
+                          $ref: '#/components/schemas/Action'
+                        sequences:
+                          $ref: '#/components/schemas/Sequence'
+                        sequenceEntry:
+                          $ref: '#/components/schemas/SequenceEntry'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Widget not found
+    delete:
+      tags:
+        - widget
+      summary: Deletes a widget
+      description: Deletes a widget
+      operationId: widget/delete
+      parameters:
+        - name: widgetId
+          in: query
+          description: Id of widget to return
+          required: true
+          schema:
+            type: array
+            items: 
+              type: string
+          explode: true
+      responses:
+        '400':
+          description: Invalid widget value
+      security:
+        - cookieAuth: []
+
+  /file:
+    post:
+      tags:
+        - file
+      summary: upload a file
+      description: ''
+      operationId: upload
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                name:
+                  type: string
+                description:
+                  type: string
+                tags:
+                  type: array
+                  examples: [cat, hat, green eggs]
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+      security:
+        - cookieAuth: []
+  /file/{fileId}:
+    get:
+      tags:
+        - file
+      summary: Get file
+      description: ''
+      operationId: getById
+      parameters:
+        - name: fileId
+          in: path
+          description: ID of file
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+           application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'  
+  /user:
+    post:
+      tags:
+        - user
+      summary: Create user
+      description: This can only be done by the logged in user.
+      operationId: user/create
+      requestBody:
+        description: Created user object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /user/login:
+    get:
+      tags:
+        - user
+      summary: Logs user into the system
+      description: ''
+      operationId: loginUser
+      parameters:
+        - name: username
+          in: query
+          description: The user name for login
+          required: false
+          schema:
+            type: string
+        - name: password
+          in: query
+          description: The password for login in clear text
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+            X-Expires-After:
+              description: date in UTC when token expires
+              schema:
+                type: string
+                format: date-time
+          content:
+            application/xml:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Invalid username/password supplied
+  /user/logout:
+    get:
+      tags:
+        - user
+      summary: Logs out current logged in user session
+      description: ''
+      operationId: logoutUser
+      parameters: []
+      responses:
+        default:
+          description: successful operation
+  /user/{userId}:
+    get:
+      tags:
+        - user
+      summary: Get user by user name
+      description: ''
+      operationId: getUserByName
+      parameters:
+        - name: userId
+          in: path
+          description: 'The userId that needs to be fetched. Use user1 for testing. '
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+    put:
+      tags:
+        - user
+      summary: Update user
+      description: This can only be done by the logged in user.
+      operationId: updateUser
+      parameters:
+        - name: userId
+          in: path
+          description: name that need to be deleted
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Update an existent user in the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        default:
+          description: successful operation
+    delete:
+      tags:
+        - user
+      summary: Delete user
+      description: This can only be done by the logged in user.
+      operationId: deleteUser
+      parameters:
+        - name: userId
+          in: path
+          description: The name that needs to be deleted
+          required: true
+          schema:
+            type: string
+      responses:
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+components:
+  schemas:
+    Action:
+      type: object
+      properties:
+        id:
+          type: string
+          examples: [2992fd043f9faee2]
+        item:
+          type: object
+          examples: [{ _$a: get/eventValue, _$p: dsContentId }]
+    Content:
+      type: object
+      properties:
+        id: 
+          type: string
+          examples: [_po68zP7osO9H2cEd_en]
+        language:
+          type: string
+          examples: [en]
+        value: 
+          type: string
+          examples: ['Hello world']
+        type: 
+          type: string
+          examples: [text]
+    Sequence:
+      type: object
+      properties:
+        id:
+          type: string
+          examples: [ce7369229d8e038e]
+        items:
+          type: array
+          examples: [[{ path: [_$p, to, _$p, 'value', 'id'], id: 2992fd043f9faee2 }, { path: [_$p, to, _$p, 'value'], id: d2e8060c3c4eb74c, children: [0]}]]
+    SequenceEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          examples: [dYrTP-6jrIYA1sLB]
+        items:
+          type: array
+          examples: [[ce7369229d8e038e]]
+    Section:
+      type: object
+      required:
+        - id
+        - items
+        - mode
+      properties:
+        id:
+          type: string
+          examples: [_q52hem8rv3uQeGtD_default]
+        items:
+          type: array
+          examples: [[_1eibB9DYx1OGPlfR_]]
+        mode:
+          type: string
+          examples: [default]
+        template:
+          type: string
+          examples: [navbar]
+    Component:
+      type: object
+      required:
+        - id
+        - item
+      properties:
+        id:
+          type: string
+          examples: [c7faf345a77eea1a]
+        item:
+          type: object
+          examples: [{ id: nav, attributes: [class, "bg-body-tertiary mb-5 navbar navbar-expand-sm"] }]
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          examples: [10]
+        username:
+          type: string
+          examples: [theUser]
+        email:
+          type: string
+          examples: [john@email.com]
+        password:
+          type: string
+          examples: [P455w0rd]
+    Layout:
+      type: object
+      properties:
+        id:
+          type: string
+          examples: [d0189ca43b45b5b0]
+        item:
+          type: array
+          examples: [[{ componentId: e1f6c20524065cca }, { parentIndex: 0, contentIndex: 0, componentId: fb5d76a1a51f3012 }, { parentIndex: 1, contentIndex: 1, componentId: 0f64a9b82c6f98f7 }]]
+    Widget:
+      type: object
+      required:
+        - id
+        - groupId
+        - mode
+        - layout
+      properties:
+        id:
+          type: string
+          examples: [_1eibB9DYx1OGPlfR_default]
+        groupId:
+          type: string
+          examples: [_lkRH4hk5Powup8yQ_]
+        mode:
+          type: string
+          examples: [default]
+        events:
+          type: object
+          examples: [{ 1: { name: click, value: [dYrTP-6jrIYA1sLB] } }]
+        content:
+          type: array
+          examples: [[_po68zP7osO9H2cEd_, _srtqPC6BItaNOobZ_, _pLyV20KAJhJkVhoZ_]]
+        layout:
+          type: string
+          examples: [d0189ca43b45b5b0]
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        type:
+          type: string
+        message:
+          type: string
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      name: token
+      in: cookie
+      description: 'token to be passed as a cookie'
