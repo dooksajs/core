@@ -104,50 +104,47 @@ export default {
 
       if (!token) {
         throw new Error('Unauthorized')
-        }
+      }
 
-        jwt.verify(token.value, this.secret, (error, decoded) => {
-          if (error) {
+      jwt.verify(token.value, this.secret, (error, decoded) => {
+        if (error) {
           throw new Error('Unauthorized')
-          }
+        }
 
         const User = this.$getModel('user')
 
-          User.findByPk(decoded.data.id)
-            .then(user => {
-              if (!user) {
+        User.findByPk(decoded.data.id)
+          .then(user => {
+            if (!user) {
               throw new Error('Unauthorized')
-              }
+            }
 
             request.user = user
 
             next()
-        })
+          })
       })
     },
     _delete (request, response) {
-      this.auth(request.cookies.token)
-        .then(userId => {
-          const User = this.$getDataValue('dssDatabase/models', { id: 'user' }).item
+      const User = this.$getModel('user')
+      const userId = request.user.id
 
-          User.findOne({
-            where: {
-              id: userId
-            },
-            force: true
-          })
-            .then(user => {
-              if (user) {
-                user.destroy()
-                  .then(() => response.send('OK'))
-                  .catch(error => response.code(500).send(error))
-              } else {
-                response.code(404).send('User not found')
-              }
-            })
-            .catch(error => response.code(500).send(error))
+      User.findOne({
+        where: {
+          id: userId
+        },
+        force: true
+      })
+        .then(user => {
+          if (user) {
+            user.destroy()
+              .then(() => response.send('OK'))
+              .catch(error => response.code(500).send(error))
+          } else {
+            response.code(404).send('User not found')
+          }
         })
-        .catch(error => response.code(401).send(error))
+        .catch(error => response.code(500).send(error))
     },
     _login (request, response) {
       const data = request.body
@@ -168,7 +165,7 @@ export default {
         where.username = data.username
       }
 
-      const User = this.$getDataValue('dssDatabase/models', { id: 'user' }).item
+      const User = this.$getModel('user')
 
       User.findOne({ where })
         .then(user => {
@@ -187,7 +184,7 @@ export default {
               id: user.id
             }
           })
-          console.log(token)
+
           response.setCookie('token', token, {
             path: '/',
             signed: true
@@ -211,7 +208,7 @@ export default {
         response.code(400).send(new Error('User registration requires a password'))
       }
 
-      const User = this.$getDataValue('dssDatabase/models', { id: 'user' }).item
+      const User = this.$getModel('user')
 
       User.create(data)
         .then(() => response.send({ message: 'Successfully registered' }))
