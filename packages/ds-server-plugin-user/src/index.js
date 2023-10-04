@@ -99,29 +99,29 @@ export default {
   },
   /** @lends dssUser */
   methods: {
-    auth (request) {
-      return new Promise((resolve, reject) => {
-        const token = request.unsignCookie(request.cookies.token)
+    $auth (request, response, next) {
+      const token = request.signedCookie(request.cookies.token, this.$getCookieSecret())
 
-        if (!token.valid) {
-          reject(new Error('Unauthorized'))
+      if (!token) {
+        throw new Error('Unauthorized')
         }
 
         jwt.verify(token.value, this.secret, (error, decoded) => {
           if (error) {
-            reject(new Error('Unauthorized'))
+          throw new Error('Unauthorized')
           }
 
-          const User = this.$getDataValue('dssDatabase/models', { id: 'user' }).item
+        const User = this.$getModel('user')
 
           User.findByPk(decoded.data.id)
             .then(user => {
               if (!user) {
-                reject(new Error('Unauthorized'))
+              throw new Error('Unauthorized')
               }
 
-              resolve(user)
-            })
+            request.user = user
+
+            next()
         })
       })
     },
