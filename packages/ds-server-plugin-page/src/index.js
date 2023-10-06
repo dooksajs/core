@@ -1,25 +1,5 @@
 import dsPage from '@dooksa/ds-plugin-page'
 
-function ValidateItem () {
-  this.isValid = true
-  this.data = []
-}
-
-ValidateItem.prototype.setError = function (message) {
-  this.isValid = false
-  this.error = message
-}
-
-ValidateItem.prototype.id = (string) => {
-  const id = string.split('_')
-
-  return {
-    default: '_' + id[1] + '_',
-    prefix: id[0],
-    suffix: id[2]
-  }
-}
-
 /**
  * DsPage plugin.
  * @namespace dssPage
@@ -116,17 +96,18 @@ export default {
     })
 
     // route: create post
-    this.$method('dssWebServer/route', {
+    this.$method('dssWebServer/addRoute', {
       path: '/page',
       method: 'post',
-      handler: this._create.bind(this)
+      middleware: ['dssUser/auth'],
+      handlers: [this._create.bind(this)]
     })
 
     // route: get page by id
-    this.$method('dssWebServer/route', {
+    this.$method('dssWebServer/addRoute', {
       path: '/page/:pageId',
       method: 'get',
-      handler: this._getOneById.bind(this)
+      handlers: [this._getOneById.bind(this)]
     })
   },
   /** @lends dssPage */
