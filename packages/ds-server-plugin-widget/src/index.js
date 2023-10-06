@@ -145,14 +145,14 @@ export default {
     this.$method('dssDatabase/association', {
       type: 'belongsToMany',
       source: 'widgetEvent',
-      target: 'actionSequenceGroup',
+      target: 'actionRecipe',
       options: {
         through: 'widgetEventActions'
       }
     })
     this.$method('dssDatabase/association', {
       type: 'belongsToMany',
-      source: 'actionSequenceGroup',
+      source: 'actionRecipe',
       target: 'widgetEvent',
       options: {
         through: 'widgetEventActions'
