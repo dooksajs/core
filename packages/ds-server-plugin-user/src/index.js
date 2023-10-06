@@ -16,22 +16,39 @@ export default {
     }
   ],
   data: {
-    algorithm: {
+    tokenAlgorithm: {
       private: true,
-      default: 'aes-256-ctr'
+      default: 'HS256'
     },
-    secret: {
+    cookieSecret: {
       private: true,
       default: ''
+    },
+    saltRounds: {
+      private: true,
+      default: 10
+    },
+    cookieMaxAge: {
+      private: true,
+      default: 90000
     }
   },
-  setup ({ secret }) {
-    if (!secret || secret.length < 32) {
+  setup ({ secret, saltRounds, tokenAlgorithm }) {
+    if (typeof secret !== 'string' || secret.length < 32) {
       throw new Error('Invalid secret length; secret must be at 32 characters')
     }
 
     this.secret = secret
 
+    if (typeof saltRounds === 'number') {
+      this.saltRounds = saltRounds
+    }
+
+    if (tokenAlgorithm) {
+      this.tokenAlgorithm = tokenAlgorithm
+    }
+
+    // setup model
     this.$method('dssDatabase/model', {
       name: 'user',
       fields: [
@@ -182,12 +199,13 @@ export default {
           const token = this._sign({
             payload: {
               id: user.id
-            }
+            },
+            maxAge: data.expiresIn || this.cookieMaxAge
           })
 
-          response.setCookie('token', token, {
-            path: '/',
-            signed: true
+          response.cookie('token', token, {
+            signed: true,
+            maxAge: data.maxAge || this.cookieMaxAge
           })
 
           response.send('OK')
@@ -223,7 +241,7 @@ export default {
     _sign ({ payload, expiresIn = '30d' }) {
       return jwt.sign({
         data: payload
-      }, this.secret)
+      }, this.secret, { algorithm: this.tokenAlgorithm, maxAge })
     }
   }
 }
