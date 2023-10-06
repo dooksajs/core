@@ -114,92 +114,134 @@ export default {
     })
 
     // route: add actions
-    this.$method('dssWebServer/route', {
+    this.$method('dssWebServer/addRoute', {
       path: '/action',
       method: 'post',
-      handler: this._create.bind(this)
+      middleware: ['dssUser/auth'],
+      handlers: [this._create.bind(this)]
     })
 
     // route: update existing actions
-    this.$method('dssWebServer/route', {
+    this.$method('dssWebServer/addRoute', {
       path: '/action',
       method: 'put',
-      handler: this._update.bind(this)
+      middleware: ['dssUser/auth'],
+      handlers: [this._update.bind(this)]
     })
 
     // route: get a list of action
-    this.$method('dssWebServer/route', {
+    this.$method('dssWebServer/addRoute', {
       path: '/action',
       method: 'get',
-      handler: this._get.bind(this)
+      handlers: [this._get.bind(this)]
     })
 
     // route: delete action
-    this.$method('dssWebServer/route', {
+    this.$method('dssWebServer/addRoute', {
       path: '/action',
       method: 'delete',
-      handler: this._delete.bind(this)
+      middleware: ['dssUser/auth'],
+      handlers: [this._delete.bind(this)]
     })
 
     // route: add action sequences
-    this.$method('dssWebServer/route', {
+    this.$method('dssWebServer/addRoute', {
       path: '/action/sequence',
       method: 'post',
-      handler: this._createSequence.bind(this)
+      middleware: ['dssUser/auth'],
+      handlers: [this._createSequence.bind(this)]
     })
 
     // route: update existing actions
-    this.$method('dssWebServer/route', {
+    this.$method('dssWebServer/addRoute', {
       path: '/action/sequence',
       method: 'put',
-      handler: this._updateSequence.bind(this)
+      middleware: ['dssUser/auth'],
+      handlers: [this._updateSequence.bind(this)]
     })
 
     // route: get a list of action
-    this.$method('dssWebServer/route', {
+    this.$method('dssWebServer/addRoute', {
       path: '/action/sequence',
       method: 'get',
-      handler: this._getSequence.bind(this)
+      handlers: [this._getSequence.bind(this)]
     })
 
     // route: delete action sequence
-    this.$method('dssWebServer/route', {
+    this.$method('dssWebServer/addRoute', {
       path: '/action/sequence',
       method: 'delete',
-      handler: this._deleteSequence.bind(this)
+      middleware: ['dssUser/auth'],
+      handlers: [this._deleteSequence.bind(this)]
     })
 
     // route: add action sequence entries
-    this.$method('dssWebServer/route', {
+    this.$method('dssWebServer/addRoute', {
       path: '/action/recipe',
       method: 'post',
-      handler: this._createSequenceEntry.bind(this)
+      middleware: ['dssUser/auth'],
+      handlers: [this._createSequenceEntry.bind(this)]
     })
 
     // route: update existing action sequence entries
-    this.$method('dssWebServer/route', {
+    this.$method('dssWebServer/addRoute', {
       path: '/action/recipe',
       method: 'put',
-      handler: this._updateSequenceEntry.bind(this)
+      middleware: ['dssUser/auth'],
+      handlers: [this._updateSequenceEntry.bind(this)]
     })
 
     // route: get a list of action sequence entries
-    this.$method('dssWebServer/route', {
+    this.$method('dssWebServer/addRoute', {
       path: '/action/recipe',
       method: 'get',
-      handler: this._getSequenceEntry.bind(this)
+      handlers: [this._getSequenceEntry.bind(this)]
     })
 
     // route: delete action sequence entries
-    this.$method('dssWebServer/route', {
+    this.$method('dssWebServer/addRoute', {
       path: '/action/recipe',
       method: 'delete',
-      handler: this._deleteSequenceEntry.bind(this)
+      middleware: ['dssUser/auth'],
+      handlers: [this._deleteSequenceEntry.bind(this)]
     })
   },
   /** @lends dssAction */
   methods: {
     async _create (request, response) {
+      response.send('ok')
+    },
+    async _createSequence (request, response) {
+
+    },
+    async _createSequenceEntry (request, response) {
+
+    },
+    async _delete (request, response) {
+
+    },
+    async _deleteSequence (request, response) {
+
+    },
+    async _deleteSequenceEntry (request, response) {
+
+    },
+    async _get (request, response) {
+
+    },
+    async _getSequence (request, response) {
+
+    },
+    async _getSequenceEntry (request, response) {
+
+    },
+    async _update (request, response) {
+
+    },
+    async _updateSequence (request, response) {
+
+    },
+    async _updateSequenceEntry (request, response) {
 
     }
   }
