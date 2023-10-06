@@ -10,6 +10,9 @@ export default {
   dependencies: [
     {
       name: 'dssDatabase'
+    },
+    {
+      name: 'dssWebServer'
     }
   ],
   data: {

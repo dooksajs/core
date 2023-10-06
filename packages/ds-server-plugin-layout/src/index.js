@@ -12,6 +12,12 @@ export default {
       name: 'dssDatabase'
     },
     {
+      name: 'dssWebServer'
+    },
+    {
+      name: 'dssUser'
+    },
+    {
       name: 'dssComponent'
     }
   ],
