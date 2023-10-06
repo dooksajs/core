@@ -115,8 +115,8 @@ export default {
   },
   /** @lends dssDatabase */
   methods: {
-    $getModel (name) {
-      return this.model[name]
+    $getDatabaseModel (name) {
+      return this.models[name]
     },
     association (item) {
       if (!this.associationTypes[item.type]) {

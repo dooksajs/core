@@ -111,7 +111,7 @@ export default {
           throw new Error('Unauthorized')
         }
 
-        const User = this.$getModel('user')
+        const User = this.$getDatabaseModel('user')
 
         User.findByPk(decoded.data.id)
           .then(user => {
@@ -126,7 +126,7 @@ export default {
       })
     },
     _delete (request, response) {
-      const User = this.$getModel('user')
+      const User = this.$getDatabaseModel('user')
       const userId = request.user.id
 
       User.findOne({
@@ -165,7 +165,7 @@ export default {
         where.username = data.username
       }
 
-      const User = this.$getModel('user')
+      const User = this.$getDatabaseModel('user')
 
       User.findOne({ where })
         .then(user => {
