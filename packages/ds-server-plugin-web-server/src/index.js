@@ -59,7 +59,6 @@ export default {
       secure: !this.isDev
     }))
 
-
     if (this.isDev) {
       this.app.use(logger())
     }

@@ -154,7 +154,7 @@ export default {
 
             next()
           })
-          .catch (error => {
+          .catch(error => {
             response.status(500).send(error)
           })
       })
