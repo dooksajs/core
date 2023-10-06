@@ -31,6 +31,15 @@ export default {
         put: true,
         delete: true
       }
+    },
+    middleware: {
+      schema: {
+        type: 'collection',
+        items: {
+          type: 'function'
+        }
+      },
+      default: {}
     }
   },
   setup ({ cookieSecret, apiSuffix = '/api' }) {
@@ -40,7 +49,7 @@ export default {
 
     this.app = express()
     this.cookieSecret = cookieSecret
-
+    
     // setup plugins
     this.app.use(helmet())
     this.app.use(express.json())
@@ -49,6 +58,7 @@ export default {
       sameSite: true,
       secure: !this.isDev
     }))
+
 
     if (this.isDev) {
       this.app.use(logger())
@@ -59,28 +69,30 @@ export default {
     this.app.use(apiSuffix, this.router)
   },
   methods: {
-    $getCookieSecret: {
-      value () {
-        return this.cookieParser
-      },
-      scope: ['dssUser']
-    },
     /**
      * Add a route to the server
-     * @param {string} path - path
-     * @param {Object} options - Extra options
-     * @param {string} options.method - HTTP method type
-     * @param {Array} options.handlers - List of callbacks
+     * @param {Object} route
+     * @param {string} route.path - path
+     * @param {string} route.method - HTTP method
+     * @param {Array} route.handlers - List of callbacks
      */
-    $addRoute (
-      path = '',
-      {
-        method = 'get',
-        handlers = []
-      }
-    ) {
+    addRoute ({
+      path = '/',
+      method = 'get',
+      middleware = [],
+      handlers = []
+    }) {
       if (!this.routeTypes[method]) {
         return
+      }
+
+      // add middleware handlers in order
+      for (let i = middleware.length - 1; i > -1; i--) {
+        const data = this.$getDataValue('dssWebServer/middleware', { id: middleware[i] })
+        
+        if (!data.isEmpty) {
+          handlers.unshift(data.item)
+        }
       }
 
       // add forward slash
@@ -90,6 +102,10 @@ export default {
       
       this.router[method](path, ...handlers)
     },
+    /**
+     * Start the web server
+     * @param {number} port - Port number for webserver
+     */
     start (port = 3000) {
       this.app.listen(port, () => {
         console.log('Listening on port: ' + port)

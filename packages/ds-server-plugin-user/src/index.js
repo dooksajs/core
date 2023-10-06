@@ -39,7 +39,7 @@ export default {
     }
 
     this.secret = secret
-
+    
     if (typeof saltRounds === 'number') {
       this.saltRounds = saltRounds
     }
@@ -89,43 +89,57 @@ export default {
       ]
     })
 
-    this.$addRoute('user/register', {
-      method: 'post',
-      handlers: [(request, response) => {
-        this._register(request, response)
-      }]
+    // add middleware
+    this.$setDataValue('dssWebServer/middleware', {
+      source: this._auth.bind(this),
+      options: {
+        id: 'dssUser/auth'
+      }
     })
 
-    this.$addRoute('user/login', {
+    // add routes
+    this.$method('dssWebServer/addRoute', {
+      path: '/user/register',
       method: 'post',
-      handlers: [(request, response) => {
-        this._login(request, response)
-      }]
-    })
-
-    this.$addRoute('user/register', {
-      method: 'delete',
       handlers: [
-        (request, response, next) => {
-          this.$auth(request, response, next)
-        },
-        (request, response) => {
-          this._delete(request, response)
-        }]
+        this._checkBody,
+        this._checkPassword.bind(this),
+        this._create.bind(this)
+      ]
+    })
+    this.$method('dssWebServer/addRoute', {
+      path: '/user/login',
+      method: 'post',
+      handlers: [
+        this._checkBody,
+        this._checkPassword.bind(this),
+        this._login.bind(this)]
+    })
+    this.$method('dssWebServer/addRoute', {
+      path: '/user/delete',
+      method: 'delete',
+      handlers: [this._delete.bind(this)]
     })
   },
   /** @lends dssUser */
   methods: {
-    $auth (request, response, next) {
-      const token = request.signedCookie(request.cookies.token, this.$getCookieSecret())
+    /**
+     * Authenticate user by JWT token middleware
+     * @private
+     * @param {ExpressRequest} request 
+     * @param {ExpressResponse} response
+     * @param {ExpressNext} next
+     */
+    _auth (request, response, next) {
+      const token = request.signedCookies.token
 
       if (!token) {
-        throw new Error('Unauthorized')
+        return response.status(403).send('Unauthorized')
       }
 
-      jwt.verify(token.value, this.secret, (error, decoded) => {
+      jwt.verify(token, this.secret, (error, decoded) => {
         if (error) {
-          throw new Error('Unauthorized')
+          return response.status(403).send('Unauthorized')
         }
 
         const User = this.$getDatabaseModel('user')
@@ -133,15 +147,86 @@ export default {
         User.findByPk(decoded.data.id)
           .then(user => {
             if (!user) {
-              throw new Error('Unauthorized')
+              return response.status(403).send('Unauthorized')
             }
 
             request.user = user
 
             next()
           })
+          .catch (error => {
+            response.status(500).send(error)
+          })
       })
     },
+    /**
+     * Validate password
+     * @private
+     * @param {ExpressRequest} request 
+     * @param {ExpressResponse} response
+     */
+    _checkPassword (request, response, next) {
+      const { password } = request.body
+
+      if (password) {
+        if (password.length < 8 || password.length > 72) {
+          return response.status(400).send({
+            status: 400,
+            message: 'The length must be between 8 and 72.'
+          })
+        }
+      } else {
+        return response.status(400).send({
+          status: 400,
+          message: 'User registration requires a password'
+        })
+      }
+
+      next()
+    },
+    _checkBody (request, response, next) {
+      if (Object.getPrototypeOf(request.body) !== Object.prototype) {
+        return response.status(400).send({
+          message: 'Missing data'
+        })
+      }
+
+      next()
+    },
+    /**
+     * Create new user
+     * @private
+     * @param {ExpressRequest} request 
+     * @param {ExpressResponse} response
+     */
+    _create (request, response) {
+      bcrypt.hash(request.body.password, this.saltRounds, (err, hash) => {
+        if (err) {
+          return response.status(500).send(err)
+        }
+
+        const User = this.$getDatabaseModel('user')
+
+        User.create({
+          email: request.body.email,
+          password: hash
+        })
+          .then(() => response.status(201).send({ message: 'Successfully registered' }))
+          .catch((error) => {
+            if (error.constructor.name === 'ValidationError') {
+              return response.status(400).send(error)
+            }
+
+            response.status(500).send(error)
+          })
+      })
+    },
+    /**
+     * Delete user from database
+     * @private
+     * @param {ExpressRequest} request 
+     * @param {ExpressResponse} response
+     */
     _delete (request, response) {
       const User = this.$getDatabaseModel('user')
       const userId = request.user.id
@@ -156,24 +241,21 @@ export default {
           if (user) {
             user.destroy()
               .then(() => response.send('OK'))
-              .catch(error => response.code(500).send(error))
+              .catch(error => response.status(500).send(error))
           } else {
-            response.code(404).send('User not found')
+            response.status(404).send('User not found')
           }
         })
-        .catch(error => response.code(500).send(error))
+        .catch(error => response.status(500).send(error))
     },
+    /**
+     * Login using email and password
+     * @private
+     * @param {ExpressRequest} request 
+     * @param {ExpressResponse} response
+     */
     _login (request, response) {
       const data = request.body
-
-      if (data.password) {
-        if (data.password.length < 8 || data.password.length > 72) {
-          response.code(400).send(new Error('The length must be between 8 and 72.'))
-        }
-      } else {
-        response.code(400).send(new Error('User registration requires a password'))
-      }
-
       const where = {}
 
       if (data.email) {
@@ -187,13 +269,17 @@ export default {
       User.findOne({ where })
         .then(user => {
           if (!user) {
-            response.code(404).send()
+            return response.status(404).send({
+              message: 'No user found'
+            })
           }
 
           const passwordMatch = bcrypt.compareSync(data.password, user.password)
 
           if (!passwordMatch) {
-            response.code(400).send(new Error('Password is incorrect'))
+            return response.status(400).send({
+              message: 'Password is incorrect'
+            })
           }
 
           const token = this._sign({
@@ -210,35 +296,19 @@ export default {
 
           response.send('OK')
         })
-        .catch((error) => response.code(500).send(error))
-    },
-    _register (request, response) {
-      const data = request.body
-
-      if (data.password) {
-        if (data.password.length < 8 || data.password.length > 72) {
-          response.code(400).send(new Error('The length must be between 8 and 72.'))
-        }
-        const salt = bcrypt.genSaltSync(10)
-
-        data.password = bcrypt.hashSync(data.password, salt)
-      } else {
-        response.code(400).send(new Error('User registration requires a password'))
-      }
-
-      const User = this.$getModel('user')
-
-      User.create(data)
-        .then(() => response.send({ message: 'Successfully registered' }))
         .catch((error) => {
-          if (error.constructor.name === 'ValidationError') {
-            response.code(400).send(error)
-          } else {
-            response.code(500).send(error)
-          }
+          response.status(500).send(error)
         })
     },
-    _sign ({ payload, expiresIn = '30d' }) {
+    /**
+     * JWT sign data
+     * @private
+     * @param {Object} param
+     * @param {*} param.payload - Data to encrypt
+     * @param {number} param.maxAge - Cookie max expire age 
+     * @returns {string}
+     */
+    _sign ({ payload, maxAge }) {
       return jwt.sign({
         data: payload
       }, this.secret, { algorithm: this.tokenAlgorithm, maxAge })
