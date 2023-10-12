@@ -53,6 +53,7 @@ export default {
       source: 'component',
       target: 'layout',
       options: {
+        onDelete: 'RESTRICT',
         through: 'layoutComponents'
       }
     })
