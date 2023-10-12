@@ -115,9 +115,8 @@ export default {
   hasProperties (entry) {
     return !!(entry.items || entry.properties || entry.patternProperties)
   },
-  processProperties (context, id, properties = [], options, relation, entries) {
+  processProperties (context, id, properties = [], options, entries) {
     const entryProperties = []
-    let hasRelation = false
 
     for (let i = 0; i < properties.length; i++) {
       const property = properties[i]
@@ -139,18 +138,10 @@ export default {
         }
       }
 
-      if (typeof property.options === 'object' && property.options.relation) {
-        hasRelation = true
-        relation.push([name, property.options.relation])
-      }
-
       entryProperties.push(property)
     }
 
-    return {
-      properties: entryProperties,
-      hasRelation
-    }
+    return entryProperties
   },
   object (context, id, entry, properties, patternProperties, options, entries) {
     const item = {
@@ -158,20 +149,15 @@ export default {
       entry
     }
 
-    const relation = []
-    const entryProperties = this.processProperties(context, id, properties, options, relation, entries)
-    const entryPatternProperties = this.processProperties(context, id, patternProperties, options, relation, entries)
+    const entryProperties = this.processProperties(context, id, properties, options, entries)
+    const entryPatternProperties = this.processProperties(context, id, patternProperties, options, entries)
 
-    if (entryProperties.hasRelation || entryPatternProperties.hasRelation) {
-      item.relation = relation
+    if (entryProperties.length) {
+      item.entry.properties = entryProperties
     }
 
-    if (entryProperties.properties.length) {
-      item.entry.properties = entryProperties.properties
-    }
-
-    if (entryPatternProperties.properties.length) {
-      item.entry.patternProperties = entryPatternProperties.properties
+    if (entryPatternProperties.length) {
+      item.entry.patternProperties = entryPatternProperties
     }
 
     entries.push(item)
@@ -183,24 +169,14 @@ export default {
       id = id + '/items'
     }
 
-    if (item.properties && item.patternProperties) {
+    if (item.properties || item.patternProperties) {
       this.object(context, id, item.entry, item.properties, item.patternProperties, item.entry.options, entries)
-    } else if (item.items) {
-      this.process(context, id, item.items, entries)
-
-      const entry = { id, entry: item.entry }
-
-      if (typeof item.entry.options === 'object' && item.entry.options.relation) {
-        entry.relation = [item.entry.options.relation]
-      }
-
-      entries.push(entry)
     } else {
-      const entry = { id, entry: item.entry }
-
-      if (typeof item.entry.options === 'object' && item.entry.options.relation) {
-        entry.relation = [item.entry.options.relation]
+      if (item.items) {
+        this.process(context, id, item.items, entries)
       }
+
+      const entry = { id, entry: item.entry }
 
       entries.push(entry)
     }
