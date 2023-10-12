@@ -177,6 +177,21 @@ export default {
           })
           .catch(error => reject(error))
       })
+    },
+    /**
+     * Get database Model
+     * @private
+     * @param {string} name - Name of Model
+     * @returns {SequelizeModel}
+     */
+    _getDatabaseModel (name) {
+      const Model = this.models[name]
+
+      if (!Model) {
+        throw new Error('No Model found')
+      }
+
+      return Model
     }
   }
 }
