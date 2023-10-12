@@ -121,7 +121,7 @@ export default {
         listenerRefs[refId] = true
       }
     },
-    $deleteDataValue (name, id) {
+    $deleteDataValue (name, id, { cascade }) {
       const collection = this.values[name]
 
       if (collection == null) {
@@ -132,12 +132,55 @@ export default {
         })
       }
 
+      const relationName = name + '/' + id
+
+      // check if data is in use
+      if (this.relationUsed[relationName]) {
+        return {
+          inUse: true,
+          deleted: false
+        }
+      }
+
+      // check if we can clean up related data
+      const relations = this.relation[relationName]
+
+      if (relations) {
+        for (let i = 0; i < relations.length; i++) {
+          const usedRelationName = relations[i]
+          const usedRelations = this.relationUsed[usedRelationName]
+
+          if (usedRelations && usedRelations.length) {
+            // remove relationship
+            this.relationUsed[usedRelationName] = usedRelations.filter(item => item !== relationName)
+
+            // clear up data if not in use
+            if (!this.relationUsed[usedRelationName].length) {
+              const splitName = usedRelationName.split('/')
+
+              delete this.relationUsed[usedRelationName]
+
+              if (cascade) {
+                this.$deleteDataValue(splitName[0] + '/' + splitName[1], splitName[2])
+              }
+
+              relations.splice(i, 1)
+              i--
+            }
+          }
+        }
+
+        if (!relations.length) {
+          delete this.relation[relationName]
+        }
+      }
+
       if (collection[id]) {
         delete collection[id]
       }
 
       return {
-        isValid: true
+        deleted: true
       }
     },
     $getDataValue: {
@@ -257,21 +300,21 @@ export default {
             result.expand = {}
             result.isExpandValid = true
 
-            for (const key in relations) {
-              if (Object.hasOwnProperty.call(relations, key)) {
-                const items = relations[key]
-                result.expand[key] = []
+            for (let i = 0; i < relations.length; i++) {
+              const item = relations[i].split('/')
+              const name = item[0] + '/' + item[1]
+              const id = item[2]
 
-                for (let i = 0; i < items.length; i++) {
-                  const id = items[i]
-                  const collection = this.values[key]
-                  const value = this.values[key][id]
-                  if (collection && value) {
-                    result.expand[key].push({ id, item: value })
-                  } else {
-                    result.isExpandValid = false
-                  }
-                }
+              if (!this.values[name] || !this.values[name][id]) {
+                continue
+              }
+
+              const value = { id, item: this.values[name][id] }
+
+              if (result.expand[name]) {
+                result.expand[name].push(value)
+              } else {
+                result.expand[name] = [value]
               }
             }
           }
@@ -899,17 +942,17 @@ export default {
       const usedName = refCollection + '/' + refId
 
       // set what is related to data
-      if (!this.relation[name] || !this.relation[name][refCollection]) {
-        this.relation[name] = { [refCollection]: [refId] }
-      } else if (!this.relation[name][refCollection].includes(refId)) {
-        this.relation[name][refCollection].push(refId)
+      if (!this.relation[name]) {
+        this.relation[name] = [usedName]
+      } else if (!this.relation[name].includes(usedName)) {
+        this.relation[name].push(usedName)
       }
 
       // set where ref data is used
-      if (!this.relationUsed[usedName] || !this.relationUsed[usedName][collection]) {
-        this.relationUsed[usedName] = { [collection]: [docId] }
-      } else if (!this.relationUsed[usedName][collection].includes(docId)) {
-        this.relationUsed[usedName][collection].push(docId)
+      if (!this.relationUsed[usedName]) {
+        this.relationUsed[usedName] = [name]
+      } else if (!this.relationUsed[usedName].includes(name)) {
+        this.relationUsed[usedName].push(name)
       }
     },
     '_setData/array' (data, name, target, source, options, depth) {

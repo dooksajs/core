@@ -264,8 +264,8 @@ export default {
               for (let i = 0; i < collections.length; i++) {
                 const data = this.$deleteDataValue(collections[i], id)
 
-                if (!data.isValid) {
-                  throw new Error(data.error.details)
+                if (!data.deleted) {
+                  throw new Error('Could not delete from cache')
                 }
               }
             }
