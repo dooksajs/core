@@ -155,7 +155,14 @@ export default {
        * @returns {Object}
        */
       value (name, { id, prefixId, suffixId, options }) {
-        const result = { isEmpty: false }
+        if (this.values[name] == null) {
+          return {
+            isEmpty: true,
+            isCollectionEmpty: true
+          }
+        }
+
+        const result = { isEmpty: false, isCollectionEmpty: false }
         const schema = this.schema[name]
 
         if (Object.hasOwn(arguments[0], 'id') && id == null) {
