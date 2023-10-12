@@ -866,12 +866,21 @@ export default {
       ++depth
 
       const setDataName = '_setData/' + schemaItems.type
+      const setData = this[setDataName].bind(this)
 
+      if (!source.length) {
+        if (!setData) {
+          this._checkType(schemaName, source, schemaItems.type)
+        } else {
+          setData(data, schemaName, target, source, options, depth)
+        }
+      } else {
       for (let i = 0; i < source.length; i++) {
-        if (!this[setDataName]) {
+          if (!setData) {
           this._checkType(schemaName, source[i], schemaItems.type)
         } else {
-          source[i] = this[setDataName](data, schemaName, target, source[i], options, depth)
+            source[i] = setData(data, schemaName, target, source[i], options, depth)
+          }
         }
       }
 
