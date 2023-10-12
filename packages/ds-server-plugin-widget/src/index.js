@@ -72,8 +72,7 @@ export default {
     ])
 
     // user association
-    this.$method('dssDatabase/association', {
-      type: 'belongsTo',
+    this.$setDatabaseAssociation('belongsTo', {
       source: 'widget',
       target: 'user',
       options: {
@@ -82,16 +81,14 @@ export default {
     })
 
     // content association
-    this.$method('dssDatabase/association', {
-      type: 'belongsToMany',
+    this.$setDatabaseAssociation('belongsToMany', {
       source: 'widget',
       target: 'content',
       options: {
         through: 'widgetContent'
       }
     })
-    this.$method('dssDatabase/association', {
-      type: 'belongsToMany',
+    this.$setDatabaseAssociation('belongsToMany', {
       source: 'content',
       target: 'widget',
       options: {
@@ -100,9 +97,7 @@ export default {
     })
 
     // events
-    this.$method('dssDatabase/model', {
-      name: 'widgetEvent',
-      fields: [
+    this.$setDatabaseModel('widgetEvent', [
         {
           name: 'id',
           type: 'string',
@@ -124,12 +119,10 @@ export default {
             allowNull: false
           }
         }
-      ]
-    })
+    ])
 
     // event association
-    this.$method('dssDatabase/association', {
-      type: 'belongsTo',
+    this.$setDatabaseAssociation('belongsTo', {
       source: 'widgetEvent',
       target: 'widget',
       options: {
@@ -139,16 +132,14 @@ export default {
       }
     })
 
-    this.$method('dssDatabase/association', {
-      type: 'belongsToMany',
+    this.$setDatabaseAssociation('belongsToMany', {
       source: 'widgetEvent',
       target: 'actionRecipe',
       options: {
         through: 'widgetEventActions'
       }
     })
-    this.$method('dssDatabase/association', {
-      type: 'belongsToMany',
+    this.$setDatabaseAssociation('belongsToMany', {
       source: 'actionRecipe',
       target: 'widgetEvent',
       options: {
@@ -157,16 +148,14 @@ export default {
     })
 
     // layout association
-    this.$method('dssDatabase/association', {
-      type: 'belongsToMany',
+    this.$setDatabaseAssociation('belongsToMany', {
       source: 'widget',
       target: 'layout',
       options: {
         through: 'widgetLayouts'
       }
     })
-    this.$method('dssDatabase/association', {
-      type: 'belongsToMany',
+    this.$setDatabaseAssociation('belongsToMany', {
       source: 'layout',
       target: 'widget',
       options: {
@@ -175,16 +164,14 @@ export default {
     })
 
     // template association
-    this.$method('dssDatabase/association', {
-      type: 'belongsToMany',
+    this.$setDatabaseAssociation('belongsToMany', {
       source: 'widget',
       target: 'template',
       options: {
         through: 'widgetTemplates'
       }
     })
-    this.$method('dssDatabase/association', {
-      type: 'belongsToMany',
+    this.$setDatabaseAssociation('belongsToMany', {
       source: 'template',
       target: 'widget',
       options: {
@@ -193,16 +180,14 @@ export default {
     })
 
     // section association
-    this.$method('dssDatabase/association', {
-      type: 'belongsToMany',
+    this.$setDatabaseAssociation('belongsToMany', {
       source: 'section',
       target: 'widget',
       options: {
         through: 'sectionWidgets'
       }
     })
-    this.$method('dssDatabase/association', {
-      type: 'belongsToMany',
+    this.$setDatabaseAssociation('belongsToMany', {
       source: 'widget',
       target: 'section',
       options: {

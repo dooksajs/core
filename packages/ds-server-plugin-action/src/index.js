@@ -70,16 +70,14 @@ export default {
         }
     ])
 
-    this.$method('dssDatabase/association', {
-      type: 'belongsToMany',
+    this.$setDatabaseAssociation('belongsToMany', {
       source: 'action',
       target: 'sequence',
       options: {
         through: 'actionSequences'
       }
     })
-    this.$method('dssDatabase/association', {
-      type: 'belongsToMany',
+    this.$setDatabaseAssociation('belongsToMany', {
       source: 'sequence',
       target: 'action',
       options: {
@@ -87,16 +85,15 @@ export default {
       }
     })
 
-    this.$method('dssDatabase/association', {
-      type: 'belongsToMany',
+    this.$setDatabaseAssociation('belongsToMany', {
       source: 'sequence',
       target: 'actionRecipe',
       options: {
         through: 'actionRecipeSequences'
       }
     })
-    this.$method('dssDatabase/association', {
-      type: 'belongsToMany',
+
+    this.$setDatabaseAssociation('belongsToMany', {
       source: 'actionRecipe',
       target: 'sequence',
       options: {

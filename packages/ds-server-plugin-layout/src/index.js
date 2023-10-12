@@ -45,16 +45,17 @@ export default {
     })
 
     // component association
-    this.$method('dssDatabase/association', {
-      type: 'belongsToMany',
+    this.$setDatabaseAssociation('belongsToMany', {
       source: 'layout',
       target: 'component',
       options: {
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
         through: 'layoutComponents'
       }
     })
-    this.$method('dssDatabase/association', {
-      type: 'belongsToMany',
+
+    this.$setDatabaseAssociation('belongsToMany', {
       source: 'component',
       target: 'layout',
       options: {
