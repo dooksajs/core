@@ -94,6 +94,7 @@ export default {
     this.callback = callback
 
     const dependencies = []
+    const priorityDependencies = []
     // create dsPlugins and sort plugin dependencies
     for (let i = 0; i < plugins.length; i++) {
       const plugin = plugins[i]
@@ -106,7 +107,24 @@ export default {
       this._addData(dsPlugin, plugin.options)
 
       if (dsPlugin.dependencies) {
+        if (!dsPlugin.contextMethods) {
         dependencies.push(dsPlugin.name)
+        } else {
+          priorityDependencies.push([dsPlugin.name, dsPlugin.dependencies])
+        }
+      }
+    }
+
+    for (let i = 0; i < priorityDependencies.length; i++) {
+      const [name, dependencies] = priorityDependencies[i]
+
+      for (let i = 0; i < dependencies.length; i++) {
+        const dependency = dependencies[i].name
+
+        // remove dependent from low priority
+        this.lowPriority = this.lowPriority.filter(item => item !== dependency)
+        // make high priority listen for its dependent plugin
+        this._subscribe(name, dependency)
       }
     }
 
@@ -118,6 +136,7 @@ export default {
       }
     }
 
+    // make all low priority dependent on high priority plugins
     for (let i = 0; i < this.highPriority.length; i++) {
       const dependency = this.highPriority[i]
 
