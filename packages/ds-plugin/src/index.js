@@ -55,14 +55,6 @@ function DsPlugin (plugin, context = [], isDev) {
     // ISSUE: [DS-752] applying context to plugins should be more dynamic
     if (item.scope && item.scope.includes(plugin.name)) {
       _context[item.name] = item.value
-    }
-
-    if (item.name === 'isDev' && item.value) {
-      // _context.isDev = true
-
-      // if (plugin.name !== 'dsDevTool') {
-      //   _context.$action('dsDevTool/set', { _context, plugin })
-      // }
     } else {
       _context[item.name] = item.value
     }
