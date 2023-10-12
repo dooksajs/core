@@ -13,6 +13,7 @@ const app = dsApp.start({
     {
       name: 'dssDatabase',
       setup: {
+        storage: './ds_data/database.db',
         logging: logger()
       }
     },
