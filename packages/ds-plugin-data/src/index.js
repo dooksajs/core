@@ -250,6 +250,32 @@ export default {
         }
 
         if (options) {
+          const relations = this.relationUsed[name + '/' + id]
+          result.isExpandValid = !!relations
+
+          if (options.expand && relations) {
+            result.expand = {}
+            result.isExpandValid = true
+
+            for (const key in relations) {
+              if (Object.hasOwnProperty.call(relations, key)) {
+                const items = relations[key]
+                result.expand[key] = []
+
+                for (let i = 0; i < items.length; i++) {
+                  const id = items[i]
+                  const collection = this.values[key]
+                  const value = this.values[key][id]
+                  if (collection && value) {
+                    result.expand[key].push({ id, item: value })
+                  } else {
+                    result.isExpandValid = false
+                  }
+                }
+              }
+            }
+          }
+
           if (Number.isInteger(options.position)) {
             // check if index is within range
             if (options.position < result.item.length && options.position > -1) {
@@ -805,7 +831,7 @@ export default {
       // if (option.source) {}
     },
     _setData (name, source, target, options, depth = 1) {
-      const data = { rootTarget: target }
+      const data = { rootTarget: target, rootName: name }
       const schema = this.schema[name]
       const setDataName = '_setData/' + schema.type
       const hasOptions = (options && (options.depth === depth || (depth === 1 && !options.depth)))
@@ -865,6 +891,21 @@ export default {
 
       return result
     },
+    /**
+     * Set the association id
+     * @param {string} name - Name of primary key
+     * @param {string} association - Name of foreign key collection
+     * @param {string} value - The foreign key
+     */
+    _setRelation (collection, docId, refCollection, refId) {
+      const name = collection + '/' + docId
+
+      if (!this.relationUsed[name] || !this.relationUsed[name][refCollection]) {
+        this.relationUsed[name] = { [refCollection]: [refId] }
+      } else if (!this.relationUsed[name][refCollection].includes(refId)) {
+        this.relationUsed[name][refCollection].push(refId)
+      }
+    },
     '_setData/array' (data, name, target, source, options, depth) {
       const schema = this.schema[name]
       const schemaName = name + '/items'
@@ -895,10 +936,10 @@ export default {
           setData(data, schemaName, target, source, options, depth)
         }
       } else {
-      for (let i = 0; i < source.length; i++) {
+        for (let i = 0; i < source.length; i++) {
           if (!setData) {
-          this._checkType(schemaName, source[i], schemaItems.type)
-        } else {
+            this._checkType(schemaName, source[i], schemaItems.type)
+          } else {
             source[i] = setData(data, schemaName, target, source[i], options, depth)
           }
         }
@@ -1030,6 +1071,10 @@ export default {
 
               source[property.name] = this[setDataName](data, schemaName, newTarget[property.name], value, options, depth)
             } else {
+              if (propertyOptions.relation) {
+                this._setRelation(data.rootName, data.id, propertyOptions.relation, value)
+              }
+
               source[property.name] = value
             }
           }
