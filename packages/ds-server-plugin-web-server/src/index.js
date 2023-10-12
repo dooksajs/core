@@ -76,6 +76,7 @@ export default {
     // setup plugins
     this.app.use(helmet())
     this.app.use(express.json())
+    this.app.use(express.urlencoded({ extended: true }))
     this.app.use(cookieParser(cookieSecret, {
       httpOnly: true,
       sameSite: true,
