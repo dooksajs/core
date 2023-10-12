@@ -108,7 +108,7 @@ export default {
 
       if (dsPlugin.dependencies) {
         if (!dsPlugin.contextMethods) {
-        dependencies.push(dsPlugin.name)
+          dependencies.push(dsPlugin.name)
         } else {
           priorityDependencies.push([dsPlugin.name, dsPlugin.dependencies])
         }
@@ -152,7 +152,7 @@ export default {
   methods: {
     /**
      * Load plugin
-     * @param {string} name - Name of plugin 
+     * @param {string} name - Name of plugin
      */
     load (name) {
       const options = this.options[name]
@@ -166,7 +166,7 @@ export default {
     /**
      * Load all current plugins
      * @private
-     * @param {string[]} - List of plugin names 
+     * @param {string[]} - List of plugin names
      */
     _processQueue (queue) {
       for (let i = 0; i < queue.length; i++) {
@@ -181,7 +181,7 @@ export default {
      * Prepare plugin data for the loading processing
      * @private
      * @param {DsPlugin} plugin - DsPlugin instance
-     * @param {DsPluginOptions} options - DsPlugin setup options 
+     * @param {DsPluginOptions} options - DsPlugin setup options
      */
     _addData (plugin, options) {
       const { name, contextMethods } = plugin
@@ -248,7 +248,7 @@ export default {
     /**
      * Start the plugin setup process
      * @private
-     * @param {DsPlugin} plugin - DsPlugin instance 
+     * @param {DsPlugin} plugin - DsPlugin instance
      * @param {DsPluginOptions} options - DsPlugin setup options
      */
     _use (plugin, options = {}) {
@@ -271,7 +271,7 @@ export default {
     /**
      * Setup the plugin
      * @private
-     * @param {DsPlugin} plugin - DsPlugin instance 
+     * @param {DsPlugin} plugin - DsPlugin instance
      * @param {DsPluginOptions} options - DsPlugin setup options
      */
     _setup (plugin, options) {
@@ -297,7 +297,7 @@ export default {
     /**
      * Set plugin as loaded
      * @private
-     * @param {string} name - Name of plugin 
+     * @param {string} name - Name of plugin
      */
     _setLoaded (name) {
       this.isLoaded[name] = true
