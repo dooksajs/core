@@ -148,10 +148,11 @@ export default {
        * @param {Object} param
        * @param {string} param.name - Data collection name
        * @param {string} param.id - Data collection document id
-       * @param {prefixId} param.id - Data collection document prefix
-       * @param {suffixId} param.id - Data collection document suffix
+       * @param {prefixId} param.prefixId - Data collection document prefix
+       * @param {suffixId} param.suffixId - Data collection document suffix
        * @param {Object} param.options - Options
-       * @param {Object} param.options.position - Data collection document suffix
+       * @param {boolean} param.options.expand - Expand all relational data
+       * @param {string|number} param.options.position - Return the value by key of the data value
        * @returns {Object}
        */
       value (name, { id, prefixId, suffixId, options }) {
