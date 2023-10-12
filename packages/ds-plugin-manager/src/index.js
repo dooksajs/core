@@ -132,7 +132,6 @@ export default {
       context,
       callback: this._add.bind(this)
     })
-      
 
     // export global functions
     if (isDev) {
