@@ -4,7 +4,7 @@ import resource from '@dooksa/resource-loader'
 
 /**
  * This callback is displayed as part of the Requester class.
- * @callback actionCallback
+ * @callback ActionCallback
  * @param {number} responseCode
  * @param {string} responseMessage
  */
