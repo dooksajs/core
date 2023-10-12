@@ -1,12 +1,5 @@
 import dsApp from '../src/index.js'
-import dsDevTool from '@dooksa/ds-plugin-devtool'
 import logger from 'sequelize-pretty-logger'
-
-dsApp.use([{
-  name: dsDevTool.name,
-  version: dsDevTool.version,
-  value: dsDevTool
-}])
 
 const app = dsApp.start({
   isDev: true,
