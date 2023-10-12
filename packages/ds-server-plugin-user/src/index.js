@@ -260,7 +260,7 @@ export default {
             payload: {
               id: user.id
             },
-            maxAge: data.expiresIn || this.cookieMaxAge
+            expiresIn: data.expiresIn || this.cookieMaxAge
           })
 
           response.cookie('token', token, {
@@ -282,10 +282,10 @@ export default {
      * @param {number} param.maxAge - Cookie max expire age 
      * @returns {string}
      */
-    _sign ({ payload, maxAge }) {
+    _sign ({ payload, expiresIn }) {
       return jwt.sign({
         data: payload
-      }, this.secret, { algorithm: this.tokenAlgorithm, maxAge })
+      }, this.secret, { algorithm: this.tokenAlgorithm, expiresIn })
     }
   }
 }
