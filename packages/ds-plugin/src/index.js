@@ -87,12 +87,7 @@ function DsPlugin (plugin, context = [], isDev) {
             scope: item.scope || false,
             export: !!item.export
           })
-
-          continue
-        }
-
-        // Catch the public method
-        if (firstChar !== '_') {
+        } else if (firstChar !== '_') {
           methods[key] = item.bind(_context)
         }
       }
