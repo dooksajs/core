@@ -983,7 +983,7 @@ export default {
         if (value == null && !propertyOptions.default) {
           propertiesChecked.push(property.name)
         } else {
-          if (property.type !== 'number' && !value && propertyOptions.default) {
+          if (value == null && propertyOptions.default) {
             // add default value
             if (typeof propertyOptions.default === 'function') {
               source[property.name] = propertyOptions.default()
