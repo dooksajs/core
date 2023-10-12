@@ -25,9 +25,7 @@ export default {
     ...dsLayout.data
   },
   setup () {
-    this.$method('dssDatabase/model', {
-      name: 'layout',
-      fields: [
+    this.$setDatabaseModel('layout', [
         {
           name: 'id',
           type: 'string',
@@ -42,7 +40,8 @@ export default {
             allowNull: false
           }
         }
-      ]
+    ], {
+      timestamps: false
     })
 
     // component association

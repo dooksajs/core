@@ -49,9 +49,7 @@ export default {
     }
 
     // setup model
-    this.$method('dssDatabase/model', {
-      name: 'user',
-      fields: [
+    this.$setDatabaseModel('user', [
         {
           name: 'username',
           type: 'string',
@@ -86,8 +84,7 @@ export default {
             dataType: 'boolean'
           }
         }
-      ]
-    })
+    ])
 
     // add middleware
     this.$setDataValue('dssWebServer/middleware', {

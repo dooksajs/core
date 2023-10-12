@@ -40,9 +40,7 @@ export default {
     ...dsWidget.data
   },
   setup () {
-    this.$method('dssDatabase/model', {
-      name: 'widget',
-      fields: [
+    this.$setDatabaseModel('widget', [
         {
           name: 'id',
           type: 'string',
@@ -71,8 +69,7 @@ export default {
             allowNull: false
           }
         }
-      ]
-    })
+    ])
 
     // user association
     this.$method('dssDatabase/association', {

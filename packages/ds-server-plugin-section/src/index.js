@@ -19,9 +19,7 @@ export default {
     ...dsSection.data
   },
   setup () {
-    this.$method('dssDatabase/model', {
-      name: 'section',
-      fields: [
+    this.$setDatabaseModel('section', [
         {
           name: 'id',
           type: 'string',
@@ -50,7 +48,6 @@ export default {
             allowNull: false
           }
         }
-      ]
-    })
+    ])
   }
 }

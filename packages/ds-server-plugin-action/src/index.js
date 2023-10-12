@@ -22,9 +22,7 @@ export default {
     ...dsAction.data
   },
   setup () {
-    this.$method('dssDatabase/model', {
-      name: 'action',
-      fields: [
+    this.$setDatabaseModel('action', [
         {
           name: 'id',
           type: 'string',
@@ -39,12 +37,9 @@ export default {
             allowNull: false
           }
         }
-      ]
-    })
+    ])
 
-    this.$method('dssDatabase/model', {
-      name: 'sequence',
-      fields: [
+    this.$setDatabaseModel('sequence', [
         {
           name: 'id',
           type: 'string',
@@ -59,12 +54,9 @@ export default {
             allowNull: false
           }
         }
-      ]
-    })
+    ])
 
-    this.$method('dssDatabase/model', {
-      name: 'actionRecipe',
-      fields: [
+    this.$setDatabaseModel('actionRecipe', [
         {
           name: 'id',
           type: 'string',
@@ -76,8 +68,7 @@ export default {
           name: 'name',
           type: 'string'
         }
-      ]
-    })
+    ])
 
     this.$method('dssDatabase/association', {
       type: 'belongsToMany',

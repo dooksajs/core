@@ -19,9 +19,7 @@ export default {
     ...dsComponent.data
   },
   setup () {
-    this.$method('dssDatabase/model', {
-      name: 'component',
-      fields: [
+    this.$setDatabaseModel('component', [
         {
           name: 'id',
           type: 'string',
@@ -37,7 +35,8 @@ export default {
             allowNull: false
           }
         }
-      ]
+    ], {
+      timestamps: false
     })
   }
 }

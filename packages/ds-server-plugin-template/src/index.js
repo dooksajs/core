@@ -2,47 +2,35 @@ import dsTemplate from '@dooksa/ds-plugin-template'
 
 /**
  * DsPage plugin.
- * @namespace dssTemplate
+ * @namespace dsTemplate
  */
 export default {
-  name: 'dssTemplate',
+  name: 'dsTemplate',
   version: 1,
   dependencies: [
     {
-      name: 'dssDatabase'
-    },
-    {
-      name: 'dssWebServer'
-    },
-    {
-      name: 'dssUser'
+      name: 'dsUser'
     }
   ],
   data: {
     ...dsTemplate.data
   },
   setup () {
-    this.$method('dssDatabase/model', {
-      name: 'template',
-      fields: [
-        {
-          name: 'id',
-          type: 'string',
-          options: {
-            primaryKey: true
-          }
-        },
-        {
-          name: 'data',
-          type: 'json',
-          options: {
-            allowNull: false
-          }
+    this.$setDatabaseModel('template', [
+      {
+        name: 'id',
+        type: 'string',
+        options: {
+          primaryKey: true
         }
-      ]
-    })
-  },
-  /** @lends dssTemplate */
-  methods: {
+      },
+      {
+        name: 'data',
+        type: 'json',
+        options: {
+          allowNull: false
+        }
+      }
+    ])
   }
 }

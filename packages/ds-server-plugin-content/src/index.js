@@ -22,9 +22,7 @@ export default {
     ...dsContent.data
   },
   setup () {
-    this.$method('dssDatabase/model', {
-      name: 'content',
-      fields: [
+    this.$setDatabaseModel('content', [
         {
           name: 'id',
           type: 'string',

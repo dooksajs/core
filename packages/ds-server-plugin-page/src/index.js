@@ -31,9 +31,7 @@ export default {
     }
   },
   setup () {
-    this.$method('dssDatabase/model', {
-      name: 'page',
-      fields: [
+    this.$setDatabaseModel('page', [
         {
           name: 'id',
           type: 'string',
@@ -57,8 +55,7 @@ export default {
             allowNull: false
           }
         }
-      ]
-    })
+    ])
 
     // section associations
     this.$method('dssDatabase/association', {
