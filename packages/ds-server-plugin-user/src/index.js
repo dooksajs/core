@@ -170,15 +170,6 @@ export default {
 
       next()
     },
-    _checkBody (request, response, next) {
-      if (Object.getPrototypeOf(request.body) !== Object.prototype) {
-        return response.status(400).send({
-          message: 'Missing data'
-        })
-      }
-
-      next()
-    },
     /**
      * Create new user
      * @private
