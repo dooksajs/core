@@ -87,33 +87,30 @@ export default {
     ])
 
     // add middleware
-    this.$setDataValue('dssWebServer/middleware', {
+    this.$setDataValue('dsMiddleware/items', {
       source: this._auth.bind(this),
       options: {
-        id: 'dssUser/auth'
+        id: 'dsUser/auth'
       }
     })
 
     // add routes
-    this.$method('dssWebServer/addRoute', {
-      path: '/user/register',
+    this.$setWebServerRoute('/user/register', {
       method: 'post',
       handlers: [
-        this._checkBody,
         this._checkPassword.bind(this),
         this._create.bind(this)
       ]
     })
-    this.$method('dssWebServer/addRoute', {
-      path: '/user/login',
+
+    this.$setWebServerRoute('/user/login', {
       method: 'post',
       handlers: [
-        this._checkBody,
         this._checkPassword.bind(this),
         this._login.bind(this)]
     })
-    this.$method('dssWebServer/addRoute', {
-      path: '/user/delete',
+
+    this.$setWebServerRoute('/user/delete', {
       method: 'delete',
       handlers: [this._delete.bind(this)]
     })

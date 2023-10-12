@@ -62,32 +62,69 @@ export default {
         through: 'layoutComponents'
       }
     })
-  },
-  /** @lends dssLayout */
-  methods: {
-    validate ({ data, pageId }) {
-      const result = []
 
-      for (const id in data) {
-        if (Object.hasOwnProperty.call(data, id)) {
-          const source = data[id]
-          const setData = this.$setDataValue('dssLayout/items', {
-            source,
-            options: { id }
-          })
+    const fields = [{
+      collection: 'dsLayout/items',
+      name: 'data'
+    }]
 
-          if (!setData.isValid) {
-            return false
-          }
+    // route: add action sequences
+    this.$setWebServerRoute('/layout', {
+      method: 'post',
+      middleware: ['dsUser/auth'],
+      handlers: [
+        this.$method('dsDatabase/create', {
+          model: 'layout',
+          fields,
+          include: [{
+            model: 'component',
+            fields: [{
+              collection: 'dsComponent/items',
+              name: 'data'
+            }]
+          }]
+        })
+      ]
+    })
 
-          // add primary key
-          source.id = id
-          source.pageId = pageId
-          result.push(source)
-        }
-      }
+    // route: update existing actions
+    this.$setWebServerRoute('/layout', {
+      method: 'put',
+      middleware: ['dsUser/auth'],
+      handlers: [
+        this.$method('dsDatabase/create', { model: 'layout', fields })
+      ]
+    })
 
-      return result
-    }
+    // route: get a list of action
+    this.$setWebServerRoute('/layout', {
+      method: 'get',
+      middleware: ['request/queryIsArray'],
+      handlers: [
+        this.$method('dsDatabase/getById', {
+          model: 'layout',
+          fields,
+          include: [{
+            model: 'component',
+            fields: [{
+              collection: 'dsComponent/items',
+              name: 'data'
+            }]
+          }]
+        })
+      ]
+    })
+
+    // route: delete action sequence
+    this.$setWebServerRoute('/layout', {
+      method: 'delete',
+      middleware: ['dsUser/auth', 'request/queryIsArray'],
+      handlers: [
+        this.$method('dsDatabase/deleteById', {
+          model: 'layout',
+          collections: ['dsLayout/items']
+        })
+      ]
+    })
   }
 }

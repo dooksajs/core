@@ -38,5 +38,49 @@ export default {
     ], {
       timestamps: false
     })
+
+    const fields = [{
+      collection: 'dsComponent/items',
+      name: 'data'
+    }]
+
+    // route: add action sequences
+    this.$setWebServerRoute('/component', {
+      method: 'post',
+      middleware: ['dsUser/auth'],
+      handlers: [
+        this.$method('dsDatabase/create', { model: 'component', fields })
+      ]
+    })
+
+    // route: update existing actions
+    this.$setWebServerRoute('/component', {
+      method: 'put',
+      middleware: ['dsUser/auth'],
+      handlers: [
+        this.$method('dsDatabase/create', { model: 'component', fields })
+      ]
+    })
+
+    // route: get a list of action
+    this.$setWebServerRoute('/component', {
+      method: 'get',
+      middleware: ['request/queryIsArray'],
+      handlers: [
+        this.$method('dsDatabase/getById', { model: 'component', fields })
+      ]
+    })
+
+    // route: delete action sequence
+    this.$setWebServerRoute('/component', {
+      method: 'delete',
+      middleware: ['dsUser/auth', 'request/queryIsArray'],
+      handlers: [
+        this.$method('dsDatabase/deleteById', {
+          model: 'component',
+          collections: ['dsComponent/items']
+        })
+      ]
+    })
   }
 }

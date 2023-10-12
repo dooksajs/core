@@ -90,13 +90,13 @@ export default {
   methods: {
     /**
      * Add a route to the server
+     * @param {string} path - path
      * @param {Object} route
-     * @param {string} route.path - path
+     * @param {string[]} route.middleware - List of middleware reference Ids
      * @param {string} route.method - HTTP method
-     * @param {Array} route.handlers - List of callbacks
+     * @param {WebServerHandler[]} route.handlers - List of callbacks
      */
-    addRoute ({
-      path = '/',
+    $setWebServerRoute (path = '/', {
       method = 'get',
       middleware = [],
       handlers = []
@@ -107,10 +107,28 @@ export default {
 
       // add middleware handlers in order
       for (let i = middleware.length - 1; i > -1; i--) {
-        const data = this.$getDataValue('dssWebServer/middleware', { id: middleware[i] })
+        const item = middleware[i]
+        let id, options
+
+        if (Array.isArray(item)) {
+          id = item[0]
+          options = item[1]
+        } else {
+          id = item
+        }
+
+        const data = this.$getDataValue('dsMiddleware/items', { id })
         
         if (!data.isEmpty) {
-          handlers.unshift(data.item)
+          let handler = data.item
+
+          if (options) {
+            handler = data.item(options)
+          }
+
+          handlers.unshift(handler)
+        } else {
+          throw new Error('Middleware not found: ' + id)
         }
       }
 

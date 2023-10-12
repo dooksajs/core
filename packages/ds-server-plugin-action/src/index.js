@@ -101,66 +101,110 @@ export default {
       }
     })
 
+    const actionFields = [{
+      collection: 'dsAction/items',
+      name: 'data'
+    }]
+
     // route: add actions
-    this.$method('dssWebServer/addRoute', {
-      path: '/action',
+    this.$setWebServerRoute('/action', {
       method: 'post',
-      middleware: ['dssUser/auth'],
-      handlers: [this._create.bind(this)]
+      middleware: ['dsUser/auth'],
+      handlers: [
+        this.$method('dsDatabase/create', {
+          model: 'action',
+          fields: actionFields
+        })
+      ]
     })
 
     // route: update existing actions
-    this.$method('dssWebServer/addRoute', {
-      path: '/action',
+    this.$setWebServerRoute('/action', {
       method: 'put',
-      middleware: ['dssUser/auth'],
-      handlers: [this._update.bind(this)]
+      middleware: ['dsUser/auth'],
+      handlers: [
+        this.$method('dsDatabase/create', {
+          model: 'action',
+          fields: actionFields
+        })
+      ]
     })
 
     // route: get a list of action
-    this.$method('dssWebServer/addRoute', {
-      path: '/action',
+    this.$setWebServerRoute('/action', {
       method: 'get',
-      handlers: [this._get.bind(this)]
+      middleware: ['request/queryIsArray'],
+      handlers: [
+        this.$method('dsDatabase/getById', {
+          model: 'action',
+          fields: actionFields
+        })
+      ]
     })
 
     // route: delete action
-    this.$method('dssWebServer/addRoute', {
-      path: '/action',
+    this.$setWebServerRoute('/action', {
       method: 'delete',
-      middleware: ['dssUser/auth'],
-      handlers: [this._delete.bind(this)]
+      middleware: ['dsUser/auth', 'request/queryIsArray'],
+      handlers: [
+        this.$method('dsDatabase/deleteById', {
+          model: 'action',
+          collections: ['dsAction/items']
+        })
+      ]
     })
 
+    const actionSequenceFields = [{
+      collection: 'dsAction/sequence',
+      name: 'data'
+    }]
+
     // route: add action sequences
-    this.$method('dssWebServer/addRoute', {
-      path: '/action/sequence',
+    this.$setWebServerRoute('/action/sequence', {
       method: 'post',
-      middleware: ['dssUser/auth'],
-      handlers: [this._createSequence.bind(this)]
+      middleware: ['dsUser/auth'],
+      handlers: [
+        this.$method('dsDatabase/create', {
+          model: 'sequence',
+          fields: actionSequenceFields
+        })
+      ]
     })
 
     // route: update existing actions
-    this.$method('dssWebServer/addRoute', {
-      path: '/action/sequence',
+    this.$setWebServerRoute('/action/sequence', {
       method: 'put',
-      middleware: ['dssUser/auth'],
-      handlers: [this._updateSequence.bind(this)]
+      middleware: ['dsUser/auth'],
+      handlers: [
+        this.$method('dsDatabase/create', {
+          model: 'sequence',
+          fields: actionSequenceFields
+        })
+      ]
     })
 
     // route: get a list of action
-    this.$method('dssWebServer/addRoute', {
-      path: '/action/sequence',
+    this.$setWebServerRoute('/action/sequence', {
       method: 'get',
-      handlers: [this._getSequence.bind(this)]
+      middleware: ['request/queryIsArray'],
+      handlers: [
+        this.$method('dsDatabase/getById', {
+          model: 'action',
+          fields: actionSequenceFields
+        })
+      ]
     })
 
     // route: delete action sequence
-    this.$method('dssWebServer/addRoute', {
-      path: '/action/sequence',
+    this.$setWebServerRoute('/action/sequence', {
       method: 'delete',
-      middleware: ['dssUser/auth'],
-      handlers: [this._deleteSequence.bind(this)]
+      middleware: ['dsUser/auth', 'request/queryIsArray'],
+      handlers: [
+        this.$method('dsDatabase/deleteById', {
+          model: 'action',
+          collections: ['dsAction/sequence']
+        })
+      ]
     })
 
     // route: add action sequence entries
