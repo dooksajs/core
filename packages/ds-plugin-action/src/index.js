@@ -19,6 +19,9 @@ export default {
           properties: {
             _$a: {
               type: 'string'
+            },
+            _$p: {
+              type: 'string'
             }
           }
         }
