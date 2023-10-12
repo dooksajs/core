@@ -1,25 +1,5 @@
 import { Sequelize, DataTypes, Op } from 'sequelize'
 
-function BulkData () {
-  this.isValid = true
-  this.value = []
-}
-
-BulkData.prototype.setError = function (message) {
-  this.isValid = false
-  this.error = message
-}
-
-BulkData.prototype.id = (string) => {
-  const id = string.split('_')
-
-  return {
-    default: '_' + id[1] + '_',
-    prefix: id[0],
-    suffix: id[2]
-  }
-}
-
 /**
  * @namespace dssDatabase
  */
@@ -115,60 +95,86 @@ export default {
   },
   /** @lends dssDatabase */
   methods: {
-    $getDatabaseModel (name) {
-      return this.models[name]
+    $getDatabaseValue (name, {
+      type = 'findAll',
+      options = {}
+    }) {
+      const Model = this._getDatabaseModel(name)
+
+      if (options.hasOperators) {
+        // traverse options.where
+      }
+
+      return Model[type](options)
     },
-    association (item) {
-      if (!this.associationTypes[item.type]) {
+    $deleteDatabaseValue (name, options) {
+      const Model = this._getDatabaseModel(name)
+
+      return Model.destroy(options)
+    },
+    $setDatabaseAssociation (type, {
+      source,
+      target,
+      options = {}
+    }) {
+      if (!this.associationTypes[type]) {
         throw new Error('No association type found')
       }
 
-      const sourceModel = this.models[item.source]
+      const sourceModel = this.models[source]
 
       if (!sourceModel) {
-        throw new Error('Association source model not found: "' + item.source + '"')
+        throw new Error('Association source model not found: "' + source + '"')
       }
-      const targetModel = this.models[item.target]
+      const targetModel = this.models[target]
 
       if (!targetModel) {
-        throw new Error('Association target model not found: "' + item.target + '"')
+        throw new Error('Association target model not found: "' + target + '"')
       }
 
-      sourceModel[item.type](targetModel, item.options || {})
+      sourceModel[type](targetModel, options)
     },
-    bulkData () {
-      return new BulkData()
-    },
-    model ({ name, fields }) {
-      const options = {}
+    $setDatabaseModel (name, fields, options = {}) {
+      const schema = {}
 
       for (let i = 0; i < fields.length; i++) {
         const field = fields[i]
-        const option = {
+        const schemaItem = {
           type: DataTypes[field.type.toUpperCase()],
           ...field.options
         }
 
         if (field.defaultValue) {
           if (Object.hasOwn(field.defaultValue, 'dataType')) {
-            option.defaultValue = DataTypes[field.defaultValue.dataType.toUpperCase()]
+            schemaItem.defaultValue = DataTypes[field.defaultValue.dataType.toUpperCase()]
           } else {
-            option.defaultValue = field.defaultValue
+            schemaItem.defaultValue = field.defaultValue
           }
         }
 
-        options[field.name] = option
+        schema[field.name] = schemaItem
       }
-      const Model = this.sequelize.define(name, options)
 
-      this.models[name] = Model
+      this.models[name] = this.sequelize.define(name, schema, options)
     },
-    start () {
+    $setDatabaseValue (name, {
+      source,
+      options = {}
+    }) {
+      const Model = this._getDatabaseModel(name)
+
+      if (!source || !Array.isArray(source)) {
+        throw new Error('Source expects an array but got ' + typeof source)
+      }
+
+      return Model.bulkCreate(source, options)
+    },
+    start (sync = {}) {
       return new Promise((resolve, reject) => {
         this.sequelize.authenticate()
           .then(() => {
             if (this.isDev) {
-              this.sequelize.sync({ force: true })
+              this.sequelize.sync(sync)
                 .then(() => resolve())
                 .catch((error) => reject(error))
             } else {
