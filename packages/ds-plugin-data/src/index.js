@@ -283,12 +283,32 @@ export default {
           const schema = this.schema[name]
 
           if (!schema) {
-            throw new Error('Schema not found "' + name + '"')
+            throw new SchemaException({
+              schemaPath: name,
+              keyword: 'schema',
+              message: 'Schema not found'
+            })
+          }
+
+          if (source == null) {
+            throw new SchemaException({
+              schemaPath: name,
+              keyword: 'source',
+              message: 'Source was undefined'
+            })
           }
 
           let result = {}
 
-          if (!typeCheck && options && options.id) {
+          if (!typeCheck && options) {
+            if (options.id == null) {
+              throw new SchemaException({
+                schemaPath: name,
+                keyword: 'collection',
+                message: 'Collection id was undefined'
+              })
+            }
+
             result.item = source
             result.id = options.id
 
@@ -898,6 +918,14 @@ export default {
       let hasOptions
 
       if (options) {
+        if (Object.hasOwn(options, 'id') && options.id == null) {
+          throw new SchemaException({
+            schemaPath: name,
+            keyword: 'collection',
+            message: 'Collection id was undefined'
+          })
+        }
+
         // generate id
         if (!options.id) {
           const collectionId = this._defaultCollectionId(name, options)
