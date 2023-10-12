@@ -33,6 +33,11 @@ import cookieParser from 'cookie-parser'
 export default {
   name: 'dssWebServer',
   version: 1,
+  dependencies: [
+    {
+      name: 'dsMiddleware'
+    }
+  ],
   data: {
     cookieSecret: {
       private: true,
