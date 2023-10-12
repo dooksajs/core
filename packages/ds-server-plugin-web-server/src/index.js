@@ -54,15 +54,6 @@ export default {
         put: true,
         delete: true
       }
-    },
-    middleware: {
-      schema: {
-        type: 'collection',
-        items: {
-          type: 'function'
-        }
-      },
-      default: {}
     }
   },
   setup ({ cookieSecret, apiSuffix = '/api' }) {
