@@ -89,7 +89,7 @@ export default {
     protocol = 'tcp',
     logging = console.log,
     dialectOptions,
-    storage,
+    storage = './db_data/database.db',
     omitNull = false,
     native = false,
     ssl = false,
