@@ -4,6 +4,29 @@ import logger from 'pino-http'
 import cookieParser from 'cookie-parser'
 
 /**
+ * The req object represents the HTTP request and has properties for the request query string, parameters, body, HTTP headers, and so on.
+ * @typedef WebServerRequest - {@link https://expressjs.com/en/4x/api.html#req}
+ */
+
+/**
+ * The res object represents the HTTP response that an Express app sends when it gets an HTTP request.
+ * @typedef WebServerResponse - {@link https://expressjs.com/en/4x/api.html#res}
+ */
+
+/**
+ * To move on to the next middleware, allowing for stacking and fall-backs.
+ * @typedef WebServerNext
+ */
+
+/**
+ * This callback part of a express js routing callback list
+ * @callback WebServerHandler
+ * @param {WebServerRequest} req
+ * @param {WebServerResponse} res
+ * @param {WebServerNext} next
+ */
+
+/**
  * Dooksa webserver.
  * @namespace dssWebServer
  */
