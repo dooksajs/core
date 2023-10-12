@@ -665,15 +665,15 @@ export default {
         const id = this._createCollectionId(name, option)
 
         if (!option.source) {
+          data.id = id
+          data.rootTarget[id] = source
+
           this._checkCollectionItems(
             data,
             name + '/items',
             {},
             { [id]: source }
           )
-
-          data.id = id
-          data.rootTarget[id] = source
 
           return true
         }
