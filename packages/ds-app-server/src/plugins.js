@@ -1,82 +1,94 @@
+import dsError from '@dooksa/ds-plugin-error'
 import dsData from '@dooksa/ds-plugin-data'
-import dssUser from '@dooksa/ds-server-plugin-user'
-import dssComponents from '@dooksa/ds-server-plugin-component'
-import dssSection from '@dooksa/ds-server-plugin-section'
-import dssAction from '@dooksa/ds-server-plugin-action'
-import dssTemplate from '@dooksa/ds-server-plugin-template'
-import dssLayout from '@dooksa/ds-server-plugin-layout'
-import dssEvent from '@dooksa/ds-server-plugin-event'
-import dssPage from '@dooksa/ds-server-plugin-page'
-import dssWidget from '@dooksa/ds-server-plugin-widget'
-import dssContent from '@dooksa/ds-server-plugin-content'
-import dssDatabase from '@dooksa/ds-server-plugin-database'
-import dssWebServer from '@dooksa/ds-server-plugin-web-server'
+import dsUser from '@dooksa/ds-server-plugin-user'
+import dsComponents from '@dooksa/ds-server-plugin-component'
+import dsSection from '@dooksa/ds-server-plugin-section'
+import dsAction from '@dooksa/ds-server-plugin-action'
+import dsTemplate from '@dooksa/ds-server-plugin-template'
+import dsLayout from '@dooksa/ds-server-plugin-layout'
+import dsEvent from '@dooksa/ds-server-plugin-event'
+import dsPage from '@dooksa/ds-server-plugin-page'
+import dsWebServer from '@dooksa/ds-server-plugin-web-server'
+import dsWidget from '@dooksa/ds-server-plugin-widget'
+import dsContent from '@dooksa/ds-server-plugin-content'
+import dsDatabase from '@dooksa/ds-server-plugin-database'
+import dsMiddleware from '@dooksa/ds-server-plugin-middleware'
 
 const plugins = [
+  {
+    name: dsError.name,
+    version: dsError.version,
+    value: dsError
+  },
   {
     name: dsData.name,
     version: dsData.version,
     value: dsData
   },
   {
-    name: dssDatabase.name,
-    version: dssDatabase.version,
-    value: dssDatabase
+    name: dsDatabase.name,
+    version: dsDatabase.version,
+    value: dsDatabase
   },
   {
-    name: dssWebServer.name,
-    version: dssWebServer.version,
-    value: dssWebServer
+    name: dsMiddleware.name,
+    version: dsMiddleware.version,
+    value: dsMiddleware
   },
   {
-    name: dssContent.name,
-    version: dssContent.version,
-    value: dssContent
+    name: dsWebServer.name,
+    version: dsWebServer.version,
+    value: dsWebServer
   },
   {
-    name: dssPage.name,
-    version: dssPage.version,
-    value: dssPage
+    name: dsContent.name,
+    version: dsContent.version,
+    value: dsContent
   },
   {
-    name: dssEvent.name,
-    version: dssEvent.version,
-    value: dssEvent
+    name: dsPage.name,
+    version: dsPage.version,
+    value: dsPage
   },
   {
-    name: dssLayout.name,
-    version: dssLayout.version,
-    value: dssLayout
+    name: dsEvent.name,
+    version: dsEvent.version,
+    value: dsEvent
   },
   {
-    name: dssTemplate.name,
-    version: dssTemplate.version,
-    value: dssTemplate
+    name: dsLayout.name,
+    version: dsLayout.version,
+    value: dsLayout
   },
   {
-    name: dssAction.name,
-    version: dssAction.version,
-    value: dssAction
+    name: dsTemplate.name,
+    version: dsTemplate.version,
+    value: dsTemplate
   },
   {
-    name: dssWidget.name,
-    version: dssWidget.version,
-    value: dssWidget
+    name: dsAction.name,
+    version: dsAction.version,
+    value: dsAction
   },
   {
-    name: dssSection.name,
-    version: dssSection.version,
-    value: dssSection
+    name: dsSection.name,
+    version: dsSection.version,
+    value: dsSection
   },
   {
-    name: dssComponents.name,
-    version: dssComponents.version,
-    value: dssComponents
+    name: dsComponents.name,
+    version: dsComponents.version,
+    value: dsComponents
   },
   {
-    name: dssUser.name,
-    version: dssUser.version,
-    value: dssUser
+    name: dsUser.name,
+    version: dsUser.version,
+    value: dsUser
+  },
+  {
+    name: dsWidget.name,
+    version: dsWidget.version,
+    value: dsWidget
   }
 ]
 

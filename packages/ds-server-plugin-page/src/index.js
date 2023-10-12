@@ -2,20 +2,14 @@ import dsPage from '@dooksa/ds-plugin-page'
 
 /**
  * DsPage plugin.
- * @namespace dssPage
+ * @namespace dsPage
  */
 export default {
-  name: 'dssPage',
+  name: 'dsPage',
   version: 1,
   dependencies: [
     {
-      name: 'dssDatabase'
-    },
-    {
-      name: 'dssUser'
-    },
-    {
-      name: 'dssWidget'
+      name: 'dsUser'
     }
   ],
   data: {
@@ -32,86 +26,84 @@ export default {
   },
   setup () {
     this.$setDatabaseModel('page', [
-        {
-          name: 'id',
-          type: 'string',
-          options: {
-            primaryKey: true,
-            defaultValue: () => this.$method('dsData/generateId')
-          }
-        },
-        {
-          name: 'path',
-          type: 'string',
-          options: {
-            unique: true,
-            allowNull: false
-          }
-        },
-        {
-          name: 'language',
-          type: 'string',
-          options: {
-            allowNull: false
-          }
+      {
+        name: 'id',
+        type: 'string',
+        options: {
+          primaryKey: true,
+          defaultValue: () => this.$method('dsData/generateId')
         }
-    ])
-
-    // section associations
-    this.$method('dssDatabase/association', {
-      type: 'belongsToMany',
-      source: 'page',
-      target: 'section',
-      options: {
-        through: 'pageSections'
-      }
-    })
-    this.$method('dssDatabase/association', {
-      type: 'belongsToMany',
-      source: 'section',
-      target: 'page',
-      options: {
-        through: 'pageSections'
-      }
-    })
-
-    // user associations
-    this.$method('dssDatabase/association', {
-      type: 'belongsTo',
-      source: 'page',
-      target: 'user',
-      options: {
-        foreignKey: {
+      },
+      {
+        name: 'path',
+        type: 'string',
+        options: {
+          unique: true,
+          allowNull: false
+        }
+      },
+      {
+        name: 'language',
+        type: 'string',
+        options: {
           allowNull: false
         }
       }
-    })
-    this.$method('dssDatabase/association', {
-      type: 'hasMany',
-      source: 'user',
-      target: 'page'
-    })
+    ])
 
-    // route: create post
-    this.$method('dssWebServer/addRoute', {
-      path: '/page',
-      method: 'post',
-      middleware: ['dssUser/auth'],
-      handlers: [this._create.bind(this)]
-    })
+    // // section associations
+    // this.$method('dsDatabase/association', {
+    //   type: 'belongsToMany',
+    //   source: 'page',
+    //   target: 'section',
+    //   options: {
+    //     through: 'pageSections'
+    //   }
+    // })
+    // this.$method('dsDatabase/association', {
+    //   type: 'belongsToMany',
+    //   source: 'section',
+    //   target: 'page',
+    //   options: {
+    //     through: 'pageSections'
+    //   }
+    // })
 
-    // route: get page by id
-    this.$method('dssWebServer/addRoute', {
-      path: '/page/:pageId',
-      method: 'get',
-      handlers: [this._getOneById.bind(this)]
-    })
+    // // user associations
+    // this.$method('dsDatabase/association', {
+    //   type: 'belongsTo',
+    //   source: 'page',
+    //   target: 'user',
+    //   options: {
+    //     foreignKey: {
+    //       allowNull: false
+    //     }
+    //   }
+    // })
+    // this.$method('dsDatabase/association', {
+    //   type: 'hasMany',
+    //   source: 'user',
+    //   target: 'page'
+    // })
+
+    // // route: create post
+    // this.$setWebServerRoute('/page', {
+    //   method: 'post',
+    //   middleware: ['dsUser/auth'],
+    //   handlers: [this._create.bind(this)]
+    // })
+
+    // // route: get page by id
+    // this.$setWebServerRoute('/page/:pageId', {
+    //   method: 'get',
+    //   handlers: [this._getOneById.bind(this)]
+    // })
   },
-  /** @lends dssPage */
+  /** @lends dsPage */
   methods: {
     async _create (request, response) {
       try {
-        const user = await this.$method('dssUser/auth', request)
+        const user = await this.$method('dsUser/auth', request)
         const data = request.body
         const content = this._processContent(data.content)
 
@@ -155,14 +147,14 @@ export default {
 
         data.userId = user.id
 
-        this.$setDataValue('dssPage/cache', {
+        this.$setDataValue('dsPage/cache', {
           source: data,
           options: {
             id: data.id
           }
         })
 
-        const Page = this.$getDataValue('dssDatabase/models', { id: 'page' }).item
+        const Page = this.$getDataValue('dsDatabase/models', { id: 'page' }).item
         const page = await Page.findByPk(data.id)
 
         if (!page) {
@@ -184,11 +176,11 @@ export default {
           await page.save()
         }
 
-        const Content = this.$getDataValue('dssDatabase/models', { id: 'content' }).item
-        const Widget = this.$getDataValue('dssDatabase/models', { id: 'widget' }).item
-        const Layout = this.$getDataValue('dssDatabase/models', { id: 'layout' }).item
-        const Component = this.$getDataValue('dssDatabase/models', { id: 'component' }).item
-        const Section = this.$getDataValue('dssDatabase/models', { id: 'section' }).item
+        const Content = this.$getDataValue('dsDatabase/models', { id: 'content' }).item
+        const Widget = this.$getDataValue('dsDatabase/models', { id: 'widget' }).item
+        const Layout = this.$getDataValue('dsDatabase/models', { id: 'layout' }).item
+        const Component = this.$getDataValue('dsDatabase/models', { id: 'component' }).item
+        const Section = this.$getDataValue('dsDatabase/models', { id: 'section' }).item
 
         const widgets = await Widget.bulkCreate(widget.data, {
           updateOnDuplicate: ['groupId']
@@ -274,13 +266,13 @@ export default {
       }
     },
     _getOneById (request, response) {
-      const result = this.$getDataValue('dssPage/cache', { id: request.params.pageId })
+      const result = this.$getDataValue('dsPage/cache', { id: request.params.pageId })
 
       // if (!result.isEmpty) {
       //   return response.send(result.item)
       // }
 
-      const Page = this.$getDataValue('dssDatabase/models', { id: 'page' }).item
+      const Page = this.$getDataValue('dsDatabase/models', { id: 'page' }).item
 
       // Need to get all related data
       Page.findByPk(request.params.pageId)
@@ -289,7 +281,7 @@ export default {
             response.code(404).send(new Error('Page not found'))
           }
 
-          this.$setDataValue('dssPage/cacheItems', {
+          this.$setDataValue('dsPage/cacheItems', {
             source: result.dataValues,
             options: {
               id: result.id
@@ -313,7 +305,7 @@ export default {
       for (const id in actionItems) {
         if (Object.hasOwnProperty.call(actionItems, id)) {
           const source = actionItems[id]
-          let setData = this.$setDataValue('dssAction/items', {
+          let setData = this.$setDataValue('dsAction/items', {
             source,
             options: { id }
           })
@@ -325,7 +317,7 @@ export default {
           }
 
           const contentType = data.type[id]
-          setData = this.$setDataValue('dssContent/type', {
+          setData = this.$setDataValue('dsContent/type', {
             source: contentType,
             options: { id }
           })
@@ -360,7 +352,7 @@ export default {
       for (const id in contentItems) {
         if (Object.hasOwnProperty.call(contentItems, id)) {
           const content = contentItems[id]
-          let setData = this.$setDataValue('dssContent/items', {
+          let setData = this.$setDataValue('dsContent/items', {
             source: content,
             options: { id }
           })
@@ -372,7 +364,7 @@ export default {
           }
 
           const contentType = data.type[id]
-          setData = this.$setDataValue('dssContent/type', {
+          setData = this.$setDataValue('dsContent/type', {
             source: contentType,
             options: { id }
           })
@@ -406,7 +398,7 @@ export default {
       for (const id in data.items) {
         if (Object.hasOwnProperty.call(data.items, id)) {
           const component = data.items[id]
-          const setData = this.$setDataValue('dssComponent/items', {
+          const setData = this.$setDataValue('dsComponent/items', {
             source: component,
             options: { id }
           })
@@ -432,7 +424,7 @@ export default {
       for (const id in data.items) {
         if (Object.hasOwnProperty.call(data.items, id)) {
           const layout = data.items[id]
-          const setData = this.$setDataValue('dssLayout/items', {
+          const setData = this.$setDataValue('dsLayout/items', {
             source: layout,
             options: { id }
           })
@@ -458,7 +450,7 @@ export default {
       for (const id in data.items) {
         if (Object.hasOwnProperty.call(data.items, id)) {
           const section = data.items[id]
-          let setData = this.$setDataValue('dssSection/items', {
+          let setData = this.$setDataValue('dsSection/items', {
             source: section,
             options: { id }
           })
@@ -471,7 +463,7 @@ export default {
 
           const idSplit = result.id(id)
           const mode = data.mode[idSplit.default]
-          setData = this.$setDataValue('dssSection/mode', {
+          setData = this.$setDataValue('dsSection/mode', {
             source: mode,
             options: { id: idSplit.default }
           })
@@ -499,7 +491,7 @@ export default {
       for (const id in data.items) {
         if (Object.hasOwnProperty.call(data.items, id)) {
           const item = data.items[id]
-          let setData = this.$setDataValue('dssWidget/items', {
+          let setData = this.$setDataValue('dsWebServer/items', {
             source: item,
             options: { id }
           })
@@ -511,7 +503,7 @@ export default {
           }
 
           const mode = data.mode[id]
-          setData = this.$setDataValue('dssWidget/mode', {
+          setData = this.$setDataValue('dsWebServer/mode', {
             source: mode,
             options: { id }
           })
@@ -526,7 +518,7 @@ export default {
           const content = data.content[affixId]
           const suffixId = mode
 
-          setData = this.$setDataValue('dssWidget/content', {
+          setData = this.$setDataValue('dsWebServer/content', {
             source: content,
             options: { id, suffixId }
           })
@@ -540,7 +532,7 @@ export default {
           const events = data.events[affixId]
 
           if (events) {
-            setData = this.$setDataValue('dssWidget/events', {
+            setData = this.$setDataValue('dsWebServer/events', {
               source: events,
               options: { id, suffixId }
             })
@@ -553,7 +545,7 @@ export default {
           }
 
           const layoutId = data.layouts[affixId]
-          setData = this.$setDataValue('dssWidget/layouts', {
+          setData = this.$setDataValue('dsWebServer/layouts', {
             source: layoutId,
             options: { id, suffixId }
           })
@@ -567,7 +559,7 @@ export default {
           const section = data.sections[affixId]
 
           if (section) {
-            setData = this.$setDataValue('dssWidget/sections', {
+            setData = this.$setDataValue('dsWebServer/sections', {
               source: section,
               options: { id, suffixId }
             })

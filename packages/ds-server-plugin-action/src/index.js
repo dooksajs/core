@@ -2,20 +2,14 @@ import dsAction from '@dooksa/ds-plugin-action'
 
 /**
  * DsPage plugin.
- * @namespace dssAction
+ * @namespace dsAction
  */
 export default {
-  name: 'dssAction',
+  name: 'dsAction',
   version: 1,
   dependencies: [
     {
-      name: 'dssDatabase'
-    },
-    {
-      name: 'dssWebServer'
-    },
-    {
-      name: 'dssUser'
+      name: 'dsUser'
     }
   ],
   data: {
@@ -23,51 +17,51 @@ export default {
   },
   setup () {
     this.$setDatabaseModel('action', [
-        {
-          name: 'id',
-          type: 'string',
-          options: {
-            primaryKey: true
-          }
-        },
-        {
-          name: 'data',
-          type: 'json',
-          options: {
-            allowNull: false
-          }
+      {
+        name: 'id',
+        type: 'string',
+        options: {
+          primaryKey: true
         }
+      },
+      {
+        name: 'data',
+        type: 'json',
+        options: {
+          allowNull: false
+        }
+      }
     ])
 
     this.$setDatabaseModel('sequence', [
-        {
-          name: 'id',
-          type: 'string',
-          options: {
-            primaryKey: true
-          }
-        },
-        {
-          name: 'data',
-          type: 'json',
-          options: {
-            allowNull: false
-          }
+      {
+        name: 'id',
+        type: 'string',
+        options: {
+          primaryKey: true
         }
+      },
+      {
+        name: 'data',
+        type: 'json',
+        options: {
+          allowNull: false
+        }
+      }
     ])
 
     this.$setDatabaseModel('actionRecipe', [
-        {
-          name: 'id',
-          type: 'string',
-          options: {
-            primaryKey: true
-          }
-        },
-        {
-          name: 'name',
-          type: 'string'
+      {
+        name: 'id',
+        type: 'string',
+        options: {
+          primaryKey: true
         }
+      },
+      {
+        name: 'name',
+        type: 'string'
+      }
     ])
 
     this.$setDatabaseAssociation('belongsToMany', {
@@ -207,74 +201,31 @@ export default {
       ]
     })
 
-    // route: add action sequence entries
-    this.$method('dssWebServer/addRoute', {
-      path: '/action/recipe',
-      method: 'post',
-      middleware: ['dssUser/auth'],
-      handlers: [this._createSequenceEntry.bind(this)]
-    })
+    // // route: add action sequence entries
+    // this.$setWebServerRoute('/action/recipe', {
+    //   method: 'post',
+    //   middleware: ['dsUser/auth'],
+    //   handlers: [this._createSequenceEntry.bind(this)]
+    // })
 
-    // route: update existing action sequence entries
-    this.$method('dssWebServer/addRoute', {
-      path: '/action/recipe',
-      method: 'put',
-      middleware: ['dssUser/auth'],
-      handlers: [this._updateSequenceEntry.bind(this)]
-    })
+    // // route: update existing action sequence entries
+    // this.$setWebServerRoute('/action/recipe', {
+    //   method: 'put',
+    //   middleware: ['dsUser/auth'],
+    //   handlers: [this._updateSequenceEntry.bind(this)]
+    // })
 
-    // route: get a list of action sequence entries
-    this.$method('dssWebServer/addRoute', {
-      path: '/action/recipe',
-      method: 'get',
-      handlers: [this._getSequenceEntry.bind(this)]
-    })
+    // // route: get a list of action sequence entries
+    // this.$setWebServerRoute('/action/recipe', {
+    //   method: 'get',
+    //   handlers: [this._getSequenceEntry.bind(this)]
+    // })
 
-    // route: delete action sequence entries
-    this.$method('dssWebServer/addRoute', {
-      path: '/action/recipe',
-      method: 'delete',
-      middleware: ['dssUser/auth'],
-      handlers: [this._deleteSequenceEntry.bind(this)]
-    })
-  },
-  /** @lends dssAction */
-  methods: {
-    async _create (request, response) {
-      response.send('ok')
-    },
-    async _createSequence (request, response) {
-
-    },
-    async _createSequenceEntry (request, response) {
-
-    },
-    async _delete (request, response) {
-
-    },
-    async _deleteSequence (request, response) {
-
-    },
-    async _deleteSequenceEntry (request, response) {
-
-    },
-    async _get (request, response) {
-
-    },
-    async _getSequence (request, response) {
-
-    },
-    async _getSequenceEntry (request, response) {
-
-    },
-    async _update (request, response) {
-
-    },
-    async _updateSequence (request, response) {
-
-    },
-    async _updateSequenceEntry (request, response) {
-
-    }
+    // // route: delete action sequence entries
+    // this.$setWebServerRoute('/action/recipe', {
+    //   method: 'delete',
+    //   middleware: ['dsUser/auth'],
+    //   handlers: [this._deleteSequenceEntry.bind(this)]
+    // })
   }
 }

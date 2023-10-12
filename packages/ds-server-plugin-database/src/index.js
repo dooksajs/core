@@ -1,10 +1,10 @@
 import { Sequelize, DataTypes, Op } from 'sequelize'
 
 /**
- * @namespace dssDatabase
+ * @namespace dsDatabase
  */
 export default {
-  name: 'dssDatabase',
+  name: 'dsDatabase',
   version: 1,
   data: {
     associationTypes: {
@@ -40,7 +40,7 @@ export default {
     }
   },
   /**
-   * Setup dssDatabase
+   * Setup dsDatabase
    * @param {Object} options
    * @param {string} [options.database=] - path to the database
    * @param {string} [options.username=] - user name used to login to database
@@ -93,7 +93,7 @@ export default {
       pool
     })
   },
-  /** @lends dssDatabase */
+  /** @lends dsDatabase */
   methods: {
     $getDatabaseValue (name, {
       type = 'findAll',

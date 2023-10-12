@@ -28,10 +28,10 @@ import cookieParser from 'cookie-parser'
 
 /**
  * Dooksa webserver.
- * @namespace dssWebServer
+ * @namespace dsWebServer
  */
 export default {
-  name: 'dssWebServer',
+  name: 'dsWebServer',
   version: 1,
   dependencies: [
     {
@@ -68,7 +68,7 @@ export default {
 
     this.app = express()
     this.cookieSecret = cookieSecret
-    
+
     // setup plugins
     this.app.use(helmet())
     this.app.use(express.json())
@@ -118,7 +118,7 @@ export default {
         }
 
         const data = this.$getDataValue('dsMiddleware/items', { id })
-        
+
         if (!data.isEmpty) {
           let handler = data.item
 
@@ -136,7 +136,7 @@ export default {
       if (path[0] !== '/') {
         path = '/' + path
       }
-      
+
       this.router[method](path, ...handlers)
     },
     /**

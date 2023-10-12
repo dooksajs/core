@@ -2,19 +2,11 @@ import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 
 /**
- * @namespace dssUser
+ * @namespace dsUser
  */
 export default {
-  name: 'dssUser',
+  name: 'dsUser',
   version: 1,
-  dependencies: [
-    {
-      name: 'dssDatabase'
-    },
-    {
-      name: 'dssWebServer'
-    }
-  ],
   data: {
     tokenAlgorithm: {
       private: true,

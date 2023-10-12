@@ -2,38 +2,32 @@ import dsWidget from '@dooksa/ds-plugin-widget'
 
 /**
  * Dooksa server widget model management
- * @namespace dssWidget
+ * @namespace dsWidget
  */
 export default {
-  name: 'dssWidget',
+  name: 'dsWidget',
   version: 1,
   dependencies: [
     {
-      name: 'dssDatabase'
+      name: 'dsUser'
     },
     {
-      name: 'dssWebServer'
+      name: 'dsComponent'
     },
     {
-      name: 'dssUser'
+      name: 'dsEvent'
     },
     {
-      name: 'dssComponent'
+      name: 'dsLayout'
     },
     {
-      name: 'dssEvent'
+      name: 'dsContent'
     },
     {
-      name: 'dssLayout'
+      name: 'dsTemplate'
     },
     {
-      name: 'dssContent'
-    },
-    {
-      name: 'dssTemplate'
-    },
-    {
-      name: 'dssSection'
+      name: 'dsSection'
     }
   ],
   data: {
@@ -41,34 +35,34 @@ export default {
   },
   setup () {
     this.$setDatabaseModel('widget', [
-        {
-          name: 'id',
-          type: 'string',
-          options: {
-            primaryKey: true
-          }
-        },
-        {
-          name: 'defaultId',
-          type: 'string',
-          options: {
-            allowNull: false
-          }
-        },
-        {
-          name: 'groupId',
-          type: 'string',
-          options: {
-            allowNull: false
-          }
-        },
-        {
-          name: 'mode',
-          type: 'string',
-          options: {
-            allowNull: false
-          }
+      {
+        name: 'id',
+        type: 'string',
+        options: {
+          primaryKey: true
         }
+      },
+      {
+        name: 'defaultId',
+        type: 'string',
+        options: {
+          allowNull: false
+        }
+      },
+      {
+        name: 'groupId',
+        type: 'string',
+        options: {
+          allowNull: false
+        }
+      },
+      {
+        name: 'mode',
+        type: 'string',
+        options: {
+          allowNull: false
+        }
+      }
     ])
 
     // user association
@@ -98,27 +92,27 @@ export default {
 
     // events
     this.$setDatabaseModel('widgetEvent', [
-        {
-          name: 'id',
-          type: 'string',
-          options: {
-            primaryKey: true
-          }
-        },
-        {
-          name: 'key',
-          type: 'string',
-          options: {
-            allowNull: false
-          }
-        },
-        {
-          name: 'name',
-          type: 'string',
-          options: {
-            allowNull: false
-          }
+      {
+        name: 'id',
+        type: 'string',
+        options: {
+          primaryKey: true
         }
+      },
+      {
+        name: 'key',
+        type: 'string',
+        options: {
+          allowNull: false
+        }
+      },
+      {
+        name: 'name',
+        type: 'string',
+        options: {
+          allowNull: false
+        }
+      }
     ])
 
     // event association
@@ -194,51 +188,5 @@ export default {
         through: 'sectionWidgets'
       }
     })
-  },
-  /** @lends dssWidget */
-  methods: {
-    save ({ data }) {
-      // const promises = []
-      // const Widget = this.$getDataValue('dssDatabase/models', { id: 'widget' })
-
-      // for (const id in data.items) {
-      //   if (Object.hasOwnProperty.call(data.items, id)) {
-      //     const groupId = data.items[id]
-      //     const createWidget = Widget.create({ id, groupId })
-
-      //     promises.push(createWidget)
-      //   }
-      // }
-
-      // const WidgetContent = this.$getDataValue('dssDatabase/models', { id: 'widgetContent' })
-
-      // for (const key in object) {
-      //   if (Object.hasOwnProperty.call(object, key)) {
-      //     const element = object[key]
-      //   }
-      // }
-      // const WidgetView = this.$getDataValue('dssDatabase/models', { id: 'widgetView' })
-    },
-    validate (data) {
-      for (const key in data) {
-        if (Object.hasOwnProperty.call(data, key)) {
-          const source = data[key]
-          const setData = this.$setDataValue('dssWidget/' + key, {
-            source,
-            options: {
-              source: {
-                merge: true
-              }
-            }
-          })
-
-          if (!setData.isValid) {
-            return false
-          }
-        }
-      }
-
-      return true
-    }
   }
 }

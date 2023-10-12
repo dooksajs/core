@@ -2,23 +2,17 @@ import dsLayout from '@dooksa/ds-plugin-layout'
 
 /**
  * Dooksa server layout model management
- * @namespace dssLayout
+ * @namespace dsLayout
  */
 export default {
-  name: 'dssLayout',
+  name: 'dsLayout',
   version: 1,
   dependencies: [
     {
-      name: 'dssDatabase'
+      name: 'dsUser'
     },
     {
-      name: 'dssWebServer'
-    },
-    {
-      name: 'dssUser'
-    },
-    {
-      name: 'dssComponent'
+      name: 'dsComponent'
     }
   ],
   data: {
@@ -26,20 +20,20 @@ export default {
   },
   setup () {
     this.$setDatabaseModel('layout', [
-        {
-          name: 'id',
-          type: 'string',
-          options: {
-            primaryKey: true
-          }
-        },
-        {
-          name: 'data',
-          type: 'json',
-          options: {
-            allowNull: false
-          }
+      {
+        name: 'id',
+        type: 'string',
+        options: {
+          primaryKey: true
         }
+      },
+      {
+        name: 'data',
+        type: 'json',
+        options: {
+          allowNull: false
+        }
+      }
     ], {
       timestamps: false
     })

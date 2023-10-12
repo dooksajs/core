@@ -2,20 +2,14 @@ import dsContent from '@dooksa/ds-plugin-content'
 
 /**
  * DsPage plugin.
- * @namespace dssContent
+ * @namespace dsContent
  */
 export default {
-  name: 'dssContent',
+  name: 'dsContent',
   version: 1,
   dependencies: [
     {
-      name: 'dssDatabase'
-    },
-    {
-      name: 'dssWebServer'
-    },
-    {
-      name: 'dssUser'
+      name: 'dsUser'
     }
   ],
   data: {
@@ -23,41 +17,41 @@ export default {
   },
   setup () {
     this.$setDatabaseModel('content', [
-        {
-          name: 'id',
-          type: 'string',
-          options: {
-            primaryKey: true
-          }
-        },
-        {
-          name: 'groupId',
-          type: 'string',
-          options: {
-            allowNull: false
-          }
-        },
-        {
-          name: 'language',
-          type: 'string',
-          options: {
-            allowNull: false
-          }
-        },
-        {
-          name: 'type',
-          type: 'string',
-          options: {
-            allowNull: false
-          }
-        },
-        {
-          name: 'data',
-          type: 'json',
-          options: {
-            allowNull: false
-          }
+      {
+        name: 'id',
+        type: 'string',
+        options: {
+          primaryKey: true
         }
+      },
+      {
+        name: 'groupId',
+        type: 'string',
+        options: {
+          allowNull: false
+        }
+      },
+      {
+        name: 'language',
+        type: 'string',
+        options: {
+          allowNull: false
+        }
+      },
+      {
+        name: 'type',
+        type: 'string',
+        options: {
+          allowNull: false
+        }
+      },
+      {
+        name: 'data',
+        type: 'json',
+        options: {
+          allowNull: false
+        }
+      }
     ])
 
     const fields = [
