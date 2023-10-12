@@ -169,6 +169,87 @@ export default {
 
       return Model.bulkCreate(source, options)
     },
+    create ({ model, fields, include }) {
+      return (request, response) => {
+        const options = { updateOnDuplicate: [] }
+        const source = []
+
+        for (let i = 0; i < request.body.items.length; i++) {
+          const data = request.body.items[i]
+
+          if (include) {
+            options.include = []
+
+            for (let i = 0; i < include.length; i++) {
+              const item = include[i]
+              const includeData = data[item.model + 's']
+
+              if (!includeData) {
+                continue
+              }
+
+              // add association models
+              options.include.push(this._getDatabaseModel(item.model))
+
+              // schema check associated data
+              for (let i = 0; i < includeData.length; i++) {
+                const data = includeData[i]
+
+                for (let i = 0; i < item.fields.length; i++) {
+                  const field = item.fields[i]
+                  const cacheData = this.$setDataValue(field.collection, {
+                    source: data[field.name],
+                    options: {
+                      id: data.id
+                    }
+                  })
+
+                  if (!cacheData.isValid) {
+                    throw new Error(cacheData.error.details)
+                  }
+                }
+              }
+            }
+          }
+
+          for (let i = 0; i < fields.length; i++) {
+            const field = fields[i]
+
+            if (!data[field.name]) {
+              return response.status(400).send({
+                errors: ['Request is missing a required field']
+              })
+            }
+
+            const cacheData = this.$setDataValue(field.collection, {
+              source: data[field.name],
+              options: {
+                id: data.id
+              }
+            })
+
+            if (!cacheData.isValid) {
+              throw new Error(cacheData.error.details)
+            }
+
+            source.push(data)
+            options.updateOnDuplicate.push(field.name)
+          }
+        }
+
+        this.$setDatabaseValue(model, { source, options })
+          .then((results) => {
+            response.status(201).send({ message: 'OK', results })
+          })
+          .catch((error) => {
+            if (error.constructor.name === 'ValidationError') {
+              return response.status(400).send(error)
+            }
+
+            response.status(500).send(error)
+          })
+      }
+    },
     start (sync = {}) {
       return new Promise((resolve, reject) => {
         this.sequelize.authenticate()
