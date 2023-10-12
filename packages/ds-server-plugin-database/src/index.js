@@ -250,6 +250,33 @@ export default {
           })
       }
     },
+    deleteById ({ model, collections }) {
+      return (request, response) => {
+        this.$deleteDatabaseValue(model, {
+          where: {
+            id: request.query.id
+          }
+        })
+          .then(result => {
+            for (let i = 0; i < request.query.id.length; i++) {
+              const id = request.query.id[i]
+
+              for (let i = 0; i < collections.length; i++) {
+                const data = this.$deleteDataValue(collections[i], id)
+
+                if (!data.isValid) {
+                  throw new Error(data.error.details)
+                }
+              }
+            }
+
+            response.status(200).send({
+              deleted: result
+            })
+          })
+          .catch(error => response.status(500).send(error))
+      }
+    },
     start (sync = {}) {
       return new Promise((resolve, reject) => {
         this.sequelize.authenticate()
