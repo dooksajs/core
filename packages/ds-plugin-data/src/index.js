@@ -250,7 +250,7 @@ export default {
         }
 
         if (options) {
-          const relations = this.relationUsed[name + '/' + id]
+          const relations = this.relation[name + '/' + id]
           result.isExpandValid = !!relations
 
           if (options.expand && relations) {
@@ -429,10 +429,6 @@ export default {
         const item = schema[i]
 
         this.schema[item.id] = item.entry
-
-        if (item.relation) {
-          this.relation[item.id] = item.relation
-        }
       }
     },
     _affixId (affix) {
@@ -571,6 +567,7 @@ export default {
           })
         }
 
+        // need a better method of determining the data type
         const dataType = value.constructor.name.toLowerCase()
 
         if (dataType === type) {
@@ -854,7 +851,7 @@ export default {
             result.item = data.rootTarget[data.id]
 
             // freeze value
-            if (!schema.options?.mutable) {
+            if (!schema.options || !schema.options.mutable) {
               Object.freeze(data.rootTarget[data.id])
             }
           }
@@ -899,11 +896,20 @@ export default {
      */
     _setRelation (collection, docId, refCollection, refId) {
       const name = collection + '/' + docId
+      const usedName = refCollection + '/' + refId
 
-      if (!this.relationUsed[name] || !this.relationUsed[name][refCollection]) {
-        this.relationUsed[name] = { [refCollection]: [refId] }
-      } else if (!this.relationUsed[name][refCollection].includes(refId)) {
-        this.relationUsed[name][refCollection].push(refId)
+      // set what is related to data
+      if (!this.relation[name] || !this.relation[name][refCollection]) {
+        this.relation[name] = { [refCollection]: [refId] }
+      } else if (!this.relation[name][refCollection].includes(refId)) {
+        this.relation[name][refCollection].push(refId)
+      }
+
+      // set where ref data is used
+      if (!this.relationUsed[usedName] || !this.relationUsed[usedName][collection]) {
+        this.relationUsed[usedName] = { [collection]: [docId] }
+      } else if (!this.relationUsed[usedName][collection].includes(docId)) {
+        this.relationUsed[usedName][collection].push(docId)
       }
     },
     '_setData/array' (data, name, target, source, options, depth) {
