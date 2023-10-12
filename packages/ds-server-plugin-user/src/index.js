@@ -128,9 +128,10 @@ export default {
           return response.status(403).send('Unauthorized')
         }
 
-        const User = this.$getDatabaseModel('user')
-
-        User.findByPk(decoded.data.id)
+        this.$getDatabaseValue('user', {
+          type: 'findByPk',
+          options: decoded.data.id
+        })
           .then(user => {
             if (!user) {
               return response.status(403).send('Unauthorized')
@@ -182,11 +183,11 @@ export default {
           return response.status(500).send(err)
         }
 
-        const User = this.$getDatabaseModel('user')
-
-        User.create({
+        this.$setDatabaseValue('user', {
+          source: [{
           email: request.body.email,
           password: hash
+          }]
         })
           .then(() => response.status(201).send({ message: 'Successfully registered' }))
           .catch((error) => {
@@ -205,14 +206,9 @@ export default {
      * @param {ExpressResponse} response
      */
     _delete (request, response) {
-      const User = this.$getDatabaseModel('user')
-      const userId = request.user.id
-
-      User.findOne({
-        where: {
-          id: userId
-        },
-        force: true
+      this.$getDatabaseValue('user', {
+        type: 'findByPk',
+        options: request.user.id
       })
         .then(user => {
           if (user) {
@@ -241,9 +237,10 @@ export default {
         where.username = data.username
       }
 
-      const User = this.$getDatabaseModel('user')
-
-      User.findOne({ where })
+      this.$getDatabaseValue('user', {
+        type: 'findOne',
+        options: { where }
+      })
         .then(user => {
           if (!user) {
             return response.status(404).send({
