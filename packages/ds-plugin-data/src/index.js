@@ -121,6 +121,25 @@ export default {
         listenerRefs[refId] = true
       }
     },
+    $deleteDataValue (name, id) {
+      const collection = this.values[name]
+
+      if (collection == null) {
+        throw new SchemaException({
+          schemaPath: name,
+          keyword: 'schema',
+          message: 'Collection not found'
+        })
+      }
+
+      if (collection[id]) {
+        delete collection[id]
+      }
+
+      return {
+        isValid: true
+      }
+    },
     $getDataValue: {
       /**
        * Get data value
