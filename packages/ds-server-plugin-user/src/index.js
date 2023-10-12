@@ -31,7 +31,7 @@ export default {
     }
 
     this.secret = secret
-    
+
     if (typeof saltRounds === 'number') {
       this.saltRounds = saltRounds
     }
@@ -42,40 +42,40 @@ export default {
 
     // setup model
     this.$setDatabaseModel('user', [
-        {
-          name: 'username',
-          type: 'string',
-          defaultValue: {
-            dataType: 'uuidv4'
-          },
-          options: {
-            unique: true
-          }
+      {
+        name: 'username',
+        type: 'string',
+        defaultValue: {
+          dataType: 'uuidv4'
         },
-        {
-          name: 'email',
-          type: 'string',
-          options: {
-            unique: true,
-            validate: {
-              isEmail: true
-            }
-          }
-        },
-        {
-          name: 'password',
-          type: 'string',
-          options: {
-            allowNull: false
-          }
-        },
-        {
-          name: 'verified',
-          type: 'boolean',
-          defaultValue: {
-            dataType: 'boolean'
+        options: {
+          unique: true
+        }
+      },
+      {
+        name: 'email',
+        type: 'string',
+        options: {
+          unique: true,
+          validate: {
+            isEmail: true
           }
         }
+      },
+      {
+        name: 'password',
+        type: 'string',
+        options: {
+          allowNull: false
+        }
+      },
+      {
+        name: 'verified',
+        type: 'boolean',
+        defaultValue: {
+          dataType: 'boolean'
+        }
+      }
     ])
 
     // add middleware
@@ -107,12 +107,12 @@ export default {
       handlers: [this._delete.bind(this)]
     })
   },
-  /** @lends dssUser */
+  /** @lends dsUser */
   methods: {
     /**
      * Authenticate user by JWT token middleware
      * @private
-     * @param {ExpressRequest} request 
+     * @param {ExpressRequest} request
      * @param {ExpressResponse} response
      * @param {ExpressNext} next
      */
@@ -149,7 +149,7 @@ export default {
     /**
      * Validate password
      * @private
-     * @param {ExpressRequest} request 
+     * @param {ExpressRequest} request
      * @param {ExpressResponse} response
      */
     _checkPassword (request, response, next) {
@@ -174,7 +174,7 @@ export default {
     /**
      * Create new user
      * @private
-     * @param {ExpressRequest} request 
+     * @param {ExpressRequest} request
      * @param {ExpressResponse} response
      */
     _create (request, response) {
@@ -185,8 +185,8 @@ export default {
 
         this.$setDatabaseValue('user', {
           source: [{
-          email: request.body.email,
-          password: hash
+            email: request.body.email,
+            password: hash
           }]
         })
           .then(() => response.status(201).send({ message: 'Successfully registered' }))
@@ -202,7 +202,7 @@ export default {
     /**
      * Delete user from database
      * @private
-     * @param {ExpressRequest} request 
+     * @param {ExpressRequest} request
      * @param {ExpressResponse} response
      */
     _delete (request, response) {
@@ -224,7 +224,7 @@ export default {
     /**
      * Login using email and password
      * @private
-     * @param {ExpressRequest} request 
+     * @param {ExpressRequest} request
      * @param {ExpressResponse} response
      */
     _login (request, response) {
@@ -271,7 +271,9 @@ export default {
           response.send('OK')
         })
         .catch((error) => {
-          response.status(500).send(error)
+          response.status(500).send({
+            message: error.message
+          })
         })
     },
     /**
@@ -279,7 +281,7 @@ export default {
      * @private
      * @param {Object} param
      * @param {*} param.payload - Data to encrypt
-     * @param {number} param.maxAge - Cookie max expire age 
+     * @param {number} param.maxAge - Cookie max expire age
      * @returns {string}
      */
     _sign ({ payload, expiresIn }) {
