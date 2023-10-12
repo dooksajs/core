@@ -277,6 +277,149 @@ export default {
           .catch(error => response.status(500).send(error))
       }
     },
+    getById ({ model, fields, include }) {
+      return (request, response) => {
+        const query = request.query
+        const databaseQuery = []
+        const cacheResults = []
+        const expand = !!(query.expand && include)
+
+        for (let i = 0; i < query.id.length; i++) {
+          const id = query.id[i]
+          const cacheItem = { id, cached: true }
+          let hasCache = true
+
+          for (let i = 0; i < fields.length; i++) {
+            const field = fields[i]
+            const data = this.$getDataValue(field.collection, {
+              id,
+              options: { expand }
+            })
+
+            if (data.isEmpty || (expand && data.isExpandEmpty)) {
+              databaseQuery.push(id)
+              hasCache = false
+              break
+            } else if (expand) {
+              // clean up result
+              for (let i = 0; i < include.length; i++) {
+                const item = include[i]
+                const cacheKey = item.model + 's'
+
+                cacheItem[cacheKey] = []
+
+                const cacheItems = cacheItem[cacheKey]
+
+                for (let i = 0; i < item.fields.length; i++) {
+                  const field = item.fields[i]
+                  const expandValues = data.expand[field.collection]
+
+                  for (let i = 0; i < expandValues.length; i++) {
+                    const expand = expandValues[i]
+
+                    if (!cacheItems[i]) {
+                      cacheItems.push({ id: expand.id, [field.name]: expand.item })
+                    } else {
+                      cacheItems[i][field.name] = expand.item
+                    }
+                  }
+                }
+              }
+            }
+
+            cacheItem[field.name] = data.item
+          }
+
+          if (hasCache) {
+            cacheResults.push(cacheItem)
+          }
+        }
+
+        if (databaseQuery.length) {
+          const options = {
+            options: {
+              where: {
+                id: databaseQuery
+              }
+            }
+          }
+
+          if (expand) {
+            const models = []
+
+            for (let index = 0; index < include.length; index++) {
+              const model = include[index].model
+
+              models.push(this._getDatabaseModel(model))
+            }
+
+            options.options.include = models
+          }
+
+          this.$getDatabaseValue(model, options)
+            .then(results => {
+              for (let i = 0; i < results.length; i++) {
+                const item = results[i].dataValues
+
+                for (let i = 0; i < fields.length; i++) {
+                  const field = fields[i]
+
+                  if (!item[field.name]) {
+                    return response.status(400).send({
+                      errors: ['Request is missing a required field']
+                    })
+                  }
+
+                  const data = this.$setDataValue(field.collection, {
+                    source: item[field.name],
+                    options: {
+                      id: item.id
+                    }
+                  })
+
+                  if (!data.isValid) {
+                    throw new Error(data.error.details)
+                  }
+                }
+
+                if (expand) {
+                  for (let i = 0; i < include.length; i++) {
+                    const { model, fields } = include[i]
+                    const includeData = item[model + 's']
+
+                    if (!includeData) {
+                      throw new Error('Could not find data to expand from model: ', model + 's')
+                    }
+
+                    for (let i = 0; i < includeData.length; i++) {
+                      const data = includeData[i].dataValues
+
+                      for (let i = 0; i < fields.length; i++) {
+                        const field = fields[i]
+                        const cacheData = this.$setDataValue(field.collection, {
+                          source: data[field.name],
+                          options: {
+                            id: data.id
+                          }
+                        })
+
+                        if (!cacheData.isValid) {
+                          throw new Error(cacheData.error.details)
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+
+              response.status(200).send(cacheResults.concat(results))
+            })
+            .catch(error => response.status(500).send(error))
+        } else {
+          response.status(200).send(cacheResults)
+        }
+      }
+    },
     start (sync = {}) {
       return new Promise((resolve, reject) => {
         this.sequelize.authenticate()
