@@ -65,7 +65,8 @@ export default {
                 value: {
                   type: 'array',
                   items: {
-                    type: 'string'
+                    type: 'string',
+                    relation: 'dsEvent/items'
                   }
                 }
               }
