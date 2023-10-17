@@ -382,6 +382,11 @@ export default {
           .catch(error => reject(error))
       })
     },
+    update ({ model, fields, include }) {
+      return (request, response) => {
+
+      }
+    },
     /**
      * Get database Model
      * @private
