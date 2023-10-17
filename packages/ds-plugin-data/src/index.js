@@ -121,7 +121,7 @@ export default {
         listenerRefs[refId] = true
       }
     },
-    $deleteDataValue (name, id, { cascade }) {
+    $deleteDataValue (name, id, { cascade } = {}) {
       const collection = this.values[name]
 
       if (collection == null) {
