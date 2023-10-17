@@ -154,8 +154,13 @@ export default {
 
         schema[field.name] = schemaItem
       }
+      const Model = this.sequelize.define(name, schema, options)
 
-      this.models[name] = this.sequelize.define(name, schema, options)
+      Model.beforeBulkCreate((docs, options) => {
+        options.ignoreDuplicates = true
+      })
+
+      this.models[name] = Model
     },
     $setDatabaseValue (name, {
       source,
