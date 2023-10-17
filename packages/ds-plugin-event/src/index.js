@@ -22,7 +22,7 @@ export default {
           type: 'array',
           items: {
             type: 'string',
-            relation: 'dsAction/sequenceActions'
+            relation: 'dsAction/items'
           }
         }
       }
