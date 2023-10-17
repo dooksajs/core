@@ -294,11 +294,11 @@ export default {
 
         if (options) {
           const relations = this.relation[name + '/' + id]
-          result.isExpandValid = !!relations
+          result.isExpandEmpty = !relations
 
           if (options.expand && relations) {
             result.expand = {}
-            result.isExpandValid = true
+            result.isExpandEmpty = false
 
             for (let i = 0; i < relations.length; i++) {
               const item = relations[i].split('/')
@@ -309,12 +309,16 @@ export default {
                 continue
               }
 
-              const value = { id, item: this.values[name][id] }
+              const value = this.$getDataValue(name, { id, options: { expand: true } })
+
+              if (!value.isExpandEmpty) {
+                result.expand = Object.assign(result.expand, value.expand)
+              }
 
               if (result.expand[name]) {
-                result.expand[name].push(value)
+                result.expand[name].push({ id, item: value.item })
               } else {
-                result.expand[name] = [value]
+                result.expand[name] = [{ id, item: value.item }]
               }
             }
           }
