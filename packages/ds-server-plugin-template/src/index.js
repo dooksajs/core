@@ -32,5 +32,52 @@ export default {
         }
       }
     ])
+
+    const options = {
+      model: 'template',
+      fields: [{
+        collection: 'dsTemplate/items',
+        name: 'data'
+      }]
+    }
+
+    // route: add section
+    this.$setWebServerRoute('/template', {
+      method: 'post',
+      middleware: ['dsUser/auth'],
+      handlers: [
+        this.$method('dsDatabase/create', options)
+      ]
+    })
+
+    // route: update existing section
+    this.$setWebServerRoute('/template', {
+      method: 'put',
+      middleware: ['dsUser/auth'],
+      handlers: [
+        this.$method('dsDatabase/create', options)
+      ]
+    })
+
+    // route: get a list of section
+    this.$setWebServerRoute('/template', {
+      method: 'get',
+      middleware: ['request/queryIsArray'],
+      handlers: [
+        this.$method('dsDatabase/getById', options)
+      ]
+    })
+
+    // route: delete section
+    this.$setWebServerRoute('/template', {
+      method: 'delete',
+      middleware: ['dsUser/auth', 'request/queryIsArray'],
+      handlers: [
+        this.$method('dsDatabase/deleteById', {
+          model: 'section',
+          collections: ['dsTemplate/items']
+        })
+      ]
+    })
   }
 }
