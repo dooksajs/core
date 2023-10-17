@@ -33,7 +33,7 @@ export default {
       }
     ])
 
-    this.$setDatabaseModel('sequence', [
+    this.$setDatabaseModel('actionBlock', [
       {
         name: 'id',
         type: 'string',
@@ -48,9 +48,11 @@ export default {
           allowNull: false
         }
       }
-    ])
+    ], {
+      timestamps: false
+    })
 
-    this.$setDatabaseModel('actionRecipe', [
+    this.$setDatabaseModel('actionSequence', [
       {
         name: 'id',
         type: 'string',
@@ -59,84 +61,93 @@ export default {
         }
       },
       {
-        name: 'name',
-        type: 'string'
+        name: 'data',
+        type: 'json',
+        options: {
+          allowNull: false
+        }
       }
-    ])
+    ], {
+      timestamps: false
+    })
+
+    this.$setDatabaseAssociation('belongsToMany', {
+      source: 'actionBlock',
+      target: 'actionSequence',
+      options: {
+        onDelete: 'RESTRICT',
+        through: 'actionBlockSequences'
+      }
+    })
+    this.$setDatabaseAssociation('belongsToMany', {
+      source: 'actionSequence',
+      target: 'actionBlock',
+      options: {
+        through: 'actionBlockSequences'
+      }
+    })
+
+    this.$setDatabaseAssociation('belongsToMany', {
+      source: 'actionSequence',
+      target: 'action',
+      options: {
+        onDelete: 'RESTRICT',
+        through: 'actionActionSequence'
+      }
+    })
 
     this.$setDatabaseAssociation('belongsToMany', {
       source: 'action',
-      target: 'sequence',
+      target: 'actionSequence',
       options: {
-        through: 'actionSequences'
-      }
-    })
-    this.$setDatabaseAssociation('belongsToMany', {
-      source: 'sequence',
-      target: 'action',
-      options: {
-        through: 'actionSequences'
+        through: 'actionActionSequence'
       }
     })
 
-    this.$setDatabaseAssociation('belongsToMany', {
-      source: 'sequence',
-      target: 'actionRecipe',
-      options: {
-        through: 'actionRecipeSequences'
-      }
-    })
+    const actionOptions = {
+      model: 'action',
+      fields: [{
+        collection: 'dsAction/items',
+        name: 'data'
+      }],
+      include: [{
+        model: 'actionSequence',
+        fields: [{
+          collection: 'dsAction/sequences',
+          name: 'data'
+        }],
+        include: [{
+          model: 'actionBlock',
+          fields: [{
+            collection: 'dsAction/blocks',
+            name: 'data'
+          }]
+        }]
+      }]
+    }
 
-    this.$setDatabaseAssociation('belongsToMany', {
-      source: 'actionRecipe',
-      target: 'sequence',
-      options: {
-        through: 'actionRecipeSequences'
-      }
-    })
-
-    const actionFields = [{
-      collection: 'dsAction/items',
-      name: 'data'
-    }]
-
-    // route: add actions
+    // route: add action sequence entries
     this.$setWebServerRoute('/action', {
       method: 'post',
       middleware: ['dsUser/auth'],
-      handlers: [
-        this.$method('dsDatabase/create', {
-          model: 'action',
-          fields: actionFields
-        })
-      ]
+      handlers: [this.$method('dsDatabase/create', actionOptions)]
     })
 
-    // route: update existing actions
+    // route: update existing action sequence entries
     this.$setWebServerRoute('/action', {
       method: 'put',
       middleware: ['dsUser/auth'],
-      handlers: [
-        this.$method('dsDatabase/create', {
-          model: 'action',
-          fields: actionFields
-        })
-      ]
+      handlers: [this.$method('dsDatabase/create', actionOptions)]
     })
 
-    // route: get a list of action
+    // route: get a list of action sequence entries
     this.$setWebServerRoute('/action', {
       method: 'get',
       middleware: ['request/queryIsArray'],
-      handlers: [
-        this.$method('dsDatabase/getById', {
-          model: 'action',
-          fields: actionFields
-        })
-      ]
+      handlers: [this.$method('dsDatabase/getById', actionOptions)]
     })
 
-    // route: delete action
+    // route: delete action sequence entries
     this.$setWebServerRoute('/action', {
       method: 'delete',
       middleware: ['dsUser/auth', 'request/queryIsArray'],
@@ -148,20 +159,27 @@ export default {
       ]
     })
 
-    const actionSequenceFields = [{
-      collection: 'dsAction/sequence',
-      name: 'data'
-    }]
+    const actionSequenceOptions = {
+      model: 'actionSequence',
+      fields: [{
+        collection: 'dsAction/sequences',
+        name: 'data'
+      }],
+      include: [{
+        model: 'actionBlock',
+        fields: [{
+          collection: 'dsAction/blocks',
+          name: 'data'
+        }]
+      }]
+    }
 
     // route: add action sequences
     this.$setWebServerRoute('/action/sequence', {
       method: 'post',
       middleware: ['dsUser/auth'],
       handlers: [
-        this.$method('dsDatabase/create', {
-          model: 'sequence',
-          fields: actionSequenceFields
-        })
+        this.$method('dsDatabase/create', actionSequenceOptions)
       ]
     })
 
@@ -170,10 +188,7 @@ export default {
       method: 'put',
       middleware: ['dsUser/auth'],
       handlers: [
-        this.$method('dsDatabase/create', {
-          model: 'sequence',
-          fields: actionSequenceFields
-        })
+        this.$method('dsDatabase/create', actionSequenceOptions)
       ]
     })
 
@@ -182,10 +197,7 @@ export default {
       method: 'get',
       middleware: ['request/queryIsArray'],
       handlers: [
-        this.$method('dsDatabase/getById', {
-          model: 'action',
-          fields: actionSequenceFields
-        })
+        this.$method('dsDatabase/getById', actionSequenceOptions)
       ]
     })
 
@@ -195,37 +207,62 @@ export default {
       middleware: ['dsUser/auth', 'request/queryIsArray'],
       handlers: [
         this.$method('dsDatabase/deleteById', {
-          model: 'action',
-          collections: ['dsAction/sequence']
+          model: 'actionSequence',
+          collections: ['dsAction/sequences']
         })
       ]
     })
 
-    // // route: add action sequence entries
-    // this.$setWebServerRoute('/action/recipe', {
-    //   method: 'post',
-    //   middleware: ['dsUser/auth'],
-    //   handlers: [this._createSequenceEntry.bind(this)]
-    // })
+    const blockOptions = {
+      model: 'actionBlock',
+      fields: [{
+        collection: 'dsAction/blocks',
+        name: 'data'
+      }]
+    }
 
-    // // route: update existing action sequence entries
-    // this.$setWebServerRoute('/action/recipe', {
-    //   method: 'put',
-    //   middleware: ['dsUser/auth'],
-    //   handlers: [this._updateSequenceEntry.bind(this)]
-    // })
+    // route: add action blocks
+    this.$setWebServerRoute('/action/block', {
+      method: 'post',
+      middleware: ['dsUser/auth'],
+      handlers: [
+        this.$method('dsDatabase/create', blockOptions)
+      ]
+    })
 
-    // // route: get a list of action sequence entries
-    // this.$setWebServerRoute('/action/recipe', {
-    //   method: 'get',
-    //   handlers: [this._getSequenceEntry.bind(this)]
-    // })
+    // route: update existing action blocks
+    this.$setWebServerRoute('/action/block', {
+      method: 'put',
+      middleware: ['dsUser/auth'],
+      handlers: [
+        this.$method('dsDatabase/create', blockOptions)
+      ]
+    })
 
-    // // route: delete action sequence entries
-    // this.$setWebServerRoute('/action/recipe', {
-    //   method: 'delete',
-    //   middleware: ['dsUser/auth'],
-    //   handlers: [this._deleteSequenceEntry.bind(this)]
-    // })
+    // route: get a list of action
+    this.$setWebServerRoute('/action/block', {
+      method: 'get',
+      middleware: ['request/queryIsArray'],
+      handlers: [
+        this.$method('dsDatabase/getById', blockOptions)
+      ]
+    })
+
+    // route: delete action
+    this.$setWebServerRoute('/action/block', {
+      method: 'delete',
+      middleware: ['dsUser/auth', 'request/queryIsArray'],
+      handlers: [
+        this.$method('dsDatabase/deleteById', {
+          model: 'actionBlock',
+          collections: ['dsAction/blocks']
+        })
+      ]
+    })
+  },
+  methods: {
+    _create (request, response) {
+
+    }
   }
 }
