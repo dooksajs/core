@@ -176,58 +176,28 @@ export default {
     },
     create ({ model, fields, include }) {
       return (request, response) => {
-        const options = { updateOnDuplicate: [] }
+        const options = { ignoreDuplicates: true }
         const source = []
 
-        for (let i = 0; i < request.body.items.length; i++) {
-          const data = request.body.items[i]
+        for (let i = 0; i < request.body.length; i++) {
+          const data = request.body[i]
 
           if (include) {
-            options.include = []
-
-            for (let i = 0; i < include.length; i++) {
-              const item = include[i]
-              const includeData = data[item.model + 's']
-
-              if (!includeData) {
-                continue
-              }
-
-              // add association models
-              options.include.push(this._getDatabaseModel(item.model))
-
-              // schema check associated data
-              for (let i = 0; i < includeData.length; i++) {
-                const data = includeData[i]
-
-                for (let i = 0; i < item.fields.length; i++) {
-                  const field = item.fields[i]
-                  const cacheData = this.$setDataValue(field.collection, {
-                    source: data[field.name],
-                    options: {
-                      id: data.id
-                    }
-                  })
-
-                  if (!cacheData.isValid) {
-                    throw new Error(cacheData.error.details)
-                  }
-                }
-              }
-            }
+            options.include = this._setIncludeDataValues(include, data)
           }
 
           for (let i = 0; i < fields.length; i++) {
             const field = fields[i]
+            const fieldData = data[field.name]
 
-            if (!data[field.name]) {
+            if (!fieldData) {
               return response.status(400).send({
                 errors: ['Request is missing a required field']
               })
             }
 
             const cacheData = this.$setDataValue(field.collection, {
-              source: data[field.name],
+              source: fieldData,
               options: {
                 id: data.id
               }
@@ -238,13 +208,12 @@ export default {
             }
 
             source.push(data)
-            options.updateOnDuplicate.push(field.name)
           }
         }
 
         this.$setDatabaseValue(model, { source, options })
-          .then((results) => {
-            response.status(201).send({ message: 'OK', results })
+          .then(() => {
+            response.status(201).send({ message: 'OK' })
           })
           .catch((error) => {
             if (error.constructor.name === 'ValidationError') {
