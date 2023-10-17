@@ -54,27 +54,31 @@ export default {
       }
     ])
 
-    const fields = [
-      {
-        collection: 'dsContent/items',
-        name: 'data'
-      },
-      {
-        collection: 'dsContent/type',
-        name: 'type'
-      },
-      {
-        collection: 'dsContent/language',
-        name: 'language'
-      }
-    ]
+
+    const options = {
+      model: 'content',
+      fields: [
+        {
+          collection: 'dsContent/items',
+          name: 'data'
+        },
+        {
+          collection: 'dsContent/type',
+          name: 'type'
+        },
+        {
+          collection: 'dsContent/language',
+          name: 'language'
+        }
+      ]
+    }
 
     // route: add content
     this.$setWebServerRoute('/content', {
       method: 'post',
       middleware: ['dsUser/auth'],
       handlers: [
-        this.$method('dsDatabase/create', { model: 'content', fields })
+        this.$method('dsDatabase/create', options)
       ]
     })
 
@@ -82,12 +86,12 @@ export default {
       method: 'put',
       middleware: ['dsUser/auth'],
       handlers: [
-        this.$method('dsDatabase/create', { model: 'content', fields })
+        this.$method('dsDatabase/create', options)
       ]
     })
 
     // route: delete content
-    this.$setWebServerRoute('/action', {
+    this.$setWebServerRoute('/content', {
       method: 'delete',
       middleware: ['dsUser/auth', 'request/queryIsArray'],
       handlers: [
@@ -103,7 +107,7 @@ export default {
       method: 'get',
       middleware: ['request/queryIsArray'],
       handlers: [
-        this.$method('dsDatabase/getById', { model: 'content', fields })
+        this.$method('dsDatabase/getById', options)
       ]
     })
   }
