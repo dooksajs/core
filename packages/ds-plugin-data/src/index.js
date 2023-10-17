@@ -980,20 +980,25 @@ export default {
       ++depth
 
       const setDataName = '_setData/' + schemaItems.type
-      const setData = this[setDataName].bind(this)
+      const setData = this[setDataName]
 
       if (!source.length) {
-        if (!setData) {
+        if (typeof setData !== 'function') {
           this._checkType(schemaName, source, schemaItems.type)
         } else {
-          setData(data, schemaName, target, source, options, depth)
+          this[setDataName](data, schemaName, target, source, options, depth)
         }
       } else {
         for (let i = 0; i < source.length; i++) {
-          if (!setData) {
+          if (typeof setData !== 'function') {
+            // set relation for array of strings
+            if (schemaItems.options && schemaItems.options.relation) {
+              this._setRelation(data.rootName, data.id, schemaItems.options.relation, source[i])
+            }
+
             this._checkType(schemaName, source[i], schemaItems.type)
           } else {
-            source[i] = setData(data, schemaName, target, source[i], options, depth)
+            source[i] = this[setDataName](data, schemaName, target, source[i], options, depth)
           }
         }
       }
