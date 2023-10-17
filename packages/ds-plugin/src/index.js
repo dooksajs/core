@@ -81,12 +81,16 @@ function DsPlugin (plugin, context = [], isDev) {
 
         // catch global methods
         if (firstChar === '$') {
+          const method = item.value ? item.value.bind(_context) : item.bind(_context)
           contextMethods.push({
             name: key,
-            value: item.value ? item.value.bind(_context) : item.bind(_context),
+            value: method,
             scope: item.scope || false,
             export: !!item.export
           })
+
+          methods[key] = method
+          _context[key] = method
         } else if (firstChar !== '_') {
           methods[key] = item.bind(_context)
         }
