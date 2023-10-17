@@ -396,6 +396,72 @@ export default {
       }
 
       return Model
+    },
+    /**
+     * Construct where include options for find method
+     * @param {Array} items
+     * @param {Array} include
+     */
+    _whereInclude (items, include = []) {
+      for (let index = 0; index < items.length; index++) {
+        const item = items[index]
+        const includeOptions = {
+          model: this._getDatabaseModel(item.model)
+        }
+
+        include.push(includeOptions)
+
+        if (item.include) {
+          includeOptions.include = []
+
+          this._whereInclude(item.include, includeOptions.include)
+        }
+      }
+    },
+    _setIncludeDataValues (items, data, models = []) {
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i]
+        const includeData = data[item.model + 's']
+
+        if (!Array.isArray(includeData)) {
+          continue
+        }
+
+        // add association models
+        models.push(this._getDatabaseModel(item.model))
+
+        // schema check associated data
+        for (let i = 0; i < includeData.length; i++) {
+          const data = includeData[i]
+
+          if (typeof data === 'string') {
+            includeData[i] = { id: data }
+            continue
+          }
+
+          for (let i = 0; i < item.fields.length; i++) {
+            const field = item.fields[i]
+            const fieldData = data[field.name]
+
+            if (item.include) {
+              this._setIncludeDataValues(item.include, fieldData, models)
+            }
+
+            const cacheData = this.$setDataValue(field.collection, {
+              source: fieldData,
+              options: {
+                id: data.id
+              }
+            })
+
+            if (!cacheData.isValid) {
+              throw new Error(cacheData.error.details)
+            }
+          }
+        }
+      }
+
+      return models
     }
   }
 }
