@@ -125,7 +125,7 @@ export default {
 
       jwt.verify(token, this.secret, (error, decoded) => {
         if (error) {
-          return response.status(403).send('Unauthorized')
+          return response.status(403).send(error)
         }
 
         this.$getDatabaseValue('user', {
