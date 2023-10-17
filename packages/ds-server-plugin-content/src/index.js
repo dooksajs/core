@@ -54,6 +54,14 @@ export default {
       }
     ])
 
+    // user association
+    this.$setDatabaseAssociation('belongsTo', {
+      source: 'content',
+      target: 'user',
+      options: {
+        allowNull: false
+      }
+    })
 
     const options = {
       model: 'content',
