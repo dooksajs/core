@@ -10,7 +10,7 @@ export default {
   name: 'dsAction',
   version: 1,
   data: {
-    items: {
+    blocks: {
       default: {},
       schema: {
         type: 'collection',
@@ -27,7 +27,20 @@ export default {
         }
       }
     },
-    sequence: {
+    items: {
+      default: {},
+      schema: {
+        type: 'collection',
+        items: {
+          type: 'array',
+          items: {
+            type: 'string',
+            relation: 'dsAction/sequences'
+          }
+        }
+      }
+    },
+    sequences: {
       default: {},
       schema: {
         type: 'collection',
@@ -37,7 +50,8 @@ export default {
             type: 'object',
             properties: {
               id: {
-                type: 'string'
+                type: 'string',
+                relation: 'dsAction/blocks'
               },
               path: {
                 type: 'array',
@@ -55,18 +69,6 @@ export default {
           }
         }
       }
-    },
-    sequenceEntry: {
-      default: {},
-      schema: {
-        type: 'collection',
-        items: {
-          type: 'array',
-          items: {
-            type: 'string'
-          }
-        }
-      }
     }
   },
   /** @lends dsAction */
@@ -77,20 +79,16 @@ export default {
      * @param {dsActionId} param.dsActionId - The entry action id
      * @param {Object} param.payload - The data to pass to the action
      */
-    dispatch ({ dsActionId, payload }) {
-      const sequences = this.$getDataValue('dsAction/sequenceEntry', {
-        id: dsActionId
-      })
+    dispatch ({ id, payload }) {
+      const actions = this.$getDataValue('dsAction/items', { id })
 
-      if (sequences.isEmpty) return
+      if (actions.isEmpty) return
 
       const result = {}
 
-      for (let i = 0; i < sequences.item.length; i++) {
-        const sequenceId = sequences.item[i]
-        const sequence = this.$getDataValue('dsAction/sequence', {
-          id: sequenceId
-        })
+      for (let i = 0; i < actions.item.length; i++) {
+        const id = actions.item[i]
+        const sequence = this.$getDataValue('dsAction/sequences', { id })
 
         if (sequence.isEmpty) return
 
@@ -141,15 +139,15 @@ export default {
       }
     },
     _processAction (item, data) {
-      const action = this.$getDataValue('dsAction/items', {
+      const block = this.$getDataValue('dsAction/blocks', {
         id: item.id
       })
 
-      if (action.isEmpty) {
+      if (block.isEmpty) {
         throw new Error('No action found: ' + item.id)
       }
 
-      let paramNode = action.item._$p
+      let paramNode = block.item._$p
 
       if (item.children) {
         for (let i = 0; i < item.children.length; i++) {
@@ -167,9 +165,9 @@ export default {
       }
 
       return {
-        async: action.item.async,
-        name: action.item._$a,
-        params: action.item._$p
+        async: block.item.async,
+        name: block.item._$a,
+        params: block.item._$p
       }
     },
     '_process/get/eventValue' (params, payload) {
@@ -324,7 +322,7 @@ export default {
                 paramItems: condition.params,
                 data,
                 lastItem: length === i,
-                ...condition.items[item.entry]
+                ...condition.blocks[item.entry]
               })
             }
 
