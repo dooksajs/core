@@ -43,8 +43,6 @@ export default {
       source: 'layout',
       target: 'component',
       options: {
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
         through: 'layoutComponents'
       }
     })
