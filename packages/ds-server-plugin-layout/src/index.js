@@ -56,27 +56,27 @@ export default {
       }
     })
 
-    const fields = [{
-      collection: 'dsLayout/items',
-      name: 'data'
-    }]
+    const options = {
+      model: 'layout',
+      fields: [{
+        collection: 'dsLayout/items',
+        name: 'data'
+      }],
+      include: [{
+        model: 'component',
+        fields: [{
+          collection: 'dsComponent/items',
+          name: 'data'
+        }]
+      }]
+    }
 
     // route: add action sequences
     this.$setWebServerRoute('/layout', {
       method: 'post',
       middleware: ['dsUser/auth'],
       handlers: [
-        this.$method('dsDatabase/create', {
-          model: 'layout',
-          fields,
-          include: [{
-            model: 'component',
-            fields: [{
-              collection: 'dsComponent/items',
-              name: 'data'
-            }]
-          }]
-        })
+        this.$method('dsDatabase/create', options)
       ]
     })
 
@@ -85,7 +85,7 @@ export default {
       method: 'put',
       middleware: ['dsUser/auth'],
       handlers: [
-        this.$method('dsDatabase/create', { model: 'layout', fields })
+        this.$method('dsDatabase/create', options)
       ]
     })
 
@@ -94,17 +94,7 @@ export default {
       method: 'get',
       middleware: ['request/queryIsArray'],
       handlers: [
-        this.$method('dsDatabase/getById', {
-          model: 'layout',
-          fields,
-          include: [{
-            model: 'component',
-            fields: [{
-              collection: 'dsComponent/items',
-              name: 'data'
-            }]
-          }]
-        })
+        this.$method('dsDatabase/getById', options)
       ]
     })
 
