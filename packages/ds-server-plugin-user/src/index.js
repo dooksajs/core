@@ -265,6 +265,7 @@ export default {
 
           response.cookie('token', token, {
             signed: true,
+            httpOnly: true,
             maxAge: data.maxAge || this.cookieMaxAge
           })
 
