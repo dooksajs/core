@@ -26,11 +26,6 @@ const plugins = [
     value: dsData
   },
   {
-    name: dsDatabase.name,
-    version: dsDatabase.version,
-    value: dsDatabase
-  },
-  {
     name: dsMiddleware.name,
     version: dsMiddleware.version,
     value: dsMiddleware
@@ -39,6 +34,11 @@ const plugins = [
     name: dsWebServer.name,
     version: dsWebServer.version,
     value: dsWebServer
+  },
+  {
+    name: dsDatabase.name,
+    version: dsDatabase.version,
+    value: dsDatabase
   },
   {
     name: dsContent.name,
