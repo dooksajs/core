@@ -332,21 +332,14 @@ export default {
 
       const pluginName = name.split('/')[0]
 
-      this.dsLoader.methods.load(pluginName)
-        .then((plugins) => {
-          for (let i = 0; i < plugins.length; i++) {
-            this._add(plugins[i])
-          }
+      this.dsLoader.methods.load(pluginName, (plugin, error) => {
+        if (error) {
+          throw error
+        }
 
-          if (this._actionExists(name)) {
-            callback()
-          } else {
-            throw new Error('action does not exist: ' + name)
-          }
-        })
-        .catch((error) => {
-          console.error(error)
-        })
+        this._add(plugin)
+        callback()
+      })
     },
     /**
      * Higher order function to allow plugins to run other plugins methods
