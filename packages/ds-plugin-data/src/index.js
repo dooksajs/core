@@ -198,7 +198,7 @@ export default {
        * @param {string|number} param.options.position - Return the value by key of the data value
        * @returns {Object}
        */
-      value (name, { id, prefixId, suffixId, options }) {
+      value (name, { id, prefixId, suffixId, options } = {}) {
         if (this.values[name] == null) {
           return {
             isEmpty: true,
