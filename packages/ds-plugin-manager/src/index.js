@@ -93,6 +93,11 @@ export default {
         value: resource
       },
       {
+        name: 'isServer',
+        value: typeof window === 'undefined',
+        export: true
+      },
+      {
         name: 'isDev',
         value: isDev,
         export: true
