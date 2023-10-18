@@ -250,21 +250,21 @@ export default {
               itemId = id + suffix
             }
 
-            if (this.values[name][itemId] != null) {
+            const value = this.values[name][itemId]
+
+            if (value != null) {
               result.isAffixEmpty = false
               result.id = itemId
-              result.item = this.values[name][itemId]
+              result.item = value._item
+              result.metadata = value._metadata || false
             }
           }
 
           if (result.isAffixEmpty) {
-            result.id = id
-            result.item = this.values[name][result.id]
+            let itemId = id
 
             // find document using default affixes
-            if (result.item == null && schema.id) {
-              let itemId
-
+            if (this.values[name][id] == null && schema.id) {
               if (schema.id.prefix && schema.id.suffix) {
                 const prefix = this._affixId(schema.id.prefix)
                 const suffix = this._affixId(schema.id.suffix)
@@ -279,13 +279,15 @@ export default {
 
                 itemId = result.id + suffix
               }
+            }
+            const value = this.values[name][itemId]
 
+            if (value == null) {
+              result.isEmpty = true
+            } else {
               result.id = itemId
-              result.item = this.values[name][itemId]
-
-              if (result.item == null) {
-                result.isEmpty = true
-              }
+              result.item = value._item
+              result.metadata = value._metadata || {}
             }
           }
         } else {
@@ -382,10 +384,14 @@ export default {
               })
             }
 
-            result.item = source
+            result.item = source._item || source
             result.id = options.id
+            const value = this.values[name][options.id]
 
-            this.values[name][options.id] = source
+            this.values[name][options.id] = {
+              _item: source._item || source,
+              _metadata: source._metadata || value._metadata || {}
+            }
           } else {
             let target = this.values[name]
 
@@ -402,7 +408,7 @@ export default {
 
             result = this._setData(
               name,
-              source,
+              source._item || source,
               target,
               options
             )
@@ -412,13 +418,14 @@ export default {
           }
 
           // notify listeners
-          this._onUpdate(name, result.item, result.id)
+          this._onUpdate(name, result.item, result.id, result.metadata)
 
           return {
             id: result.id,
             noAffixId: result.noAffixId,
             item: result.item,
-            isValid: true
+            isValid: true,
+            metadata: result.metadata
           }
         } catch (errorMessage) {
           console.error(errorMessage)
@@ -470,6 +477,21 @@ export default {
      */
     generateId () {
       return '_' + uuid() + '_'
+    },
+    _setMetadata (item = {}, options) {
+      const timestamp = Date.now()
+
+      if (!item.userId && options.userId) {
+        item.userId = options.userId
+      }
+
+      if (!item.createdAt) {
+        item.createdAt = timestamp
+      }
+
+      item.updatedAt = timestamp
+
+      return item
     },
     _addSchema (schema) {
       for (let i = 0; i < schema.length; i++) {
@@ -756,7 +778,16 @@ export default {
 
         if (!option.source) {
           data.id = id
-          data.rootTarget[id] = source
+          const rootTarget = data.rootTarget[id]
+
+          if (rootTarget) {
+            rootTarget._item = source
+          } else {
+            data.rootTarget[id] = {
+              _item: source,
+              _metadata: {}
+            }
+          }
 
           this._checkCollectionItems(
             data,
@@ -894,12 +925,21 @@ export default {
           }
 
           if (data.id) {
+            const value = data.rootTarget[data.id]
+
+            if (this.isServer) {
+              value._metadata = this._setMetadata(value._metadata, options)
+            }
+
             result.id = data.id
-            result.item = data.rootTarget[data.id]
+            result.item = value._item
+            result.metadata = value._metadata
+
+            // data.rootTarget[data.id] = value
 
             // freeze value
             if (!schema.options || !schema.options.mutable) {
-              Object.freeze(data.rootTarget[data.id])
+              Object.freeze(value._item)
             }
           }
 
