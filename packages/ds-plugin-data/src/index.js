@@ -813,6 +813,7 @@ export default {
       // update target with source
       if (option.source) {
         if (option.source.merge) {
+          console.warn('Need to fix: source needs _metadata')
           // merge collection item
           if (option.id) {
             for (const key in source) {
