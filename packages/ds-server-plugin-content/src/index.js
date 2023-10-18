@@ -16,97 +16,12 @@ export default {
     ...dsContent.data
   },
   setup () {
-    this.$setDatabaseModel('content', [
-      {
-        name: 'id',
-        type: 'string',
-        options: {
-          primaryKey: true
-        }
-      },
-      {
-        name: 'groupId',
-        type: 'string',
-        options: {
-          allowNull: false
-        }
-      },
-      {
-        name: 'language',
-        type: 'string',
-        options: {
-          allowNull: false
-        }
-      },
-      {
-        name: 'type',
-        type: 'string',
-        options: {
-          allowNull: false
-        }
-      },
-      {
-        name: 'data',
-        type: 'json',
-        options: {
-          allowNull: false
-        }
-      }
-    ])
-
-    // user association
-    this.$setDatabaseAssociation('belongsTo', {
-      source: 'content',
-      target: 'user',
-      options: {
-        allowNull: false
-      }
-    })
-
-    const options = {
-      model: 'content',
-      fields: [
-        {
-          collection: 'dsContent/items',
-          name: 'data'
-        },
-        {
-          collection: 'dsContent/type',
-          name: 'type'
-        },
-        {
-          collection: 'dsContent/language',
-          name: 'language'
-        }
-      ]
-    }
-
-    // route: add content
-    this.$setWebServerRoute('/content', {
-      method: 'post',
-      middleware: ['dsUser/auth'],
-      handlers: [
-        this.$method('dsDatabase/create', options)
-      ]
-    })
-
-    this.$setWebServerRoute('/content', {
-      method: 'put',
-      middleware: ['dsUser/auth'],
-      handlers: [
-        this.$method('dsDatabase/create', options)
-      ]
-    })
-
     // route: delete content
     this.$setWebServerRoute('/content', {
       method: 'delete',
       middleware: ['dsUser/auth', 'request/queryIsArray'],
       handlers: [
-        this.$method('dsDatabase/deleteById', {
-          model: 'content',
-          collections: ['dsContent/items', 'dsContent/type', 'dsContent/language']
-        })
+        this.$deleteDatabaseValue(['dsContent/items', 'dsContent/types'])
       ]
     })
 
@@ -115,7 +30,7 @@ export default {
       method: 'get',
       middleware: ['request/queryIsArray'],
       handlers: [
-        this.$method('dsDatabase/getById', options)
+        this.$getDatabaseValue(['dsContent/items', 'dsContent/types'])
       ]
     })
   }

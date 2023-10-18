@@ -16,21 +16,6 @@ export default {
     ...dsEvent.data
   },
   setup () {
-    this.$setDatabaseModel('event', [
-      {
-        name: 'id',
-        type: 'string',
-        options: {
-          primaryKey: true
-        }
-      },
-      {
-        name: 'data',
-        type: 'json',
-        options: {
-          allowNull: false
-        }
-      }
-    ])
+
   }
 }

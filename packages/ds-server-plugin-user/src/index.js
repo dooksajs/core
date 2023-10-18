@@ -8,6 +8,14 @@ export default {
   name: 'dsUser',
   version: 1,
   data: {
+    emails: {
+      private: true,
+      default: {}
+    },
+    users: {
+      private: true,
+      default: {}
+    },
     tokenAlgorithm: {
       private: true,
       default: 'HS256'
@@ -39,44 +47,6 @@ export default {
     if (tokenAlgorithm) {
       this.tokenAlgorithm = tokenAlgorithm
     }
-
-    // setup model
-    this.$setDatabaseModel('user', [
-      {
-        name: 'username',
-        type: 'string',
-        defaultValue: {
-          dataType: 'uuidv4'
-        },
-        options: {
-          unique: true
-        }
-      },
-      {
-        name: 'email',
-        type: 'string',
-        options: {
-          unique: true,
-          validate: {
-            isEmail: true
-          }
-        }
-      },
-      {
-        name: 'password',
-        type: 'string',
-        options: {
-          allowNull: false
-        }
-      },
-      {
-        name: 'verified',
-        type: 'boolean',
-        defaultValue: {
-          dataType: 'boolean'
-        }
-      }
-    ])
 
     // add middleware
     this.$setDataValue('dsMiddleware/items', {
@@ -128,22 +98,15 @@ export default {
           return response.status(403).send(error)
         }
 
-        this.$getDatabaseValue('user', {
-          type: 'findByPk',
-          options: decoded.data.id
-        })
-          .then(user => {
-            if (!user) {
-              return response.status(403).send('Unauthorized')
-            }
+        const user = { id: decoded.data.id }
 
-            request.user = user
+        if (!user) {
+          return response.status(404).send('Unauthorized')
+        }
 
-            next()
-          })
-          .catch(error => {
-            response.status(500).send(error)
-          })
+        request.user = user
+
+        next()
       })
     },
     /**
@@ -183,20 +146,20 @@ export default {
           return response.status(500).send(err)
         }
 
-        this.$setDatabaseValue('user', {
-          source: [{
-            email: request.body.email,
-            password: hash
-          }]
-        })
-          .then(() => response.status(201).send({ message: 'Successfully registered' }))
-          .catch((error) => {
-            if (error.constructor.name === 'ValidationError') {
-              return response.status(400).send(error)
-            }
+        const id = this.$method('dsData/generateId')
 
-            response.status(500).send(error)
-          })
+        // TODO: update snapshot
+        if (this.emails[request.body.email]) {
+          return response.status(400).send({ message: 'Email must be unique' })
+        }
+
+        this.emails[request.body.email] = id
+        this.users[id] = {
+          password: hash,
+          verified: false
+        }
+
+        response.status(201).send({ message: 'Successfully registered' })
       })
     },
     /**
@@ -206,20 +169,11 @@ export default {
      * @param {ExpressResponse} response
      */
     _delete (request, response) {
-      this.$getDatabaseValue('user', {
-        type: 'findByPk',
-        options: request.user.id
-      })
-        .then(user => {
-          if (user) {
-            user.destroy()
-              .then(() => response.send('OK'))
-              .catch(error => response.status(500).send(error))
-          } else {
-            response.status(404).send('User not found')
-          }
-        })
-        .catch(error => response.status(500).send(error))
+      delete this.users[request.user.id]
+      delete this.emails[request.user.id]
+
+      // TODO: update snapshot
+      response.send('OK')
     },
     /**
      * Login using email and password
@@ -229,53 +183,46 @@ export default {
      */
     _login (request, response) {
       const data = request.body
-      const where = {}
+      // const where = {}
 
-      if (data.email) {
-        where.email = data.email
-      } else if (data.username) {
-        where.username = data.username
+      // TODO add username to manage auth without email
+      // if (data.email) {
+      //   where.email = data.email
+      // } else if (data.username) {
+      //   where.username = data.username
+      // }
+
+      const userId = this.emails[data.email]
+      const user = this.users[userId]
+
+      if (!user) {
+        return response.status(404).send({
+          message: 'No user found'
+        })
       }
 
-      this.$getDatabaseValue('user', {
-        type: 'findOne',
-        options: { where }
+      const passwordMatch = bcrypt.compareSync(data.password, user.password)
+
+      if (!passwordMatch) {
+        return response.status(400).send({
+          message: 'Password is incorrect'
+        })
+      }
+
+      const token = this._sign({
+        payload: {
+          id: userId
+        },
+        expiresIn: data.expiresIn || this.cookieMaxAge
       })
-        .then(user => {
-          if (!user) {
-            return response.status(404).send({
-              message: 'No user found'
-            })
-          }
 
-          const passwordMatch = bcrypt.compareSync(data.password, user.password)
+      response.cookie('token', token, {
+        signed: true,
+        httpOnly: true,
+        maxAge: data.maxAge || this.cookieMaxAge
+      })
 
-          if (!passwordMatch) {
-            return response.status(400).send({
-              message: 'Password is incorrect'
-            })
-          }
-
-          const token = this._sign({
-            payload: {
-              id: user.id
-            },
-            expiresIn: data.expiresIn || this.cookieMaxAge
-          })
-
-          response.cookie('token', token, {
-            signed: true,
-            httpOnly: true,
-            maxAge: data.maxAge || this.cookieMaxAge
-          })
-
-          response.send('OK')
-        })
-        .catch((error) => {
-          response.status(500).send({
-            message: error.message
-          })
-        })
+      response.send('OK')
     },
     /**
      * JWT sign data

@@ -16,55 +16,12 @@ export default {
     ...dsTemplate.data
   },
   setup () {
-    this.$setDatabaseModel('template', [
-      {
-        name: 'id',
-        type: 'string',
-        options: {
-          primaryKey: true
-        }
-      },
-      {
-        name: 'data',
-        type: 'json',
-        options: {
-          allowNull: false
-        }
-      }
-    ])
-
-    const options = {
-      model: 'template',
-      fields: [{
-        collection: 'dsTemplate/items',
-        name: 'data'
-      }]
-    }
-
-    // route: add section
-    this.$setWebServerRoute('/template', {
-      method: 'post',
-      middleware: ['dsUser/auth'],
-      handlers: [
-        this.$method('dsDatabase/create', options)
-      ]
-    })
-
-    // route: update existing section
-    this.$setWebServerRoute('/template', {
-      method: 'put',
-      middleware: ['dsUser/auth'],
-      handlers: [
-        this.$method('dsDatabase/create', options)
-      ]
-    })
-
     // route: get a list of section
     this.$setWebServerRoute('/template', {
       method: 'get',
       middleware: ['request/queryIsArray'],
       handlers: [
-        this.$method('dsDatabase/getById', options)
+        this.$getDatabaseValue(['dsTemplate/items'])
       ]
     })
 
@@ -73,10 +30,7 @@ export default {
       method: 'delete',
       middleware: ['dsUser/auth', 'request/queryIsArray'],
       handlers: [
-        this.$method('dsDatabase/deleteById', {
-          model: 'section',
-          collections: ['dsTemplate/items']
-        })
+        this.$deleteDatabaseValue(['dsTemplate/items'])
       ]
     })
   }

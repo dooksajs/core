@@ -25,31 +25,6 @@ export default {
     }
   },
   setup () {
-    this.$setDatabaseModel('page', [
-      {
-        name: 'id',
-        type: 'string',
-        options: {
-          primaryKey: true,
-          defaultValue: () => this.$method('dsData/generateId')
-        }
-      },
-      {
-        name: 'path',
-        type: 'string',
-        options: {
-          unique: true,
-          allowNull: false
-        }
-      },
-      {
-        name: 'language',
-        type: 'string',
-        options: {
-          allowNull: false
-        }
-      }
-    ])
 
     // // section associations
     // this.$method('dsDatabase/association', {

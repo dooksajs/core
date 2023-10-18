@@ -19,82 +19,12 @@ export default {
     ...dsLayout.data
   },
   setup () {
-    this.$setDatabaseModel('layout', [
-      {
-        name: 'id',
-        type: 'string',
-        options: {
-          primaryKey: true
-        }
-      },
-      {
-        name: 'data',
-        type: 'json',
-        options: {
-          allowNull: false
-        }
-      }
-    ], {
-      timestamps: false
-    })
-
-    // component association
-    this.$setDatabaseAssociation('belongsToMany', {
-      source: 'layout',
-      target: 'component',
-      options: {
-        through: 'layoutComponents'
-      }
-    })
-
-    this.$setDatabaseAssociation('belongsToMany', {
-      source: 'component',
-      target: 'layout',
-      options: {
-        onDelete: 'RESTRICT',
-        through: 'layoutComponents'
-      }
-    })
-
-    const options = {
-      model: 'layout',
-      fields: [{
-        collection: 'dsLayout/items',
-        name: 'data'
-      }],
-      include: [{
-        model: 'component',
-        fields: [{
-          collection: 'dsComponent/items',
-          name: 'data'
-        }]
-      }]
-    }
-
-    // route: add action sequences
-    this.$setWebServerRoute('/layout', {
-      method: 'post',
-      middleware: ['dsUser/auth'],
-      handlers: [
-        this.$method('dsDatabase/create', options)
-      ]
-    })
-
-    // route: update existing actions
-    this.$setWebServerRoute('/layout', {
-      method: 'put',
-      middleware: ['dsUser/auth'],
-      handlers: [
-        this.$method('dsDatabase/create', options)
-      ]
-    })
-
     // route: get a list of action
     this.$setWebServerRoute('/layout', {
       method: 'get',
       middleware: ['request/queryIsArray'],
       handlers: [
-        this.$method('dsDatabase/getById', options)
+        this.$getDatabaseValue(['dsLayout/items'])
       ]
     })
 
@@ -103,10 +33,7 @@ export default {
       method: 'delete',
       middleware: ['dsUser/auth', 'request/queryIsArray'],
       handlers: [
-        this.$method('dsDatabase/deleteById', {
-          model: 'layout',
-          collections: ['dsLayout/items']
-        })
+        this.$deleteDatabaseValue(['dsLayout/items'])
       ]
     })
   }

@@ -16,58 +16,12 @@ export default {
     ...dsComponent.data
   },
   setup () {
-    this.$setDatabaseModel('component', [
-      {
-        name: 'id',
-        type: 'string',
-        options: {
-          primaryKey: true
-        }
-      },
-      {
-        name: 'data',
-        type: 'json',
-        options: {
-          unique: true,
-          allowNull: false
-        }
-      }
-    ], {
-      timestamps: false
-    })
-
-    const options = {
-      model: 'component',
-      fields: [{
-        collection: 'dsComponent/items',
-        name: 'data'
-      }]
-    }
-
-    // route: add component
-    this.$setWebServerRoute('/component', {
-      method: 'post',
-      middleware: ['dsUser/auth'],
-      handlers: [
-        this.$method('dsDatabase/create', options)
-      ]
-    })
-
-    // route: update existing component
-    this.$setWebServerRoute('/component', {
-      method: 'put',
-      middleware: ['dsUser/auth'],
-      handlers: [
-        this.$method('dsDatabase/create', options)
-      ]
-    })
-
     // route: get a list of component
     this.$setWebServerRoute('/component', {
       method: 'get',
       middleware: ['request/queryIsArray'],
       handlers: [
-        this.$method('dsDatabase/getById', options)
+        this.$getDatabaseValue(['dsComponent/items'])
       ]
     })
 
@@ -76,10 +30,7 @@ export default {
       method: 'delete',
       middleware: ['dsUser/auth', 'request/queryIsArray'],
       handlers: [
-        this.$method('dsDatabase/deleteById', {
-          model: 'component',
-          collections: ['dsComponent/items']
-        })
+        this.$deleteDatabaseValue(['dsComponent/items'])
       ]
     })
   }
