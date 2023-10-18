@@ -1059,7 +1059,7 @@ export default {
           throw new SchemaException({
             schemaPath: name,
             keyword: 'collection',
-            message: 'Collection id was undefined'
+            message: 'Expected collection id to be a string but got undefined'
           })
         }
 
