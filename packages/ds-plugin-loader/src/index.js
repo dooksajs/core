@@ -242,7 +242,10 @@ export default {
 
             resolve(dsPlugin)
           })
-          .catch(e => reject(e))
+          .catch(e => {
+            this.callback(null, e)
+            reject(e)
+          })
       })
     },
     /**
@@ -262,6 +265,7 @@ export default {
             this._setup(plugin, options.setup)
           })
           .catch(error => {
+            this.callback(null, error)
             throw error
           })
       } else {
@@ -287,6 +291,7 @@ export default {
             this._setLoaded(plugin.name)
           })
           .catch(error => {
+            this.callback(null, error)
             // Need to test how this fails
             throw error
           })
