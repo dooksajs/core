@@ -291,6 +291,7 @@ export default {
             }
           }
         } else {
+          // dump whole collection
           result.item = this.values[name]
         }
 
@@ -299,7 +300,7 @@ export default {
           result.isExpandEmpty = !relations
 
           if (options.expand && relations) {
-            result.expand = {}
+            result.expand = []
             result.isExpandEmpty = false
 
             for (let i = 0; i < relations.length; i++) {
@@ -314,14 +315,10 @@ export default {
               const value = this.$getDataValue(name, { id, options: { expand: true } })
 
               if (!value.isExpandEmpty) {
-                result.expand = Object.assign(result.expand, value.expand)
+                result.expand = result.expand.concat(value.expand)
               }
 
-              if (result.expand[name]) {
-                result.expand[name].push({ id, item: value.item })
-              } else {
-                result.expand[name] = [{ id, item: value.item }]
-              }
+              result.expand.push({ collection: name, id, item: value.item, metadata: value.metadata })
             }
           }
 
