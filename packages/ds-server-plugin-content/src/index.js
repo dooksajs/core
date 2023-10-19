@@ -16,6 +16,9 @@ export default {
     ...dsContent.data
   },
   setup () {
+    this.$setDatabaseSeed('ds-content-items')
+    this.$setDatabaseSeed('ds-content-type')
+
     // route: delete content
     this.$setWebServerRoute('/content', {
       method: 'delete',
