@@ -9,12 +9,34 @@ export default {
   version: 1,
   data: {
     emails: {
-      private: true,
-      default: {}
+      default: {},
+      schema: {
+        type: 'collection',
+        items: {
+          type: 'string',
+          relation: 'dsUser/items'
+        }
+      }
     },
-    users: {
-      private: true,
-      default: {}
+    items: {
+      default: {},
+      schema: {
+        type: 'collection',
+        items: {
+          type: 'object',
+          properties: {
+            email: {
+              type: 'string'
+            },
+            password: {
+              type: 'string'
+            },
+            verified: {
+              type: 'boolean'
+            }
+          }
+        }
+      }
     },
     tokenAlgorithm: {
       private: true,
@@ -74,7 +96,7 @@ export default {
 
     this.$setWebServerRoute('/user/delete', {
       method: 'delete',
-      handlers: [this._delete.bind(this)]
+      handlers: [this.$deleteDatabaseValue(['dsUser/items'])]
     })
   },
   /** @lends dsUser */
@@ -98,13 +120,7 @@ export default {
           return response.status(403).send(error)
         }
 
-        const user = { id: decoded.data.id }
-
-        if (!user) {
-          return response.status(404).send('Unauthorized')
-        }
-
-        request.user = user
+        request.user = { id: decoded.data.id }
 
         next()
       })
@@ -146,34 +162,47 @@ export default {
           return response.status(500).send(err)
         }
 
-        const id = this.$method('dsData/generateId')
-
         // TODO: update snapshot
-        if (this.emails[request.body.email]) {
+        const email = this.$getDataValue('dsUser/emails', { id: request.body.email })
+
+        if (!email.isEmpty) {
           return response.status(400).send({ message: 'Email must be unique' })
         }
 
-        this.emails[request.body.email] = id
-        this.users[id] = {
-          password: hash,
-          verified: false
+        const id = this.$method('dsData/generateId')
+        const setEmail = this.$setDataValue('dsUser/emails', {
+          source: id,
+          options: { id: request.body.email }
+        })
+
+        if (!setEmail.isValid) {
+          return response.status(400).send(setEmail.error.details)
         }
 
-        response.status(201).send({ message: 'Successfully registered' })
-      })
-    },
-    /**
-     * Delete user from database
-     * @private
-     * @param {ExpressRequest} request
-     * @param {ExpressResponse} response
-     */
-    _delete (request, response) {
-      delete this.users[request.user.id]
-      delete this.emails[request.user.id]
+        const setUser = this.$setDataValue('dsUser/items', {
+          source: {
+            password: hash,
+            verified: false
+          },
+          options: { id }
+        })
 
-      // TODO: update snapshot
-      response.send('OK')
+        if (!setUser.isValid) {
+          return response.status(400).send(setUser.error.details)
+        }
+
+        // Save user collections
+        const saveItems = this.$setDatabaseCollection('dsUser/items')
+        const saveEmails = this.$setDatabaseCollection('dsUser/emails')
+
+        Promise.all([saveItems, saveEmails])
+          .then(() => {
+            response.status(201).send({ message: 'Successfully registered' })
+          })
+          .catch(error => {
+            response.status(500).send(error)
+          })
+      })
     },
     /**
      * Login using email and password
@@ -192,16 +221,16 @@ export default {
       //   where.username = data.username
       // }
 
-      const userId = this.emails[data.email]
-      const user = this.users[userId]
+      const userId = this.$getDataValue('dsUser/emails', { id: data.email })
 
-      if (!user) {
+      if (userId.isEmpty) {
         return response.status(404).send({
           message: 'No user found'
         })
       }
 
-      const passwordMatch = bcrypt.compareSync(data.password, user.password)
+      const user = this.$getDataValue('dsUser/items', { id: userId.item })
+      const passwordMatch = bcrypt.compareSync(data.password, user.item.password)
 
       if (!passwordMatch) {
         return response.status(400).send({
@@ -211,7 +240,7 @@ export default {
 
       const token = this._sign({
         payload: {
-          id: userId
+          id: userId.item
         },
         expiresIn: data.expiresIn || this.cookieMaxAge
       })
