@@ -60,7 +60,7 @@ export default {
       private: true,
       default: {}
     },
-    isLoaded: {
+    isPluginLoaded: {
       private: true,
       default: {}
     },
@@ -164,6 +164,9 @@ export default {
       }
 
       this._processQueue(this.entryQueue)
+    },
+    isLoaded (name) {
+      return this.isPluginLoaded[name]
     },
     /**
      * Load all current plugins
@@ -307,7 +310,7 @@ export default {
      * @param {string} name - Name of plugin
      */
     _setLoaded (name) {
-      this.isLoaded[name] = true
+      this.isPluginLoaded[name] = true
       this.totalLoaded += 1
       // plugin might not be in this list
       this.entryQueue = this.entryQueue.filter(item => item !== name)
@@ -320,7 +323,7 @@ export default {
      * @param {string} dependency - The name of the dependent plugin
      */
     _subscribe (listener, dependency) {
-      if (this.isLoaded[dependency] || this.subscribed[dependency][listener]) {
+      if (this.isPluginLoaded[dependency] || this.subscribed[dependency][listener]) {
         return
       }
 
