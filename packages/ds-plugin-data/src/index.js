@@ -563,11 +563,19 @@ export default {
       if (!this[setDataName]) {
         for (const key in source) {
           if (Object.hasOwn(source, key)) {
-            const element = source[key]
+            const value = source[key]
+            const item = value._item || value
 
-            this._checkType(name, element, schema.type)
+            this._checkType(name, item, schema.type)
 
-            target[key] = element
+            target[key] = {
+              _item: item
+            }
+
+            // add metadata
+            if (value._metadata) {
+              target[key]._metadata = value._metadata
+            }
           }
         }
 
@@ -576,11 +584,21 @@ export default {
 
       for (const key in source) {
         if (Object.hasOwn(source, key)) {
-          const element = source[key]
-          this._checkType(name, element, schema.type)
+          const value = source[key]
+          const item = value._item || value
 
-          target[key] = this.defaultTypes[schema.type]()
-          target[key] = this[setDataName](data, name, target[key], element)
+          this._checkType(name, item, schema.type)
+
+          target[key] = {
+            _item: this.defaultTypes[schema.type]()
+          }
+
+          target[key]._item = this[setDataName](data, name, target[key]._item, item)
+
+          // add metadata
+          if (value._metadata) {
+            target[key]._metadata = value._metadata
+          }
         }
       }
 
@@ -814,7 +832,6 @@ export default {
       // update target with source
       if (option.source) {
         if (option.source.merge) {
-          console.warn('Need to fix: source needs _metadata')
           // merge collection item
           if (option.id) {
             for (const key in source) {
