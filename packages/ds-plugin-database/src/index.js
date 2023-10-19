@@ -30,13 +30,6 @@ export default {
       default: 'update'
     }
   },
-  setup ({ adapter }) {
-    if (adapter) {
-      this.adapter = adapter
-    }
-
-    // this._updateNames()
-  },
   /** @lends dsDatabase */
   methods: {
     /**
