@@ -384,7 +384,7 @@ export default {
 
             result.item = source._item || source
             result.id = options.id
-            const value = this.values[name][options.id]
+            const value = this.values[name][options.id] || {}
 
             this.values[name][options.id] = {
               _item: source._item || source,
