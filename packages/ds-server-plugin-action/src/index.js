@@ -16,6 +16,10 @@ export default {
     ...dsAction.data
   },
   setup () {
+    this.$setDatabaseSeed('ds-action-items')
+    this.$setDatabaseSeed('ds-action-blocks')
+    this.$setDatabaseSeed('ds-action-sequences')
+
     // route: get a list of action sequence entries
     this.$setWebServerRoute('/action', {
       method: 'get',
