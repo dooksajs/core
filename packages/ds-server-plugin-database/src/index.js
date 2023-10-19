@@ -133,6 +133,36 @@ export default {
           .catch(error => reject(error))
       })
     },
+    $setDatabaseSeed (name) {
+      const path = resolve(this.path, name + '.json')
+
+      if (!existsSync(path)) {
+        console.log('Seed file not exist:', path)
+      }
+
+      readFile(path, 'utf8', (err, json) => {
+        if (err) {
+          console.error(err)
+          return
+        }
+        const data = JSON.parse(json)
+        const setData = this.$setDataValue(data.collection, {
+          source: data.item,
+          options: {
+            source: {
+              merge: true
+            }
+          }
+        })
+
+        if (!setData.isValid) {
+          console.error(setData.error)
+          return
+        }
+
+        console.log('Successfully loaded dsData collection:', data.collection)
+      })
+    },
     _create (request, response) {
       const items = request.body
       const usedCollections = {}
