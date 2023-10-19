@@ -21,6 +21,8 @@ import DsPlugin from '@dooksa/ds-plugin'
  * @namespace dsLoader
  */
 export default {
+  name: 'dsLoader',
+  version: 1,
   data: {
     context: {
       private: true,
