@@ -300,13 +300,17 @@ export default {
       }
 
       // setup on request
-      if (!this.isLoaded[component.plugin] && this.setupOnRequestQueue[component.plugin]) {
-        const pluginName = component.plugin
-        const options = this._getOptions(pluginName)
-        const plugin = this.setupOnRequestQueue[pluginName]
+      const isLoaded = this.dsLoader.methods.isLoaded(component.plugin)
 
-        this._setup(plugin, options.setup)
-          .catch((e) => console.error(e))
+      if (!isLoaded) {
+        this.dsLoader.methods.load(component.plugin, (plugin, error) => {
+          if (error) {
+            throw error
+          }
+
+          this._add(plugin)
+          this._component(name)
+        })
       }
 
       // lazy load component
