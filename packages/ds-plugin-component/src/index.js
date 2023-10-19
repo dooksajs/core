@@ -16,10 +16,10 @@ export default {
     items: {
       default: {
         '0f64a9b82c6f98f7': {
-          id: 'text'
+          _item: { id: 'text' }
         },
         '43f4f4c34d66e648': {
-          id: 'div'
+          _item: { id: 'div' }
         }
       },
       schema: {
