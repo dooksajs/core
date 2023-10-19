@@ -35,6 +35,9 @@ export default {
       throw new Error('Storage path does not exist:', this.path)
     }
 
+    this.$setDatabaseSeed('ds-user-items')
+    this.$setDatabaseSeed('ds-user-emails')
+
     // route: add section
     this.$setWebServerRoute('/', {
       method: 'post',
