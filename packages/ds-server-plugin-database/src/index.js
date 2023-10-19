@@ -106,6 +106,33 @@ export default {
         response.status(200).send('deleted:', result)
       }
     },
+    $setDatabaseCollection (collection) {
+      return new Promise((resolve, reject) => {
+        const data = this.$getDataValue(collection)
+
+        if (data.isEmpty) {
+          reject(new Error('No collection found:', collection))
+        }
+
+        const timestamp = Date.now()
+        const fileName = collection.replace(/[A-Z]/g, letter => '-' + letter.toLowerCase()).replace('/', '-')
+        const tempFilePath = join(this.path, fileName + '_' + timestamp + '.json')
+        const filePath = join(this.path, fileName + '.json')
+
+        writeFile(tempFilePath, JSON.stringify({ collection, item: data.item, createdAt: timestamp }))
+          .then(() => {
+            rename(tempFilePath, filePath, (error) => {
+              if (error) {
+                reject(error)
+                return
+              }
+
+              resolve()
+            })
+          })
+          .catch(error => reject(error))
+      })
+    },
     _create (request, response) {
       const items = request.body
       const usedCollections = {}
@@ -128,48 +155,19 @@ export default {
       }
 
       const collections = Object.keys(usedCollections)
-      const filePaths = []
       const files = []
-      const timestamp = Date.now()
 
       for (let i = 0; i < collections.length; i++) {
-        const collection = collections[i]
-        const data = this.$getDataValue(collection)
-        const fileName = collection.replace('/', '_')
-        const tempFilePath = resolve(this.path, fileName + '-' + timestamp + '.json')
-        const filePath = resolve(this.path, fileName + '.json')
-        const file = writeFile(tempFilePath, JSON.stringify({ collection, item: data.item, createdAt: timestamp }))
+        const file = this.$setDatabaseCollection(collections[i])
 
-        filePaths.push([tempFilePath, filePath])
         files.push(file)
       }
 
-      const renamed = []
-
       Promise.all(files)
         .then(() => {
-          for (let i = 0; i < filePaths.length; i++) {
-            const filePath = filePaths[i]
-
-            rename(filePath[0], filePath[1], (error) => {
-              if (error) {
-                throw error
-              }
-
-              renamed.push(i)
-            })
-          }
-
           response.status(201).send('Successfully saved')
         })
-        .catch(error => {
-          if (renamed.length) {
-            return response.status(500).send({ message: 'Failed to rename, must restore data!' })
-          }
-
-          // delete temp files
-          response.status(500).send(error)
-        })
+        .catch(error => response.status(500).send(error))
     }
   }
 }
