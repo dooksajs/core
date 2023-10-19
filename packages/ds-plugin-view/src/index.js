@@ -73,7 +73,7 @@ export default {
    * @param {Object} options
    * @param {string} options.rootElementId - Root element id
    */
-  setup ({ rootElementId = 'root' }) {
+  setup ({ rootElementId = 'root' } = {}) {
     // get root element from the DOM
     const rootElement = document.getElementById(rootElementId)
 
