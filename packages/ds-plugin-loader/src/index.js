@@ -100,19 +100,22 @@ export default {
     // create dsPlugins and sort plugin dependencies
     for (let i = 0; i < plugins.length; i++) {
       const plugin = plugins[i]
-      const dsPlugin = new DsPlugin(plugin.value, this.context, this.isDev)
 
-      if (!plugin.options || (plugin.options && !plugin.options.setupOnRequest)) {
-        this.entryQueue.push(plugin.name)
-      }
+      if (plugin.value) {
+        const dsPlugin = new DsPlugin(plugin.value, this.context, this.isDev)
 
-      this._addData(dsPlugin, plugin.options)
+        if (!plugin.options || (plugin.options && !plugin.options.setupOnRequest)) {
+          this.entryQueue.push(plugin.name)
+        }
 
-      if (dsPlugin.dependencies) {
-        if (!dsPlugin.contextMethods) {
-          dependencies.push(dsPlugin.name)
-        } else {
-          priorityDependencies.push([dsPlugin.name, dsPlugin.dependencies])
+        this._addData(dsPlugin, plugin.options)
+
+        if (dsPlugin.dependencies) {
+          if (!dsPlugin.contextMethods) {
+            dependencies.push(dsPlugin.name)
+          } else {
+            priorityDependencies.push([dsPlugin.name, dsPlugin.dependencies])
+          }
         }
       }
     }
