@@ -1,6 +1,6 @@
-import { existsSync, rename } from 'fs'
+import { existsSync, rename, readFile } from 'fs'
 import { writeFile } from 'fs/promises'
-import { resolve } from 'path'
+import { resolve, join } from 'path'
 
 /**
  * @namespace dsDatabase
@@ -52,13 +52,32 @@ export default {
 
           for (let i = 0; i < request.query.id.length; i++) {
             const id = request.query.id[i]
-            const data = this.$getDataValue(collection, { id })
+            const args = { id }
+            const value = { id }
+
+            if (request.query.expand) {
+              args.options = {
+                expand: true
+              }
+
+              value.expand = []
+            }
+
+            const data = this.$getDataValue(collection, args)
 
             if (data.isEmpty) {
               return response.status(404).send('Document not found:', collection, id)
             }
 
-            result.push({ id, item: data.item })
+            value.item = data.item
+            value.metadata = data.metadata
+            value.collection = collection
+
+            if (!data.isExpandEmpty) {
+              value.expand = data.expand
+            }
+
+            result.push(value)
           }
         }
 
