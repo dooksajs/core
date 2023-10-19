@@ -9,7 +9,10 @@ export default () => ({
 
     // this is pretty weak protection
     for (let i = 0; i < this._plugins.length; i++) {
-      this._plugins[i].value = Object.assign(this._plugins[i].value, {})
+      if (this._plugins[i].value) {
+        this._plugins[i].value = Object.assign(this._plugins[i].value, {})
+      }
+
       this._plugins[i] = Object.assign(this._plugins[i], {})
     }
   },
