@@ -46,7 +46,7 @@ export default {
       if (!listeners.isEmpty) {
         for (let i = 0; i < listeners.item.length; i++) {
           this.$method('dsAction/dispatch', {
-            dsActionId: listeners.item[i],
+            id: listeners.item[i],
             payload
           })
         }
