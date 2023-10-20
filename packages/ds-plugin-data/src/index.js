@@ -1038,24 +1038,16 @@ export default {
       const setDataName = '_setData/' + schemaItems.type
       const setData = this[setDataName]
 
-      if (!source.length) {
+      for (let i = 0; i < source.length; i++) {
         if (typeof setData !== 'function') {
-          this._checkType(schemaName, source, schemaItems.type)
-        } else {
-          this[setDataName](data, schemaName, target, source, options, depth)
-        }
-      } else {
-        for (let i = 0; i < source.length; i++) {
-          if (typeof setData !== 'function') {
-            // set relation for array of strings
-            if (schemaItems.options && schemaItems.options.relation) {
-              this._setRelation(data.rootName, data.id, schemaItems.options.relation, source[i])
-            }
-
-            this._checkType(schemaName, source[i], schemaItems.type)
-          } else {
-            source[i] = this[setDataName](data, schemaName, target, source[i], options, depth)
+          // set relation for array of strings
+          if (schemaItems.options && schemaItems.options.relation) {
+            this._setRelation(data.rootName, data.id, schemaItems.options.relation, source[i])
           }
+
+          this._checkType(schemaName, source[i], schemaItems.type)
+        } else {
+          source[i] = this[setDataName](data, schemaName, target, source[i], options, depth)
         }
       }
 
