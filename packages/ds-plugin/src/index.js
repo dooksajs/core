@@ -4,17 +4,12 @@ import dsSchema from './utils/schema.js'
  * Plugins are used to extend and customise the Dooksa application builder.
  * @interface
  * @param {DsPlugin} plugin - The plugin object used by the Plugin constructor.
- * @param {Object[]} context - Context is shared data between plugins.
- * @param {string} context.name - The name will be the key used within the plugin, e.g. '$action' = this.$action
- * @param {(string|object)} context.value - The value of the context.
- * @param {Boolean} isDev - Sets development features
  */
-function DsPlugin (plugin, context = [], isDev) {
-  const _context = {
+function DsPlugin (plugin) {
+  this._context = {
     name: plugin.name,
     version: plugin.version
   }
-
   this.name = plugin.name
   this.version = plugin.version
 
@@ -28,7 +23,7 @@ function DsPlugin (plugin, context = [], isDev) {
         const item = plugin.data[key]
 
         if (item.private) {
-          _context[key] = item.default
+          this._context[key] = item.default
         } else {
           const dataEntry = {}
           const item = plugin.data[key]
@@ -36,7 +31,7 @@ function DsPlugin (plugin, context = [], isDev) {
 
           dataEntry.id = plugin.name + '/' + key
           dataEntry.default = item.default
-          dataEntry.schema = dsSchema.process(_context, dataEntry.id, schema, [], true)
+          dataEntry.schema = dsSchema.process(this._context, dataEntry.id, schema, [], true)
           dataEntry.collection = schema.type === 'collection'
 
           data.push(dataEntry)
@@ -49,21 +44,10 @@ function DsPlugin (plugin, context = [], isDev) {
     }
   }
 
-  // set context to plugin
-  for (let i = 0; i < context.length; i++) {
-    const item = context[i]
-    // ISSUE: [DS-752] applying context to plugins should be more dynamic
-    if (item.scope && item.scope.includes(plugin.name)) {
-      _context[item.name] = item.value
-    } else {
-      _context[item.name] = item.value
-    }
-  }
-
   // set dependencies
   if (plugin.dependencies) {
     this.dependencies = plugin.dependencies
-    _context.dependencies = plugin.dependencies
+    this._context.dependencies = plugin.dependencies
   }
 
   // set methods
@@ -77,11 +61,11 @@ function DsPlugin (plugin, context = [], isDev) {
         const firstChar = key.charAt(0)
 
         // Add method to context
-        _context[key] = item
+        this._context[key] = item
 
         // catch global methods
         if (firstChar === '$') {
-          const method = item.value ? item.value.bind(_context) : item.bind(_context)
+          const method = item.value ? item.value.bind(this._context) : item.bind(this._context)
           contextMethods.push({
             name: key,
             value: method,
@@ -90,9 +74,9 @@ function DsPlugin (plugin, context = [], isDev) {
           })
 
           methods[key] = method
-          _context[key] = method
+          this._context[key] = method
         } else if (firstChar !== '_') {
-          methods[key] = item.bind(_context)
+          methods[key] = item.bind(this._context)
         }
       }
     }
@@ -112,13 +96,13 @@ function DsPlugin (plugin, context = [], isDev) {
       if (Object.hasOwn(plugin.tokens, key)) {
         const item = plugin.tokens[key]
 
-        _context[key] = item
+        this._context[key] = item
         tokens[key] = item
 
         if (item.get) {
-          tokens[key].get = item.get.bind(_context)
+          tokens[key].get = item.get.bind(this._context)
         } else {
-          tokens[key] = item.bind(_context)
+          tokens[key] = item.bind(this._context)
         }
       }
     }
@@ -140,7 +124,7 @@ function DsPlugin (plugin, context = [], isDev) {
 
   // set setup function
   if (plugin.setup) {
-    this.setup = plugin.setup.bind(_context)
+    this.setup = plugin.setup.bind(this._context)
   }
 }
 
@@ -152,6 +136,30 @@ function DsPlugin (plugin, context = [], isDev) {
 DsPlugin.prototype.init = function (params) {
   if (this.setup) {
     return this.setup(params)
+  }
+}
+
+/**
+ * @param {Object[]} context - Context is shared data between plugins.
+ * @param {string} context.name - The name will be the key used within the plugin, e.g. '$action' = this.$action
+ * @param {(string|object)} context.value - The value of the context.
+ */
+DsPlugin.prototype.setContext = function (context) {
+  // set context to plugin
+  for (let i = 0; i < context.length; i++) {
+    const item = context[i]
+
+    // Ignore existing context
+    if (this._context[item.name]) {
+      continue
+    }
+
+    // ISSUE: [DS-752] applying context to plugins should be more dynamic
+    if (item.scope && item.scope.includes(this.name)) {
+      this._context[item.name] = item.value
+    } else {
+      this._context[item.name] = item.value
+    }
   }
 }
 

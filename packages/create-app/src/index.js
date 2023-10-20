@@ -21,7 +21,7 @@ export default () => ({
    * @param {DsPluginOptions[]} start.options - Plugin setup option overrides
    * @returns {Object|undefined} - Development mode functions used to interact with the app
    */
-  start ({ options = [], isDev }) {
+  start ({ options = [], isDev }, callback) {
     const pluginManager = new DsPlugin(dsManager, [], isDev)
 
     for (let i = 0; i < options.length; i++) {
@@ -46,9 +46,10 @@ export default () => ({
     }
 
     // start dooksa
-    return pluginManager.init({
+    pluginManager.init({
       plugins: this._plugins,
-      isDev
+      isDev,
+      onSuccess: callback
     })
   },
   _plugins: [],

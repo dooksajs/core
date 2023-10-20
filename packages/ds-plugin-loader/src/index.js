@@ -67,18 +67,6 @@ export default {
     listeners: {
       private: true,
       default: {}
-    },
-    totalPlugins: {
-      private: true,
-      default: 0
-    },
-    totalLoaded: {
-      private: true,
-      default: 0
-    },
-    callback: {
-      private: true,
-      default: () => {}
     }
   },
   /**
@@ -89,11 +77,13 @@ export default {
    * @param {DsPlugin} plugins[].value - Object used to create a DsPLugin
    * @param {DsPluginOptions} plugins[].options - Setup options
    * @param {Array}
-   * @param {dsLoaderCallback} plugin.callback - This callback handles the plugin once loaded
+   * @param {dsLoaderCallback} plugin.onAdd - This callback handles the plugin once loaded
+   * @param {dsLoaderCallback} plugin.onSuccess - This callback handles the plugin once loaded
    */
-  setup ({ plugins, context, callback }) {
+  setup ({ plugins, context, onAdd, onSuccess }) {
     this.context = context
-    this.callback = callback
+    this.onAdd = onAdd
+    this.onSuccess = onSuccess
 
     const dependencies = []
     const priorityDependencies = []
@@ -102,13 +92,13 @@ export default {
       const plugin = plugins[i]
 
       if (plugin.value) {
-        const dsPlugin = new DsPlugin(plugin.value, this.context, this.isDev)
+        const dsPlugin = new DsPlugin(plugin.value)
 
         if (!plugin.options || (plugin.options && !plugin.options.setupOnRequest)) {
           this.entryQueue.push(plugin.name)
         }
 
-        this._addData(dsPlugin, plugin.options)
+        this._addPlugin(dsPlugin, plugin.options)
 
         if (dsPlugin.dependencies) {
           if (!dsPlugin.contextMethods) {
@@ -117,6 +107,9 @@ export default {
             priorityDependencies.push([dsPlugin.name, dsPlugin.dependencies])
           }
         }
+      } else {
+        // these plugins need to handle their dependencies once they are loaded
+        this._addPlugin(plugin, plugin.options)
       }
     }
 
@@ -152,7 +145,13 @@ export default {
       }
     }
 
-    this._processQueue(this.entryQueue)
+    for (let i = 0; i < this.entryQueue.length; i++) {
+      const name = this.entryQueue[i]
+
+      this.plugins[name].setContext(this.context)
+    }
+
+    this._processQueue()
   },
   methods: {
     /**
@@ -166,7 +165,7 @@ export default {
         options.setupOnRequest = false
       }
 
-      this._processQueue(this.entryQueue)
+      this._processQueue()
     },
     isLoaded (name) {
       return this.isPluginLoaded[name]
@@ -174,11 +173,10 @@ export default {
     /**
      * Load all current plugins
      * @private
-     * @param {string[]} - List of plugin names
      */
-    _processQueue (queue) {
-      for (let i = 0; i < queue.length; i++) {
-        const name = queue[i]
+    _processQueue () {
+      for (let i = 0; i < this.entryQueue.length; i++) {
+        const name = this.entryQueue[i]
 
         if (!this.dependencyQueue[name]) {
           this._use(this.plugins[name], this.options[name])
@@ -191,20 +189,19 @@ export default {
      * @param {DsPlugin} plugin - DsPlugin instance
      * @param {DsPluginOptions} options - DsPlugin setup options
      */
-    _addData (plugin, options) {
-      const { name, contextMethods } = plugin
+    _addPlugin (plugin, options) {
+      const name = plugin.name
 
-      this.callback(plugin)
+      this.onAdd(plugin)
       this.options[name] = options
       this.plugins[name] = plugin
       this.dependencyQueue[name] = 0
       this.subscribed[name] = {}
       this.listeners[name] = []
-      this.totalPlugins += 1
 
-      if (contextMethods) {
+      if (plugin.contextMethods) {
         this.highPriority.push(name)
-        this.context = this.context.concat(contextMethods)
+        this.context = this.context.concat(plugin.contextMethods)
       } else {
         this.lowPriority.push(name)
       }
@@ -237,10 +234,12 @@ export default {
       return new Promise((resolve, reject) => {
         import(`./plugins/${fileName}.js`)
           .then(({ default: plugin }) => {
-            const dsPlugin = new this.DsPlugin(plugin, this.context, this.isDev)
+            const dsPlugin = new DsPlugin(plugin)
+
+            dsPlugin.setContext(this.context)
 
             // add plugin to manager
-            this._addData(dsPlugin)
+            this._addPlugin(dsPlugin)
 
             if (dsPlugin.dependencies) {
               for (let i = 0; i < plugin.dependencies.length; i++) {
@@ -251,7 +250,6 @@ export default {
             resolve(dsPlugin)
           })
           .catch(e => {
-            this.callback(null, e)
             reject(e)
           })
       })
@@ -273,7 +271,6 @@ export default {
             this._setup(plugin, options.setup)
           })
           .catch(error => {
-            this.callback(null, error)
             throw error
           })
       } else {
@@ -299,7 +296,6 @@ export default {
             this._setLoaded(plugin.name)
           })
           .catch(error => {
-            this.callback(null, error)
             // Need to test how this fails
             throw error
           })
@@ -314,10 +310,13 @@ export default {
      */
     _setLoaded (name) {
       this.isPluginLoaded[name] = true
-      this.totalLoaded += 1
       // plugin might not be in this list
       this.entryQueue = this.entryQueue.filter(item => item !== name)
       this._notify(name)
+
+      if (!this.entryQueue.length) {
+        this.onSuccess(this.context)
+      }
     },
     /**
      * Add plugin dependency
