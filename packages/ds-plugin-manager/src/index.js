@@ -75,7 +75,8 @@ export default {
    */
   setup ({
     plugins = [],
-    isDev = false
+    isDev = false,
+    onSuccess = () => {}
   }) {
     const context = [
       {
@@ -135,25 +136,25 @@ export default {
     this.dsLoader.init({
       plugins,
       context,
-      callback: this._add.bind(this)
-    })
+      onAdd: this._add.bind(this),
+      onSuccess: (context) => {
+        const result = {}
+        // export global functions
+        if (isDev) {
+          result.components = this.components
 
-    // export global functions
-    if (isDev) {
-      const result = {
-        components: this.components
-      }
+          for (let i = 0; i < context.length; i++) {
+            const method = context[i]
 
-      for (let i = 0; i < context.length; i++) {
-        const method = context[i]
-
-        if (method.export) {
-          result[method.name] = method.value
+            if (method.export) {
+              result[method.name] = method.value
+            }
+          }
         }
-      }
 
-      return result
-    }
+        onSuccess(result)
+      }
+    })
   },
   /** @lends @dsManager */
   methods: {
