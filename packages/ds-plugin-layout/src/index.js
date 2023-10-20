@@ -63,16 +63,15 @@ export default {
         id: dsWidgetId,
         suffixId: dsWidgetMode
       })
-      const isViewItemsEmpty = viewItems.isEmpty
 
-      if (isViewItemsEmpty) {
+      if (viewItems.isEmpty) {
         viewItems = []
       } else {
         viewItems = viewItems.item
       }
 
       for (let i = 0; i < layout.item.length; i++) {
-        const { componentId, contentIndex, sectionIndex, parentIndex } = layout.item[i]
+        const element = layout.item[i]
         const event = events[i]
         const item = {}
         let parentViewId = dsViewId
@@ -80,8 +79,8 @@ export default {
 
         layoutItems.push(item)
 
-        if (Number.isInteger(parentIndex)) {
-          const layoutItem = layoutItems[parentIndex]
+        if (Number.isInteger(element.parentIndex)) {
+          const layoutItem = layoutItems[element.parentIndex]
 
           parentViewId = layoutItem.dsViewId
 
@@ -94,7 +93,7 @@ export default {
           dsViewId: viewItems[i],
           dsSectionId: sectionId,
           dsWidgetId,
-          dsComponentId: componentId
+          dsComponentId: element.componentId
         })
 
         this.$method('dsView/append', {
@@ -103,20 +102,20 @@ export default {
         })
 
         // collect new view ids for instance
-        if (isViewItemsEmpty) {
+        if (viewItems.isEmpty) {
           viewItems.push(childViewId)
         }
 
         item.dsViewId = childViewId
 
-        if (Number.isInteger(contentIndex)) {
+        if (Number.isInteger(element.contentIndex)) {
           const language = this.$getDataValue('dsMetadata/language').item
           const contentId = this.$getDataValue('dsWidget/content', {
             id: dsWidgetId,
             prefixId: dsSectionUniqueId,
             suffixId: dsWidgetMode,
             options: {
-              position: contentIndex
+              position: element.contentIndex
             }
           }).item
           const dsContentId = this.$getDataValue('dsContent/items', {
@@ -145,14 +144,14 @@ export default {
           })
         }
 
-        if (Number.isInteger(sectionIndex)) {
+        if (Number.isInteger(element.sectionIndex)) {
           // get next widget section id
           sectionId = this.$getDataValue('dsWidget/sections', {
             id: dsWidgetId,
             prefixId: dsSectionUniqueId,
             suffixId: dsWidgetMode,
             options: {
-              position: sectionIndex
+              position: element.sectionIndex
             }
           }).item
 
@@ -187,7 +186,7 @@ export default {
       }
 
       // set view items used with widget instance
-      if (isViewItemsEmpty) {
+      if (viewItems.isEmpty) {
         this.$setDataValue('dsWidget/view', {
           source: viewItems,
           options: {
