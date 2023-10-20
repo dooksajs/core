@@ -247,20 +247,20 @@ export default {
 
           for (let i = 0; i < event.length; i++) {
             const dsActionSequenceEntryId = event[i]
-            const dsActionSequenceEntry = this.$getDataValue('dsAction/sequenceEntry', { id: dsActionSequenceEntryId }).item
+            const dsActionSequenceEntry = this.$getDataValue('dsAction/items', { id: dsActionSequenceEntryId }).item
 
             data.actions.sequenceEntry[dsActionSequenceEntryId] = dsActionSequenceEntry
 
             for (let i = 0; i < dsActionSequenceEntry.length; i++) {
               const dsActionSequenceId = dsActionSequenceEntry[i]
-              const dsActionSequence = this.$getDataValue('dsAction/sequence', { id: dsActionSequenceId }).item
+              const dsActionSequence = this.$getDataValue('dsAction/sequences', { id: dsActionSequenceId }).item
 
               data.actions.sequence[dsActionSequenceId] = dsActionSequence
 
               for (let i = 0; i < dsActionSequence.length; i++) {
                 const dsActionId = dsActionSequence[i].id
 
-                data.actions.items[dsActionId] = this.$getDataValue('dsAction/items', { id: dsActionId }).item
+                data.actions.items[dsActionId] = this.$getDataValue('dsAction/blocks', { id: dsActionId }).item
               }
             }
           }

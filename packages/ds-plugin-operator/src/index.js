@@ -31,7 +31,7 @@ export default {
         if (Object.hasOwn(item, key)) {
           const value = item[key]
 
-          this.$method('dsAction/dispatch', { dsActionId, payload: { key, value } })
+          this.$method('dsAction/dispatch', { id: dsActionId, payload: { key, value } })
         }
       }
     },
