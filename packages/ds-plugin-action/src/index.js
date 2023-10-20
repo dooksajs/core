@@ -15,15 +15,7 @@ export default {
       schema: {
         type: 'collection',
         items: {
-          type: 'object',
-          properties: {
-            _$a: {
-              type: 'string'
-            },
-            _$p: {
-              type: 'string'
-            }
-          }
+          type: 'object'
         }
       }
     },
