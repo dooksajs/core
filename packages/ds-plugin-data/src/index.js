@@ -1082,7 +1082,13 @@ export default {
           data.noAffixId = collectionId.noAffixId
           data.name = name + '/' + collectionId.id
 
-          target[collectionId.id] = source
+          target[collectionId.id] = {
+            _item: source,
+            _metadata: {}
+          }
+
+          // change target
+          target = target[collectionId.id]._item
         }
 
         hasOptions = options.depth === depth || (depth === 1 && !options.depth)
@@ -1094,10 +1100,13 @@ export default {
         data.noAffixId = collectionId.noAffixId
         data.name = name + '/' + collectionId.id
 
-        target[collectionId.id] = source
+        target[collectionId.id] = {
+          _item: source,
+          _metadata: {}
+        }
 
         // change target
-        target = target[collectionId.id]
+        target = target[collectionId.id]._item
       }
 
       if (schema.options || hasOptions) {
