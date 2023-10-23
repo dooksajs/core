@@ -55,7 +55,7 @@ export default {
     },
     cookieMaxAge: {
       private: true,
-      default: 9000000
+      default: 43200
     }
   },
   setup ({ secret, saltRounds, tokenAlgorithm }) {
