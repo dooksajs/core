@@ -76,7 +76,8 @@ export default {
   setup ({
     plugins = [],
     isDev = false,
-    onSuccess = () => {}
+    onSuccess = () => {},
+    onError = () => {}
   }) {
     const context = [
       {
@@ -136,24 +137,30 @@ export default {
     this.dsLoader.init({
       plugins,
       context,
-      onAdd: this._add.bind(this),
-      onSuccess: (context) => {
-        const result = {}
+      callback: {
+        onImport: this._add.bind(this),
+        onSuccess: (context) => {
+          const result = {}
 
-        if (isDev) {
-          result.components = this.components
-        }
-
-        // return context functions
-        for (let i = 0; i < context.length; i++) {
-          const method = context[i]
-
-          if (method.export) {
-            result[method.name] = method.value
+          if (isDev) {
+            result.components = this.components
           }
-        }
 
-        onSuccess(result)
+          // return context functions
+          for (let i = 0; i < context.length; i++) {
+            const method = context[i]
+
+            if (method.export) {
+              result[method.name] = method.value
+            }
+          }
+
+          onSuccess(result)
+        },
+        onError: (error) => {
+          onError(error)
+          throw new Error(error)
+        }
       }
     })
   },
@@ -338,13 +345,14 @@ export default {
 
       const pluginName = name.split('/')[0]
 
-      this.dsLoader.methods.get(pluginName, (plugin, error) => {
-        if (error) {
-          throw error
+      this.dsLoader.methods.get(pluginName, {
+        onImport: this._add.bind(this),
+        onSuccess: () => {
+          callback()
+        },
+        onError: err => {
+          console.log(err)
         }
-
-        this._add(plugin)
-        callback()
       })
     },
     /**

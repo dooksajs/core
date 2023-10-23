@@ -16,11 +16,11 @@ dsApp.start({
       }
     }
   ]
-}, (app, error) => {
-  if (error) {
-    console.error(error)
-    return
+}, {
+  onSuccess (app) {
+    app.$method('dsWebServer/start')
+  },
+  onError (error) {
+    console.log(error)
   }
-
-  app.$method('dsWebServer/start')
 })

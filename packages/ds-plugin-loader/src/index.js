@@ -84,7 +84,15 @@ export default {
    * @param {dsLoaderCallback} plugin.onAdd - This callback handles the plugin once loaded
    * @param {dsLoaderCallback} plugin.onSuccess - This callback handles the plugin once loaded
    */
-  setup ({ plugins, context, onAdd, onSuccess }) {
+  setup ({
+    plugins,
+    context,
+    callback = {
+      onImport: () => {},
+      onSuccess: () => {},
+      onError: () => {}
+    }
+  }) {
     this.context = context
 
     const dependencies = []
@@ -95,10 +103,15 @@ export default {
     for (let i = 0; i < plugins.length; i++) {
       const plugin = plugins[i]
 
+      // check if the plugin is a duplicate
+      if (this.plugins[plugin.name]) {
+        continue
+      }
+
       if (plugin.value) {
         const dsPlugin = new DsPlugin(plugin.value)
 
-        this._add(dsPlugin, plugin.options, onAdd)
+        this._add(dsPlugin, plugin.options, callback.onImport)
 
         if (dsPlugin.dependencies) {
           if (!dsPlugin.contextMethods) {
@@ -111,7 +124,7 @@ export default {
         }
       } else {
         // these plugins need to handle their dependencies once they are loaded
-        this._add(plugin, plugin.options, onAdd)
+        this._add(plugin, plugin.options, callback.onImport)
       }
     }
 
@@ -149,12 +162,14 @@ export default {
 
     // set context to plugins
     for (let i = 0; i < plugins.length; i++) {
-      const plugin = plugins[i]
+      const plugin = this.plugins[plugins[i].name]
 
-      this.plugins[plugin.name].setContext(this.context)
+      if (plugin._context) {
+        plugin.setContext(this.context)
+      }
     }
 
-    this._processQueue(entryQueue, onSuccess)
+    this._processQueue(entryQueue, callback)
   },
   methods: {
     /**
@@ -245,11 +260,11 @@ export default {
         import(`./plugins/${fileName}.js`)
           .then(({ default: plugin }) => {
             const dsPlugin = new DsPlugin(plugin)
-
+            const options = this.options[plugin.name]
             dsPlugin.setContext(this.context)
 
             // add plugin to manager
-            this._add(dsPlugin, callback)
+            this._add(dsPlugin, options, callback)
 
             if (dsPlugin.dependencies) {
               for (let i = 0; i < plugin.dependencies.length; i++) {
@@ -276,12 +291,12 @@ export default {
       }
 
       if (options.import) {
-        this._import(options.import)
+        this._import(options.import, callback.onImport)
           .then(plugin => {
             this._setup(plugin, options.setup, callback)
           })
           .catch(error => {
-            callback(null, error)
+            callback.onError(error)
           })
       } else {
         this._setup(plugin, options.setup, callback)
@@ -324,7 +339,10 @@ export default {
       this.totalInQueue -= 1
 
       if (this.totalInQueue === 0) {
-        callback(this.context)
+        this.lowPriority = []
+        this.highPriority = []
+
+        callback.onSuccess(this.context)
       }
 
       this._notify(name, callback)
