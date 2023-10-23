@@ -8,11 +8,6 @@ import { resolve, join } from 'path'
 export default {
   name: 'dsDatabase',
   version: 1,
-  dependencies: [{
-    name: 'dsWebServer'
-  }, {
-    name: 'dsUser'
-  }],
   data: {
     path: {
       private: true,
@@ -34,16 +29,6 @@ export default {
     if (!existsSync(this.path)) {
       throw new Error('Storage path does not exist:', this.path)
     }
-
-    this.$setDatabaseSeed('ds-user-items')
-    this.$setDatabaseSeed('ds-user-emails')
-
-    // route: add section
-    this.$setWebServerRoute('/', {
-      method: 'post',
-      middleware: ['dsUser/auth'],
-      handlers: [this._create.bind(this)]
-    })
   },
   methods: {
     $getDatabaseValue (collections) {
