@@ -63,6 +63,9 @@ export default {
       throw new Error('Invalid secret length; secret must be at 32 characters')
     }
 
+    this.$setDatabaseSeed('ds-user-items')
+    this.$setDatabaseSeed('ds-user-emails')
+
     this.secret = secret
 
     if (typeof saltRounds === 'number') {
