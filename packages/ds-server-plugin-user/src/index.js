@@ -7,6 +7,9 @@ import bcrypt from 'bcryptjs'
 export default {
   name: 'dsUser',
   version: 1,
+  dependencies: [{
+    name: 'dsWebServer'
+  }],
   data: {
     emails: {
       default: {},

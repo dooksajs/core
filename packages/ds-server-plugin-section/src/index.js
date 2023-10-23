@@ -7,6 +7,9 @@ import dsSection from '@dooksa/ds-plugin-section'
 export default {
   name: 'dsSection',
   version: 1,
+  dependencies: [{
+    name: 'dsUser'
+  }],
   data: {
     ...dsSection.data
   },
