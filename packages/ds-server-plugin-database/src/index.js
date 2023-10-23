@@ -113,8 +113,9 @@ export default {
         }
 
         const timestamp = Date.now()
+        const uuid = this.$method('dsData/generateId')
         const fileName = collection.replace(/[A-Z]/g, letter => '-' + letter.toLowerCase()).replace('/', '-')
-        const tempFilePath = join(this.path, fileName + '_' + timestamp + '.json')
+        const tempFilePath = join(this.path, fileName + '_' + uuid + '.json')
         const filePath = join(this.path, fileName + '.json')
 
         writeFile(tempFilePath, JSON.stringify({ collection, item: data.item, createdAt: timestamp }))
