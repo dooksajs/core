@@ -61,7 +61,7 @@ export default {
       }
     }
   },
-  setup ({ cookieSecret, apiSuffix = '/api' }) {
+  setup ({ cookieSecret, apiSuffix = '/_' }) {
     if (!cookieSecret || cookieSecret.length < 32) {
       throw new Error('Invalid cookie secret length; secret must be at 32 characters')
     }
