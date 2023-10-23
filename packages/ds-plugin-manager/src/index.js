@@ -139,16 +139,17 @@ export default {
       onAdd: this._add.bind(this),
       onSuccess: (context) => {
         const result = {}
-        // export global functions
+
         if (isDev) {
           result.components = this.components
+        }
 
-          for (let i = 0; i < context.length; i++) {
-            const method = context[i]
+        // return context functions
+        for (let i = 0; i < context.length; i++) {
+          const method = context[i]
 
-            if (method.export) {
-              result[method.name] = method.value
-            }
+          if (method.export) {
+            result[method.name] = method.value
           }
         }
 
@@ -156,7 +157,7 @@ export default {
       }
     })
   },
-  /** @lends @dsManager */
+  /** @lends dsManager */
   methods: {
     /**
      * Execute plugin methods
@@ -304,7 +305,7 @@ export default {
       const isLoaded = this.dsLoader.methods.isLoaded(component.plugin)
 
       if (!isLoaded) {
-        this.dsLoader.methods.load(component.plugin, (plugin, error) => {
+        this.dsLoader.methods.get(component.plugin, (plugin, error) => {
           if (error) {
             throw error
           }
@@ -337,7 +338,7 @@ export default {
 
       const pluginName = name.split('/')[0]
 
-      this.dsLoader.methods.load(pluginName, (plugin, error) => {
+      this.dsLoader.methods.get(pluginName, (plugin, error) => {
         if (error) {
           throw error
         }
