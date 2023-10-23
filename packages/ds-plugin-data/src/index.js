@@ -589,6 +589,9 @@ export default {
 
           this._checkType(name, item, schema.type)
 
+          // set current merge root id
+          data.id = key
+
           target[key] = {
             _item: this.defaultTypes[schema.type]()
           }
