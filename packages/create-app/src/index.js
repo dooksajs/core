@@ -22,7 +22,7 @@ export default () => ({
    * @returns {Object|undefined} - Development mode functions used to interact with the app
    */
   start ({ options = [], isDev }, callback) {
-    const pluginManager = new DsPlugin(dsManager, [], isDev)
+    const pluginManager = new DsPlugin(dsManager)
 
     for (let i = 0; i < options.length; i++) {
       const option = options[i]
