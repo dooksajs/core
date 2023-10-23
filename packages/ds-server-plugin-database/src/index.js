@@ -162,7 +162,7 @@ export default {
         console.log('Successfully loaded dsData collection:', data.collection)
       })
     },
-    _create (request, response) {
+    $setDatabaseValue (request, response) {
       const items = request.body
       const usedCollections = {}
 
