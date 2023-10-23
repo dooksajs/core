@@ -16,12 +16,25 @@ export default {
     storage: {
       default: 'ds_data',
       private: true
+    },
+    snapshotLock: {
+      private: true,
+      default: {}
+    },
+    snapshotQueue: {
+      private: true,
+      default: {}
+    },
+    snapshotError: {
+      private: true,
+      default: {}
     }
   },
   setup (storage) {
-    // if (storage) {
-    //   this.storage = storage
-    // }
+    if (storage) {
+      this.storage = storage
+    }
+
     const path = process.cwd()
 
     this.path = resolve(path, this.storage)
@@ -74,7 +87,6 @@ export default {
     },
     $deleteDatabaseValue (collections) {
       return (request, response) => {
-        const updateDB = []
         let result = 0
 
         for (let i = 0; i < collections.length; i++) {
@@ -91,46 +103,15 @@ export default {
             result += 1
           }
 
-          updateDB.push(this.$setDatabaseCollection(collection))
+          if (this.snapshotError[collection]) {
+            return response.status(500).send(this.snapshotError[collection])
+          }
+
+          this._setSnapshot(collections)
         }
 
-        Promise.all(updateDB)
-          .then(() => {
-            response.status(200).send('deleted: ' + result)
-          })
-          .catch(error => {
-            console.error(error)
-            response.status(500).send(error)
-          })
+        response.status(200).send('deleted: ' + result)
       }
-    },
-    $setDatabaseCollection (collection) {
-      return new Promise((resolve, reject) => {
-        const data = this.$getDataValue(collection)
-
-        if (data.isEmpty) {
-          reject(new Error('No collection found:', collection))
-        }
-
-        const timestamp = Date.now()
-        const uuid = this.$method('dsData/generateId')
-        const fileName = collection.replace(/[A-Z]/g, letter => '-' + letter.toLowerCase()).replace('/', '-')
-        const tempFilePath = join(this.path, fileName + '_' + uuid + '.json')
-        const filePath = join(this.path, fileName + '.json')
-
-        writeFile(tempFilePath, JSON.stringify({ collection, item: data.item, createdAt: timestamp }))
-          .then(() => {
-            rename(tempFilePath, filePath, (error) => {
-              if (error) {
-                reject(error)
-                return
-              }
-
-              resolve()
-            })
-          })
-          .catch(error => reject(error))
-      })
     },
     $setDatabaseSeed (name) {
       const path = resolve(this.path, name + '.json')
@@ -159,12 +140,18 @@ export default {
           return
         }
 
+        // setup snapshot collection states
+        this.snapshotQueue[data.collection] = false
+        this.snapshotLock[data.collection] = false
+        this.snapshotError[data.collection] = false
+
         console.log('Successfully loaded dsData collection:', data.collection)
       })
     },
     $setDatabaseValue (request, response) {
       const items = request.body
       const usedCollections = {}
+      const collections = []
 
       for (let i = 0; i < items.length; i++) {
         const data = items[i]
@@ -180,23 +167,79 @@ export default {
           return response.status(400).send(setData.error.details)
         }
 
-        usedCollections[data.collection] = true
+        if (!usedCollections[data.collection]) {
+          usedCollections[data.collection] = true
+          collections.push(data.collection)
+        }
       }
-
-      const collections = Object.keys(usedCollections)
-      const files = []
 
       for (let i = 0; i < collections.length; i++) {
-        const file = this.$setDatabaseCollection(collections[i])
+        const collection = collections[i]
 
-        files.push(file)
+        if (this.snapshotError[collection]) {
+          return response.status(500).send(this.snapshotError[collection])
+        }
+
+        this._setSnapshot(collection)
       }
 
-      Promise.all(files)
+      response.status(201).send('Successfully saved')
+    },
+    _setSnapshot (collection) {
+      // Exit early if error
+      if (this.snapshotError[collection]) {
+        return
+      }
+
+      // Set queue if locked
+      if (this.snapshotLock[collection]) {
+        this.snapshotQueue[collection] = true
+        return
+      }
+
+      this.snapshotLock[collection] = true
+      this.snapshotQueue[collection] = false
+
+      const set = new Promise((resolve, reject) => {
+        const data = this.$getDataValue(collection)
+
+        if (data.isEmpty) {
+          reject(new Error('No collection found:', collection))
+        }
+
+        const timestamp = Date.now()
+        const uuid = this.$method('dsData/generateId')
+        const fileName = collection.replace(/[A-Z]/g, letter => '-' + letter.toLowerCase()).replace('/', '-')
+        const tempFilePath = join(this.path, fileName + '_' + uuid + '.json')
+        const filePath = join(this.path, fileName + '.json')
+
+        writeFile(tempFilePath, JSON.stringify({ collection, item: data.item, createdAt: timestamp }))
+          .then(() => {
+            rename(tempFilePath, filePath, (error) => {
+              if (error) {
+                reject(error)
+                return
+              }
+
+              // unlock
+              this.snapshotLock[collection] = false
+              resolve()
+            })
+          })
+          .catch(error => reject(error))
+      })
+
+      // save snapshot
+      Promise.resolve(set)
         .then(() => {
-          response.status(201).send('Successfully saved')
+          if (this.snapshotQueue) {
+            this._setSnapshot(collection)
+          }
         })
-        .catch(error => response.status(500).send(error))
+        .catch(error => {
+          console.error(error)
+          this.snapshotError[collection] = error
+        })
     }
   }
 }
