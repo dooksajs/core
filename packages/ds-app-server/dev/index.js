@@ -1,7 +1,6 @@
 import dsApp from '../src/index.js'
-import logger from 'sequelize-pretty-logger'
 
-const app = dsApp.start({
+dsApp.start({
   isDev: true,
   options: [
     {
@@ -11,20 +10,17 @@ const app = dsApp.start({
       }
     },
     {
-      name: 'dsDatabase',
-      setup: {
-        storage: './ds_data/database.db',
-        logging: logger()
-      }
-    },
-    {
       name: 'dsUser',
       setup: {
         secret: 'RTRe50oe-wX8gd9qzrWUY71W4yGob10c'
       }
     }
   ]
-})
+}, (app, error) => {
+  if (error) {
+    console.error(error)
+    return
+  }
 
-app.$action('dsWebServer/start')
-app.$action('dsDatabase/start', { force: true })
+  app.$method('dsWebServer/start')
+})

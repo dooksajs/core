@@ -67,6 +67,10 @@ export default {
     listeners: {
       private: true,
       default: {}
+    },
+    totalInQueue: {
+      private: true,
+      default: 0
     }
   },
   /**
@@ -82,11 +86,11 @@ export default {
    */
   setup ({ plugins, context, onAdd, onSuccess }) {
     this.context = context
-    this.onAdd = onAdd
-    this.onSuccess = onSuccess
 
     const dependencies = []
     const priorityDependencies = []
+    const entryQueue = []
+
     // create dsPlugins and sort plugin dependencies
     for (let i = 0; i < plugins.length; i++) {
       const plugin = plugins[i]
@@ -94,11 +98,7 @@ export default {
       if (plugin.value) {
         const dsPlugin = new DsPlugin(plugin.value)
 
-        if (!plugin.options || (plugin.options && !plugin.options.setupOnRequest)) {
-          this.entryQueue.push(plugin.name)
-        }
-
-        this._addPlugin(dsPlugin, plugin.options)
+        this._add(dsPlugin, plugin.options, onAdd)
 
         if (dsPlugin.dependencies) {
           if (!dsPlugin.contextMethods) {
@@ -106,10 +106,12 @@ export default {
           } else {
             priorityDependencies.push([dsPlugin.name, dsPlugin.dependencies])
           }
+        } else if (!plugin.options || (plugin.options && !plugin.options.setupOnRequest)) {
+          entryQueue.push(plugin.name)
         }
       } else {
         // these plugins need to handle their dependencies once they are loaded
-        this._addPlugin(plugin, plugin.options)
+        this._add(plugin, plugin.options, onAdd)
       }
     }
 
@@ -145,27 +147,28 @@ export default {
       }
     }
 
-    for (let i = 0; i < this.entryQueue.length; i++) {
-      const name = this.entryQueue[i]
+    // set context to plugins
+    for (let i = 0; i < plugins.length; i++) {
+      const plugin = plugins[i]
 
-      this.plugins[name].setContext(this.context)
+      this.plugins[plugin.name].setContext(this.context)
     }
 
-    this._processQueue()
+    this._processQueue(entryQueue, onSuccess)
   },
   methods: {
     /**
      * Load plugin
      * @param {string} name - Name of plugin
      */
-    load (name) {
+    get (name, callback) {
       const options = this.options[name]
 
       if (options) {
         options.setupOnRequest = false
       }
 
-      this._processQueue()
+      this._processQueue([name], callback)
     },
     isLoaded (name) {
       return this.isPluginLoaded[name]
@@ -174,12 +177,12 @@ export default {
      * Load all current plugins
      * @private
      */
-    _processQueue () {
-      for (let i = 0; i < this.entryQueue.length; i++) {
-        const name = this.entryQueue[i]
+    _processQueue (items, callback) {
+      for (let i = 0; i < items.length; i++) {
+        const name = items[i]
 
         if (!this.dependencyQueue[name]) {
-          this._use(this.plugins[name], this.options[name])
+          this._use(this.plugins[name], this.options[name], callback)
         }
       }
     },
@@ -188,16 +191,20 @@ export default {
      * @private
      * @param {DsPlugin} plugin - DsPlugin instance
      * @param {DsPluginOptions} options - DsPlugin setup options
+     * @param {dsLoaderCallback} - Add plugin callback
      */
-    _addPlugin (plugin, options) {
+    _add (plugin, options, callback) {
       const name = plugin.name
 
-      this.onAdd(plugin)
       this.options[name] = options
       this.plugins[name] = plugin
       this.dependencyQueue[name] = 0
       this.subscribed[name] = {}
       this.listeners[name] = []
+
+      if (!options || !options.setupOnRequest) {
+        this.totalInQueue += 1
+      }
 
       if (plugin.contextMethods) {
         this.highPriority.push(name)
@@ -205,13 +212,16 @@ export default {
       } else {
         this.lowPriority.push(name)
       }
+
+      // Add plugin callback
+      callback(plugin)
     },
     /**
      * Notify any plugin listeners to load
      * @private
      * @param {string} name - Name of plugin
      */
-    _notify (name) {
+    _notify (name, callback) {
       const listeners = this.listeners[name]
 
       for (let i = 0; i < listeners.length; i++) {
@@ -219,8 +229,8 @@ export default {
 
         if (this.dependencyQueue[listener] > 1) {
           this.dependencyQueue[listener] -= 1
-        } else {
-          this._use(this.plugins[listener], this.options[listener])
+        } else if (!this.isPluginLoaded[listener]) {
+          this._use(this.plugins[listener], this.options[listener], callback)
         }
       }
     },
@@ -230,7 +240,7 @@ export default {
      * @param {string} fileName - The file name of the plugin to be loaded
      * @returns {Promise}
      */
-    _import (fileName) {
+    _import (fileName, callback) {
       return new Promise((resolve, reject) => {
         import(`./plugins/${fileName}.js`)
           .then(({ default: plugin }) => {
@@ -239,7 +249,7 @@ export default {
             dsPlugin.setContext(this.context)
 
             // add plugin to manager
-            this._addPlugin(dsPlugin)
+            this._add(dsPlugin, callback)
 
             if (dsPlugin.dependencies) {
               for (let i = 0; i < plugin.dependencies.length; i++) {
@@ -260,7 +270,7 @@ export default {
      * @param {DsPlugin} plugin - DsPlugin instance
      * @param {DsPluginOptions} options - DsPlugin setup options
      */
-    _use (plugin, options = {}) {
+    _use (plugin, options = {}, callback) {
       if (options.setupOnRequest) {
         return
       }
@@ -268,13 +278,13 @@ export default {
       if (options.import) {
         this._import(options.import)
           .then(plugin => {
-            this._setup(plugin, options.setup)
+            this._setup(plugin, options.setup, callback)
           })
           .catch(error => {
-            throw error
+            callback(null, error)
           })
       } else {
-        this._setup(plugin, options.setup)
+        this._setup(plugin, options.setup, callback)
       }
     },
     /**
@@ -283,7 +293,7 @@ export default {
      * @param {DsPlugin} plugin - DsPlugin instance
      * @param {DsPluginOptions} options - DsPlugin setup options
      */
-    _setup (plugin, options) {
+    _setup (plugin, options, callback) {
       if (!plugin || plugin.constructor.name !== 'DsPlugin') {
         throw new Error('Not a valid plugin')
       }
@@ -293,14 +303,14 @@ export default {
       if (setup instanceof Promise) {
         setup
           .then(() => {
-            this._setLoaded(plugin.name)
+            this._setLoaded(plugin.name, callback)
           })
           .catch(error => {
             // Need to test how this fails
             throw error
           })
       } else {
-        this._setLoaded(plugin.name)
+        this._setLoaded(plugin.name, callback)
       }
     },
     /**
@@ -308,15 +318,16 @@ export default {
      * @private
      * @param {string} name - Name of plugin
      */
-    _setLoaded (name) {
+    _setLoaded (name, callback) {
       this.isPluginLoaded[name] = true
       // plugin might not be in this list
-      this.entryQueue = this.entryQueue.filter(item => item !== name)
-      this._notify(name)
+      this.totalInQueue -= 1
 
-      if (!this.entryQueue.length) {
-        this.onSuccess(this.context)
+      if (this.totalInQueue === 0) {
+        callback(this.context)
       }
+
+      this._notify(name, callback)
     },
     /**
      * Add plugin dependency
