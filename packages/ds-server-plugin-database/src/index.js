@@ -74,24 +74,34 @@ export default {
     },
     $deleteDatabaseValue (collections) {
       return (request, response) => {
+        const updateDB = []
         let result = 0
 
         for (let i = 0; i < collections.length; i++) {
           const collection = collections[i]
 
           for (let i = 0; i < request.query.id.length; i++) {
-            const query = request.query[i]
-            const data = this.$deleteDataValue(collection, query.id, { cascade: query.cascade })
+            const id = request.query.id[i]
+            const data = this.$deleteDataValue(collection, id, { cascade: request.query.cascade })
 
             if (!data.deleted) {
-              return response.status(400).send('Could not delete document:', collection, query.id)
+              return response.status(400).send('Could not delete document:', collection, id)
             }
 
-            result += i
+            result += 1
           }
+
+          updateDB.push(this.$setDatabaseCollection(collection))
         }
 
-        response.status(200).send('deleted:', result)
+        Promise.all(updateDB)
+          .then(() => {
+            response.status(200).send('deleted: ' + result)
+          })
+          .catch(error => {
+            console.error(error)
+            response.status(500).send(error)
+          })
       }
     },
     $setDatabaseCollection (collection) {
