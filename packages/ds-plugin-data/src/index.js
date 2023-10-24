@@ -852,14 +852,23 @@ export default {
           return true
         }
 
-        if (option.source.push) {
-          target.push(source)
+        if (option.source.push || option.source.unshift) {
+          const schemaPath = name + '/items' + '/items'
+          const schema = this.schema[schemaPath]
 
-          return true
-        }
+          if (schema) {
+            this._checkType(schemaPath, source, schema.type)
 
-        if (option.source.unshift) {
-          target.unshift(source)
+            if (schema.options && schema.options.relation) {
+              this._setRelation(data.rootName, data.id, schema.options.relation, source)
+            }
+          }
+
+          if (option.source.push) {
+            target.push(source)
+          } else {
+            target.unshift(source)
+          }
 
           return true
         }
