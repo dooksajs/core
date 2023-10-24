@@ -161,7 +161,7 @@ export default {
               delete this.relationUsed[usedRelationName]
 
               if (cascade) {
-                this.$deleteDataValue(splitName[0] + '/' + splitName[1], splitName[2])
+                this.$deleteDataValue(splitName[0] + '/' + splitName[1], splitName[2], { cascade })
               }
 
               relations.splice(i, 1)
