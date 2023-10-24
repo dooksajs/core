@@ -33,7 +33,7 @@ export default {
         }
       }
     },
-    sections: {
+    items: {
       default: {},
       schema: {
         type: 'collection',
@@ -42,20 +42,6 @@ export default {
           items: {
             type: 'string',
             relation: 'dsSection/items'
-          }
-        }
-      }
-    },
-    sectionEntry: {
-      default: {},
-      schema: {
-        type: 'collection',
-        items: {
-          type: 'array',
-          schema: {
-            items: {
-              type: 'string'
-            }
           }
         }
       }

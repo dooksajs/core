@@ -44,8 +44,8 @@ export default {
       if (to === from) {
         return
       }
-      const fromSections = this.$getDataValue('dsPage/sections', { id: from })
-      const toSections = this.$getDataValue('dsPage/sections', { id: to })
+      const fromSections = this.$getDataValue('dsPage/items', { id: from })
+      const toSections = this.$getDataValue('dsPage/items', { id: to })
 
       if (toSections.isEmpty) {
         // get data

@@ -111,7 +111,7 @@ export default {
         }
       })
 
-      this.$setDataValue('dsPage/sections', {
+      this.$setDataValue('dsPage/items', {
         source: dsSection.noAffixId,
         options: {
           id: path,
