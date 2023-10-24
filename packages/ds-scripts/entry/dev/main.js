@@ -15,7 +15,7 @@ createApp(plugins, { ...options, setup }, {
       const template = buildTemplates(dsConfig.templates, app.components)
 
       app.$setDataValue('dsAction/blocks', {
-        source: template.actions.items,
+        source: template.actions.blocks,
         options: {
           source: {
             merge: true
@@ -24,7 +24,7 @@ createApp(plugins, { ...options, setup }, {
       })
 
       app.$setDataValue('dsAction/sequences', {
-        source: template.actions.sequence,
+        source: template.actions.sequences,
         options: {
           source: {
             merge: true
@@ -33,7 +33,7 @@ createApp(plugins, { ...options, setup }, {
       })
 
       app.$setDataValue('dsAction/items', {
-        source: template.actions.sequenceEntry,
+        source: template.actions.items,
         options: {
           source: {
             merge: true
