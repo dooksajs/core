@@ -1132,15 +1132,9 @@ export default {
 
       ++depth
 
-      if (schema.type === 'array') {
-        this._checkType(name, source, schema.type)
+      this._checkType(name, source, schema.type)
 
-        for (let i = 0; i < source.length; i++) {
-          source[i] = this[setDataName](data, schemaName, target, source[i], options, depth)
-        }
-      } else {
-        this[setDataName](data, schemaName, target, source, options, depth)
-      }
+      this[setDataName](data, schemaName, target, source, options, depth)
     },
     '_setData/object' (data, name, target, source, options, depth) {
       const schema = this.schema[name]
