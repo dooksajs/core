@@ -40,7 +40,8 @@ export default {
         items: {
           type: 'array',
           items: {
-            type: 'string'
+            type: 'string',
+            relation: 'dsSection/items'
           }
         }
       }
