@@ -39,6 +39,10 @@ export default {
     }
   ],
   data: {
+    apiSuffix: {
+      private: true,
+      default: '/_'
+    },
     cookieSecret: {
       private: true,
       default: ''
@@ -61,9 +65,13 @@ export default {
       }
     }
   },
-  setup ({ cookieSecret, apiSuffix = '/_' }) {
+  setup ({ cookieSecret, apiSuffix }) {
     if (!cookieSecret || cookieSecret.length < 32) {
       throw new Error('Invalid cookie secret length; secret must be at 32 characters')
+    }
+
+    if (apiSuffix) {
+      this.apiSuffix = apiSuffix
     }
 
     this.app = express()
@@ -82,10 +90,6 @@ export default {
     if (this.isDev) {
       this.app.use(logger())
     }
-
-    this.router = express.Router()
-
-    this.app.use(apiSuffix, this.router)
   },
   methods: {
     /**
@@ -99,7 +103,8 @@ export default {
     $setWebServerRoute (path = '/', {
       method = 'get',
       middleware = [],
-      handlers = []
+      handlers = [],
+      suffix = this.apiSuffix
     }) {
       if (!this.routeTypes[method]) {
         return
@@ -137,7 +142,9 @@ export default {
         path = '/' + path
       }
 
-      this.router[method](path, ...handlers)
+      path = suffix + path
+
+      this.app[method](path, ...handlers)
     },
     /**
      * Start the web server
