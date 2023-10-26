@@ -1040,7 +1040,7 @@ export default {
             // data.rootTarget[data.id] = value
 
             // freeze value
-            if (!schema.options || !schema.options.mutable) {
+            if (typeof value._item === 'object' && (!schema.options || !schema.options.mutable)) {
               Object.freeze(value._item)
             }
           }
