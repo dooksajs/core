@@ -345,7 +345,7 @@ export default {
         } else {
           // create copy
           // TODO: Make this a proxy to handle unfreeze
-          const unfreezeName = '_unfreeze' + schema.type
+          const unfreezeName = '_unfreeze/' + schema.type
 
           if (this[unfreezeName]) {
             result.item = this[unfreezeName](result.item)
