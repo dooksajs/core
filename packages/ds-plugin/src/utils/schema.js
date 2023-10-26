@@ -79,7 +79,8 @@ export default {
           if (hasProperties) {
             result.patternProperties.push({
               name: key,
-              type: property.type
+              type: property.type,
+              [hasProperties]: property[hasProperties]
             })
           } else {
             const entry = this.entry(context, property, key)
@@ -97,7 +98,8 @@ export default {
           if (hasProperties) {
             result.properties.push({
               name: key,
-              type: property.type
+              type: property.type,
+              [hasProperties]: property[hasProperties]
             })
           } else {
             const entry = this.entry(context, property, key)
@@ -113,7 +115,17 @@ export default {
     return result
   },
   hasProperties (entry) {
-    return !!(entry.items || entry.properties || entry.patternProperties)
+    if (entry.items) {
+      return 'items'
+    }
+
+    if (entry.properties) {
+      return 'properties'
+    }
+
+    if (entry.patternProperties) {
+      return 'patternProperties'
+    }
   },
   processProperties (context, id, properties = [], options, entries) {
     const entryProperties = []
