@@ -33,7 +33,7 @@ export default {
             attributes: {
               type: 'array',
               items: {
-                array: 'array',
+                type: 'array',
                 items: {
                   type: 'string'
                 }
