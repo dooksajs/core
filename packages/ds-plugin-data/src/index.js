@@ -789,12 +789,23 @@ export default {
         }
       }
     },
-    '_option/collection' (data, name, option = {}, schema, target, source) {
-      if (option.id) {
-        const id = this._createCollectionId(name, option)
+    '_option/collection' (data, name, options = {}, schema, target, source) {
+      if (Object.hasOwn(options, 'id') && options.id == null) {
+        throw new SchemaException({
+          schemaPath: name,
+          keyword: 'collection',
+          message: 'Expected collection id to be a string but got undefined'
+        })
+      } else if (options.id) {
+        // update id
+        const id = this._createCollectionId(name, options)
 
-        if (!option.source) {
-          data.id = id
+        // update root data
+        data.id = id
+        data.name = name + '/' + id
+
+        // update or create entry by id
+        if (!options.source) {
           const rootTarget = data.rootTarget[id]
 
           if (rootTarget) {
@@ -803,6 +814,10 @@ export default {
             data.rootTarget[id] = {
               _item: source,
               _metadata: {}
+            }
+
+            if (this.isServer) {
+              data.rootTarget[id]._metadata = this._setMetadata({}, options)
             }
           }
 
@@ -815,14 +830,26 @@ export default {
 
           return true
         }
+      } else if (!options.source || options.suffixId || options.prefixId) {
+        // create new id
+        const collection = this._defaultCollectionId(name, options)
 
-        const schema = this.schema[name + '/items']
+        // update data
+        data.id = collection.id
+        data.noAffixId = collection.noAffixId
+        data.name = name + '/' + collection.id
 
-        target = this._changeTarget(name, target, id, schema.type)
+        // create new entry
+        data.rootTarget[collection.id] = {
+          _item: source,
+          _metadata: {}
+        }
 
-        // update export data
-        data.id = id
-        data.name = name + '/' + id
+        if (this.isServer) {
+          data.rootTarget[collection.id]._metadata = this._setMetadata({}, options)
+        }
+
+        target = data.rootTarget[collection.id]._item
       }
 
       // change target
@@ -830,15 +857,89 @@ export default {
 
       // }
 
+      /**
+       * option source rootTarget needs to be updated
+       */
+
       // update target with source
-      if (option.source) {
-        if (option.source.merge) {
-          // merge collection item
-          if (option.id) {
-            for (const key in source) {
-              if (Object.hasOwn(source, key)) {
-                target[key] = source[key]
+      if (options.source) {
+        if (data.id) {
+          // add metadata
+          if (options.source.metadata) {
+            const rootTarget = data.rootTarget[data.id]
+            rootTarget._metadata = rootTarget._metadata || {}
+            rootTarget._metadata = Object.assign(rootTarget._metadata, options.source.metadata)
+          }
+
+          // Add item to an array
+          if (options.source.push || options.source.unshift) {
+            const schemaPath = name + '/items' + '/items'
+            const schema = this.schema[schemaPath]
+            const rootTarget = data.rootTarget[data.id]
+
+            if (schema) {
+              this._checkType(schemaPath, source, schema.type)
+
+              if (schema.options && schema.options.relation) {
+                this._setRelation(data.rootName, data.id, schema.options.relation, source)
               }
+            }
+
+            if (!rootTarget) {
+              data.rootTarget[data.id] = {
+                _item: [],
+                _metadata: {}
+              }
+
+              if (this.isServer) {
+                data.rootTarget[data.id]._metadata = this._setMetadata({}, options)
+              }
+
+              target = data.rootTarget[data.id]._item
+            } else if (Object.isFrozen(rootTarget._item)) {
+              target = this['_unfreeze/array'](rootTarget._item)
+            } else {
+              target = rootTarget._item
+            }
+
+            if (options.source.push) {
+              target.push(source)
+            } else {
+              target.unshift(source)
+            }
+
+            return true
+          }
+        }
+
+        if (options.source.merge) {
+          // merge target
+          if (options.id) {
+            const schemaPath = name + '/items' + '/items'
+            const schema = this.schema[schemaPath]
+
+            if (Array.isArray(source)) {
+              for (let i = 0; i < source.length; i++) {
+                const item = source[i]
+
+                this._checkType(schemaPath, item, schema.type)
+              }
+
+              data.rootTarget[options.id] = data.rootTarget[options.id].concat(source)
+            } else if (source instanceof Object && source.constructor === Object) {
+              for (const key in source) {
+                if (Object.hasOwn(source, key)) {
+                  const item = source[key]
+
+                  this._checkType(schemaPath, item, schema.type)
+
+                  target[key] = item
+                }
+              }
+            } else {
+              this._checkType(schemaPath, source, schema.type)
+
+              data.rootTarget[options.id] = source
             }
 
             return true
@@ -850,30 +951,10 @@ export default {
           return true
         }
 
-        if (option.source.push || option.source.unshift) {
-          const schemaPath = name + '/items' + '/items'
-          const schema = this.schema[schemaPath]
-
-          if (schema) {
-            this._checkType(schemaPath, source, schema.type)
-
-            if (schema.options && schema.options.relation) {
-              this._setRelation(data.rootName, data.id, schema.options.relation, source)
-            }
-          }
-
-          if (option.source.push) {
-            target.push(source)
-          } else {
-            target.unshift(source)
-          }
-
-          return true
-        }
-
-        if (option.source.id) {
-          data.id = option.source.id
-          target[option.source.id] = source
+        // update target property
+        if (options.source.id) {
+          data.id = options.source.id
+          target[options.source.id] = source
         }
       }
     },
@@ -1074,49 +1155,9 @@ export default {
 
       let hasOptions
 
+      // Apply depth options (feature may not be useful)
       if (options) {
-        if (Object.hasOwn(options, 'id') && options.id == null) {
-          throw new SchemaException({
-            schemaPath: name,
-            keyword: 'collection',
-            message: 'Expected collection id to be a string but got undefined'
-          })
-        }
-
-        // generate id
-        if (!options.id) {
-          const collectionId = this._defaultCollectionId(name, options)
-
-          // update export data
-          data.id = collectionId.id
-          data.noAffixId = collectionId.noAffixId
-          data.name = name + '/' + collectionId.id
-
-          target[collectionId.id] = {
-            _item: source,
-            _metadata: {}
-          }
-
-          // change target
-          target = target[collectionId.id]._item
-        }
-
         hasOptions = options.depth === depth || (depth === 1 && !options.depth)
-      } else {
-        const collectionId = this._defaultCollectionId(name)
-
-        // update export data
-        data.id = collectionId.id
-        data.noAffixId = collectionId.noAffixId
-        data.name = name + '/' + collectionId.id
-
-        target[collectionId.id] = {
-          _item: source,
-          _metadata: {}
-        }
-
-        // change target
-        target = target[collectionId.id]._item
       }
 
       if (schema.options || hasOptions) {
