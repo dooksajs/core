@@ -398,7 +398,7 @@ export default {
             }
           } else {
             let target = this.values[name]
-
+            // TODO: Move this inside setData and unfreeze when needed
             if (target != null) {
               const unfreeze = this['_unfreeze/' + schema.type]
 
