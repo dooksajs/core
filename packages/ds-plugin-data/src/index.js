@@ -1037,11 +1037,9 @@ export default {
             result.item = value._item
             result.metadata = value._metadata
 
-            // data.rootTarget[data.id] = value
-
             // freeze value
             if (typeof value._item === 'object' && (!schema.options || !schema.options.mutable)) {
-              Object.freeze(value._item)
+              // Object.freeze(value._item)
             }
           }
 
