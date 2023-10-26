@@ -107,7 +107,8 @@ export default {
         type: 'collection',
         suffixId: 'default',
         items: {
-          type: 'string'
+          type: 'string',
+          relation: 'dsLayout/items'
         }
       }
     },
