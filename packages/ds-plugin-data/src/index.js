@@ -1027,16 +1027,11 @@ export default {
           const result = {
             isValid: true,
             target: data.rootTarget,
-            value: data.rootTarget,
             name: data.name
           }
 
           if (data.id) {
             const value = data.rootTarget[data.id]
-
-            if (this.isServer) {
-              value._metadata = this._setMetadata(value._metadata, options)
-            }
 
             result.id = data.id
             result.item = value._item
