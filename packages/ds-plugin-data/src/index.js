@@ -1077,7 +1077,8 @@ export default {
       if (data.id) {
         result.id = data.id
         result.noAffixId = data.noAffixId
-        result.item = data.rootTarget[data.id]
+        result.item = data.rootTarget[data.id]._item
+        result.metadata = data.rootTarget[data.id]._metadata
       }
 
       return result
