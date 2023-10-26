@@ -54,7 +54,7 @@ export default {
               children: {
                 type: 'array',
                 items: {
-                  type: 'string'
+                  type: 'number'
                 }
               }
             }
