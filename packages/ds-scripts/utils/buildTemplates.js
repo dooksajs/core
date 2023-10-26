@@ -2,7 +2,7 @@ import parseAction from '@dooksa/parse-action'
 import { uuid } from '@dooksa/crypto'
 
 export default (html) => {
-  const actionSequenceRef = {}
+  const actionSequences = {}
   const actions = {
     items: {},
     sequences: {},
@@ -39,7 +39,7 @@ export default (html) => {
           const actionTemplates = metadata.actions[key]
           const sequenceId = uuid()
 
-          actionSequenceRef[key] = sequenceId
+          actionSequences[key] = sequenceId
           actions.items[sequenceId] = []
 
           for (let i = 0; i < actionTemplates.length; i++) {
@@ -60,7 +60,7 @@ export default (html) => {
 
   return {
     actions,
-    actionSequenceRef,
+    actionSequences,
     elements
   }
 }

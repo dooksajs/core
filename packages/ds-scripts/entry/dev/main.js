@@ -46,7 +46,7 @@ createApp(plugins, { ...options, setup }, {
 
         app.$action('dsTemplate/parseHTML', {
           html: element,
-          actions: template.actionSequenceRef
+          actions: template.actionSequences
         },
         {
           onSuccess: (result) => {
