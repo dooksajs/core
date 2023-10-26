@@ -173,16 +173,12 @@ export default {
           const dsContent = this.$setDataValue('dsContent/items', {
             source: content.item,
             options: {
-              suffixId: language
-            }
-          })
-
-          this.$setDataValue('dsContent/type', {
-            source: {
-              name: content.type
-            },
-            options: {
-              id: dsContent.id
+              suffixId: language,
+              source: {
+                metadata: {
+                  type: content.type
+                }
+              }
             }
           })
 

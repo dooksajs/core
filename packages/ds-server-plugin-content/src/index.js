@@ -24,7 +24,7 @@ export default {
       method: 'delete',
       middleware: ['dsUser/auth', 'request/queryIsArray'],
       handlers: [
-        this.$deleteDatabaseValue(['dsContent/items', 'dsContent/types'])
+        this.$deleteDatabaseValue(['dsContent/items'])
       ]
     })
 
@@ -33,7 +33,7 @@ export default {
       method: 'get',
       middleware: ['request/queryIsArray'],
       handlers: [
-        this.$getDatabaseValue(['dsContent/items', 'dsContent/types'])
+        this.$getDatabaseValue(['dsContent/items'])
       ]
     })
   }

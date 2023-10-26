@@ -34,26 +34,11 @@ export default {
       default: {},
       schema: {
         type: 'collection',
+        suffixId () {
+          return this.$getDataValue('dsMetadata/language').item
+        },
         items: {
           type: 'object'
-        }
-      }
-    },
-    type: {
-      default: {},
-      schema: {
-        type: 'collection',
-        items: {
-          type: 'object',
-          properties: {
-            name: {
-              type: 'string'
-            },
-            isTemporary: {
-              default: false,
-              type: 'boolean'
-            }
-          }
         }
       }
     }

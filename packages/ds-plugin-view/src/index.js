@@ -398,7 +398,7 @@ export default {
 
       dsContentId = dsContentId.item
 
-      let dsContent = this.$getDataValue('dsContent/items', {
+      const dsContent = this.$getDataValue('dsContent/items', {
         id: dsContentId
       })
 
@@ -407,17 +407,12 @@ export default {
         return
       }
 
-      dsContent = dsContent.item
-
-      const dsContentType = this.$getDataValue('dsContent/type', {
-        id: dsContentId
-      })
       const node = dsView.item
       const nodeName = node.nodeName.toLowerCase()
 
       // ISSUE: [DS-760] move setters to general actions
-      if (dsContentType.item.name === 'text') {
-        if (dsContent.token) {
+      if (dsContent.metadata.type === 'text') {
+        if (dsContent.item.token) {
           return this.$method('dsToken/textContent', {
             dsViewId,
             text: dsContent.value,
@@ -427,7 +422,7 @@ export default {
           })
         }
 
-        node.textContent = dsContent.value
+        node.textContent = dsContent.item.value
 
         return
       }
@@ -439,7 +434,7 @@ export default {
         for (let i = 0; i < setters.length; i++) {
           const setter = setters[i]
 
-          this[`_setValueBy/${setter.type}`](node, setter.value, dsContent)
+          this[`_setValueBy/${setter.type}`](node, setter.value, dsContent.item)
         }
       }
     },
