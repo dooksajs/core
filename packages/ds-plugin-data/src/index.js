@@ -206,7 +206,7 @@ export default {
           }
         }
 
-        const result = { isEmpty: false, isCollectionEmpty: false }
+        const result = { id, isEmpty: false, isCollectionEmpty: false }
         const schema = this.schema[name]
 
         if (Object.hasOwn(arguments[0], 'id') && id == null) {
@@ -269,17 +269,18 @@ export default {
                 const prefix = this._affixId(schema.id.prefix)
                 const suffix = this._affixId(schema.id.suffix)
 
-                itemId = prefix + result.id + suffix
+                itemId = prefix + id + suffix
               } else if (schema.id.prefix) {
                 const prefix = this._affixId(schema.id.prefix)
 
-                itemId = prefix + result.id
+                itemId = prefix + id
               } else {
                 const suffix = this._affixId(schema.id.suffix)
 
-                itemId = result.id + suffix
+                itemId = id + suffix
               }
             }
+
             const value = this.values[name][itemId]
 
             if (value == null) {
@@ -296,7 +297,8 @@ export default {
         }
 
         if (options) {
-          const relations = this.relation[name + '/' + id]
+          const relations = this.relation[name + '/' + result.id]
+
           result.isExpandEmpty = !relations
 
           if (options.expand && relations) {
