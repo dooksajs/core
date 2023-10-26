@@ -53,6 +53,7 @@ export default {
       default: {},
       schema: {
         type: 'collection',
+        suffixId: 'default',
         items: {
           type: 'object',
           patternProperties: {
