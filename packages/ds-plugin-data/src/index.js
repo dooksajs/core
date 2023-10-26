@@ -575,12 +575,8 @@ export default {
             this._checkType(name, item, schema.type)
 
             target[key] = {
-              _item: item
-            }
-
-            // add metadata
-            if (value._metadata) {
-              target[key]._metadata = value._metadata
+              _item: item,
+              _metadata: value._metadata || {}
             }
           }
         }
@@ -599,15 +595,11 @@ export default {
           data.id = key
 
           target[key] = {
-            _item: this.defaultTypes[schema.type]()
+            _item: this.defaultTypes[schema.type](),
+            _metadata: value._metadata || {}
           }
 
           target[key]._item = this[setDataName](data, name, target[key]._item, item)
-
-          // add metadata
-          if (value._metadata) {
-            target[key]._metadata = value._metadata
-          }
         }
       }
 
