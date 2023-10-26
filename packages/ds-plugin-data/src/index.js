@@ -309,18 +309,22 @@ export default {
               const item = relations[i].split('/')
               const name = item[0] + '/' + item[1]
               const id = item[2]
+              const value = this.$getDataValue(name, { id, options: { expand: true } })
 
-              if (!this.values[name] || !this.values[name][id]) {
+              if (value.isEmpty) {
                 continue
               }
-
-              const value = this.$getDataValue(name, { id, options: { expand: true } })
 
               if (!value.isExpandEmpty) {
                 result.expand = result.expand.concat(value.expand)
               }
 
-              result.expand.push({ collection: name, id, item: value.item, metadata: value.metadata })
+              result.expand.push({
+                collection: name,
+                id: value.id,
+                item: value.item,
+                metadata: value.metadata
+              })
             }
           }
 
