@@ -586,7 +586,11 @@ export default {
 
             this._checkType(name, item, schema.type)
 
-            target[key] = {
+            if (schema.options && schema.options.relation) {
+              this._setRelation(data.rootName, data.id, schema.options.relation, item)
+            }
+
+            source[key] = {
               _item: item,
               _metadata: value._metadata || {}
             }
