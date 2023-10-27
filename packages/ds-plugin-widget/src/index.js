@@ -67,7 +67,7 @@ export default {
                   type: 'array',
                   items: {
                     type: 'string',
-                    relation: 'dsEvent/items'
+                    relation: 'dsAction/items'
                   }
                 }
               }
