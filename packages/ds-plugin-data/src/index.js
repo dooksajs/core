@@ -195,6 +195,7 @@ export default {
        * @param {suffixId} param.suffixId - Data collection document suffix
        * @param {Object} param.options - Options
        * @param {boolean} param.options.expand - Expand all relational data
+       * @param {Object} param.options.expandExclude - Exclude items from expanding
        * @param {string|number} param.options.position - Return the value by key of the data value
        * @returns {Object}
        */
@@ -302,14 +303,25 @@ export default {
           result.isExpandEmpty = !relations
 
           if (options.expand && relations) {
+            const expandExclude = options.expandExclude ?? {}
+
             result.expand = []
             result.isExpandEmpty = false
 
             for (let i = 0; i < relations.length; i++) {
-              const item = relations[i].split('/')
+              const relation = relations[i]
+
+              // prevent duplication and infinite loop
+              if (expandExclude[relations]) {
+                continue
+              }
+
+              expandExclude[relation] = true
+
+              const item = relation.split('/')
               const name = item[0] + '/' + item[1]
               const id = item[2]
-              const value = this.$getDataValue(name, { id, options: { expand: true } })
+              const value = this.$getDataValue(name, { id, options: { expand: true, expandExclude } })
 
               if (value.isEmpty) {
                 continue
