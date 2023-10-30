@@ -75,7 +75,8 @@ export default {
         number: Number,
         object: Object,
         array: Array,
-        boolean: Boolean
+        boolean: Boolean,
+        function: Function
       }
     }
   },
