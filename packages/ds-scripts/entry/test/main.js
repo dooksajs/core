@@ -25,12 +25,9 @@ if (dsConfig.templates) {
             dsSectionId
           })
 
-          app.$setDataValue('dsWidget/templates', {
-            source: template.id,
-            options: {
-              id: instanceId,
-              suffixId: template.mode
-            }
+          app.$setDataValue('dsWidget/templates', template.id, {
+            id: instanceId,
+            suffixId: template.mode
           })
         }
       }

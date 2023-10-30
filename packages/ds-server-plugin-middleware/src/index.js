@@ -17,18 +17,12 @@ export default {
     }
   },
   setup () {
-    this.$setDataValue('dsMiddleware/items', {
-      source: this._checkBody,
-      options: {
-        id: 'request/checkBody'
-      }
+    this.$setDataValue('dsMiddleware/items', this._checkBody, {
+      id: 'request/checkBody'
     })
 
-    this.$setDataValue('dsMiddleware/items', {
-      source: this._queryIsArray,
-      options: {
-        id: 'request/queryIsArray'
-      }
+    this.$setDataValue('dsMiddleware/items', this._queryIsArray, {
+      id: 'request/queryIsArray'
     })
   },
   methods: {

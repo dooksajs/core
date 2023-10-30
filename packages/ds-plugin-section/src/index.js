@@ -102,22 +102,16 @@ export default {
         suffixId: mode
       })
 
-      this.$setDataValue('dsSection/view', {
-        source: dsViewId,
-        options: {
-          id: dsSectionId,
-          prefixId: dsSectionUniqueId,
-          suffixId: mode
-        }
+      this.$setDataValue('dsSection/view', dsViewId, {
+        id: dsSectionId,
+        prefixId: dsSectionUniqueId,
+        suffixId: mode
       })
 
-      this.$setDataValue('dsPage/items', {
-        source: dsSection.noAffixId,
-        options: {
-          id: path,
-          source: {
-            push: true
-          }
+      this.$setDataValue('dsPage/items', dsSection.noAffixId, {
+        id: path,
+        update: {
+          method: 'push'
         }
       })
 

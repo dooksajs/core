@@ -131,19 +131,13 @@ export default {
       const dsWidgetItems = []
       const dsWidgetGroupId = this.$method('dsData/generateId')
 
-      this.$setDataValue('dsWidget/templates', {
-        source: id,
-        options: {
-          id: dsSectionId,
-          suffixId: mode
-        }
+      this.$setDataValue('dsSection/templates', id, {
+        id: dsSectionId,
+        suffixId: mode
       })
 
-      this.$setDataValue('dsSection/mode', {
-        source: mode,
-        options: {
-          id: dsSectionId
-        }
+      this.$setDataValue('dsSection/mode', mode, {
+        id: dsSectionId
       })
 
       for (let i = 0; i < template.item.layoutId.length; i++) {
@@ -159,26 +153,18 @@ export default {
 
         // add events to instance
         if (Object.keys(events).length) {
-          this.$setDataValue('dsWidget/events', {
-            source: events,
-            options: {
-              id: widget.id,
-              suffixId: mode
-            }
+          this.$setDataValue('dsWidget/events', events, {
+            id: widget.id,
+            suffixId: mode
           })
         }
 
         for (let j = 0; j < contentItems.length; j++) {
           const content = contentItems[j]
-          const dsContent = this.$setDataValue('dsContent/items', {
-            source: content.item,
-            options: {
-              suffixId: language,
-              source: {
-                metadata: {
-                  type: content.type
-                }
-              }
+          const dsContent = this.$setDataValue('dsContent/items', content.item, {
+            suffixId: language,
+            metadata: {
+              type: content.type
             }
           })
 
@@ -189,46 +175,31 @@ export default {
         }
 
         // set widget content
-        this.$setDataValue('dsWidget/content', {
-          source: widget.content,
-          options: {
-            id: widget.id,
-            suffixId: mode
-          }
+        this.$setDataValue('dsWidget/content', widget.content, {
+          id: widget.id,
+          suffixId: mode
         })
 
         // add widget instance to group
-        this.$setDataValue('dsWidget/groups', {
-          source: widget.id,
-          options: {
-            id: dsWidgetGroupId,
-            source: {
-              push: true
-            }
+        this.$setDataValue('dsWidget/groups', widget.id, {
+          id: dsWidgetGroupId,
+          update: {
+            method: 'push'
           }
         })
 
         // set widget instance
-        this.$setDataValue('dsWidget/items', {
-          source: dsWidgetGroupId,
-          options: {
-            id: widget.id
-          }
+        this.$setDataValue('dsWidget/items', dsWidgetGroupId, {
+          id: widget.id
         })
 
-        this.$setDataValue('dsWidget/mode', {
-          source: mode,
-          options: {
-            id: widget.id
-          }
+        this.$setDataValue('dsWidget/mode', mode, {
+          id: widget.id
         })
 
-        this.$setDataValue('dsWidget/layouts', {
-          source: widget.layout,
-          options: {
-            id: widget.id,
-            suffixId: mode
-          }
+        this.$setDataValue('dsWidget/layouts', widget.layout, {
+          id: widget.id,
+          suffixId: mode
         })
       }
 
@@ -258,29 +229,20 @@ export default {
               usedWidgets.push(dsWidgetId)
             }
 
-            const section = this.$setDataValue('dsSection/items', {
-              source: dsSection,
-              options: {
-                suffixId: mode
-              }
+            const section = this.$setDataValue('dsSection/items', dsSection, {
+              suffixId: mode
             })
 
             dsWidgetSection.push(section.noAffixId)
 
-            this.$setDataValue('dsSection/mode', {
-              source: mode,
-              options: {
-                id: section.noAffixId
-              }
+            this.$setDataValue('dsSection/mode', mode, {
+              id: section.noAffixId
             })
           }
 
-          this.$setDataValue('dsWidget/sections', {
-            source: dsWidgetSection,
-            options: {
-              id: dsWidgetId,
-              suffixId: mode
-            }
+          this.$setDataValue('dsWidget/sections', dsWidgetSection, {
+            id: dsWidgetId,
+            suffixId: mode
           })
         }
 
@@ -289,12 +251,9 @@ export default {
         }
       }
 
-      this.$setDataValue('dsSection/items', {
-        source: rootSection,
-        options: {
-          id: dsSectionId,
-          mode
-        }
+      this.$setDataValue('dsSection/items', rootSection, {
+        id: dsSectionId,
+        suffixId: mode
       })
 
       return dsSectionId
@@ -335,11 +294,8 @@ export default {
         const layout = template.layout[i]
         const layoutId = template.layoutId[i]
 
-        this.$setDataValue('dsLayout/items', {
-          source: layout,
-          options: {
-            id: layoutId
-          }
+        this.$setDataValue('dsLayout/items', layout, {
+          id: layoutId
         })
       }
 
@@ -364,27 +320,19 @@ export default {
         }
       }
 
-      this.$setDataValue('dsComponent/items', {
-        source: template.component,
-        options: {
-          source: {
-            merge: true
-          }
-        }
+      this.$setDataValue('dsComponent/items', template.component, {
+        merge: true
       })
 
       const result = this.$setDataValue('dsTemplate/items', {
-        source: {
-          content: template.content,
-          layout: template.layout,
-          layoutId: template.layoutId,
-          widgetEvent: template.widgetEvent,
-          widgetSection: template.widgetSection,
-          section: template.section
-        },
-        options: {
-          id: template.id
-        }
+        content: template.content,
+        layout: template.layout,
+        layoutId: template.layoutId,
+        widgetEvent: template.widgetEvent,
+        widgetSection: template.widgetSection,
+        section: template.section
+      }, {
+        id: template.id
       })
 
       return { id: result.id, mode: template.mode }

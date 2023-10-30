@@ -124,11 +124,8 @@ export default {
           }).id
 
           // Associate dsContent with dsView item
-          this.$setDataValue('dsView/content', {
-            source: dsContentId,
-            options: {
-              id: childViewId
-            }
+          this.$setDataValue('dsView/content', dsContentId, {
+            id: childViewId
           })
 
           this.$method('dsView/updateValue', { dsViewId: childViewId })
@@ -165,21 +162,15 @@ export default {
           // match core event names with namespaced core plugins
           const eventName = this.eventNames[event.name] || event.name
 
-          const dsEvent = this.$setDataValue('dsEvent/listeners', {
-            source: event.value,
-            options: {
-              id: childViewId,
-              suffixId: eventName
-            }
+          const dsEvent = this.$setDataValue('dsEvent/listeners', event.value, {
+            id: childViewId,
+            suffixId: eventName
           })
 
-          this.$setDataValue('dsPage/events', {
-            source: dsEvent.id,
-            options: {
-              id: this.$method('dsRouter/currentPath'),
-              source: {
-                push: true
-              }
+          this.$setDataValue('dsPage/events', dsEvent.id, {
+            id: this.$method('dsRouter/currentPath'),
+            update: {
+              method: 'push'
             }
           })
         }
@@ -187,11 +178,8 @@ export default {
 
       // set view items used with widget instance
       if (viewItems.isEmpty) {
-        this.$setDataValue('dsWidget/view', {
-          source: viewItems,
-          options: {
-            id: dsWidgetId
-          }
+        this.$setDataValue('dsWidget/view', viewItems, {
+          id: dsWidgetId
         })
       }
     }

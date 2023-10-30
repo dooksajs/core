@@ -127,12 +127,9 @@ export default {
           return
         }
         const data = JSON.parse(json)
-        const setData = this.$setDataValue(data.collection, {
-          source: data.item,
-          options: {
-            source: {
-              merge: true
-            }
+        const setData = this.$setDataValue(data.collection, data.item, {
+          update: {
+            method: 'push'
           }
         })
 

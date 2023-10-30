@@ -77,11 +77,8 @@ export default {
     }
 
     // add middleware
-    this.$setDataValue('dsMiddleware/items', {
-      source: this._auth.bind(this),
-      options: {
-        id: 'dsUser/auth'
-      }
+    this.$setDataValue('dsMiddleware/items', this._auth.bind(this), {
+      id: 'dsUser/auth'
     })
 
     // add routes

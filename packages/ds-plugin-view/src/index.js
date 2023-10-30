@@ -87,9 +87,7 @@ export default {
       dsComponentId: '43f4f4c34d66e648'
     })
 
-    this.$setDataValue('dsView/rootViewId', {
-      source: dsViewId
-    })
+    this.$setDataValue('dsView/rootViewId', dsViewId)
 
     // get root element
     const dsView = this.$getDataValue('dsView/items', {
@@ -137,13 +135,9 @@ export default {
       })
 
       // update parents
-      this.$setDataValue('dsView/itemParent', {
-        source: dsViewParentId,
-        typeCheck: false,
-        options: {
-          id: dsViewId
-        }
-      })
+      this.$setDataValue('dsView/itemParent', dsViewParentId, {
+        id: dsViewId
+      }, true)
     },
     /**
      * Creates node
@@ -184,13 +178,9 @@ export default {
 
       element.dsViewId = dsViewId
 
-      this.$setDataValue('dsView/items', {
-        source: element,
-        typeCheck: false,
-        options: {
-          id: dsViewId
-        }
-      })
+      this.$setDataValue('dsView/items', element, {
+        id: dsViewId
+      }, true)
 
       if (dsComponent.attributes) {
         this._setAttributes(element, dsComponent.attributes)
@@ -223,13 +213,10 @@ export default {
 
           element.addEventListener(name, handler)
 
-          this.$setDataValue('dsView/handlers', {
-            source: handler,
-            options: {
-              id: dsViewId,
-              source: {
-                push: true
-              }
+          this.$setDataValue('dsView/handlers', handler, {
+            id: dsViewId,
+            update: {
+              method: 'push'
             }
           })
         }
@@ -364,11 +351,8 @@ export default {
         })
 
         // update parents
-        this.$setDataValue('dsView/itemParent', {
-          source: dsViewParent.item.dsViewId,
-          options: {
-            id: dsViewId
-          }
+        this.$setDataValue('dsView/itemParent', dsViewParent.item.dsViewId, {
+          id: dsViewId
         })
       }
     },

@@ -14,31 +14,16 @@ createApp(plugins, { ...options, setup }, {
     if (dsConfig.templates) {
       const template = buildTemplates(dsConfig.templates, app.components)
 
-      app.$setDataValue('dsAction/blocks', {
-        source: template.actions.blocks,
-        options: {
-          source: {
-            merge: true
-          }
-        }
+      app.$setDataValue('dsAction/blocks', template.actions.blocks, {
+        merge: true
       })
 
-      app.$setDataValue('dsAction/sequences', {
-        source: template.actions.sequences,
-        options: {
-          source: {
-            merge: true
-          }
-        }
+      app.$setDataValue('dsAction/sequences', template.actions.sequences, {
+        merge: true
       })
 
-      app.$setDataValue('dsAction/items', {
-        source: template.actions.items,
-        options: {
-          source: {
-            merge: true
-          }
-        }
+      app.$setDataValue('dsAction/items', template.actions.items, {
+        merge: true
       })
 
       for (let i = 0; i < template.elements.length; i++) {
