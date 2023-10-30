@@ -118,6 +118,7 @@ export default {
 
       if (!existsSync(path)) {
         console.log('Seed file not exist:', path)
+        return
       }
 
       readFile(path, 'utf8', (err, json) => {
