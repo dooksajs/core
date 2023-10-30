@@ -123,7 +123,7 @@ export default {
           return response.status(403).send(error)
         }
 
-        request.user = { id: decoded.data.id }
+        request.userId = decoded.data.id
 
         next()
       })
@@ -172,39 +172,41 @@ export default {
           return response.status(400).send({ message: 'Email must be unique' })
         }
 
-        const id = this.$method('dsData/generateId')
-        const setEmail = this.$setDataValue('dsUser/emails', {
-          source: id,
-          options: { id: request.body.email }
-        })
-
-        if (!setEmail.isValid) {
-          return response.status(400).send(setEmail.error.details)
+        const userId = this.$method('dsData/generateId')
+        const metadata = { userId }
+        const emailItem = {
+          collection: 'dsUser/emails',
+          id: request.body.email,
+          item: userId,
+          metadata
         }
-
-        const setUser = this.$setDataValue('dsUser/items', {
-          source: {
+        const userItem = {
+          collection: 'dsUser/items',
+          id: userId,
+          item: {
             password: hash,
             verified: false
           },
-          options: { id }
-        })
-
-        if (!setUser.isValid) {
-          return response.status(400).send(setUser.error.details)
+          metadata
         }
 
-        // Save user collections
-        const saveItems = this.$setDatabaseCollection('dsUser/items')
-        const saveEmails = this.$setDatabaseCollection('dsUser/emails')
+        const setData = this.$setDatabaseValue({
+          items: [
+            emailItem, userItem
+          ]
+        })
 
-        Promise.all([saveItems, saveEmails])
-          .then(() => {
-            response.status(201).send({ message: 'Successfully registered' })
-          })
-          .catch(error => {
-            response.status(500).send(error)
-          })
+        if (!setData.isValid) {
+          if (setData.snapshotError) {
+            response.status(500).send(setData.snapshotError)
+          }
+
+          return response.status(400).send(setData.error.details)
+        }
+
+        response.status(201).send({
+          message: 'Successfully created account'
+        })
       })
     },
     /**
