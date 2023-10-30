@@ -149,23 +149,34 @@ export default {
         console.log('Successfully loaded dsData collection:', data.collection)
       })
     },
-    $setDatabaseValue (request, response) {
-      const items = request.body
+    $setDatabaseValue ({ items, userId }) {
       const usedCollections = {}
       const collections = []
 
       for (let i = 0; i < items.length; i++) {
         const data = items[i]
-        const setData = this.$setDataValue(data.collection, {
-          source: data.item,
-          options: {
-            id: data.id,
-            userId: request.user.id
+        const metadata = data.metadata || { userId }
+
+        if (metadata && !metadata.userId) {
+          metadata.userId = userId
+        }
+
+        if (!metadata.userId) {
+          return {
+            isValid: false,
+            error: {
+              details: 'Author missing'
+            }
           }
+        }
+
+        const setData = this.$setDataValue(data.collection, data.item, {
+          id: data.id,
+          metadata
         })
 
         if (!setData.isValid) {
-          return response.status(400).send(setData.error.details)
+          return setData
         }
 
         if (!usedCollections[data.collection]) {
@@ -178,13 +189,19 @@ export default {
         const collection = collections[i]
 
         if (this.snapshotError[collection]) {
-          return response.status(500).send(this.snapshotError[collection])
+          return {
+            isValid: false,
+            snapshotError: this.snapshotError[collection]
+          }
         }
 
         this._setSnapshot(collection)
       }
 
-      response.status(201).send('Successfully saved')
+      return {
+        isValid: true,
+        message: 'Successfully saved'
+      }
     },
     _setSnapshot (collection) {
       // Exit early if error
