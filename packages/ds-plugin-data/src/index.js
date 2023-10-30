@@ -304,32 +304,43 @@ export default {
           result.isExpandEmpty = !relations
 
           if (options.expand && relations) {
-            const expandExclude = options.expandExclude ?? {}
-
             result.expand = []
             result.isExpandEmpty = false
+            result.expandIncluded = options.expandExclude ?? {}
 
             for (let i = 0; i < relations.length; i++) {
               const relation = relations[i]
 
               // prevent duplication and infinite loop
-              if (expandExclude[relations]) {
+              if (result.expandIncluded[relation]) {
                 continue
               }
 
-              expandExclude[relation] = true
+              result.expandIncluded[relation] = true
 
               const item = relation.split('/')
               const name = item[0] + '/' + item[1]
               const id = item[2]
-              const value = this.$getDataValue(name, { id, options: { expand: true, expandExclude } })
+              const value = this.$getDataValue(name, {
+                id,
+                options: {
+                  expand: true,
+                  expandExclude: result.expandIncluded
+                }
+              })
 
               if (value.isEmpty) {
                 continue
               }
 
               if (!value.isExpandEmpty) {
-                result.expand = result.expand.concat(value.expand)
+                for (let i = 0; i < value.expand.length; i++) {
+                  const item = value.expand[i]
+                  const name = item.collection + '/' + item.id
+
+                  result.expand.push(item)
+                  result.expandIncluded[name] = true
+                }
               }
 
               result.expand.push({
