@@ -381,7 +381,7 @@ export default {
       export: true
     },
     $setDataValue: {
-      value (name, { source, options, typeCheck = true }) {
+      value (name, data, options, ignoreTypeCheck) {
         try {
           const schema = this.schema[name]
 
@@ -393,7 +393,7 @@ export default {
             })
           }
 
-          if (source == null) {
+          if (data == null) {
             throw new SchemaException({
               schemaPath: name,
               keyword: 'source',
@@ -403,22 +403,24 @@ export default {
 
           let result = {}
 
-          if (!typeCheck && options) {
-            if (options.id == null) {
-              throw new SchemaException({
-                schemaPath: name,
-                keyword: 'collection',
-                message: 'Collection id was undefined'
-              })
-            }
+          if (ignoreTypeCheck) {
+            if (options) {
+              if (options.id == null) {
+                // update collection
+                this.values[name] = data
 
-            result.item = source._item || source
-            result.id = options.id
-            const value = this.values[name][options.id] || {}
+                result.item = data
+              } else {
+                result.item = data._item || data
+                result.id = options.id
 
-            this.values[name][options.id] = {
-              _item: source._item || source,
-              _metadata: source._metadata || value._metadata || {}
+                const value = this.values[name][options.id] || {}
+
+                this.values[name][options.id] = {
+                  _item: data._item || data,
+                  _metadata: data._metadata || value._metadata || {}
+                }
+              }
             }
           } else {
             let target = this.values[name]
@@ -436,8 +438,8 @@ export default {
 
             result = this._setData(
               name,
-              source._item || source,
               target,
+              data._item || data,
               options
             )
 
@@ -506,21 +508,6 @@ export default {
     generateId () {
       return '_' + uuid() + '_'
     },
-    _setMetadata (item = {}, options) {
-      const timestamp = Date.now()
-
-      if (!item.userId && options.userId) {
-        item.userId = options.userId
-      }
-
-      if (!item.createdAt) {
-        item.createdAt = timestamp
-      }
-
-      item.updatedAt = timestamp
-
-      return item
-    },
     _addSchema (schema) {
       for (let i = 0; i < schema.length; i++) {
         const item = schema[i]
@@ -577,8 +564,10 @@ export default {
      * @param {Array} target - Target array
      * @param {*} source - Source to be found in array
      */
-    _checkArrayUniqueItem (name, target, source) {
-      if (target.includes(source)) {
+    _checkArrayUniqueItem (name, source) {
+      const hasDuplicates = this._containsDuplicates(source)
+
+      if (hasDuplicates) {
         throw new SchemaException({
           schemaPath: name,
           keyword: 'uniqueItems',
@@ -586,52 +575,95 @@ export default {
         })
       }
     },
-    _checkCollectionItems (data, name, target, source) {
-      const schema = this.schema[name]
-      const setDataName = '_setData/' + schema.type
+    _checkCollectionItems (data, path, source, metadata) {
+      const schema = this.schema[path]
+      const schemaCheck = '_schema/' + schema.type
 
-      if (!this[setDataName]) {
-        for (const key in source) {
-          if (Object.hasOwn(source, key)) {
-            const value = source[key]
-            const item = value._item || value
+      if (!this[schemaCheck]) {
+        for (const id in source) {
+          if (Object.hasOwn(source, id)) {
+            const value = source[id]._item || source[id]
 
-            this._checkType(name, item, schema.type)
+            this._checkType(path, value, schema.type)
 
             if (schema.options && schema.options.relation) {
-              this._setRelation(data.rootName, data.id, schema.options.relation, item)
+              this._setRelation(data.collection, id, schema.options.relation, value)
             }
 
-            source[key] = {
-              _item: item,
-              _metadata: value._metadata || {}
+            data.target[id] = {
+              _item: value,
+              _metadata: this._setMetadata(value._metadata, metadata)
             }
           }
         }
-
-        return target
       }
 
-      for (const key in source) {
-        if (Object.hasOwn(source, key)) {
-          const value = source[key]
-          const item = value._item || value
+      for (const id in source) {
+        if (Object.hasOwn(source, id)) {
+          const value = source[id]._item || source[id]
 
-          this._checkType(name, item, schema.type)
+          this._checkType(path, value, schema.type)
 
           // set current merge root id
-          data.id = key
+          data.id = id
 
-          target[key] = {
-            _item: this.defaultTypes[schema.type](),
-            _metadata: value._metadata || {}
-          }
+          this[schemaCheck](data, path, value)
 
-          target[key]._item = this[setDataName](data, name, target[key]._item, item)
+          data.target[id] = this._createTarget(schema.type, metadata)
+          data.target[id]._item = value
+        }
+      }
+    },
+    /**
+     * Check data type
+     * @private
+     * @param {string} name - Schema path
+     * @param {*} value - value to be checked
+     * @param {string} type - Expected data type
+     * @returns {boolean}
+     */
+    _checkType (path, value, type) {
+      if (value == null) {
+        throw new SchemaException({
+          schemaPath: path,
+          keyword: 'type',
+          message: 'Unexpected type, expected "' + type + '" but got "undefined"'
+        })
+      }
+
+      if (type === 'node') {
+        if (value.nodeName && Object.isFrozen(value.nodeName)) {
+          return true
+        }
+
+        throw new SchemaException({
+          schemaPath: path,
+          keyword: 'type',
+          message: 'Unexpected type, expected a node'
+        })
+      }
+
+      // need a better method of determining the data type
+      const dataType = value.constructor.name.toLowerCase()
+
+      if (dataType === type) {
+        return true
+      }
+
+      throw new SchemaException({
+        schemaPath: path,
+        keyword: 'type',
+        message: 'Unexpected type, expected "' + type + '" but got "' + dataType + '"'
+      })
+    },
+    _containsDuplicates (array) {
+      for (let i = 0; i < array.length; i++) {
+        if (array.indexOf(array[i]) !== array.lastIndexOf(array[i])) {
+          return true
         }
       }
 
-      return target
+      return false
     },
     _createCollectionId (name, option) {
       const schema = this.schema[name]
@@ -659,47 +691,17 @@ export default {
 
       return prefix + id + suffix
     },
-    /**
-     * Check data type
-     * @private
-     * @param {string} name - Schema path
-     * @param {*} value - value to be checked
-     * @param {string} type - Expected data type
-     * @returns {boolean}
-     */
-    _checkType (name, value, type) {
-      if (value !== null) {
-        if (type === 'node') {
-          if (value.nodeName && Object.isFrozen(value.nodeName)) {
-            return true
-          }
-
-          throw new SchemaException({
-            schemaPath: name,
-            keyword: 'type',
-            message: 'Unexpected type, expected a node'
-          })
+    _createTarget (type, metadata, target) {
+      if (target == null) {
+        target = {
+          _item: this.defaultTypes[type](),
+          _metadata: {}
         }
-
-        // need a better method of determining the data type
-        const dataType = value.constructor.name.toLowerCase()
-
-        if (dataType === type) {
-          return true
-        }
-
-        throw new SchemaException({
-          schemaPath: name,
-          keyword: 'type',
-          message: 'Unexpected type, expected "' + type + '" but got "' + dataType + '"'
-        })
       }
 
-      throw new SchemaException({
-        schemaPath: name,
-        keyword: 'type',
-        message: 'Unexpected type, expected "' + type + '" but got "undefined"'
-      })
+      target._metadata = this._setMetadata({}, metadata)
+
+      return target
     },
     /**
      * Generate the default id for a collection
@@ -769,11 +771,11 @@ export default {
       }
     },
     /**
-     * Process listeners on delete event
-     * @param {dsDataId} id
-     * @param {string} key - Data key
-     * @param {(string|number|boolean|Object|Array)} value - Value that is being deleted
-     */
+         * Process listeners on delete event
+         * @param {dsDataId} id
+         * @param {string} key - Data key
+         * @param {(string|number|boolean|Object|Array)} value - Value that is being deleted
+         */
     _onDelete (id, key, value) {
       const listeners = this['data/delete/listeners'][id][key]
 
@@ -785,285 +787,245 @@ export default {
         }
       }
     },
-    '_option/array' (data, name, option, schema, target, source) {
-      // change target
-      if (option.target) {
-        // target enter array position
-        if (Number.isInteger(option.target.position)) {
-          target = this._changeTarget(name, target, option.target.position)
-          data.name = name
-        }
-      }
+    _schemaArrayOption (path, source) {
+      const schema = this.schema[path]
 
-      // check schema options
-      if (schema.options) {
-        if (schema.options.uniqueItems) {
-          for (let i = 0; i < source.length; i++) {
-            if (schema.options && schema.options.uniqueItems) {
-              this._checkArrayUniqueItem(name, target, source[i])
+      if (schema.options.uniqueItems) {
+        this._checkArrayUniqueItem(path, source)
+      }
+    },
+    _schemaObjectOption (path, data) {
+      const schema = this.schema[path]
+
+      if (schema.options.additionalProperties) {
+        const patternProperties = schema.patternProperties || []
+        const additionalKeys = []
+
+        for (const key in data) {
+          if (Object.hasOwn(data, key)) {
+            // check if key can exist
+            if (!schema.options.additionalProperties.includes(key)) {
+              additionalKeys.push(key)
             }
           }
         }
-      }
 
-      // update target with source
-      if (option.source) {
-        if (option.source.push) {
-          target.push(source)
+        // check patterned keys
+        for (let i = 0; i < patternProperties.length; i++) {
+          const property = patternProperties[i]
+          const regex = new RegExp(property.name)
+
+          for (let i = 0; i < additionalKeys.length; i++) {
+            const key = additionalKeys[i]
+
+            // remove additional key
+            if (regex.test(key)) {
+              additionalKeys.splice(i, 1)
+            }
+          }
         }
 
-        if (option.source.shift) {
-          target.shift(source)
+        if (additionalKeys.length) {
+          throw new SchemaException({
+            schemaPath: path,
+            keyword: 'additionalProperties',
+            message: 'Additional properties are now allowed ' + JSON.stringify(additionalKeys)
+          })
         }
       }
     },
-    '_option/collection' (data, name, options = {}, schema, target, source) {
-      if (Object.hasOwn(options, 'id') && options.id == null) {
-        throw new SchemaException({
-          schemaPath: name,
-          keyword: 'collection',
-          message: 'Expected collection id to be a string but got undefined'
-        })
-      } else if (options.id) {
-        // update id
-        const id = this._createCollectionId(name, options)
+    _schemaObjectPatternProperties (data, properties, propertiesChecked, source, path) {
+      for (let i = 0; i < properties.length; i++) {
+        const property = properties[i]
 
-        // update root data
-        data.id = id
-        data.name = name + '/' + id
+        for (const key in source) {
+          if (Object.hasOwn(source, key)) {
+            if (!propertiesChecked.includes(key)) {
+              const regex = new RegExp(property.name)
 
-        // update or create entry by id
-        if (!options.source) {
-          const rootTarget = data.rootTarget[id]
-
-          if (rootTarget) {
-            rootTarget._item = source
-          } else {
-            data.rootTarget[id] = {
-              _item: source,
-              _metadata: {}
-            }
-
-            if (this.isServer) {
-              data.rootTarget[id]._metadata = this._setMetadata({}, options)
-            }
-          }
-
-          this._checkCollectionItems(
-            data,
-            name + '/items',
-            {},
-            { [id]: source }
-          )
-
-          return true
-        }
-      } else if (!options.source || options.suffixId || options.prefixId) {
-        // create new id
-        const collection = this._defaultCollectionId(name, options)
-
-        // update data
-        data.id = collection.id
-        data.noAffixId = collection.noAffixId
-        data.name = name + '/' + collection.id
-
-        // create new entry
-        data.rootTarget[collection.id] = {
-          _item: source,
-          _metadata: {}
-        }
-
-        if (this.isServer) {
-          data.rootTarget[collection.id]._metadata = this._setMetadata({}, options)
-        }
-
-        target = data.rootTarget[collection.id]._item
-      }
-
-      // change target
-      // if (option.target) {
-
-      // }
-
-      /**
-       * option source rootTarget needs to be updated
-       */
-
-      // update target with source
-      if (options.source) {
-        if (data.id) {
-          // add metadata
-          if (options.source.metadata) {
-            const rootTarget = data.rootTarget[data.id]
-            rootTarget._metadata = rootTarget._metadata || {}
-            rootTarget._metadata = Object.assign(rootTarget._metadata, options.source.metadata)
-          }
-
-          // Add item to an array
-          if (options.source.push || options.source.unshift) {
-            const schemaPath = name + '/items' + '/items'
-            const schema = this.schema[schemaPath]
-            const rootTarget = data.rootTarget[data.id]
-
-            if (schema) {
-              this._checkType(schemaPath, source, schema.type)
-
-              if (schema.options && schema.options.relation) {
-                this._setRelation(data.rootName, data.id, schema.options.relation, source)
-              }
-            }
-
-            if (!rootTarget) {
-              data.rootTarget[data.id] = {
-                _item: [],
-                _metadata: {}
+              if (!regex.test(key)) {
+                throw new SchemaException({
+                  schemaPath: path,
+                  keyword: 'patternProperty',
+                  message: 'Invalid property: ' + key
+                })
               }
 
-              if (this.isServer) {
-                data.rootTarget[data.id]._metadata = this._setMetadata({}, options)
-              }
+              const value = source[key]
 
-              target = data.rootTarget[data.id]._item
-            } else if (Object.isFrozen(rootTarget._item)) {
-              target = this['_unfreeze/array'](rootTarget._item)
-            } else {
-              target = rootTarget._item
-            }
+              if (property.type !== 'number' && !value && property.default) {
+                // add default value
+                if (typeof property.default === 'function') {
+                  source[property.name] = property.default()
+                } else {
+                  source[property.name] = property.default
+                }
+              } else {
+                const schemaName = path + '/' + property.name
+                const schema = this.schema[schemaName]
 
-            if (options.source.push) {
-              target.push(source)
-            } else {
-              target.unshift(source)
-            }
+                if (schema) {
+                  this._checkType(schemaName, source[property.name], schema.type)
 
-            return true
-          }
-        }
+                  const schemaValidationName = '_schema/' + schema.type
 
-        if (options.source.merge) {
-          // merge target
-          if (options.id) {
-            const schemaPath = name + '/items' + '/items'
-            const schema = this.schema[schemaPath]
+                  this[schemaValidationName](data, schemaName, source[property.name])
+                } else {
+                  const propertyOptions = property.options || {}
 
-            if (Array.isArray(source)) {
-              for (let i = 0; i < source.length; i++) {
-                const item = source[i]
-
-                this._checkType(schemaPath, item, schema.type)
-              }
-
-              data.rootTarget[options.id] = data.rootTarget[options.id].concat(source)
-            } else if (source instanceof Object && source.constructor === Object) {
-              for (const key in source) {
-                if (Object.hasOwn(source, key)) {
-                  const item = source[key]
-
-                  this._checkType(schemaPath, item, schema.type)
-
-                  target[key] = item
+                  if (propertyOptions.relation) {
+                    this._setRelation(data.collection, data.id, propertyOptions.relation, value)
+                  }
                 }
               }
+
+              this._checkType(path, source[property.name], property.type)
+            }
+          }
+        }
+      }
+    },
+    _schemaObjectProperties (data, properties, propertiesChecked, source, path) {
+      for (let i = 0; i < properties.length; i++) {
+        const property = properties[i]
+        const propertyOptions = property.options || {}
+        const value = source[property.name]
+
+        // check if field is required
+        if (propertyOptions.required && value == null) {
+          throw new SchemaException({
+            schemaPath: path,
+            keyword: 'required',
+            message: 'Invalid data (' + path + '): required property missing: "' + property.name + '"'
+          })
+        }
+
+        if (value == null && !propertyOptions.default) {
+          propertiesChecked.push(property.name)
+        } else {
+          if (value == null && propertyOptions.default) {
+            // add default value
+            if (typeof propertyOptions.default === 'function') {
+              source[property.name] = propertyOptions.default()
             } else {
-              this._checkType(schemaPath, source, schema.type)
-
-              data.rootTarget[options.id] = source
+              source[property.name] = propertyOptions.default
             }
+          } else {
+            const schemaName = path + '/' + property.name
+            const schema = this.schema[schemaName]
 
-            return true
+            if (schema) {
+              this._checkType(schemaName, source[property.name], schema.type)
+
+              const schemaValidationName = '_schema/' + schema.type
+
+              this[schemaValidationName](data, schemaName, source[property.name])
+            } else {
+              if (propertyOptions.relation) {
+                this._setRelation(data.collection, data.id, propertyOptions.relation, value)
+              }
+            }
           }
 
-          // merge collection
-          this._checkCollectionItems(data, name + '/items', target, source)
+          this._checkType(path, source[property.name], property.type)
 
-          return true
-        }
-
-        // update target property
-        if (options.source.id) {
-          data.id = options.source.id
-          target[options.source.id] = source
+          propertiesChecked.push(property.name)
         }
       }
     },
-    '_option/object' (data, name, option, schema, target, source) {
-      // change target
-      if (option.target) {
-        if (option.target.position) {
-          const schema = this.schema[name + '/' + option.target.position] || {}
+    '_schema/array' (data, path, source) {
+      const schema = this.schema[path]
 
-          target = this._changeTarget(name, target, option.target.position, schema.type)
-          data.name = name + '/' + option.target.position
-        }
-      }
-
-      // check schema options
       if (schema.options) {
-        if (schema.options.additionalProperties) {
-          const patternProperties = schema.patternProperties || []
-          const additionalKeys = []
-
-          for (const key in source) {
-            if (Object.hasOwn(source, key)) {
-              // check if key can exist
-              if (!schema.options.additionalProperties.includes(key)) {
-                additionalKeys.push(key)
-              }
-            }
-          }
-
-          // check patterned keys
-          for (let i = 0; i < patternProperties.length; i++) {
-            const property = patternProperties[i]
-            const regex = new RegExp(property.name)
-
-            for (let i = 0; i < additionalKeys.length; i++) {
-              const key = additionalKeys[i]
-
-              // remove additional key
-              if (regex.test(key)) {
-                additionalKeys.splice(i, 1)
-              }
-            }
-          }
-
-          if (additionalKeys.length) {
-            throw new SchemaException({
-              schemaPath: name,
-              keyword: 'additionalProperties',
-              message: 'Additional properties are now allowed ' + JSON.stringify(additionalKeys)
-            })
-          }
-        }
+        this._schemaArrayOption(path, source)
       }
 
-      // update target with source
-      // if (option.source) {}
+      const schemaName = path + '/items'
+      const schemaItems = this.schema[schemaName]
+
+      // no validation
+      if (!schemaItems) {
+        return
+      }
+
+      const schemaValidationName = '_schema/' + schemaItems.type
+
+      for (let i = 0; i < source.length; i++) {
+        if (typeof this[schemaValidationName] !== 'function') {
+          // set relation for array of strings
+          if (schemaItems.options && schemaItems.options.relation) {
+            this._setRelation(data.collection, data.id, schemaItems.options.relation, source[i])
+          }
+
+          this._checkType(schemaName, source[i], schemaItems.type)
+        } else {
+          this[schemaValidationName](data, schemaName, source[i])
+        }
+      }
     },
-    _setData (name, source, target, options, depth = 1) {
-      const data = { rootTarget: target, rootName: name }
-      const schema = this.schema[name]
-      const setDataName = '_setData/' + schema.type
-      const hasOptions = (options && (options.depth === depth || (depth === 1 && !options.depth)))
+    '_schema/object' (data, path, source) {
+      const schema = this.schema[path]
 
-      if (schema.options || hasOptions) {
-        const currentOptions = hasOptions ? options : {}
-        const optionName = '_option/' + schema.type
-        const end = this[optionName](data, name, currentOptions, schema, target, source)
+      // no validation
+      if (!schema.properties && !schema.patternProperties) {
+        return
+      }
 
-        if (end) {
+      if (schema.options) {
+        this._schemaObjectOption(path, source)
+      }
+
+      const propertiesChecked = []
+
+      if (schema.properties) {
+        this._schemaObjectProperties(data, schema.properties, propertiesChecked, source, path)
+      }
+
+      if (schema.patternProperties) {
+        this._schemaObjectProperties(data, schema.patternProperties, propertiesChecked, source, path)
+      }
+    },
+    _schemaValidation (data, path, source) {
+      const schema = this.schema[path]
+      const schemaValidationName = '_schema/' + schema.type
+
+      // schema check depth
+      if (typeof this[schemaValidationName] === 'function') {
+        this[schemaValidationName](data, path, source)
+
+        return
+      }
+
+      // type check
+      this._checkType(path, source, schema.type)
+
+      if (schema.options && schema.options.relation) {
+        this._setRelation(data.collection, data.id, schema.options.relation, source)
+      }
+    },
+    _setData (collection, target, source, options) {
+      const data = { target, collection }
+      const schema = this.schema[collection]
+      let isValid = true
+
+      if (options) {
+        const dataOptions = this['_setData/options'](data, source, options)
+
+        isValid = dataOptions.isValid
+
+        if (dataOptions.complete) {
           const result = {
-            isValid: true,
-            target: data.rootTarget,
-            name: data.name
+            isValid,
+            target: data.target
           }
 
           if (data.id) {
-            const value = data.rootTarget[data.id]
+            const value = data.target[data.id]
 
             result.id = data.id
             result.item = value._item
             result.metadata = value._metadata
+            result.noAffixId = data.noAffixId
 
             // freeze value
             if (typeof value._item === 'object' && (!schema.options || !schema.options.mutable)) {
@@ -1075,34 +1037,173 @@ export default {
         }
       }
 
-      // update depth
-      ++depth
-
-      if (this[setDataName]) {
-        // set data by type
-        this[setDataName](data, name, target, source, options, depth)
-      } else {
-        // type check
-        this._checkType(name, source, schema.type)
-
-        data.rootTarget = source
-      }
-
       const result = {
-        isValid: true,
-        target: data.rootTarget,
-        value: data.rootTarget,
-        name: data.name
+        isValid,
+        target: data.target
       }
 
       if (data.id) {
         result.id = data.id
         result.noAffixId = data.noAffixId
-        result.item = data.rootTarget[data.id]._item
-        result.metadata = data.rootTarget[data.id]._metadata
+        result.item = data.target[data.id]._item
+        result.metadata = data.target[data.id]._metadata
+      } else {
+        this._schemaValidation(data, collection, source)
       }
 
       return result
+    },
+    '_setData/options' (data, source, options) {
+      if (Object.hasOwn(options, 'id') && options.id == null) {
+        throw new SchemaException({
+          schemaPath: data.collection,
+          keyword: 'collection',
+          message: 'Expected collection id to be a string but got undefined'
+        })
+      }
+
+      let schemaPath = data.collection + '/items'
+      const schema = this.schema[schemaPath]
+
+      // process document id
+      if (options.id) {
+        const id = this._createCollectionId(data.collection, options)
+
+        data.id = id
+      } else {
+        if (options.merge) {
+          this._checkCollectionItems(data, schemaPath, source, options.metadata)
+
+          return {
+            complete: true,
+            isValid: true
+          }
+        }
+
+        // create new id
+        const collection = this._defaultCollectionId(data.collection, options)
+
+        data.id = collection.id
+        data.noAffixId = collection.noAffixId
+      }
+
+      data.target[data.id] = this._createTarget(schema.type, options.metadata, data.target[data.id])
+
+      // insert new data
+      if (!options.update) {
+        this._schemaValidation(data, schemaPath, source)
+
+        // add new data entry
+        data.target[data.id]._item = source
+
+        return {
+          complete: true,
+          isValid: true
+        }
+      }
+
+      let target = data.target[data.id]._item
+
+      // update target position
+      if (options.update.position) {
+        const lastKey = options.position.length - 1
+        let path = schemaPath
+        let isValidPosition = true
+
+        for (let i = 0; i < lastKey; i++) {
+          const key = options.position[i]
+          path = path + '/' + key
+
+          if (!target[key]) {
+            isValidPosition = false
+            break
+          }
+
+          target = target[key]
+        }
+
+        // insert data
+        if (!options.update.method && isValidPosition) {
+          this._schemaValidation(data, path, source)
+
+          target[lastKey] = source
+
+          return {
+            complete: true,
+            isValid: true
+          }
+        }
+
+        schemaPath = path
+      } else {
+        // update schema path to match the first item in the collection
+        schemaPath = schemaPath + '/items'
+      }
+
+      if (options.update.method) {
+        if (!Array.isArray(target)) {
+          throw new SchemaException({
+            schemaPath,
+            keyword: 'updateMethod',
+            message: 'Expected target to be an array but found ' + typeof target
+          })
+        }
+
+        const schema = this.schema[schemaPath]
+
+        if (schema && schema.options) {
+          if (schema.options.uniqueItems) {
+            const hasDuplicates = this._containsDuplicates(source)
+
+            if (hasDuplicates) {
+              return {
+                complete: true,
+                isValid: false
+              }
+            }
+          }
+
+          if (schema.options.relation) {
+            this._setRelation(data.collection, data.id, schema.options.relation, source)
+          }
+        }
+
+        this._updateArray(target, source, options.update.method)
+      }
+
+      return {
+        isValid: true
+      }
+    },
+    _setMetadata (item = {}, options) {
+      const timestamp = Date.now()
+
+      if (options) {
+        // append additional metadata
+        for (const key in options) {
+          if (Object.hasOwnProperty.call(options, key)) {
+            const value = options[key]
+
+            if (key !== 'createdAt' && key !== 'updatedAt' && key !== 'userId') {
+              item[key] = value
+            }
+          }
+        }
+      }
+
+      if (this.isServer) {
+        if (!item.userId && options && options.userId) {
+          item.userId = options.userId
+        }
+
+        if (!item.createdAt) {
+          item.createdAt = timestamp
+        }
+
+        item.updatedAt = timestamp
+      }
+
+      return item
     },
     /**
      * Set the association id
@@ -1128,189 +1229,6 @@ export default {
         this.relationUsed[usedName].push(name)
       }
     },
-    '_setData/array' (data, name, target, source, options, depth) {
-      const schema = this.schema[name]
-      const schemaName = name + '/items'
-      const schemaItems = this.schema[schemaName]
-
-      // no validation
-      if (!schemaItems) {
-        return source
-      }
-
-      const hasOptions = (options && (options.depth === depth || (depth === 1 && !options.depth)))
-
-      if (schema.options || hasOptions) {
-        const currentOptions = hasOptions ? options : {}
-
-        this['_option/' + schema.type](data, name, currentOptions, schema, target, source)
-      }
-
-      ++depth
-
-      const setDataName = '_setData/' + schemaItems.type
-      const setData = this[setDataName]
-
-      for (let i = 0; i < source.length; i++) {
-        if (typeof setData !== 'function') {
-          // set relation for array of strings
-          if (schemaItems.options && schemaItems.options.relation) {
-            this._setRelation(data.rootName, data.id, schemaItems.options.relation, source[i])
-          }
-
-          this._checkType(schemaName, source[i], schemaItems.type)
-        } else {
-          source[i] = this[setDataName](data, schemaName, target, source[i], options, depth)
-        }
-      }
-
-      return source
-    },
-    '_setData/collection' (data, name, target, source, options, depth) {
-      const schemaName = name + '/items'
-      const schema = this.schema[schemaName]
-      const setDataName = '_setData/' + schema.type
-
-      if (!this[setDataName]) {
-        return target
-      }
-
-      let hasOptions
-
-      // Apply depth options (feature may not be useful)
-      if (options) {
-        hasOptions = options.depth === depth || (depth === 1 && !options.depth)
-      }
-
-      if (schema.options || hasOptions) {
-        const currentOptions = hasOptions ? options : {}
-        const end = this['_option/collection'](data, name, currentOptions, schema, target, source)
-
-        if (end) {
-          return
-        }
-      }
-
-      ++depth
-
-      this._checkType(name, source, schema.type)
-
-      this[setDataName](data, schemaName, target, source, options, depth)
-    },
-    '_setData/object' (data, name, target, source, options, depth) {
-      const schema = this.schema[name]
-
-      // no validation
-      if (!schema.properties && !schema.patternProperties) {
-        return source
-      }
-
-      const hasOptions = (options && (options.depth === depth || (depth === 1 && !options.depth)))
-
-      if (schema.options || hasOptions) {
-        const currentOptions = hasOptions ? options : {}
-
-        this['_option/object'](data, name, currentOptions, schema, target, source)
-      }
-
-      const properties = schema.properties || []
-      const patternProperties = schema.patternProperties || []
-      const propertiesChecked = []
-
-      for (let i = 0; i < properties.length; i++) {
-        const property = properties[i]
-        const propertyOptions = property.options || {}
-        const value = source[property.name]
-
-        // check if field is required
-        if (propertyOptions.required && value == null) {
-          throw new SchemaException({
-            schemaPath: name,
-            keyword: 'required',
-            message: 'Invalid data (' + name + '): required property missing: "' + property.name + '"'
-          })
-        }
-
-        if (value == null && !propertyOptions.default) {
-          propertiesChecked.push(property.name)
-        } else {
-          if (value == null && propertyOptions.default) {
-            // add default value
-            if (typeof propertyOptions.default === 'function') {
-              source[property.name] = propertyOptions.default()
-            } else {
-              source[property.name] = propertyOptions.default
-            }
-          } else {
-            const schemaName = name + '/' + property.name
-            const schema = this.schema[schemaName]
-
-            if (schema) {
-              this._checkType(schemaName, source[property.name], schema.type)
-
-              const setDataName = '_setData/' + schema.type
-              const newTarget = target ?? this.defaultTypes[schema.type]()
-
-              source[property.name] = this[setDataName](data, schemaName, newTarget[property.name], value, options, depth)
-            } else {
-              if (propertyOptions.relation) {
-                this._setRelation(data.rootName, data.id, propertyOptions.relation, value)
-              }
-
-              source[property.name] = value
-            }
-          }
-
-          this._checkType(name, source[property.name], property.type)
-
-          propertiesChecked.push(property.name)
-        }
-      }
-
-      for (let i = 0; i < patternProperties.length; i++) {
-        const property = patternProperties[i]
-
-        for (const key in source) {
-          if (Object.hasOwn(source, key)) {
-            if (!propertiesChecked.includes(key)) {
-              const regex = new RegExp(property.name)
-
-              if (!regex.test(key)) {
-                throw new SchemaException({
-                  schemaPath: name,
-                  keyword: 'patternProperty',
-                  message: 'Invalid property: ' + key
-                })
-              }
-
-              const value = source[key]
-
-              if (property.type !== 'number' && !value && property.default) {
-                // add default value
-                if (typeof property.default === 'function') {
-                  source[property.name] = property.default()
-                } else {
-                  source[property.name] = property.default
-                }
-              } else {
-                const schemaName = name + '/' + property.name
-                const schema = this.schema[schemaName]
-
-                if (schema) {
-                  source[key] = this['_setData/' + schema.type](data, schemaName, target, value, options, depth)
-                } else {
-                  source[key] = value
-                }
-              }
-
-              this._checkType(name, source[key], property.type)
-            }
-          }
-        }
-      }
-
-      return source
-    },
     '_unfreeze/object' (source) {
       const target = {}
 
@@ -1328,6 +1246,26 @@ export default {
     },
     '_unfreeze/array' (value) {
       return value.slice()
+    },
+    _updateArray (target, source, method) {
+      switch (method) {
+        case 'push':
+          target.push(source)
+
+          break
+        case 'pop':
+          target.pop(source)
+
+          break
+        case 'shift':
+          target.shift(source)
+
+          break
+        case 'unshift':
+          target.unshift(source)
+
+          break
+      }
     }
   }
 }
