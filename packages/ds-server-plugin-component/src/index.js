@@ -16,7 +16,7 @@ export default {
     ...dsComponent.data
   },
   setup () {
-    this.$setDatabaseSeed('ds-component-items')
+    this.$seedDatabase('ds-component-items')
 
     // route: get a list of component
     this.$setWebServerRoute('/component', {

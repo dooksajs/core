@@ -113,7 +113,7 @@ export default {
         response.status(200).send('deleted: ' + result)
       }
     },
-    $setDatabaseSeed (name) {
+    $seedDatabase (name) {
       const path = resolve(this.path, name + '.json')
 
       if (!existsSync(path)) {

@@ -19,7 +19,7 @@ export default {
     ...dsLayout.data
   },
   setup () {
-    this.$setDatabaseSeed('ds-layout-items')
+    this.$seedDatabase('ds-layout-items')
 
     // route: get a list of action
     this.$setWebServerRoute('/layout', {

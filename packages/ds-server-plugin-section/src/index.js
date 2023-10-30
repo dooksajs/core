@@ -14,7 +14,7 @@ export default {
     ...dsSection.data
   },
   setup () {
-    this.$setDatabaseSeed('ds-section-items')
+    this.$seedDatabase('ds-section-items')
 
     // route: get a list of section
     this.$setWebServerRoute('/section', {

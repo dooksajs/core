@@ -24,7 +24,7 @@ export default {
     }
   },
   setup () {
-    this.$setDatabaseSeed('ds-page-items')
+    this.$seedDatabase('ds-page-items')
 
     this.$setWebServerRoute('/*', {
       suffix: '',

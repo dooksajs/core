@@ -34,14 +34,13 @@ export default {
     ...dsWidget.data
   },
   setup () {
-    this.$setDatabaseSeed('ds-widget-items')
-    this.$setDatabaseSeed('ds-widget-content')
-    this.$setDatabaseSeed('ds-widget-events')
-    this.$setDatabaseSeed('ds-widget-groups')
-    this.$setDatabaseSeed('ds-widget-mode')
-    this.$setDatabaseSeed('ds-widget-layouts')
-    this.$setDatabaseSeed('ds-widget-sections')
-    this.$setDatabaseSeed('ds-widget-templates')
+    this.$seedDatabase('ds-widget-items')
+    this.$seedDatabase('ds-widget-content')
+    this.$seedDatabase('ds-widget-events')
+    this.$seedDatabase('ds-widget-groups')
+    this.$seedDatabase('ds-widget-mode')
+    this.$seedDatabase('ds-widget-layouts')
+    this.$seedDatabase('ds-widget-sections')
 
     // route: get a list of action
     this.$setWebServerRoute('/layout', {

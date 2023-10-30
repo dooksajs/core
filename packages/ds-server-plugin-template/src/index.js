@@ -16,7 +16,7 @@ export default {
     ...dsTemplate.data
   },
   setup () {
-    this.$setDatabaseSeed('ds-template-items')
+    this.$seedDatabase('ds-template-items')
 
     // route: get a list of section
     this.$setWebServerRoute('/template', {
