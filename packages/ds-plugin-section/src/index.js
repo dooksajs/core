@@ -59,6 +59,18 @@ export default {
         }
       }
     },
+    templates: {
+      description: 'Templates used by section sorted by modes',
+      default: {},
+      schema: {
+        type: 'collection',
+        suffixId: 'default',
+        items: {
+          type: 'string',
+          relation: 'dsTemplate/items'
+        }
+      }
+    },
     viewParent: {
       description: 'The parent section to a section',
       default: {},
