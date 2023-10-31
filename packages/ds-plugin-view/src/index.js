@@ -170,11 +170,6 @@ export default {
       } else {
         element = document.createElement(dsComponent.id)
       }
-      // ISSUE: [DS-758] Remove dev code during build (using rollup)
-      // Add view node id to the node
-      if (this.isDev) {
-        element.id = dsViewId
-      }
 
       element.dsViewId = dsViewId
 
