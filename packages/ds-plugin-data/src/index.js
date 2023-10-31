@@ -714,7 +714,7 @@ export default {
         }
       }
 
-      target._metadata = this._setMetadata({}, metadata)
+      target._metadata = this._setMetadata(target._metadata, metadata)
 
       return target
     },
