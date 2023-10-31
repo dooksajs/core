@@ -145,6 +145,7 @@ export default {
       })
     },
     $setDatabaseValue ({ items, userId }) {
+      const results = []
       const usedCollections = {}
       const collections = []
 
@@ -178,6 +179,8 @@ export default {
           usedCollections[data.collection] = true
           collections.push(data.collection)
         }
+
+        results.push(setData)
       }
 
       for (let i = 0; i < collections.length; i++) {
@@ -194,6 +197,7 @@ export default {
       }
 
       return {
+        item: results,
         isValid: true,
         message: 'Successfully saved'
       }
