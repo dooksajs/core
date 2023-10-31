@@ -128,9 +128,7 @@ export default {
         }
         const data = JSON.parse(json)
         const setData = this.$setDataValue(data.collection, data.item, {
-          update: {
-            method: 'push'
-          }
+          merge: true
         })
 
         if (!setData.isValid) {
