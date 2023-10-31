@@ -208,7 +208,7 @@ export default {
           }
         }
 
-        const result = { id, isEmpty: false, isCollectionEmpty: false }
+        const result = { id, isEmpty: false, isCollectionEmpty: false, collection: name }
         const schema = this.schema[name]
 
         if (Object.hasOwn(arguments[0], 'id') && id == null) {
@@ -401,7 +401,7 @@ export default {
             })
           }
 
-          let result = {}
+          let result = { collection: name }
 
           if (ignoreTypeCheck) {
             if (options) {
@@ -451,6 +451,7 @@ export default {
           this._onUpdate(name, result.item, result.id, result.metadata)
 
           return {
+            collection: name,
             id: result.id,
             noAffixId: result.noAffixId,
             item: result.item,
