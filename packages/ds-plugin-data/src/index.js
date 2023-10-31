@@ -672,6 +672,20 @@ export default {
       let prefix = option.prefixId ?? ''
       let suffix = option.suffixId ?? ''
 
+      if (id) {
+        const affixId = id.split('_')
+
+        if (affixId.length === 2) {
+          if (affixId[0].length === 18) {
+            suffix = affixId[1]
+          } else {
+            prefix = affixId[0]
+          }
+        } else if (affixId.length === 3) {
+          return id
+        }
+      }
+
       if (schema.id) {
         if (!prefix && schema.id.prefix) {
           prefix = this._affixId(schema.id.prefix)
