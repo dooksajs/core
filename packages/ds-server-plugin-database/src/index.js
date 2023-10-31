@@ -254,7 +254,7 @@ export default {
       // save snapshot
       Promise.resolve(set)
         .then(() => {
-          if (this.snapshotQueue) {
+          if (this.snapshotQueue[collection]) {
             this._setSnapshot(collection)
           }
         })
