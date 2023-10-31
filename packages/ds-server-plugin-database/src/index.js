@@ -40,7 +40,7 @@ export default {
     this.path = resolve(path, this.storage)
 
     if (!existsSync(this.path)) {
-      throw new Error('Storage path does not exist:', this.path)
+      throw new Error('Storage path does not exist: ' + this.path)
     }
   },
   methods: {
