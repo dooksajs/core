@@ -221,7 +221,11 @@ export default {
         const data = this.$getDataValue(collection)
 
         if (data.isEmpty) {
-          reject(new Error('No collection found:', collection))
+          this.snapshotError[collection] = new Error('Snapshot failed, no collection found: ' + collection)
+
+          console.error(this.snapshotError[collection])
+
+          reject(this.snapshotError[collection])
         }
 
         const timestamp = Date.now()
