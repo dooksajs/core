@@ -1,5 +1,15 @@
 import dsSchema from './utils/schema.js'
 
+const schemaDefaults = {
+  collection: Object,
+  array: Array,
+  number: Number,
+  boolean: Boolean,
+  string: String,
+  object: Object,
+  function: Function
+}
+
 /**
  * Plugins are used to extend and customise the Dooksa application builder.
  * @interface
@@ -21,16 +31,24 @@ function DsPlugin (plugin) {
     for (const key in plugin.data) {
       if (Object.hasOwn(plugin.data, key)) {
         const item = plugin.data[key]
+        const schema = item.schema || {}
+        let defaultValues
+
+        if (typeof item.default === 'function') {
+          defaultValues = item.default()
+        } else if (schema.type && schemaDefaults[schema.type]) {
+          defaultValues = schemaDefaults[schema.type]()
+        } else {
+          throw new Error('Plugin data could not be created')
+        }
 
         if (item.private) {
-          this._context[key] = item.default
+          this._context[key] = defaultValues
         } else {
           const dataEntry = {}
-          const item = plugin.data[key]
-          const schema = item.schema
 
           dataEntry.id = plugin.name + '/' + key
-          dataEntry.default = item.default
+          dataEntry.default = defaultValues
           dataEntry.schema = dsSchema.process(this._context, dataEntry.id, schema, [], true)
           dataEntry.collection = schema.type === 'collection'
 
