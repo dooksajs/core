@@ -26,51 +26,75 @@ export default {
   data: {
     context: {
       private: true,
-      default: []
+      schema: {
+        type: 'array'
+      }
     },
     entryQueue: {
       private: true,
-      default: []
+      schema: {
+        type: 'array'
+      }
     },
     lowPriority: {
       private: true,
-      default: []
+      schema: {
+        type: 'array'
+      }
     },
     highPriority: {
       private: true,
-      default: []
+      schema: {
+        type: 'array'
+      }
     },
     plugins: {
       private: true,
-      default: {}
+      schema: {
+        type: 'object'
+      }
     },
     options: {
       private: true,
-      default: {}
+      schema: {
+        type: 'object'
+      }
     },
     dependencyQueue: {
       private: true,
-      default: []
+      schema: {
+        type: 'array'
+      }
     },
     hasDependencies: {
       private: true,
-      default: []
+      schema: {
+        type: 'array'
+      }
     },
     subscribed: {
       private: true,
-      default: {}
+      schema: {
+        type: 'object'
+      }
     },
     isPluginLoaded: {
       private: true,
-      default: {}
+      schema: {
+        type: 'object'
+      }
     },
     listeners: {
       private: true,
-      default: {}
+      schema: {
+        type: 'object'
+      }
     },
     totalInQueue: {
       private: true,
-      default: 0
+      schema: {
+        type: 'number'
+      }
     }
   },
   /**

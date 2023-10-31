@@ -15,7 +15,6 @@ export default {
   version: 1,
   data: {
     listeners: {
-      default: {},
       schema: {
         type: 'collection',
         items: {

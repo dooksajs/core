@@ -11,23 +11,31 @@ export default {
   data: {
     path: {
       private: true,
-      default: ''
+      schema: {
+        type: 'string'
+      }
     },
     storage: {
-      default: 'ds_data',
+      default: () => 'ds_data',
       private: true
     },
     snapshotLock: {
       private: true,
-      default: {}
+      schema: {
+        type: 'object'
+      }
     },
     snapshotQueue: {
       private: true,
-      default: {}
+      schema: {
+        type: 'object'
+      }
     },
     snapshotError: {
       private: true,
-      default: {}
+      schema: {
+        type: 'object'
+      }
     }
   },
   setup (storage) {

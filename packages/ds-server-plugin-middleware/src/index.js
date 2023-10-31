@@ -12,8 +12,7 @@ export default {
         items: {
           type: 'function'
         }
-      },
-      default: {}
+      }
     }
   },
   setup () {

@@ -12,14 +12,12 @@ export default {
   data: {
     uniqueId: {
       description: 'Unique identifier used to allow instances to be shared but contain different related content',
-      default: '',
       schema: {
         type: 'string'
       }
     },
     items: {
       description: 'Widget instance',
-      default: {},
       schema: {
         type: 'collection',
         prefixId () {
@@ -36,7 +34,6 @@ export default {
     },
     content: {
       description: 'Content references used by an instance',
-      default: {},
       schema: {
         type: 'collection',
         items: {
@@ -50,7 +47,6 @@ export default {
       }
     },
     events: {
-      default: {},
       schema: {
         type: 'collection',
         suffixId: 'default',
@@ -78,7 +74,6 @@ export default {
     },
     groups: {
       description: 'Group instances',
-      default: {},
       schema: {
         type: 'collection',
         items: {
@@ -93,7 +88,6 @@ export default {
     },
     mode: {
       description: 'Current instance template mode',
-      default: {},
       schema: {
         type: 'collection',
         items: {
@@ -103,7 +97,6 @@ export default {
     },
     layouts: {
       description: 'layouts related to the instance',
-      default: {},
       schema: {
         type: 'collection',
         suffixId: 'default',
@@ -115,7 +108,6 @@ export default {
     },
     sections: {
       description: 'References to sections',
-      default: {},
       schema: {
         type: 'collection',
         suffixId: 'default',
@@ -130,7 +122,6 @@ export default {
     },
     view: {
       description: 'View references used by an instance',
-      default: {},
       schema: {
         type: 'collection',
         items: {

@@ -34,50 +34,68 @@ export default {
   data: {
     'data/update/listeners': {
       private: true,
-      default: {}
+      schema: {
+        type: 'object'
+      }
     },
     'data/update/refs': {
       private: true,
-      default: {}
+      schema: {
+        type: 'object'
+      }
     },
     'data/delete/listeners': {
       private: true,
-      default: {}
+      schema: {
+        type: 'object'
+      }
     },
     'data/delete/refs': {
       private: true,
-      default: {}
+      schema: {
+        type: 'object'
+      }
     },
     values: {
       private: true,
-      default: {}
+      schema: {
+        type: 'object'
+      }
     },
     schema: {
       private: true,
-      default: {}
+      schema: {
+        type: 'object'
+      }
     },
     relation: {
       private: true,
-      default: {}
+      schema: {
+        type: 'object'
+      }
     },
     relationUsed: {
       private: true,
-      default: {}
+      schema: {
+        type: 'object'
+      }
     },
     collection: {
       private: true,
-      default: {}
+      schema: {
+        type: 'object'
+      }
     },
     defaultTypes: {
       private: true,
-      default: {
+      default: () => ({
         string: String,
         number: Number,
         object: Object,
         array: Array,
         boolean: Boolean,
         function: Function
-      }
+      })
     }
   },
   /** @lends dsData */

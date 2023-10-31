@@ -4,7 +4,7 @@ export default {
   data: {
     operators: {
       private: true,
-      default: {
+      default: () => ({
         '==': v => v[0] === v[1],
         '!=': v => v[0] !== v[1],
         '>': v => v[0] > v[1],
@@ -22,7 +22,7 @@ export default {
         '+': v => v[0] + v[1],
         '*': v => v[0] * v[1],
         '**': v => v[0] ** v[1]
-      }
+      })
     }
   },
   methods: {

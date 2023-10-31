@@ -31,7 +31,6 @@ export default {
   version: 1,
   data: {
     items: {
-      default: {},
       schema: {
         type: 'collection',
         suffixId () {

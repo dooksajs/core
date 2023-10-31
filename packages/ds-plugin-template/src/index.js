@@ -18,7 +18,6 @@ export default {
   ],
   data: {
     items: {
-      default: {},
       schema: {
         type: 'collection',
         items: {

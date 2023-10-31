@@ -22,43 +22,63 @@ export default {
   data: {
     methods: {
       private: true,
-      default: {}
+      schema: {
+        type: 'object'
+      }
     },
     tokens: {
       private: true,
-      default: {}
+      schema: {
+        type: 'object'
+      }
     },
     tokenListeners: {
       private: true,
-      default: {}
+      schema: {
+        type: 'object'
+      }
     },
     components: {
       private: true,
-      default: {}
+      schema: {
+        type: 'object'
+      }
     },
     componentGetters: {
       private: true,
-      default: {}
+      schema: {
+        type: 'object'
+      }
     },
     componentSetters: {
       private: true,
-      default: {}
+      schema: {
+        type: 'object'
+      }
     },
     componentIgnoreAttr: {
       private: true,
-      default: {}
+      schema: {
+        type: 'object'
+      }
     },
     buildId: {
       private: true,
-      default: 0
+      schema: {
+        type: 'number'
+      }
     },
     isDev: {
       private: true,
-      default: false
+      schema: {
+        type: 'boolean'
+      }
     },
     dsLoader: {
       private: true,
-      default: {}
+      schema: {
+        type: 'object'
+      }
     }
   },
   /**

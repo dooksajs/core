@@ -9,16 +9,15 @@ export default {
   data: {
     associationTypes: {
       private: true,
-      default: {
+      default: () => ({
         belongsTo: true,
         belongsToMany: true,
         hasOne: true,
         hasMany: true
-      }
+      })
     },
     models: {
       private: true,
-      default: {},
       schema: {
         type: 'collection',
         items: {
@@ -28,15 +27,17 @@ export default {
     },
     sequelize: {
       private: true,
-      default: false
+      schema: {
+        type: 'boolean'
+      }
     },
     operators: {
       private: true,
-      default: {
+      default: () => ({
         $and: Op.and,
         $like: Op.like,
         $or: Op.or
-      }
+      })
     }
   },
   /**

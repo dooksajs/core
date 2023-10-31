@@ -14,14 +14,14 @@ export default {
   version: 1,
   data: {
     items: {
-      default: {
+      default: () => ({
         '0f64a9b82c6f98f7': {
           _item: { id: 'text' }
         },
         '43f4f4c34d66e648': {
           _item: { id: 'div' }
         }
-      },
+      }),
       schema: {
         type: 'collection',
         items: {

@@ -11,7 +11,6 @@ export default {
   version: 1,
   data: {
     blocks: {
-      default: {},
       schema: {
         type: 'collection',
         items: {
@@ -20,7 +19,6 @@ export default {
       }
     },
     items: {
-      default: {},
       schema: {
         type: 'collection',
         items: {
@@ -33,7 +31,6 @@ export default {
       }
     },
     sequences: {
-      default: {},
       schema: {
         type: 'collection',
         items: {
@@ -186,6 +183,7 @@ export default {
       return this._getValue(params.value, params.map)
     },
     '_process/set/dataValue' (data) {
+      console.log(data)
       return this.$setDataValue(data.name, data)
     },
     _getDataByKey (data, key) {

@@ -12,7 +12,6 @@ export default {
   }],
   data: {
     emails: {
-      default: {},
       schema: {
         type: 'collection',
         items: {
@@ -22,7 +21,6 @@ export default {
       }
     },
     items: {
-      default: {},
       schema: {
         type: 'collection',
         items: {
@@ -43,19 +41,21 @@ export default {
     },
     tokenAlgorithm: {
       private: true,
-      default: 'HS256'
+      default: () => 'HS256'
     },
     cookieSecret: {
       private: true,
-      default: ''
+      schema: {
+        type: 'string'
+      }
     },
     saltRounds: {
       private: true,
-      default: 10
+      default: () => 10
     },
     cookieMaxAge: {
       private: true,
-      default: 43200
+      default: () => 43200
     }
   },
   setup ({ secret, saltRounds, tokenAlgorithm }) {

@@ -14,13 +14,12 @@ export default {
   version: 1,
   data: {
     rootViewId: {
-      default: 'rootElement',
+      default: () => 'rootElement',
       schema: {
         type: 'string'
       }
     },
     attributes: {
-      default: {},
       schema: {
         type: 'collection',
         items: {
@@ -29,7 +28,6 @@ export default {
       }
     },
     content: {
-      default: {},
       schema: {
         type: 'collection',
         items: {
@@ -39,7 +37,6 @@ export default {
       }
     },
     handlers: {
-      default: {},
       schema: {
         type: 'collection',
         uniqueItems: true,
@@ -49,7 +46,6 @@ export default {
       }
     },
     items: {
-      default: {},
       schema: {
         type: 'collection',
         mutable: true,
@@ -59,7 +55,6 @@ export default {
       }
     },
     itemParent: {
-      default: {},
       schema: {
         type: 'collection',
         items: {

@@ -19,7 +19,6 @@ export default {
     },
     items: {
       description: 'Collection of widget instances',
-      default: {},
       schema: {
         type: 'collection',
         prefixId () {
@@ -37,7 +36,6 @@ export default {
     },
     entry: {
       description: 'The entry section, e.g. a page top entry sections',
-      default: {},
       schema: {
         type: 'collection',
         items: {
@@ -51,7 +49,6 @@ export default {
     },
     mode: {
       description: 'Current template mode for the section',
-      default: {},
       schema: {
         type: 'collection',
         items: {
@@ -61,7 +58,6 @@ export default {
     },
     templates: {
       description: 'Templates used by section sorted by modes',
-      default: {},
       schema: {
         type: 'collection',
         suffixId: 'default',
@@ -73,7 +69,6 @@ export default {
     },
     viewParent: {
       description: 'The parent section to a section',
-      default: {},
       schema: {
         type: 'collection',
         items: {
@@ -84,7 +79,6 @@ export default {
     },
     view: {
       description: 'The node which the section is attached',
-      default: {},
       schema: {
         type: 'collection',
         items: {

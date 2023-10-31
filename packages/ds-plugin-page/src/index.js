@@ -7,7 +7,6 @@ export default {
   version: 1,
   data: {
     id: {
-      default: {},
       schema: {
         type: 'collection',
         defaultId () {
@@ -22,7 +21,6 @@ export default {
       }
     },
     events: {
-      default: {},
       schema: {
         type: 'collection',
         items: {
@@ -34,7 +32,6 @@ export default {
       }
     },
     items: {
-      default: {},
       schema: {
         type: 'collection',
         items: {

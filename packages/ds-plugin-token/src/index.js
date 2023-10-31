@@ -4,15 +4,17 @@ export default {
   data: {
     process: {
       private: true,
-      default: {}
+      schema: {
+        type: 'object'
+      }
     },
     values: {
       private: true,
-      default: {
+      default: () => ({
         heading: {
           default: 'Add title'
         }
-      }
+      })
     }
   },
   tokens: {

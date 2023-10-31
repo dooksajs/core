@@ -7,7 +7,6 @@ export default {
   version: 1,
   data: {
     items: {
-      default: {},
       schema: {
         type: 'collection',
         items: {
@@ -33,10 +32,10 @@ export default {
     },
     eventNames: {
       private: true,
-      default: {
+      default: () => ({
         mount: 'dsView/mount',
         unmount: 'dsView/unmount'
-      }
+      })
     }
   },
   /** @lends dsLayout */

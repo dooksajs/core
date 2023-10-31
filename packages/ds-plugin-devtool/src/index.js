@@ -8,15 +8,21 @@ export default {
   data: {
     items: {
       private: true,
-      default: {}
+      schema: {
+        type: 'object'
+      }
     },
     plugins: {
       private: true,
-      default: []
+      schema: {
+        type: 'array'
+      }
     },
     keys: {
       private: true,
-      default: {}
+      schema: {
+        type: 'object'
+      }
     }
   },
   methods: {

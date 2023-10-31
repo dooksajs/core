@@ -7,7 +7,6 @@ export default {
   version: 1,
   data: {
     sections: {
-      default: {},
       schema: {
         type: 'collection',
         defaultId () {
@@ -50,7 +49,7 @@ export default {
       if (toSections.isEmpty) {
         // get data
       }
-      debugger
+
       for (const dsSectionId in toSections.item) {
         if (Object.hasOwn(toSections.item, dsSectionId)) {
           const toViewId = toSections.item[dsSectionId]

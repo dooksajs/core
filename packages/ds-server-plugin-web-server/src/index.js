@@ -41,28 +41,34 @@ export default {
   data: {
     apiSuffix: {
       private: true,
-      default: '/_'
+      default: () => '/_'
     },
     cookieSecret: {
       private: true,
-      default: ''
+      schema: {
+        type: 'string'
+      }
     },
     app: {
       private: true,
-      default: () => {}
+      schema: {
+        type: 'function'
+      }
     },
     routes: {
       private: true,
-      default: {}
+      schema: {
+        type: 'object'
+      }
     },
     routeTypes: {
       private: true,
-      default: {
+      default: () => ({
         get: true,
         post: true,
         put: true,
         delete: true
-      }
+      })
     }
   },
   setup ({ cookieSecret, apiSuffix }) {

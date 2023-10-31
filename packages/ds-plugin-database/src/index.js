@@ -7,27 +7,27 @@ export default {
   data: {
     adapter: {
       private: true,
-      default: 'dsDatabaseLocal'
+      default: () => 'dsDatabaseLocal'
     },
     createName: {
       private: true,
-      default: 'create'
+      default: () => 'create'
     },
     deleteName: {
       private: true,
-      default: 'delete'
+      default: () => 'delete'
     },
     getListName: {
       private: true,
-      default: 'getList'
+      default: () => 'getList'
     },
     getOneName: {
       private: true,
-      default: 'getOne'
+      default: () => 'getOne'
     },
     updateName: {
       private: true,
-      default: 'update'
+      default: () => 'update'
     }
   },
   /** @lends dsDatabase */
