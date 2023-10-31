@@ -50,13 +50,49 @@ export default {
   /** @lends dsPage */
   methods: {
     save ({ id }) {
-      const pageData = this.$getDataValue('dsPage/items', { id, options: { expand: true } })
+      const pageData = this._getById(id)
 
       if (pageData.isEmpty) {
         return
       }
 
-      const data = []
+      fetch('http://localhost:3000/', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(pageData.item)
+      })
+        .then((response) => {
+          console.log(response)
+          if (response.status !== 201) {
+            return
+          }
+
+          return response.json()
+        })
+        .then(data => {
+          console.log(data)
+        })
+        .catch(e => console.log(e))
+    },
+    _getById (id) {
+      const pageData = this.$getDataValue('dsPage/items', { id, options: { expand: true } })
+
+      if (pageData.isEmpty) {
+        return {
+          isEmpty: true
+        }
+      }
+
+      const data = [{
+        collection: 'dsPage/items',
+        id,
+        item: pageData.item,
+        metadata: pageData.metadata
+      }]
+
       const expandExclude = pageData.expandIncluded
 
       for (let i = 0; i < pageData.expand.length; i++) {
@@ -75,18 +111,10 @@ export default {
         }
       }
 
-      fetch('http://localhost:3000/', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      })
-        .then((response) => {
-          console.log(response)
-        })
-        .catch(e => console.log(e))
+      return {
+        isEmpty: false,
+        item: data
+      }
     },
     _appendExpand (collection, id, data, expandExclude, expand = true) {
       const getData = this.$getDataValue(collection, { id, options: { expand, expandExclude } })
