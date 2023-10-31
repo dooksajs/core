@@ -861,41 +861,43 @@ export default {
               continue
             }
 
-              if (!regex.test(key)) {
-                throw new SchemaException({
-                  schemaPath: path,
-                  keyword: 'patternProperty',
-                  message: 'Invalid property: ' + key
-                })
-              }
+            const regex = new RegExp(property.name)
 
-              const value = source[key]
+            if (!regex.test(key)) {
+              throw new SchemaException({
+                schemaPath: path,
+                keyword: 'patternProperty',
+                message: 'Invalid property: ' + key
+              })
+            }
 
-              if (property.type !== 'number' && !value && property.default) {
-                // add default value
-                if (typeof property.default === 'function') {
-                  source[property.name] = property.default()
-                } else {
-                  source[property.name] = property.default
-                }
+            const value = source[key]
+
+            if (value == null && property.default) {
+              // add default value
+              if (typeof property.default === 'function') {
+                source[key] = property.default()
               } else {
-                const schemaName = path + '/' + property.name
-                const schema = this.schema[schemaName]
+                source[key] = property.default
+              }
+            } else {
+              const schemaName = path + '/' + property.name
+              const schema = this.schema[schemaName]
 
-                if (schema) {
-                  this._checkType(schemaName, source[property.name], schema.type)
+              if (schema) {
+                this._checkType(schemaName, source[key], schema.type)
 
-                  const schemaValidationName = '_schema/' + schema.type
+                const schemaValidationName = '_schema/' + schema.type
 
-                  this[schemaValidationName](data, schemaName, source[property.name])
-                } else {
-                  const propertyOptions = property.options || {}
+                this[schemaValidationName](data, schemaName, source[key])
+              } else {
+                const propertyOptions = property.options || {}
 
-                  if (propertyOptions.relation) {
-                    this._setRelation(data.collection, data.id, propertyOptions.relation, value)
-                  }
+                if (propertyOptions.relation) {
+                  this._setRelation(data.collection, data.id, propertyOptions.relation, value)
                 }
               }
+            }
 
             this._checkType(path, source[key], property.type)
           }
@@ -999,7 +1001,7 @@ export default {
       }
 
       if (schema.patternProperties) {
-        this._schemaObjectProperties(data, schema.patternProperties, propertiesChecked, source, path)
+        this._schemaObjectPatternProperties(data, schema.patternProperties, propertiesChecked, source, path)
       }
     },
     _schemaValidation (data, path, source) {
