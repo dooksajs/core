@@ -597,6 +597,8 @@ export default {
             }
           }
         }
+
+        return
       }
 
       for (const id in source) {
