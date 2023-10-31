@@ -857,8 +857,9 @@ export default {
 
         for (const key in source) {
           if (Object.hasOwn(source, key)) {
-            if (!propertiesChecked.includes(key)) {
-              const regex = new RegExp(property.name)
+            if (propertiesChecked[key]) {
+              continue
+            }
 
               if (!regex.test(key)) {
                 throw new SchemaException({
@@ -896,8 +897,7 @@ export default {
                 }
               }
 
-              this._checkType(path, source[property.name], property.type)
-            }
+            this._checkType(path, source[key], property.type)
           }
         }
       }
@@ -918,7 +918,7 @@ export default {
         }
 
         if (value == null && !propertyOptions.default) {
-          propertiesChecked.push(property.name)
+          propertiesChecked[property.name] = true
         } else {
           if (value == null && propertyOptions.default) {
             // add default value
@@ -946,7 +946,7 @@ export default {
 
           this._checkType(path, source[property.name], property.type)
 
-          propertiesChecked.push(property.name)
+          propertiesChecked[property.name] = true
         }
       }
     },
@@ -992,7 +992,7 @@ export default {
         this._schemaObjectOption(path, source)
       }
 
-      const propertiesChecked = []
+      const propertiesChecked = {}
 
       if (schema.properties) {
         this._schemaObjectProperties(data, schema.properties, propertiesChecked, source, path)
