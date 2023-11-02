@@ -699,13 +699,7 @@ export default {
       if (id) {
         const affixId = id.split('_')
 
-        if (affixId.length === 2) {
-          if (affixId[0].length === 18) {
-            suffix = affixId[1]
-          } else {
-            prefix = affixId[0]
-          }
-        } else if (affixId.length === 3) {
+        if (affixId.length === 3 && (affixId[0].length || affixId[2].length)) {
           return id
         }
       }
