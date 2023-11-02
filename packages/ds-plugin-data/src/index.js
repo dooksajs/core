@@ -601,17 +601,19 @@ export default {
       if (!this[schemaCheck]) {
         for (const id in source) {
           if (Object.hasOwn(source, id)) {
-            const value = source[id]._item || source[id]
+            const item = source[id]
+            const targetValue = item._item || item
+            const targetMetadata = item._metadata || metadata
 
-            this._checkType(path, value, schema.type)
+            this._checkType(path, targetValue, schema.type)
 
             if (schema.options && schema.options.relation) {
-              this._setRelation(data.collection, id, schema.options.relation, value)
+              this._setRelation(data.collection, id, schema.options.relation, targetValue)
             }
 
             data.target[id] = {
-              _item: value,
-              _metadata: this._setMetadata(value._metadata, metadata)
+              _item: targetValue,
+              _metadata: this._setMetadata(targetMetadata, metadata)
             }
           }
         }
@@ -621,17 +623,19 @@ export default {
 
       for (const id in source) {
         if (Object.hasOwn(source, id)) {
-          const value = source[id]._item || source[id]
+          const item = source[id]
+          const targetValue = item._item || item
+          const targetMetadata = item._metadata || metadata
 
-          this._checkType(path, value, schema.type)
+          this._checkType(path, targetValue, schema.type)
 
           // set current merge root id
           data.id = id
 
-          this[schemaCheck](data, path, value)
+          this[schemaCheck](data, path, targetValue)
 
-          data.target[id] = this._createTarget(schema.type, metadata)
-          data.target[id]._item = value
+          data.target[id] = this._createTarget(schema.type, targetMetadata)
+          data.target[id]._item = targetValue
         }
       }
     },
