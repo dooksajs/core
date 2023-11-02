@@ -1265,7 +1265,7 @@ export default {
     '_unfreeze/object' (source) {
       const target = {}
 
-      if (source.constructor.name !== 'Object') {
+      if (source.constructor !== Object) {
         return source
       }
 
