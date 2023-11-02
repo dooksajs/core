@@ -91,35 +91,38 @@ export default {
   /** @lends dsSection */
   methods: {
     create ({
-      dsSectionId,
+      id,
       dsViewId = this.$getDataValue('dsView/rootViewId').item,
-      path = this.$method('dsRouter/currentPath')
+      path = this.$method('dsRouter/currentPath'),
+      appendToPage = false
     }) {
       const dsSectionUniqueId = this.$getDataValue('dsSection/uniqueId').item
 
       const mode = this.$getDataValue('dsSection/mode', {
-        id: dsSectionId,
+        id,
         prefixId: dsSectionUniqueId
       }).item
 
       const dsSection = this.$getDataValue('dsSection/items', {
-        id: dsSectionId,
+        id,
         prefixId: dsSectionUniqueId,
         suffixId: mode
       })
 
       this.$setDataValue('dsSection/view', dsViewId, {
-        id: dsSectionId,
+        id,
         prefixId: dsSectionUniqueId,
         suffixId: mode
       })
 
-      this.$setDataValue('dsPage/items', dsSection.noAffixId, {
-        id: path,
-        update: {
-          method: 'push'
-        }
-      })
+      if (appendToPage) {
+        this.$setDataValue('dsPage/items', dsSection.noAffixId, {
+          id: path,
+          update: {
+            method: 'push'
+          }
+        })
+      }
 
       for (let i = 0; i < dsSection.item.length; i++) {
         const dsWidgetId = dsSection.item[i]
@@ -136,7 +139,7 @@ export default {
 
         this.$method('dsLayout/create', {
           dsLayoutId,
-          dsSectionId,
+          dsSectionId: id,
           dsSectionUniqueId,
           dsWidgetId,
           dsWidgetMode,
@@ -144,7 +147,7 @@ export default {
         })
       }
 
-      return dsSection.id
+      return dsSection
     }
   }
 }

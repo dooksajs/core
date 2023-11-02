@@ -152,7 +152,7 @@ export default {
           }).item
 
           this.$method('dsSection/create', {
-            dsSectionId: sectionId,
+            id: sectionId,
             dsViewId: childViewId
           })
         }
