@@ -2,6 +2,7 @@ import express from 'express'
 import helmet from 'helmet'
 import logger from 'pino-http'
 import cookieParser from 'cookie-parser'
+import compression from 'compression'
 
 /**
  * The req object represents the HTTP request and has properties for the request query string, parameters, body, HTTP headers, and so on.
@@ -92,6 +93,7 @@ export default {
       sameSite: true,
       secure: !this.isDev
     }))
+    this.app.use(compression())
 
     if (this.isDev) {
       this.app.use(logger())
