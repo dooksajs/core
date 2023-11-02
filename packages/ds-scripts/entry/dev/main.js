@@ -35,13 +35,13 @@ createApp(plugins, { ...options, setup }, {
         },
         {
           onSuccess: (result) => {
-            const dsSectionId = app.$method('dsTemplate/create', {
+            const id = app.$method('dsTemplate/create', {
               id: result.id,
               mode: result.mode,
               language: result.lang
             })
 
-            app.$action('dsSection/create', { dsSectionId })
+            app.$action('dsSection/create', { id })
           }
         })
       }
