@@ -1211,22 +1211,20 @@ export default {
       }
     },
     _setMetadata (item = {}, options) {
-      const timestamp = Date.now()
-
       if (options) {
         // append additional metadata
         for (const key in options) {
           if (Object.hasOwnProperty.call(options, key)) {
             const value = options[key]
 
-            if (key !== 'createdAt' && key !== 'updatedAt' && key !== 'userId') {
-              item[key] = value
-            }
+            item[key] = value
           }
         }
       }
 
       if (this.isServer) {
+        const timestamp = Date.now()
+
         if (!item.userId && options && options.userId) {
           item.userId = options.userId
         }
