@@ -333,7 +333,7 @@ export default {
      * @param {DsPluginOptions} options - DsPlugin setup options
      */
     _setup (plugin, options, callback) {
-      if (!plugin || plugin.constructor.name !== 'DsPlugin') {
+      if (!plugin || plugin.constructor !== DsPlugin) {
         throw new Error('Not a valid plugin')
       }
 
