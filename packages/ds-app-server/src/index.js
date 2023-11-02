@@ -1,5 +1,5 @@
 import createApp from '@dooksa/create-app'
-import plugins from './plugins'
+import plugins from './plugins.js'
 
 const dsApp = createApp()
 
