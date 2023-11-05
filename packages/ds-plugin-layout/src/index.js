@@ -133,9 +133,11 @@ export default {
           this.$addDataListener('dsContent/items', {
             on: 'update',
             id: dsContentId,
-            refId: dsViewId,
-            listener: (value) => {
-              this.$method('dsView/updateValue', { dsViewId: childViewId })
+            handler: {
+              id: dsViewId,
+              value: (value) => {
+                this.$method('dsView/updateValue', { dsViewId: childViewId })
+              }
             }
           })
         }

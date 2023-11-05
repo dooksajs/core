@@ -121,11 +121,13 @@ export default {
       this.$addDataListener('dsView/items', {
         on: 'delete',
         id: dsViewId,
-        refId: dsViewId,
-        listener: () => {
-          this.$deleteDataValue('dsView/items', {
-            id: dsViewId
-          })
+        handler: {
+          id: dsViewId,
+          value: () => {
+            this.$deleteDataValue('dsView/items', {
+              id: dsViewId
+            })
+          }
         }
       })
 
