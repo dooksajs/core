@@ -1,25 +1,31 @@
 import path from 'path'
-import { appDirectory } from '../utils/paths.js'
-import { build } from 'vite'
-import wasm from 'vite-plugin-wasm'
-import topLevelAwait from 'vite-plugin-top-level-await'
+import * as esbuild from 'esbuild'
+import { appDirectory, scriptDirectory } from '../utils/paths.js'
+import { readdir, unlink } from 'fs'
 
-;(async () => {
-  await build({
-    root: path.resolve(appDirectory, 'build'),
-    build: {
-      emptyOutDir: true,
-      outDir: path.resolve(appDirectory, 'dist'),
-      sourcemap: true
-    },
-    plugins: [
-      wasm(),
-      topLevelAwait()
-    ],
-    resolve: {
-      alias: {
-        '@dooksa/plugin': path.resolve(appDirectory, 'src', 'index.js')
-      }
-    }
-  })
-})()
+const outdir = path.resolve(appDirectory, 'app', 'production', 'dist')
+
+// delete previous build
+readdir(outdir, (err, files) => {
+  if (err) throw err
+
+  for (const file of files) {
+    unlink(path.join(outdir, file), (err) => {
+      if (err) throw err
+    })
+  }
+})
+
+const result = await esbuild.build({
+  entryPoints: [path.resolve(scriptDirectory, 'entry', 'build', 'index.js')],
+  bundle: true,
+  treeShaking: true,
+  splitting: true,
+  outdir,
+  format: 'esm',
+  minify: true,
+  platform: 'browser',
+  metafile: true
+})
+
+console.log(await esbuild.analyzeMetafile(result.metafile))
