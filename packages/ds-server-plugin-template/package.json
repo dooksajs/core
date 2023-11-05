@@ -20,6 +20,7 @@
     "@dooksa/ds-scripts": "workspace:^"
   },
   "dependencies": {
-    "@dooksa/ds-plugin-template": "workspace:^"
+    "@dooksa/ds-plugin-template": "workspace:^",
+    "@dooksa/parse-template": "workspace:^"
   }
 }
