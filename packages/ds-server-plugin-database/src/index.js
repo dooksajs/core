@@ -1,4 +1,4 @@
-import { existsSync, rename, readFile } from 'fs'
+import { existsSync, rename, readFile } from 'node:fs'
 import { writeFile } from 'fs/promises'
 import { resolve, join } from 'path'
 
@@ -38,7 +38,7 @@ export default {
       }
     }
   },
-  setup (storage) {
+  setup ({ storage }) {
     if (storage) {
       this.storage = storage
     }
