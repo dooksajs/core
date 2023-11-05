@@ -125,7 +125,7 @@ export default {
       const path = resolve(this.path, name + '.json')
 
       if (!existsSync(path)) {
-        console.log('Seed file not exist:', path)
+        console.log('Seed file missing:', path)
         return
       }
 
