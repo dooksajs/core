@@ -2,6 +2,13 @@ import DsPlugin from '@dooksa/ds-plugin'
 import dsManager from '@dooksa/ds-plugin-manager'
 
 export default () => ({
+  /**
+   * Add dooksa plugins to the app
+   * @param {Object[]} plugins
+   * @param {string} plugins[].name - Name of plugin
+   * @param {number} plugins[].version - Version of plugin
+   * @param {dsPlugin} plugins[].value - dsPlugin
+   */
   use (plugins) {
     // ISSUE: add plugin schema checks
     // Make a copy of the plugin list and nested data
