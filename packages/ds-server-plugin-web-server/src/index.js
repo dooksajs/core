@@ -58,9 +58,9 @@ export default {
     },
     routes: {
       private: true,
-      schema: {
-        type: 'object'
-      }
+      default: () => ({
+        all: []
+      })
     },
     routeTypes: {
       private: true,
@@ -72,7 +72,7 @@ export default {
       })
     }
   },
-  setup ({ cookieSecret, apiSuffix }) {
+  setup ({ cookieSecret, apiSuffix, publicPath }) {
     if (!cookieSecret || cookieSecret.length < 32) {
       throw new Error('Invalid cookie secret length; secret must be at 32 characters')
     }
@@ -80,6 +80,9 @@ export default {
     if (apiSuffix) {
       this.apiSuffix = apiSuffix
     }
+
+    // prepare api route suffix
+    this.routes[this.apiSuffix] = []
 
     this.app = express()
     this.cookieSecret = cookieSecret
@@ -93,10 +96,15 @@ export default {
       sameSite: true,
       secure: !this.isDev
     }))
-    this.app.use(compression())
 
     if (this.isDev) {
       this.app.use(logger())
+    } else {
+      this.app.use(compression())
+    }
+
+    if (publicPath) {
+      this.app.use(express.static(publicPath))
     }
   },
   methods: {
@@ -150,18 +158,48 @@ export default {
         path = '/' + path
       }
 
-      path = suffix + path
+      const suffixPath = suffix + path
 
-      this.app[method](path, ...handlers)
+      if (suffix === this.apiSuffix) {
+        this.routes[suffix].push({ method, path: suffixPath, handlers })
+        return
+      }
+
+      this.routes.all.push({ method, path: suffixPath, handlers })
     },
     /**
      * Start the web server
      * @param {number} port - Port number for webserver
      */
     start (port = 3000) {
+      this._useRoutes()
+
       this.app.listen(port, () => {
         console.log('Listening on port: ' + port)
       })
+    },
+    _useRoutes () {
+      const apiRoutes = this.routes[this.apiSuffix]
+
+      for (let i = 0; i < apiRoutes.length; i++) {
+        const route = apiRoutes[i]
+
+        this.app[route.method](route.path, ...route.handlers)
+
+        if (this.isDev) {
+          console.log('Route: [' + route.method + '] "' + route.path + '"')
+        }
+      }
+
+      for (let index = 0; index < this.routes.all.length; index++) {
+        const route = this.routes.all[index]
+
+        this.app[route.method](route.path, ...route.handlers)
+
+        if (this.isDev) {
+          console.log('Route: [' + route.method + '] "' + route.path + '"')
+        }
+      }
     }
   }
 }
