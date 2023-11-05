@@ -1,44 +1,116 @@
-import { resolve } from 'path'
-import { existsSync } from 'fs'
-import { scriptDirectory, appDirectory } from '../utils/paths.js'
-import { createServer } from 'vite'
-import dsHtmlLoader from '../plugin/vite-plugin-ds-html-loader.js'
-import basicSsl from '@vitejs/plugin-basic-ssl'
-const args = process.argv.slice(2)
-const plugins = [basicSsl()]
-const resolveConfig = {}
-let root
+import path from 'path'
+import esbuild from 'esbuild'
+import { appDirectory, scriptDirectory } from '../utils/paths.js'
+import dsApp from '@dooksa/ds-app-server'
+import dsDevelopment from '@dooksa/ds-server-plugin-development'
+import chalk from 'chalk'
+import getUserLocale from 'get-user-locale'
 
-if (args.includes('--lib')) {
-  root = resolve(appDirectory, 'src')
-} else {
-  const configPath = resolve(appDirectory, 'ds.config.js')
+const log = console.log
+const lang = getUserLocale()
 
-  root = resolve(scriptDirectory, 'entry', 'dev')
-  plugins.push(dsHtmlLoader())
+const devDirectory = path.resolve(appDirectory, 'app', 'development')
+const buildDirectory = path.resolve(scriptDirectory, 'entry', 'dev')
+const dsAppClientEntryPoint = path.resolve(buildDirectory, 'ds-app-client.js')
+const outfile = path.resolve(buildDirectory, 'build', 'ds-app-client.js')
+let dsAppServer
 
-  resolveConfig.alias = {
-    '@dooksa/plugin': resolve(appDirectory, 'src', 'index.js'),
-    dsConfig: resolve(scriptDirectory, 'utils', 'emptyExport')
-  }
+const dsRebuildClientPlugin = {
+  name: 'dsRebuildClient',
+  setup (build) {
+    let timerStart
+    let rebuildClientNum = 0
 
-  // check if absolute path exists
-  if (existsSync(configPath)) {
-    resolveConfig.alias.dsConfig = configPath
+    build.onStart(() => {
+      timerStart = performance.now()
+    })
+
+    build.onEnd(result => {
+      const timer = performance.now() - timerStart
+
+      log(
+        Intl.DateTimeFormat(lang, {
+          dateStyle: 'short',
+          timeStyle: 'short'
+        }).format(new Date()) +
+        ' ' +
+        chalk.magenta('[dooksa]') +
+        chalk.green(' client built in: ') +
+        chalk.blue(Math.floor(timer) + ' ms')
+      )
+
+      if (result.errors.length) {
+        return { errors: result.errors }
+      }
+
+      if (result.outputFiles.length) {
+        // set app script
+        dsAppServer.$method('dsPage/setApp', result.outputFiles[0].text)
+
+        // notify sse to reload
+        dsAppServer.$setDataValue('dsDevelopment/rebuildClient', rebuildClientNum++)
+      }
+    })
   }
 }
 
-const server = await createServer({
-  root,
-  plugins,
-  server: {
-    https: true
-  },
-  resolve: resolveConfig
+const ctx = await esbuild.context({
+  entryPoints: [dsAppClientEntryPoint],
+  bundle: true,
+  outfile,
+  format: 'esm',
+  sourcemap: 'inline',
+  platform: 'browser',
+  write: false,
+  legalComments: 'none',
+  minify: true,
+  plugins: [dsRebuildClientPlugin]
 })
 
-;(async () => {
-  await server.listen()
+await ctx.watch()
 
-  server.printUrls()
-})()
+dsApp.use([{
+  name: dsDevelopment.name,
+  version: dsDevelopment.version,
+  value: dsDevelopment
+}])
+
+dsApp.start({
+  isDev: true,
+  options: [
+    {
+      name: 'dsDatabase',
+      setup: {
+        storage: path.resolve(devDirectory, 'ds_data')
+      }
+    },
+    {
+      name: 'dsWebServer',
+      setup: {
+        cookieSecret: 'RTRe50oe-wX8gd9qzrWUY71W4yGob10c',
+        publicPath: path.resolve(devDirectory, 'public')
+      }
+    },
+    {
+      name: 'dsUser',
+      setup: {
+        secret: 'RTRe50oe-wX8gd9qzrWUY71W4yGob10c'
+      }
+    },
+    {
+      name: 'dsPage',
+      setup: {
+        dsApp
+      }
+    }
+  ]
+}, {
+  onSuccess (app) {
+    app.$method('dsWebServer/start')
+
+    dsAppServer = app
+  },
+  onError (error) {
+    console.log(error)
+  }
+})
