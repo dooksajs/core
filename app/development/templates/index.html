@@ -1,3 +1,12 @@
+<template ds-id="page-editor-nav">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+		<div class="container-fluid justify-content-start">
+			<span class="navbar-brand mb-0 h1 me-auto">Page</span>
+			<button class="btn btn-primary" type="button" ds-on-click="save">Save</button>
+		</div>
+	</nav>
+</template>
+
 <template ds-id="navbar">
   <nav class="navbar navbar-expand-sm bg-body-tertiary mb-5">
     <div class="container-fluid">
@@ -44,7 +53,7 @@
       <div class="card-body">
         <h5 class="card-title">Card title</h5>
         <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-        <a class="btn btn-primary">Go somewhere</a>
+        <a class="btn btn-primary" href="">Go somewhere</a>
       </div>
     </div>
 
@@ -53,6 +62,7 @@
       <div class="card-body">
         <h5 class="card-title">Card title</h5>
         <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+        <!-- Type check content link href, is attribute is missing it'll store a null value -->
         <a class="btn btn-primary">Go somewhere</a>
       </div>
     </div>
@@ -73,6 +83,16 @@
     description: 'test actions',
     version: 1,
     actions: {
+      save: [
+        {
+          dsAction: 'dsPage/save',
+          dsParams: {
+            id: {
+              dsAction: 'dsRouter/currentPath'
+            }
+          }
+        }
+      ],
       link: [
         {
           dsAction: 'dsRouter/navigate',
