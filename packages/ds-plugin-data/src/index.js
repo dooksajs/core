@@ -32,25 +32,25 @@ export default {
   name: 'dsData',
   version: 1,
   data: {
-    'data/update/listeners': {
+    'data/listener/delete': {
       private: true,
       schema: {
         type: 'object'
       }
     },
-    'data/update/refs': {
+    'data/listener/update': {
       private: true,
       schema: {
         type: 'object'
       }
     },
-    'data/delete/listeners': {
+    'data/handler/delete': {
       private: true,
       schema: {
         type: 'object'
       }
     },
-    'data/delete/refs': {
+    'data/handler/update': {
       private: true,
       schema: {
         type: 'object'
@@ -102,42 +102,52 @@ export default {
   methods: {
     /**
      * Add data listener
-     * @param {dsDataName} param.name - Data collection name
-     * @param {string} param.on - Event name, currently, update or delete
-     * @param {dsDataId} param.id - Data collection id
-     * @param {function} param.listener - The listener function to run when event is fired
+     * @param {string} name - Data collection name
+     * @param {string} param.on - Data event name
+     * @param {dsDataId} param.id - Data collection Id
+     * @param {Object} param.handler
+     * @param {string} item.handler.id - Id of handler
+     * @param {function|dsActionId} item.handler.value - Function or action that will be called
      */
-    $addDataListener (name, { on, id, refId, listener }) {
-      const listenerName = 'data/' + on + '/listeners'
-      let listeners = this[listenerName]
+    $addDataListener (name, { on, id, handler }) {
+      const listeners = this._getListeners(name, on, id)
+      const handlers = this['data/handler/' + on][name]
 
-      if (!listeners) {
-        throw new Error('Data event type does not exist: "' + on + '"')
-      }
-
-      const listenerRefs = this['data/' + on + '/refs'][name]
-      listeners = listeners[name]
-
-      if (!listeners) {
-        throw new Error('Data event name does not exist: "' + name + '"')
-      }
+      let handlerId = handler.id
 
       if (id) {
-        refId = id + refId
-        listeners = listeners[id]
+        handlerId = id + handler.id
+      }
 
-        // add listener
-        if (!listeners) {
-          this[listenerName][name][id] = [listener]
-          listenerRefs[refId] = true
-        } else if (!listenerRefs[refId]) {
-          listeners.push(listener)
-          listenerRefs[refId] = true
-        }
-      } else if (!listenerRefs[refId]) {
-        // add listener
-        listeners.push(listener)
-        listenerRefs[refId] = true
+      // add listener
+      if (!handlers[handlerId]) {
+        listeners.push(handler.value)
+        handlers[handlerId] = handler.value
+      }
+    },
+    /**
+     * Delete data listeners
+     * @param {string} name - Data collection name
+     * @param {Object} item
+     * @param {string} item.on - Data event name
+     * @param {string} item.id - Data collection Id
+     * @param {string} item.handlerId - The reference handler Id that will be removed
+     */
+    $deleteDataListener (name, { on, id, handlerId }) {
+      const listeners = this._getListeners(name, on, id)
+
+      if (id) {
+        handlerId = id + handlerId
+      }
+
+      const handler = this['data/handler/' + on][name][handlerId]
+      const handlerIndex = listeners.indexOf(handler)
+
+      // remove handler
+      if (handlerIndex !== -1) {
+        listeners.splice(handlerIndex, 1)
+
+        delete this['data/handler/' + on][name][handlerId]
       }
     },
     $deleteDataValue (name, id, { cascade } = {}) {
@@ -466,7 +476,7 @@ export default {
           }
 
           // notify listeners
-          this._onUpdate(name, result.item, result.id, result.metadata)
+          this._onUpdate(name, result)
 
           return {
             collection: name,
@@ -515,10 +525,10 @@ export default {
       // prepare listeners
       const listenerType = data.collection ? {} : []
 
-      this['data/update/listeners'][data.id] = listenerType
-      this['data/update/refs'][data.id] = {}
-      this['data/delete/listeners'][data.id] = listenerType
-      this['data/delete/refs'][data.id] = {}
+      this['data/listener/update'][data.id] = listenerType
+      this['data/handler/update'][data.id] = {}
+      this['data/listener/delete'][data.id] = listenerType
+      this['data/handler/delete'][data.id] = {}
     },
     /**
      * Generate a unique id
@@ -784,33 +794,65 @@ export default {
       }
     },
     /**
+     * Get data listeners
+     * @param {string} name - Data collection name
+     * @param {string} on - Event name
+     * @param {string} id  - Data collection Id
+     * @returns {Array} - list of handlers
+     */
+    _getListeners (name, on, id) {
+      const listenerType = this['data/listener/' + on]
+
+      if (!listenerType) {
+        throw new Error('Data event type does not exist: "' + on + '"')
+      }
+
+      const listenerCollection = listenerType[name]
+
+      if (!listenerCollection) {
+        throw new Error('Data event name does not exist: "' + name + '"')
+      }
+
+      if (id) {
+        let listeners = listenerCollection[id]
+
+        if (listeners) {
+          listenerCollection[id] = []
+          listeners = listenerCollection[id]
+        }
+
+        return listeners
+      }
+
+      return listenerCollection
+    },
+    /**
      * Process listeners on update event
      * @param {dsDataId} id
      * @param {string} key - Data key
      * @param {(string|number|boolean|Object|Array)} value - Value that is being set
      */
-    _onUpdate (name, value, id) {
-      let listeners = this['data/update/listeners'][name]
+    _onUpdate (name, item) {
+      let listeners = this['data/listener/update'][name]
 
-      if (id) {
-        listeners = listeners[id]
+      if (item.id) {
+        listeners = listeners[item.id]
       }
 
       if (listeners) {
         for (let i = 0; i < listeners.length; i++) {
-          const listener = listeners[i]
-          listener(value)
+          listeners[i](item)
         }
       }
     },
     /**
-         * Process listeners on delete event
-         * @param {dsDataId} id
-         * @param {string} key - Data key
-         * @param {(string|number|boolean|Object|Array)} value - Value that is being deleted
-         */
+     * Process listeners on delete event
+     * @param {dsDataId} id
+     * @param {string} key - Data key
+     * @param {(string|number|boolean|Object|Array)} value - Value that is being deleted
+     */
     _onDelete (id, key, value) {
-      const listeners = this['data/delete/listeners'][id][key]
+      const listeners = this['data/listeners/delete'][id][key]
 
       if (listeners) {
         for (let i = 0; i < listeners.length; i++) {
