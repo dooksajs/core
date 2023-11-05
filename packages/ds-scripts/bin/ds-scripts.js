@@ -10,6 +10,7 @@ const scriptName = args[args.length - 1]
  */
 const scripts = {
   dev: true,
+  start: true,
   build: true,
   test: true,
   dispatch (scriptName) {
