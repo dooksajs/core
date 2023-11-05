@@ -8,18 +8,6 @@
   "license": "MPL-2.0",
   "type": "module",
   "main": "src/index.js",
-  "scripts": {
-    "dev": "ds-scripts dev",
-    "test:unit": "ds-scripts --unit test",
-    "test:unit:record": "ds-scripts --unit --record test",
-    "test:e2e": "ds-scripts --e2e test",
-    "test:e2e:record": "ds-scripts --e2e --record test",
-    "lint": "standard",
-    "lint:fix": "standard --fix"
-  },
-  "devDependencies": {
-    "@dooksa/ds-scripts": "workspace:^"
-  },
   "dependencies": {
     "@dooksa/crypto": "workspace:^",
     "@dooksa/parse-template": "workspace:^"

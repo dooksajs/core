@@ -7,16 +7,5 @@
   "repository": "git@github.com:dooksajs/dooksa.git",
   "license": "MPL-2.0",
   "type": "module",
-  "main": "src/index.js",
-  "scripts": {
-    "dev": "ds-scripts dev",
-    "test:open": "ds-scripts --open test",
-    "test:run": "ds-scripts --run test",
-    "test:record": "ds-scripts --run --record test",
-    "lint": "standard",
-    "lint:fix": "standard --fix"
-  },
-  "devDependencies": {
-    "@dooksa/ds-scripts": "workspace:^"
-  }
+  "main": "src/index.js"
 }

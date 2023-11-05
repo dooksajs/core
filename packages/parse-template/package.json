@@ -6,34 +6,8 @@
   "repository": "git@github.com:dooksajs/dooksa.git",
   "license": "MPL-2.0",
   "type": "module",
-  "files": [
-    "dist"
-  ],
   "main": "./src/main.js",
-  "scripts": {
-    "dev": "ds-scripts --lib dev ",
-    "test:open": "ds-scripts --open --lib test",
-    "test:run": "ds-scripts --run --lib test",
-    "test:record": "ds-scripts --run --record --lib test",
-    "lint": "standard",
-    "lint:fix": "standard --fix"
-  },
-  "standard": {
-    "env": [
-      "browser",
-      "mocha"
-    ],
-    "globals": [
-      "cy",
-      "Cypress",
-      "expect",
-      "assert"
-    ]
-  },
   "dependencies": {
     "@dooksa/object-hash": "workspace:^"
-  },
-  "devDependencies": {
-    "@dooksa/ds-scripts": "workspace:^"
   }
 }

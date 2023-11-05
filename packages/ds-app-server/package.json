@@ -7,21 +7,6 @@
   "license": "MPL-2.0",
   "type": "module",
   "main": "src/index.js",
-  "scripts": {
-    "dev": "vite-node dev/index.js",
-    "test:open": "ds-scripts --open test",
-    "test:run": "ds-scripts --run test",
-    "test:record": "ds-scripts --run --record test",
-    "lint": "standard",
-    "lint:fix": "standard --fix"
-  },
-  "devDependencies": {
-    "@dooksa/ds-plugin-devtool": "workspace:^",
-    "@dooksa/ds-scripts": "workspace:^",
-    "nodemon": "^2.0.22",
-    "sequelize-pretty-logger": "^1.0.3",
-    "vite-node": "^0.33.0"
-  },
   "dependencies": {
     "@dooksa/create-app": "workspace:^",
     "@dooksa/ds-plugin-data": "workspace:^",

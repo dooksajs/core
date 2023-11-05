@@ -7,17 +7,6 @@
   "license": "MPL-2.0",
   "type": "module",
   "main": "src/index.js",
-  "scripts": {
-    "build": "ds-scripts build",
-    "test:open": "ds-scripts --open test",
-    "test:run": "ds-scripts --run test",
-    "test:record": "ds-scripts --run --record test",
-    "lint": "standard",
-    "lint:fix": "standard --fix"
-  },
-  "devDependencies": {
-    "@dooksa/ds-scripts": "workspace:^"
-  },
   "dependencies": {
     "@dooksa/create-app": "workspace:^",
     "@dooksa/ds-plugin-action": "workspace:^",
