@@ -3,7 +3,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "ds-scripts build",
+    "dev": "ds-scripts dev",
+    "start": "ds-scripts start",
+    "test": "ds-scripts test"
   },
   "license": "MPL-2.0",
   "packageManager": "pnpm@8.10.0",
@@ -12,5 +15,8 @@
   },
   "devDependencies": {
     "standard": "^17.1.0"
+  },
+  "dependencies": {
+    "@dooksa/ds-scripts": "workspace:^"
   }
 }
