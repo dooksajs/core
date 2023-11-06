@@ -76,7 +76,7 @@ export default {
       this.dsCSSHash = this._hash(item)
     },
     _getApp (data = []) {
-      return '(() => {window.dsData =' + JSON.stringify(data) + ';' + this.dsApp + '})()'
+      return '(() => {const __ds__ =' + JSON.stringify(data) + ';' + this.dsApp + '})()'
     },
     _get (request, response) {
       const pageData = this._getById(request.path)

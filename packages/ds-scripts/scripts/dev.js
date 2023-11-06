@@ -64,6 +64,7 @@ const ctx = await esbuild.context({
   write: false,
   legalComments: 'none',
   minify: true,
+  reserveProps: /__d__/,
   plugins: [dsRebuildClientPlugin]
 })
 
