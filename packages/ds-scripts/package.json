@@ -8,6 +8,10 @@
   "bin": {
     "ds-scripts": "./bin/ds-scripts.js"
   },
+  "imports": {
+    "#development": "../../../app/development/*",
+    "#production": "../../../app/production/*"
+  },
   "env": {
     "test:run": {
       "plugins": [
