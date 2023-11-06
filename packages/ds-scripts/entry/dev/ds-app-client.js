@@ -1,7 +1,6 @@
 import dsAppClient from '@dooksa/ds-app-client'
 
-const data = window.dsData ? window.dsData.slice() : []
-delete window.dsData
+const data = __ds__ // eslint-disable-line
 
 dsAppClient.start({
   isDev: true
