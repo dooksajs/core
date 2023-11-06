@@ -1,0 +1,8 @@
+{
+    "name": "@dooksa/ds-plugin-example",
+    "private": true,
+    "description": "Example client side plugin",
+    "type": "module",
+    "main": "src/index.js"
+  }
+  

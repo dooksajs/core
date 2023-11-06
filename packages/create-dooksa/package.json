@@ -1,0 +1,25 @@
+{
+  "name": "create-dooksa",
+  "version": "0.1.0",
+  "description": "Create a new Dooksa app",
+  "type": "module",
+  "author": "Thomas David <tom@mightysmile.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dooksajs/dooksa",
+    "directory": "packages/create-dooksa"
+  },
+  "license": "MPL-2.0",
+  "files": [
+    "dist"
+  ],
+  "bin": {
+    "create-dooksa": "dist/index.js"
+  },
+  "scripts": {
+    "build": "esbuild ./src/index.js --bundle --outfile=./dist/index.js"
+  },
+  "dependencies": {
+    "esbuild": "^0.19.5"
+  }
+}
