@@ -1,3 +1,5 @@
+import { definePlugin } from '@dooksa/ds-plugin'
+
 /**
  * @typedef {string} dsWidgetId - Instance id for a widget
  */
@@ -6,7 +8,7 @@
  * Dooksa widget plugin.
  * @namespace dsWidget
  */
-export default {
+export default definePlugin({
   name: 'dsWidget',
   version: 1,
   data: {
@@ -135,4 +137,4 @@ export default {
       }
     }
   }
-}
+})
