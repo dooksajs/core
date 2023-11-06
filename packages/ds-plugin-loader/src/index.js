@@ -1,4 +1,4 @@
-import DsPlugin from '@dooksa/ds-plugin'
+import { DsPlugin } from '@dooksa/ds-plugin'
 
 /**
  * @typedef DsPluginOptions
