@@ -25,7 +25,8 @@ const result = await esbuild.build({
   format: 'esm',
   minify: true,
   platform: 'browser',
-  metafile: true
+  metafile: true,
+  reserveProps: /__d__/
 })
 
 console.log(await esbuild.analyzeMetafile(result.metafile))
