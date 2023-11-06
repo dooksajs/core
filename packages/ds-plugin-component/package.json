@@ -9,6 +9,7 @@
   "type": "module",
   "main": "src/index.js",
   "dependencies": {
+    "@dooksa/ds-plugin": "workspace:^",
     "iconify-icon": "^1.0.1"
   }
 }

@@ -9,6 +9,7 @@
   "type": "module",
   "main": "src/index.js",
   "dependencies": {
+    "@dooksa/ds-plugin": "workspace:^",
     "@dooksa/ds-plugin-page": "workspace:^"
   }
 }

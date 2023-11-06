@@ -16,6 +16,8 @@ importers:
         specifier: ^17.1.0
         version: 17.1.0
 
+  packages/config: {}
+
   packages/create-app:
     dependencies:
       '@dooksa/ds-plugin':
@@ -24,6 +26,12 @@ importers:
       '@dooksa/ds-plugin-manager':
         specifier: workspace:^
         version: link:../ds-plugin-manager
+
+  packages/create-dooksa:
+    dependencies:
+      esbuild:
+        specifier: ^0.19.5
+        version: 0.19.5
 
   packages/crypto:
     dependencies:
@@ -145,23 +153,41 @@ importers:
 
   packages/ds-plugin: {}
 
-  packages/ds-plugin-action: {}
+  packages/ds-plugin-action:
+    dependencies:
+      '@dooksa/ds-plugin':
+        specifier: workspace:^
+        version: link:../ds-plugin
 
   packages/ds-plugin-component:
     dependencies:
+      '@dooksa/ds-plugin':
+        specifier: workspace:^
+        version: link:../ds-plugin
       iconify-icon:
         specifier: ^1.0.1
         version: 1.0.1
 
-  packages/ds-plugin-content: {}
+  packages/ds-plugin-content:
+    dependencies:
+      '@dooksa/ds-plugin':
+        specifier: workspace:^
+        version: link:../ds-plugin
 
   packages/ds-plugin-data:
     dependencies:
       '@dooksa/crypto':
         specifier: workspace:^
         version: link:../crypto
+      '@dooksa/ds-plugin':
+        specifier: workspace:^
+        version: link:../ds-plugin
 
-  packages/ds-plugin-database: {}
+  packages/ds-plugin-database:
+    dependencies:
+      '@dooksa/ds-plugin':
+        specifier: workspace:^
+        version: link:../ds-plugin
 
   packages/ds-plugin-devtool: {}
 
@@ -171,9 +197,17 @@ importers:
         specifier: workspace:^
         version: link:../ds-plugin
 
-  packages/ds-plugin-event: {}
+  packages/ds-plugin-event:
+    dependencies:
+      '@dooksa/ds-plugin':
+        specifier: workspace:^
+        version: link:../ds-plugin
 
-  packages/ds-plugin-layout: {}
+  packages/ds-plugin-layout:
+    dependencies:
+      '@dooksa/ds-plugin':
+        specifier: workspace:^
+        version: link:../ds-plugin
 
   packages/ds-plugin-loader:
     dependencies:
@@ -199,34 +233,68 @@ importers:
         specifier: bitbucket:dooksa/resource-loader
         version: bitbucket.org/dooksa/resource-loader/62193df21e23aa45401b4700574dbdae85b7b80f
 
-  packages/ds-plugin-metadata: {}
+  packages/ds-plugin-metadata:
+    dependencies:
+      '@dooksa/ds-plugin':
+        specifier: workspace:^
+        version: link:../ds-plugin
 
-  packages/ds-plugin-operator: {}
+  packages/ds-plugin-operator:
+    dependencies:
+      '@dooksa/ds-plugin':
+        specifier: workspace:^
+        version: link:../ds-plugin
 
-  packages/ds-plugin-page: {}
+  packages/ds-plugin-page:
+    dependencies:
+      '@dooksa/ds-plugin':
+        specifier: workspace:^
+        version: link:../ds-plugin
 
-  packages/ds-plugin-router: {}
+  packages/ds-plugin-router:
+    dependencies:
+      '@dooksa/ds-plugin':
+        specifier: workspace:^
+        version: link:../ds-plugin
 
-  packages/ds-plugin-section: {}
+  packages/ds-plugin-section:
+    dependencies:
+      '@dooksa/ds-plugin':
+        specifier: workspace:^
+        version: link:../ds-plugin
 
   packages/ds-plugin-template:
     dependencies:
       '@dooksa/crypto':
         specifier: workspace:^
         version: link:../crypto
+      '@dooksa/ds-plugin':
+        specifier: workspace:^
+        version: link:../ds-plugin
       '@dooksa/parse-template':
         specifier: workspace:^
         version: link:../parse-template
 
-  packages/ds-plugin-token: {}
+  packages/ds-plugin-token:
+    dependencies:
+      '@dooksa/ds-plugin':
+        specifier: workspace:^
+        version: link:../ds-plugin
 
   packages/ds-plugin-view:
     dependencies:
+      '@dooksa/ds-plugin':
+        specifier: workspace:^
+        version: link:../ds-plugin
       '@dooksa/parse-template':
         specifier: workspace:^
         version: link:../parse-template
 
-  packages/ds-plugin-widget: {}
+  packages/ds-plugin-widget:
+    dependencies:
+      '@dooksa/ds-plugin':
+        specifier: workspace:^
+        version: link:../ds-plugin
 
   packages/ds-scripts:
     dependencies:
@@ -269,24 +337,36 @@ importers:
 
   packages/ds-server-plugin-action:
     dependencies:
+      '@dooksa/ds-plugin':
+        specifier: workspace:^
+        version: link:../ds-plugin
       '@dooksa/ds-plugin-action':
         specifier: workspace:^
         version: link:../ds-plugin-action
 
   packages/ds-server-plugin-component:
     dependencies:
+      '@dooksa/ds-plugin':
+        specifier: workspace:^
+        version: link:../ds-plugin
       '@dooksa/ds-plugin-component':
         specifier: workspace:^
         version: link:../ds-plugin-component
 
   packages/ds-server-plugin-content:
     dependencies:
+      '@dooksa/ds-plugin':
+        specifier: workspace:^
+        version: link:../ds-plugin
       '@dooksa/ds-plugin-content':
         specifier: workspace:^
         version: link:../ds-plugin-content
 
   packages/ds-server-plugin-database:
     dependencies:
+      '@dooksa/ds-plugin':
+        specifier: workspace:^
+        version: link:../ds-plugin
       sequelize:
         specifier: ^6.32.1
         version: 6.32.1(sqlite3@5.1.6)
@@ -311,12 +391,18 @@ importers:
 
   packages/ds-server-plugin-event:
     dependencies:
+      '@dooksa/ds-plugin':
+        specifier: workspace:^
+        version: link:../ds-plugin
       '@dooksa/ds-plugin-event':
         specifier: workspace:^
         version: link:../ds-plugin-event
 
   packages/ds-server-plugin-layout:
     dependencies:
+      '@dooksa/ds-plugin':
+        specifier: workspace:^
+        version: link:../ds-plugin
       '@dooksa/ds-plugin-layout':
         specifier: workspace:^
         version: link:../ds-plugin-layout
@@ -329,18 +415,27 @@ importers:
 
   packages/ds-server-plugin-page:
     dependencies:
+      '@dooksa/ds-plugin':
+        specifier: workspace:^
+        version: link:../ds-plugin
       '@dooksa/ds-plugin-page':
         specifier: workspace:^
         version: link:../ds-plugin-page
 
   packages/ds-server-plugin-section:
     dependencies:
+      '@dooksa/ds-plugin':
+        specifier: workspace:^
+        version: link:../ds-plugin
       '@dooksa/ds-plugin-section':
         specifier: workspace:^
         version: link:../ds-plugin-section
 
   packages/ds-server-plugin-template:
     dependencies:
+      '@dooksa/ds-plugin':
+        specifier: workspace:^
+        version: link:../ds-plugin
       '@dooksa/ds-plugin-template':
         specifier: workspace:^
         version: link:../ds-plugin-template
@@ -350,6 +445,9 @@ importers:
 
   packages/ds-server-plugin-user:
     dependencies:
+      '@dooksa/ds-plugin':
+        specifier: workspace:^
+        version: link:../ds-plugin
       bcryptjs:
         specifier: ^2.4.3
         version: 2.4.3
@@ -362,6 +460,9 @@ importers:
 
   packages/ds-server-plugin-web-server:
     dependencies:
+      '@dooksa/ds-plugin':
+        specifier: workspace:^
+        version: link:../ds-plugin
       compression:
         specifier: ^1.7.4
         version: 1.7.4
@@ -381,6 +482,9 @@ importers:
 
   packages/ds-server-plugin-widget:
     dependencies:
+      '@dooksa/ds-plugin':
+        specifier: workspace:^
+        version: link:../ds-plugin
       '@dooksa/ds-plugin-widget':
         specifier: workspace:^
         version: link:../ds-plugin-widget

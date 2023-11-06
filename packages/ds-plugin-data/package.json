@@ -9,6 +9,7 @@
   "type": "module",
   "main": "src/index.js",
   "dependencies": {
-    "@dooksa/crypto": "workspace:^"
+    "@dooksa/crypto": "workspace:^",
+    "@dooksa/ds-plugin": "workspace:^"
   }
 }
