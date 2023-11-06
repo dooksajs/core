@@ -1,15 +1,15 @@
-export default (type, node, getter) => {
+export default (type, node, getterName, getterKey = 'value') => {
   if (type === 'attribute') {
-    return _getNodeValueByAttribute(node, getter)
+    return _getNodeValueByAttribute(node, getterName, getterKey)
   }
 
   if (node.nodeName === '#text') {
-    const item = _getNodeValueByGetter(node, getter)
+    const item = _getNodeValueByGetter(node, getterName, getterKey)
 
     return _parseText(item.value)
   }
 
-  return _getNodeValueByGetter(node, getter)
+  return _getNodeValueByGetter(node, getterName, getterKey)
 }
 
 /**
@@ -19,17 +19,10 @@ export default (type, node, getter) => {
    * @returns {string}
    * @private
    */
-const _getNodeValueByAttribute = (node, getter) => {
-  if (typeof getter === 'string') {
-    return {
-      key: 'value',
-      value: node.getAttribute(getter)
-    }
-  }
-
+const _getNodeValueByAttribute = (node, name, key) => {
   return {
-    key: getter.key,
-    value: node.getAttribute(getter.name)
+    key,
+    value: node.getAttribute(name)
   }
 }
 
@@ -40,24 +33,14 @@ const _getNodeValueByAttribute = (node, getter) => {
    * @returns {string}
    * @private
    */
-const _getNodeValueByGetter = (node, getter) => {
-  if (typeof getter === 'string') {
-    const result = { key: 'value', value: '' }
+const _getNodeValueByGetter = (node, name, key) => {
+  const result = { key, value: '' }
 
-    if (node.__lookupGetter__(getter)) {
-      result.value = node[getter]
-    }
-
-    return result
-  } else {
-    const result = { key: getter.key, value: '' }
-
-    if (node.__lookupGetter__(getter.name)) {
-      result.value = node[getter.name]
-    }
-
-    return result
+  if (node.__lookupGetter__(name)) {
+    result.value = node[name]
   }
+
+  return result
 }
 
 const _parseText = (text) => {

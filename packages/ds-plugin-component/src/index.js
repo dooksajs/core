@@ -60,11 +60,11 @@ export default {
       content: {
         set: [{
           type: 'attribute',
-          value: 'href'
+          name: 'href'
         }],
         get: [{
           type: 'attribute',
-          value: 'href'
+          name: 'href'
         }]
       },
       events: ['click', 'hover']
@@ -75,31 +75,23 @@ export default {
       content: {
         set: [{
           type: 'attribute',
-          value: {
-            name: 'src',
-            key: 'src'
-          }
+          name: 'src',
+          contentProperty: 'src'
         },
         {
           type: 'attribute',
-          value: {
-            name: 'alt',
-            key: 'alt'
-          }
+          name: 'alt',
+          contentProperty: 'alt'
         }],
         get: [{
           type: 'attribute',
-          value: {
-            name: 'src',
-            key: 'src'
-          }
+          name: 'src',
+          contentProperty: 'src'
         },
         {
           type: 'attribute',
-          value: {
-            name: 'alt',
-            key: 'alt'
-          }
+          name: 'alt',
+          contentProperty: 'alt'
         }]
       },
       events: ['click']
@@ -110,7 +102,7 @@ export default {
       content: {
         set: [{
           type: 'setter',
-          value: 'innerHTML'
+          name: 'innerHTML'
         }]
       }
     },
@@ -120,7 +112,7 @@ export default {
       content: {
         set: [{
           type: 'setter',
-          value: 'textContent'
+          name: 'textContent'
         }]
       }
     },
@@ -130,7 +122,7 @@ export default {
       content: {
         set: [{
           type: 'setter',
-          value: 'textContent'
+          name: 'textContent'
         }]
       }
     },
@@ -140,7 +132,7 @@ export default {
       content: {
         set: [{
           type: 'setter',
-          value: 'textContent'
+          name: 'textContent'
         }]
       }
     },
@@ -150,7 +142,7 @@ export default {
       content: {
         set: [{
           type: 'setter',
-          value: 'textContent'
+          name: 'textContent'
         }]
       }
     },
@@ -160,7 +152,7 @@ export default {
       content: {
         set: [{
           type: 'setter',
-          value: 'textContent'
+          name: 'textContent'
         }]
       }
     },
@@ -170,7 +162,7 @@ export default {
       content: {
         set: [{
           type: 'setter',
-          value: 'textContent'
+          name: 'textContent'
         }]
       }
     },
@@ -180,7 +172,7 @@ export default {
       content: {
         set: [{
           type: 'setter',
-          value: 'textContent'
+          name: 'textContent'
         }]
       }
     },
@@ -190,7 +182,7 @@ export default {
       content: {
         set: [{
           type: 'setter',
-          value: 'textContent'
+          name: 'textContent'
         }]
       }
     },
@@ -200,7 +192,7 @@ export default {
       content: {
         set: [{
           type: 'setter',
-          value: 'textContent'
+          name: 'textContent'
         }]
       }
     },
@@ -209,7 +201,7 @@ export default {
       content: {
         set: [{
           type: 'setter',
-          value: 'textContent'
+          name: 'textContent'
         }]
       }
     },
@@ -219,7 +211,7 @@ export default {
       content: {
         set: [{
           type: 'setter',
-          value: 'textContent'
+          name: 'textContent'
         }]
       }
     },
@@ -248,11 +240,11 @@ export default {
       content: {
         get: [{
           type: 'getter',
-          value: 'value'
+          name: 'value'
         }],
         set: [{
           type: 'setter',
-          value: 'value'
+          name: 'value'
         }]
       }
     },
@@ -262,7 +254,7 @@ export default {
       content: {
         get: [{
           type: 'getter',
-          value: 'value'
+          name: 'value'
         }]
       }
     },
@@ -272,11 +264,11 @@ export default {
       content: {
         get: [{
           type: 'getter',
-          value: 'value'
+          name: 'value'
         }],
         set: [{
           type: 'setter',
-          value: 'value'
+          name: 'value'
         }]
       }
     },
@@ -286,7 +278,7 @@ export default {
       content: {
         get: [{
           type: 'getter',
-          value: 'textContent'
+          name: 'textContent'
         }]
       }
     },
@@ -297,11 +289,11 @@ export default {
       content: {
         set: [{
           type: 'attribute',
-          value: 'icon'
+          name: 'icon'
         }],
         get: [{
           type: 'attribute',
-          value: 'icon'
+          name: 'icon'
         }]
       }
     }

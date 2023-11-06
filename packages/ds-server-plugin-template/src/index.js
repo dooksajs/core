@@ -51,12 +51,12 @@ export default {
           let value = {}
 
           if (node.nodeName === '#text') {
-            value = getNodeValue(getters[0].type, node, getters[0].value)
+            value = getNodeValue(getters[0].type, node, getters[0].name, 'value')
           } else {
             // get node value
             for (let i = 0; i < getters.length; i++) {
               const getter = getters[i]
-              const result = getNodeValue(getter.type, node, getter.value)
+              const result = getNodeValue(getter.type, node, getter.name, getter.contentProperty)
 
               value[result.key] = result.value
             }
