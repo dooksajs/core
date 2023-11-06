@@ -23,6 +23,9 @@
  * @property {DsPluginSchemaItem} items
  * @property {DsPluginSchemaObject} properties
  * @property {DsPluginSchemaObject} patternProperties
+ * @property {Function} suffixId - Collection suffix id
+ * @property {Function} prefixId - Collection prefix id
+ * @property {Function} defaultId - Default collection id
  */
 
 /**
