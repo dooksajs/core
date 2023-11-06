@@ -153,11 +153,6 @@ export default {
         }
       }
 
-      // add forward slash
-      if (path[0] !== '/') {
-        path = '/' + path
-      }
-
       const suffixPath = suffix + path
 
       if (suffix === this.apiSuffix) {
