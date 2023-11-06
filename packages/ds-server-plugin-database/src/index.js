@@ -1,3 +1,4 @@
+import { definePlugin } from '@dooksa/ds-plugin'
 import { existsSync, rename, readFile } from 'node:fs'
 import { writeFile } from 'fs/promises'
 import { resolve, join } from 'path'
@@ -5,7 +6,7 @@ import { resolve, join } from 'path'
 /**
  * @namespace dsDatabase
  */
-export default {
+export default definePlugin({
   name: 'dsDatabase',
   version: 1,
   data: {
@@ -272,4 +273,4 @@ export default {
         })
     }
   }
-}
+})

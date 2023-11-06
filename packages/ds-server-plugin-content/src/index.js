@@ -1,10 +1,11 @@
+import { definePlugin } from '@dooksa/ds-plugin'
 import dsContent from '@dooksa/ds-plugin-content'
 
 /**
  * DsPage plugin.
  * @namespace dsContent
  */
-export default {
+export default definePlugin({
   name: 'dsContent',
   version: 1,
   dependencies: [
@@ -36,4 +37,4 @@ export default {
       ]
     })
   }
-}
+})

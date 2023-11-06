@@ -1,10 +1,11 @@
+import { definePlugin } from '@dooksa/ds-plugin'
 import dsLayout from '@dooksa/ds-plugin-layout'
 
 /**
  * Dooksa server layout model management
  * @namespace dsLayout
  */
-export default {
+export default definePlugin({
   name: 'dsLayout',
   version: 1,
   dependencies: [
@@ -39,4 +40,4 @@ export default {
       ]
     })
   }
-}
+})

@@ -1,8 +1,10 @@
+import { definePlugin } from '@dooksa/ds-plugin'
+
 /**
  * Ds Plugin.
- * @module plugin
+ * @namespace dsMetadata
  */
-export default {
+export default definePlugin({
   name: 'dsMetadata',
   version: 1,
   data: {
@@ -34,4 +36,4 @@ export default {
       }
     }
   }
-}
+})

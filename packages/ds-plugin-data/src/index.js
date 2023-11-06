@@ -1,3 +1,4 @@
+import { definePlugin } from '@dooksa/ds-plugin'
 import { uuid } from '@dooksa/crypto'
 
 function SchemaException (details) {
@@ -28,7 +29,7 @@ function SchemaException (details) {
  * Dooksa content management plugin
  * @namespace dsData
  */
-export default {
+export default definePlugin({
   name: 'dsData',
   version: 1,
   data: {
@@ -1343,4 +1344,4 @@ export default {
       }
     }
   }
-}
+})

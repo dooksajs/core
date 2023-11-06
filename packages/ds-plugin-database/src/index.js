@@ -1,7 +1,9 @@
+import { definePlugin } from '@dooksa/ds-plugin'
+
 /**
  * @namespace dsDatabase
  */
-export default {
+export default definePlugin({
   name: 'dsDatabase',
   version: 1,
   data: {
@@ -124,4 +126,4 @@ export default {
       this.updateName = this.adapter + '/' + this.updateName
     }
   }
-}
+})

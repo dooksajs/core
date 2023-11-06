@@ -1,3 +1,5 @@
+import { definePlugin } from '@dooksa/ds-plugin'
+
 /**
  * @typedef {string} dsSectionId - Id for a collection of widgets
  */
@@ -6,7 +8,7 @@
  * Dooksa sections.
  * @namespace dsSection
  */
-export default {
+export default definePlugin({
   name: 'dsSection',
   version: 1,
   data: {
@@ -150,4 +152,4 @@ export default {
       return dsSection
     }
   }
-}
+})

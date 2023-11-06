@@ -1,4 +1,6 @@
-export default {
+import { definePlugin } from '@dooksa/ds-plugin'
+
+export default definePlugin({
   name: 'dsOperator',
   version: 1,
   data: {
@@ -273,4 +275,4 @@ export default {
       return list
     }
   }
-}
+})

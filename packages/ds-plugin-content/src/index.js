@@ -1,3 +1,5 @@
+import { definePlugin } from '@dooksa/ds-plugin'
+
 /**
  * @typedef {string} dsContentId - dsContent item id
  * @example
@@ -26,7 +28,7 @@
  * Dooksa content management plugin
  * @namespace dsContent
  */
-export default {
+export default definePlugin({
   name: 'dsContent',
   version: 1,
   data: {
@@ -42,4 +44,4 @@ export default {
       }
     }
   }
-}
+})

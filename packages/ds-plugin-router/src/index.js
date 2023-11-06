@@ -1,8 +1,10 @@
+import { definePlugin } from '@dooksa/ds-plugin'
+
 /**
  * Dooksa widget plugin.
  * @namespace dsRouter
  */
-export default {
+export default definePlugin({
   name: 'dsRouter',
   version: 1,
   data: {
@@ -91,4 +93,4 @@ export default {
         .replace(/--+/g, '-') // Replace multiple - with single -
     }
   }
-}
+})

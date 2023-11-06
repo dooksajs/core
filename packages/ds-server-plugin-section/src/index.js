@@ -1,10 +1,11 @@
+import { definePlugin } from '@dooksa/ds-plugin'
 import dsSection from '@dooksa/ds-plugin-section'
 
 /**
  * DsPage plugin.
  * @namespace dsSection
  */
-export default {
+export default definePlugin({
   name: 'dsSection',
   version: 1,
   dependencies: [{
@@ -34,4 +35,4 @@ export default {
       ]
     })
   }
-}
+})

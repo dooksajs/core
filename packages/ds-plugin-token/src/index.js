@@ -1,4 +1,6 @@
-export default {
+import { definePlugin } from '@dooksa/ds-plugin'
+
+export default definePlugin({
   name: 'dsToken',
   version: 1,
   data: {
@@ -201,4 +203,4 @@ export default {
       updateText(process.text)
     }
   }
-}
+})

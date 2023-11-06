@@ -1,8 +1,10 @@
+import { definePlugin } from '@dooksa/ds-plugin'
+
 /**
  * Dooksa layout tools.
- * @module plugin
+ * @namespace dsLayout
  */
-export default {
+export default definePlugin({
   name: 'dsLayout',
   version: 1,
   data: {
@@ -185,4 +187,4 @@ export default {
       }
     }
   }
-}
+})

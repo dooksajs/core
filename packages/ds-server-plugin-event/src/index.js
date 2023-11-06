@@ -1,10 +1,11 @@
+import { definePlugin } from '@dooksa/ds-plugin'
 import dsEvent from '@dooksa/ds-plugin-event'
 
 /**
  * Dooksa server event model management.
  * @namespace dsEvent
  */
-export default {
+export default definePlugin({
   name: 'dsEvent',
   version: 1,
   dependencies: [
@@ -18,4 +19,4 @@ export default {
   setup () {
 
   }
-}
+})

@@ -1,3 +1,5 @@
+import { definePlugin } from '@dooksa/ds-plugin'
+
 /**
  * @typedef {Object} dsComponent - Component schema used to construct an Text node or Element
  * @property {boolean} Component.textNode - Declares if component is a textNode or not
@@ -9,7 +11,7 @@
  * Dooksa components
  * @namespace dsComponent
  */
-export default {
+export default definePlugin({
   name: 'dsComponent',
   version: 1,
   data: {
@@ -319,4 +321,4 @@ export default {
       }
     }
   }
-}
+})

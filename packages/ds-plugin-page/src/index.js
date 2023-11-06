@@ -1,8 +1,10 @@
+import { definePlugin } from '@dooksa/ds-plugin'
+
 /**
  * DsPage plugin.
  * @namespace dsPage
  */
-export default {
+export default definePlugin({
   name: 'dsPage',
   version: 1,
   data: {
@@ -139,4 +141,4 @@ export default {
 
     }
   }
-}
+})

@@ -1,3 +1,4 @@
+import { definePlugin } from '@dooksa/ds-plugin'
 import { getNodeValue } from '@dooksa/parse-template'
 
 /**
@@ -9,7 +10,7 @@ import { getNodeValue } from '@dooksa/parse-template'
 /**
  * @namespace dsView
  */
-export default {
+export default definePlugin({
   name: 'dsView',
   version: 1,
   data: {
@@ -271,7 +272,7 @@ export default {
       if (!dsView.isEmpty) {
         // remove content attachment
         this._unmount(dsViewId)
-        this._removeHanders(dsViewId)
+        this._removeHandlers(dsViewId)
 
         dsView.item.remove()
       }
@@ -290,7 +291,7 @@ export default {
 
         while (node.lastChild) {
           this._unmount(node.lastChild.dsViewId)
-          this._removeHanders(node.lastChild.dsViewId)
+          this._removeHandlers(node.lastChild.dsViewId)
 
           node.removeChild(node.lastChild)
         }
@@ -419,7 +420,7 @@ export default {
      * @param {dsViewId} id - handler ref id
      * @private
      */
-    _removeHanders (dsViewId) {
+    _removeHandlers (dsViewId) {
       delete this.handlers[dsViewId]
     },
     /**
@@ -494,4 +495,4 @@ export default {
       })
     }
   }
-}
+})

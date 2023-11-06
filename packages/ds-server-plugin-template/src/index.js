@@ -1,3 +1,4 @@
+import { definePlugin } from '@dooksa/ds-plugin'
 import dsTemplate from '@dooksa/ds-plugin-template'
 import { parseHTML, getNodeValue } from '@dooksa/parse-template'
 
@@ -5,7 +6,7 @@ import { parseHTML, getNodeValue } from '@dooksa/parse-template'
  * DsPage plugin.
  * @namespace dsTemplate
  */
-export default {
+export default definePlugin({
   name: 'dsTemplate',
   version: 1,
   dependencies: [
@@ -118,4 +119,4 @@ export default {
       return { id: result.id, mode: template.mode }
     }
   }
-}
+})

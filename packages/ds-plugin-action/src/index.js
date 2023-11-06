@@ -1,12 +1,10 @@
-/**
- * @typedef {String} dsActionId - The entry action id
- */
+import { definePlugin } from '@dooksa/ds-plugin'
 
 /**
  * Dooksa action plugin.
  * @namespace dsAction
  */
-export default {
+export default definePlugin({
   name: 'dsAction',
   version: 1,
   data: {
@@ -341,4 +339,4 @@ export default {
       return result
     }
   }
-}
+})

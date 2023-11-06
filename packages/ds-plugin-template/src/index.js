@@ -1,7 +1,6 @@
-/**
- * @namespace dsTemplate
- */
-export default {
+import { definePlugin } from '@dooksa/ds-plugin'
+
+export default definePlugin({
   name: 'dsTemplate',
   version: 1,
   dependencies: [
@@ -106,7 +105,6 @@ export default {
       }
     }
   },
-  /** @lends dsTemplate */
   methods: {
     create ({
       id,
@@ -256,4 +254,4 @@ export default {
       return dsSectionId
     }
   }
-}
+})

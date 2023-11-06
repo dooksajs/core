@@ -1,3 +1,4 @@
+import { definePlugin } from '@dooksa/ds-plugin'
 import dsPage from '@dooksa/ds-plugin-page'
 import { createHash } from 'node:crypto'
 
@@ -5,7 +6,7 @@ import { createHash } from 'node:crypto'
  * DsPage plugin.
  * @namespace dsPage
  */
-export default {
+export default definePlugin({
   name: 'dsPage',
   version: 1,
   dependencies: [
@@ -127,4 +128,4 @@ export default {
       response.status(201).send(setData)
     }
   }
-}
+})

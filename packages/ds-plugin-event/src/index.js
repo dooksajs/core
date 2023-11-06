@@ -1,3 +1,5 @@
+import { definePlugin } from '@dooksa/ds-plugin'
+
 /**
  * @typedef {string} dsEventId - Event id is the listener reference item
  */
@@ -10,7 +12,7 @@
  * Dooksa event plugin.
  * @namespace dsEvent
  */
-export default {
+export default definePlugin({
   name: 'dsEvent',
   version: 1,
   data: {
@@ -52,4 +54,4 @@ export default {
       }
     }
   }
-}
+})

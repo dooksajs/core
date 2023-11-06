@@ -1,4 +1,4 @@
-import { DsPlugin } from '@dooksa/ds-plugin'
+import { DsPlugin, definePlugin } from '@dooksa/ds-plugin'
 
 /**
  * @typedef DsPluginOptions
@@ -20,7 +20,7 @@ import { DsPlugin } from '@dooksa/ds-plugin'
  * Dooksa plugin loader, this includes async loading and resolving dependencies management
  * @namespace dsLoader
  */
-export default {
+export default definePlugin({
   name: 'dsLoader',
   version: 1,
   data: {
@@ -393,4 +393,4 @@ export default {
       this.subscribed[dependency][listener] = true
     }
   }
-}
+})

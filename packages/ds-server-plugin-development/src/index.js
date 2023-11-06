@@ -1,7 +1,9 @@
+import { definePlugin } from '@dooksa/ds-plugin'
+
 /**
  * @namespace dsServerDevelopment
  */
-export default {
+export default definePlugin({
   name: 'dsDevelopment',
   version: 1,
   data: {
@@ -12,15 +14,23 @@ export default {
     }
   },
   setup () {
+    this.$setWebServerRoute('/build/template/:id', {
+      method: 'get',
+      handlers: [
+        this._template.bind(this)
+      ]
+    })
+
+    // sse rebuild notification
     this.$setWebServerRoute('/esbuild', {
       method: 'get',
       handlers: [
-        this._build.bind(this)
+        this._esbuild.bind(this)
       ]
     })
   },
   methods: {
-    _build (request, response) {
+    _esbuild (request, response) {
       response.writeHead(200, {
         'Content-Type': 'text/event-stream',
         Connection: 'keep-alive',
@@ -51,7 +61,7 @@ export default {
         })
       })
     }
-    // template () {
+    // _template (request, response) {
     //   // build templates
     //   if (dsConfig.templates) {
     //     const template = buildTemplates(dsConfig.templates, app.components)
@@ -90,4 +100,4 @@ export default {
     //   }
     // }
   }
-}
+})

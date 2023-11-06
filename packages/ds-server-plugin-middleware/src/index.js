@@ -1,8 +1,10 @@
+import { definePlugin } from '@dooksa/ds-plugin'
+
 /**
  * Error handler for Dooksa plugins
  * @namespace dsMiddleware
  */
-export default {
+export default definePlugin({
   name: 'dsMiddleware',
   version: 1,
   data: {
@@ -53,4 +55,4 @@ export default {
       next()
     }
   }
-}
+})

@@ -1,4 +1,4 @@
-import { DsPlugin } from '@dooksa/ds-plugin'
+import { DsPlugin, definePlugin } from '@dooksa/ds-plugin'
 import dsLoader from '@dooksa/ds-plugin-loader'
 import resource from '@dooksa/resource-loader'
 
@@ -16,7 +16,7 @@ const VERSION = 1
  * Ds plugin manager
  * @namespace dsManager
  */
-export default {
+export default definePlugin({
   name: NAME,
   version: VERSION,
   data: {
@@ -407,4 +407,4 @@ export default {
       }
     }
   }
-}
+})

@@ -1,10 +1,11 @@
+import { definePlugin } from '@dooksa/ds-plugin'
 import dsAction from '@dooksa/ds-plugin-action'
 
 /**
  * DsPage plugin.
  * @namespace dsAction
  */
-export default {
+export default definePlugin({
   name: 'dsAction',
   version: 1,
   dependencies: [
@@ -72,4 +73,4 @@ export default {
       ]
     })
   }
-}
+})

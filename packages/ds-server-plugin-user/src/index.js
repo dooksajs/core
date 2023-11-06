@@ -1,10 +1,11 @@
+import { definePlugin } from '@dooksa/ds-plugin'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 
 /**
  * @namespace dsUser
  */
-export default {
+export default definePlugin({
   name: 'dsUser',
   version: 1,
   dependencies: [{
@@ -272,4 +273,4 @@ export default {
       }, this.secret, { algorithm: this.tokenAlgorithm, expiresIn })
     }
   }
-}
+})

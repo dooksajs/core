@@ -1,3 +1,4 @@
+import { definePlugin } from '@dooksa/ds-plugin'
 import express from 'express'
 import helmet from 'helmet'
 import logger from 'pino-http'
@@ -31,7 +32,7 @@ import compression from 'compression'
  * Dooksa webserver.
  * @namespace dsWebServer
  */
-export default {
+export default definePlugin({
   name: 'dsWebServer',
   version: 1,
   dependencies: [
@@ -197,4 +198,4 @@ export default {
       }
     }
   }
-}
+})
