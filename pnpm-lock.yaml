@@ -387,7 +387,11 @@ importers:
         specifier: workspace:^
         version: link:../ds-scripts
 
-  packages/ds-server-plugin-development: {}
+  packages/ds-server-plugin-development:
+    dependencies:
+      '@dooksa/ds-plugin':
+        specifier: workspace:^
+        version: link:../ds-plugin
 
   packages/ds-server-plugin-event:
     dependencies:
