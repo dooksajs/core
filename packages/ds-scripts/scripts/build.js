@@ -23,9 +23,9 @@ const result = await esbuild.build({
   splitting: true,
   outdir,
   format: 'esm',
-  minify: true,
   platform: 'browser',
   metafile: true,
+  minify: true,
   reserveProps: /__d__/
 })
 
