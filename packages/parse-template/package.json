@@ -6,7 +6,7 @@
   "repository": "git@github.com:dooksajs/dooksa.git",
   "license": "MPL-2.0",
   "type": "module",
-  "main": "./src/main.js",
+  "main": "./src/index.js",
   "dependencies": {
     "@dooksa/object-hash": "workspace:^"
   }
