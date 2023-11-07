@@ -293,11 +293,7 @@ export default definePlugin({
                 const getter = component.content.get[i]
 
                 if (getter.type === 'attribute') {
-                  if (getter.value.name) {
-                    ignoreAttributes.push(getter.value.name)
-                  } else {
-                    ignoreAttributes.push(getter.value)
-                  }
+                  ignoreAttributes.push(getter.name)
                 }
               }
 
