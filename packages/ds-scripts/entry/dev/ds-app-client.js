@@ -1,5 +1,11 @@
 import dsAppClient from '@dooksa/ds-app-client'
 
+const eventSource = new window.EventSource('/_/esbuild')
+
+eventSource.addEventListener('rebuild-client', () => {
+  window.location.reload()
+})
+
 const data = __ds__ // eslint-disable-line
 
 dsAppClient.start({
@@ -23,10 +29,4 @@ dsAppClient.start({
   onError: (e) => {
     console.error(e)
   }
-})
-
-const eventSource = new window.EventSource('/_/esbuild')
-
-eventSource.addEventListener('rebuild-client', () => {
-  window.location.reload()
 })
