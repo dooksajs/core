@@ -68,6 +68,18 @@
  */
 
 /**
+ * @typedef {Function} DsPluginMethod
+ * @param {Object} value - Public methods parameter requires a single object
+ */
+
+/**
+ * @typedef {Object} DsPluginMethodContext
+ * @property {function} value - The contextual plugin function
+ * @property {string[]} scope - A list of plugins to restrict the scope
+ * @property {boolean} export - Export the method to the global app
+ */
+
+/**
  * Define a dooksa plugin
  * @param {Object} plugin - Plugin object
  * @param {string} plugin.name - Name of plugin
@@ -79,8 +91,8 @@
  * @param {Object.<string, DsPluginData>} plugin.data - Data that the plugin will manage
  * @param {Object.<string, DsPluginSchemaComponent>} plugin.components
  * @param {Object} plugin.methods
- * @param {Object.<string, Function>} plugin.methods.context - Context methods are bound to each plugins scope unless specified otherwise
- * @param {Object.<string, Function>} plugin.methods.public - Public methods are available within the plugins local scope and shared with other plugins via this.$method('dsExample/methodName')
+ * @param {Object.<string, (DsPluginMethodContext|Function)>} plugin.methods.context - Context methods are bound to each plugins scope unless specified otherwise
+ * @param {Object.<string, DsPluginMethod>} plugin.methods.public - Public methods are available within the plugins local scope and shared with other plugins via this.$method('dsExample/methodName')
  * @param {Object.<string, Function>} plugin.methods.private - Private methods scope is bound to the plugin only
  * @returns {DsPlugin}
  */
