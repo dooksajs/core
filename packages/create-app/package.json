@@ -16,6 +16,6 @@
     "lint:fix": "standard --fix"
   },
   "dependencies": {
-    "@dooksa/ds-plugins": "workspace:^"
+    "@dooksa/ds-plugin": "workspace:^"
   }
 }

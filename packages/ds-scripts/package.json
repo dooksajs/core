@@ -9,10 +9,10 @@
     "ds-scripts": "./bin/ds-scripts.js"
   },
   "dependencies": {
-    "@dooksa/crypto": "workspace:^",
+    "@dooksa/crypto-uuid": "workspace:^",
     "@dooksa/ds-app-client": "workspace:^",
     "@dooksa/ds-app-server": "workspace:^",
-    "@dooksa/ds-plugins": "workspace:^",
+    "@dooksa/ds-plugin": "workspace:^",
     "@dooksa/parse-action": "workspace:^",
     "@dooksa/parse-template": "workspace:^",
     "chalk": "^5.3.0",

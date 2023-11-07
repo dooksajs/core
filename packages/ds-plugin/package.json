@@ -1,0 +1,15 @@
+{
+  "name": "@dooksa/ds-plugin",
+  "private": true,
+  "version": "1.0.0",
+  "author": "Thomas David <tom@mightysmile.com>",
+  "repository": "git@github.com:dooksajs/dooksa.git",
+  "license": "MPL-2.0",
+  "type": "module",
+  "main": "./src/index.js",
+  "devDependencies": {
+    "@dooksa/crypto-uuid": "workspace:^",
+    "@dooksa/dom": "workspace:^",
+    "@dooksa/resource-loader": "workspace:^"
+  }
+}

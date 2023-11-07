@@ -8,6 +8,6 @@
   "type": "module",
   "main": "./src/main.js",
   "dependencies": {
-    "@dooksa/crypto": "workspace:^"
+    "@dooksa/crypto-hash": "workspace:^"
   }
 }

@@ -1,25 +1,25 @@
 import {
-  dsMiddlewareServer,
+  dsMiddleware,
   dsWebServer,
-  dsDatabaseSever,
-  dsContentServer,
-  dsPageServer,
-  dsEventServer,
-  dsLayoutServer,
-  dsTemplateServer,
-  dsActionServer,
-  dsSectionServer,
-  dsComponentServer,
-  dsUserServer,
-  dsWidgetServer
-} from '@dooksa/ds-plugins'
+  dsDatabase,
+  dsContent,
+  dsPage,
+  dsEvent,
+  dsLayout,
+  dsTemplate,
+  dsAction,
+  dsSection,
+  dsComponent,
+  dsUser,
+  dsWidget
+} from '@dooksa/ds-plugin-'
 
 const plugins = [
 
   {
-    name: dsMiddlewareServer.name,
-    version: dsMiddlewareServer.version,
-    value: dsMiddlewareServer
+    name: dsMiddleware.name,
+    version: dsMiddleware.version,
+    value: dsMiddleware
   },
   {
     name: dsWebServer.name,
@@ -27,59 +27,59 @@ const plugins = [
     value: dsWebServer
   },
   {
-    name: dsDatabaseSever.name,
-    version: dsDatabaseSever.version,
-    value: dsDatabaseSever
+    name: dsDatabase.name,
+    version: dsDatabase.version,
+    value: dsDatabase
   },
   {
-    name: dsContentServer.name,
-    version: dsContentServer.version,
-    value: dsContentServer
+    name: dsContent.name,
+    version: dsContent.version,
+    value: dsContent
   },
   {
-    name: dsPageServer.name,
-    version: dsPageServer.version,
-    value: dsPageServer
+    name: dsPage.name,
+    version: dsPage.version,
+    value: dsPage
   },
   {
-    name: dsEventServer.name,
-    version: dsEventServer.version,
-    value: dsEventServer
+    name: dsEvent.name,
+    version: dsEvent.version,
+    value: dsEvent
   },
   {
-    name: dsLayoutServer.name,
-    version: dsLayoutServer.version,
-    value: dsLayoutServer
+    name: dsLayout.name,
+    version: dsLayout.version,
+    value: dsLayout
   },
   {
-    name: dsTemplateServer.name,
-    version: dsTemplateServer.version,
-    value: dsTemplateServer
+    name: dsTemplate.name,
+    version: dsTemplate.version,
+    value: dsTemplate
   },
   {
-    name: dsActionServer.name,
-    version: dsActionServer.version,
-    value: dsActionServer
+    name: dsAction.name,
+    version: dsAction.version,
+    value: dsAction
   },
   {
-    name: dsSectionServer.name,
-    version: dsSectionServer.version,
-    value: dsSectionServer
+    name: dsSection.name,
+    version: dsSection.version,
+    value: dsSection
   },
   {
-    name: dsComponentServer.name,
-    version: dsComponentServer.version,
-    value: dsComponentServer
+    name: dsComponent.name,
+    version: dsComponent.version,
+    value: dsComponent
   },
   {
-    name: dsUserServer.name,
-    version: dsUserServer.version,
-    value: dsUserServer
+    name: dsUser.name,
+    version: dsUser.version,
+    value: dsUser
   },
   {
-    name: dsWidgetServer.name,
-    version: dsWidgetServer.version,
-    value: dsWidgetServer
+    name: dsWidget.name,
+    version: dsWidget.version,
+    value: dsWidget
   }
 ]
 

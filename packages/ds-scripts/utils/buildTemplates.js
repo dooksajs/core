@@ -1,5 +1,5 @@
 import parseAction from '@dooksa/parse-action'
-import { uuid } from '@dooksa/crypto'
+import uuid from '@dooksa/crypto-uuid'
 
 export default (html) => {
   const actionSequences = {}

@@ -1,4 +1,4 @@
-import { dsManager, dsData, DsPlugin } from '@dooksa/ds-plugins'
+import { dsManager, dsData, DsPlugin } from '@dooksa/ds-plugin'
 
 export default () => ({
   /**

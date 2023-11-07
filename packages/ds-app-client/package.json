@@ -9,6 +9,8 @@
   "main": "src/index.js",
   "dependencies": {
     "@dooksa/create-app": "workspace:^",
-    "@dooksa/ds-plugins": "workspace:^"
+    "@dooksa/crypto-uuid": "workspace:^",
+    "@dooksa/ds-plugin": "workspace:^",
+    "@dooksa/dom": "workspace:^"
   }
 }

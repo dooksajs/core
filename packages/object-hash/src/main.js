@@ -1,4 +1,4 @@
-import { checksum } from '@dooksa/crypto'
+import checksum from '@dooksa/crypto-hash'
 
 const TYPES = {
   Object,

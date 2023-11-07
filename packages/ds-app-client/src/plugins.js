@@ -13,7 +13,7 @@ import {
   dsOperator,
   dsPage,
   dsDatabase
-} from '@dooksa/ds-plugins'
+} from '@dooksa/ds-plugin'
 
 const plugins = [
   {

@@ -2,7 +2,7 @@ import path from 'path'
 import esbuild from 'esbuild'
 import { appDirectory, scriptDirectory } from '../utils/paths.js'
 import dsApp from '@dooksa/ds-app-server'
-import dsDevelopmentServer from '@dooksa/ds-plugins'
+import { dsDevelopmentServer } from '@dooksa/ds-plugin-server'
 import chalk from 'chalk'
 import getUserLocale from 'get-user-locale'
 
@@ -48,7 +48,7 @@ const dsRebuildClientPlugin = {
         dsAppServer.$method('dsPage/setApp', result.outputFiles[0].text)
 
         // notify sse to reload
-        dsAppServer.$setDataValue('dsDevelopment/rebuildClient', rebuildClientNum++)
+        dsAppServer.$setDataValue('dsDevelopment/rebuildClient', ++rebuildClientNum)
       }
     })
   }
