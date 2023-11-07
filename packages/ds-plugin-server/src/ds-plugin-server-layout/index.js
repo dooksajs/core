@@ -1,11 +1,10 @@
-import definePlugin from '../definePlugin.js'
-import dsLayout from '../ds-plugin-layout/index.js'
+import { definePlugin, dsLayout } from '@dooksa/ds-plugin'
 
 /**
  * Dooksa server layout model management
  * @namespace dsLayout
  */
-export default /* @__PURE__ */ definePlugin({
+export default definePlugin({
   name: 'dsLayout',
   version: 1,
   dependencies: [

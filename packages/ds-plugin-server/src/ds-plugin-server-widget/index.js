@@ -1,11 +1,10 @@
-import definePlugin from '../definePlugin.js'
-import dsWidget from '../ds-plugin-widget/index.js'
+import { definePlugin, dsWidget } from '@dooksa/ds-plugin'
 
 /**
  * Dooksa server widget model management
  * @namespace dsWidget
  */
-export default /* @__PURE__ */ definePlugin({
+export default definePlugin({
   name: 'dsWidget',
   version: 1,
   dependencies: [

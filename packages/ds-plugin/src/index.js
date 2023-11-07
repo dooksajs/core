@@ -15,6 +15,7 @@ import dsOperator from './ds-plugin-operator/index.js'
 import dsPage from './ds-plugin-page/index.js'
 import dsRouter from './ds-plugin-router/index.js'
 import dsSection from './ds-plugin-section/index.js'
+import dsTemplate from './ds-plugin-template/index.js'
 import dsToken from './ds-plugin-token/index.js'
 import dsView from './ds-plugin-view/index.js'
 import dsWidget from './ds-plugin-widget/index.js'
@@ -37,6 +38,7 @@ export {
   dsPage,
   dsRouter,
   dsSection,
+  dsTemplate,
   dsToken,
   dsView,
   dsWidget

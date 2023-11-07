@@ -1,10 +1,10 @@
-import definePlugin from '../definePlugin.js'
+import { definePlugin } from '@dooksa/ds-plugin'
 
 /**
  * Error handler for Dooksa plugins
  * @namespace dsLog
  */
-export default /* @__PURE__ */ definePlugin({
+export default definePlugin({
   name: 'dsLog',
   version: 1,
   data: {

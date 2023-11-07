@@ -1,11 +1,10 @@
-import definePlugin from '../definePlugin.js'
-import dsSection from '../ds-plugin-section/index.js'
+import { definePlugin, dsSection } from '@dooksa/ds-plugin'
 
 /**
  * DsPage plugin.
  * @namespace dsSection
  */
-export default /* @__PURE__ */ definePlugin({
+export default definePlugin({
   name: 'dsSection',
   version: 1,
   dependencies: [{

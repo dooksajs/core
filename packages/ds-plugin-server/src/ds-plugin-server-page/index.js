@@ -1,12 +1,11 @@
 import { createHash } from 'node:crypto'
-import definePlugin from '../definePlugin.js'
-import dsPage from '../ds-plugin-page/index.js'
+import { definePlugin, dsPage } from '@dooksa/ds-plugin'
 
 /**
  * DsPage plugin.
  * @namespace dsPage
  */
-export default {
+export default definePlugin({
   name: 'dsPage',
   version: 1,
   dependencies: [
@@ -128,4 +127,4 @@ export default {
       response.status(201).send(setData)
     }
   }
-}
+})

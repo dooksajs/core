@@ -1,11 +1,11 @@
-import definePlugin from '../definePlugin.js'
+import { definePlugin } from '@dooksa/ds-plugin'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 
 /**
  * @namespace dsUser
  */
-export default /* @__PURE__ */ definePlugin({
+export default definePlugin({
   name: 'dsUser',
   version: 1,
   dependencies: [{

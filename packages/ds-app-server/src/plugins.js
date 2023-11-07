@@ -12,7 +12,7 @@ import {
   dsComponent,
   dsUser,
   dsWidget
-} from '@dooksa/ds-plugin-'
+} from '@dooksa/ds-plugin-server'
 
 const plugins = [
 

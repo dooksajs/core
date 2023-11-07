@@ -1,12 +1,12 @@
 import { existsSync, rename, readFile } from 'node:fs'
 import { writeFile } from 'fs/promises'
 import { resolve, join } from 'path'
-import definePlugin from '../definePlugin.js'
+import { definePlugin } from '@dooksa/ds-plugin'
 
 /**
  * @namespace dsDatabase
  */
-export default /* @__PURE__ */ definePlugin({
+export default definePlugin({
   name: 'dsDatabase',
   version: 1,
   data: {

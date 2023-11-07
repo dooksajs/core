@@ -1,11 +1,10 @@
-import definePlugin from '../definePlugin.js'
-import dsEvent from '../ds-plugin-event/index.js'
+import { definePlugin, dsEvent } from '@dooksa/ds-plugin'
 
 /**
  * Dooksa server event model management.
  * @namespace dsEvent
  */
-export default /* @__PURE__ */ definePlugin({
+export default definePlugin({
   name: 'dsEvent',
   version: 1,
   dependencies: [

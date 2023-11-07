@@ -9,6 +9,8 @@
   "main": "./src/index.js",
   "devDependencies": {
     "@dooksa/crypto-hash": "workspace:^",
+    "@dooksa/dom": "workspace:^",
+    "@dooksa/ds-plugin": "workspace:^",
     "@dooksa/parse-template": "workspace:^",
     "@dooksa/resource-loader": "workspace:^",
     "bcryptjs": "^2.4.3",

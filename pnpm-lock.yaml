@@ -118,6 +118,12 @@ importers:
       '@dooksa/crypto-hash':
         specifier: workspace:^
         version: link:../crypto-hash
+      '@dooksa/dom':
+        specifier: workspace:^
+        version: link:../dom
+      '@dooksa/ds-plugin':
+        specifier: workspace:^
+        version: link:../ds-plugin
       '@dooksa/parse-template':
         specifier: workspace:^
         version: link:../parse-template
@@ -166,6 +172,9 @@ importers:
       '@dooksa/ds-plugin':
         specifier: workspace:^
         version: link:../ds-plugin
+      '@dooksa/ds-plugin-server':
+        specifier: workspace:^
+        version: link:../ds-plugin-server
       '@dooksa/parse-action':
         specifier: workspace:^
         version: link:../parse-action

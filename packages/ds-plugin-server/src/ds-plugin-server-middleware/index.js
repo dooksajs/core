@@ -1,4 +1,4 @@
-import definePlugin from '../definePlugin.js'
+import { definePlugin } from '@dooksa/ds-plugin'
 
 /**
  * Error handler for Dooksa plugins

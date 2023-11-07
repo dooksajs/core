@@ -1,9 +1,9 @@
-import definePlugin from '../definePlugin.js'
+import { definePlugin } from '@dooksa/ds-plugin'
 
 /**
  * @namespace dsServerDevelopment
  */
-export default /* @__PURE__ */ definePlugin({
+export default definePlugin({
   name: 'dsDevelopment',
   version: 1,
   data: {
