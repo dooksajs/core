@@ -14,9 +14,7 @@
     "node": ">=16.10.0"
   },
   "devDependencies": {
+    "@dooksa/ds-scripts": "workspace:^",
     "standard": "^17.1.0"
-  },
-  "dependencies": {
-    "@dooksa/ds-scripts": "workspace:^"
   }
 }
