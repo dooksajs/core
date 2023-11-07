@@ -45,30 +45,30 @@
  */
 
 /**
- * @typedef {Object} DsPluginSchemaComponent
+ * @typedef {Object} DsPluginComponent
  * @property {string} name - Name of HTMLElement
  * @property {string} type - Category of element, e.g. <img> == 'image'
  * @property {Object} content - The getter and setters for the element
- * @property {DsPluginSchemaComponentGet[]} content.get[] - The element getters
- * @property {DsPluginSchemaComponentSet[]} content.set[] - The element setters
+ * @property {DsPluginComponentGet[]} content.get[] - The element getters
+ * @property {DsPluginComponentSet[]} content.set[] - The element setters
  */
 
 /**
- * @typedef {Object} DsPluginSchemaComponentGet
+ * @typedef {Object} DsPluginComponentGet
  * @property {'attribute'|'getter'} type - The type of getter by getAttribute or an element getter
  * @property {string} name - The name of the attribute
  * @property {string} contentProperty - The property name for the dsContent object to store the value
  */
 
 /**
- * @typedef {Object} DsPluginSchemaComponentSet
+ * @typedef {Object} DsPluginComponentSet
  * @property {'attribute'|'setter'} type - The type of setter by setAttribute or an element setter
  * @property {string} name - The name of the attribute
  * @property {string} contentProperty - The property name for the dsContent object to store the value
  */
 
 /**
- * @typedef {Function} DsPluginMethod
+ * @method DsPluginMethod
  * @param {Object} value - Public methods parameter requires a single object
  */
 
