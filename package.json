@@ -9,7 +9,7 @@
     "test": "ds-scripts test"
   },
   "license": "MPL-2.0",
-  "packageManager": "pnpm@8.10.0",
+  "packageManager": "pnpm@8.10.2",
   "engines": {
     "node": ">=16.10.0"
   },
