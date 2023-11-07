@@ -9,21 +9,6 @@
   "main": "src/index.js",
   "dependencies": {
     "@dooksa/create-app": "workspace:^",
-    "@dooksa/ds-plugin-action": "workspace:^",
-    "@dooksa/ds-plugin-component": "workspace:^",
-    "@dooksa/ds-plugin-content": "workspace:^",
-    "@dooksa/ds-plugin-data": "workspace:^",
-    "@dooksa/ds-plugin-database": "workspace:^",
-    "@dooksa/ds-plugin-event": "workspace:^",
-    "@dooksa/ds-plugin-layout": "workspace:^",
-    "@dooksa/ds-plugin-metadata": "workspace:^",
-    "@dooksa/ds-plugin-operator": "workspace:^",
-    "@dooksa/ds-plugin-page": "workspace:^",
-    "@dooksa/ds-plugin-router": "workspace:^",
-    "@dooksa/ds-plugin-section": "workspace:^",
-    "@dooksa/ds-plugin-template": "workspace:^",
-    "@dooksa/ds-plugin-token": "workspace:^",
-    "@dooksa/ds-plugin-view": "workspace:^",
-    "@dooksa/ds-plugin-widget": "workspace:^"
+    "@dooksa/ds-plugins": "workspace:^"
   }
 }

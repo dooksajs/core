@@ -1,25 +1,21 @@
-import dsData from '@dooksa/ds-plugin-data'
-import dsMetadata from '@dooksa/ds-plugin-metadata'
-import dsAction from '@dooksa/ds-plugin-action'
-import dsSection from '@dooksa/ds-plugin-section'
-import dsWidget from '@dooksa/ds-plugin-widget'
-import dsPage from '@dooksa/ds-plugin-page'
-import dsOperator from '@dooksa/ds-plugin-operator'
-import dsEvent from '@dooksa/ds-plugin-event'
-import dsRouter from '@dooksa/ds-plugin-router'
-import dsComponent from '@dooksa/ds-plugin-component'
-import dsLayout from '@dooksa/ds-plugin-layout'
-import dsToken from '@dooksa/ds-plugin-token'
-import dsView from '@dooksa/ds-plugin-view'
-import dsContent from '@dooksa/ds-plugin-content'
-import dsDatabase from '@dooksa/ds-plugin-database'
+import {
+  dsMetadata,
+  dsAction,
+  dsToken,
+  dsRouter,
+  dsComponent,
+  dsView,
+  dsContent,
+  dsLayout,
+  dsWidget,
+  dsSection,
+  dsEvent,
+  dsOperator,
+  dsPage,
+  dsDatabase
+} from '@dooksa/ds-plugins'
 
 const plugins = [
-  {
-    name: dsData.name,
-    version: dsData.version,
-    value: dsData
-  },
   {
     name: dsMetadata.name,
     version: dsMetadata.version,

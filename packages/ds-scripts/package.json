@@ -8,10 +8,6 @@
   "bin": {
     "ds-scripts": "./bin/ds-scripts.js"
   },
-  "imports": {
-    "#development": "../../../app/development/*",
-    "#production": "../../../app/production/*"
-  },
   "env": {
     "test:run": {
       "plugins": [
@@ -40,7 +36,7 @@
     "@dooksa/crypto": "workspace:^",
     "@dooksa/ds-app-client": "workspace:^",
     "@dooksa/ds-app-server": "workspace:^",
-    "@dooksa/ds-server-plugin-development": "workspace:^",
+    "@dooksa/ds-plugins": "workspace:^",
     "@dooksa/parse-action": "workspace:^",
     "@dooksa/parse-template": "workspace:^",
     "chalk": "^5.3.0",

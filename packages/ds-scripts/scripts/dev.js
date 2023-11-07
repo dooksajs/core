@@ -2,7 +2,7 @@ import path from 'path'
 import esbuild from 'esbuild'
 import { appDirectory, scriptDirectory } from '../utils/paths.js'
 import dsApp from '@dooksa/ds-app-server'
-import dsDevelopment from '@dooksa/ds-server-plugin-development'
+import dsDevelopmentServer from '@dooksa/ds-plugins'
 import chalk from 'chalk'
 import getUserLocale from 'get-user-locale'
 
@@ -71,9 +71,9 @@ const ctx = await esbuild.context({
 await ctx.watch()
 
 dsApp.use([{
-  name: dsDevelopment.name,
-  version: dsDevelopment.version,
-  value: dsDevelopment
+  name: dsDevelopmentServer.name,
+  version: dsDevelopmentServer.version,
+  value: dsDevelopmentServer
 }])
 
 dsApp.start({

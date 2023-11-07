@@ -27,11 +27,8 @@
       "assert"
     ]
   },
-  "devDependencies": {
-    "@dooksa/ds-scripts": "workspace:^"
-  },
   "dependencies": {
-    "nanoid": "^4.0.2",
-    "xxhash-wasm": "^1.0.2"
+    "@node-rs/xxhash": "^1.4.2",
+    "nanoid": "^4.0.2"
   }
 }

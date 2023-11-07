@@ -1,5 +1,4 @@
-import DsPlugin from '@dooksa/ds-plugin'
-import dsManager from '@dooksa/ds-plugin-manager'
+import { dsManager, dsData, DsPlugin } from '@dooksa/ds-plugins'
 
 export default () => ({
   /**
@@ -60,7 +59,13 @@ export default () => ({
       onError
     })
   },
-  _plugins: [],
+  _plugins: [
+    {
+      name: dsData.name,
+      version: dsData.version,
+      value: dsData
+    }
+  ],
   _getPlugin (name) {
     return this._plugins.find(item => item.name === name)
   }
