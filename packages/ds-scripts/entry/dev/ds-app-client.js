@@ -25,7 +25,7 @@ dsAppClient.start({
   }
 })
 
-const eventSource = new EventSource('/_/esbuild')
+const eventSource = new window.EventSource('/_/esbuild')
 
 eventSource.addEventListener('rebuild-client', () => {
   window.location.reload()
