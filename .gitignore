@@ -1,3 +1,7 @@
+# Dooksa
+/app
+/ds-config.js
+
 # Dependencies
 node_modules
 jspm_packages
