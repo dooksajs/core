@@ -1,14 +1,15 @@
 {
+  "name": "my-dooksa-app",
   "private": true,
   "scripts": {
-    "build": "ds-scripts build",
-    "dev": "ds-scripts dev",
-    "start": "ds-scripts start",
-    "test": "ds-scripts test"
+    "build": "ds-app build",
+    "dev": "ds-app dev",
+    "start": "ds-app start",
+    "test": "ds-app test"
   },
   "devDependencies": {
-    "@dooksa/ds-scripts": "latest"
+    "@dooksa/ds-app": "latest"
   },
-  "packageManager": "pnpm@8.10.2",
-  "name": "my-dooksa-app"
+  "packageManager": "pnpm@8.10.2"
+
 }
