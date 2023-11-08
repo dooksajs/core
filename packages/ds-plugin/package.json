@@ -10,6 +10,7 @@
   "devDependencies": {
     "@dooksa/crypto-uuid": "workspace:^",
     "@dooksa/dom": "workspace:^",
+    "@dooksa/ds-app": "workspace:^",
     "@dooksa/resource-loader": "workspace:^"
   }
 }

@@ -3,10 +3,12 @@ import dsApp from '@dooksa/ds-app-client'
 import dsPlugin from '@dooksa/plugin'
 
 export default (plugins = [], options = {}, callback) => {
+  const app = dsApp()
+
   for (let i = 0; i < plugins.length; i++) {
     const plugin = plugins[i]
 
-    dsApp.use({
+    app.use({
       name: plugin.name,
       version: plugin.version,
       value: plugin
@@ -14,13 +16,13 @@ export default (plugins = [], options = {}, callback) => {
   }
 
   // add current dev plugin
-  dsApp.use({
+  app.use({
     name: dsPlugin.name,
     version: dsPlugin.version,
     value: dsPlugin
   })
 
-  dsApp.start({
+  app.start({
     isDev: true,
     options
   }, callback)

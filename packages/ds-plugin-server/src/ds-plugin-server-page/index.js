@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto'
-import { definePlugin, dsPage } from '@dooksa/ds-plugin'
+import { dsPage } from '@dooksa/ds-plugin'
+import { definePlugin } from '@dooksa/ds-app'
 
 /**
  * DsPage plugin.

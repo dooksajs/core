@@ -1,4 +1,5 @@
-import { definePlugin, dsEvent } from '@dooksa/ds-plugin'
+import { dsEvent } from '@dooksa/ds-plugin'
+import { definePlugin } from '@dooksa/ds-app'
 
 /**
  * Dooksa server event model management.

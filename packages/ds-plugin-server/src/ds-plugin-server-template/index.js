@@ -1,6 +1,7 @@
 import { getNodeValue } from '@dooksa/dom'
 import { parseHTML } from '@dooksa/parse-template'
-import { definePlugin, dsTemplate } from '@dooksa/ds-plugin'
+import { dsTemplate } from '@dooksa/ds-plugin'
+import { definePlugin } from '@dooksa/ds-app'
 
 /**
  * DsPage plugin.

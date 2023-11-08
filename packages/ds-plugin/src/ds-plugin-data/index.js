@@ -1,5 +1,5 @@
+import { definePlugin } from '@dooksa/ds-app'
 import uuid from '@dooksa/crypto-uuid'
-import definePlugin from '../definePlugin.js'
 
 function SchemaException (details) {
   this.details = details

@@ -1,4 +1,4 @@
-import definePlugin from '../definePlugin.js'
+import { definePlugin } from '@dooksa/ds-app'
 
 export default definePlugin({
   name: 'dsOperator',

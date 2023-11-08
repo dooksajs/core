@@ -1,4 +1,5 @@
-import { definePlugin, dsSection } from '@dooksa/ds-plugin'
+import { dsSection } from '@dooksa/ds-plugin'
+import { definePlugin } from '@dooksa/ds-app'
 
 /**
  * DsPage plugin.

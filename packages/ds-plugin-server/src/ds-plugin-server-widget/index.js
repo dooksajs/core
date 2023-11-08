@@ -1,4 +1,5 @@
-import { definePlugin, dsWidget } from '@dooksa/ds-plugin'
+import { dsWidget } from '@dooksa/ds-plugin'
+import { definePlugin } from '@dooksa/ds-app'
 
 /**
  * Dooksa server widget model management

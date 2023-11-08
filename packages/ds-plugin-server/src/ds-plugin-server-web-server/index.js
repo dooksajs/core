@@ -1,4 +1,4 @@
-import { definePlugin } from '@dooksa/ds-plugin'
+import { definePlugin } from '@dooksa/ds-app'
 import express from 'express'
 import helmet from 'helmet'
 import logger from 'pino-http'

@@ -1,4 +1,5 @@
-import { definePlugin, dsLayout } from '@dooksa/ds-plugin'
+import { dsLayout } from '@dooksa/ds-plugin'
+import { definePlugin } from '@dooksa/ds-app'
 
 /**
  * Dooksa server layout model management

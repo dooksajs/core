@@ -1,13 +1,14 @@
 {
-  "name": "@dooksa/ds-scripts",
+  "name": "@dooksa/ds-app",
   "version": "0.0.0",
   "private": true,
   "author": "Thomas David <tom@mightysmile.com>",
   "repository": "git@github.com:dooksajs/dooksa.git",
   "type": "module",
   "bin": {
-    "ds-scripts": "./bin/ds-scripts.js"
+    "ds-app": "./bin/ds-app.js"
   },
+  "main": "./src/index.js",
   "dependencies": {
     "@dooksa/crypto-uuid": "workspace:^",
     "@dooksa/ds-app-client": "workspace:^",

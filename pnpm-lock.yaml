@@ -8,9 +8,9 @@ importers:
 
   .:
     devDependencies:
-      '@dooksa/ds-scripts':
+      '@dooksa/ds-app':
         specifier: workspace:^
-        version: link:packages/ds-scripts
+        version: link:packages/ds-app
       standard:
         specifier: ^17.1.0
         version: 17.1.0
@@ -40,6 +40,45 @@ importers:
         version: 4.0.2
 
   packages/dom: {}
+
+  packages/ds-app:
+    dependencies:
+      '@dooksa/crypto-uuid':
+        specifier: workspace:^
+        version: link:../crypto-uuid
+      '@dooksa/ds-app-client':
+        specifier: workspace:^
+        version: link:../ds-app-client
+      '@dooksa/ds-app-server':
+        specifier: workspace:^
+        version: link:../ds-app-server
+      '@dooksa/ds-plugin':
+        specifier: workspace:^
+        version: link:../ds-plugin
+      '@dooksa/ds-plugin-server':
+        specifier: workspace:^
+        version: link:../ds-plugin-server
+      '@dooksa/parse-action':
+        specifier: workspace:^
+        version: link:../parse-action
+      '@dooksa/parse-template':
+        specifier: workspace:^
+        version: link:../parse-template
+      chalk:
+        specifier: ^5.3.0
+        version: 5.3.0
+      dotenv:
+        specifier: ^16.0.3
+        version: 16.0.3
+      esbuild:
+        specifier: ^0.19.5
+        version: 0.19.5
+      get-user-locale:
+        specifier: ^2.3.1
+        version: 2.3.1
+      standard:
+        specifier: ^17.1.0
+        version: 17.1.0
 
   packages/ds-app-client:
     dependencies:
@@ -109,6 +148,9 @@ importers:
       '@dooksa/dom':
         specifier: workspace:^
         version: link:../dom
+      '@dooksa/ds-app':
+        specifier: workspace:^
+        version: link:../ds-app
       '@dooksa/resource-loader':
         specifier: workspace:^
         version: link:../resource-loader
@@ -121,6 +163,9 @@ importers:
       '@dooksa/dom':
         specifier: workspace:^
         version: link:../dom
+      '@dooksa/ds-app':
+        specifier: workspace:^
+        version: link:../ds-app
       '@dooksa/ds-plugin':
         specifier: workspace:^
         version: link:../ds-plugin

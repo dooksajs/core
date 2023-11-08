@@ -1,4 +1,5 @@
-import { definePlugin, dsAction } from '@dooksa/ds-plugin'
+import { dsAction } from '@dooksa/ds-plugin'
+import { definePlugin } from '@dooksa/ds-app'
 
 /**
  * DsPage plugin.

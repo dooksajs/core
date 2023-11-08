@@ -1,4 +1,4 @@
-import definePlugin from '../definePlugin.js'
+import { definePlugin } from '@dooksa/ds-app'
 
 /**
  * Dooksa widget plugin.

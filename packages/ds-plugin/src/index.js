@@ -1,5 +1,4 @@
 import DsPlugin from './DsPlugin.js'
-import definePlugin from './definePlugin.js'
 import dsAction from './ds-plugin-action/index.js'
 import dsComponent from './ds-plugin-component/index.js'
 import dsContent from './ds-plugin-content/index.js'
@@ -22,7 +21,6 @@ import dsWidget from './ds-plugin-widget/index.js'
 
 export {
   DsPlugin,
-  definePlugin,
   dsAction,
   dsComponent,
   dsContent,

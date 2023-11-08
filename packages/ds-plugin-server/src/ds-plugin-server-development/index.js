@@ -1,4 +1,4 @@
-import { definePlugin } from '@dooksa/ds-plugin'
+import { definePlugin } from '@dooksa/ds-app'
 
 /**
  * @namespace dsServerDevelopment
