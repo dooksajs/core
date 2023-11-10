@@ -110,6 +110,7 @@ export default definePlugin({
       })
 
       const result = this.$setDataValue('dsTemplate/items', {
+        options: template.options,
         content: template.content,
         layout: template.layout,
         layoutId: template.layoutId,
