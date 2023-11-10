@@ -243,10 +243,18 @@ export default definePlugin({
         get: [{
           type: 'getter',
           name: 'value'
+        },
+        {
+          type: 'attribute',
+          name: 'placeholder'
         }],
         set: [{
           type: 'setter',
           name: 'value'
+        },
+        {
+          type: 'attribute',
+          name: 'placeholder'
         }]
       }
     },
