@@ -2,18 +2,77 @@ import path from 'path'
 import esbuild from 'esbuild'
 import { appDirectory, scriptDirectory } from '../utils/paths.js'
 import dsApp from '@dooksa/ds-app-server'
-import { dsDevelopment } from '@dooksa/ds-plugin-server'
+import { dsEsbuild, dsTemplateBuild } from '@dooksa/ds-plugin-server'
 import chalk from 'chalk'
 import getUserLocale from 'get-user-locale'
 
 const log = console.log
 const lang = getUserLocale()
 
-const devDirectory = path.resolve(appDirectory, 'app', 'development')
+const devDirectory = path.resolve(appDirectory, 'app')
 const buildDirectory = path.resolve(scriptDirectory, 'entry', 'dev')
 const dsAppClientEntryPoint = path.resolve(buildDirectory, 'ds-app-client.js')
 const outfile = path.resolve(buildDirectory, 'build', 'ds-app-client.js')
 let dsAppServer
+
+dsApp.use([
+  {
+    name: dsEsbuild.name,
+    version: dsEsbuild.version,
+    value: dsEsbuild
+  },
+  {
+    name: dsTemplateBuild.name,
+    version: dsTemplateBuild.version,
+    value: dsTemplateBuild
+  }
+])
+
+dsApp.start({
+  isDev: true,
+  options: [
+    {
+      name: 'dsDatabase',
+      setup: {
+        storage: path.resolve(devDirectory, '.ds_snapshots')
+      }
+    },
+    {
+      name: 'dsWebServer',
+      setup: {
+        cookieSecret: 'RTRe50oe-wX8gd9qzrWUY71W4yGob10c',
+        publicPath: path.resolve(devDirectory, 'public')
+      }
+    },
+    {
+      name: 'dsUser',
+      setup: {
+        secret: 'RTRe50oe-wX8gd9qzrWUY71W4yGob10c'
+      }
+    },
+    {
+      name: 'dsPage',
+      setup: {
+        dsApp
+      }
+    },
+    {
+      name: 'dsTemplateBuild',
+      setup: {
+        buildDir: path.resolve(devDirectory, 'widgets')
+      }
+    }
+  ]
+}, {
+  onSuccess (app) {
+    app.$method('dsWebServer/start')
+
+    dsAppServer = app
+  },
+  onError (error) {
+    console.log(error)
+  }
+})
 
 const dsRebuildClientPlugin = {
   name: 'dsRebuildClient',
@@ -48,7 +107,7 @@ const dsRebuildClientPlugin = {
         dsAppServer.$method('dsPage/setApp', result.outputFiles[0].text)
 
         // notify sse to reload
-        dsAppServer.$setDataValue('dsDevelopment/rebuildClient', ++rebuildClientNum)
+        dsAppServer.$setDataValue('dsEsbuild/rebuildClient', ++rebuildClientNum)
       }
     })
   }
@@ -69,49 +128,3 @@ const ctx = await esbuild.context({
 })
 
 await ctx.watch()
-
-dsApp.use([{
-  name: dsDevelopment.name,
-  version: dsDevelopment.version,
-  value: dsDevelopment
-}])
-
-dsApp.start({
-  isDev: true,
-  options: [
-    {
-      name: 'dsDatabase',
-      setup: {
-        storage: path.resolve(devDirectory, 'ds_data')
-      }
-    },
-    {
-      name: 'dsWebServer',
-      setup: {
-        cookieSecret: 'RTRe50oe-wX8gd9qzrWUY71W4yGob10c',
-        publicPath: path.resolve(devDirectory, 'public')
-      }
-    },
-    {
-      name: 'dsUser',
-      setup: {
-        secret: 'RTRe50oe-wX8gd9qzrWUY71W4yGob10c'
-      }
-    },
-    {
-      name: 'dsPage',
-      setup: {
-        dsApp
-      }
-    }
-  ]
-}, {
-  onSuccess (app) {
-    app.$method('dsWebServer/start')
-
-    dsAppServer = app
-  },
-  onError (error) {
-    console.log(error)
-  }
-})
