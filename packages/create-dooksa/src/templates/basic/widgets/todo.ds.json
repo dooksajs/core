@@ -1,0 +1,38 @@
+{
+  "translations": [
+    {
+      "from": "en",
+      "content": "Add",
+      "to": [
+        ["es", "Agregar"],
+        ["fr", "Ajouter"]
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "id": "todo-add",
+      "name": "Add todo item",
+      "sequence": [
+        {
+          "dsAction": "dsTemplate/create",
+          "dsArgs": {
+            "id": "todo-item",
+            "sectionId": "todo-items",
+            "props": {
+              "content": {
+                "todo-text": {
+                  "dsAction": "get/dataValue",
+                  "dsArgs": {
+                    "name": "dsContent/items",
+                    "id": "todo-input"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

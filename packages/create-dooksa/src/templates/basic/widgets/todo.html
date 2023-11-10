@@ -1,0 +1,12 @@
+<template ds-template-id="todo">
+  <input ds-content-id="todo-input" type="text" placeholder="What needs to be done?">
+  <button class="btn btn-primary" type="button" ds-on-click="todo-add">Add</button>
+
+  <ul ds-section ds-section-id="todo-items"></ul>
+</template>
+
+<template ds-template-id="todo-item">
+  <li>
+    <ds-text ds-content-id="todo-text">Todo item</ds-text>
+  </li>
+</template>
