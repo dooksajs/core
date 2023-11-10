@@ -16,6 +16,7 @@ export default definePlugin({
   data: {
     ...dsComponent.data
   },
+  components: dsComponent.components,
   setup () {
     this.$seedDatabase('ds-component-items')
 
