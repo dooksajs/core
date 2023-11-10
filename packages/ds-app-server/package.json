@@ -11,7 +11,7 @@
     "@dooksa/create-app": "workspace:^",
     "@dooksa/ds-plugin": "workspace:^",
     "@dooksa/ds-plugin-server": "workspace:^",
-    "@dooksa/parse-template": "workspace:^",
+    "@dooksa/parse": "workspace:^",
     "@dooksa/dom": "workspace:^",
     "bcryptjs": "^2.4.3",
     "compression": "^1.7.4",

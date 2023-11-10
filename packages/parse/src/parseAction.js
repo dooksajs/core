@@ -11,7 +11,7 @@ import objectHash from '@dooksa/object-hash'
 /**
  * @typedef {Object} ActionBlock
  * @property {string} ActionBlock._$a - Action name
- * @property {(Object|Array|string|number)} ActionBlock._$p - Action parameters
+ * @property {(Object|Array|string|number)} ActionBlock._$arg - Action parameters
  */
 
 /**
@@ -100,9 +100,9 @@ const findActions = ({
     source._$a = source.dsAction
     delete source.dsAction
 
-    if (source.dsParams != null) {
-      source._$p = source.dsParams
-      delete source.dsParams
+    if (source.dsArgs != null) {
+      source._$arg = source.dsArgs
+      delete source.dsArgs
     }
 
     actions.unshift({

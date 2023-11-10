@@ -16,6 +16,7 @@ const parseHTML = (
     id: '',
     component: {},
     content: [],
+    options: [],
     layout: [],
     layoutId: [],
     layoutEntry: [],
@@ -32,7 +33,7 @@ const parseHTML = (
     // set metadata
     data.mode = source.getAttribute('ds-mode') || 'default'
     data.lang = source.getAttribute('ds-lang') || 'en'
-    data.id = source.getAttribute('ds-id') || ''
+    data.id = source.getAttribute('ds-template-id') || ''
 
     if (source.tagName === 'TEMPLATE') {
       // clone template content
@@ -44,6 +45,7 @@ const parseHTML = (
   }
 
   const content = []
+  const options = {}
   const layoutNodes = []
   const layout = []
   const layoutEntry = []
@@ -52,6 +54,7 @@ const parseHTML = (
   let sectionIndex = 0
 
   data.content[data.layoutIndex] = content
+  data.options[data.layoutIndex] = options
   data.layout[data.layoutIndex] = layout
   data.layoutEntry[data.layoutIndex] = layoutEntry
   data.widgetEvent[data.layoutIndex] = widgetEvent
@@ -62,13 +65,28 @@ const parseHTML = (
 
     for (let j = 0; j < nodeList.length; j++) {
       const node = nodeList[j]
+
+      if (node.nodeName === 'DS-TEXT') {
+        const item = { contentIndex: content.length }
+        const component = { id: 'text' }
+        const componentId = objectHash(component)
+
+        content.push({
+          nodeName: '#text',
+          textContent: node.innerHTML
+        })
+
+        item.componentId = componentId
+        data.component[componentId] = component
+        continue
+      }
+
       const isTextNode = node.nodeName === '#text' && node.textContent.trim()
 
       if (isTextNode || node.tagName) {
         const item = {}
         const component = {}
 
-        layoutNodes.push(node)
         layout.push(item)
 
         if (node.parentElement) {
@@ -85,8 +103,22 @@ const parseHTML = (
           item.contentIndex = content.length
           component.id = 'text'
           content.push(node)
+          layoutNodes.push(node)
+        } else if (node.nodeName === 'DS-TEXT') {
+          const textNode = {
+            nodeName: '#text',
+            textContent: node.innerHTML,
+            dsContentRef: node.getAttribute('ds-content-ref')
+          }
+
+          item.contentIndex = content.length
+          component.id = 'text'
+          content.push(textNode)
+          layoutNodes.push(textNode)
         } else {
           let hasSection = false
+
+          layoutNodes.push(node)
 
           // set component id
           component.id = node.tagName.toLowerCase()
@@ -102,6 +134,10 @@ const parseHTML = (
 
             if (result.bind.on) {
               widgetEvent[j] = result.bind.on
+            }
+
+            if (result.options) {
+              options[j] = result.options
             }
 
             hasSection = result.bind.hasSection
@@ -165,6 +201,7 @@ const parseHTML = (
 
 const parseAttributes = (attributes, ignore = []) => {
   const item = {
+    options: [],
     attributes: [],
     bind: {}
   }
@@ -175,11 +212,7 @@ const parseAttributes = (attributes, ignore = []) => {
     const value = attribute.value
 
     if (!ignore.includes(name)) {
-      if (name === 'class') {
-        const classList = value.split(' ').sort()
-
-        item.attributes.push([name, classList.join(' ')])
-      } else if (name.substring(0, 3) === 'ds-') {
+      if (name.substring(0, 3) === 'ds-') {
         const bind = name.split('-')
 
         if (bind[1] === 'on') {
@@ -189,9 +222,13 @@ const parseAttributes = (attributes, ignore = []) => {
           }
         } else if (bind[1] === 'section') {
           item.bind.hasSection = true
+        } else {
+          item.options.push(name, value)
         }
       } else {
-        item.attributes.push([name, value])
+        const valueSorted = value.split(' ').sort().join(' ')
+
+        item.attributes.push([name, valueSorted])
       }
     }
   }
