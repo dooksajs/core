@@ -76,6 +76,11 @@ function DsPlugin (plugin) {
     for (const key in plugin.methods) {
       if (Object.hasOwn(plugin.methods, key)) {
         const item = plugin.methods[key]
+
+        if (typeof item !== 'function' && typeof item !== 'object') {
+          throw new Error('[' + plugin.name + '] Plugin method "' + key + '" is undefined')
+        }
+
         const firstChar = key.charAt(0)
 
         // Add method to context
