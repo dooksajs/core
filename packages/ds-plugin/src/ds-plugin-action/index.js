@@ -134,7 +134,7 @@ export default definePlugin({
         throw new Error('No action found: ' + item.id)
       }
 
-      let paramNode = block.item._$p
+      let paramNode = block.item._$arg
 
       if (item.children) {
         for (let i = 0; i < item.children.length; i++) {
@@ -154,7 +154,7 @@ export default definePlugin({
       return {
         async: block.item.async,
         name: block.item._$a,
-        params: block.item._$p
+        params: block.item._$arg
       }
     },
     '_process/get/eventValue' (params, payload) {
