@@ -56,7 +56,12 @@ export default definePlugin({
 
     this.$setWebServerRoute('/*', {
       suffix: '',
-      handlers: [this._get.bind(this)]
+      handlers: [
+        this._get.bind(this),
+        (request, response) => {
+          this.create({ request, response })
+        }
+      ]
     })
 
     this.$setWebServerRoute('/', {
@@ -67,28 +72,11 @@ export default definePlugin({
     })
   },
   methods: {
-    _getById: dsPage.methods._getById,
-    _appendExpand: dsPage.methods._appendExpand,
-    setApp (item) {
-      this.dsApp = item
-    },
-    setCSS (item = '') {
-      this.dsCSS = '<style>' + item + '</style>'
-      this.dsCSSHash = this._hash(item)
-    },
-    _getApp (data = []) {
-      return '(() => {const __ds__ =' + JSON.stringify(data) + ';' + this.dsApp + '})()'
-    },
-    _get (request, response) {
-      const pageData = this._getById(request.path)
-
+    getById: dsPage.methods._getById,
+    create ({ request, response }) {
       response.set('Content-Type', 'text/html')
 
-      if (pageData.isEmpty) {
-        response.status(404)
-      }
-
-      const dsApp = this._getApp(pageData.item)
+      const dsApp = this._getApp(request.dsPageData)
       const dsAppHash = this._hash(dsApp)
 
       let csp = "script-src 'sha256-" + dsAppHash + "'"
@@ -105,6 +93,28 @@ export default definePlugin({
           <script>${dsApp}</script>
         ${this.templateEnd}`
       )
+    },
+    setApp (item) {
+      this.dsApp = item
+    },
+    setCSS (item = '') {
+      this.dsCSS = '<style>' + item + '</style>'
+      this.dsCSSHash = this._hash(item)
+    },
+    _appendExpand: dsPage.methods._appendExpand,
+    _getApp (data = []) {
+      return '(() => {const __ds__ =' + JSON.stringify(data) + ';' + this.dsApp + '})()'
+    },
+    _get (request, response, next) {
+      const pageData = this.getById(request.path)
+
+      if (pageData.isEmpty) {
+        return response.status(404)
+      }
+
+      request.dsPageData = pageData
+
+      next()
     },
     _hash (item) {
       const hash = createHash('sha256')
