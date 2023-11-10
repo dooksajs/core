@@ -80,6 +80,9 @@ export default definePlugin({
         })
       }
 
+      // store what event id's were used
+      const eventActions = []
+
       // match action reference to events
       if (actions) {
         for (let i = 0; i < template.widgetEvent.length; i++) {
@@ -94,6 +97,7 @@ export default definePlugin({
 
                 if (actions[eventId]) {
                   event.value[i] = actions[eventId]
+                  eventActions.push(eventId)
                 }
               }
             }
@@ -116,7 +120,7 @@ export default definePlugin({
         id: template.id
       })
 
-      return { id: result.id, mode: template.mode }
+      return { id: result.id, mode: template.mode, eventActions }
     }
   }
 })
