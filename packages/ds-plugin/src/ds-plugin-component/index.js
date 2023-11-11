@@ -246,7 +246,8 @@ export default definePlugin({
         },
         {
           type: 'attribute',
-          name: 'placeholder'
+          name: 'placeholder',
+          contentProperty: 'placeholder'
         }],
         set: [{
           type: 'setter',
@@ -254,7 +255,8 @@ export default definePlugin({
         },
         {
           type: 'attribute',
-          name: 'placeholder'
+          name: 'placeholder',
+          contentProperty: 'placeholder'
         }]
       }
     },
