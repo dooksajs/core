@@ -92,7 +92,7 @@ export default definePlugin({
   },
   /** @lends dsSection */
   methods: {
-    create ({
+    append ({
       id,
       dsViewId = this.$getDataValue('dsView/rootViewId').item,
       path = this.$method('dsRouter/currentPath'),

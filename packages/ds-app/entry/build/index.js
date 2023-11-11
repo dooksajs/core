@@ -17,7 +17,7 @@ dsAppClient.start({
 
     if (data[0] && data[0].collection === 'dsPage/items') {
       for (let i = 0; i < data[0].item.length; i++) {
-        app.$method('dsSection/create', { id: data[0].item[i] })
+        app.$method('dsSection/append', { id: data[0].item[i] })
       }
     }
   },
