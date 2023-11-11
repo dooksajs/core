@@ -805,19 +805,19 @@ export default definePlugin({
       const listenerType = this['data/listener/' + on]
 
       if (!listenerType) {
-        throw new Error('Data event type does not exist: "' + on + '"')
+        throw new Error('Data Listener type does not exist: "' + on + '"')
       }
 
       const listenerCollection = listenerType[name]
 
       if (!listenerCollection) {
-        throw new Error('Data event name does not exist: "' + name + '"')
+        throw new Error('Could not find data collection listeners: "' + name + '"')
       }
 
       if (id) {
         let listeners = listenerCollection[id]
 
-        if (listeners) {
+        if (!listeners) {
           listenerCollection[id] = []
           listeners = listenerCollection[id]
         }
