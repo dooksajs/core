@@ -167,7 +167,7 @@ export default definePlugin({
      * Start the web server
      * @param {number} port - Port number for webserver
      */
-    start (port = 3000) {
+    start (port = 4151) {
       this._useRoutes()
 
       this.app.listen(port, () => {
