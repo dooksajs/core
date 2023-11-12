@@ -79,7 +79,12 @@ export default definePlugin({
   methods: {
     _build (request, response, next) {
       const id = request.params.id
-      const template = this.$getDataValue('dsTemplate/items', { id })
+      const template = this.$getDataValue('dsTemplate/items', {
+        id,
+        options: {
+          expand: true
+        }
+      })
 
       if (template.isEmpty) {
         // check if any new template files were added
@@ -91,11 +96,40 @@ export default definePlugin({
         }
       }
 
-      this.$setDataValue('dsPage/items', id, {
-        id: request.path
+      const data = template.expand
+
+      data.push({
+        collection: 'dsTemplate/items',
+        id,
+        item: template.item,
+        metadata: template.metadata
       })
 
-      request.dsPageData = this.$method('dsPage/getById', request.path)
+      const actions = this.templateActions[id]
+
+      if (actions) {
+        for (let i = 0; i < actions.length; i++) {
+          const [collection, ids] = actions[i]
+
+          for (let i = 0; i < ids.length; i++) {
+            const id = ids[i]
+            const actionData = this.$getDataValue(collection, { id })
+
+            data.push({
+              collection,
+              id,
+              item: actionData.item,
+              metadata: actionData.metadata
+            })
+          }
+        }
+      }
+
+      request.dsPageData = {
+        isEmpty: false,
+        item: data,
+        templates: [id]
+      }
 
       next()
     },
