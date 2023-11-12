@@ -41,6 +41,9 @@ export default definePlugin({
   methods: {
     parseHTML ({ html, actions }) {
       const template = parseHTML(html, this.$componentGetters, this.$componentIgnoreAttr)
+
+      // Store refs
+      const templateActions = []
       const contentRefs = []
 
       for (let i = 0; i < template.content.length; i++) {
@@ -88,9 +91,6 @@ export default definePlugin({
         })
       }
 
-      // store what event id's were used
-      const eventActions = []
-
       // match action reference to events
       if (actions) {
         for (let i = 0; i < template.widgetEvent.length; i++) {
@@ -105,7 +105,7 @@ export default definePlugin({
 
                 if (actions[eventId]) {
                   event.value[i] = actions[eventId]
-                  eventActions.push(eventId)
+                  templateActions.push(eventId)
                 }
               }
             }
@@ -118,7 +118,6 @@ export default definePlugin({
       })
 
       const result = this.$setDataValue('dsTemplate/items', {
-        options: template.options,
         content: template.content,
         layout: template.layout,
         layoutId: template.layoutId,
@@ -129,7 +128,7 @@ export default definePlugin({
         id: template.id
       })
 
-      return { id: result.id, mode: template.mode, eventActions }
+      return { id: result.id, mode: template.mode, templateActions }
     }
   }
 })
