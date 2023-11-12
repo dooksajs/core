@@ -41,32 +41,40 @@ export default definePlugin({
   methods: {
     parseHTML ({ html, actions }) {
       const template = parseHTML(html, this.$componentGetters, this.$componentIgnoreAttr)
+      const contentRefs = []
 
       for (let i = 0; i < template.content.length; i++) {
         const items = template.content[i]
+        const options = template.options[i]
 
         for (let j = 0; j < items.length; j++) {
           const node = items[j]
+          const option = options[j]
           const nodeName = node.nodeName.toLowerCase()
           const getters = this.$componentGetters[nodeName]
-          let value = {}
+          const item = {
+            item: {},
+            type: this.$component(nodeName).type
+          }
 
           if (node.nodeName === '#text') {
-            value = getNodeValue(getters[0].type, node, getters[0].name, 'value')
+            item.item = getNodeValue(getters[0].type, node, getters[0].name, 'value')
           } else {
             // get node value
             for (let i = 0; i < getters.length; i++) {
               const getter = getters[i]
               const result = getNodeValue(getter.type, node, getter.name, getter.contentProperty)
 
-              value[result.key] = result.value
+              item.item[result.key] = result.value
             }
           }
 
-          items[j] = {
-            item: value,
-            type: this.$component(nodeName).type
+          if (option && option[0] === 'ds-content-ref') {
+            contentRefs.push(option[1])
+            item.ref = option[1]
           }
+
+          items[j] = item
         }
       }
 
