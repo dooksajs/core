@@ -155,7 +155,7 @@ export default definePlugin({
             }
           }).item
 
-          this.$method('dsSection/create', {
+          this.$method('dsSection/append', {
             id: sectionId,
             dsViewId: childViewId
           })
