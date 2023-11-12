@@ -87,7 +87,7 @@ export default definePlugin({
 
       response.set('Content-Security-Policy', csp)
 
-      response.send(
+      response.status(200).send(
         `${this.templateStart}
           ${this.dsCSS}
           <script>${dsApp}</script>
@@ -109,7 +109,7 @@ export default definePlugin({
       const pageData = this.getById(request.path)
 
       if (pageData.isEmpty) {
-        return response.status(404)
+        return response.sendStatus(404)
       }
 
       request.dsPageData = pageData
