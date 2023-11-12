@@ -45,6 +45,12 @@ export default definePlugin({
       schema: {
         type: 'object'
       }
+    },
+    templateActions: {
+      private: true,
+      schema: {
+        type: 'object'
+      }
     }
   },
   setup ({ buildDir }) {
@@ -179,12 +185,20 @@ export default definePlugin({
           actions: this.actionSequences
         })
 
-        for (let i = 0; i < result.eventActions.length; i++) {
-          const actions = this.actions[result.eventActions[i]]
+        // template actions are uses to send specific template actions on request
+        const templateActions = []
+        this.templateActions[result.id] = templateActions
 
-          this.$setDataValue('dsAction/items', actions.items, { merge: true })
-          this.$setDataValue('dsAction/sequences', actions.sequences, { merge: true })
-          this.$setDataValue('dsAction/blocks', actions.blocks, { merge: true })
+        for (let i = 0; i < result.templateActions.length; i++) {
+          const actions = this.actions[result.templateActions[i]]
+
+          templateActions.push(['dsTemplate/actionItems', Object.keys(actions.items)])
+          templateActions.push(['dsTemplate/actionSequences', Object.keys(actions.sequences)])
+          templateActions.push(['dsTemplate/actionBlocks', Object.keys(actions.blocks)])
+
+          this.$setDataValue('dsTemplate/actionItems', actions.items, { merge: true })
+          this.$setDataValue('dsTemplate/actionSequences', actions.sequences, { merge: true })
+          this.$setDataValue('dsTemplate/actionBlocks', actions.blocks, { merge: true })
         }
       }
     }
