@@ -65,126 +65,133 @@ const parseHTML = (
 
     for (let j = 0; j < nodeList.length; j++) {
       const node = nodeList[j]
+      const isTextNode = node.nodeName === '#text' && node.textContent.trim()
 
-      if (node.nodeName === 'DS-TEXT') {
-        const item = { contentIndex: content.length }
-        const component = { id: 'text' }
-        const componentId = objectHash(component)
-
-        content.push({
-          nodeName: '#text',
-          textContent: node.innerHTML
-        })
-
-        item.componentId = componentId
-        data.component[componentId] = component
+      // remove empty text nodes
+      if (!isTextNode && !node.tagName) {
+        node.remove()
+        --j
         continue
       }
 
-      const isTextNode = node.nodeName === '#text' && node.textContent.trim()
+      const item = {}
+      const component = {}
 
-      if (isTextNode || node.tagName) {
-        const item = {}
-        const component = {}
+      layout.push(item)
 
-        layout.push(item)
+      if (node.parentElement) {
+        const parentIndex = layoutNodes.indexOf(node.parentElement)
 
-        if (node.parentElement) {
-          const parentIndex = layoutNodes.indexOf(node.parentElement)
-
-          if (parentIndex !== -1) {
-            item.parentIndex = parentIndex
-          }
-        } else {
-          layoutEntry.push(data.layoutIndex)
+        if (parentIndex !== -1) {
+          item.parentIndex = parentIndex
         }
-
-        if (isTextNode) {
-          item.contentIndex = content.length
-          component.id = 'text'
-          content.push(node)
-          layoutNodes.push(node)
-        } else if (node.nodeName === 'DS-TEXT') {
-          const textNode = {
-            nodeName: '#text',
-            textContent: node.innerHTML,
-            dsContentRef: node.getAttribute('ds-content-ref')
-          }
-
-          item.contentIndex = content.length
-          component.id = 'text'
-          content.push(textNode)
-          layoutNodes.push(textNode)
-        } else {
-          let hasSection = false
-
-          layoutNodes.push(node)
-
-          // set component id
-          component.id = node.tagName.toLowerCase()
-
-          if (contentTypes[component.id]) {
-            item.contentIndex = content.length
-            content.push(node)
-          }
-
-          // parse attributes
-          if (node.attributes.length) {
-            const result = parseAttributes(node.attributes, ignoreAttributes[component.id])
-
-            if (result.bind.on) {
-              widgetEvent[j] = result.bind.on
-            }
-
-            if (result.options) {
-              options[j] = result.options
-            }
-
-            hasSection = result.bind.hasSection
-
-            if (result.attributes.length) {
-              component.attributes = result.attributes
-            }
-          }
-
-          // prepare child nodes
-          if (node.childNodes.length) {
-            if (hasSection) {
-              // data.layoutIndex++
-              const sections = []
-              data.section.push(sections)
-              // add instance to new section
-              // data.widgetSection[data.layoutIndex] = []
-              // add section index to component
-              item.sectionIndex = sectionIndex
-              widgetSection.push(data.section.length - 1)
-
-              // collect instances inside a section
-              for (let i = 0; i < node.childNodes.length; i++) {
-                const childNode = node.childNodes[i]
-
-                if (!childNode.nodeName === '#text' || childNode.textContent.trim()) {
-                  // increase the data index to exclude the children from the current section
-                  ++data.layoutIndex
-
-                  sections.push(data.layoutIndex)
-                  // create new instance
-                  parseHTML([childNode], contentTypes, ignoreAttributes, data, false)
-                }
-              }
-
-              ++sectionIndex
-            } else {
-              nodeLists.push(node.childNodes)
-            }
-          }
-        }
-
-        const componentId = objectHash(component)
-
-        item.componentId = componentId
-        data.component[componentId] = component
+      } else {
+        layoutEntry.push(data.layoutIndex)
       }
+
+      if (isTextNode) {
+        item.contentIndex = content.length
+        component.id = 'text'
+        content.push(node)
+        layoutNodes.push(node)
+      } else if (node.nodeName === 'DS-TEXT') {
+        const textNode = {
+          nodeName: '#text',
+          textContent: node.innerHTML
+        }
+
+        item.contentIndex = content.length
+        component.id = 'text'
+        content.push(textNode)
+        layoutNodes.push(textNode)
+
+        if (node.attributes.length) {
+          const result = parseAttributes(node.attributes, ignoreAttributes[component.id])
+
+          if (result.bind.on) {
+            widgetEvent[j] = result.bind.on
+          }
+
+          if (result.options.length) {
+            options[j] = result.options
+          }
+        }
+
+        // remove childNodes
+        if (node.childNodes.length) {
+          for (let i = 0; i < node.childNodes.length; i++) {
+            node.childNodes[i].remove()
+          }
+        }
+      } else {
+        let hasSection = false
+
+        layoutNodes.push(node)
+
+        // set component id
+        component.id = node.tagName.toLowerCase()
+
+        if (contentTypes[component.id]) {
+          item.contentIndex = content.length
+          content.push(node)
+        }
+
+        // parse attributes
+        if (node.attributes.length) {
+          const result = parseAttributes(node.attributes, ignoreAttributes[component.id])
+
+          if (result.bind.on) {
+            widgetEvent[j] = result.bind.on
+          }
+
+          if (result.options.length) {
+            options[j] = result.options
+          }
+
+          hasSection = result.bind.hasSection
+
+          if (result.attributes.length) {
+            component.attributes = result.attributes
+          }
+        }
+
+        // prepare child nodes
+        if (node.childNodes.length) {
+          if (hasSection) {
+            // data.layoutIndex++
+            const sections = []
+            data.section.push(sections)
+            // add instance to new section
+            // data.widgetSection[data.layoutIndex] = []
+            // add section index to component
+            item.sectionIndex = sectionIndex
+            widgetSection.push(data.section.length - 1)
+
+            // collect instances inside a section
+            for (let i = 0; i < node.childNodes.length; i++) {
+              const childNode = node.childNodes[i]
+
+              if (!childNode.nodeName === '#text' || childNode.textContent.trim()) {
+                // increase the data index to exclude the children from the current section
+                ++data.layoutIndex
+
+                sections.push(data.layoutIndex)
+                // create new instance
+                parseHTML([childNode], contentTypes, ignoreAttributes, data, false)
+              }
+            }
+
+            ++sectionIndex
+          } else {
+            nodeLists.push(node.childNodes)
+          }
+        }
+      }
+
+      const componentId = objectHash(component)
+
+      item.componentId = componentId
+      data.component[componentId] = component
     }
   }
   // create layout ids
