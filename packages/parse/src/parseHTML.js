@@ -33,7 +33,7 @@ const parseHTML = (
     // set metadata
     data.mode = source.getAttribute('ds-mode') || 'default'
     data.lang = source.getAttribute('ds-lang') || 'en'
-    data.id = source.getAttribute('ds-template-id') || ''
+    data.id = source.getAttribute('ds-template-id')
 
     if (source.tagName === 'TEMPLATE') {
       // clone template content
