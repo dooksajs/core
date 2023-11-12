@@ -12,17 +12,53 @@ dsAppClient.start({
   isDev: true
 }, {
   onSuccess: app => {
-    for (let i = 0; i < data.length; i++) {
-      const e = data[i]
-      app.$setDataValue(e.collection, e.item, {
-        id: e.id,
-        metadata: e.metadata
+    if (data.isEmpty) {
+      return
+    }
+
+    // set data
+    for (let i = 0; i < data.item.length; i++) {
+      const item = data.item[i]
+
+      app.$setDataValue(item.collection, item.item, {
+        id: item.id,
+        metadata: item.metadata
       })
     }
 
-    if (data[0] && data[0].collection === 'dsPage/items') {
-      for (let i = 0; i < data[0].item.length; i++) {
-        app.$method('dsSection/create', { id: data[0].item[i] })
+    const page = app.$getDataValue('dsPage/items', {
+      id: window.location.pathname
+    })
+
+    if (!page.isEmpty) {
+      for (let i = 0; i < page.item.length; i++) {
+        app.$method('dsSection/append', { id: page.item[i] })
+      }
+    }
+
+    if (data.templates) {
+      const currentPath = app.$method('dsRouter/currentPath')
+
+      for (let i = 0; i < data.templates.length; i++) {
+        const templateId = data.templates[i]
+        const dsSectionId = app.$method('dsTemplate/create', { id: templateId })
+
+        app.$setDataValue('dsPage/items', dsSectionId, {
+          id: currentPath,
+          update: {
+            method: 'push'
+          }
+        })
+      }
+
+      const page = app.$getDataValue('dsPage/items', {
+        id: window.location.pathname
+      })
+
+      if (!page.isEmpty) {
+        for (let i = 0; i < page.item.length; i++) {
+          app.$method('dsSection/append', { id: page.item[i] })
+        }
       }
     }
   },
