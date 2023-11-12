@@ -177,6 +177,16 @@ export default definePlugin({
       const fragment = JSDOM.fragment(file)
       const templates = fragment.querySelectorAll('template[ds-template-id]')
 
+      if (!templates) {
+        const templates = fragment.querySelectorAll('template')
+
+        if (templates) {
+          throw new Error('Templates missing the "ds-template-id" attribute')
+        }
+
+        throw new Error('No templates found')
+      }
+
       for (let i = 0; i < templates.length; i++) {
         const template = templates[i]
 
