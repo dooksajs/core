@@ -41,7 +41,7 @@ dsApp.start({
       name: 'dsWebServer',
       setup: {
         cookieSecret: 'RTRe50oe-wX8gd9qzrWUY71W4yGob10c',
-        publicPath: path.resolve(devDirectory, 'public')
+        publicPath: path.resolve(devDirectory, 'assets')
       }
     },
     {
