@@ -146,19 +146,21 @@ export default definePlugin({
 
         if (Number.isInteger(element.sectionIndex)) {
           // get next widget section id
-          sectionId = this.$getDataValue('dsWidget/sections', {
+          const section = this.$getDataValue('dsWidget/sections', {
             id: dsWidgetId,
             prefixId: dsSectionUniqueId,
             suffixId: dsWidgetMode,
             options: {
               position: element.sectionIndex
             }
-          }).item
-
-          this.$method('dsSection/append', {
-            id: sectionId,
-            dsViewId: childViewId
           })
+
+          if (!section.isEmpty) {
+            this.$method('dsSection/append', {
+              id: section.id,
+              dsViewId: childViewId
+            })
+          }
         }
 
         if (event) {
