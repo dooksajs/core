@@ -57,6 +57,9 @@ export default definePlugin({
                 items: {
                   type: 'object',
                   properties: {
+                    item: {
+                      type: 'object'
+                    },
                     type: {
                       type: 'string'
                     }
