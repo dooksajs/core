@@ -1125,8 +1125,37 @@ export default definePlugin({
         result.noAffixId = data.noAffixId
         result.item = data.target[data.id]._item
         result.metadata = data.target[data.id]._metadata
+      } else if (schema.type === 'collection') {
+        const schemaPath = collection + '/items'
+
+        // validate source
+        this._schemaValidation(data, schemaPath, source)
+
+        // create document id
+        const collectionId = this._defaultCollectionId(collection)
+
+        const target = this._createTarget(this.schema[schemaPath].type, source._metadata)
+
+        target._item = source._item || source
+
+        // set item in data target
+        data.target[collectionId.id] = target
+
+        result.id = collectionId.id
+        result.noAffixId = collectionId.noAffixId
+        result.item = target._item
+        result.metadata = target._metadata
       } else {
         this._schemaValidation(data, collection, source)
+
+        const target = this._createTarget(this.schema[collection].type, source._metadata)
+
+        target._item = source._item || source
+
+        data.target = target
+
+        result.item = target._item
+        result.metadata = target._metadata
       }
 
       return result
