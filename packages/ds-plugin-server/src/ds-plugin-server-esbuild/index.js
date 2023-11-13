@@ -47,11 +47,11 @@ export default definePlugin({
 
       // Close the connection when the client disconnects
       request.on('close', () => {
-        response.end('OK')
         this.$deleteDataListener('dsEsbuild/rebuildClient', {
           on: 'update',
           handlerId: id
         })
+        response.end('OK')
       })
     }
   }
