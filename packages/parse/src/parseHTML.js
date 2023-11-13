@@ -16,7 +16,8 @@ const parseHTML = (
     id: '',
     component: {},
     content: [],
-    options: [],
+    contentRefs: {},
+    sectionRefs: {},
     layout: [],
     layoutId: [],
     layoutEntry: [],
@@ -45,7 +46,7 @@ const parseHTML = (
   }
 
   const content = []
-  const options = {}
+  const contentRefs = {}
   const layoutNodes = []
   const layout = []
   const layoutEntry = []
@@ -54,7 +55,6 @@ const parseHTML = (
   let sectionIndex = 0
 
   data.content[data.layoutIndex] = content
-  data.options[data.layoutIndex] = options
   data.layout[data.layoutIndex] = layout
   data.layoutEntry[data.layoutIndex] = layoutEntry
   data.widgetEvent[data.layoutIndex] = widgetEvent
@@ -97,8 +97,14 @@ const parseHTML = (
       } else if (node.nodeName === 'DS-TEXT') {
         const textNode = {
           nodeName: '#text',
-          textContent: node.innerHTML
+          text: node.innerHTML
         }
+
+        Object.defineProperty(textNode, 'textContent', {
+          get () {
+            return this.text
+          }
+        })
 
         item.contentIndex = content.length
         component.id = 'text'
@@ -112,8 +118,14 @@ const parseHTML = (
             widgetEvent[j] = result.bind.on
           }
 
-          if (result.options.length) {
-            options[j] = result.options
+          const contentRef = result.options['ds-content-ref']
+
+          if (contentRef) {
+            contentRefs[item.contentIndex] = contentRef
+
+            if (!data.contentRefs[data.layoutIndex]) {
+              data.contentRefs[data.layoutIndex] = contentRefs
+            }
           }
         }
 
@@ -124,7 +136,9 @@ const parseHTML = (
           }
         }
       } else {
-        let hasSection = false
+        const element = {
+          isSection: false
+        }
 
         layoutNodes.push(node)
 
@@ -144,27 +158,44 @@ const parseHTML = (
             widgetEvent[j] = result.bind.on
           }
 
-          if (result.options.length) {
-            options[j] = result.options
+          const contentRef = result.options['ds-content-ref']
+
+          if (contentRef) {
+            contentRefs[item.contentIndex] = contentRef
+
+            if (!data.contentRefs[data.layoutIndex]) {
+              data.contentRefs[data.layoutIndex] = contentRefs
+            }
           }
 
-          hasSection = result.bind.hasSection
+          const sectionRef = result.options['ds-section-ref']
+
+          if (sectionRef) {
+            element.sectionRef = sectionRef
+          }
+
+          element.isSection = result.bind.hasSection
 
           if (result.attributes.length) {
             component.attributes = result.attributes
           }
         }
 
+        // add section
+        const sections = []
+
+        if (element.isSection) {
+          data.section.push(sections)
+          item.sectionIndex = sectionIndex
+
+          if (element.sectionRef) {
+            data.sectionRefs[data.section.length - 1] = element.sectionRef
+          }
+        }
+
         // prepare child nodes
         if (node.childNodes.length) {
-          if (hasSection) {
-            // data.layoutIndex++
-            const sections = []
-            data.section.push(sections)
-            // add instance to new section
-            // data.widgetSection[data.layoutIndex] = []
-            // add section index to component
-            item.sectionIndex = sectionIndex
+          if (element.isSection) {
             widgetSection.push(data.section.length - 1)
 
             // collect instances inside a section
@@ -208,7 +239,7 @@ const parseHTML = (
 
 const parseAttributes = (attributes, ignore = []) => {
   const item = {
-    options: [],
+    options: {},
     attributes: [],
     bind: {}
   }
@@ -227,10 +258,10 @@ const parseAttributes = (attributes, ignore = []) => {
             name: bind.slice(2).join('-'),
             value: value.split(' ')
           }
-        } else if (bind[1] === 'section') {
+        } else if (bind[1] === 'section' && !bind[2]) {
           item.bind.hasSection = true
         } else {
-          item.options.push(name, value)
+          item.options[name] = value
         }
       } else {
         const valueSorted = value.split(' ').sort().join(' ')
