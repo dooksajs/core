@@ -79,7 +79,7 @@ export default definePlugin({
       const dsApp = this._getApp(request.dsPageData)
       const dsAppHash = this._hash(dsApp)
 
-      let csp = "script-src 'sha256-" + dsAppHash + "'"
+      let csp = "script-src 'wasm-unsafe-eval' 'sha256-" + dsAppHash + "'"
 
       if (this.dsCSSHash) {
         csp += " style-src 'sha256-" + this.dsCSSHash + "'"
@@ -103,7 +103,7 @@ export default definePlugin({
     },
     _appendExpand: dsPage.methods._appendExpand,
     _getApp (data = []) {
-      return '(() => {const __ds__ =' + JSON.stringify(data) + ';' + this.dsApp + '})()'
+      return '(async () => {const __ds__ =' + JSON.stringify(data) + ';' + this.dsApp + '})()'
     },
     _get (request, response, next) {
       const pageData = this.getById(request.path)
