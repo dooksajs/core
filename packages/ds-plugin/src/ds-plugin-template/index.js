@@ -1,4 +1,5 @@
 import { definePlugin } from '@dooksa/ds-app'
+import objectHash from '@dooksa/crypto-hash'
 
 export default definePlugin({
   name: 'dsTemplate',
