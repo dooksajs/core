@@ -81,7 +81,7 @@ export default definePlugin({
       window.history.pushState({ to, from }, '', to)
     },
     currentPath () {
-      return this.cleanPath(window.location.pathname) || '/'
+      return window.location.pathname || '/'
     },
     cleanPath (value) {
       const text = value.toString().trim().toLocaleLowerCase('en-US')
