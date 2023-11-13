@@ -4,7 +4,6 @@ import { extname, join } from 'path'
 import { JSDOM } from 'jsdom'
 import { parseAction } from '@dooksa/parse'
 import checksum from '@dooksa/crypto-hash'
-import uuid from '@dooksa/crypto-uuid'
 
 /**
  * @namespace dsTemplateBuild
@@ -105,26 +104,6 @@ export default definePlugin({
         metadata: template.metadata
       })
 
-      const actions = this.templateActions[id]
-
-      if (actions) {
-        for (let i = 0; i < actions.length; i++) {
-          const [collection, ids] = actions[i]
-
-          for (let i = 0; i < ids.length; i++) {
-            const id = ids[i]
-            const actionData = this.$getDataValue(collection, { id })
-
-            data.push({
-              collection,
-              id,
-              item: actionData.item,
-              metadata: actionData.metadata
-            })
-          }
-        }
-      }
-
       request.dsPageData = {
         isEmpty: false,
         item: data,
@@ -185,7 +164,6 @@ export default definePlugin({
     _parseAction (items) {
       for (let i = 0; i < items.length; i++) {
         const action = items[i]
-        const sequenceId = uuid()
 
         this.actions[action.id] = {
           items: {},
@@ -195,13 +173,12 @@ export default definePlugin({
 
         const actions = this.actions[action.id]
 
-        this.actionSequences[action.id] = sequenceId
-        actions.items[sequenceId] = []
+        actions.items[action.id] = []
 
         for (let i = 0; i < action.sequence.length; i++) {
           const result = parseAction(action.sequence[i])
 
-          actions.items[sequenceId].push(result.sequenceId)
+          actions.items[action.id].push(result.sequenceId)
           actions.sequences[result.sequenceId] = result.sequences
           actions.blocks = Object.assign(actions.blocks, result.blocks)
         }
@@ -224,26 +201,10 @@ export default definePlugin({
       for (let i = 0; i < templates.length; i++) {
         const template = templates[i]
 
-        const result = this.$method('dsTemplate/parseHTML', {
+        this.$method('dsTemplate/parseHTML', {
           html: template,
-          actions: this.actionSequences
+          actions: this.actions
         })
-
-        // template actions are uses to send specific template actions on request
-        const templateActions = []
-        this.templateActions[result.id] = templateActions
-
-        for (let i = 0; i < result.templateActions.length; i++) {
-          const actions = this.actions[result.templateActions[i]]
-
-          templateActions.push(['dsTemplate/actionItems', Object.keys(actions.items)])
-          templateActions.push(['dsTemplate/actionSequences', Object.keys(actions.sequences)])
-          templateActions.push(['dsTemplate/actionBlocks', Object.keys(actions.blocks)])
-
-          this.$setDataValue('dsTemplate/actionItems', actions.items, { merge: true })
-          this.$setDataValue('dsTemplate/actionSequences', actions.sequences, { merge: true })
-          this.$setDataValue('dsTemplate/actionBlocks', actions.blocks, { merge: true })
-        }
       }
     }
   }
