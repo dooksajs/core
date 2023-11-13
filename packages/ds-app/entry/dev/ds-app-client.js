@@ -36,6 +36,8 @@ dsAppClient.start({
       for (let i = 0; i < page.item.length; i++) {
         app.$method('dsSection/append', { id: page.item[i] })
       }
+
+      return
     }
 
     if (data.templates) {
