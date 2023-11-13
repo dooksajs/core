@@ -147,6 +147,14 @@ export default definePlugin({
                   type: 'number'
                 }
               }
+            },
+            sectionRefs: {
+              type: 'object',
+              patternProperties: {
+                '^[0-9]+$': {
+                  type: 'string'
+                }
+              }
             }
           }
         }
