@@ -88,7 +88,8 @@ export default definePlugin({
                   type: 'object',
                   properties: {
                     componentId: {
-                      type: 'string'
+                      type: 'string',
+                      relation: 'dsComponent/items'
                     },
                     contentIndex: {
                       type: 'number'
@@ -103,7 +104,8 @@ export default definePlugin({
             layoutId: {
               type: 'array',
               items: {
-                type: 'string'
+                type: 'string',
+                relation: 'dsLayout/items'
               }
             },
             widgetEvent: {
