@@ -111,6 +111,10 @@ export default definePlugin({
         suffixId: mode
       })
 
+      if (dsSection.isEmpty) {
+        return
+      }
+
       this.$setDataValue('dsSection/view', dsViewId, {
         id,
         prefixId: dsSectionUniqueId,
