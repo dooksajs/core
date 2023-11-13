@@ -67,6 +67,19 @@ export default definePlugin({
                 }
               }
             },
+            contentRefs: {
+              type: 'object',
+              patternProperties: {
+                '^[0-9]+$': {
+                  type: 'object',
+                  patternProperties: {
+                    '^[0-9]+$': {
+                      type: 'string'
+                    }
+                  }
+                }
+              }
+            },
             layout: {
               type: 'array',
               items: {
