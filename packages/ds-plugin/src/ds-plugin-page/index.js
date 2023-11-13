@@ -7,6 +7,11 @@ import { definePlugin } from '@dooksa/ds-app'
 export default definePlugin({
   name: 'dsPage',
   version: 1,
+  dependencies: [
+    {
+      name: 'dsWidget'
+    }
+  ],
   data: {
     id: {
       schema: {
