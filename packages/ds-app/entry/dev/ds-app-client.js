@@ -45,24 +45,26 @@ dsAppClient.start({
 
       for (let i = 0; i < data.templates.length; i++) {
         const templateId = data.templates[i]
-        const dsSectionId = app.$method('dsTemplate/create', { id: templateId })
+        app.$action('dsTemplate/create', { id: templateId }, {
+          onSuccess: (dsSectionId) => {
+            app.$setDataValue('dsPage/items', dsSectionId, {
+              id: currentPath,
+              update: {
+                method: 'push'
+              }
+            })
 
-        app.$setDataValue('dsPage/items', dsSectionId, {
-          id: currentPath,
-          update: {
-            method: 'push'
+            const page = app.$getDataValue('dsPage/items', {
+              id: window.location.pathname
+            })
+
+            if (!page.isEmpty) {
+              for (let i = 0; i < page.item.length; i++) {
+                app.$method('dsSection/append', { id: page.item[i] })
+              }
+            }
           }
         })
-      }
-
-      const page = app.$getDataValue('dsPage/items', {
-        id: window.location.pathname
-      })
-
-      if (!page.isEmpty) {
-        for (let i = 0; i < page.item.length; i++) {
-          app.$method('dsSection/append', { id: page.item[i] })
-        }
       }
     }
   },
