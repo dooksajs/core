@@ -21,6 +21,35 @@ export default definePlugin({
         items: {
           type: 'object',
           properties: {
+            actions: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  id: {
+                    type: 'string'
+                  },
+                  blocks: {
+                    type: 'array',
+                    items: {
+                      type: 'string',
+                      relation: 'dsAction/blocks'
+                    }
+                  },
+                  items: {
+                    type: 'string',
+                    relation: 'dsAction/items'
+                  },
+                  sequences: {
+                    type: 'array',
+                    items: {
+                      type: 'string',
+                      relation: 'dsAction/sequences'
+                    }
+                  }
+                }
+              }
+            },
             content: {
               type: 'array',
               items: {
