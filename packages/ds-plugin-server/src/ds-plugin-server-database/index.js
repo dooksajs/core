@@ -126,7 +126,6 @@ export default definePlugin({
       const path = resolve(this.path, name + '.json')
 
       if (!existsSync(path)) {
-        console.log('Seed file missing:', path)
         return
       }
 
