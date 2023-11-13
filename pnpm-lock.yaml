@@ -83,6 +83,9 @@ importers:
       '@dooksa/create-app':
         specifier: workspace:^
         version: link:../create-app
+      '@dooksa/crypto-hash':
+        specifier: workspace:^
+        version: link:../crypto-hash
       '@dooksa/crypto-uuid':
         specifier: workspace:^
         version: link:../crypto-uuid
@@ -140,6 +143,9 @@ importers:
 
   packages/ds-plugin:
     devDependencies:
+      '@dooksa/crypto-hash':
+        specifier: workspace:^
+        version: link:../crypto-hash
       '@dooksa/crypto-uuid':
         specifier: workspace:^
         version: link:../crypto-uuid
@@ -149,9 +155,15 @@ importers:
       '@dooksa/ds-app':
         specifier: workspace:^
         version: link:../ds-app
+      '@dooksa/object-hash':
+        specifier: workspace:^
+        version: link:../object-hash
       '@dooksa/resource-loader':
         specifier: workspace:^
         version: link:../resource-loader
+      l:
+        specifier: ^0.6.0
+        version: 0.6.0
 
   packages/ds-plugin-server:
     devDependencies:
@@ -1855,6 +1867,10 @@ packages:
     dependencies:
       jwa: 1.4.1
       safe-buffer: 5.2.1
+
+  /l@0.6.0:
+    resolution: {integrity: sha512-rB5disIyfKRBQ1xcedByHCcAmPWy2NPnjWo5u4mVVIPtathROHyfHjkloqSBT49mLnSRnupkpoIUOFCL7irCVQ==}
+    dev: true
 
   /levn@0.4.1:
     resolution: {integrity: sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ==}

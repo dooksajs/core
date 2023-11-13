@@ -8,9 +8,12 @@
   "type": "module",
   "main": "./src/index.js",
   "devDependencies": {
+    "@dooksa/crypto-hash": "workspace:^",
     "@dooksa/crypto-uuid": "workspace:^",
     "@dooksa/dom": "workspace:^",
     "@dooksa/ds-app": "workspace:^",
-    "@dooksa/resource-loader": "workspace:^"
+    "@dooksa/object-hash": "workspace:^",
+    "@dooksa/resource-loader": "workspace:^",
+    "l": "^0.6.0"
   }
 }
