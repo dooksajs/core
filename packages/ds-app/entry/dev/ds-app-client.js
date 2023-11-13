@@ -20,6 +20,7 @@ dsAppClient.start({
     for (let i = 0; i < data.item.length; i++) {
       const item = data.item[i]
 
+      // need to check if any data requires an async plugin
       app.$setDataValue(item.collection, item.item, {
         id: item.id,
         metadata: item.metadata
@@ -31,6 +32,7 @@ dsAppClient.start({
     })
 
     if (!page.isEmpty) {
+      // Render page
       for (let i = 0; i < page.item.length; i++) {
         app.$method('dsSection/append', { id: page.item[i] })
       }
