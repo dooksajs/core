@@ -42,17 +42,14 @@ export default definePlugin({
     parseHTML ({ html, actions }) {
       const template = parseHTML(html, this.$componentGetters, this.$componentIgnoreAttr)
 
-      // Store refs
-      const templateActions = []
-      const contentRefs = []
+      // Store used action collection
+      template.actions = []
 
       for (let i = 0; i < template.content.length; i++) {
         const items = template.content[i]
-        const options = template.options[i]
 
         for (let j = 0; j < items.length; j++) {
           const node = items[j]
-          const option = options[j]
           const nodeName = node.nodeName.toLowerCase()
           const getters = this.$componentGetters[nodeName]
           const item = {
@@ -72,11 +69,6 @@ export default definePlugin({
             }
           }
 
-          if (option && option[0] === 'ds-content-ref') {
-            contentRefs.push(option[1])
-            item.ref = option[1]
-          }
-
           items[j] = item
         }
       }
@@ -91,8 +83,8 @@ export default definePlugin({
         })
       }
 
-      // match action reference to events
-      if (actions) {
+      // Add used actions by widget
+      if (template.widgetEvent) {
         for (let i = 0; i < template.widgetEvent.length; i++) {
           const events = template.widgetEvent[i]
 
@@ -101,11 +93,20 @@ export default definePlugin({
               const event = events[key]
 
               for (let i = 0; i < event.value.length; i++) {
-                const eventId = event.value[i]
+                const actionId = event.value[i]
 
-                if (actions[eventId]) {
-                  event.value[i] = actions[eventId]
-                  templateActions.push(eventId)
+                if (actions[actionId]) {
+                  const action = actions[actionId]
+
+                  this.$setDataValue('dsAction/blocks', action.blocks, { merge: true })
+                  this.$setDataValue('dsAction/items', action.items[actionId], { id: actionId })
+                  this.$setDataValue('dsAction/sequences', action.sequences, { merge: true })
+
+                  template.actions.push({
+                    blocks: Object.keys(action.blocks),
+                    items: actionId,
+                    sequences: Object.keys(action.sequences)
+                  })
                 }
               }
             }
@@ -118,6 +119,9 @@ export default definePlugin({
       })
 
       const result = this.$setDataValue('dsTemplate/items', {
+        contentRefs: template.contentRefs,
+        sectionRefs: template.sectionRefs,
+        actions: template.actions,
         content: template.content,
         layout: template.layout,
         layoutId: template.layoutId,
@@ -128,7 +132,10 @@ export default definePlugin({
         id: template.id
       })
 
-      return { id: result.id, mode: template.mode, templateActions }
+      return {
+        id: result.id,
+        mode: template.mode
+      }
     }
   }
 })
