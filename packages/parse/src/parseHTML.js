@@ -263,10 +263,12 @@ const parseAttributes = (attributes, ignore = []) => {
         } else {
           item.options[name] = value
         }
-      } else {
+      } else if (name === 'class') {
         const valueSorted = value.split(' ').sort().join(' ')
 
         item.attributes.push([name, valueSorted])
+      } else {
+        item.attributes.push([name, value])
       }
     }
   }
