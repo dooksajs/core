@@ -51,6 +51,7 @@ export default definePlugin({
         for (let j = 0; j < items.length; j++) {
           const node = items[j]
           const nodeName = node.nodeName.toLowerCase()
+          const component = this.$component(nodeName)
           const getters = this.$componentGetters[nodeName]
           const item = {
             item: {},
@@ -58,14 +59,18 @@ export default definePlugin({
           }
 
           if (node.nodeName === '#text') {
-            item.item = getNodeValue(getters[0].type, node, getters[0].name, 'value')
+            item.item = getNodeValue(getters[0].type, node, 'text', getters[0].name, 'value')
           } else {
             // get node value
             for (let i = 0; i < getters.length; i++) {
               const getter = getters[i]
-              const result = getNodeValue(getter.type, node, getter.name, getter.contentProperty)
+              const result = getNodeValue(getter.type, node, component.type, getter.name, getter.contentProperty)
 
-              item.item[result.key] = result.value
+              if (component.type === 'text') {
+                item.item = result
+              } else {
+                item.item[result.key] = result.value
+              }
             }
           }
 
