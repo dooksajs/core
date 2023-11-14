@@ -1,12 +1,26 @@
-export default (type, node, getterName, getterKey = 'value') => {
-  if (type === 'attribute') {
-    return _getNodeValueByAttribute(node, getterName, getterKey)
-  }
+/**
+ * Get content value from node
+ * @param {'attribute'|'getter'} type - Type of getter
+ * @param {HTMLElement|Text} node - HTML element or Text node used to get value from
+ * @param {string} contentType - Content type
+ * @param {string} getterName - Name of node getter
+ * @param {string} getterKey
+ */
+export default (type, node, contentType, getterName, getterKey = 'value') => {
+  if (contentType === 'text') {
+    let item
 
-  if (node.nodeName === '#text') {
-    const item = _getNodeValueByGetter(node, getterName, getterKey)
+    if (type === 'attribute') {
+      item = _getNodeValueByAttribute(node, getterName, getterKey)
+    } else {
+      item = _getNodeValueByGetter(node, getterName, getterKey)
+    }
 
     return _parseText(item.value)
+  }
+
+  if (type === 'attribute') {
+    return _getNodeValueByAttribute(node, getterName, getterKey)
   }
 
   return _getNodeValueByGetter(node, getterName, getterKey)
@@ -27,12 +41,13 @@ const _getNodeValueByAttribute = (node, name, key) => {
 }
 
 /**
-   * Get value from element using a getter
-   * @param {Object} node - Text or Element node
-   * @param {dsComponentGet} getter - Getters used to fetch the value from the element
-   * @returns {string}
-   * @private
-   */
+ * Get value from element using a getter
+ * @param {Object} node - Text or Element node
+ * @param {strubg} getter - Getters used to fetch the value from the element
+ * @param {string} key -
+ * @returns {string}
+ * @private
+ */
 const _getNodeValueByGetter = (node, name, key) => {
   const result = { key, value: '' }
 
