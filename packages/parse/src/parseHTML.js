@@ -55,6 +55,7 @@ const parseHTML = (
   let sectionIndex = 0
 
   data.content[data.layoutIndex] = content
+  data.contentRefs[data.layoutIndex] = contentRefs
   data.layout[data.layoutIndex] = layout
   data.layoutEntry[data.layoutIndex] = layoutEntry
   data.widgetEvent[data.layoutIndex] = widgetEvent
@@ -122,10 +123,6 @@ const parseHTML = (
 
           if (contentRef) {
             contentRefs[item.contentIndex] = contentRef
-
-            if (!data.contentRefs[data.layoutIndex]) {
-              data.contentRefs[data.layoutIndex] = contentRefs
-            }
           }
         }
 
@@ -162,10 +159,6 @@ const parseHTML = (
 
           if (contentRef) {
             contentRefs[item.contentIndex] = contentRef
-
-            if (!data.contentRefs[data.layoutIndex]) {
-              data.contentRefs[data.layoutIndex] = contentRefs
-            }
           }
 
           const sectionRef = result.options['ds-section-ref']
