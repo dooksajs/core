@@ -115,7 +115,7 @@ const parseHTML = (
           const result = parseAttributes(node.attributes, ignoreAttributes[component.id])
 
           if (result.bind.on) {
-            widgetEvent[j] = result.bind.on
+            widgetEvent[layoutNodes.length - 1] = result.bind.on
           }
 
           const contentRef = result.options['ds-content-ref']
@@ -155,7 +155,7 @@ const parseHTML = (
           const result = parseAttributes(node.attributes, ignoreAttributes[component.id])
 
           if (result.bind.on) {
-            widgetEvent[j] = result.bind.on
+            widgetEvent[layoutNodes.length - 1] = result.bind.on
           }
 
           const contentRef = result.options['ds-content-ref']
