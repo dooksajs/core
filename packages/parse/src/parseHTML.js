@@ -202,11 +202,10 @@ const parseHTML = (
             for (let i = 0; i < node.childNodes.length; i++) {
               const childNode = node.childNodes[i]
 
-              if (!childNode.nodeName === '#text' || childNode.textContent.trim()) {
+              if (childNode.nodeName !== '#text' && childNode.textContent.trim()) {
                 // increase the data index to exclude the children from the current section
-                ++data.layoutIndex
+                sections.push(++data.layoutIndex)
 
-                sections.push(data.layoutIndex)
                 // create new instance
                 parseHTML([childNode], contentTypes, ignoreAttributes, data, false)
               }
