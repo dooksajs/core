@@ -404,7 +404,7 @@ export default definePlugin({
         for (let i = 0; i < action.blocks.length; i++) {
           const id = action.blocks[i]
           const block = this.$getDataValue('dsAction/blocks', { id })
-          const newBlock = this._replaceActionRef(Object.assign({}, block.item), refs)
+          const newBlock = this._replaceActionRef(structuredClone(block.item), refs)
 
           newBlocks[id] = newBlock
         }
@@ -464,16 +464,15 @@ export default definePlugin({
 
       return newActions
     },
-    _replaceActionRef (items, refs, parent, parentKey) {
+    _replaceActionRef (items, refs) {
       for (const key in items) {
         if (Object.hasOwnProperty.call(items, key)) {
           const item = items[key]
 
-          if (refs[item]) {
-            parent[parentKey] = Object.assign({}, items)
-            parent[parentKey][key] = refs[item]
+          if (refs[item] != null) {
+            items[key] = refs[item]
           } else if (typeof item === 'object') {
-            this._replaceActionRef(item, refs, items, key)
+            this._replaceActionRef(item, refs)
           }
         }
       }
