@@ -193,48 +193,56 @@ export default definePlugin({
     '_process/set/dataValue' (data) {
       return this.$setDataValue(data.name, data.value, data.options)
     },
-    _getDataByKey (data, key) {
-      const dotNotations = key.split('.')
-      let result = data
+    _getDataByKey (data, keys) {
+      let lastKey
 
-      for (let i = 0; i < dotNotations.length; i++) {
-        const key = dotNotations[i]
+      if (typeof keys === 'string') {
+        keys = keys.split('.')
+      }
+
+      for (let i = 0; i < keys.length; i++) {
+        const key = keys[i]
 
         if (Object.hasOwn(data, key)) {
-          result = data[key]
-        } else {
-          return { result, key }
+          data = data[key]
+          lastKey = key
         }
       }
 
-      return result
+      return { result: data, key: lastKey }
     },
     /**
      * Get result value
      * @private
      * @param {*} data
-     * @param {Object} item
-     * @param {string} item.$key - Request to return a specific key/value, dot notations are permitted
-     * @param {number} item.$index - Request to return specific indexes from an array
+     * @param {Object|string} value
+     * @param {string} value.$key - Request to return a specific key/value, dot notations are permitted
+     * @param {number} value.$index - Request to return specific indexes from an array
      * @returns {*}
      */
-    _getValue (data, value) {
-      if (value == null) {
-        return data
+    _getValue (value, query) {
+      if (query == null) {
+        return value
       }
 
-      if (Object.hasOwn(data, value)) {
-        return data[value]
+      if (Object.hasOwn(value, query)) {
+        return value[query]
       }
 
-      if (Object.hasOwn(data, '$keys')) {
-        const keys = data.$keys
+      // get a nested value
+      if (Object.hasOwn(query, '$key')) {
+        return this._getDataByKey(value, query.$key).result
+      }
+
+      // return an object of data
+      if (Object.hasOwn(query, '$keys')) {
+        const keys = query.$keys
         const result = {}
 
         for (const key in keys) {
           if (Object.hasOwn(keys, key)) {
             const item = keys[key]
-            const dataKey = this._getDataByKey(data, item)
+            const dataKey = this._getDataByKey(value, item)
 
             result[dataKey.key] = dataKey.result
           }
@@ -243,19 +251,19 @@ export default definePlugin({
         return result
       }
 
-      if (Object.hasOwn(data, '$index')) {
-        const [index, keys] = data.$index
-        const dataItem = data[index]
+      if (Object.hasOwn(query, '$index')) {
+        const [index, keys] = query.$index
+        const valueItem = value[index]
 
         if (!keys) {
-          return dataItem
+          return valueItem
         }
 
         const result = {}
 
         for (let i = 0; i < keys.length; i++) {
           const key = keys[i]
-          const dataKey = this._getDataByKey(data, key)
+          const dataKey = this._getDataByKey(value, key)
 
           result[dataKey.key] = dataKey.result
         }
@@ -263,19 +271,19 @@ export default definePlugin({
         return result
       }
 
-      if (Object.hasOwn(data, '$indexes')) {
+      if (Object.hasOwn(query, '$indexes')) {
         const result = []
 
-        for (let i = 0; i < data.$indexes.length; i++) {
-          const [index, key] = data[i]
-          const dataItem = data[index]
+        for (let i = 0; i < query.$indexes.length; i++) {
+          const [index, key] = query[i]
+          const valueItem = value[index]
 
           if (key) {
-            const dataKey = this._getDataByKey(dataItem, key)
+            const dataKey = this._getDataByKey(valueItem, key)
 
             result.push(dataKey.result)
           } else {
-            result.push(dataItem)
+            result.push(valueItem)
           }
         }
 
@@ -284,9 +292,9 @@ export default definePlugin({
 
       const result = {}
 
-      for (let i = 0; i < data.length; i++) {
-        const key = data[i]
-        result[key] = data[key]
+      for (let i = 0; i < value.length; i++) {
+        const key = value[i]
+        result[key] = value[key]
       }
 
       return result
