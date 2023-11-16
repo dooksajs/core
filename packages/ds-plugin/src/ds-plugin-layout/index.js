@@ -146,7 +146,7 @@ export default definePlugin({
 
         if (Number.isInteger(element.sectionIndex)) {
           // get next widget section id
-          const section = this.$getDataValue('dsWidget/sections', {
+          const widgetSectionItem = this.$getDataValue('dsWidget/sections', {
             id: dsWidgetId,
             prefixId: dsSectionUniqueId,
             suffixId: dsWidgetMode,
@@ -155,10 +155,25 @@ export default definePlugin({
             }
           })
 
-          if (!section.isEmpty) {
+          // ISSUE: this can't be empty
+          if (!widgetSectionItem.isEmpty) {
             this.$method('dsSection/append', {
-              id: section.id,
+              id: widgetSectionItem.item,
               dsViewId: childViewId
+            })
+
+            const section = this.$getDataValue('dsSection/items', { id: widgetSectionItem.item })
+
+            // update section elements
+            this.$addDataListener('dsSection/items', {
+              on: 'update',
+              id: section.id,
+              handler: {
+                id: childViewId,
+                value: (value) => {
+                  this.$method('dsSection/update', { id: section.id, dsViewId: childViewId })
+                }
+              }
             })
           }
         }
