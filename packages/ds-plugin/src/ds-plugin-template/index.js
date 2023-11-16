@@ -166,8 +166,9 @@ export default definePlugin({
       id,
       mode = 'default',
       language,
-      dsSectionId
-    }) {
+      dsSectionId,
+      options = {}
+    }, _callback) {
       const template = this.$getDataValue('dsTemplate/items', { id })
 
       // fetch template
