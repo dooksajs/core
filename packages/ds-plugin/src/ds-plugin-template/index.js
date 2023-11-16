@@ -223,8 +223,9 @@ export default definePlugin({
 
       const dsWidgetItems = []
       const dsWidgetGroupId = this.$method('dsData/generateId')
-      const actionRefs = []
+      const actionRefs = {}
       const events = []
+      let rootWidgetId
 
       this.$setDataValue('dsSection/templates', id, {
         id: dsSectionId,
@@ -236,13 +237,17 @@ export default definePlugin({
       })
 
       for (let i = 0; i < template.item.layoutId.length; i++) {
-        const contentRefs = template.item.contentRefs[i] || {}
+        const contentRefs = template.item.contentRefs[i]
         const contentItems = template.item.content[i]
         const event = template.item.widgetEvent[i]
         const widget = {
           id: this.$method('dsData/generateId'),
           content: [],
           layout: template.item.layoutId[i]
+        }
+
+        if (!rootWidgetId) {
+          rootWidgetId = widget.id
         }
 
         dsWidgetItems.push(widget)
@@ -255,6 +260,11 @@ export default definePlugin({
         for (let j = 0; j < contentItems.length; j++) {
           const content = contentItems[j]
           const contentRef = contentRefs[j]
+
+          // change content value
+          if (options.content && options.content[contentRef]) {
+            content.item = options.content[contentRef]
+          }
 
           const dsContent = this.$setDataValue('dsContent/items', content.item, {
             suffixId: language,
@@ -272,6 +282,7 @@ export default definePlugin({
             }
 
             actionRefs[contentRef] = contentId
+            actionRefs[contentRef + ':index'] = j
           }
 
           widget.content.push(contentId)
@@ -322,6 +333,7 @@ export default definePlugin({
           }
 
           actionRefs[sectionRef] = dsWidgetId
+          actionRefs[sectionRef + ':index'] = i
         }
 
         // get section within widget
@@ -360,10 +372,13 @@ export default definePlugin({
         }
       }
 
-      this.$setDataValue('dsSection/items', rootSection, {
-        id: dsSectionId,
-        suffixId: mode
-      })
+      // this might be bad for empty sections, it would be better to compare to layout "hasSection"
+      if (rootSection.length) {
+        this.$setDataValue('dsSection/items', rootSection, {
+          id: dsSectionId,
+          suffixId: mode
+        })
+      }
 
       const newActions = this._updateActions(template.item.actions, actionRefs)
 
@@ -391,7 +406,16 @@ export default definePlugin({
         })
       }
 
-      return dsSectionId
+      const result = {
+        dsSectionId,
+        dsWidgetId: rootWidgetId
+      }
+
+      if (_callback) {
+        return _callback(result)
+      }
+
+      return result
     },
     _updateActions (actions, refs) {
       const newActions = {}
