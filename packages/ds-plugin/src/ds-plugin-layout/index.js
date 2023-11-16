@@ -184,7 +184,8 @@ export default definePlugin({
 
           const dsEvent = this.$setDataValue('dsEvent/listeners', event.value, {
             id: childViewId,
-            suffixId: eventName
+            suffixId: eventName,
+            merge: true
           })
 
           this.$setDataValue('dsPage/events', dsEvent.id, {
