@@ -170,8 +170,50 @@ export default definePlugin({
     }) {
       const template = this.$getDataValue('dsTemplate/items', { id })
 
+      // fetch template
       if (template.isEmpty) {
-        return
+        return new Promise((resolve, reject) => {
+          fetch('/_/template?expand=true&id=' + id)
+            .then(response => {
+              if (response.ok) {
+                return response.json()
+              }
+
+              resolve(false)
+            })
+            .then(data => {
+              const dataItem = data[0]
+              const templateData = this.$setDataValue(dataItem.collection, dataItem.item, { id: dataItem.id })
+
+              if (!templateData.isValid) {
+                reject(templateData.error.details)
+              }
+
+              if (dataItem.expand) {
+                for (let i = 0; i < dataItem.expand.length; i++) {
+                  const expand = dataItem.expand[i]
+                  const expandData = this.$setDataValue(expand.collection, expand.item, { id: expand.id })
+
+                  if (!expandData.isValid) {
+                    reject(templateData.error.details)
+                  }
+                }
+              }
+
+              // set default values here to avoid exec unnecessary functions if there is no template found
+              language = language || this.$getDataValue('dsMetadata/language').item
+              dsSectionId = dsSectionId || this.$method('dsData/generateId')
+
+              this.create({
+                id,
+                mode,
+                language,
+                options,
+                dsSectionId
+              }, resolve)
+            })
+            .catch(error => reject(error))
+        })
       }
 
       // set default values here to avoid exec unnecessary functions if there is no template found
