@@ -46,8 +46,8 @@ dsAppClient.start({
       for (let i = 0; i < data.templates.length; i++) {
         const templateId = data.templates[i]
         app.$action('dsTemplate/create', { id: templateId }, {
-          onSuccess: (dsSectionId) => {
-            app.$setDataValue('dsPage/items', dsSectionId, {
+          onSuccess: (result) => {
+            app.$setDataValue('dsPage/items', result.dsSectionId, {
               id: currentPath,
               update: {
                 method: 'push'
