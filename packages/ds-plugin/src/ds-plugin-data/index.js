@@ -1,3 +1,4 @@
+import { deepClone } from '@dooksa/utils'
 import { definePlugin } from '@dooksa/ds-app'
 import uuid from '@dooksa/crypto-uuid'
 
@@ -1245,8 +1246,8 @@ export default definePlugin({
         let isValidPosition = true
 
         // make a deep copy to previous state
-        if (target._previous) {
-          target._previous = structuredClone(target._previous)
+        if (previousTarget) {
+          target._previous = deepClone({}, target._previous)
           targetDeepCopy = true
         }
 
@@ -1310,7 +1311,7 @@ export default definePlugin({
 
         // make a deep copy to previous state
         if (target._previous && !targetDeepCopy) {
-          target._previous = structuredClone(target._previous)
+          target._previous = deepClone({}, target._previous)
         }
 
         this._updateArray(targetItem, source, options.update.method)
