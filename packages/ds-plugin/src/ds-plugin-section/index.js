@@ -36,19 +36,6 @@ export default definePlugin({
         }
       }
     },
-    entry: {
-      description: 'The entry section, e.g. a page top entry sections',
-      schema: {
-        type: 'collection',
-        items: {
-          type: 'array',
-          items: {
-            type: 'string',
-            relation: 'dsWidget/sections'
-          }
-        }
-      }
-    },
     mode: {
       description: 'Current template mode for the section',
       schema: {
