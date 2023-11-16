@@ -78,6 +78,10 @@ export default (source) => {
     blocks[id] = action.source
   }
 
+  // update last sequence children
+  const lastIndex = sequences.length - 1
+  sequences[lastIndex].children = getLastSequenceChildren(sequences, lastIndex)
+
   const sequenceId = objectHash(sequences)
 
   return { blocks, sequences, sequenceId }
@@ -90,12 +94,12 @@ export default (source) => {
  * @param {Object} param.source - Action template
  * @returns
  */
-const findActions = ({
+function findActions ({
   source,
   node = { path: [] },
   actions = [],
   lastNode = 0
-}) => {
+}) {
   if (source.dsAction) {
     source._$a = source.dsAction
     delete source.dsAction
@@ -138,4 +142,24 @@ const findActions = ({
   }
 
   return { actions, node }
+}
+
+/**
+ * Get the last sequence children "data"
+ * @param {Array} sequences - List of sequences
+ * @returns {Array}
+ */
+function getLastSequenceChildren (sequences, length) {
+  const children = []
+
+  for (let i = 0; i < length; i++) {
+    const sequence = sequences[i]
+
+    // check for nested functions and ignore
+    if (sequence.path.indexOf('$arg') === sequence.path.lastIndexOf('$arg')) {
+      children.push(i)
+    }
+  }
+
+  return children
 }
