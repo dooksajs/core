@@ -112,8 +112,13 @@ export default definePlugin({
       const action = this._processAction(sequence[sequenceEnd], actionData)
 
       if (action.async) {
-        this.$action(action.name, action.params, (result) => {
-          actionData[sequenceEnd] = result
+        this.$action(action.name, action.params, {
+          onSuccess: (result) => {
+            actionData[sequenceEnd] = result
+          },
+          onError: (error) => {
+            console.error(error)
+          }
         })
       } else {
         const methodName = '_process/' + action.name
