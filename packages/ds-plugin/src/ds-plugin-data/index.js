@@ -289,6 +289,10 @@ export default definePlugin({
               result.id = itemId
               result.item = value._item
               result.metadata = value._metadata || false
+
+              if (value._previous) {
+                result.previous = value._previous
+              }
             }
           }
 
@@ -321,6 +325,10 @@ export default definePlugin({
               result.id = itemId
               result.item = value._item
               result.metadata = value._metadata || {}
+
+              if (value._previous) {
+                result.previous = value._previous
+              }
             }
           }
         } else {
@@ -396,22 +404,16 @@ export default definePlugin({
           result.isEmpty = true
 
           return result
-        } else {
-          // create copy
-          // TODO: Make this a proxy to handle unfreeze
-          const unfreezeName = '_unfreeze/' + schema.type
-
-          if (this[unfreezeName]) {
-            result.item = this[unfreezeName](result.item)
-          }
         }
+
+        // TODO: create copy (structuredClone) if options.writable is true
 
         return result
       },
       export: true
     },
     $setDataValue: {
-      value (name, data, options, ignoreTypeCheck) {
+      value (name, data, options) {
         try {
           const schema = this.schema[name]
 
@@ -432,50 +434,28 @@ export default definePlugin({
           }
 
           let result = { collection: name }
+          let target = this.values[name]
+          // TODO: Move this inside setData and unfreeze when needed
+          if (target != null) {
+            const unfreeze = this['_unfreeze/' + schema.type]
 
-          if (ignoreTypeCheck) {
-            if (options) {
-              if (options.id == null) {
-                // update collection
-                this.values[name] = data
-
-                result.item = data
-              } else {
-                result.item = data._item || data
-                result.id = options.id
-
-                const value = this.values[name][options.id] || {}
-
-                this.values[name][options.id] = {
-                  _item: data._item || data,
-                  _metadata: data._metadata || value._metadata || {}
-                }
-              }
+            if (unfreeze) {
+              target = unfreeze(target)
             }
           } else {
-            let target = this.values[name]
-            // TODO: Move this inside setData and unfreeze when needed
-            if (target != null) {
-              const unfreeze = this['_unfreeze/' + schema.type]
-
-              if (unfreeze) {
-                target = unfreeze(target)
-              }
-            } else {
-              // set default value
-              target = this.defaultTypes[schema.type]()
-            }
-
-            result = this._setData(
-              name,
-              target,
-              data._item || data,
-              options
-            )
-
-            // set new value
-            this.values[name] = result.target
+            // set default value
+            target = this.defaultTypes[schema.type]()
           }
+
+          result = this._setData(
+            name,
+            target,
+            data._item || data,
+            options
+          )
+
+          // set new value
+          this.values[name] = result.target
 
           // notify listeners
           this._onUpdate(name, result)
@@ -485,6 +465,7 @@ export default definePlugin({
             id: result.id,
             noAffixId: result.noAffixId,
             item: result.item,
+            previous: result.previous,
             isValid: true,
             metadata: result.metadata
           }
@@ -606,48 +587,71 @@ export default definePlugin({
         })
       }
     },
-    _checkCollectionItems (data, path, source, metadata) {
+    _checkCollectionItems (data, path, sources, metadata) {
       const schema = this.schema[path]
       const schemaCheck = '_schema/' + schema.type
 
       if (!this[schemaCheck]) {
-        for (const id in source) {
-          if (Object.hasOwn(source, id)) {
-            const item = source[id]
-            const targetValue = item._item || item
-            const targetMetadata = item._metadata || metadata
+        for (const id in sources) {
+          if (Object.hasOwn(sources, id)) {
+            const source = sources[id]
+            const target = {
+              _item: source._item || source,
+              _metadata: source._metadata || metadata
+            }
 
-            this._checkType(path, targetValue, schema.type)
+            this._checkType(path, target._item, schema.type)
 
             if (schema.options && schema.options.relation) {
-              this._setRelation(data.collection, id, schema.options.relation, targetValue)
+              this._setRelation(data.collection, id, schema.options.relation, target._item)
             }
 
-            data.target[id] = {
-              _item: targetValue,
-              _metadata: this._setMetadata(targetMetadata, metadata)
+            // store old values
+            const previousData = data.target[id]
+
+            if (previousData) {
+              target._previous = {
+                _item: previousData._item,
+                _metadata: previousData._metadata
+              }
             }
+
+            data.target[id] = target
           }
         }
 
         return
       }
 
-      for (const id in source) {
-        if (Object.hasOwn(source, id)) {
-          const item = source[id]
-          const targetValue = item._item || item
-          const targetMetadata = item._metadata || metadata
+      for (const id in sources) {
+        if (Object.hasOwn(sources, id)) {
+          const source = sources[id]
+          const resultItem = source._item || source
+          const resultMetadata = source._metadata || metadata
 
-          this._checkType(path, targetValue, schema.type)
+          this._checkType(path, resultItem, schema.type)
 
           // set current merge root id
           data.id = id
 
-          this[schemaCheck](data, path, targetValue)
+          this[schemaCheck](data, path, resultItem)
 
-          data.target[id] = this._createTarget(schema.type, targetMetadata)
-          data.target[id]._item = targetValue
+          const result = this._createTarget(schema.type, resultMetadata)
+
+          // add new item value
+          result._item = resultItem
+
+          // store old values
+          const previousData = data.target[id]
+
+          if (previousData) {
+            result._previous = {
+              _item: previousData._item,
+              _metadata: previousData._metadata
+            }
+          }
+
+          data.target[id] = result
         }
       }
     },
@@ -695,7 +699,9 @@ export default definePlugin({
     },
     _containsDuplicates (array) {
       for (let i = 0; i < array.length; i++) {
-        if (array.indexOf(array[i]) !== array.lastIndexOf(array[i])) {
+        const value = array[i]
+
+        if (array.indexOf(value) !== array.lastIndexOf(value)) {
           return true
         }
       }
@@ -1103,6 +1109,7 @@ export default definePlugin({
 
             result.id = data.id
             result.item = value._item
+            result.previous = value._previous
             result.metadata = value._metadata
             result.noAffixId = data.noAffixId
 
@@ -1125,6 +1132,7 @@ export default definePlugin({
         result.id = data.id
         result.noAffixId = data.noAffixId
         result.item = data.target[data.id]._item
+        result.previous = data.target[data.id]._previous
         result.metadata = data.target[data.id]._metadata
       } else if (schema.type === 'collection') {
         const schemaPath = collection + '/items'
@@ -1145,6 +1153,7 @@ export default definePlugin({
         result.id = collectionId.id
         result.noAffixId = collectionId.noAffixId
         result.item = target._item
+        result.previous = target._previous
         result.metadata = target._metadata
       } else {
         this._schemaValidation(data, collection, source)
@@ -1156,6 +1165,7 @@ export default definePlugin({
         data.target = target
 
         result.item = target._item
+        result.previous = target._previous
         result.metadata = target._metadata
       }
 
@@ -1195,7 +1205,21 @@ export default definePlugin({
         data.noAffixId = collection.noAffixId
       }
 
-      data.target[data.id] = this._createTarget(schema.type, options.metadata, data.target[data.id])
+      const previousTarget = data.target[data.id]
+
+      // store previous state
+      if (previousTarget) {
+        const result = this._createTarget(schema.type, options.metadata, previousTarget)
+
+        previousTarget._previous = {
+          _item: previousTarget._item,
+          _metadata: previousTarget._metadata
+        }
+
+        previousTarget._metadata = result._metadata
+      } else {
+        data.target[data.id] = this._createTarget(schema.type, options.metadata)
+      }
 
       // insert new data
       if (!options.update) {
@@ -1210,7 +1234,9 @@ export default definePlugin({
         }
       }
 
-      let target = data.target[data.id]._item
+      const target = data.target[data.id]
+      let targetItem = target._item
+      let targetDeepCopy = false
 
       // update target position
       if (options.update.position) {
@@ -1218,23 +1244,29 @@ export default definePlugin({
         let path = schemaPath
         let isValidPosition = true
 
+        // make a deep copy to previous state
+        if (target._previous) {
+          target._previous = structuredClone(target._previous)
+          targetDeepCopy = true
+        }
+
         for (let i = 0; i < lastKey; i++) {
           const key = options.position[i]
           path = path + '/' + key
 
-          if (!target[key]) {
+          if (!targetItem[key]) {
             isValidPosition = false
             break
           }
 
-          target = target[key]
+          targetItem = targetItem[key]
         }
 
         // insert data
         if (!options.update.method && isValidPosition) {
           this._schemaValidation(data, path, source)
 
-          target[lastKey] = source
+          targetItem[lastKey] = source
 
           return {
             complete: true,
@@ -1249,11 +1281,11 @@ export default definePlugin({
       }
 
       if (options.update.method) {
-        if (!Array.isArray(target)) {
+        if (!Array.isArray(targetItem)) {
           throw new SchemaException({
             schemaPath,
             keyword: 'updateMethod',
-            message: 'Expected target to be an array but found ' + typeof target
+            message: 'Expected target to be an array but found ' + typeof targetItem
           })
         }
 
@@ -1276,7 +1308,12 @@ export default definePlugin({
           }
         }
 
-        this._updateArray(target, source, options.update.method)
+        // make a deep copy to previous state
+        if (target._previous && !targetDeepCopy) {
+          target._previous = structuredClone(target._previous)
+        }
+
+        this._updateArray(targetItem, source, options.update.method)
       }
 
       return {
