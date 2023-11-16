@@ -1,5 +1,6 @@
 import { definePlugin } from '@dooksa/ds-app'
 import objectHash from '@dooksa/crypto-hash'
+import { deepClone } from '@dooksa/utils'
 
 export default definePlugin({
   name: 'dsTemplate',
@@ -428,7 +429,7 @@ export default definePlugin({
         for (let i = 0; i < action.blocks.length; i++) {
           const id = action.blocks[i]
           const block = this.$getDataValue('dsAction/blocks', { id })
-          const newBlock = this._replaceActionRef(structuredClone(block.item), refs)
+          const newBlock = this._replaceActionRef(deepClone({}, block.item), refs)
 
           newBlocks[id] = newBlock
         }
