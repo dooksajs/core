@@ -186,8 +186,7 @@ export default definePlugin({
       return this._getValue(params.value, params.map)
     },
     '_process/set/dataValue' (data) {
-      console.log(data)
-      return this.$setDataValue(data.name, data)
+      return this.$setDataValue(data.name, data.value, data.options)
     },
     _getDataByKey (data, key) {
       const dotNotations = key.split('.')
