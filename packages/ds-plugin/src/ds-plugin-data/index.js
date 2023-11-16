@@ -95,7 +95,8 @@ export default definePlugin({
         object: Object,
         array: Array,
         boolean: Boolean,
-        function: Function
+        function: Function,
+        node: Object
       })
     }
   },
