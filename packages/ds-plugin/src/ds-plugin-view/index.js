@@ -236,7 +236,7 @@ export default definePlugin({
      * @param {dsViewId} dsViewId - dsView node id
      * @returns {string|Object} - Either a string or Object based on the components getter
      */
-    getValue (dsViewId) {
+    getValue ({ dsViewId }) {
       const dsView = this.$getDataValue('dsView/items', {
         id: dsViewId
       })
@@ -249,18 +249,23 @@ export default definePlugin({
       const getters = this.$componentGetters[nodeName]
 
       if (getters) {
-        const node = this.$component(nodeName)
+        const node = dsView.item
+        const component = this.$component(nodeName)
         let value = {}
 
         if (node.nodeName === '#text') {
-          value = getNodeValue(getters[0].type, node, getters[0].name, 'value')
+          value = getNodeValue(getters[0].type, node, 'text', getters[0].name, 'value')
         } else {
           // get node value
           for (let i = 0; i < getters.length; i++) {
             const getter = getters[i]
-            const result = getNodeValue(getter.type, node, getter.name, getters.contentProperty)
+            const result = getNodeValue(getter.type, node, component.type, getter.name, getters.contentProperty)
 
-            value[result.key] = result.value
+            if (component.type === 'text') {
+              value = result
+            } else {
+              value[result.key] = result.value
+            }
           }
         }
 
