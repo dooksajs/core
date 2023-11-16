@@ -184,19 +184,26 @@ export default definePlugin({
       // ISSUE: [DS-889] Only add events if in edit mode
       if (component && component.events) {
         for (let i = 0; i < component.events.length; i++) {
-          const name = component.events[i]
+          const event = component.events[i]
+          const name = event.name || event
 
-          const handler = (event) => {
-            event.preventDefault()
-            const dsContentId = this.$getDataValue('dsView/content', {
+          const handler = (e) => {
+            e.preventDefault()
+            const dsViewContent = this.$getDataValue('dsView/content', {
               id: dsViewId
             })
+
+            if (event.updateContent) {
+              const value = this.getValue({ dsViewId })
+
+              this.$setDataValue('dsContent/items', value, { id: dsViewContent.item })
+            }
 
             this.$emit(name, {
               id: dsViewId,
               payload: {
                 dsViewId,
-                dsContentId: dsContentId.item,
+                dsContentId: dsViewContent.item,
                 dsWidgetId,
                 dsSectionId,
                 event
