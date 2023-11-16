@@ -1,5 +1,5 @@
 import { definePlugin } from '@dooksa/ds-app'
-
+import { deepClone } from '@dooksa/utils'
 /**
  * Dooksa action plugin.
  * @namespace dsAction
@@ -142,14 +142,14 @@ export default definePlugin({
       let params = block.item._$arg
 
       if (item.children) {
-        params = structuredClone(block.item._$arg)
-
-        // node to traverse params and update value
-        let paramNode = params
+        params = deepClone({}, block.item._$arg)
 
         for (let i = 0; i < item.children.length; i++) {
           const child = data[item.children[i]]
           const lastChildIndex = child.path.length - 1
+
+          // node to traverse params and update value
+          let paramNode = params
 
           for (let i = item.path.length + 1; i < lastChildIndex; i++) {
             const path = child.path[i]
