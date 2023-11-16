@@ -134,9 +134,14 @@ export default definePlugin({
         throw new Error('No action found: ' + item.id)
       }
 
-      let paramNode = block.item._$arg
+      let params = block.item._$arg
 
       if (item.children) {
+        params = structuredClone(block.item._$arg)
+
+        // node to traverse params and update value
+        let paramNode = params
+
         for (let i = 0; i < item.children.length; i++) {
           const child = data[item.children[i]]
           const lastChildIndex = child.path.length - 1
@@ -154,7 +159,7 @@ export default definePlugin({
       return {
         async: block.item.async,
         name: block.item._$a,
-        params: block.item._$arg
+        params
       }
     },
     '_process/get/eventValue' (params, payload) {
