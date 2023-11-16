@@ -238,25 +238,30 @@ export default definePlugin({
     {
       name: 'input',
       type: 'text',
-      events: ['input'],
+      events: [{
+        name: 'input',
+        updateContent: true
+      }],
       content: {
         get: [{
           type: 'getter',
           name: 'value'
-        },
-        {
-          type: 'attribute',
-          name: 'placeholder',
-          contentProperty: 'placeholder'
         }],
         set: [{
           type: 'setter',
           name: 'value'
-        },
-        {
+        }]
+      },
+      props: {
+        get: [{
           type: 'attribute',
           name: 'placeholder',
-          contentProperty: 'placeholder'
+          property: 'placeholder'
+        }],
+        set: [{
+          type: 'attribute',
+          name: 'placeholder',
+          property: 'placeholder'
         }]
       }
     },
