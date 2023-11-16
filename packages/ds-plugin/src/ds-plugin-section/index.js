@@ -141,6 +141,44 @@ export default definePlugin({
       }
 
       return dsSection
+    },
+    update ({ id, dsViewId }) {
+      const section = this.$getDataValue('dsSection/items', { id })
+      const dsSectionUniqueId = this.$getDataValue('dsSection/uniqueId').item
+      const mode = this.$getDataValue('dsSection/mode', {
+        id,
+        prefixId: dsSectionUniqueId
+      }).item
+
+      for (let i = 0; i < section.item.length; i++) {
+        const dsWidgetId = section.item[i]
+        const prevWidgetId = section.previous._item[i]
+
+        // do not render an existing widget in the same position
+        if (prevWidgetId && prevWidgetId === dsWidgetId) {
+          continue
+        }
+
+        const widgetMode = this.$getDataValue('dsWidget/mode', {
+          id: dsWidgetId,
+          prefixId: dsSectionUniqueId
+        }).item
+        const dsWidgetMode = widgetMode !== 'default' ? widgetMode : mode
+        const dsLayoutId = this.$getDataValue('dsWidget/layouts', {
+          id: dsWidgetId,
+          suffixId: widgetMode,
+          prefixId: dsSectionUniqueId
+        }).item
+
+        this.$method('dsLayout/create', {
+          dsLayoutId,
+          dsSectionId: id,
+          dsSectionUniqueId,
+          dsWidgetId,
+          dsWidgetMode,
+          dsViewId
+        })
+      }
     }
   }
 })
