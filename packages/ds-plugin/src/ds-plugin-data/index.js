@@ -337,6 +337,12 @@ export default definePlugin({
           result.item = this.values[name]
         }
 
+        if (result.item == null) {
+          result.isEmpty = true
+
+          return result
+        }
+
         if (options) {
           const relations = this.relation[name + '/' + result.id]
 
@@ -399,12 +405,6 @@ export default definePlugin({
               throw new Error('Get data value by index was out of range')
             }
           }
-        }
-
-        if (result.item == null) {
-          result.isEmpty = true
-
-          return result
         }
 
         // TODO: create copy (structuredClone) if options.writable is true
