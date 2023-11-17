@@ -1,3 +1,3 @@
-import dsTemplate from '../../ds-plugin-template/index.js'
+import dsTemplate from '../ds-plugin-template.js'
 
 export default dsTemplate
