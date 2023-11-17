@@ -1,5 +1,5 @@
 import { definePlugin } from '@dooksa/ds-app'
-import DsPlugin from '../DsPlugin.js'
+import DsPlugin from './DsPlugin.js'
 
 /**
  * @typedef DsPluginOptions

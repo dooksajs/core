@@ -1,7 +1,7 @@
 import { definePlugin } from '@dooksa/ds-app'
 import resource from '@dooksa/resource-loader'
-import DsPlugin from '../DsPlugin.js'
-import dsLoader from '../ds-plugin-loader/index.js'
+import DsPlugin from './DsPlugin.js'
+import dsLoader from '../ds-plugin-loader/ds-plugin-loader.js'
 
 /**
  * This callback is displayed as part of the Requester class.
