@@ -1276,9 +1276,6 @@ export default definePlugin({
         }
 
         schemaPath = path
-      } else {
-        // update schema path to match the first item in the collection
-        schemaPath = schemaPath + '/items'
       }
 
       if (options.update.method) {
@@ -1290,6 +1287,15 @@ export default definePlugin({
           })
         }
 
+        const schemaPathItem = schemaPath + '/items'
+        const schemaItem = this.schema[schemaPathItem]
+
+        // validate source
+        if (schemaItem) {
+          this._checkType(schemaPathItem, source, schemaItem.type)
+        }
+
+        // check schema options of array
         const schema = this.schema[schemaPath]
 
         if (schema && schema.options) {
