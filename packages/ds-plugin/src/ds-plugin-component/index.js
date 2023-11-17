@@ -221,6 +221,9 @@ export default definePlugin({
       name: 'ul'
     },
     {
+      name: 'ol'
+    },
+    {
       name: 'section'
     },
     {
