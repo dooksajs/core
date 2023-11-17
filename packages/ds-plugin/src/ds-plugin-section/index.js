@@ -150,12 +150,15 @@ export default definePlugin({
         prefixId: dsSectionUniqueId
       }).item
 
+      let j = 0
+
       for (let i = 0; i < section.item.length; i++) {
         const dsWidgetId = section.item[i]
-        const prevWidgetId = section.previous._item[i]
+        const prevWidgetId = section.previous._item[j]
 
         // do not render an existing widget in the same position
         if (prevWidgetId && prevWidgetId === dsWidgetId) {
+          j++
           continue
         }
 
