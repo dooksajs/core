@@ -242,7 +242,7 @@ export default definePlugin({
         const result = { id, isEmpty: false, isCollectionEmpty: false, collection: name }
         const schema = this.schema[name]
 
-        if (Object.hasOwn(arguments[1], 'id') && id == null) {
+        if (arguments[1] && Object.hasOwn(arguments[1], 'id') && id == null) {
           result.isEmpty = true
 
           return result
