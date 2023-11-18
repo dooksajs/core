@@ -4,11 +4,7 @@ import { appDirectory, scriptDirectory } from '../utils/paths.js'
 import dsApp from '@dooksa/ds-app-server'
 import { dsEsbuild, dsTemplateBuild } from '@dooksa/ds-plugin-server'
 import chalk from 'chalk'
-import getUserLocale from 'get-user-locale'
-
 const log = console.log
-const lang = getUserLocale()
-
 const devDirectory = path.resolve(appDirectory, 'app')
 const buildDirectory = path.resolve(scriptDirectory, 'entry', 'dev')
 const dsAppClientEntryPoint = path.resolve(buildDirectory, 'ds-app-client.js')
@@ -86,15 +82,14 @@ const dsRebuildClientPlugin = {
 
     build.onEnd(result => {
       const timer = performance.now() - timerStart
+      const now = new Date()
+      const hours = now.getHours()
+      const minutes = now.getMinutes()
+      const seconds = now.getSeconds()
 
-      log(
-        Intl.DateTimeFormat(lang, {
-          dateStyle: 'short',
-          timeStyle: 'short'
-        }).format(new Date()) +
-        ' ' +
-        chalk.magenta('[dooksa]') +
-        chalk.green(' client built in: ') +
+      log(`${hours}:${minutes}:${seconds} ` +
+        chalk.white('Message:') +
+        chalk.green(' Client built in: ') +
         chalk.blue(Math.floor(timer) + ' ms')
       )
 
