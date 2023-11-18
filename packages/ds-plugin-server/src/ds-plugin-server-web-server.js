@@ -165,36 +165,32 @@ export default definePlugin({
     },
     /**
      * Start the web server
-     * @param {number} port - Port number for webserver
+     * @param {number} port - Port number for webserver (@link https://gchq.github.io/CyberChef/#recipe=Fletcher-8_Checksum()To_Hex('None',0)&input=ZG9va3Nh
      */
-    start (port = 4151) {
-      this._useRoutes()
+    start (port = 6362, path = 'http://localhost') {
+      this._useRoutes(port, path)
 
-      this.app.listen(port, () => {
-        console.log('Listening on port: ' + port)
+      const log = this.$log
+
+      this.app.listen(port, function () {
+        port = port || this.address().port
+
+        log('message', { message: `{magenta.bold Dooksa} is ready: {blue.underline ${path + ':' + port}}` })
       })
     },
-    _useRoutes () {
+    _useRoutes (port, path) {
       const apiRoutes = this.routes[this.apiSuffix]
 
       for (let i = 0; i < apiRoutes.length; i++) {
         const route = apiRoutes[i]
 
         this.app[route.method](route.path, ...route.handlers)
-
-        if (this.isDev) {
-          console.log('Route: [' + route.method + '] "' + route.path + '"')
-        }
       }
 
       for (let index = 0; index < this.routes.all.length; index++) {
         const route = this.routes.all[index]
 
         this.app[route.method](route.path, ...route.handlers)
-
-        if (this.isDev) {
-          console.log('Route: [' + route.method + '] "' + route.path + '"')
-        }
       }
     }
   }
