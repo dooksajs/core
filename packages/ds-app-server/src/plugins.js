@@ -3,6 +3,7 @@ import {
   dsWebServer,
   dsDatabase,
   dsContent,
+  dsLog,
   dsPage,
   dsEvent,
   dsLayout,
@@ -15,7 +16,11 @@ import {
 } from '@dooksa/ds-plugin-server'
 
 const plugins = [
-
+  {
+    name: dsLog.name,
+    version: dsLog.version,
+    value: dsLog
+  },
   {
     name: dsMiddleware.name,
     version: dsMiddleware.version,
