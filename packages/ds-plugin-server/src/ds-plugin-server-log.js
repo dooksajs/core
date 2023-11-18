@@ -46,7 +46,7 @@ export default definePlugin({
       console.log(template(`{grey ${time}} {white Message:} ${message}`))
     },
     '_log/warn' (time, message, store, code = '400', cause) {
-      console.warn(template(`{yellow Warning:} ${message}`))
+      console.warn(template(`{grey ${time}} {yellow Warning:} ${message}`))
 
       if (store) {
         const error = this._error(message, code, cause)
@@ -57,7 +57,7 @@ export default definePlugin({
     '_log/error' (time, message, store, code = '500', cause) {
       const error = this._error(message, code, cause)
 
-      console.error(template(`{red Error:} {grey ${time}} ${message}`))
+      console.error(template(`{grey ${time}} {red Error:} ${message}`))
 
       if (store) {
         this.$setDataValue('dsLog/errors', error)
