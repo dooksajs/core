@@ -153,7 +153,7 @@ export default definePlugin({
         delete this['data/handler/' + on][name][handlerId]
       }
     },
-    $deleteDataValue (name, id, { cascade } = {}) {
+    $deleteDataValue (name, id, { cascade, listeners } = {}) {
       const collection = this.values[name]
 
       if (collection == null) {
@@ -414,8 +414,38 @@ export default definePlugin({
       export: true
     },
     $setDataValue: {
-      value (name, data, options) {
+      value (name, data, options, ignoreTypeCheck) {
         try {
+          let result = { collection: name }
+
+          if (ignoreTypeCheck) {
+            if (options) {
+              if (options.id == null) {
+                // update collection
+                this.values[name] = data
+
+                result.item = data
+              } else {
+                result.item = data._item || data
+                result.id = options.id
+
+                const value = this.values[name][options.id] || {}
+
+                this.values[name][options.id] = {
+                  _item: data._item || data,
+                  _metadata: data._metadata || value._metadata || {}
+                }
+              }
+            } else {
+              // update collection
+              this.values[name] = data
+
+              result.item = data
+            }
+
+            return result
+          }
+
           const schema = this.schema[name]
 
           if (!schema) {
@@ -434,7 +464,6 @@ export default definePlugin({
             })
           }
 
-          let result = { collection: name }
           let target = this.values[name]
           // TODO: Move this inside setData and unfreeze when needed
           if (target != null) {
