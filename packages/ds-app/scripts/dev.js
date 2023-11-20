@@ -87,7 +87,8 @@ const dsRebuildClientPlugin = {
       const minutes = now.getMinutes()
       const seconds = now.getSeconds()
 
-      log(`${hours}:${minutes}:${seconds} ` +
+      log(
+        chalk.grey(`${hours}:${minutes}:${seconds} `) +
         chalk.white('Message:') +
         chalk.green(' Client built in: ') +
         chalk.blue(Math.floor(timer) + ' ms')
