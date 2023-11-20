@@ -165,7 +165,7 @@ export default definePlugin({
     },
     /**
      * Start the web server
-     * @param {number} port - Port number for webserver (@link https://gchq.github.io/CyberChef/#recipe=Fletcher-8_Checksum()To_Hex('None',0)&input=ZG9va3Nh
+     * @param {number} port - Port number for webserver @link https://gchq.github.io/CyberChef/#recipe=Fletcher-8_Checksum()To_Hex('None',0)&input=ZG9va3Nh
      */
     start (port = 6362, path = 'http://localhost') {
       this._useRoutes(port, path)
@@ -175,7 +175,7 @@ export default definePlugin({
       this.app.listen(port, function () {
         port = port || this.address().port
 
-        log('message', { message: `{magenta.bold Dooksa} is ready: {blue.underline ${path + ':' + port}}` })
+        log('message', { message: `{magenta.bold Dooksa!} {green ➜}  {cyan.underline ${path + ':' + port}}` })
       })
     },
     _useRoutes (port, path) {
