@@ -273,18 +273,16 @@ export default definePlugin({
       }
     },
     /**
-     * Remove node
-     * @param {dsViewId} dsViewId - dsView node id
+     * Remove node from DOM
+     * @param {string} id - dsView node id
      */
-    remove (dsViewId) {
-      const dsView = this.$getDataValue('dsView/items', {
-        id: dsViewId
-      })
+    remove ({ id }) {
+      const dsView = this.$getDataValue('dsView/items', { id })
 
       if (!dsView.isEmpty) {
         // remove content attachment
-        this._unmount(dsViewId)
-        this._removeHandlers(dsViewId)
+        this._unmount(id)
+        this._removeHandlers(id)
 
         dsView.item.remove()
       }
