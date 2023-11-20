@@ -56,6 +56,12 @@ export default definePlugin({
           }
         }
       }
+    },
+    process: {
+      private: true,
+      schema: {
+        type: 'object'
+      }
     }
   },
   /** @lends dsAction */
@@ -71,24 +77,51 @@ export default definePlugin({
 
       if (actions.isEmpty) return
 
-      const result = {}
+      const processId = performance.now()
+
+      this.process[processId] = {
+        position: -1,
+        items: [],
+        results: {}
+      }
 
       for (let i = 0; i < actions.item.length; i++) {
         const id = actions.item[i]
         const sequence = this.$getDataValue('dsAction/sequences', { id })
 
-        if (sequence.isEmpty) return
+        if (sequence.isEmpty) {
+          this.$log('error', { message: 'Broken action sequence', code: '50' })
 
-        result[i] = this._processSequence(
-          sequence.item,
-          payload,
-          result
-        )
+          return
+        }
+
+        this.process[processId].items.push(() => {
+          this._processSequence(
+            sequence.item,
+            payload,
+            i,
+            processId
+          )
+        })
       }
+
+      this._nextProcess(processId)
     },
-    _processSequence (sequence, payload, results = {}) {
+    _nextProcess (processId) {
+      const process = this.process[processId]
+      const item = process.items[++process.position]
+
+      if (item) {
+        return item()
+      }
+
+      // clean up process
+      delete this.process[processId]
+    },
+    _processSequence (sequence, payload, position, processId) {
       const sequenceEnd = sequence.length - 1
       const actionData = {}
+      const results = this.process[processId].results
 
       for (let i = 0; i < sequenceEnd; i++) {
         const item = sequence[i]
@@ -114,20 +147,26 @@ export default definePlugin({
       if (action.async) {
         this.$action(action.name, action.params, {
           onSuccess: (result) => {
-            actionData[sequenceEnd] = result
+            results[position] = result
+
+            this._nextProcess(processId)
           },
           onError: (error) => {
             console.error(error)
+
+            delete this.process[processId]
           }
         })
       } else {
         const methodName = '_process/' + action.name
 
         if (this[methodName]) {
-          return this[methodName](action.params, payload, actionData, results)
+          results[position] = this[methodName](action.params, payload, actionData, results)
         } else {
-          return this.$method(action.name, action.params)
+          results[position] = this.$method(action.name, action.params)
         }
+
+        this._nextProcess(processId)
       }
     },
     _processAction (item, data) {
