@@ -154,16 +154,47 @@ export default definePlugin({
         prefixId: dsSectionUniqueId
       }).item
 
-      let j = 0
+      const previousWidgets = []
+      const nextItems = section.item
+      const prevItems = section.previous ? section.previous._item : []
+      let updateLength = nextItems.length
 
-      for (let i = 0; i < section.item.length; i++) {
-        const dsWidgetId = section.item[i]
-        const prevWidgetId = section.previous._item[j]
+      if (prevItems.length > nextItems.length) {
+        updateLength = prevItems.length
+      }
+
+      for (let i = 0; i < updateLength; i++) {
+        const dsWidgetId = nextItems[i]
+        const prevWidgetId = prevItems[i]
+
+        // Remove previous items
+        if (!dsWidgetId) {
+          this.$method('dsWidget/remove', { id: prevWidgetId })
+
+          continue
+        }
 
         // do not render an existing widget in the same position
         if (prevWidgetId && prevWidgetId === dsWidgetId) {
-          j++
           continue
+        }
+
+        if (prevWidgetId) {
+          const previousView = this.$getDataValue('dsWidget/parentViews', {
+            id: prevWidgetId,
+            options: {
+              expand: true
+            }
+          })
+
+          // detach previous nodes
+          if (!previousView.expandIsEmpty) {
+            previousWidgets.push(prevWidgetId)
+
+            for (let i = 0; i < previousView.expand.length; i++) {
+              previousView.expand[i].item.remove()
+            }
+          }
         }
 
         const widgetMode = this.$getDataValue('dsWidget/mode', {
@@ -185,6 +216,21 @@ export default definePlugin({
           dsWidgetMode,
           dsViewId
         })
+      }
+
+      // remove unused widgets from state
+      for (let i = 0; i < previousWidgets.length; i++) {
+        const id = previousWidgets[i]
+        const view = this.$getDataValue('dsWidget/parentViews', {
+          id,
+          options: {
+            expand: true
+          }
+        })
+
+        if (!view.expandIsEmpty && !view.expand[0].item.parentElement) {
+          this.$method('dsWidget/remove', { id })
+        }
       }
     }
   }
