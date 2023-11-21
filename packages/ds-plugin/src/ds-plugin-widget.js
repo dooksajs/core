@@ -150,5 +150,93 @@ export default definePlugin({
         suffixId: 'default'
       }
     }
+  },
+  methods: {
+    remove ({ id }) {
+      const view = this.$getDataValue('dsWidget/views', { id })
+
+      // remove all nodes from DOM
+      if (!view.isEmpty) {
+        for (let i = 0; i < view.item.length; i++) {
+          const id = view.item[i]
+
+          this.$method('dsView/remove', { id })
+        }
+      }
+
+      const widget = this.$getDataValue('dsWidget/groups', {
+        id,
+        options: {
+          expand: true
+        }
+      })
+
+      const widgets = widget.expand || []
+
+      widgets.push({ id })
+
+      for (let i = 0; i < widgets.length; i++) {
+        const { id } = widgets[i]
+
+        this.$deleteDataValue('dsWidget/mode', { id })
+        this._removeLayout(id)
+        this._removeContent(id)
+        this._removeEvent(id)
+        this._removeSection(id)
+      }
+    },
+    _removeContent (id) {
+      const content = this.$getDataValue('dsWidget/content', { id })
+
+      // remove related content
+      if (!content.isEmpty) {
+        for (let i = 0; i < content.item.length; i++) {
+          const id = content.item[i]
+
+          this.$deleteDataValue('dsContent/item', id, { listeners: true })
+        }
+      }
+    },
+    _removeEvent (id) {
+      const event = this.$getDataValue('dsWidget/event', {
+        id,
+        options: {
+          expand: true
+        }
+      })
+
+      // remove related content
+      if (!event.isExpandEmpty) {
+        for (let i = 0; i < event.item.length; i++) {
+          const item = event.expand[i]
+
+          this.$deleteDataValue(item.collection, item.id, {
+            cascade: true,
+            listeners: true
+          })
+        }
+      }
+    },
+    _removeLayout (id) {
+      const layout = this.$getDataValue('dsWidget/layout', { id })
+
+      // remove unused layout
+      if (!layout.isEmpty) {
+        this.$deleteDataValue('dsLayout/items', layout.item, {
+          cascade: true
+        })
+      }
+    },
+    _removeSection (id) {
+      const section = this.$getDataValue('dsWidget/section', { id })
+
+      // remove unused section
+      if (!section.isEmpty) {
+        this.$deleteDataValue('dsSection/items', section.id, {
+          cascade: true,
+          listeners: true
+        })
+      }
+    }
   }
 })
