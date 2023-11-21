@@ -326,22 +326,22 @@ export default definePlugin({
         const sectionIndexes = template.item.widgetSection[i]
         const dsWidgetId = dsWidgetItems[i].id
         const dsWidgetSection = []
-        const sectionRef = template.item.sectionRefs[i]
-
-        if (sectionRef) {
-          if (actionRefs[sectionRef]) {
-            throw new Error('Action reference id must be unique: "' + sectionRef + '"')
-          }
-
-          actionRefs[sectionRef] = dsWidgetId
-          actionRefs[sectionRef + ':index'] = i
-        }
 
         // get section within widget
         for (let i = 0; i < sectionIndexes.length; i++) {
           const index = sectionIndexes[i]
           const templateSection = template.item.section[index]
           const dsSection = []
+          const sectionRef = template.item.sectionRefs[i]
+
+          if (sectionRef) {
+            if (actionRefs[sectionRef]) {
+              throw new Error('Action reference id must be unique: "' + sectionRef + '"')
+            }
+
+            actionRefs[sectionRef] = dsWidgetId
+            actionRefs[sectionRef + ':index'] = i
+          }
 
           for (let i = 0; i < templateSection.length; i++) {
             const index = templateSection[i]
