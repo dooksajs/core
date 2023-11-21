@@ -50,33 +50,29 @@ export default definePlugin({
       dsWidgetMode,
       dsViewId
     }) {
-      const layout = this.$getDataValue('dsLayout/items', {
-        id: dsLayoutId
-      })
-
-      const events = this.$getDataValue('dsWidget/events', {
-        id: dsWidgetId,
-        suffixId: dsWidgetMode
-      }).item || {}
-
+      const { items, events, viewItems, parentViewItems } = this._getItems(dsLayoutId, dsWidgetId, dsWidgetMode)
       const layoutItems = []
-      let viewItems = this.$getDataValue('dsWidget/view', {
-        id: dsWidgetId,
-        suffixId: dsWidgetMode
-      })
 
-      if (viewItems.isEmpty) {
-        viewItems = []
-      } else {
-        viewItems = viewItems.item
+      if (parentViewItems.length) {
+        for (let i = 0; i < parentViewItems.length; i++) {
+          const sourceId = parentViewItems[i]
+
+          this.$method('dsView/insert', {
+            sourceId,
+            targetId: dsViewId
+          })
+        }
+
+        return
       }
 
-      for (let i = 0; i < layout.item.length; i++) {
-        const element = layout.item[i]
+      for (let i = 0; i < items.length; i++) {
+        const element = items[i]
         const event = events[i]
         const item = {}
         let parentViewId = dsViewId
         let sectionId = dsSectionId
+        let isChild = true
 
         layoutItems.push(item)
 
@@ -88,6 +84,8 @@ export default definePlugin({
           if (layoutItem.sectionId) {
             sectionId = layoutItem.sectionId
           }
+        } else {
+          isChild = false
         }
 
         const childViewId = this.$method('dsView/createNode', {
@@ -97,110 +95,153 @@ export default definePlugin({
           dsComponentId: element.componentId
         })
 
-        this.$method('dsView/append', {
-          dsViewId: childViewId,
-          dsViewParentId: parentViewId
-        })
-
-        // collect new view ids for instance
-        if (viewItems.isEmpty) {
-          viewItems.push(childViewId)
+        if (!isChild) {
+          parentViewItems.push(childViewId)
         }
+
+        // Collect elements
+        viewItems.push(childViewId)
 
         item.dsViewId = childViewId
 
         if (Number.isInteger(element.contentIndex)) {
-          const language = this.$getDataValue('dsMetadata/language').item
-          const contentId = this.$getDataValue('dsWidget/content', {
-            id: dsWidgetId,
-            prefixId: dsSectionUniqueId,
-            suffixId: dsWidgetMode,
-            options: {
-              position: element.contentIndex
-            }
-          }).item
-          const dsContentId = this.$getDataValue('dsContent/items', {
-            id: contentId,
-            suffixId: language
-          }).id
-
-          // Associate dsContent with dsView item
-          this.$setDataValue('dsView/content', dsContentId, {
-            id: childViewId
-          })
-
-          this.$method('dsView/updateValue', { dsViewId: childViewId })
-
-          // Update view item if content value changes
-          this.$addDataListener('dsContent/items', {
-            on: 'update',
-            id: dsContentId,
-            handler: {
-              id: dsViewId,
-              value: (value) => {
-                this.$method('dsView/updateValue', { dsViewId: childViewId })
-              }
-            }
-          })
+          this._contentItem(dsWidgetId, dsWidgetMode, dsSectionUniqueId, dsViewId, childViewId, element.contentIndex)
         }
 
         if (Number.isInteger(element.sectionIndex)) {
-          // get next widget section id
-          const widgetSectionItem = this.$getDataValue('dsWidget/sections', {
-            id: dsWidgetId,
-            prefixId: dsSectionUniqueId,
-            suffixId: dsWidgetMode,
-            options: {
-              position: element.sectionIndex
-            }
-          })
-
-          // ISSUE: this can't be empty
-          if (!widgetSectionItem.isEmpty) {
-            this.$method('dsSection/append', {
-              id: widgetSectionItem.item,
-              dsViewId: childViewId
-            })
-
-            const section = this.$getDataValue('dsSection/items', { id: widgetSectionItem.item })
-
-            // update section elements
-            this.$addDataListener('dsSection/items', {
-              on: 'update',
-              id: section.id,
-              handler: {
-                id: childViewId,
-                value: (value) => {
-                  this.$method('dsSection/update', { id: section.id, dsViewId: childViewId })
-                }
-              }
-            })
-          }
+          this._sectionItem(dsWidgetId, dsWidgetMode, dsSectionUniqueId, childViewId, element.sectionIndex)
         }
 
         if (event) {
-          // match core event names with namespaced core plugins
-          const eventName = this.eventNames[event.name] || event.name
-
-          const dsEvent = this.$setDataValue('dsEvent/listeners', event.value, {
-            id: childViewId,
-            suffixId: eventName,
-            merge: true
-          })
-
-          this.$setDataValue('dsPage/events', dsEvent.id, {
-            id: this.$method('dsRouter/currentPath'),
-            update: {
-              method: 'push'
-            }
-          })
+          this._eventItem(event, childViewId)
         }
+
+        this.$method('dsView/insert', {
+          sourceId: childViewId,
+          targetId: parentViewId
+        })
       }
 
-      // set view items used with widget instance
-      if (viewItems.isEmpty) {
-        this.$setDataValue('dsWidget/view', viewItems, {
-          id: dsWidgetId
+      this.$setDataValue('dsWidget/views', viewItems, {
+        id: dsWidgetId,
+        suffixId: dsWidgetMode
+      })
+
+      this.$setDataValue('dsWidget/parentViews', parentViewItems, {
+        id: dsWidgetId,
+        suffixId: dsWidgetMode
+      })
+    },
+    _getItems (dsLayoutId, dsWidgetId, dsWidgetMode) {
+      const layout = this.$getDataValue('dsLayout/items', {
+        id: dsLayoutId
+      })
+
+      const events = this.$getDataValue('dsWidget/events', {
+        id: dsWidgetId,
+        suffixId: dsWidgetMode
+      }).item || {}
+
+      const parentViewItems = this.$getDataValue('dsWidget/parentViews', {
+        id: dsWidgetId,
+        suffixId: dsWidgetMode
+      })
+
+      const viewItems = this.$getDataValue('dsWidget/views', {
+        id: dsWidgetId,
+        suffixId: dsWidgetMode
+      })
+
+      return {
+        items: layout.item,
+        events,
+        viewItems: viewItems.item || [],
+        parentViewItems: parentViewItems.item || []
+      }
+    },
+    _contentItem (dsWidgetId, dsWidgetMode, dsSectionUniqueId, dsViewId, childViewId, contentIndex) {
+      const language = this.$getDataValue('dsMetadata/language').item
+      const contentId = this.$getDataValue('dsWidget/content', {
+        id: dsWidgetId,
+        prefixId: dsSectionUniqueId,
+        suffixId: dsWidgetMode,
+        options: {
+          position: contentIndex
+        }
+      }).item
+      const dsContentId = this.$getDataValue('dsContent/items', {
+        id: contentId,
+        suffixId: language
+      }).id
+
+      // Associate dsContent with dsView item
+      this.$setDataValue('dsView/content', dsContentId, {
+        id: childViewId
+      })
+
+      this.$method('dsView/updateValue', { dsViewId: childViewId })
+
+      // Update view item if content value changes
+      this.$addDataListener('dsContent/items', {
+        on: 'update',
+        id: dsContentId,
+        handler: {
+          id: dsViewId,
+          value: () => {
+            this.$method('dsView/updateValue', { dsViewId: childViewId })
+          }
+        }
+      })
+    },
+    _eventItem (event, dsView) {
+      // match core event names with namespaced core plugins
+      const eventName = this.eventNames[event.name] || event.name
+
+      const dsEvent = this.$setDataValue('dsEvent/listeners', event.value, {
+        id: dsView,
+        suffixId: eventName,
+        merge: true
+      })
+
+      // Store used events on page used by "save page"
+      // ISSUE: not sure if this is needed since schema relation
+      this.$setDataValue('dsPage/events', dsEvent.id, {
+        id: this.$method('dsRouter/currentPath'),
+        update: {
+          method: 'push'
+        }
+      })
+    },
+    _sectionItem (dsWidgetId, dsWidgetMode, dsSectionUniqueId, dsViewId, sectionIndex) {
+      // get next widget section id
+      const widgetSectionItem = this.$getDataValue('dsWidget/sections', {
+        id: dsWidgetId,
+        prefixId: dsSectionUniqueId,
+        suffixId: dsWidgetMode,
+        options: {
+          position: sectionIndex
+        }
+      })
+
+      // ISSUE: this can't be empty
+      if (!widgetSectionItem.isEmpty) {
+        this.$method('dsSection/append', {
+          id: widgetSectionItem.item,
+          dsViewId
+        })
+
+        const section = this.$getDataValue('dsSection/items', { id: widgetSectionItem.item })
+
+        // update section elements
+        this.$addDataListener('dsSection/items', {
+          on: 'update',
+          id: section.id,
+          handler: {
+            id: dsViewId,
+            value: () => {
+              this.$method('dsSection/update', { id: section.id, dsViewId })
+            }
+          }
         })
       }
     }
