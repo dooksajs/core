@@ -1,7 +1,7 @@
 import { definePlugin } from '@dooksa/ds-app'
 import express from 'express'
 import helmet from 'helmet'
-import logger from 'pino-http'
+import pino from 'pino-http'
 import cookieParser from 'cookie-parser'
 import compression from 'compression'
 
@@ -73,7 +73,7 @@ export default definePlugin({
       })
     }
   },
-  setup ({ cookieSecret, apiSuffix, publicPath }) {
+  setup ({ cookieSecret, apiSuffix, publicPath, webServerLogger }) {
     if (!cookieSecret || cookieSecret.length < 32) {
       throw new Error('Invalid cookie secret length; secret must be at 32 characters')
     }
@@ -99,8 +99,35 @@ export default definePlugin({
     }))
 
     if (this.isDev) {
-      this.app.use(logger())
+      let logger
+
+      if (webServerLogger) {
+        logger = webServerLogger
+      } else {
+        logger = pino({
+          transport: {
+            target: 'pino-pretty',
+            options: {
+              colorize: true,
+              hideObject: true,
+              messageFormat: 'status: {res.statusCode}, url: {req.url}'
+            }
+          }
+        })
+      }
+
+      this.app.use(logger)
     } else {
+      let logger
+
+      if (webServerLogger) {
+        logger = webServerLogger
+      } else {
+        logger = pino()
+      }
+
+      this.app.use(logger)
+
       this.app.use(compression())
     }
 
