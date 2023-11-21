@@ -122,8 +122,22 @@ export default definePlugin({
         }
       }
     },
-    view: {
-      description: 'View references used by an instance',
+    views: {
+      description: 'Widget element',
+      schema: {
+        type: 'collection',
+        items: {
+          type: 'array',
+          items: {
+            type: 'string',
+            relation: 'dsView/items'
+          }
+        },
+        suffixId: 'default'
+      }
+    },
+    parentViews: {
+      description: 'parent widget element',
       schema: {
         type: 'collection',
         items: {
