@@ -98,44 +98,39 @@ export default definePlugin({
     /**
      * Adds a node to the end of the list of children of a specified parent node
      * @param {Object} item
-     * @param {dsViewId} item.dsViewId - Child dsView node id
-     * @param {dsViewId} item.dsViewParentId - Parent dsView node id
+     * @param {dsViewId} item.targetId - Child dsView node id
+     * @param {dsViewId} item.sourceId - Parent dsView node id
      */
-    append ({ dsViewId, dsViewParentId }) {
-      const parentView = this.$getDataValue('dsView/items', {
-        id: dsViewParentId
+    insert ({ targetId, sourceId, type = 'append' }) {
+      const target = this.$getDataValue('dsView/items', {
+        id: targetId
       })
-      const childView = this.$getDataValue('dsView/items', {
-        id: dsViewId
+      const source = this.$getDataValue('dsView/items', {
+        id: sourceId
       })
 
-      parentView.item.appendChild(childView.item)
+      this['_insert/' + type](target.item, source.item)
 
       this.$emit('dsView/mount', {
-        id: dsViewId,
+        id: sourceId,
         payload: {
-          dsViewParentId,
-          dsViewId
+          targetId,
+          sourceId
         }
       })
 
       this.$addDataListener('dsView/items', {
         on: 'delete',
-        id: dsViewId,
+        id: sourceId,
         handler: {
-          id: dsViewId,
+          id: sourceId,
           value: () => {
             this.$deleteDataValue('dsView/items', {
-              id: dsViewId
+              id: sourceId
             })
           }
         }
       })
-
-      // update parents
-      this.$setDataValue('dsView/itemParent', dsViewParentId, {
-        id: dsViewId
-      }, true)
     },
     /**
      * Creates node
@@ -194,7 +189,7 @@ export default definePlugin({
             })
 
             if (event.updateContent) {
-              const value = this.getValue({ dsViewId })
+              const value = this.getValue({ id: dsViewId })
 
               this.$setDataValue('dsContent/items', value, { id: dsViewContent.item })
             }
@@ -224,21 +219,14 @@ export default definePlugin({
 
       return dsViewId
     },
-    detach (id) {
-      const dsView = this.$getDataValue('dsView/items', { id })
-
-      if (!dsView.isEmpty) {
-        dsView.item.remove()
-      }
-    },
     /**
      * Get value from node item
      * @param {dsViewId} dsViewId - dsView node id
      * @returns {string|Object} - Either a string or Object based on the components getter
      */
-    getValue ({ dsViewId }) {
+    getValue ({ id }) {
       const dsView = this.$getDataValue('dsView/items', {
-        id: dsViewId
+        id
       })
 
       if (dsView.isEmpty) {
@@ -424,6 +412,18 @@ export default definePlugin({
           this[`_setValueBy/${setter.type}`](node, setter, dsContent.item)
         }
       }
+    },
+    '_insert/append' (target, source) {
+      target.appendChild(source)
+    },
+    '_insert/after' (target, source) {
+      target.after(source)
+    },
+    '_insert/before' (target, source) {
+      target.before(source)
+    },
+    '_insert/replace' (target, source) {
+      target.replaceWith(source)
     },
     /**
      * Remove event handlers
