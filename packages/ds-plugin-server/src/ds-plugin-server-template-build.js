@@ -192,10 +192,10 @@ export default definePlugin({
         const templates = fragment.querySelectorAll('template')
 
         if (templates) {
-          throw new Error('Templates missing the "ds-template-id" attribute')
+          this.$log('error', { message: 'Templates missing the "ds-template-id" attribute', code: 55 })
         }
 
-        throw new Error('No templates found')
+        this.$log('error', { message: 'No templates found', code: 54 })
       }
 
       for (let i = 0; i < templates.length; i++) {
