@@ -81,9 +81,7 @@ export default definePlugin({
   methods: {
     append ({
       id,
-      dsViewId = this.$getDataValue('dsView/rootViewId').item,
-      path = this.$method('dsRouter/currentPath'),
-      appendToPage = false
+      dsViewId = this.$getDataValue('dsView/rootViewId').item
     }) {
       const dsSectionUniqueId = this.$getDataValue('dsSection/uniqueId').item
 
@@ -107,15 +105,6 @@ export default definePlugin({
         prefixId: dsSectionUniqueId,
         suffixId: mode
       })
-
-      if (appendToPage) {
-        this.$setDataValue('dsPage/items', dsSection.noAffixId, {
-          id: path,
-          update: {
-            method: 'push'
-          }
-        })
-      }
 
       for (let i = 0; i < dsSection.item.length; i++) {
         const dsWidgetId = dsSection.item[i]
