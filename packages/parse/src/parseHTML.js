@@ -179,6 +179,7 @@ const parseHTML = (
 
         if (element.isSection) {
           data.section.push(sections)
+          widgetSection.push(sectionIndex)
           item.sectionIndex = sectionIndex
 
           if (element.sectionRef) {
@@ -189,8 +190,6 @@ const parseHTML = (
         // prepare child nodes
         if (node.childNodes.length) {
           if (element.isSection) {
-            widgetSection.push(sectionIndex)
-
             // collect instances inside a section
             for (let i = 0; i < node.childNodes.length; i++) {
               const childNode = node.childNodes[i]
