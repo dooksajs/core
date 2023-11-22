@@ -397,12 +397,14 @@ export default definePlugin({
             }
           }
 
-          if (Number.isInteger(options.position) && result.item[options.position]) {
-            result.item = result.item[options.position]
-          } else {
-            result.isEmpty = true
+          if (Number.isInteger(options.position)) {
+            if (result.item[options.position]) {
+              result.item = result.item[options.position]
+            } else {
+              result.isEmpty = true
 
-            return result
+              return result
+            }
           }
         }
 
