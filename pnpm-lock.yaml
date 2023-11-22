@@ -180,9 +180,6 @@ importers:
       '@dooksa/utils':
         specifier: workspace:^
         version: link:../utils
-      l:
-        specifier: ^0.6.0
-        version: 0.6.0
 
   packages/ds-plugin-server:
     devDependencies:
@@ -1951,10 +1948,6 @@ packages:
     dependencies:
       jwa: 1.4.1
       safe-buffer: 5.2.1
-
-  /l@0.6.0:
-    resolution: {integrity: sha512-rB5disIyfKRBQ1xcedByHCcAmPWy2NPnjWo5u4mVVIPtathROHyfHjkloqSBT49mLnSRnupkpoIUOFCL7irCVQ==}
-    dev: true
 
   /levn@0.4.1:
     resolution: {integrity: sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ==}

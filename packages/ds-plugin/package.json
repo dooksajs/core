@@ -6,7 +6,7 @@
   "repository": "git@github.com:dooksajs/dooksa.git",
   "license": "MPL-2.0",
   "type": "module",
-  "main": "./src/index.js",
+  "main": "./index.js",
   "devDependencies": {
     "@dooksa/crypto-hash": "workspace:^",
     "@dooksa/crypto-uuid": "workspace:^",
@@ -14,7 +14,6 @@
     "@dooksa/ds-app": "workspace:^",
     "@dooksa/object-hash": "workspace:^",
     "@dooksa/resource-loader": "workspace:^",
-    "@dooksa/utils": "workspace:^",
-    "l": "^0.6.0"
+    "@dooksa/utils": "workspace:^"
   }
 }

@@ -397,13 +397,12 @@ export default definePlugin({
             }
           }
 
-          if (Number.isInteger(options.position)) {
-            // check if index is within range
-            if (options.position === 0 || (options.position < result.item.length && options.position > -1)) {
-              result.item = result.item[options.position]
-            } else {
-              throw new Error('Get data value by index was out of range')
-            }
+          if (Number.isInteger(options.position) && result.item[options.position]) {
+            result.item = result.item[options.position]
+          } else {
+            result.isEmpty = true
+
+            return result
           }
         }
 

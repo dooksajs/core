@@ -368,7 +368,7 @@ export default definePlugin({
           callback()
         },
         onError: err => {
-          console.log(err)
+          console.error(err)
         }
       })
     },
