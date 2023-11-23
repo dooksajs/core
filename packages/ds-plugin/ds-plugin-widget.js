@@ -18,6 +18,17 @@ export default definePlugin({
         type: 'string'
       }
     },
+    attached: {
+      description: 'Which section the widget is attached to',
+      schema: {
+        type: 'collection',
+        suffixId: 'default',
+        items: {
+          type: 'string',
+          relation: 'dsSection/items'
+        }
+      }
+    },
     items: {
       description: 'Widget instance',
       schema: {

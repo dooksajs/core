@@ -84,7 +84,19 @@ export default definePlugin({
           if (layoutItem.sectionId) {
             sectionId = layoutItem.sectionId
           }
+
+          this.$setDataValue('dsWidget/attached', sectionId, {
+            id: dsWidgetId,
+            prefixId: dsSectionUniqueId,
+            suffixId: dsWidgetMode
+          })
         } else {
+          this.$setDataValue('dsWidget/attached', dsSectionId, {
+            id: dsWidgetId,
+            prefixId: dsSectionUniqueId,
+            suffixId: dsWidgetMode
+          })
+
           isChild = false
         }
 
@@ -231,6 +243,12 @@ export default definePlugin({
         })
 
         const section = this.$getDataValue('dsSection/items', { id: widgetSectionItem.item })
+
+        this.$setDataValue('dsWidget/attached', section.id, {
+          id: dsWidgetId,
+          prefixId: dsSectionUniqueId,
+          suffixId: dsWidgetMode
+        })
 
         // update section elements
         this.$addDataListener('dsSection/items', {
