@@ -1,7 +1,6 @@
 import { definePlugin } from '@dooksa/ds-app'
 import express from 'express'
 import helmet from 'helmet'
-import pino from 'pino-http'
 import cookieParser from 'cookie-parser'
 import compression from 'compression'
 
@@ -98,36 +97,11 @@ export default definePlugin({
       secure: !this.isDev
     }))
 
-    if (this.isDev) {
-      let logger
+    if (webServerLogger) {
+      this.app.use(webServerLogger)
+    }
 
-      if (webServerLogger) {
-        logger = webServerLogger
-      } else {
-        logger = pino({
-          transport: {
-            target: 'pino-pretty',
-            options: {
-              colorize: true,
-              hideObject: true,
-              messageFormat: 'status: {res.statusCode}, url: {req.url}'
-            }
-          }
-        })
-      }
-
-      this.app.use(logger)
-    } else {
-      let logger
-
-      if (webServerLogger) {
-        logger = webServerLogger
-      } else {
-        logger = pino()
-      }
-
-      this.app.use(logger)
-
+    if (!this.isDev) {
       this.app.use(compression())
     }
 

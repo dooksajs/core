@@ -23,10 +23,6 @@
     "helmet": "^7.0.0",
     "iconify-icon": "^1.0.8",
     "jsonwebtoken": "^9.0.0",
-    "password-validator": "^5.3.0",
-    "pino-http": "^8.5.1"
-  },
-  "devDependencies": {
-    "pino-pretty": "^10.2.3"
+    "password-validator": "^5.3.0"
   }
 }

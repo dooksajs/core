@@ -25,8 +25,6 @@
     "iconify-icon": "^1.0.8",
     "jsdom": "^22.1.0",
     "jsonwebtoken": "^9.0.0",
-    "password-validator": "^5.3.0",
-    "pino-http": "^8.5.1",
-    "pino-pretty": "^10.2.3"
+    "password-validator": "^5.3.0"
   }
 }
