@@ -249,6 +249,7 @@ export default definePlugin({
 
         if (!rootWidgetId) {
           rootWidgetId = widget.id
+          actionRefs['widget:id'] = widget.id
         }
 
         dsWidgetItems.push(widget)
