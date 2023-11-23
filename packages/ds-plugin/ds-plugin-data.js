@@ -1319,20 +1319,41 @@ export default definePlugin({
 
         const schemaPathItem = schemaPath + '/items'
         const schemaItem = this.schema[schemaPathItem]
+        const updateMethod = options.update.method
 
         // validate source
-        if (schemaItem) {
-          this._checkType(schemaPathItem, source, schemaItem.type)
+        if (schemaItem && (updateMethod === 'push' || updateMethod === 'unshift')) {
+          if (Array.isArray(source)) {
+            for (let i = 0; i < source.length; i++) {
+              const item = source[i]
+
+              this._checkType(schemaPathItem, item, schemaItem.type)
+            }
+          } else {
+            this._checkType(schemaPathItem, source, schemaItem.type)
+          }
         }
+
+        // make a deep copy to previous state
+        if (target._previous && !targetDeepCopy) {
+          target._previous = deepClone({}, target._previous)
+        }
+
+        // update target array
+        this._updateArray(targetItem, source, updateMethod)
 
         // check schema options of array
         const schema = this.schema[schemaPath]
 
+        // ISSUE: containsDuplicates expects an array
         if (schema && schema.options) {
           if (schema.options.uniqueItems) {
-            const hasDuplicates = this._containsDuplicates(source)
+            const hasDuplicates = this._containsDuplicates(targetItem)
 
             if (hasDuplicates) {
+              // restore target
+              target._item = target._previous._item
+
               return {
                 complete: true,
                 isValid: false
@@ -1344,13 +1365,6 @@ export default definePlugin({
             this._setRelation(data.collection, data.id, schema.options.relation, source)
           }
         }
-
-        // make a deep copy to previous state
-        if (target._previous && !targetDeepCopy) {
-          target._previous = deepClone({}, target._previous)
-        }
-
-        this._updateArray(targetItem, source, options.update.method)
       }
 
       return {
@@ -1428,21 +1442,32 @@ export default definePlugin({
       return value.slice()
     },
     _updateArray (target, source, method) {
+      source = Array.isArray(source) ? source : [source]
+
       switch (method) {
         case 'push':
-          target.push(source)
+          target.push(...source)
+
+          break
+        case 'pull':
+          for (let i = 0; i < source.length; i++) {
+            const value = source[i]
+            const index = target.indexOf(value)
+
+            target.splice(index, 1)
+          }
 
           break
         case 'pop':
-          target.pop(source)
+          target.pop()
 
           break
         case 'shift':
-          target.shift(source)
+          target.shift()
 
           break
         case 'unshift':
-          target.unshift(source)
+          target.unshift(...source)
 
           break
       }
