@@ -217,7 +217,7 @@ export default definePlugin({
       })
 
       // remove related content
-      if (!event.isExpandEmpty) {
+      if (!event.isEmpty && !event.isExpandEmpty) {
         for (let i = 0; i < event.item.length; i++) {
           const item = event.expand[i]
 
