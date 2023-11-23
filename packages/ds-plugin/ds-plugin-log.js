@@ -45,7 +45,7 @@ export default definePlugin({
       const hours = this._timeToString(now.getHours())
       const minutes = this._timeToString(now.getMinutes())
       const seconds = this._timeToString(now.getSeconds())
-      const milliseconds = this._timeToString(now.getMilliseconds())
+      const milliseconds = now.getMilliseconds().toString().padStart(3, 0)
 
       this[logType](`${hours}:${minutes}:${seconds}.${milliseconds}`, message, store, code, cause)
     },
