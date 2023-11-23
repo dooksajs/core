@@ -239,6 +239,12 @@ export default definePlugin({
       name: 'i'
     },
     {
+      name: 'form',
+      events: [{
+        name: 'submit'
+      }]
+    },
+    {
       name: 'input',
       type: 'text',
       events: [{
