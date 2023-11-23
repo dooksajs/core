@@ -8,7 +8,7 @@ export default definePlugin({
   name: 'dsLog',
   version: 1,
   data: {
-    message: {
+    info: {
       schema: {
         type: 'collection',
         items: {
@@ -49,11 +49,11 @@ export default definePlugin({
 
       this[logType](`${hours}:${minutes}:${seconds}:${milliseconds}`, message, store, code, cause)
     },
-    '_log/message' (time, message, store, code) {
+    '_log/info' (time, message, store, code) {
       code = code ? ` {blue[${code}]} ` : ' '
 
       console.log(
-        `%c${time}} %cMessage:%c${code}%c${message}`,
+        `%c${time}} %Info:%c${code}%c${message}`,
         'color:grey;',
         '',
         'color: blue;',

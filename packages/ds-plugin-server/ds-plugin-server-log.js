@@ -10,7 +10,7 @@ export default definePlugin({
   name: 'dsLog',
   version: 1,
   data: {
-    message: {
+    info: {
       schema: {
         type: 'collection',
         items: {
@@ -50,15 +50,15 @@ export default definePlugin({
 
       this[logType](`${hours}:${minutes}:${seconds}`, message, store, code, cause)
     },
-    '_log/message' (time, message, store, code) {
+    '_log/info' (time, message, store, code) {
       code = code ? ` {blue[${code}]} ` : ' '
 
-      console.log(template(`{grey ${time}} {white Message:}${code}${message}`))
+      console.log(template(`{grey ${time}} {white Info:}${code}${message}`))
 
       if (store) {
         const error = this._error(message, code)
 
-        this.$setDataValue('dsLog/message', error)
+        this.$setDataValue('dsLog/info', error)
       }
     },
     '_log/warn' (time, message, store, code = '400', cause) {
