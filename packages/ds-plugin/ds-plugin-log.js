@@ -42,12 +42,12 @@ export default definePlugin({
       }
 
       const now = new Date()
-      const hours = now.getHours()
-      const minutes = now.getMinutes()
-      const seconds = now.getSeconds()
-      const milliseconds = now.getSeconds()
+      const hours = this._timeToString(now.getHours())
+      const minutes = this._timeToString(now.getMinutes())
+      const seconds = this._timeToString(now.getSeconds())
+      const milliseconds = this._timeToString(now.getMilliseconds())
 
-      this[logType](`${hours}:${minutes}:${seconds}:${milliseconds}`, message, store, code, cause)
+      this[logType](`${hours}:${minutes}:${seconds}.${milliseconds}`, message, store, code, cause)
     },
     '_log/info' (time, message, store, code) {
       code = code ? ` {blue[${code}]} ` : ' '
@@ -109,6 +109,9 @@ export default definePlugin({
           details: cause
         }
       })
+    },
+    _timeToString (time) {
+      return time.toString().padStart(2, 0)
     }
   }
 })
