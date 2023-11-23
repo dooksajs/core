@@ -270,7 +270,8 @@ export default definePlugin({
       if (!dsView.isEmpty) {
         // remove content attachment
         this._unmount(id)
-        this._removeHandlers(id)
+
+        this.$deleteDataValue('dsView/handlers', { id })
 
         dsView.item.remove()
       }
@@ -426,14 +427,6 @@ export default definePlugin({
       target.replaceWith(source)
     },
     /**
-     * Remove event handlers
-     * @param {dsViewId} id - handler ref id
-     * @private
-     */
-    _removeHandlers (dsViewId) {
-      delete this.handlers[dsViewId]
-    },
-    /**
      * Set attributes to element
      * @param {dsViewId} dsViewId - dsView node id
      * @param {Object.<string, string>} attributes
@@ -444,19 +437,6 @@ export default definePlugin({
         const [name, value] = attributes[i]
 
         element.setAttribute(name, value)
-      }
-    },
-    /**
-     * Set event handler
-     * @param {string} dsViewId - handler ref id
-     * @param {function} handler - handler for an event
-     * @private
-     */
-    _setHandler (dsViewId, handler) {
-      if (this.handlers[dsViewId]) {
-        this.handlers[dsViewId].push(handler)
-      } else {
-        this.handlers[dsViewId] = [handler]
       }
     },
     /**
@@ -500,7 +480,7 @@ export default definePlugin({
         payload: { dsViewId }
       })
 
-      this.$removeDataValue('dsView/itemParent', {
+      this.$deleteDataValue('dsView/itemParent', {
         id: dsViewId
       })
     }
