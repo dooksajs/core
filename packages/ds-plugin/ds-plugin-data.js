@@ -1,6 +1,7 @@
 import { deepClone } from '@dooksa/utils'
 import { definePlugin } from '@dooksa/ds-app'
 import uuid from '@dooksa/crypto-uuid'
+import DataResult from './utils/DataResult.js'
 
 function SchemaException (details) {
   this.details = details
@@ -239,7 +240,7 @@ export default definePlugin({
           }
         }
 
-        const result = { id, isEmpty: false, isCollectionEmpty: false, collection: name }
+        const result = new DataResult(name, id)
         const schema = this.schema[name]
 
         if (arguments[1] && Object.hasOwn(arguments[1], 'id') && id == null) {
@@ -247,23 +248,6 @@ export default definePlugin({
 
           return result
         } else if (id != null) {
-          result.isAffixEmpty = true
-
-          // Better off creating a result constructor
-          Object.defineProperty(result, 'noAffixId', {
-            get () {
-              let noAffixId = this.id.split('_')
-
-              if (noAffixId.length === 3) {
-                noAffixId = '_' + noAffixId[1] + '_'
-              } else {
-                noAffixId = this.id
-              }
-
-              return noAffixId
-            }
-          })
-
           // find document using custom affixes
           if (prefixId || suffixId) {
             let itemId
@@ -466,14 +450,8 @@ export default definePlugin({
           }
 
           let target = this.values[name]
-          // TODO: Move this inside setData and unfreeze when needed
-          if (target != null) {
-            const unfreeze = this['_unfreeze/' + schema.type]
 
-            if (unfreeze) {
-              target = unfreeze(target)
-            }
-          } else {
+          if (target == null) {
             // set default value
             target = this.defaultTypes[schema.type]()
           }
@@ -578,15 +556,6 @@ export default definePlugin({
       const newTarget = target[position]
 
       if (newTarget) {
-        if (Object.isFrozen(newTarget)) {
-          const unfreeze = this['_unfreeze/' + type]
-
-          // @ISSUE: find a better way to make all data types immutable
-          target[position] = unfreeze(newTarget)
-
-          return target[position]
-        }
-
         return newTarget
       } else if (!newTarget && type) {
         target[position] = this.defaultTypes[type]()
@@ -625,7 +594,7 @@ export default definePlugin({
       if (!this[schemaCheck]) {
         for (const id in sources) {
           if (Object.hasOwn(sources, id)) {
-            const source = sources[id]
+            const source = deepClone(this.defaultTypes[schema.type](), sources[id], true)
             const target = {
               _item: source._item || source,
               _metadata: source._metadata || metadata
@@ -656,7 +625,7 @@ export default definePlugin({
 
       for (const id in sources) {
         if (Object.hasOwn(sources, id)) {
-          const source = sources[id]
+          const source = deepClone(this.defaultTypes[schema.type](), sources[id], true)
           const resultItem = source._item || source
           const resultMetadata = source._metadata || metadata
 
@@ -1066,6 +1035,9 @@ export default definePlugin({
 
       const schemaValidationName = '_schema/' + schemaItems.type
 
+      // freeze array
+      Object.freeze(source)
+
       for (let i = 0; i < source.length; i++) {
         if (typeof this[schemaValidationName] !== 'function') {
           // set relation for array of strings
@@ -1090,6 +1062,9 @@ export default definePlugin({
       if (schema.options) {
         this._schemaObjectOption(path, source)
       }
+
+      // freeze object
+      Object.freeze(source)
 
       const propertiesChecked = {}
 
