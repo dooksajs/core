@@ -204,7 +204,7 @@ export default definePlugin({
         for (let i = 0; i < content.item.length; i++) {
           const id = content.item[i]
 
-          this.$deleteDataValue('dsContent/item', id, { listeners: true })
+          this.$deleteDataValue('dsContent/items', id, { listeners: true })
         }
       }
     },
