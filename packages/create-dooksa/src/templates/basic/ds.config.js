@@ -1,4 +1,4 @@
-import { defineApp } from '@dooksa/ds-app'
+import { defineApp } from '@dooksa/utils'
 
 export default defineApp({
   cookieSecret: '',

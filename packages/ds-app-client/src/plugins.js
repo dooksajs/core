@@ -12,7 +12,8 @@ import {
   dsEvent,
   dsOperator,
   dsPage,
-  dsDatabase
+  dsDatabase,
+  dsTemplate
 } from '@dooksa/ds-plugin'
 
 const plugins = [
@@ -87,12 +88,9 @@ const plugins = [
     value: dsDatabase
   },
   {
-    name: 'dsTemplate',
-    version: 1,
-    options: {
-      import: 'ds-plugin-template',
-      setupOnRequest: true
-    }
+    name: dsTemplate.name,
+    version: dsTemplate.version,
+    value: dsTemplate
   }
 ]
 

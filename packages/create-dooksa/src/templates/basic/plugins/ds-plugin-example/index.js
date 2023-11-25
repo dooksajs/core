@@ -1,4 +1,4 @@
-import { definePlugin } from '@dooksa/ds-app'
+import { definePlugin } from '@dooksa/utils'
 
 export default definePlugin({
   name: 'dsExample',
