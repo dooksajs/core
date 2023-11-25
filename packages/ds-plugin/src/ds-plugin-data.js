@@ -411,38 +411,8 @@ export default definePlugin({
       export: true
     },
     $setDataValue: {
-      value (name, data, options, ignoreTypeCheck) {
+      value (name, data, options) {
         try {
-          let result = { collection: name }
-
-          if (ignoreTypeCheck) {
-            if (options) {
-              if (options.id == null) {
-                // update collection
-                this.values[name] = data
-
-                result.item = data
-              } else {
-                result.item = data._item || data
-                result.id = options.id
-
-                const value = this.values[name][options.id] || {}
-
-                this.values[name][options.id] = {
-                  _item: data._item || data,
-                  _metadata: data._metadata || value._metadata || {}
-                }
-              }
-            } else {
-              // update collection
-              this.values[name] = data
-
-              result.item = data
-            }
-
-            return result
-          }
-
           const schema = this.schema[name]
 
           if (!schema) {
@@ -461,6 +431,7 @@ export default definePlugin({
             })
           }
 
+          let result = { collection: name }
           let target = this.values[name]
 
           if (target == null) {
@@ -540,6 +511,34 @@ export default definePlugin({
      */
     generateId () {
       return '_' + uuid() + '_'
+    },
+    unsafeSetData ({ name, data, options }) {
+      const result = new DataResult(name, options.id)
+
+      if (options) {
+        if (options.id == null) {
+          // update collection
+          this.values[name] = data
+
+          result.item = data
+        } else {
+          result.item = data._item || data
+
+          const value = this.values[name][options.id] || {}
+
+          this.values[name][options.id] = {
+            _item: data._item || data,
+            _metadata: data._metadata || value._metadata || {}
+          }
+        }
+      } else {
+        // update collection
+        this.values[name] = data
+
+        result.item = data
+      }
+
+      return result
     },
     _addSchema (schema) {
       for (let i = 0; i < schema.length; i++) {
@@ -1247,36 +1246,28 @@ export default definePlugin({
         }
       }
 
+      data.target[data.id] = deepClone({}, data.target[data.id])
       const target = data.target[data.id]
       let targetItem = target._item
-      let targetDeepCopy = false
 
       // update target position
       if (options.update.position) {
         const lastKey = options.position.length - 1
         let path = schemaPath
-        let isValidPosition = true
-
-        // make a deep copy to previous state
-        if (previousTarget) {
-          target._previous = deepClone({}, target._previous)
-          targetDeepCopy = true
-        }
 
         for (let i = 0; i < lastKey; i++) {
           const key = options.position[i]
           path = path + '/' + key
 
           if (!targetItem[key]) {
-            isValidPosition = false
-            break
+            return this.$log('error', { message: 'Update position does not exist' + options.position })
           }
 
           targetItem = targetItem[key]
         }
 
         // insert data
-        if (!options.update.method && isValidPosition) {
+        if (!options.update.method) {
           this._schemaValidation(data, path, source)
 
           targetItem[lastKey] = source
@@ -1314,11 +1305,6 @@ export default definePlugin({
           } else {
             this._checkType(schemaPathItem, source, schemaItem.type)
           }
-        }
-
-        // make a deep copy to previous state
-        if (target._previous && !targetDeepCopy) {
-          target._previous = deepClone({}, target._previous)
         }
 
         // update target array

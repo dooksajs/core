@@ -165,9 +165,13 @@ export default definePlugin({
 
       element.dsViewId = dsViewId
 
-      this.$setDataValue('dsView/items', element, {
-        id: dsViewId
-      }, true)
+      this.$method('dsData/unsafeSetData', {
+        name: 'dsView/items',
+        data: element,
+        options: {
+          id: dsViewId
+        }
+      })
 
       if (dsComponent.attributes) {
         this._setAttributes(element, dsComponent.attributes)
