@@ -8,19 +8,13 @@ export default definePlugin({
   name: 'dsMetadata',
   version: 1,
   data: {
-    appId: {
-      default: '',
-      schema: {
-        type: 'string'
-      }
-    },
     language: {
-      default: 'en',
+      default: () => 'en',
       schema: {
         type: 'string'
       }
     },
-    languages: {
+    availableLanguages: {
       default: ['en'],
       schema: {
         type: 'array',
@@ -28,12 +22,15 @@ export default definePlugin({
           type: 'string'
         }
       }
-    },
-    theme: {
-      default: '',
-      schema: {
-        type: 'string'
-      }
+    }
+  },
+  setup ({ defaultLanguage, availableLanguages } = {}) {
+    if (defaultLanguage) {
+      this.$setDataValue('dsMetadata/language', defaultLanguage)
+    }
+
+    if (availableLanguages) {
+      this.$setDataValue('dsMetadata/languages', availableLanguages)
     }
   }
 })
