@@ -1,4 +1,4 @@
-import { definePlugin } from '@dooksa/utils'
+import { deepClone, definePlugin } from '@dooksa/utils'
 import objectHash from '@dooksa/object-hash'
 
 export default definePlugin({
@@ -259,11 +259,12 @@ export default definePlugin({
         }
 
         for (let j = 0; j < contentItems.length; j++) {
-          const content = contentItems[j]
+          let content = contentItems[j]
           const contentRef = contentRefs[j]
 
           // change content value
           if (options.content && options.content[contentRef]) {
+            content = deepClone({}, contentItems[j])
             content.item = options.content[contentRef]
           }
 
