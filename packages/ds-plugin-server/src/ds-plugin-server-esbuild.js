@@ -11,6 +11,11 @@ export default definePlugin({
       schema: {
         type: 'number'
       }
+    },
+    rebuildServer: {
+      schema: {
+        type: 'number'
+      }
     }
   },
   setup () {
