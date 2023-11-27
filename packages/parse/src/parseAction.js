@@ -69,7 +69,7 @@ export default (source) => {
 
     if (keyLength > -1) {
       node[action.path[keyLength]] = {
-        _$id: id
+        _$dv: i
       }
     }
 
