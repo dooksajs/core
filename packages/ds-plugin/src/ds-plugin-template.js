@@ -280,7 +280,7 @@ export default definePlugin({
 
           if (contentRef) {
             if (actionRefs[contentRef]) {
-              throw new Error('Action reference id must be unique: "' + contentRef + '"')
+              this.$log('error', { message: 'Action reference id must be unique: "' + contentRef + '"' })
             }
 
             actionRefs[contentRef] = contentId
