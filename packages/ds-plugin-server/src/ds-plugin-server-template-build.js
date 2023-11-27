@@ -178,7 +178,7 @@ export default definePlugin({
         for (let i = 0; i < action.sequence.length; i++) {
           const result = parseAction(action.sequence[i])
 
-          actions.items[action.id].push(result.sequenceId)
+          actions.items[action.id].push({ id: result.sequenceId })
           actions.sequences[result.sequenceId] = result.sequences
           actions.blocks = Object.assign(actions.blocks, result.blocks)
         }

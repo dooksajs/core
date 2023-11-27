@@ -386,23 +386,29 @@ export default definePlugin({
 
       for (let i = 0; i < events.length; i++) {
         const [widgetId, event] = events[i]
+        const newEvent = {}
 
         for (const key in event) {
           if (Object.hasOwnProperty.call(event, key)) {
             const item = event[key]
+
+            newEvent[key] = {
+              name: item.name,
+              value: item.value.slice()
+            }
 
             for (let i = 0; i < item.value.length; i++) {
               const value = item.value[i]
 
               // update event action item id
               if (newActions[value]) {
-                item.value[i] = newActions[value]
+                newEvent[key].value[i] = newActions[value]
               }
             }
           }
         }
 
-        this.$setDataValue('dsWidget/events', event, {
+        this.$setDataValue('dsWidget/events', newEvent, {
           id: widgetId,
           suffixId: mode
         })
@@ -425,41 +431,47 @@ export default definePlugin({
       for (let i = 0; i < actions.length; i++) {
         const action = actions[i]
         const newBlocks = {}
-        const newSequence = {}
+        const blockValues = {}
 
         for (let i = 0; i < action.blocks.length; i++) {
           const id = action.blocks[i]
           const block = this.$getDataValue('dsAction/blocks', { id, options: { writeable: true } })
+          const result = this._replaceActionRef(block.item, refs)
 
-          newBlocks[id] = this._replaceActionRef(block.item, refs)
+          if (result.blockValues.length) {
+            const blockValues = []
+
+            for (let i = 0; i < result.blockValues.length; i++) {
+              blockValues.push(result.blockValues[i])
+            }
+
+            newBlocks[id] = {
+              item: result.item,
+              values: blockValues
+            }
+          }
         }
 
         for (let i = 0; i < action.sequences.length; i++) {
           const id = action.sequences[i]
-          const sequences = this.$getDataValue('dsAction/sequences', { id, options: { writeable: true } })
-          const newSequences = sequences.item
+          const sequences = this.$getDataValue('dsAction/sequences', { id })
 
-          for (let i = 0; i < newSequences.length; i++) {
-            const sequence = newSequences[i]
+          blockValues[id] = {}
+
+          for (let i = 0; i < sequences.item.length; i++) {
+            const sequence = sequences.item[i]
             const block = newBlocks[sequence.id]
 
             if (block) {
-              const blockId = objectHash(block)
+              const blockId = objectHash(block.item)
 
-              // set new block
-              this.$setDataValue('dsAction/blocks', block, { id: blockId })
+              blockValues[id][i] = { id: blockId }
 
-              // update block id
-              sequence.id = blockId
+              if (block.values.length) {
+                blockValues[id][i].values = block.values
+              }
             }
           }
-
-          const sequenceId = objectHash(newSequence)
-
-          // store new sequence id change
-          newSequence[id] = sequenceId
-
-          this.$setDataValue('dsAction/sequences', newSequences, { id: sequenceId })
         }
 
         const id = action.items
@@ -469,10 +481,14 @@ export default definePlugin({
         const newItems = items.item.slice()
 
         for (let i = 0; i < newItems.length; i++) {
-          const sequenceId = newItems[i]
+          const { id } = newItems[i]
+          const blockOverwrites = blockValues[id]
 
-          if (newSequence[sequenceId]) {
-            newItems[i] = newSequence[sequenceId]
+          if (blockOverwrites) {
+            newItems[i] = {
+              id,
+              blocks: blockOverwrites
+            }
           }
         }
 
@@ -483,16 +499,33 @@ export default definePlugin({
 
       return newActions
     },
-    _replaceActionRef (items, refs) {
+    _replaceActionRef (items, refs, blockKeys = [], blockValues = [], isEntry = true) {
       for (const key in items) {
         if (Object.hasOwnProperty.call(items, key)) {
           const item = items[key]
 
           if (refs[item] != null) {
-            items[key] = refs[item]
+            // store key/values
+            blockKeys.push(key)
+            blockValues.push({ keys: blockKeys, value: refs[item] })
+
+            // remove last key
+            blockKeys = blockKeys.slice(0, -1)
           } else if (typeof item === 'object') {
-            this._replaceActionRef(item, refs)
+            blockKeys.push(key)
+
+            this._replaceActionRef(item, refs, blockKeys, blockValues, false)
           }
+        }
+      }
+
+      // reset keys
+      blockKeys = []
+
+      if (isEntry) {
+        return {
+          item: items,
+          blockValues
         }
       }
 

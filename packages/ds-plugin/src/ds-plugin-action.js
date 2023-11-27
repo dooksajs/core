@@ -15,14 +15,41 @@ export default definePlugin({
         }
       }
     },
+    blockValues: {
+      schema: {
+        type: 'collection'
+      }
+    },
     items: {
       schema: {
         type: 'collection',
         items: {
           type: 'array',
           items: {
-            type: 'string',
-            relation: 'dsAction/sequences'
+            type: 'object',
+            properties: {
+              id: {
+                type: 'string',
+                relation: 'dsAction/sequences'
+              },
+              blocks: {
+                type: 'object',
+                patternProperties: {
+                  '^[0-9]+$': {
+                    type: 'object',
+                    properties: {
+                      id: {
+                        type: 'string',
+                        relation: 'dsAction/blocks'
+                      },
+                      values: {
+                        type: 'array'
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -72,9 +99,12 @@ export default definePlugin({
      * @param {Object} param.payload - The data to pass to the action
      */
     dispatch ({ id, payload }) {
-      const actions = this.$getDataValue('dsAction/items', { id })
+      const actions = this.$getDataValue('dsAction/items', { id, options: { expand: true } })
 
-      if (actions.isEmpty) return
+      if (actions.isEmpty) {
+        this.$log('error', { message: 'Expected action item is missing: ' + id })
+        return
+      }
 
       const processId = performance.now()
 
@@ -85,19 +115,44 @@ export default definePlugin({
       }
 
       for (let i = 0; i < actions.item.length; i++) {
-        const id = actions.item[i]
-        const sequence = this.$getDataValue('dsAction/sequences', { id })
+        const item = actions.item[i]
+        let sequence
+        let expand = []
+        let expandIndexes = {}
 
-        if (sequence.isEmpty) {
-          this.$log('error', { message: 'Broken action sequence', code: '50' })
+        if (!actions.isExpandEmpty) {
+          const key = actions.expandIncluded['dsAction/sequences/' + item.id]
 
-          return
+          sequence = actions.expand[key]
+
+          if (!sequence) {
+            this.$log('error', { message: 'Broken action sequence', code: '50' })
+
+            return
+          }
+
+          sequence = sequence.item
+          expand = actions.expand
+          expandIndexes = actions.expandIncluded
+        } else {
+          sequence = this.$getDataValue('dsAction/sequences', { id: item.id })
+
+          if (sequence.isEmpty) {
+            this.$log('error', { message: 'Broken action sequence', code: '50' })
+
+            return
+          }
+
+          sequence = sequence.item
         }
 
         this.process[processId].items.push(() => {
           this._processSequence(
-            sequence.item,
+            sequence,
             payload,
+            item.blocks,
+            expand,
+            expandIndexes,
             i,
             processId
           )
@@ -117,14 +172,31 @@ export default definePlugin({
       // clean up process
       delete this.process[processId]
     },
-    _processSequence (sequence, payload, position, processId) {
+    _processSequence (sequence, payload, blocks = {}, expand, expandIndexes, position, processId) {
       const sequenceEnd = sequence.length - 1
       const actionData = {}
       const results = this.process[processId].results
 
       for (let i = 0; i < sequenceEnd; i++) {
         const item = sequence[i]
-        const action = this._processAction(item, actionData)
+        const block = { id: item.id }
+        const blockOverwrites = blocks[i]
+
+        if (blockOverwrites) {
+          block.id = blockOverwrites.id
+          block.values = blockOverwrites.values
+        }
+
+        if (expand) {
+          const key = expandIndexes['dsAction/blocks/' + block.id]
+          const blockData = expand[key]
+
+          if (blockData) {
+            block.item = blockData.item
+          }
+        }
+
+        const action = this._processAction(item, block, actionData)
         const methodName = '_process/' + action.name
 
         if (this[methodName]) {
@@ -140,8 +212,27 @@ export default definePlugin({
         }
       }
 
+      // this is repeating for last item
+      const item = sequence[sequenceEnd]
+      const block = { id: item.id }
+      const blockOverwrites = blocks[sequenceEnd]
+
+      if (blockOverwrites) {
+        block.id = blockOverwrites.id
+        block.values = blockOverwrites.values
+      }
+
+      if (expand) {
+        const key = expandIndexes['dsAction/blocks/' + block.id]
+        const blockData = expand[key]
+
+        if (blockData) {
+          block.item = blockData.item
+        }
+      }
+
       // process last action
-      const action = this._processAction(sequence[sequenceEnd], actionData)
+      const action = this._processAction(item, block, actionData)
 
       if (action.async) {
         this.$action(action.name, action.params, {
@@ -168,19 +259,44 @@ export default definePlugin({
         this._nextProcess(processId)
       }
     },
-    _processAction (item, data) {
-      const block = this.$getDataValue('dsAction/blocks', {
-        id: item.id
-      })
+    _processAction (item, block, data) {
+      if (!block.item) {
+        const blockData = this.$getDataValue('dsAction/blocks', { id: item.id })
 
-      if (block.isEmpty) {
-        throw new Error('No action found: ' + item.id)
+        if (block.isEmpty) {
+          throw new Error('No action found: ' + item.id)
+        }
+
+        block.item = blockData.item
+      }
+
+      let deepCloned = false
+
+      if (block.values) {
+        block.item = deepClone({}, block.item)
+        deepCloned = true
+
+        for (let i = 0; i < block.values.length; i++) {
+          const keys = block.values[i].keys
+          const lastKey = keys.length - 1
+          let blockValue = block.item
+
+          for (let j = 0; j < lastKey; j++) {
+            const key = keys[j]
+
+            blockValue = blockValue[key]
+          }
+
+          blockValue[keys[lastKey]] = block.values[i].value
+        }
       }
 
       let params = block.item._$arg
 
       if (item.children) {
-        params = deepClone({}, block.item._$arg)
+        if (!deepCloned) {
+          params = deepClone({}, block.item._$arg)
+        }
 
         for (let i = 0; i < item.children.length; i++) {
           const child = data[item.children[i]]
