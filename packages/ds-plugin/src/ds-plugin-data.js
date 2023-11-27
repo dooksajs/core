@@ -1441,7 +1441,9 @@ export default definePlugin({
             const value = source[i]
             const index = target.indexOf(value)
 
-            target.splice(index, 1)
+            if (index !== -1) {
+              target.splice(index, 1)
+            }
           }
 
           break
