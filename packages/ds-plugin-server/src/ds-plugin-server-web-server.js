@@ -176,7 +176,7 @@ export default definePlugin({
       this.app.listen(port, function () {
         port = port || this.address().port
 
-        log('info', { message: `{magenta.bold Dooksa!} 👉 {cyan.underline ${path + ':' + port}} 👀` })
+        log('info', { message: `{magenta.bold Dooksa!} ✨ {cyan.underline ${path + ':' + port}}` })
       })
     },
     _useRoutes (port, path) {
