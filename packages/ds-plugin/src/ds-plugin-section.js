@@ -158,7 +158,9 @@ export default definePlugin({
 
         // Remove previous items
         if (!dsWidgetId) {
-          this.$method('dsWidget/remove', { id: prevWidgetId })
+          if (!nextItems.includes(prevWidgetId)) {
+            this.$method('dsWidget/remove', { id: prevWidgetId })
+          }
 
           continue
         }
