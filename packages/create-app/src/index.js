@@ -7,6 +7,10 @@ export default () => ({
    * @param {string} plugins[].name - Name of plugin
    * @param {number} plugins[].version - Version of plugin
    * @param {dsPlugin} plugins[].value - dsPlugin
+   * @param {Object} plugins[].options - Plugin options
+   * @param {string} plugins[].options.import - File name of plugin to be async loaded
+   * @param {boolean} plugins[].options.setupOnRequest - Mark plugin to be loaded by request
+   * @param {Object} plugins[].options.setup - Setup arguments to be passed to the plugin on initialisation
    */
   use (plugins) {
     // ISSUE: add plugin schema checks
