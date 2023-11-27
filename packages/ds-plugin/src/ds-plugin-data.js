@@ -1156,6 +1156,11 @@ export default definePlugin({
         result.metadata = data.target[data.id]._metadata
       } else if (schema.type === 'collection') {
         const schemaPath = collection + '/items'
+        // create document id
+        const collectionId = this._defaultCollectionId(collection)
+
+        // set doc id for relation data
+        data.id = collectionId.id
 
         // validate source
         this._schemaValidation(data, schemaPath, source)
