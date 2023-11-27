@@ -5,6 +5,7 @@ import {
   dsRouter,
   dsComponent,
   dsView,
+  dsLog,
   dsContent,
   dsLayout,
   dsWidget,
@@ -17,6 +18,11 @@ import {
 } from '@dooksa/ds-plugin'
 
 const plugins = [
+  {
+    name: dsLog.name,
+    version: dsLog.version,
+    value: dsLog
+  },
   {
     name: dsMetadata.name,
     version: dsMetadata.version,
