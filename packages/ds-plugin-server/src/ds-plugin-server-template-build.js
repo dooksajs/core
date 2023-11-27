@@ -53,7 +53,6 @@ export default definePlugin({
     }
   },
   setup ({ buildDir }) {
-    console.log(buildDir)
     if (!buildDir || !existsSync(buildDir)) {
       this.$log('error', { message: 'Widget directory could not be found: ' + buildDir })
     }
