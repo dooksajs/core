@@ -1091,6 +1091,12 @@ export default definePlugin({
     },
     _schemaValidation (data, path, source) {
       const schema = this.schema[path]
+
+      /** @todo validate *any* until schema supports multi type schema */
+      if (!schema) {
+        return
+      }
+
       const schemaValidationName = '_schema/' + schema.type
 
       // schema check depth
@@ -1154,10 +1160,9 @@ export default definePlugin({
         // validate source
         this._schemaValidation(data, schemaPath, source)
 
-        // create document id
-        const collectionId = this._defaultCollectionId(collection)
-
-        const target = this._createTarget(this.schema[schemaPath].type, source._metadata)
+        /** @todo validate *any* until schema supports multi type schema */
+        const type = this.schema[schemaPath] ? this.schema[schemaPath].type : 'object'
+        const target = this._createTarget(type, source._metadata)
 
         target._item = source._item || source
 
@@ -1172,7 +1177,9 @@ export default definePlugin({
       } else {
         this._schemaValidation(data, collection, source)
 
-        const target = this._createTarget(this.schema[collection].type, source._metadata)
+        /** @todo validate *any* until schema supports multi type schema */
+        const type = this.schema[collection] ? this.schema[collection].type : 'object'
+        const target = this._createTarget(type, source._metadata)
 
         target._item = source._item || source
 
