@@ -341,7 +341,7 @@ export default definePlugin({
               const relation = relations[i]
 
               // prevent duplication and infinite loop
-              if (result.expandIncluded[relation]) {
+              if (result.expandIncluded[relation] != null) {
                 continue
               }
 
@@ -373,10 +373,12 @@ export default definePlugin({
                     item.item = item.clone()
                   }
 
+                  result.expandIncluded[name] = result.expand.length
                   result.expand.push(item)
-                  result.expandIncluded[name] = true
                 }
               }
+
+              result.expandIncluded[relation] = result.expand.length
 
               result.expand.push({
                 collection: name,
