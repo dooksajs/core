@@ -50,10 +50,10 @@ export default definePlugin({
       this[logType](`${hours}:${minutes}:${seconds}.${milliseconds}`, message, store, code, cause)
     },
     '_log/info' (time, message, store, code) {
-      code = code ? ` {blue[${code}]} ` : ' '
+      code = code ? ` [${code}] ` : ' '
 
       console.log(
-        `%c${time}} %Info:%c${code}%c${message}`,
+        `%c${time} %cInfo:%c${code}%c${message}`,
         'color:grey;',
         '',
         'color: blue;',
@@ -67,10 +67,10 @@ export default definePlugin({
       }
     },
     '_log/warn' (time, message, store, code = '400', cause) {
-      code = code ? ` {blue[${code}]} ` : ' '
+      code = code ? ` [${code}] ` : ' '
 
       console.warn(
-        `%c${time}} %Warning:%c${code}%c${message}`,
+        `%c${time} %cWarning:%c${code}%c${message}`,
         'color:grey;',
         'color:orange;',
         'color: blue;',
@@ -84,10 +84,10 @@ export default definePlugin({
       }
     },
     '_log/error' (time, message, store, code = '500', cause) {
-      code = code ? ` {blue[${code}]} ` : ' '
+      code = code ? ` [${code}] ` : ' '
 
-      console.warn(
-        `%c${time}} %Error:%c${code}%c${message}`,
+      console.error(
+        `%c${time} %cError:%c${code}%c${message}`,
         'color:grey;',
         'color:red;',
         'color: blue;',
