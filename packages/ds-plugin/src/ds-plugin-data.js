@@ -234,6 +234,8 @@ export default definePlugin({
        */
       value (name, { id, prefixId, suffixId, options } = {}) {
         if (this.values[name] == null) {
+          this.$log('error', { message: 'No such collection: ' + name, code: 54 })
+
           return {
             isEmpty: true,
             isCollectionEmpty: true
