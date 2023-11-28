@@ -151,6 +151,10 @@ export default definePlugin({
         const prevWidgetId = prevItems[i]
         const nextIndex = nextItems.indexOf(prevWidgetId)
 
+        /**
+         * @todo (Render benchmarking needed) Avoid reattaching unchanged
+         * nodes by preparing a before/after list
+         */
         // detach previous nodes
         if (nextIndex === -1) {
           this.$method('dsWidget/remove', { id: prevWidgetId })
