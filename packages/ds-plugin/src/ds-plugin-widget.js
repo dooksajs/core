@@ -209,7 +209,7 @@ export default definePlugin({
       }
     },
     _removeEvent (id) {
-      const event = this.$getDataValue('dsWidget/event', {
+      const event = this.$getDataValue('dsWidget/events', {
         id,
         options: {
           expand: true
@@ -229,7 +229,7 @@ export default definePlugin({
       }
     },
     _removeLayout (id) {
-      const layout = this.$getDataValue('dsWidget/layout', { id })
+      const layout = this.$getDataValue('dsWidget/layouts', { id })
 
       // remove unused layout
       if (!layout.isEmpty) {
@@ -239,7 +239,7 @@ export default definePlugin({
       }
     },
     _removeSection (id) {
-      const section = this.$getDataValue('dsWidget/section', { id })
+      const section = this.$getDataValue('dsWidget/sections', { id })
 
       // remove unused section
       if (!section.isEmpty) {
