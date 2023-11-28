@@ -150,17 +150,18 @@ export default definePlugin({
       for (let i = 0; i < prevItems.length; i++) {
         const prevWidgetId = prevItems[i]
         const nextIndex = nextItems.indexOf(prevWidgetId)
-        const previousView = this.$getDataValue('dsWidget/parentViews', {
-          id: prevWidgetId,
-          options: {
-            expand: true
-          }
-        })
 
         // detach previous nodes
         if (nextIndex === -1) {
           this.$method('dsWidget/remove', { id: prevWidgetId })
         } else {
+          const previousView = this.$getDataValue('dsWidget/parentViews', {
+            id: prevWidgetId,
+            options: {
+              expand: true
+            }
+          })
+
           if (!previousView.expandIsEmpty) {
             previousWidgets[nextIndex] = []
 
