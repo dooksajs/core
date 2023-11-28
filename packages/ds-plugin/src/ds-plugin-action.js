@@ -15,11 +15,6 @@ export default definePlugin({
         }
       }
     },
-    blockValues: {
-      schema: {
-        type: 'collection'
-      }
-    },
     items: {
       schema: {
         type: 'collection',
