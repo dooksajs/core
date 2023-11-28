@@ -143,84 +143,73 @@ export default definePlugin({
         prefixId: dsSectionUniqueId
       }).item
 
-      const previousWidgets = []
+      const previousWidgets = {}
       const nextItems = section.item
       const prevItems = section.previous ? section.previous._item : []
-      let updateLength = nextItems.length
 
-      if (prevItems.length > nextItems.length) {
-        updateLength = prevItems.length
-      }
-
-      for (let i = 0; i < updateLength; i++) {
-        const dsWidgetId = nextItems[i]
+      for (let i = 0; i < prevItems.length; i++) {
         const prevWidgetId = prevItems[i]
-
-        // Remove previous items
-        if (!dsWidgetId) {
-          if (!nextItems.includes(prevWidgetId)) {
-            this.$method('dsWidget/remove', { id: prevWidgetId })
-          }
-
-          continue
-        }
-
-        // do not render an existing widget in the same position
-        if (prevWidgetId && prevWidgetId === dsWidgetId) {
-          continue
-        }
-
-        if (prevWidgetId) {
-          const previousView = this.$getDataValue('dsWidget/parentViews', {
-            id: prevWidgetId,
-            options: {
-              expand: true
-            }
-          })
-
-          // detach previous nodes
-          if (!previousView.expandIsEmpty) {
-            previousWidgets.push(prevWidgetId)
-
-            for (let i = 0; i < previousView.expand.length; i++) {
-              previousView.expand[i].item.remove()
-            }
-          }
-        }
-
-        const widgetMode = this.$getDataValue('dsWidget/mode', {
-          id: dsWidgetId,
-          prefixId: dsSectionUniqueId
-        }).item
-        const dsWidgetMode = widgetMode !== 'default' ? widgetMode : mode
-        const dsLayoutId = this.$getDataValue('dsWidget/layouts', {
-          id: dsWidgetId,
-          suffixId: widgetMode,
-          prefixId: dsSectionUniqueId
-        }).item
-
-        this.$method('dsLayout/create', {
-          dsLayoutId,
-          dsSectionId: id,
-          dsSectionUniqueId,
-          dsWidgetId,
-          dsWidgetMode,
-          dsViewId
-        })
-      }
-
-      // remove unused widgets from state
-      for (let i = 0; i < previousWidgets.length; i++) {
-        const id = previousWidgets[i]
-        const view = this.$getDataValue('dsWidget/parentViews', {
-          id,
+        const nextIndex = nextItems.indexOf(prevWidgetId)
+        const previousView = this.$getDataValue('dsWidget/parentViews', {
+          id: prevWidgetId,
           options: {
             expand: true
           }
         })
 
-        if (!view.expandIsEmpty && !view.expand[0].item.parentElement) {
-          this.$method('dsWidget/remove', { id })
+        // detach previous nodes
+        if (nextIndex === -1) {
+          this.$method('dsWidget/remove', { id: prevWidgetId })
+        } else {
+          if (!previousView.expandIsEmpty) {
+            previousWidgets[nextIndex] = []
+
+            for (let i = 0; i < previousView.expand.length; i++) {
+              const node = previousView.expand[i].item
+
+              node.remove()
+
+              previousWidgets[nextIndex].push(node)
+            }
+          }
+        }
+      }
+
+      const sectionNode = this.$getDataValue('dsView/items', {
+        id: dsViewId
+      })
+
+      for (let i = 0; i < nextItems.length; i++) {
+        const previousWidget = previousWidgets[i]
+
+        // reattach existing node
+        if (previousWidget) {
+          for (let i = 0; i < previousWidget.length; i++) {
+            const node = previousWidget[i]
+
+            sectionNode.item.appendChild(node)
+          }
+        } else {
+          const dsWidgetId = nextItems[i]
+          const widgetMode = this.$getDataValue('dsWidget/mode', {
+            id: dsWidgetId,
+            prefixId: dsSectionUniqueId
+          }).item
+          const dsWidgetMode = widgetMode !== 'default' ? widgetMode : mode
+          const dsLayoutId = this.$getDataValue('dsWidget/layouts', {
+            id: dsWidgetId,
+            suffixId: widgetMode,
+            prefixId: dsSectionUniqueId
+          }).item
+
+          this.$method('dsLayout/create', {
+            dsLayoutId,
+            dsSectionId: id,
+            dsSectionUniqueId,
+            dsWidgetId,
+            dsWidgetMode,
+            dsViewId
+          })
         }
       }
     }
