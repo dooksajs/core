@@ -1,5 +1,9 @@
 import dsSchema from './utils/schema.js'
 
+/**
+ * @typedef {import('../../ds-scripts/src/types.js').DsPluginData} DsPluginData
+ */
+
 const schemaDefaults = {
   collection: Object,
   array: Array,
@@ -13,7 +17,7 @@ const schemaDefaults = {
 /**
  * Plugins are used to extend and customise the Dooksa application builder.
  * @constructor
- * @param {DsPlugin} plugin - The plugin object used by the Plugin constructor.
+ * @param {DsPluginData} plugin - The plugin object used by the Plugin constructor.
  */
 function DsPlugin (plugin) {
   this._context = {
@@ -29,15 +33,15 @@ function DsPlugin (plugin) {
 
     // process data
     for (const key in plugin.data) {
-      if (Object.hasOwn(plugin.data, key)) {
+      if (Object.hasOwnProperty.call(plugin.data, key)) {
         const item = plugin.data[key]
-        const schema = item.schema || {}
+        const schema = item.schema
         let defaultValues
 
         if (typeof item.default === 'function') {
           defaultValues = item.default()
-        } else if (schema.type && schemaDefaults[schema.type]) {
-          defaultValues = schemaDefaults[schema.type]()
+        } else if (schema && schemaDefaults[schema.type]) {
+          defaultValues = new schemaDefaults[schema.type]()
         } else {
           throw new Error('Plugin data could not be created')
         }
@@ -74,7 +78,7 @@ function DsPlugin (plugin) {
     const contextMethods = []
 
     for (const key in plugin.methods) {
-      if (Object.hasOwn(plugin.methods, key)) {
+      if (Object.hasOwnProperty.call(plugin.methods, key)) {
         const item = plugin.methods[key]
 
         if (typeof item !== 'function' && typeof item !== 'object') {
@@ -116,7 +120,7 @@ function DsPlugin (plugin) {
     const tokens = {}
 
     for (const key in plugin.tokens) {
-      if (Object.hasOwn(plugin.tokens, key)) {
+      if (Object.hasOwnProperty.call(plugin.tokens, key)) {
         const item = plugin.tokens[key]
 
         this._context[key] = item
@@ -153,8 +157,8 @@ function DsPlugin (plugin) {
 
 /**
  * Runs the setup function within the plugin if present, this function is intended to be used by the parent plugin
- * @param {Object.<(number|boolean|string|array|object)>} params - These are the parameters required by the setup function
- * @returns {(number|boolean|string|array|object)}
+ * @param {Object.<string, (*)>} params - These are the parameters required by the setup function
+ * @returns {*}
  */
 DsPlugin.prototype.init = function (params) {
   if (this.setup) {
@@ -165,7 +169,9 @@ DsPlugin.prototype.init = function (params) {
 /**
  * @param {Object[]} context - Context is shared data between plugins.
  * @param {string} context.name - The name will be the key used within the plugin, e.g. '$action' = this.$action
- * @param {(string|object)} context.value - The value of the context.
+ * @param {string[]} context.scope - A list of plugins to restrict the scope
+ * @param {*} context.value - The value of the context.
+ * @param {boolean} context.export - Export the method to the global app
  */
 DsPlugin.prototype.setContext = function (context) {
   // set context to plugin
