@@ -34,6 +34,15 @@ export default definePlugin({
     }
   },
   methods: {
+    /**
+     * Log system errors
+     * @param {'info'|'warn'|'error'} type - Type of error
+     * @param {Object} param
+     * @param {!string} param.message - Message about the log (will be massed to Error constructor if log type is 'error')
+     * @param {!string} param.code - Log status code, similar to http status codes but only a length of 2 numbers
+     * @param {(string|Error)} [param.cause] - The value that was passed to the Error() constructor in the options.cause argument {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/cause}
+     * @param {boolean} [param.store] - Snapshot the error
+     */
     $log (type, { message, cause, code, store }) {
       const logType = '_log/' + type
 
@@ -45,11 +54,19 @@ export default definePlugin({
       const hours = this._timeToString(now.getHours())
       const minutes = this._timeToString(now.getMinutes())
       const seconds = this._timeToString(now.getSeconds())
-      const milliseconds = now.getMilliseconds().toString().padStart(3, 0)
+      const milliseconds = now.getMilliseconds().toString().padStart(3, '0')
 
-      this[logType](`${hours}:${minutes}:${seconds}.${milliseconds}`, message, store, code, cause)
+      this[logType](`${hours}:${minutes}:${seconds}.${milliseconds}`, message, cause, store, code)
     },
-    '_log/info' (time, message, store, code) {
+    /**
+     * Console log message
+     * @param {string} time - Current time of log
+     * @param {!string} message - Message about the log (will be massed to Error constructor if log type is 'error')
+     * @param {*} [cause] - The value that was passed to the Error() constructor in the options.cause argument {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/cause}
+     * @param {boolean} [store] - Snapshot the message
+     * @param {!string} [code] - Log status code, similar to http status codes but only a length of 2 numbers
+     */
+    '_log/info' (time, message, cause, store, code) {
       code = code ? ` [${code}] ` : ' '
 
       console.log(
@@ -61,12 +78,20 @@ export default definePlugin({
       )
 
       if (store) {
-        const error = this._error(message, code)
+        const error = this._error(message, code, cause)
 
         this.$setDataValue('dsLog/message', error)
       }
     },
-    '_log/warn' (time, message, store, code = '400', cause) {
+    /**
+     * Console warn message
+     * @param {string} time - Current time of log
+     * @param {!string} message - Message about the log (will be massed to Error constructor if log type is 'error')
+     * @param {boolean} [store] - Snapshot the message
+     * @param {!string} [code='40'] - Log status code, similar to http status codes but only a length of 2 numbers
+     * @param {*} [cause] - The value that was passed to the Error() constructor in the options.cause argument {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/cause}
+     */
+    '_log/warn' (time, message, cause, store, code = '40') {
       code = code ? ` [${code}] ` : ' '
 
       console.warn(
@@ -83,7 +108,15 @@ export default definePlugin({
         this.$setDataValue('dsLog/warning', error)
       }
     },
-    '_log/error' (time, message, store, code = '500', cause) {
+    /**
+     * Console error message
+     * @param {string} time - Current time of log
+     * @param {!string} message - Message about the log (will be massed to Error constructor if log type is 'error')
+     * @param {boolean} [store] - Snapshot the message
+     * @param {!string} [code='50'] - Log status code, similar to http status codes but only a length of 2 numbers
+     * @param {*} [cause] - The value that was passed to the Error() constructor in the options.cause argument {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/cause}
+     */
+    '_log/error' (time, message, cause, store, code = '50') {
       code = code ? ` [${code}] ` : ' '
 
       console.error(
@@ -102,16 +135,29 @@ export default definePlugin({
 
       throw error
     },
+    /**
+     *
+     * @param {string} message
+     * @param {string} code -
+     * @param {*} cause - Useful data about the cause of error
+     * @returns {Error}
+     */
     _error (message, code, cause) {
+      let causeValue = {
+        code,
+        values: cause
+      }
+
+      if (cause instanceof Error) {
+        causeValue = cause
+      }
+
       return new Error(`${Date.now()} ${message}`, {
-        cause: {
-          code,
-          details: cause
-        }
+        cause: causeValue
       })
     },
     _timeToString (time) {
-      return time.toString().padStart(2, 0)
+      return time.toString().padStart(2, '0')
     }
   }
 })
