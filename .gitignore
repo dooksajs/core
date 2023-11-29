@@ -13,6 +13,7 @@ packages/*/LICENSE
 
 # Logs
 *.log
+.history
 
 # Temp directories
 .temp
