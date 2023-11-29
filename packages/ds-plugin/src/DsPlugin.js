@@ -171,7 +171,7 @@ DsPlugin.prototype.init = function (params) {
  * @param {string} context.name - The name will be the key used within the plugin, e.g. '$action' = this.$action
  * @param {string[]} context.scope - A list of plugins to restrict the scope
  * @param {*} context.value - The value of the context.
- * @param {boolean} context.export - Export the method to the global app
+ * @param {boolean} [context.export] - Export the method to the global app
  */
 DsPlugin.prototype.setContext = function (context) {
   // set context to plugin
