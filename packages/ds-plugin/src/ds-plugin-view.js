@@ -66,14 +66,14 @@ export default definePlugin({
   /**
    * Setup plugin
    * @param {Object} options
-   * @param {string} options.rootElementId - Root element id
+   * @param {string} [options.rootElementId = 'root'] - Root element id
    */
   setup ({ rootElementId = 'root' } = {}) {
     // get root element from the DOM
     const rootElement = document.getElementById(rootElementId)
 
     if (!rootElement) {
-      throw new Error('Could not find root element: ', rootElement)
+      this.$log('error', { message: 'Could not find root element: ' + rootElement, code: '40' })
     }
 
     // Set root element
@@ -92,7 +92,6 @@ export default definePlugin({
     // replace root element with new app element
     rootElement.parentElement.replaceChild(dsView.item, rootElement)
   },
-  /** @lends dsView.prototype */
   methods: {
     /**
      * Adds a node to the end of the list of children of a specified parent node
