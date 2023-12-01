@@ -159,6 +159,7 @@ export default definePlugin({
     _get (type, dsViewId, process, index, tokenId, token, start, end, updateText) {
       const item = process.list[index]
       let valueLength = 0
+
       item.value = this.$token(tokenId, dsViewId, token)
       // check if token exists
       if (item.value === undefined) {
