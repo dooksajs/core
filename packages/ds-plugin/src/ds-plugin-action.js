@@ -1,4 +1,5 @@
 import { definePlugin, deepClone } from '@dooksa/utils'
+
 /**
  * Dooksa action plugin.
  * @namespace dsAction
@@ -90,7 +91,7 @@ export default definePlugin({
     /**
      * Dispatch an action
      * @param {Object} param
-     * @param {dsActionId} param.dsActionId - The entry action id
+     * @param {string} param.id - The Id of action
      * @param {Object} param.payload - The data to pass to the action
      */
     dispatch ({ id, payload }) {
