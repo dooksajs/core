@@ -1,8 +1,6 @@
 import dsSchema from './utils/schema.js'
 
-/**
- * @typedef {import('../../ds-scripts/src/types.js').DsPluginData} DsPluginData
- */
+/** @typedef {import('@dooksa/utils/src/types.js').DsPluginData} DsPluginData */
 
 const schemaDefaults = {
   collection: Object,

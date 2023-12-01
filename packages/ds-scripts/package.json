@@ -8,7 +8,6 @@
   "bin": {
     "ds-scripts": "./bin/ds-scripts.js"
   },
-  "main": "./src/index.js",
   "dependencies": {
     "@dooksa/ds-app-client": "workspace:^",
     "@dooksa/ds-app-server": "workspace:^",
