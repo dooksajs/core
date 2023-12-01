@@ -2,6 +2,9 @@ import { definePlugin } from '@dooksa/utils'
 import DsPlugin from './DsPlugin.js'
 import dsLoader from './ds-plugin-loader.js'
 
+/** @typedef {import('@dooksa/utils/src/types.js').DsPluginData} DsPluginData */
+/** @typedef {import('./ds-plugin-loader.js').DsPluginOptions} DsPluginOptions  */
+
 /**
  * This callback is displayed as part of the Requester class.
  * @callback ActionCallback
@@ -87,7 +90,7 @@ export default definePlugin({
    * @param {Object[]} setup.plugins - A list of base plugins
    * @param {string} setup.plugins[].name - The name of the plugin
    * @param {number} setup.plugins[].version - The version of the plugin
-   * @param {dsPlugin} setup.plugins[].item - The plugin object
+   * @param {DsPluginData} setup.plugins[].item - The plugin object
    * @param {DsPluginOptions} setup.plugins[].options - Options used by the plugin
    * @param {boolean} setup.isDev - Toggle development mode
    * @returns {Object} Development tools used by browser extension if it is enabled
@@ -147,7 +150,7 @@ export default definePlugin({
       }
     ]
 
-    this.dsLoader = new DsPlugin(dsLoader, context, isDev)
+    this.dsLoader = new DsPlugin(dsLoader)
 
     // add dsPlugin
     this.dsLoader.init({
@@ -372,12 +375,7 @@ export default definePlugin({
      */
     _method (name, params) {
       try {
-        if (this.methods[name]) {
-          return this.methods[name](params)
-        } else {
-          // Check if the plugin needs to run setup
-          throw new Error('Method "' + name + '" does not exist')
-        }
+        return this.methods[name](params)
       } catch (error) {
         console.error(name, error)
       }
