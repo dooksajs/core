@@ -1,6 +1,21 @@
 {
+  "compilerOptions": {
+    "checkJs": true
+  },
   "include": [
-    "packages/*/src/**/*.js"
+    "packages/**/*.js",
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "dist",
+    "node_modules",
+    "build",
+    ".vscode",
+    "coverage",
+    "jspm_packages",
+    "tmp",
+    "temp",
+    "bower_components",
+    ".npm",
+    ".yarn"
+  ]
 }
