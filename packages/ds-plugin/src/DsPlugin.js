@@ -22,6 +22,7 @@ function DsPlugin (plugin) {
     name: plugin.name,
     version: plugin.version
   }
+
   this.name = plugin.name
   this.version = plugin.version
 
