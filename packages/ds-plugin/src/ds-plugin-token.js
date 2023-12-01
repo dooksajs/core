@@ -44,7 +44,6 @@ export default definePlugin({
      */
     textContent ({ dsViewId, text, updateText }) {
       let tokenIndex = 0
-
       // create new process if text is different or no process exists
       if (!this.process[dsViewId] || this.process[dsViewId].tokens !== text) {
         this.process[dsViewId] = {
@@ -62,7 +61,7 @@ export default definePlugin({
         let valuePadding = 0
 
         for (const tokenIndex in item.list) {
-          if (Object.hasOwn(item.list, tokenIndex)) {
+          if (Object.hasOwnProperty.call(item.list, tokenIndex)) {
             const token = item.list[tokenIndex]
             const prevLength = token.valueLength
 
@@ -148,19 +147,18 @@ export default definePlugin({
     /**
      * Retrieve a token
      * @param {string} type The expected value to be returned by the token
-     * @param {dsViewId} dsViewId An ID related to the content and the target, usually the element ID
+     * @param {string} dsViewId An ID related to the content and the target, usually the element ID
      * @param {Object} process Temporary information about the current token being processed
      * @param {number} index The index of the current token within the process
      * @param {string} token The token without the brackets, e.g. placeholder:empty
      * @param {number} start The index of the start of the token
      * @param {number} end The index of end of the token
-     * @param {Function} param.updateText This the function that updates the element, for example: element.textContent
+     * @param {Function} updateText This the function that updates the element, for example: element.textContent
      * @returns {number} The length of the value retrieved
      */
     _get (type, dsViewId, process, index, tokenId, token, start, end, updateText) {
       const item = process.list[index]
       let valueLength = 0
-
       item.value = this.$token(tokenId, dsViewId, token)
       // check if token exists
       if (item.value === undefined) {
