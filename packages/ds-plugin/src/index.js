@@ -18,6 +18,8 @@ import dsTemplate from './ds-plugin-template.js'
 import dsToken from './ds-plugin-token.js'
 import dsView from './ds-plugin-view.js'
 import dsWidget from './ds-plugin-widget.js'
+import dsQuery from './ds-plugin-query.js'
+import dsField from './ds-plugin-field.js'
 
 export {
   DsPlugin,
@@ -39,5 +41,7 @@ export {
   dsTemplate,
   dsToken,
   dsView,
-  dsWidget
+  dsWidget,
+  dsQuery,
+  dsField
 }
