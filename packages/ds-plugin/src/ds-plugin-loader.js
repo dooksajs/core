@@ -1,6 +1,8 @@
 import { definePlugin } from '@dooksa/utils'
 import DsPlugin from './DsPlugin.js'
 
+/** @typedef {import('@dooksa/utils/src/types.js').DsPluginData} DsPluginData */
+
 /**
  * @typedef DsPluginOptions
  * @property {Object} option - Setup options
@@ -14,12 +16,11 @@ import DsPlugin from './DsPlugin.js'
 /**
  * This callback handles the plugin once loaded
  * @callback dsLoaderCallback
- * @returns {DsPlugin}
+ * @returns {DsPluginData}
  */
 
 /**
  * Dooksa plugin loader, this includes async loading and resolving dependencies management
- * @namespace dsLoader
  */
 export default definePlugin({
   name: 'dsLoader',
@@ -100,12 +101,11 @@ export default definePlugin({
   },
   /**
    *
-   * @param {Object[]} plugins - List of DsPlugins
+   * @param {Object} plugins - List of DsPlugins
    * @param {string} plugins[].name - Name of plugin
    * @param {string} plugins[].version - Version of plugin
    * @param {DsPlugin} plugins[].value - Object used to create a DsPLugin
    * @param {DsPluginOptions} plugins[].options - Setup options
-   * @param {Array}
    * @param {dsLoaderCallback} plugin.onAdd - This callback handles the plugin once loaded
    * @param {dsLoaderCallback} plugin.onSuccess - This callback handles the plugin once loaded
    */
@@ -231,7 +231,7 @@ export default definePlugin({
      * @private
      * @param {DsPlugin} plugin - DsPlugin instance
      * @param {DsPluginOptions} options - DsPlugin setup options
-     * @param {dsLoaderCallback} - Add plugin callback
+     * @param {dsLoaderCallback} callback - Add plugin callback
      */
     _add (plugin, options, callback) {
       const name = plugin.name
