@@ -107,3 +107,5 @@
 // * @property {Object.<string, (DsMethodContext|DsMethod)>} [methods.context] - Context methods are bound to each plugins scope unless specified otherwise
 // * @property {Object.<string, DsMethod>} [methods.public] - Public methods are available within the plugins local scope and shared with other plugins via this.$method('dsExample/methodName')
 // * @property {Object.<string, Function>} [methods.private] - Private methods scope is bound to the plugin only
+
+export default {}
