@@ -150,7 +150,7 @@ export default definePlugin({
      * @param {string} dsViewId An ID related to the content and the target, usually the element ID
      * @param {Object} process Temporary information about the current token being processed
      * @param {number} index The index of the current token within the process
-     * @param {string} token The token without the brackets, e.g. placeholder:empty
+     * @param {string[]} token The token without the brackets, e.g. placeholder:empty
      * @param {number} start The index of the start of the token
      * @param {number} end The index of end of the token
      * @param {Function} updateText This the function that updates the element, for example: element.textContent
