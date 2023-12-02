@@ -2,7 +2,7 @@
  * Primitive deep clone - because JS can't have nice things {@link https://jsbench.me/gvlp19oy0u/1}
  * @param {Object|Array} target - The deep clone of the original data
  * @param {Object|Array} source - The original data
- * @param {boolean} freeze - Freeze object
+ * @param {boolean} [freeze] - Freeze object
  * @returns {Object|Array}
  */
 function deepClone (target, source, freeze) {
