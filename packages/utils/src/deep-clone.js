@@ -7,7 +7,7 @@
  */
 function deepClone (target, source, freeze) {
   for (const prop in source) {
-    if (Object.hasOwn(source, prop)) {
+    if (Object.hasOwnProperty.call(source, prop)) {
       const nextSource = source[prop]
 
       if (Array.isArray(nextSource)) {
