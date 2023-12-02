@@ -1,6 +1,24 @@
 import { deepClone, definePlugin } from '@dooksa/utils'
 import objectHash from '@dooksa/object-hash'
 
+/**
+ * @typedef {Object} TemplateResult
+ * @property {string} dsSectionId - The parent section id related to a dsSection/item
+ * @property {string} dsWidgetId - The parent widget id related to dsWidget/item
+ */
+
+/**
+ * @typedef {Object} BlockValue - Collection of block overwrites
+ * @property {string[]} keys - The list of keys used related to the location of the value
+ * @property {string} value - The overwrite block value
+ */
+
+/**
+ * @typedef {Object} BlockRefs
+ * @property {Object} item
+ * @property {BlockValue[]} blockValues - Collection of block overwrites
+ */
+
 export default definePlugin({
   name: 'dsTemplate',
   version: 1,
@@ -162,6 +180,18 @@ export default definePlugin({
     }
   },
   methods: {
+    /**
+     * Create new widget/section/content instances from template
+     * @param {Object} param
+     * @param {string} param.id - Id of template
+     * @param {string} [param.mode="default"] - Suffix used to categories the instances
+     * @param {string} param.language - Language used to label the content
+     * @param {string} param.dsSectionId - Id related to a dsSection/item
+     * @param {Object} param.options
+     * @param {Object} [param.options.content] - Collection of content overwrites by matching a ref id
+     * @param {Function} _callback - Private callback that is called to resolve a fetched template
+     * @returns {(TemplateResult|Promise)}
+     */
     create ({
       id,
       mode = 'default',
@@ -170,7 +200,7 @@ export default definePlugin({
       options = {}
     }, _callback) {
       const template = this.$getDataValue('dsTemplate/items', { id })
-
+      
       // fetch template
       if (template.isEmpty) {
         return new Promise((resolve, reject) => {
@@ -425,6 +455,13 @@ export default definePlugin({
 
       return result
     },
+    /**
+     * Create action block overwrites
+     * @private
+     * @param {Object} actions - Collection of actions used by template
+     * @param {Object} refs - Reference action overwrites
+     * @returns {Object}
+     */
     _updateActions (actions, refs) {
       const newActions = {}
 
@@ -499,6 +536,16 @@ export default definePlugin({
 
       return newActions
     },
+    /**
+     * Create a list of block value overwrites
+     * @private
+     * @param {Object} items
+     * @param {Object} refs
+     * @param {string[]} blockKeys - The keys used to lead to the block value
+     * @param {BlockValue[]} blockValues - Collection of block overwrites
+     * @param {boolean} [isEntry=true] - The head of the recursive function
+     * @returns {BlockRefs}
+     */
     _replaceActionRef (items, refs, blockKeys = [], blockValues = [], isEntry = true) {
       for (const key in items) {
         if (Object.hasOwnProperty.call(items, key)) {
