@@ -200,7 +200,7 @@ export default definePlugin({
       options = {}
     }, _callback) {
       const template = this.$getDataValue('dsTemplate/items', { id })
-      
+
       // fetch template
       if (template.isEmpty) {
         return new Promise((resolve, reject) => {
@@ -267,6 +267,7 @@ export default definePlugin({
       })
 
       for (let i = 0; i < template.item.layoutId.length; i++) {
+        const queryIndexes = template.item.queryIndexes[i]
         const contentRefs = template.item.contentRefs[i]
         const contentItems = template.item.content[i]
         const event = template.item.widgetEvent[i]
@@ -289,8 +290,9 @@ export default definePlugin({
         }
 
         for (let j = 0; j < contentItems.length; j++) {
-          let content = contentItems[j]
+          const queryIndex = queryIndexes[j]
           const contentRef = contentRefs[j]
+          let content = contentItems[j]
 
           // change content value
           if (options.content && options.content[contentRef]) {
@@ -315,6 +317,56 @@ export default definePlugin({
 
             actionRefs[contentRef] = contentId
             actionRefs[contentRef + ':index'] = j
+          }
+
+          if (queryIndex) {
+            const dataValue = {
+              contentId,
+              widgetId: rootWidgetId,
+              sectionId: dsSectionId
+            }
+
+            if (queryIndex.contentPosition) {
+              dataValue.contentPosition = queryIndex.contentPosition
+            }
+
+            this.$setDataValue('dsQuery/items', dataValue, {
+              id: queryIndex.id,
+              update: {
+                method: 'push'
+              }
+            })
+
+            // remove content from query when content item is deleted
+            this.$addDataListener('dsContent/items', {
+              on: 'delete',
+              id: contentId,
+              handler: {
+                id: queryIndex.id,
+                value: () => {
+                  const queryData = this.$getDataValue('dsQuery/items', {
+                    id: queryIndex.id,
+                    writable: true
+                  })
+
+                  if (queryData.isEmpty) {
+                    return
+                  }
+
+                  const query = queryData.item.filter(item => {
+                    if (item.contentId !== contentId) {
+                      return true
+                    }
+
+                    return false
+                  })
+
+                  this.$setDataValue('dsQuery/items', query, {
+                    id: queryData.id
+                  })
+                }
+              }
+            })
           }
 
           widget.content.push(contentId)
