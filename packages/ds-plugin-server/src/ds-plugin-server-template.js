@@ -93,7 +93,7 @@ export default definePlugin({
           const events = template.widgetEvent[i]
 
           for (const key in events) {
-            if (Object.hasOwn(events, key)) {
+            if (Object.hasOwnProperty.call(events, key)) {
               const event = events[key]
 
               for (let i = 0; i < event.value.length; i++) {
@@ -123,6 +123,7 @@ export default definePlugin({
       })
 
       const result = this.$setDataValue('dsTemplate/items', {
+        queryIndexes: template.queryIndexes,
         contentRefs: template.contentRefs,
         sectionRefs: template.sectionRefs,
         actions: template.actions,
