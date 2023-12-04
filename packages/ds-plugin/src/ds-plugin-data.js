@@ -1293,16 +1293,16 @@ export default definePlugin({
         }
       }
 
-      data.target[data.id] = deepClone({}, data.target[data.id])
       const target = data.target[data.id]
       let targetItem = target._item
 
       // update target position
       if (options.update.position) {
-        const lastKey = options.position.length - 1
+        const length = options.position.length - 1
+        const lastKey = options.position[length]
         let path = schemaPath
 
-        for (let i = 0; i < lastKey; i++) {
+        for (let i = 0; i < length; i++) {
           const key = options.position[i]
           path = path + '/' + key
 
@@ -1323,6 +1323,13 @@ export default definePlugin({
             complete: true,
             isValid: true
           }
+        } else {
+          // make a copy for update method
+          if (Array.isArray(targetItem[lastKey])) {
+            targetItem = targetItem[lastKey].slice()
+          } else {
+            this.$log('error', { message: 'Update position and update method expected an array' })
+          }
         }
 
         schemaPath = path
@@ -1335,6 +1342,12 @@ export default definePlugin({
             keyword: 'updateMethod',
             message: 'Expected target to be an array but found ' + typeof targetItem
           })
+        }
+
+        // Clone array if position was not changed
+        if (options.update.position == null) {
+          data.target[data.id]._item = target._item.slice()
+          targetItem = data.target[data.id]._item
         }
 
         const schemaPathItem = schemaPath + '/items'
