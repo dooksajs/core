@@ -56,13 +56,28 @@ export default definePlugin({
         }
       }
     },
-    viewParent: {
-      description: 'The parent section to a section',
+    query: {
+      description: 'Active queries applied to section',
       schema: {
         type: 'collection',
+        prefixId () {
+          return this.$getDataValue('dsWidget/uniqueId').item
+        },
+        suffixId: 'default',
         items: {
-          type: 'string',
-          relation: 'dsWidget/sections'
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+              relation: 'dsQuery/items'
+            },
+            method: {
+              type: 'string'
+            },
+            options: {
+              type: 'object'
+            }
+          }
         }
       }
     },
