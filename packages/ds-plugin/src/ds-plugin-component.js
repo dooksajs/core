@@ -239,6 +239,9 @@ export default definePlugin({
       name: 'i'
     },
     {
+      name: 'strong'
+    },
+    {
       name: 'form',
       events: [{
         name: 'submit'
