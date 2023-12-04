@@ -524,7 +524,7 @@ export default definePlugin({
 
         for (let i = 0; i < action.blocks.length; i++) {
           const id = action.blocks[i]
-          const block = this.$getDataValue('dsAction/blocks', { id, options: { writeable: true } })
+          const block = this.$getDataValue('dsAction/blocks', { id })
           const result = this._replaceActionRef(block.item, refs)
 
           if (result.blockValues.length) {
