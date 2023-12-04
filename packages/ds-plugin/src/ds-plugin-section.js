@@ -159,12 +159,18 @@ export default definePlugin({
         dsViewId = view.item
       }
 
-      const section = this.$getDataValue('dsSection/items', { id })
-      const dsSectionUniqueId = this.$getDataValue('dsSection/uniqueId').item
+      const query = this.$getDataValue('dsSection/query', { id })
+      const uniqueId = this.$getDataValue('dsSection/uniqueId').item
       const mode = this.$getDataValue('dsSection/mode', {
         id,
-        prefixId: dsSectionUniqueId
+        prefixId: uniqueId
       }).item
+
+      if (!query.isEmpty) {
+        return this._updateByQuery(query.item, dsViewId, id, uniqueId, mode)
+      }
+
+      const section = this.$getDataValue('dsSection/items', { id })
 
       const previousWidgets = {}
       const nextItems = section.item
@@ -221,19 +227,77 @@ export default definePlugin({
           const dsWidgetId = nextItems[i]
           const widgetMode = this.$getDataValue('dsWidget/mode', {
             id: dsWidgetId,
-            prefixId: dsSectionUniqueId
+            prefixId: uniqueId
           }).item
           const dsWidgetMode = widgetMode !== 'default' ? widgetMode : mode
           const dsLayoutId = this.$getDataValue('dsWidget/layouts', {
             id: dsWidgetId,
             suffixId: widgetMode,
-            prefixId: dsSectionUniqueId
+            prefixId: uniqueId
           }).item
 
           this.$method('dsLayout/create', {
             dsLayoutId,
             dsSectionId: id,
-            dsSectionUniqueId,
+            dsSectionUniqueId: uniqueId,
+            dsWidgetId,
+            dsWidgetMode,
+            dsViewId
+          })
+        }
+      }
+    },
+    _updateByQuery (query, dsViewId, id, uniqueId, mode) {
+      const result = this.$method('dsQuery/' + query.method, { id: query.id, options: query.options })
+
+      // Exit, nothing to do.
+      if (!result) {
+        return
+      }
+
+      const viewData = this.$getDataValue('dsView/items', { id: dsViewId })
+      const view = viewData.item
+      // remove old nodes
+
+      for (let i = 0; i < view.children.length; i++) {
+        view.children[i].remove()
+        --i
+      }
+
+      for (let i = 0; i < result.length; i++) {
+        const item = result[i]
+        const dsWidgetId = item.widgetId
+        const widgetView = this.$getDataValue('dsWidget/parentViews', {
+          id: dsWidgetId,
+          options: {
+            expand: true
+          }
+        })
+
+        if (!widgetView.isEmpty) {
+          // reattach existing nodes
+          for (let i = 0; i < widgetView.expand.length; i++) {
+            const node = widgetView.expand[i].item
+
+            view.appendChild(node)
+          }
+        } else {
+          const widgetMode = this.$getDataValue('dsWidget/mode', {
+            id: dsWidgetId,
+            prefixId: uniqueId
+          }).item
+          const dsWidgetMode = widgetMode !== 'default' ? widgetMode : mode
+          const dsLayoutId = this.$getDataValue('dsWidget/layouts', {
+            id: dsWidgetId,
+            suffixId: widgetMode,
+            prefixId: uniqueId
+          }).item
+
+          // create new widget layout and attach to section
+          this.$method('dsLayout/create', {
+            dsLayoutId,
+            dsSectionId: id,
+            dsSectionUniqueId: uniqueId,
             dsWidgetId,
             dsWidgetMode,
             dsViewId
