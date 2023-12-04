@@ -1062,6 +1062,9 @@ export default definePlugin({
         this._schemaArrayOption(path, source)
       }
 
+      // check if source is an array
+      this._checkType(schema, source, schema.type)
+
       const schemaName = path + '/items'
       const schemaItems = this.schema[schemaName]
 
