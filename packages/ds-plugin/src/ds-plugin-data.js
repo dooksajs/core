@@ -1356,14 +1356,24 @@ export default definePlugin({
 
         // validate source
         if (schemaItem && (updateMethod === 'push' || updateMethod === 'unshift')) {
+          const schemaValidationName = '_schema/' + schemaItem.type
+
           if (Array.isArray(source)) {
             for (let i = 0; i < source.length; i++) {
               const item = source[i]
 
-              this._checkType(schemaPathItem, item, schemaItem.type)
+              if (this[schemaValidationName]) {
+                this[schemaValidationName](data, schemaPathItem, item)
+              } else {
+                this._checkType(schemaPathItem, item, schemaItem.type)
+              }
             }
           } else {
-            this._checkType(schemaPathItem, source, schemaItem.type)
+            if (this[schemaValidationName]) {
+              this[schemaValidationName](data, schemaPathItem, source)
+            } else {
+              this._checkType(schemaPathItem, source, schemaItem.type)
+            }
           }
         }
 
@@ -1479,7 +1489,11 @@ export default definePlugin({
 
       switch (method) {
         case 'push':
-          target.push(...source)
+          for (let i = 0; i < source.length; i++) {
+            target.push(source[i])
+          }
+
+          this._updateArrayItemFreeze(target, source.length)
 
           break
         case 'pull':
@@ -1502,9 +1516,22 @@ export default definePlugin({
 
           break
         case 'unshift':
-          target.unshift(...source)
+          for (let i = 0; i < source.length; i++) {
+            target.unshift(source[i])
+          }
+
+          this._updateArrayItemFreeze(target, source.length)
 
           break
+      }
+    },
+    _updateArrayItemFreeze (items, length) {
+      for (let i = items.length - length; i < items.length; i++) {
+        const item = items[i]
+
+        if (typeof item === 'object') {
+          Object.freeze(item)
+        }
       }
     }
   }
