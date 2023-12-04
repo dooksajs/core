@@ -14,7 +14,8 @@ import {
   dsOperator,
   dsPage,
   dsDatabase,
-  dsTemplate
+  dsTemplate,
+  dsQuery
 } from '@dooksa/ds-plugin'
 
 const plugins = [
@@ -27,6 +28,11 @@ const plugins = [
     name: dsMetadata.name,
     version: dsMetadata.version,
     value: dsMetadata
+  },
+  {
+    name: dsQuery.name,
+    version: dsQuery.version,
+    value: dsQuery
   },
   {
     name: dsAction.name,
