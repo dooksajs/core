@@ -6,6 +6,7 @@ import sortObject from './sort-object.js'
 import getNodeValue from './getNodeValue.js'
 import defineApp from './defineApp.js'
 import definePlugin from './definePlugin.js'
+import types from './types.js'
 
 export {
   resourceLoader,
@@ -15,5 +16,6 @@ export {
   sortObject,
   getNodeValue,
   defineApp,
-  definePlugin
+  definePlugin,
+  types
 }
