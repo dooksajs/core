@@ -1,8 +1,9 @@
 /**
  * @typedef {Object} DsData - Dooksa plugin data
  * @property {Boolean} [private] - Bind data to the scope of the plugin
- * @property {Function} [default] - Default value to be set
+ * @property {(Function|string)} [default] - Default value to be set
  * @property {DsSchema} [schema] - The data schema
+ * @property {string} [description] - Description of data set
  */
 
 /**
@@ -11,9 +12,9 @@
  * @property {DsSchemaItem} [items]
  * @property {Object.<string, DsSchemaObject>} [properties]
  * @property {Object.<string, DsSchemaObject>} [patternProperties]
- * @property {Function} [suffixId] - Collection suffix id
- * @property {Function} [prefixId] - Collection prefix id
- * @property {Function} [defaultId] - Default collection id
+ * @property {(Function|string)} [suffixId] - Collection suffix id
+ * @property {(Function|string)} [prefixId] - Collection prefix id
+ * @property {(Function|string)} [defaultId] - Default collection id
  * @property {string} [relation] - Name of data collection the foreign key is related to
  */
 
