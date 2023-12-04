@@ -972,9 +972,9 @@ export default definePlugin({
               })
             }
 
-            const value = source[key]
+            const sourceItem = source[key]
 
-            if (value == null && property.default) {
+            if (sourceItem == null && property.default) {
               // add default value
               if (typeof property.default === 'function') {
                 source[key] = property.default()
@@ -986,21 +986,21 @@ export default definePlugin({
               const schema = this.schema[schemaName]
 
               if (schema) {
-                this._checkType(schemaName, source[key], schema.type)
+                this._checkType(schemaName, sourceItem, schema.type)
 
                 const schemaValidationName = '_schema/' + schema.type
 
-                this[schemaValidationName](data, schemaName, source[key])
+                this[schemaValidationName](data, schemaName, sourceItem)
               } else {
                 const propertyOptions = property.options || {}
 
                 if (propertyOptions.relation) {
-                  this._setRelation(data.collection, data.id, propertyOptions.relation, value)
+                  this._setRelation(data.collection, data.id, propertyOptions.relation, sourceItem)
                 }
               }
             }
 
-            this._checkType(path, source[key], property.type)
+            this._checkType(path, sourceItem, property.type)
           }
         }
       }
@@ -1023,6 +1023,8 @@ export default definePlugin({
         if (value == null && !propertyOptions.default) {
           propertiesChecked[property.name] = true
         } else {
+          const sourceItem = source[property.name]
+
           if (value == null && propertyOptions.default) {
             // add default value
             if (typeof propertyOptions.default === 'function') {
@@ -1035,11 +1037,11 @@ export default definePlugin({
             const schema = this.schema[schemaName]
 
             if (schema) {
-              this._checkType(schemaName, source[property.name], schema.type)
+              this._checkType(schemaName, sourceItem, schema.type)
 
               const schemaValidationName = '_schema/' + schema.type
 
-              this[schemaValidationName](data, schemaName, source[property.name])
+              this[schemaValidationName](data, schemaName, sourceItem)
             } else {
               if (propertyOptions.relation) {
                 this._setRelation(data.collection, data.id, propertyOptions.relation, value)
@@ -1047,7 +1049,7 @@ export default definePlugin({
             }
           }
 
-          this._checkType(path, source[property.name], property.type)
+          this._checkType(path, sourceItem, property.type)
 
           propertiesChecked[property.name] = true
         }
