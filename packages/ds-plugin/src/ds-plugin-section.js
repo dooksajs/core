@@ -148,7 +148,15 @@ export default definePlugin({
     },
     update ({ id, dsViewId }) {
       if (!dsViewId) {
-        this.$log('error', { message: 'dsViewId is undefined', code: 54 })
+        const view = this.$getDataValue('dsSection/view', {
+          id
+        })
+
+        if (view.isEmpty) {
+          return this.$log('error', { message: 'dsViewId is undefined', code: 54 })
+        }
+
+        dsViewId = view.item
       }
 
       const section = this.$getDataValue('dsSection/items', { id })
