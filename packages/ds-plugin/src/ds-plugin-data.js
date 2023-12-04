@@ -1080,12 +1080,18 @@ export default definePlugin({
 
       for (let i = 0; i < source.length; i++) {
         if (typeof this[schemaValidationName] !== 'function') {
+          const item = source[i]
           // set relation for array of strings
           if (schemaItems.options && schemaItems.options.relation) {
             this._setRelation(data.collection, data.id, schemaItems.options.relation, source[i])
           }
 
           this._checkType(schemaName, source[i], schemaItems.type)
+
+          // freeze array item
+          if (typeof item === 'object') {
+            Object.freeze(item)
+          }
         } else {
           this[schemaValidationName](data, schemaName, source[i])
         }
