@@ -250,15 +250,35 @@ export default definePlugin({
           suffixId: dsWidgetMode
         })
 
+        const handlerValue = () => {
+          this.$method('dsSection/update', { id: section.id, dsViewId })
+        }
+
         // update section elements
         this.$addDataListener('dsSection/items', {
           on: 'update',
           id: section.id,
           handler: {
             id: dsViewId,
-            value: () => {
-              this.$method('dsSection/update', { id: section.id, dsViewId })
-            }
+            value: handlerValue
+          }
+        })
+
+        this.$addDataListener('dsSection/query', {
+          on: 'update',
+          id: section.id,
+          handler: {
+            id: dsViewId,
+            value: handlerValue
+          }
+        })
+
+        this.$addDataListener('dsSection/query', {
+          on: 'delete',
+          id: section.id,
+          handler: {
+            id: dsViewId,
+            value: handlerValue
           }
         })
       }
