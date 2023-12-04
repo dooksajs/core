@@ -245,16 +245,19 @@ export default definePlugin({
         if (this.values[name] == null) {
           this.$log('error', { message: 'No such collection: ' + name, code: 54 })
 
-          return {
-            isEmpty: true,
-            isCollectionEmpty: true
-          }
+          // create result
+          const result = new DataResult(name, id)
+
+          result.isEmpty = true
+          result.isCollectionEmpty = true
+
+          return result
         }
 
         const result = new DataResult(name, id)
         const schema = this.schema[name]
 
-        if (arguments[1] && Object.hasOwn(arguments[1], 'id') && id == null) {
+        if (arguments[1] && Object.hasOwnProperty.call(arguments[1], 'id') && id == null) {
           result.isEmpty = true
 
           return result
