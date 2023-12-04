@@ -104,12 +104,13 @@ export default definePlugin({
   methods: {
     /**
      * Add data listener
-     * @param {string} name - Data collection name
+     * @param {string} name - Collection name
+     * @param {Object} param
      * @param {string} param.on - Data event name
-     * @param {dsDataId} param.id - Data collection Id
+     * @param {string} param.id - Data collection Id
      * @param {Object} param.handler
-     * @param {string} item.handler.id - Id of handler
-     * @param {function|dsActionId} item.handler.value - Function or action that will be called
+     * @param {string} param.handler.id - Id of handler
+     * @param {Function|dsActionId} param.handler.value - Function or action that will be called
      */
     $addDataListener (name, { on, id, handler }) {
       const listeners = this._getListeners(name, on, id)
@@ -152,6 +153,15 @@ export default definePlugin({
         delete this['data/handler/' + on][name][handlerId]
       }
     },
+    /**
+     * Delete data value
+     * @param {string} name - Collection name
+     * @param {string} id - Document id
+     * @param {Object} [options]
+     * @param {boolean} [options.cascade] - Delete related data
+     * @param {boolean} [options.listeners] - Delete related listeners
+     * @returns {Object}
+     */
     $deleteDataValue (name, id, { cascade, listeners } = {}) {
       const collection = this.values[name]
 
@@ -217,20 +227,19 @@ export default definePlugin({
     $getDataValue: {
       /**
        * Get data value
-       * @name $getDataValue
-       * @memberof dsData#
-       * @param {Object} param
-       * @param {string} param.name - Data collection name
-       * @param {string} param.id - Data collection document id
-       * @param {prefixId} param.prefixId - Data collection document prefix
-       * @param {suffixId} param.suffixId - Data collection document suffix
-       * @param {Object} param.options - Options
-       * @param {boolean} param.options.expand - Expand all relational data
-       * @param {Object} param.options.expandExclude - Exclude items from expanding
-       * @param {boolean} param.options.expandWritable - Expanded items returns a deep clone of the item value
-       * @param {string|number} param.options.position - Return the value by key of the data value
-       * @param {boolean} param.options.writable - Returns a deep clone of the item value
-       * @returns {Object}
+       * @alias $getDataValue
+       * @param {string} name - Name of collection
+       * @param {Object} [param]
+       * @param {string} [param.id] - Data collection document id
+       * @param {string} [param.prefixId] - Data collection document prefix
+       * @param {string} [param.suffixId] - Data collection document suffix
+       * @param {Object} [param.options] - Options
+       * @param {boolean} [param.options.expand] - Expand all relational data
+       * @param {Object} [param.options.expandExclude] - Exclude items from expanding
+       * @param {boolean} [param.options.expandWritable] - Expanded items returns a deep clone of the item value
+       * @param {string|number} [param.options.position] - Return the value by key of the data value
+       * @param {boolean} [param.options.writable] - Returns a deep clone of the item value
+       * @returns {DataResult}
        */
       value (name, { id, prefixId, suffixId, options } = {}) {
         if (this.values[name] == null) {
@@ -415,6 +424,14 @@ export default definePlugin({
       export: true
     },
     $setDataValue: {
+      /**
+       * Set data value
+       * @alias $setDataValue
+       * @param {string} name - Name of collection
+       * @param {*} data - Data to be set
+       * @param {*} options
+       * @returns {DataResult}
+       */
       value (name, data, options) {
         try {
           const schema = this.schema[name]
@@ -489,7 +506,7 @@ export default definePlugin({
     /**
      * Add data and its data type
      * @param {Object} data
-     * @param {dsDataId} data.id - Data id
+     * @param {string} data.id - Data id
      * @param {string} data.default - Data value
      * @param {string} data.type - Data type
      */
@@ -774,9 +791,9 @@ export default definePlugin({
      * @private
      * @param {string} name - Collection schema path
      * @param {Object} option - Collection id prefix or suffix options
-     * @param {string} option.prefixId - Prefix to add to the id
-     * @param {string} option.suffixId - Suffix to add to the id
-     * @returns {string}
+     * @param {string} [option.prefixId] - Prefix to add to the id
+     * @param {string} [option.suffixId] - Suffix to add to the id
+     * @returns {Object}
      */
     _defaultCollectionId (name, option = {}) {
       const schema = this.schema[name]
