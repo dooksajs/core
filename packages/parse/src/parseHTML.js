@@ -17,6 +17,7 @@ const parseHTML = (
     component: {},
     content: [],
     contentRefs: {},
+    queryIndexes: {},
     sectionRefs: {},
     layout: [],
     layoutId: [],
@@ -47,6 +48,7 @@ const parseHTML = (
 
   const content = []
   const contentRefs = {}
+  const queryIndexes = {}
   const layoutNodes = []
   const layout = []
   const layoutEntry = []
@@ -56,6 +58,7 @@ const parseHTML = (
 
   data.content[data.layoutIndex] = content
   data.contentRefs[data.layoutIndex] = contentRefs
+  data.queryIndexes[data.layoutIndex] = queryIndexes
   data.layout[data.layoutIndex] = layout
   data.layoutEntry[data.layoutIndex] = layoutEntry
   data.widgetEvent[data.layoutIndex] = widgetEvent
@@ -123,6 +126,19 @@ const parseHTML = (
 
           if (contentRef) {
             contentRefs[item.contentIndex] = contentRef
+          }
+
+          const queryIndex = result.options['ds-query-index']
+
+          if (queryIndex) {
+            const querySplit = queryIndex.split(':')
+            const queryValue = { id: querySplit[0] }
+
+            if (querySplit[1] === 'content') {
+              queryValue.contentPosition = querySplit.splice(2)
+            }
+
+            queryIndexes[item.contentIndex] = queryValue
           }
         }
 
