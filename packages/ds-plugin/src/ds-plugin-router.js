@@ -53,7 +53,7 @@ export default definePlugin({
       }
 
       for (const dsSectionId in toSections.item) {
-        if (Object.hasOwn(toSections.item, dsSectionId)) {
+        if (Object.hasOwnProperty.call(toSections.item, dsSectionId)) {
           const toViewId = toSections.item[dsSectionId]
           const fromViewId = fromSections.item[dsSectionId]
 
@@ -67,7 +67,7 @@ export default definePlugin({
       }
 
       for (const dsSectionId in fromSections.item) {
-        if (Object.hasOwn(fromSections.item, dsSectionId)) {
+        if (Object.hasOwnProperty.call(fromSections.item, dsSectionId)) {
           const toViewId = toSections.item[dsSectionId]
           const fromViewId = fromSections.item[dsSectionId]
 

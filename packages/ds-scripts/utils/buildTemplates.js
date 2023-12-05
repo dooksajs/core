@@ -35,7 +35,7 @@ export default (html) => {
       for (let i = 0; i < actionKeys.length; i++) {
         const key = actionKeys[i]
 
-        if (Object.hasOwn(metadata.actions, key)) {
+        if (Object.hasOwnProperty.call(metadata.actions, key)) {
           const actionTemplates = metadata.actions[key]
           const sequenceId = uuid()
 

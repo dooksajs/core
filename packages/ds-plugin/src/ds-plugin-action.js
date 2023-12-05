@@ -359,7 +359,7 @@ export default definePlugin({
       for (let i = 0; i < keys.length; i++) {
         const key = keys[i]
 
-        if (Object.hasOwn(data, key)) {
+        if (Object.hasOwnProperty.call(data, key)) {
           data = data[key]
           lastKey = key
         }
@@ -381,22 +381,22 @@ export default definePlugin({
         return value
       }
 
-      if (Object.hasOwn(value, query)) {
+      if (Object.hasOwnProperty.call(value, query)) {
         return value[query]
       }
 
       // get a nested value
-      if (Object.hasOwn(query, '$key')) {
+      if (Object.hasOwnProperty.call(query, '$key')) {
         return this._getDataByKey(value, query.$key).result
       }
 
       // return an object of data
-      if (Object.hasOwn(query, '$keys')) {
+      if (Object.hasOwnProperty.call(query, '$keys')) {
         const keys = query.$keys
         const result = {}
 
         for (const key in keys) {
-          if (Object.hasOwn(keys, key)) {
+          if (Object.hasOwnProperty.call(keys, key)) {
             const item = keys[key]
             const dataKey = this._getDataByKey(value, item)
 
@@ -407,7 +407,7 @@ export default definePlugin({
         return result
       }
 
-      if (Object.hasOwn(query, '$index')) {
+      if (Object.hasOwnProperty.call(query, '$index')) {
         const [index, keys] = query.$index
         const valueItem = value[index]
 
@@ -427,7 +427,7 @@ export default definePlugin({
         return result
       }
 
-      if (Object.hasOwn(query, '$indexes')) {
+      if (Object.hasOwnProperty.call(query, '$indexes')) {
         const result = []
 
         for (let i = 0; i < query.$indexes.length; i++) {
@@ -475,7 +475,7 @@ export default definePlugin({
             const item = condition.values[i]
             let value = item.value
 
-            if (Object.hasOwn(item, 'entry')) {
+            if (Object.hasOwnProperty.call(item, 'entry')) {
               value = this._action({
                 instanceId,
                 entry: item.entry,

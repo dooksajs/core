@@ -24,7 +24,7 @@ function sortObject (source) {
  */
 function sortType (target, source) {
   for (const prop in source) {
-    if (Object.hasOwn(source, prop)) {
+    if (Object.hasOwnProperty.call(source, prop)) {
       const nextSource = source[prop]
 
       if (Array.isArray(nextSource)) {

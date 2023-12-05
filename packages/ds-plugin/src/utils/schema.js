@@ -15,7 +15,7 @@ export default {
     }
 
     for (const key in item) {
-      if (Object.hasOwn(item, key)) {
+      if (Object.hasOwnProperty.call(item, key)) {
         let value = item[key]
 
         // prepare additionalProperties
@@ -72,7 +72,7 @@ export default {
       result.entryPatternProperties = items.patternProperties
 
       for (const key in items.patternProperties) {
-        if (Object.hasOwn(items.patternProperties, key)) {
+        if (Object.hasOwnProperty.call(items.patternProperties, key)) {
           const property = items.patternProperties[key]
           const hasProperties = this.hasProperties(property)
 
@@ -91,7 +91,7 @@ export default {
       }
 
       for (const key in items.properties) {
-        if (Object.hasOwn(items.properties, key)) {
+        if (Object.hasOwnProperty.call(items.properties, key)) {
           const property = items.properties[key]
           const hasProperties = this.hasProperties(property)
 

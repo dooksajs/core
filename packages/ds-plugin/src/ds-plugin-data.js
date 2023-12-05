@@ -628,7 +628,7 @@ export default definePlugin({
 
       if (!this[schemaCheck]) {
         for (const id in sources) {
-          if (Object.hasOwn(sources, id)) {
+          if (Object.hasOwnProperty.call(sources, id)) {
             const source = deepClone(this.defaultTypes[schema.type](), sources[id], true)
             const target = {
               _item: source._item || source,
@@ -659,7 +659,7 @@ export default definePlugin({
       }
 
       for (const id in sources) {
-        if (Object.hasOwn(sources, id)) {
+        if (Object.hasOwnProperty.call(sources, id)) {
           const source = deepClone(this.defaultTypes[schema.type](), sources[id], true)
           const resultItem = source._item || source
           const resultMetadata = source._metadata || metadata
@@ -920,7 +920,7 @@ export default definePlugin({
         const additionalKeys = []
 
         for (const key in data) {
-          if (Object.hasOwn(data, key)) {
+          if (Object.hasOwnProperty.call(data, key)) {
             // check if key can exist
             if (!schema.options.additionalProperties.includes(key)) {
               additionalKeys.push(key)
@@ -957,7 +957,7 @@ export default definePlugin({
         const property = properties[i]
 
         for (const key in source) {
-          if (Object.hasOwn(source, key)) {
+          if (Object.hasOwnProperty.call(source, key)) {
             if (propertiesChecked[key]) {
               continue
             }
@@ -1231,7 +1231,7 @@ export default definePlugin({
       return result
     },
     '_setData/options' (data, source, options) {
-      if (Object.hasOwn(options, 'id') && options.id == null) {
+      if (Object.hasOwnProperty.call(options, 'id') && options.id == null) {
         throw new SchemaException({
           schemaPath: data.collection,
           keyword: 'collection',
@@ -1474,7 +1474,7 @@ export default definePlugin({
       }
 
       for (const prop in source) {
-        if (Object.hasOwn(source, prop)) {
+        if (Object.hasOwnProperty.call(source, prop)) {
           target[prop] = source[prop]
         }
       }

@@ -250,7 +250,7 @@ export default definePlugin({
 
       if (plugin.methods) {
         for (const key in plugin.methods) {
-          if (Object.hasOwn(plugin.methods, key)) {
+          if (Object.hasOwnProperty.call(plugin.methods, key)) {
             const method = plugin.methods[key]
 
             this.methods[`${plugin.name}/${key}`] = method
@@ -260,7 +260,7 @@ export default definePlugin({
 
       if (plugin.tokens) {
         for (const key in plugin.tokens) {
-          if (Object.hasOwn(plugin.tokens, key)) {
+          if (Object.hasOwnProperty.call(plugin.tokens, key)) {
             const token = plugin.tokens[key]
 
             if (token.get) {

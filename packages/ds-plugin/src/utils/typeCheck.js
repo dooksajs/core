@@ -29,7 +29,7 @@ function typeCheck (namespace, data, keys = '', currentKey = '', root, depth = 0
       }
 
       for (const key in data) {
-        if (Object.hasOwn(data, key)) {
+        if (Object.hasOwnProperty.call(data, key)) {
           const item = data[key]
           const newKey = prefix + key + suffix
 

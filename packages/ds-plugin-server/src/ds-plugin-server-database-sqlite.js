@@ -146,7 +146,7 @@ export default {
         }
 
         if (field.defaultValue) {
-          if (Object.hasOwn(field.defaultValue, 'dataType')) {
+          if (Object.hasOwnProperty.call(field.defaultValue, 'dataType')) {
             schemaItem.defaultValue = DataTypes[field.defaultValue.dataType.toUpperCase()]
           } else {
             schemaItem.defaultValue = field.defaultValue
