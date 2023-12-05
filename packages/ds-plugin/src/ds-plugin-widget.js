@@ -242,7 +242,7 @@ export default definePlugin({
       const section = this.$getDataValue('dsWidget/sections', { id })
 
       // remove unused section
-      if (!section.isEmpty) {
+      if (section.isEmpty) {
         this.$deleteDataValue('dsSection/items', section.id, {
           cascade: true,
           listeners: true
