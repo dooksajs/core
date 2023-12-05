@@ -322,8 +322,7 @@ export default definePlugin({
           if (queryIndex) {
             const dataValue = {
               contentId,
-              widgetId: rootWidgetId,
-              sectionId: dsSectionId
+              widgetId: rootWidgetId
             }
 
             if (queryIndex.contentPosition) {
@@ -340,7 +339,7 @@ export default definePlugin({
             // remove content from query when content item is deleted
             this.$addDataListener('dsContent/items', {
               on: 'delete',
-              id: contentId,
+              id: dsContent.id,
               handler: {
                 id: queryIndex.id,
                 value: () => {
