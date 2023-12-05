@@ -317,6 +317,12 @@ export default definePlugin({
         params
       }
     },
+    '_process/delete/dataValue' (params) {
+      return this.$deleteDataValue(params.name, params.id, {
+        cascade: params.cascade,
+        listeners: params.listeners
+      })
+    },
     '_process/get/eventValue' (params, payload) {
       return this._getValue(payload, params)
     },
