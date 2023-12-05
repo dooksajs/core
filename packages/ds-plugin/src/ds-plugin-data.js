@@ -509,9 +509,6 @@ export default definePlugin({
     /**
      * Add data and its data type
      * @param {Object} data
-     * @param {string} data.id - Data id
-     * @param {string} data.default - Data value
-     * @param {string} data.type - Data type
      */
     add (data) {
       if (data.schema) {
@@ -871,9 +868,8 @@ export default definePlugin({
     },
     /**
      * Process listeners on update event
-     * @param {dsDataId} id
-     * @param {string} key - Data key
-     * @param {(string|number|boolean|Object|Array)} value - Value that is being set
+     * @param {string} name - Collection name
+     * @param {DataResult} item - Value that is being set
      */
     _onUpdate (name, item) {
       let listeners = this['data/listener/update'][name]
@@ -890,9 +886,8 @@ export default definePlugin({
     },
     /**
      * Process listeners on delete event
-     * @param {dsDataId} id
-     * @param {string} key - Data key
-     * @param {(string|number|boolean|Object|Array)} value - Value that is being deleted
+     * @param {string} name - Collection name
+     * @param {string} id - Data id
      */
     _onDelete (id, key, value) {
       const listeners = this['data/listeners/delete'][id][key]
