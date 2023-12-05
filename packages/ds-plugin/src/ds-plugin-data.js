@@ -519,11 +519,15 @@ export default definePlugin({
       this.values[data.id] = data.default ?? this.defaultTypes[data.type]()
 
       // prepare listeners
-      const listenerType = data.collection ? {} : []
+      if (data.collection) {
+        this['data/listener/update'][data.id] = {}
+        this['data/listener/delete'][data.id] = {}
+      } else {
+        this['data/listener/update'][data.id] = []
+        this['data/listener/delete'][data.id] = []
+      }
 
-      this['data/listener/update'][data.id] = listenerType
       this['data/handler/update'][data.id] = {}
-      this['data/listener/delete'][data.id] = listenerType
       this['data/handler/delete'][data.id] = {}
     },
     /**
