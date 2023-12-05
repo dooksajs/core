@@ -220,6 +220,8 @@ export default definePlugin({
         delete collection[id]
       }
 
+      this._onDelete(name, id)
+
       return {
         deleted: true
       }
@@ -893,14 +895,16 @@ export default definePlugin({
      * @param {string} name - Collection name
      * @param {string} id - Data id
      */
-    _onDelete (id, key, value) {
-      const listeners = this['data/listeners/delete'][id][key]
+    _onDelete (name, id) {
+      let listeners = this['data/listener/delete'][name]
+
+      if (id) {
+        listeners = listeners[id]
+      }
 
       if (listeners) {
         for (let i = 0; i < listeners.length; i++) {
-          const listener = listeners[i]
-
-          listener.action(listener.arguments, value)
+          listeners[i](id)
         }
       }
     },
