@@ -39,7 +39,19 @@ export default definePlugin({
         type: 'object'
       }
     },
+    'data/listener/delete/priority': {
+      private: true,
+      schema: {
+        type: 'object'
+      }
+    },
     'data/listener/update': {
+      private: true,
+      schema: {
+        type: 'object'
+      }
+    },
+    'data/listener/update/priority': {
       private: true,
       schema: {
         type: 'object'
@@ -108,12 +120,33 @@ export default definePlugin({
      * @param {Object} param
      * @param {string} param.on - Data event name
      * @param {string} param.id - Data collection Id
+     * @param {number} param.priority
      * @param {Object} param.handler
      * @param {string} param.handler.id - Id of handler
      * @param {Function|dsActionId} param.handler.value - Function or action that will be called
      */
-    $addDataListener (name, { on, id, handler }) {
+    $addDataListener (name, { on, id, priority, handler }) {
       const listeners = this._getListeners(name, on, id)
+
+      // set default listener value
+      if (!listeners.items) {
+        const type = 'data/listener/' + on
+
+        if (id) {
+          this[type][name][id] = []
+          this[type + '/priority'][name][id] = []
+
+          listeners.items = this[type][name][id] = []
+          listeners.priority = this[type + '/priority'][name][id] = []
+        } else {
+          this[type][name] = []
+          this[type + '/priority'][name] = []
+
+          listeners.items = this[type][name]
+          listeners.priority = this[type + '/priority'][name]
+        }
+      }
+
       const handlers = this['data/handler/' + on][name]
 
       let handlerId = handler.id
@@ -124,8 +157,19 @@ export default definePlugin({
 
       // add listener
       if (!handlers[handlerId]) {
-        listeners.push(handler.value)
-        handlers[handlerId] = handler.value
+        if (!priority) {
+          listeners.items.push(handler.value)
+          handlers[handlerId] = handler.value
+
+          return
+        }
+
+        listeners.priority.push({
+          priority,
+          value: handler.value
+        })
+
+        listeners.priority.sort((a, b) => a.priority - b.priority)
       }
     },
     /**
@@ -144,12 +188,24 @@ export default definePlugin({
       }
 
       const handler = this['data/handler/' + on][name][handlerId]
-      const handlerIndex = listeners.indexOf(handler)
+      const handlerIndex = listeners.items.indexOf(handler)
+      const handlerPriorityIndex = listeners.priority.indexOf(handler)
+      let hadHandler = false
 
       // remove handler
       if (handlerIndex !== -1) {
-        listeners.splice(handlerIndex, 1)
+        listeners.item.splice(handlerIndex, 1)
 
+        hadHandler = true
+      }
+
+      if (handlerPriorityIndex !== -1) {
+        listeners.priority.splice(handlerIndex, 1)
+
+        hadHandler = true
+      }
+
+      if (hadHandler) {
         delete this['data/handler/' + on][name][handlerId]
       }
     },
@@ -517,20 +573,26 @@ export default definePlugin({
         this._addSchema(data.schema)
       }
 
+      const id = data.id
+
       // add values
-      this.values[data.id] = data.default ?? this.defaultTypes[data.type]()
+      this.values[id] = data.default ?? this.defaultTypes[data.type]()
 
       // prepare listeners
       if (data.collection) {
-        this['data/listener/update'][data.id] = {}
-        this['data/listener/delete'][data.id] = {}
+        this['data/listener/update'][id] = {}
+        this['data/listener/delete'][id] = {}
+        this['data/listener/update/priority'][id] = {}
+        this['data/listener/delete/priority'][id] = {}
       } else {
-        this['data/listener/update'][data.id] = []
-        this['data/listener/delete'][data.id] = []
+        this['data/listener/update'][id] = []
+        this['data/listener/delete'][id] = []
+        this['data/listener/update/priority'][id] = []
+        this['data/listener/delete/priority'][id] = []
       }
 
-      this['data/handler/update'][data.id] = {}
-      this['data/handler/delete'][data.id] = {}
+      this['data/handler/update'][id] = {}
+      this['data/handler/delete'][id] = {}
     },
     /**
      * Generate a unique id
@@ -844,10 +906,11 @@ export default definePlugin({
      * @param {string} name - Data collection name
      * @param {string} on - Event name
      * @param {string} id  - Data collection Id
-     * @returns {Array} - list of handlers
+     * @returns {Object} - list of handlers
      */
     _getListeners (name, on, id) {
-      const listenerType = this['data/listener/' + on]
+      const type = 'data/listener/' + on
+      const listenerType = this[type]
 
       if (!listenerType) {
         throw new Error('Data Listener type does not exist: "' + on + '"')
@@ -859,18 +922,19 @@ export default definePlugin({
         throw new Error('Could not find data collection listeners: "' + name + '"')
       }
 
+      const listenerPriorityCollection = this[type + '/priority'][name]
+
       if (id) {
-        let listeners = listenerCollection[id]
-
-        if (!listeners) {
-          listenerCollection[id] = []
-          listeners = listenerCollection[id]
+        return {
+          items: listenerCollection[id],
+          priority: listenerPriorityCollection[id]
         }
-
-        return listeners
       }
 
-      return listenerCollection
+      return {
+        items: listenerCollection,
+        priority: listenerPriorityCollection
+      }
     },
     /**
      * Process listeners on update event
@@ -878,15 +942,17 @@ export default definePlugin({
      * @param {DataResult} item - Value that is being set
      */
     _onUpdate (name, item) {
-      let listeners = this['data/listener/update'][name]
+      const listeners = this._getListeners(name, 'update', item.id)
 
-      if (item.id) {
-        listeners = listeners[item.id]
+      if (listeners.priority) {
+        for (let i = 0; i < listeners.priority.length; i++) {
+          listeners.priority[i].value(item)
+        }
       }
 
-      if (listeners) {
-        for (let i = 0; i < listeners.length; i++) {
-          listeners[i](item)
+      if (listeners.items) {
+        for (let i = 0; i < listeners.items.length; i++) {
+          listeners.items[i](item)
         }
       }
     },
