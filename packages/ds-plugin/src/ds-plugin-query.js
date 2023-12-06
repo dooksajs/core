@@ -70,9 +70,17 @@ export default definePlugin({
         id: dsSectionId
       })
 
+      const mode = this.$getDataValue('dsSection/mode', { id: dsSectionId })
+      let sectionId = dsSectionId
+
+      if (!mode.isEmpty) {
+        sectionId = sectionId + mode.item
+      }
+
       this.$addDataListener('dsSection/items', {
         on: 'update',
-        id: dsSectionId,
+        id: sectionId,
+        priority: 1,
         handler: {
           id,
           value: (result) => {
