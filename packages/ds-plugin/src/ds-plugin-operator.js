@@ -26,14 +26,22 @@ export default definePlugin({
      * Evaluate two values
      * @param {Object} eval - The Object containing the data to evaluate two values
      * @param {string} eval.name - Operator name
-     * @param {string[]|number[]} eval.values - Contains two values to be evaluated
+     * @param {OperatorValues} eval.values - Contains two values to be evaluated
      */
     eval ({ name, values }) {
-      return this.operators[name](values)
+      const operator = '_operator/' + name
+
+      if (this[operator]) {
+        return this[operator](values)
+      } else {
+        this.$log('error', { message: 'Unexpected operator name: "' + name + '"' })
+      }
     },
     /**
      * Compare two or more values
-     * @param {string[]|number[]} values - Contains two values or more values which are compared
+     * @param {*[]} values - Contains two values or more values which are compared
+     * @example
+     * const andValues = ['1', '&&', 1]
      */
     compare (values) {
       let result = false
