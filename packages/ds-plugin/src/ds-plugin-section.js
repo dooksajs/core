@@ -248,7 +248,7 @@ export default definePlugin({
       }
     },
     _updateByQuery (query, dsViewId, id, uniqueId, mode) {
-      const result = this.$method('dsQuery/' + query.method, { id: query.id, options: query.options })
+      const result = this.$method('dsQuery/fetch', query)
 
       // Exit, nothing to do.
       if (!result) {
