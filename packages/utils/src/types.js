@@ -99,10 +99,10 @@
  * @property {number} dependencies[].version - version of dependent plugin
  * @property {number} version - Version of plugin
  * @property {DsSetup} [setup] - Setup function that is run on plugin initialisation
- * @property {Object.<string, DsData>} data - Data that the plugin will manage
+ * @property {Object.<string, DsData>} [data] - Data that the plugin will manage
  * @property {DsComponent[]} [components]
  * @property {Object.<string, (DsToken|DsTokenGet)>} [tokens]
- * @property {Object} methods
+ * @property {Object} [methods]
  */
 
 // * @property {Object.<string, (DsMethodContext|DsMethod)>} [methods.context] - Context methods are bound to each plugins scope unless specified otherwise
