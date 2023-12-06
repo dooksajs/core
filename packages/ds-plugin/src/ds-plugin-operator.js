@@ -1,32 +1,17 @@
 import { definePlugin } from '@dooksa/utils'
 
+/**
+ * Two or one values to run an operator on
+ * @typedef {(string[]|number[])} OperatorValues
+ * @example
+ * [1, 2]
+ * ['hello', 'world]
+ * [0]
+ */
+
 export default definePlugin({
   name: 'dsOperator',
   version: 1,
-  data: {
-    operators: {
-      private: true,
-      default: () => ({
-        '==': v => v[0] === v[1],
-        '!=': v => v[0] !== v[1],
-        '>': v => v[0] > v[1],
-        '>=': v => v[0] >= v[1],
-        '<': v => v[0] < v[1],
-        '<=': v => v[0] <= v[1],
-        '!': v => !v[0],
-        '!!': v => !!v[0],
-        '%': v => v[0] % v[1],
-        '++x': v => ++v[0],
-        'x++': v => v[0]++,
-        '--x': v => --v[0],
-        'x--': v => v[0]--,
-        '-': v => v[0] - v[1],
-        '+': v => v[0] + v[1],
-        '*': v => v[0] * v[1],
-        '**': v => v[0] ** v[1]
-      })
-    }
-  },
   methods: {
     iterate ({ item, dsActionId }) {
       for (const key in item) {
@@ -273,6 +258,125 @@ export default definePlugin({
       }
 
       return list
-    }
+    },
+    /**
+     * Equality
+     * @private
+     * @param {OperatorValues} v
+     * @returns {boolean}
+     */
+    '_operator/==': v => v[0] === v[1],
+    /**
+     * Inequality
+     * @private
+     * @param {OperatorValues} v
+     * @returns {boolean}
+     */
+    '_operator/!=': v => v[0] !== v[1],
+    /**
+     * Greater than
+     * @private
+     * @param {OperatorValues} v
+     * @returns {boolean}
+     */
+    '_operator/>': v => v[0] > v[1],
+    /**
+     * Greater than or equal operator
+     * @private
+     * @param {OperatorValues} v
+     * @returns {boolean}
+     */
+    '_operator/>=': v => v[0] >= v[1],
+    /**
+     * Less than
+     * @private
+     * @param {OperatorValues} v
+     * @returns {boolean}
+     */
+    '_operator/<': v => v[0] < v[1],
+    /**
+     * Less than or equal operator
+     * @private
+     * @param {OperatorValues} v
+     * @returns {boolean}
+     */
+    '_operator/<=': v => v[0] <= v[1],
+    /**
+     * Logical NOT
+     * @private
+     * @param {OperatorValues} v
+     * @returns {boolean}
+     */
+    '_operator/!': v => !v[0],
+    /**
+     * Boolean value
+     * @private
+     * @param {OperatorValues} v
+     * @returns {boolean}
+     */
+    '_operator/!!': v => Boolean(v[0]),
+    /**
+     * Remainder operator
+     * @private
+     * @param {number[]} v
+     * @returns {number}
+     */
+    '_operator/%': v => v[0] % v[1],
+    /**
+     * Prefix increment operator
+     * @private
+     * @param {number[]} v
+     * @returns {number}
+     */
+    '_operator/++x': v => ++v[0],
+    /**
+     * Postfix increment operator
+     * @private
+     * @param {number[]} v
+     * @returns {number}
+     */
+    '_operator/x++': v => v[0]++,
+    /**
+     * Prefix decrement operator
+     * @private
+     * @param {number[]} v
+     * @returns {number}
+     */
+    '_operator/--x': v => --v[0],
+    /**
+     * Postfix decrement operator
+     * @private
+     * @param {number[]} v
+     * @returns {number}
+     */
+    '_operator/x--': v => v[0]--,
+    /**
+     * Negation operator
+     * @private
+     * @param {number[]} v
+     * @returns {number}
+     */
+    '_operator/-': v => v[0] - v[1],
+    /**
+     * Plus operator
+     * @private
+     * @param {number[]} v
+     * @returns {number}
+     */
+    '_operator/+': v => v[0] + v[1],
+    /**
+     * Multiplication operator
+     * @private
+     * @param {number[]} v
+     * @returns {number}
+     */
+    '_operator/*': v => v[0] * v[1],
+    /**
+     * Exponentiation operator
+     * @private
+     * @param {number[]} v
+     * @returns {number}
+     */
+    '_operator/**': v => v[0] ** v[1]
   }
 })
