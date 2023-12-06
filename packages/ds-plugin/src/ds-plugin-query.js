@@ -1,8 +1,28 @@
 import { definePlugin } from '@dooksa/utils'
 
 /**
- * @namespace dsQuery
+ * @typedef {Object} QueryItem
+ * @property {string} contentId - dsContent/item id
+ * @property {string} widgetId - dsWidget/item id
+ * @property {string[]} contentPosition - The content value position within the content object
  */
+
+/**
+ * @typedef {Object} QueryWhere
+ * @property {string} name - Name of operator
+ * @property {*} value - Value to compare with content value
+ */
+
+/**
+ * @typedef {string} QuerySort
+ */
+
+/**
+ * @typedef {Object} QueryValue
+ * @property {(string|number)} value - Content value
+ * @property {string} widgetId - dsWidget/item id
+ */
+
 export default definePlugin({
   name: 'dsQuery',
   version: 1,
@@ -23,9 +43,11 @@ export default definePlugin({
                 type: 'string',
                 relation: 'dsWidget/items'
               },
-              sectionId: {
-                type: 'string',
-                relation: 'dsSection/items'
+              contentPosition: {
+                type: 'array',
+                items: {
+                  type: 'string'
+                }
               }
             }
           }
@@ -34,55 +56,96 @@ export default definePlugin({
     }
   },
   methods: {
-    sort ({ id, options = {} }) {
+    /**
+     * Append query to section
+     * @param {Object} param
+     * @param {string} param.id - Query Id
+     * @param {Object} param.options
+     * @param {QueryWhere} param.options.where
+     * @param {QuerySort} param.options.sort
+     * @param {string} param.dsSectionId - Section to overwrite with query
+     */
+    addToSection ({ id, options, dsSectionId }) {
+      this.$setDataValue('dsSection/query', { id, options }, {
+        id: dsSectionId
+      })
+
+      this.$addDataListener('dsSection/items', {
+        on: 'update',
+        id: dsSectionId,
+        handler: {
+          id,
+          value: (result) => {
+            const queryData = this.$getDataValue('dsQuery/items', { id })
+
+            if (queryData.isEmpty) {
+              console.error('query should not be empty')
+            }
+
+            if (result.isEmpty) {
+              return this.$setDataValue('dsQuery/items', [], { id })
+            }
+
+            const query = []
+            const currentSection = {}
+
+            // collect current widgets
+            for (let i = 0; i < result.item.length; i++) {
+              currentSection[result.item[i]] = true
+            }
+
+            // update query widget list
+            for (let i = 0; i < queryData.item.length; i++) {
+              const item = queryData.item[i]
+
+              if (currentSection[item.widgetId]) {
+                query.push(item)
+
+                currentSection[item.widgetId] = false
+              }
+            }
+
+            this.$setDataValue('dsQuery/items', query, {
+              id: queryData.id
+            })
+          }
+        }
+      })
+    },
+    /**
+     * Fetch values by query
+     * @param {Object} param
+     * @param {string} param.id - Query Id
+     * @param {Object} param.options
+     * @param {QueryWhere} param.options.where - Where options
+     * @param {QuerySort} param.options.sort - Sort type
+     * @returns {QueryValue[]}
+     */
+    fetch ({ id, options }) {
       const queryData = this.$getDataValue('dsQuery/items', { id })
 
       if (queryData.isEmpty) {
         return
       }
 
-      const methodName = '_sort/by/' + options.type
+      let items = this._fetchValues(queryData.item)
 
-      if (typeof this[methodName] === 'function') {
-        const items = this._fetchValues(queryData.item)
-
-        return this[methodName](items)
-      } else {
-        this.$log('error', { message: 'Sort method does not exist: ' + methodName })
+      if (options.where) {
+        items = this._where(items, options.where)
       }
+
+      if (options.sort) {
+        items = this._sort(items, options.sort)
+      }
+
+      return items
     },
-    _ascendingValues (a, b) {
-      // ignore upper and lowercase
-      const A = typeof a.value === 'string' ? a.value.toUpperCase() : a.value
-      const B = typeof b.value === 'string' ? b.value.toUpperCase() : b.value
-
-      if (A < B) {
-        return -1
-      }
-
-      if (A > B) {
-        return 1
-      }
-
-      // names must be equal
-      return 0
-    },
-    _descendingValues (a, b) {
-      // ignore upper and lowercase
-      const A = typeof a.value === 'string' ? a.value.toUpperCase() : a.value
-      const B = typeof b.value === 'string' ? b.value.toUpperCase() : b.value
-
-      if (A > B) {
-        return -1
-      }
-
-      if (A < B) {
-        return 1
-      }
-
-      // names must be equal
-      return 0
-    },
+    /**
+     * Fetch content values
+     * @private
+     * @param {QueryItem[]} items
+     * @returns {QueryValue[]}
+     */
     _fetchValues (items) {
       return items.map(item => {
         const content = this.$getDataValue('dsContent/items', { id: item.contentId })
@@ -102,11 +165,108 @@ export default definePlugin({
         }
       })
     },
-    '_sort/by/ascending' (item) {
-      return item.sort(this._ascendingValues)
+    /**
+     * Sort list
+     * @private
+     * @param {QueryValue[]} items
+     * @param {QuerySort} type - Sort by
+     * @returns {QueryValue[]}
+     */
+    _sort (items, type) {
+      const methodName = '_sort/by/' + type
+
+      if (typeof this[methodName] === 'function') {
+        return this[methodName](items)
+      } else {
+        this.$log('error', { message: 'Sort method does not exist: ' + methodName })
+      }
     },
+    /**
+     * Sort by ascending callback
+     * @private
+     * @param {QueryValue} a
+     * @param {QueryValue} b
+     * @returns {number}
+     */
+    _sortAscending (a, b) {
+      // ignore upper and lowercase
+      const A = typeof a.value === 'string' ? a.value.toUpperCase() : a.value
+      const B = typeof b.value === 'string' ? b.value.toUpperCase() : b.value
+
+      if (A < B) {
+        return -1
+      }
+
+      if (A > B) {
+        return 1
+      }
+
+      // names must be equal
+      return 0
+    },
+    /**
+     * Sort by descending callback
+     * @private
+     * @param {QueryValue} a
+     * @param {QueryValue} b
+     * @returns {number}
+     */
+    _sortDescending (a, b) {
+      // ignore upper and lowercase
+      const A = typeof a.value === 'string' ? a.value.toUpperCase() : a.value
+      const B = typeof b.value === 'string' ? b.value.toUpperCase() : b.value
+
+      if (A > B) {
+        return -1
+      }
+
+      if (A < B) {
+        return 1
+      }
+
+      // names must be equal
+      return 0
+    },
+    /**
+     * Sort by ascending
+     * @private
+     * @param {QueryValue[]} item
+     * @returns {QueryValue[]}
+     */
+    '_sort/by/ascending' (item) {
+      return item.sort(this._sortAscending)
+    },
+    /**
+     * Sort by descending
+     * @private
+     * @param {QueryValue[]} item
+     * @returns {QueryValue[]}
+     */
     '_sort/by/descending' (item) {
-      return item.sort(this._descendingValues)
+      return item.sort(this._sortAscending)
+    },
+    /**
+     * Filter items based on conditions
+     * @private
+     * @param {*[]} items
+     * @param {QueryWhere[]} options
+     * @returns {*[]}
+     */
+    _where (items, options) {
+      return items.filter(value => {
+        let valid = false
+
+        for (let i = 0; i < options.length; i++) {
+          const option = options[i]
+
+          valid = this.$method('dsOperator/eval', {
+            name: option.name,
+            values: [value, option.value]
+          })
+        }
+
+        return valid
+      })
     }
   }
 })
