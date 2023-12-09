@@ -273,7 +273,7 @@ export default definePlugin({
      * @param {OperatorValues} v
      * @returns {boolean}
      */
-    '_operator/==': v => v[0] === v[1],
+    '_operator/=': v => v[0] === v[1],
     /**
      * Inequality
      * @private
@@ -317,13 +317,6 @@ export default definePlugin({
      */
     '_operator/!': v => !v[0],
     /**
-     * Boolean value
-     * @private
-     * @param {OperatorValues} v
-     * @returns {boolean}
-     */
-    '_operator/!!': v => Boolean(v[0]),
-    /**
      * Remainder operator
      * @private
      * @param {number[]} v
@@ -331,33 +324,19 @@ export default definePlugin({
      */
     '_operator/%': v => v[0] % v[1],
     /**
-     * Prefix increment operator
+     * Increment operator
      * @private
      * @param {number[]} v
      * @returns {number}
      */
-    '_operator/++x': v => ++v[0],
+    '_operator/++': v => ++v[0],
     /**
-     * Postfix increment operator
+     * Decrement operator
      * @private
      * @param {number[]} v
      * @returns {number}
      */
-    '_operator/x++': v => v[0]++,
-    /**
-     * Prefix decrement operator
-     * @private
-     * @param {number[]} v
-     * @returns {number}
-     */
-    '_operator/--x': v => --v[0],
-    /**
-     * Postfix decrement operator
-     * @private
-     * @param {number[]} v
-     * @returns {number}
-     */
-    '_operator/x--': v => v[0]--,
+    '_operator/--': v => --v[0],
     /**
      * Negation operator
      * @private
@@ -386,6 +365,13 @@ export default definePlugin({
      * @returns {number}
      */
     '_operator/**': v => v[0] ** v[1],
+    /**
+     * Boolean value
+     * @private
+     * @param {OperatorValues} v
+     * @returns {boolean}
+     */
+    '_operator/boolean': v => Boolean(v[0]),
     /**
      * Check if value is within an string or array
      * @private
