@@ -100,113 +100,40 @@ export default definePlugin({
       }
     },
     {
-      name: 'h1',
-      type: 'text',
-      content: {
-        set: [{
-          type: 'setter',
-          name: 'textContent'
-        }]
-      }
+      name: 'div'
     },
     {
-      name: 'h2',
-      type: 'text',
-      content: {
-        set: [{
-          type: 'setter',
-          name: 'textContent'
-        }]
-      }
+      name: 'h1'
     },
     {
-      name: 'h3',
-      type: 'text',
-      content: {
-        set: [{
-          type: 'setter',
-          name: 'textContent'
-        }]
-      }
+      name: 'h2'
     },
     {
-      name: 'h4',
-      type: 'text',
-      content: {
-        set: [{
-          type: 'setter',
-          name: 'textContent'
-        }]
-      }
+      name: 'h3'
     },
     {
-      name: 'h5',
-      type: 'text',
-      content: {
-        set: [{
-          type: 'setter',
-          name: 'textContent'
-        }]
-      }
+      name: 'h4'
     },
     {
-      name: 'h6',
-      type: 'text',
-      content: {
-        set: [{
-          type: 'setter',
-          name: 'textContent'
-        }]
-      }
+      name: 'h5'
     },
     {
-      name: 'label',
-      type: 'text',
-      content: {
-        set: [{
-          type: 'setter',
-          name: 'textContent'
-        }]
-      }
+      name: 'h6'
     },
     {
-      name: 'small',
-      type: 'text',
-      content: {
-        set: [{
-          type: 'setter',
-          name: 'textContent'
-        }]
-      }
+      name: 'label'
     },
     {
-      name: 'p',
-      type: 'text',
-      content: {
-        set: [{
-          type: 'setter',
-          name: 'textContent'
-        }]
-      }
+      name: 'small'
     },
     {
-      name: 'span',
-      content: {
-        set: [{
-          type: 'setter',
-          name: 'textContent'
-        }]
-      }
+      name: 'p'
     },
     {
-      name: 'nav',
-      type: 'text',
-      content: {
-        set: [{
-          type: 'setter',
-          name: 'textContent'
-        }]
-      }
+      name: 'span'
+    },
+    {
+      name: 'nav'
     },
     {
       name: 'ul'
@@ -240,7 +167,7 @@ export default definePlugin({
     },
     {
       name: 'input',
-      type: 'text',
+      type: 'input',
       events: [{
         name: 'input',
         syncContent: true
