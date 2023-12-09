@@ -422,7 +422,7 @@ export default definePlugin({
     /**
      * Set attributes to element
      * @param {dsViewId} dsViewId - dsView node id
-     * @param {Object.<string, string>} attributes
+     * @param {Array.<string[]>} attributes
      * @private
      */
     _setAttributes (element, attributes) {
