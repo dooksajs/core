@@ -435,16 +435,11 @@ export default definePlugin({
     /**
      * Set element value using a attribute
      * @param {Object} node - Text or Element node
-     * @param {dsComponentSet} setter - Setters used to update the elements value
      * @param {(string|Object)} content - dsContent object
      * @private
      */
-    '_setValueBy/attribute' (node, setter, content) {
-      if (!setter.contentProperty) {
-        return node.setAttribute(setter.name, content.value)
-      }
-
-      node.setAttribute(setter.name, content[setter.contentProperty])
+    '_setValueBy/attribute' (node, content, name, property) {
+      node.setAttribute(name, content[property])
     },
     /**
      * Set element value using a attribute
