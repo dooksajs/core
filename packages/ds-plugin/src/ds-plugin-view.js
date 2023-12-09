@@ -190,7 +190,7 @@ export default definePlugin({
               id: dsViewId
             })
 
-            if (event.updateContent) {
+            if (event.syncContent) {
               const value = this.getValue({ id: dsViewId })
 
               this.$setDataValue('dsContent/items', value, { id: dsViewContent.item })

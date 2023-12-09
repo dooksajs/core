@@ -252,7 +252,7 @@ export default definePlugin({
       type: 'text',
       events: [{
         name: 'input',
-        updateContent: true
+        syncContent: true
       }],
       content: {
         get: [{
