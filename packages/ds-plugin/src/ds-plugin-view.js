@@ -48,7 +48,6 @@ export default definePlugin({
     items: {
       schema: {
         type: 'collection',
-        mutable: true,
         items: {
           type: 'node'
         }
