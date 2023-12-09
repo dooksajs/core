@@ -385,6 +385,13 @@ export default definePlugin({
      * @param {number[]} v
      * @returns {number}
      */
-    '_operator/**': v => v[0] ** v[1]
+    '_operator/**': v => v[0] ** v[1],
+    /**
+     * Check if value is within an string or array
+     * @private
+     * @param {(string|Array)} v
+     * @return {boolean}
+     */
+    '_operator/includes': v => v[0].includes(v[1])
   }
 })
