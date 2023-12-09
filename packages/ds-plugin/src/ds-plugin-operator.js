@@ -273,7 +273,7 @@ export default definePlugin({
      * @param {OperatorValues} v
      * @returns {boolean}
      */
-    '_operator/=': v => v[0] === v[1],
+    '_operator/==': v => v[0] === v[1],
     /**
      * Inequality
      * @private
