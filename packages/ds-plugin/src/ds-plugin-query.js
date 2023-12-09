@@ -253,7 +253,7 @@ export default definePlugin({
      * @returns {QueryValue[]}
      */
     '_sort/by/descending' (item) {
-      return item.sort(this._sortAscending)
+      return item.sort(this._sortDescending)
     },
     /**
      * Filter items based on conditions
