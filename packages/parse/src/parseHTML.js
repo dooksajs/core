@@ -128,7 +128,7 @@ const parseHTML = (
             contentRefs[item.contentIndex] = contentRef
           }
 
-          const queryIndex = result.options['ds-query-index']
+          const queryIndex = result.options['ds-query']
 
           if (queryIndex) {
             const querySplit = queryIndex.split(':')
@@ -175,6 +175,19 @@ const parseHTML = (
 
           if (contentRef) {
             contentRefs[item.contentIndex] = contentRef
+          }
+
+          const queryIndex = result.options['ds-query']
+
+          if (queryIndex) {
+            const querySplit = queryIndex.split(':')
+            const queryValue = { id: querySplit[0] }
+
+            if (querySplit[1] === 'content') {
+              queryValue.content = querySplit.splice(2)
+            }
+
+            queryIndexes[item.contentIndex] = queryValue
           }
 
           const sectionRef = result.options['ds-section-ref']
