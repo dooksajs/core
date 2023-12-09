@@ -389,32 +389,21 @@ export default definePlugin({
 
       const node = dsView.item
       const nodeName = node.nodeName.toLowerCase()
-
-      // ISSUE: [DS-760] move setters to general actions
-      if (dsContent.metadata.type === 'text') {
-        if (dsContent.item.token) {
-          return this.$method('dsToken/textContent', {
-            dsViewId,
-            text: dsContent.value,
-            updateText: (value) => {
-              node.textContent = value
-            }
-          })
-        }
-
-        node.textContent = dsContent.item.value
-
-        return
-      }
-
       this.$component(nodeName)
       const setters = this.$componentSetters[nodeName]
 
       if (setters) {
         for (let i = 0; i < setters.length; i++) {
           const setter = setters[i]
+          const content = dsContent.item.values
 
-          this[`_setValueBy/${setter.type}`](node, setter, dsContent.item)
+          if (setter.token && dsContent.item.tokens[setter.property]) {
+            this['_setValueBy/token'](node, content, setter.name, setter.property, setter.type, dsViewId)
+
+            continue
+          }
+
+          this[`_setValueBy/${setter.type}`](node, content, setter.name, setter.property)
         }
       }
     },
@@ -460,18 +449,23 @@ export default definePlugin({
     /**
      * Set element value using a attribute
      * @param {Object} node - Text or Element node
-     * @param {dsComponentSet} setter - Setters used to update the elements value
      * @param {(string|Object)} content - dsContent object
      * @private
      */
-    '_setValueBy/setter' (node, setter, content) {
-      if (!setter.contentProperty) {
-        if (node.__lookupSetter__(setter.name)) {
-          node[setter.name] = content.value
-        }
-      } else if (node.__lookupSetter__(setter.name)) {
-        node[setter.name] = content[setter.contentProperty]
+    '_setValueBy/setter' (node, content, name, property) {
+      if (node.__lookupSetter__(name)) {
+        node[name] = content[property]
       }
+    },
+    '_setValueBy/token' (node, content, name, property, type, dsViewId) {
+      this.$method('dsToken/textContent', {
+        dsViewId,
+        text: content[property],
+        updateText: (value) => {
+          content[property] = value
+          this['_setValueBy/' + type](node, content[property], name, property)
+        }
+      })
     },
     /**
      * Unmount node
