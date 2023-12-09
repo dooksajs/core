@@ -194,7 +194,7 @@ export default definePlugin({
 
       // remove handler
       if (handlerIndex !== -1) {
-        listeners.item.splice(handlerIndex, 1)
+        listeners.items.splice(handlerIndex, 1)
 
         hadHandler = true
       }
