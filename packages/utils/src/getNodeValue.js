@@ -1,66 +1,64 @@
 /**
- * Get content value from node
- * @param {'attribute'|'getter'} type - Type of getter
- * @param {HTMLElement|Text} node - HTML element or Text node used to get value from
- * @param {string} contentType - Content type
- * @param {string} getterName - Name of node getter
- * @param {string} getterKey
+ * @typedef {Object} GetterValue
+ * @property {string} value - Value from node
+ * @property {boolean} [token] - Has token
  */
-export default (type, node, contentType, getterName, getterKey = 'value') => {
-  if (contentType === 'text') {
-    let item
+
+/**
+ * Get content value from node
+ * @param {Element} node - HTML element or Text node used to get value from
+ * @param {'attribute'|'getter'} type - Type of getter
+ * @param {string} name - Name of value to get from node
+ * @param {boolean} [token] - Check if value has token
+ * @return {GetterValue}
+ */
+export default function (node, type, name, token) {
+  // fetch token from string
+  if (token) {
+    let value
 
     if (type === 'attribute') {
-      item = _getNodeValueByAttribute(node, getterName, getterKey)
+      value = node.getAttribute(name)
     } else {
-      item = _getNodeValueByGetter(node, getterName, getterKey)
+      value = _getNodeValueByGetter(node, name)
     }
 
-    return _parseText(item.value)
+    return _parseText(value)
   }
 
   if (type === 'attribute') {
-    return _getNodeValueByAttribute(node, getterName, getterKey)
+    return { value: node.getAttribute(name) }
   }
 
-  return _getNodeValueByGetter(node, getterName, getterKey)
-}
-
-/**
-   * Get value from element it's attribute
-   * @param {Object} node - Element
-   * @param {dsComponentGet} getter - Getters used to fetch the value from the element
-   * @returns {string}
-   * @private
-   */
-const _getNodeValueByAttribute = (node, name, key) => {
-  return {
-    key,
-    value: node.getAttribute(name)
-  }
+  return { value: _getNodeValueByGetter(node, name) }
 }
 
 /**
  * Get value from element using a getter
- * @param {Object} node - Text or Element node
- * @param {strubg} getter - Getters used to fetch the value from the element
- * @param {string} key -
- * @returns {string}
  * @private
+ * @param {Object} node - Text or Element node
+ * @param {string} name - Getters used to fetch the value from the element
+ * @returns {string}
  */
-const _getNodeValueByGetter = (node, name, key) => {
-  const result = { key, value: '' }
+function _getNodeValueByGetter (node, name) {
+  let result = ''
 
   if (node.__lookupGetter__(name)) {
-    result.value = node[name]
+    result = node[name]
   }
 
   return result
 }
 
-const _parseText = (text) => {
+/**
+ * Check if value has token
+ * @private
+ * @param {string} value - Value from node
+ * @returns {GetterValue}
+ */
+function _parseText (value) {
   // return empty
-  if (text === '[empty]') {
+  if (value === '[empty]') {
     return {
       value: '',
       token: false
@@ -69,7 +67,7 @@ const _parseText = (text) => {
 
   const pattern = /\[(.+)\]/
   const findToken = new RegExp(pattern, 'g')
-  const token = findToken.test(text)
+  const token = findToken.test(value)
 
-  return { value: text, token }
+  return { value, token }
 }

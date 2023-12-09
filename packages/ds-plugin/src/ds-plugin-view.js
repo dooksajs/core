@@ -240,26 +240,28 @@ export default definePlugin({
 
       if (getters) {
         const node = dsView.item
-        const component = this.$component(nodeName)
-        let value = {}
+        const item = {
+          values: {}
+        }
 
-        if (node.nodeName === '#text') {
-          value = getNodeValue(getters[0].type, node, 'text', getters[0].name, 'value')
-        } else {
-          // get node value
-          for (let i = 0; i < getters.length; i++) {
-            const getter = getters[i]
-            const result = getNodeValue(getter.type, node, component.type, getter.name, getters.contentProperty)
+        // get node value
+        for (let i = 0; i < getters.length; i++) {
+          const getter = getters[i]
+          const result = getNodeValue(node, getter.type, getter.name, getter.token)
+          const property = getter.property
 
-            if (component.type === 'text') {
-              value = result
-            } else {
-              value[result.key] = result.value
+          item.values[property] = result.value
+
+          if (getter.token) {
+            if (!item.tokens) {
+              item.tokens = {}
             }
+
+            item.tokens[property] = result.token
           }
         }
 
-        return value
+        return item
       }
     },
     /**

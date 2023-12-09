@@ -52,28 +52,30 @@ export default definePlugin({
           const nodeName = node.nodeName.toLowerCase()
           const component = this.$component(nodeName)
           const getters = this.$componentGetters[nodeName]
-          const item = {
-            item: {},
-            type: this.$component(nodeName).type
+          const content = {
+            item: { values: {} },
+            type: component.type
           }
 
-          if (node.nodeName === '#text') {
-            item.item = getNodeValue(getters[0].type, node, 'text', getters[0].name, 'value')
-          } else {
-            // get node value
+          // get node value
+          if (getters) {
             for (let i = 0; i < getters.length; i++) {
               const getter = getters[i]
-              const result = getNodeValue(getter.type, node, component.type, getter.name, getter.contentProperty)
+              const result = getNodeValue(node, getter.type, getter.name, getter.token)
 
-              if (component.type === 'text') {
-                item.item = result
-              } else {
-                item.item[result.key] = result.value
+              content.item.values[getter.property] = result.value
+
+              if (getter.token) {
+                if (!content.item.tokens) {
+                  content.item.tokens = {}
+                }
+
+                content.item.tokens[getter.property] = result.token
               }
             }
           }
 
-          items[j] = item
+          items[j] = content
         }
       }
 

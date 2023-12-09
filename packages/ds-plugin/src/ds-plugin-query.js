@@ -263,7 +263,7 @@ export default definePlugin({
      * @returns {*[]}
      */
     _where (items, options) {
-      return items.filter(value => {
+      return items.filter(item => {
         let valid = false
 
         for (let i = 0; i < options.length; i++) {
@@ -271,7 +271,7 @@ export default definePlugin({
 
           valid = this.$method('dsOperator/eval', {
             name: option.name,
-            values: [value, option.value]
+            values: [item.value, option.value]
           })
         }
 

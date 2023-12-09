@@ -59,17 +59,19 @@ export default definePlugin({
     {
       name: 'a',
       type: 'link',
+      events: ['click', 'hover'],
       content: {
         set: [{
           type: 'attribute',
-          name: 'href'
+          name: 'href',
+          property: 'value'
         }],
         get: [{
           type: 'attribute',
-          name: 'href'
+          name: 'href',
+          property: 'value'
         }]
-      },
-      events: ['click', 'hover']
+      }
     },
     {
       name: 'img',
@@ -78,33 +80,22 @@ export default definePlugin({
         set: [{
           type: 'attribute',
           name: 'src',
-          contentProperty: 'src'
+          property: 'value'
         },
         {
           type: 'attribute',
           name: 'alt',
-          contentProperty: 'alt'
+          property: 'alt'
         }],
         get: [{
           type: 'attribute',
           name: 'src',
-          contentProperty: 'src'
+          property: 'value'
         },
         {
           type: 'attribute',
           name: 'alt',
-          contentProperty: 'alt'
-        }]
-      },
-      events: ['click']
-    },
-    {
-      name: 'div',
-      type: 'html',
-      content: {
-        set: [{
-          type: 'setter',
-          name: 'innerHTML'
+          property: 'alt'
         }]
       }
     },
@@ -255,51 +246,58 @@ export default definePlugin({
         syncContent: true
       }],
       content: {
-        get: [{
-          type: 'getter',
-          name: 'value'
-        }],
-        set: [{
-          type: 'setter',
-          name: 'value'
-        }]
-      },
-      props: {
-        get: [{
-          type: 'attribute',
-          name: 'placeholder',
-          property: 'placeholder'
-        }],
-        set: [{
-          type: 'attribute',
-          name: 'placeholder',
-          property: 'placeholder'
-        }]
+        get: [
+          {
+            type: 'getter',
+            name: 'value',
+            property: 'value',
+            token: true
+          },
+          {
+            type: 'getter',
+            name: 'checked',
+            property: 'checked'
+          },
+          {
+            type: 'attribute',
+            name: 'placeholder',
+            property: 'placeholder'
+          }
+        ],
+        set: [
+          {
+            type: 'setter',
+            name: 'value',
+            property: 'value',
+            token: true
+          },
+          {
+            type: 'setter',
+            name: 'checked',
+            property: 'checked'
+          },
+          {
+            type: 'attribute',
+            name: 'placeholder',
+            property: 'placeholder'
+          }
+        ]
       }
     },
     {
       name: 'select',
       type: 'select',
+      events: ['input'],
       content: {
         get: [{
           type: 'getter',
-          name: 'value'
+          name: 'value',
+          property: 'value'
         }]
       }
     },
     {
-      name: 'option',
-      type: 'option',
-      content: {
-        get: [{
-          type: 'getter',
-          name: 'value'
-        }],
-        set: [{
-          type: 'setter',
-          name: 'value'
-        }]
-      }
+      name: 'option'
     },
     {
       name: '#text',
@@ -307,7 +305,15 @@ export default definePlugin({
       content: {
         get: [{
           type: 'getter',
-          name: 'textContent'
+          name: 'textContent',
+          property: 'value',
+          token: true
+        }],
+        set: [{
+          type: 'setter',
+          name: 'textContent',
+          property: 'value',
+          token: true
         }]
       }
     },
@@ -318,11 +324,13 @@ export default definePlugin({
       content: {
         set: [{
           type: 'attribute',
-          name: 'icon'
+          name: 'icon',
+          property: 'value'
         }],
         get: [{
           type: 'attribute',
-          name: 'icon'
+          name: 'icon',
+          property: 'value'
         }]
       }
     }
