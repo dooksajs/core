@@ -4,7 +4,7 @@ import { definePlugin } from '@dooksa/utils'
  * @typedef {Object} QueryItem
  * @property {string} contentId - dsContent/item id
  * @property {string} widgetId - dsWidget/item id
- * @property {string[]} contentPosition - The content value position within the content object
+ * @property {string[]} content - The content value position within the content object
  */
 
 /**
@@ -43,7 +43,7 @@ export default definePlugin({
                 type: 'string',
                 relation: 'dsWidget/items'
               },
-              contentPosition: {
+              content: {
                 type: 'array',
                 items: {
                   type: 'string'
@@ -157,14 +157,16 @@ export default definePlugin({
     _fetchValues (items) {
       return items.map(item => {
         const content = this.$getDataValue('dsContent/items', { id: item.contentId })
-        let contentValue = content.item
+        let contentValue = content.item.values
 
-        if (item.contentPosition) {
-          for (let i = 0; i < item.contentPosition.length; i++) {
-            const key = item.contentPosition[i]
+        for (let i = 0; i < item.content.length; i++) {
+          const property = item.content[i]
 
-            contentValue = contentValue[key]
+          if (content.item.tokens[property]) {
+            // process token value
           }
+
+          contentValue = contentValue[property]
         }
 
         return {

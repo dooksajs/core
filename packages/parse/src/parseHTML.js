@@ -135,7 +135,7 @@ const parseHTML = (
             const queryValue = { id: querySplit[0] }
 
             if (querySplit[1] === 'content') {
-              queryValue.contentPosition = querySplit.splice(2)
+              queryValue.content = querySplit.splice(2)
             }
 
             queryIndexes[item.contentIndex] = queryValue
