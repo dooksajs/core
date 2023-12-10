@@ -325,8 +325,8 @@ export default definePlugin({
               widgetId: rootWidgetId
             }
 
-            if (queryIndex.contentPosition) {
-              dataValue.contentPosition = queryIndex.contentPosition
+            if (queryIndex.content) {
+              dataValue.content = queryIndex.content
             }
 
             this.$setDataValue('dsQuery/items', dataValue, {

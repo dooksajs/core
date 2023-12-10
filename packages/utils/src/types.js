@@ -16,6 +16,7 @@
  * @property {(Function|string)} [prefixId] - Collection prefix id
  * @property {(Function|string)} [defaultId] - Default collection id
  * @property {string} [relation] - Name of data collection the foreign key is related to
+ * @property {boolean} [uniqueItems] - Ensure that each of the items in an array is unique
  */
 
 /**
@@ -25,6 +26,7 @@
  * @property {Object.<string, DsSchemaObject>} [properties] - The properties of an object
  * @property {Object.<string, DsSchemaObject>} [patternProperties] - The property name is equal regex pattern, e.g patternProperties: { '[0-9]': { } }
  * @property {string} [relation] - Name of data collection the foreign key is related to
+ * @property {boolean} [uniqueItems] - Ensure that each of the items in an array is unique
  */
 
 /**
@@ -36,6 +38,7 @@
  * @property {boolean} [additionalProperties] - Additional properties are allowed by default
  * @property {string} [relation] - Name of data collection the foreign key is related to
  * @property {string[]} [required] - List of required properties that must exist and contain a value
+ * @property {boolean} [uniqueItems] - Ensure that each of the items in an array is unique
  */
 
 /**
@@ -53,24 +56,33 @@
  * @property {string} name - Name of HTMLElement
  * @property {Function} [lazy] - Function to import external resources e.g. () => import('iconify-icon')
  * @property {boolean} [isLazy] - DsPlugin constructor set if component is lazy loaded
- * @property {string} type - Category of element, e.g. <img> == 'image'
- * @property {Object} content - The getter and setters for the element
- * @property {DsComponentGet[]} content.get[] - The element getters
- * @property {DsComponentSet[]} content.set[] - The element setters
+ * @property {string} [type] - Category of element, e.g. <img> == 'image'
+ * @property {(string[]|DsComponentEvent[])} [events] - The getter and setters for the element
+ * @property {Object} [content] - The getter and setters for the element
+ * @property {DsComponentGet[]} [content.get] - The element getters
+ * @property {DsComponentSet[]} [content.set] - The element setters
+ */
+
+/**
+ * @typedef {Object} DsComponentEvent
+ * @property {string} name
+ * @property {boolean} [syncContent]
  */
 
 /**
  * @typedef {Object} DsComponentGet
  * @property {('attribute'|'getter')} type - The type of getter by getAttribute or an element getter
  * @property {string} name - The name of the attribute
- * @property {string} contentProperty - The property name for the dsContent object to store the value
+ * @property {string} [property] - The property name for the dsContent object to store the value
+ * @property {boolean} [token] - The property name for the dsContent object to store the value
  */
 
 /**
  * @typedef {Object} DsComponentSet
  * @property {('attribute'|'setter')} type - The type of setter by setAttribute or an element setter
  * @property {string} name - The name of the attribute
- * @property {string} contentProperty - The property name for the dsContent object to store the value
+ * @property {string} [property] - The property name for the dsContent object to store the value
+ * @property {boolean} [token] - The property name for the dsContent object to store the value
  */
 
 /**
