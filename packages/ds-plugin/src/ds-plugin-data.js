@@ -170,6 +170,8 @@ export default definePlugin({
         })
 
         listeners.priority.sort((a, b) => a.priority - b.priority)
+
+        handlers[handlerId] = handler.value
       }
     },
     /**
