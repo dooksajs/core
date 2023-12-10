@@ -308,7 +308,6 @@ export default definePlugin({
           // create result
           const result = new DataResult(name, id)
 
-          result.isEmpty = true
           result.isCollectionEmpty = true
 
           return result
@@ -344,6 +343,7 @@ export default definePlugin({
             const value = this.values[name][itemId]
 
             if (value != null) {
+              result.isEmpty = false
               result.isAffixEmpty = false
               result.id = itemId
               result.item = value._item
@@ -378,9 +378,9 @@ export default definePlugin({
 
             const value = this.values[name][itemId]
 
-            if (value == null) {
-              result.isEmpty = true
-            } else {
+            if (value != null) {
+              result.isEmpty = false
+              result.isAffixEmpty = false
               result.id = itemId
               result.item = value._item
               result.metadata = value._metadata || {}
@@ -396,8 +396,6 @@ export default definePlugin({
         }
 
         if (result.item == null) {
-          result.isEmpty = true
-
           return result
         }
 
@@ -407,7 +405,6 @@ export default definePlugin({
           result.isExpandEmpty = !relations
 
           if (options.expand && relations) {
-            result.expand = []
             result.isExpandEmpty = false
             result.expandIncluded = options.expandExclude ?? {}
 

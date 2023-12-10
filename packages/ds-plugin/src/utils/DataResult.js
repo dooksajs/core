@@ -8,12 +8,16 @@ import { deepClone } from '@dooksa/utils'
 function DataResult (collection = '', id = '') {
   this.id = id
   this.collection = collection
-  this.isEmpty = false
+  this.isEmpty = true
+  this.isExpandEmpty = true
+  this.expand = []
+  this.expandIncluded = {}
   this.isCollectionEmpty = false
   this.isAffixEmpty = true
-  this.item = undefined
-  this.metadata = undefined
-  this.previous = undefined
+  this.noAffixId = true
+  this.item = null
+  this.metadata = null
+  this.previous = null
 
   Object.defineProperty(this, 'noAffixId', {
     get () {
