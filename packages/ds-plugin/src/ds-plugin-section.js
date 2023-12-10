@@ -65,19 +65,8 @@ export default definePlugin({
         },
         suffixId: 'default',
         items: {
-          type: 'object',
-          properties: {
-            id: {
-              type: 'string',
-              relation: 'dsQuery/items'
-            },
-            method: {
-              type: 'string'
-            },
-            options: {
-              type: 'object'
-            }
-          }
+          type: 'string',
+          relation: 'dsQuery/items'
         }
       }
     },
@@ -247,8 +236,8 @@ export default definePlugin({
         }
       }
     },
-    _updateByQuery (query, dsViewId, id, uniqueId, mode) {
-      const result = this.$method('dsQuery/fetch', query)
+    _updateByQuery (queryId, dsViewId, id, uniqueId, mode) {
+      const result = this.$method('dsQuery/fetch', { id: queryId })
 
       // Exit, nothing to do.
       if (!result) {
