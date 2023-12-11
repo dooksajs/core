@@ -1,16 +1,16 @@
 import { dsManager, dsData, DsPlugin } from '@dooksa/ds-plugin'
 
+/** @typedef {import('@dooksa/utils/src/types.js').DsPluginData} DsPluginData */
+/** @typedef {import('@dooksa/utils/src/types.js').DsPluginOptions} DsPluginOptions */
+
 export default () => ({
   /**
    * Add dooksa plugins to the app
    * @param {Object[]} plugins
    * @param {string} plugins[].name - Name of plugin
    * @param {number} plugins[].version - Version of plugin
-   * @param {dsPlugin} plugins[].value - dsPlugin
-   * @param {Object} plugins[].options - Plugin options
-   * @param {string} plugins[].options.import - File name of plugin to be async loaded
-   * @param {boolean} plugins[].options.setupOnRequest - Mark plugin to be loaded by request
-   * @param {Object} plugins[].options.setup - Setup arguments to be passed to the plugin on initialisation
+   * @param {DsPluginData} plugins[].value - dsPlugin
+   * @param {DsPluginOptions[]} [plugins[].options] - Plugin options
    */
   use (plugins) {
     // ISSUE: add plugin schema checks
@@ -27,8 +27,9 @@ export default () => ({
     }
   },
   /**
-   * @param {Object} start
-   * @param {DsPluginOptions[]} start.options - Plugin setup option overrides
+   * @param {Object} setup
+   * @param {DsPluginOptions[]} setup.options[]
+   * @param {boolean} [setup.isDev] - Set the app in development mode
    * @returns {Object|undefined} - Development mode functions used to interact with the app
    */
   start ({ options = [], isDev }, { onSuccess, onError }) {

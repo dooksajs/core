@@ -2,16 +2,7 @@ import { definePlugin } from '@dooksa/utils'
 import DsPlugin from './DsPlugin.js'
 
 /** @typedef {import('@dooksa/utils/src/types.js').DsPluginData} DsPluginData */
-
-/**
- * @typedef DsPluginOptions
- * @property {Object} option - Setup options
- * @property {string} option.name - Plugin name related to the options
- * @property {boolean} option.setupOnRequest - Load plugin when the plugin is requested by dsManager
- * @property {string} option.import - Name of plugin file to dynamically import
- * @property {Object} option.setup - Setup options to pass to the dooksa plugin
- * @property {Object} option.script - This is to load an external plugin (refer to {@link https://bitbucket.org/dooksa/resource-loader/src/master/README.md resource-loader})
- */
+/** @typedef {import('@dooksa/utils/src/types.js').DsPluginOptions} DsPluginOptions */
 
 /**
  * This callback handles the plugin once loaded
@@ -101,12 +92,12 @@ export default definePlugin({
   },
   /**
    *
-   * @param {Object} plugins - List of DsPlugins
+   * @param {Object[]} plugins - List of DsPlugins
    * @param {string} plugins[].name - Name of plugin
    * @param {string} plugins[].version - Version of plugin
-   * @param {DsPlugin} plugins[].value - Object used to create a DsPLugin
+   * @param {DsPluginData} plugins[].value - Object used to create a DsPLugin
    * @param {DsPluginOptions} plugins[].options - Setup options
-   * @param {dsLoaderCallback} plugin.onAdd - This callback handles the plugin once loaded
+   * @param {dsLoaderCallback} plugin.onImport - This callback handles the plugin once loaded
    * @param {dsLoaderCallback} plugin.onSuccess - This callback handles the plugin once loaded
    */
   setup ({

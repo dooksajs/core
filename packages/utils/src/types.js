@@ -117,6 +117,15 @@
  * @property {Object} [methods]
  */
 
+/**
+ * @typedef {Object} DsPluginOptions - Setup options
+ * @property {string} name - Plugin name related to the options
+ * @property {boolean} [setupOnRequest] - Load plugin when the plugin is requested by dsManager
+ * @property {string} [import] - Name of plugin file to dynamically import
+ * @property {Object} [setup] - Setup options to pass to the dooksa plugin
+ * @property {Object} [script] - This is to load an external plugin (refer to {@link https://bitbucket.org/dooksa/resource-loader/src/master/README.md resource-loader})
+ */
+
 // * @property {Object.<string, (DsMethodContext|DsMethod)>} [methods.context] - Context methods are bound to each plugins scope unless specified otherwise
 // * @property {Object.<string, DsMethod>} [methods.public] - Public methods are available within the plugins local scope and shared with other plugins via this.$method('dsExample/methodName')
 // * @property {Object.<string, Function>} [methods.private] - Private methods scope is bound to the plugin only
