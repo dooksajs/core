@@ -3,6 +3,7 @@
  */
 
 /**
+ * Define a Dooksa plugin
  * @param {DsPluginData} plugin
  * @returns {DsPluginData}
  */

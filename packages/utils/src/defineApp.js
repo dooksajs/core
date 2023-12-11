@@ -1,10 +1,12 @@
+/** @typedef {import('./types.js').DsPluginOptions} DsPluginOptions */
+
 /**
- *
- * @param {Object} config
- * @returns {Object}
+ * Define a Dooksa App
+ * @param {DsPluginOptions[]} options
+ * @returns {DsPluginOptions[]}
  */
-function defineApp (config) {
-  return config
+function defineApp (options) {
+  return options
 }
 
 export default defineApp
