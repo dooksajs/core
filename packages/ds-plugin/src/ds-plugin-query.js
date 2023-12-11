@@ -53,6 +53,40 @@ export default definePlugin({
           }
         }
       }
+    },
+    where: {
+      schema: {
+        type: 'collection',
+        items: {
+          type: 'object',
+          properties: {
+            options: {
+              type: 'array'
+            },
+            id: {
+              type: 'string',
+              relation: 'dsQuery/items'
+            }
+          }
+        }
+      }
+    },
+    sort: {
+      schema: {
+        type: 'collection',
+        items: {
+          type: 'object',
+          properties: {
+            options: {
+              type: 'string'
+            },
+            id: {
+              type: 'string',
+              relation: 'dsQuery/items'
+            }
+          }
+        }
+      }
     }
   },
   methods: {
@@ -60,13 +94,10 @@ export default definePlugin({
      * Append query to section
      * @param {Object} param
      * @param {string} param.id - Query Id
-     * @param {Object} param.options
-     * @param {QueryWhere} param.options.where
-     * @param {QuerySort} param.options.sort
      * @param {string} param.dsSectionId - Section to overwrite with query
      */
-    addToSection ({ id, options, dsSectionId }) {
-      this.$setDataValue('dsSection/query', { id, options }, {
+    addToSection ({ id, dsSectionId }) {
+      this.$setDataValue('dsSection/query', id, {
         id: dsSectionId
       })
 
@@ -84,17 +115,9 @@ export default definePlugin({
         handler: {
           id,
           value: (result) => {
-            const queryData = this.$getDataValue('dsQuery/items', { id })
+            const where = this.$getDataValue('dsQuery/where', { id })
+            const sort = this.$getDataValue('dsQuery/sort', { id })
 
-            if (queryData.isEmpty) {
-              console.error('query should not be empty')
-            }
-
-            if (result.isEmpty) {
-              return this.$setDataValue('dsQuery/items', [], { id })
-            }
-
-            const query = []
             const currentSection = {}
 
             // collect current widgets
@@ -102,20 +125,59 @@ export default definePlugin({
               currentSection[result.item[i]] = true
             }
 
-            // update query widget list
-            for (let i = 0; i < queryData.item.length; i++) {
-              const item = queryData.item[i]
+            if (!where.isEmpty) {
+              const queryData = this.$getDataValue('dsQuery/items', { id: where.item.id })
 
-              if (currentSection[item.widgetId]) {
-                query.push(item)
+              if (queryData.isEmpty) {
+                console.error('where query should not be empty')
 
-                currentSection[item.widgetId] = false
+                return this.$setDataValue('dsQuery/items', [], { id: where.item.id })
               }
+
+              const query = []
+
+              // update query widget list
+              for (let i = 0; i < queryData.item.length; i++) {
+                const item = queryData.item[i]
+
+                if (currentSection[item.widgetId]) {
+                  query.push(item)
+
+                  currentSection[item.widgetId] = false
+                }
+              }
+
+              this.$setDataValue('dsQuery/items', query, {
+                id: where.item.id
+              })
             }
 
-            this.$setDataValue('dsQuery/items', query, {
-              id: queryData.id
-            })
+            if (!sort.isEmpty) {
+              const queryData = this.$getDataValue('dsQuery/items', { id: sort.item.id })
+
+              if (queryData.isEmpty) {
+                console.error('sort query should not be empty')
+
+                return this.$setDataValue('dsQuery/items', [], { id: sort.item.id })
+              }
+
+              const query = []
+
+              // update query widget list
+              for (let i = 0; i < queryData.item.length; i++) {
+                const item = queryData.item[i]
+
+                if (currentSection[item.widgetId]) {
+                  query.push(item)
+
+                  currentSection[item.widgetId] = false
+                }
+              }
+
+              this.$setDataValue('dsQuery/items', query, {
+                id: sort.item.id
+              })
+            }
           }
         }
       })
@@ -129,24 +191,44 @@ export default definePlugin({
      * @param {QuerySort} param.options.sort - Sort type
      * @returns {QueryValue[]}
      */
-    fetch ({ id, options }) {
-      const queryData = this.$getDataValue('dsQuery/items', { id })
+    fetch ({ id }) {
+      const where = this.$getDataValue('dsQuery/where', { id })
+      const sort = this.$getDataValue('dsQuery/sort', { id })
 
-      if (queryData.isEmpty) {
-        return
+      if (!where.isEmpty) {
+        const queryData = this.$getDataValue('dsQuery/items', { id: where.item.id })
+        let items = this._fetchValues(queryData.item)
+        const whereResults = this._where(items, where.item.options)
+
+        items = whereResults.items
+
+        if (!sort.isEmpty) {
+          const queryData = this.$getDataValue('dsQuery/items', { id: sort.item.id })
+          items = []
+
+          // filter where results
+          for (let i = 0; i < queryData.item.length; i++) {
+            const item = queryData.item[i]
+
+            if (whereResults.usedWidgets[item.widgetId]) {
+              items.push(item)
+            }
+          }
+
+          items = this._fetchValues(items)
+          items = this._sort(items, sort.item.options)
+        }
+
+        return items
       }
 
-      let items = this._fetchValues(queryData.item)
+      if (!sort.isExpandEmpty) {
+        let items = this._fetchValues(sort.expand[0].item)
 
-      if (options.where) {
-        items = this._where(items, options.where)
+        items = this._sort(items, sort.item.options)
+
+        return items
       }
-
-      if (options.sort) {
-        items = this._sort(items, options.sort)
-      }
-
-      return items
     },
     /**
      * Fetch content values
@@ -155,7 +237,10 @@ export default definePlugin({
      * @returns {QueryValue[]}
      */
     _fetchValues (items) {
-      return items.map(item => {
+      const result = []
+
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i]
         const content = this.$getDataValue('dsContent/items', { id: item.contentId })
         let contentValue = content.item.values
 
@@ -169,11 +254,13 @@ export default definePlugin({
           contentValue = contentValue[property]
         }
 
-        return {
+        result.push({
           value: contentValue,
           widgetId: item.widgetId
-        }
-      })
+        })
+      }
+
+      return result
     },
     /**
      * Sort list
@@ -260,23 +347,59 @@ export default definePlugin({
      * @private
      * @param {*[]} items
      * @param {QueryWhere[]} options
-     * @returns {*[]}
+     * @returns {Object}
      */
     _where (items, options) {
-      return items.filter(item => {
-        let valid = false
+      const result = {
+        items: [],
+        usedWidgets: {}
+      }
 
-        for (let i = 0; i < options.length; i++) {
-          const option = options[i]
+      /* eslint no-labels: ["error", { "allowLoop": true }] */
+      filter: for (let i = 0; i < items.length; i++) {
+        const item = items[i]
 
-          valid = this.$method('dsOperator/eval', {
-            name: option.name,
-            values: [item.value, option.value]
+        if (options.length > 1) {
+          for (let i = 0; i < options.length; i++) {
+            const option = options[i]
+
+            // compare one or more results
+            const compareValues = []
+
+            const item = option[i]
+            let compareItem = item
+
+            if (typeof item !== 'string') {
+              compareItem = this.$method('dsOperator/eval', {
+                name: item.name,
+                values: [item.value, item.value]
+              })
+            }
+
+            compareValues.push(compareItem)
+
+            const isValid = this.$method('dsOperator/compare', compareValues)
+
+            if (!isValid) {
+              continue filter
+            }
+          }
+        } else {
+          const isValid = this.$method('dsOperator/eval', {
+            name: options[0].name,
+            values: [item.value, options[0].value]
           })
+
+          if (!isValid) {
+            continue filter
+          }
         }
 
-        return valid
-      })
+        result.items.push(item)
+        result.usedWidgets[item.widgetId] = true
+      }
+
+      return result
     }
   }
 })
