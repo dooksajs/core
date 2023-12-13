@@ -121,8 +121,7 @@ export default definePlugin({
       name: 'h6'
     },
     {
-      name: 'label',
-      events: ['click', 'hover']
+      name: 'label'
     },
     {
       name: 'small'
@@ -165,6 +164,30 @@ export default definePlugin({
       events: [{
         name: 'submit'
       }]
+    },
+    {
+      name: 'input-checkbox',
+      type: 'input',
+      events: [{
+        name: 'click',
+        syncContent: true
+      }],
+      content: {
+        get: [
+          {
+            type: 'getter',
+            name: 'checked',
+            property: 'value'
+          }
+        ],
+        set: [
+          {
+            type: 'setter',
+            name: 'checked',
+            property: 'checked'
+          }
+        ]
+      }
     },
     {
       name: 'input',
