@@ -17,6 +17,7 @@ const parseHTML = (
     component: {},
     content: [],
     contentRefs: {},
+    computedAttributes: [],
     queryIndexes: {},
     sectionRefs: {},
     layout: [],
@@ -48,6 +49,7 @@ const parseHTML = (
 
   const content = []
   const contentRefs = {}
+  const computedAttributes = []
   const queryIndexes = {}
   const layoutNodes = []
   const layout = []
@@ -58,6 +60,7 @@ const parseHTML = (
 
   data.content[data.layoutIndex] = content
   data.contentRefs[data.layoutIndex] = contentRefs
+  data.computedAttributes[data.layoutIndex] = computedAttributes
   data.queryIndexes[data.layoutIndex] = queryIndexes
   data.layout[data.layoutIndex] = layout
   data.layoutEntry[data.layoutIndex] = layoutEntry
@@ -171,29 +174,41 @@ const parseHTML = (
             widgetEvent[layoutNodes.length - 1] = result.bind.on
           }
 
-          const contentRef = result.options['ds-content-ref']
+          if (result.options) {
+            if (result.options.computed) {
+              // set component to have computed attributes (for hash reasons)
+              component.computed = true
 
-          if (contentRef) {
-            contentRefs[item.contentIndex] = contentRef
-          }
-
-          const queryIndex = result.options['ds-query']
-
-          if (queryIndex) {
-            const querySplit = queryIndex.split(':')
-            const queryValue = { id: querySplit[0] }
-
-            if (querySplit[1] === 'content') {
-              queryValue.content = querySplit.splice(2)
+              computedAttributes.push({
+                index: layoutNodes.length - 1,
+                values: result.options.computed
+              })
             }
 
-            queryIndexes[item.contentIndex] = queryValue
-          }
+            const contentRef = result.options['ds-content-ref']
 
-          const sectionRef = result.options['ds-section-ref']
+            if (contentRef) {
+              contentRefs[item.contentIndex] = contentRef
+            }
 
-          if (sectionRef) {
-            element.sectionRef = sectionRef
+            const queryIndex = result.options['ds-query']
+
+            if (queryIndex) {
+              const querySplit = queryIndex.split(':')
+              const queryValue = { id: querySplit[0] }
+
+              if (querySplit[1] === 'content') {
+                queryValue.content = querySplit.splice(2)
+              }
+
+              queryIndexes[item.contentIndex] = queryValue
+            }
+
+            const sectionRef = result.options['ds-section-ref']
+
+            if (sectionRef) {
+              element.sectionRef = sectionRef
+            }
           }
 
           element.isSection = result.bind.hasSection
@@ -274,19 +289,37 @@ const parseAttributes = (attributes, ignore = []) => {
         const bind = name.split('-')
 
         if (bind[1] === 'on') {
+          // Event attributes
           item.bind.on = {
             name: bind.slice(2).join('-'),
             value: value.split(' ')
           }
+        } else if (bind[1] === 'computed') {
+          // Computed attributes
+          const computedName = bind.slice(2).join('-')
+          const computedValue = value.split(':')
+          const result = {
+            name: computedName,
+            value: computedValue[0],
+            arguments: computedValue.slice(1)
+          }
+
+          if (!item.options.computed) {
+            item.options.computed = [result]
+          } else {
+            item.options.computed.push(result)
+          }
         } else if (bind[1] === 'section' && !bind[2]) {
+          // set element to be a section
           item.bind.hasSection = true
+        } else if (name === 'class') {
+          // Need to make this optional, sometimes class order matters, specially for tailwind
+          const valueSorted = value.split(' ').sort().join(' ')
+
+          item.attributes.push([name, valueSorted])
         } else {
           item.options[name] = value
         }
-      } else if (name === 'class') {
-        const valueSorted = value.split(' ').sort().join(' ')
-
-        item.attributes.push([name, valueSorted])
       } else {
         item.attributes.push([name, value])
       }
