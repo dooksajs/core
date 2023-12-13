@@ -121,7 +121,8 @@ export default definePlugin({
       name: 'h6'
     },
     {
-      name: 'label'
+      name: 'label',
+      events: ['click', 'hover']
     },
     {
       name: 'small'
