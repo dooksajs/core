@@ -1,0 +1,79 @@
+{
+  "actions": [
+    {
+      "id": "widget-add",
+      "name": "Add new widget",
+      "sequence": [
+        {
+          "async": true,
+          "dsAction": "dsTemplate/create",
+          "dsArgs": {
+            "id": "bootstrap-widget-add"
+          }
+        },
+        {
+          "dsAction": "set/dataValue",
+          "dsArgs": {
+            "name": "dsSection/items",
+            "value": {
+              "dsAction": "get/sequenceValue",
+              "dsArgs": {
+                "$key": ["0", "dsWidgetId"]
+              }
+            },
+            "options": {
+              "id": {
+                "dsAction": "get/dataValue",
+                "dsArgs": {
+                  "name": "dsWidget/sections",
+                  "id": "section-entry",
+                  "options": {
+                    "position": "section-entry:index"
+                  }
+                }
+              },
+              "update": {
+                "method": "push"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "widget-add-close",
+      "name": "Close add widget",
+      "sequence": [{
+        "dsAction": "set/dataValue",
+        "dsArgs": {
+          "name": "dsSection/items",
+          "value": "widget:id",
+          "options": {
+            "id": {
+              "dsAction": "get/dataValue",
+              "dsArgs": {
+                "name": "dsWidget/attached",
+                "id": "widget:id"
+              }
+            },
+            "update": {
+              "method": "pull"
+            }
+          }
+        }
+      }]
+    },
+    {
+      "id": "widget-add-fetch",
+      "name": "Fetch widgets",
+      "sequence": [
+        {
+          "dsAction": "dsTemplate/fetch",
+          "dsArg": {
+            "name": ""
+          }
+        }
+      ]
+    }
+  ]
+}
