@@ -1,0 +1,277 @@
+{
+  "translations": [
+    {
+      "content": "Add",
+      "from": "en",
+      "to": [
+        ["de", "Hinzufügen"],
+        ["es", "Agregar"],
+        ["fr", "Ajouter"]
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "id": "todo-add",
+      "name": "Add todo item",
+      "sequence": [
+        {
+          "async": true,
+          "dsAction": "dsTemplate/create",
+          "dsArgs": {
+            "id": "todo-item",
+            "options": {
+              "content": {
+                "todo-text": {
+                  "dsAction": "get/dataValue",
+                  "dsArgs": {
+                    "name": "dsContent/items",
+                    "id": "todo-input"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "dsAction": "set/dataValue",
+          "dsArgs": {
+            "name": "dsSection/items",
+            "value": {
+              "dsAction": "get/sequenceValue",
+              "dsArgs": {
+                "$key": ["0", "dsWidgetId"]
+              }
+            },
+            "options": {
+              "id": {
+                "dsAction": "get/dataValue",
+                "dsArgs": {
+                  "name": "dsWidget/sections",
+                  "id": "todo-items",
+                  "options": {
+                    "position": "todo-items:index"
+                  }
+                }
+              },
+              "update": {
+                "method": "unshift"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "todo-delete",
+      "description": "Delete todo item",
+      "sequence": [{
+        "dsAction": "set/dataValue",
+        "dsArgs": {
+          "name": "dsSection/items",
+          "value": "widget:id",
+          "options": {
+            "id": {
+              "dsAction": "get/dataValue",
+              "dsArgs": {
+                "name": "dsWidget/attached",
+                "id": "widget:id"
+              }
+            },
+            "update": {
+              "method": "pull"
+            }
+          }
+        }
+      }]
+    },
+    {
+      "id": "todo-asc",
+      "description": "Sort section by ascending order",
+      "sequence": [
+        {
+          "dsAction": "set/dataValue",
+          "dsArgs": {
+            "name": "dsQuery/sort",
+            "value": {
+              "options": "ascending",
+              "id": "query-todo-content"
+            },
+            "options": {
+              "id": "query-todo"
+            }
+          }
+        },
+        {
+          "dsAction": "dsQuery/addToSection",
+          "dsArgs": {
+            "id": "query-todo",
+            "dsSectionId": {
+              "dsAction": "get/dataValue",
+              "dsArgs": {
+                "name": "dsWidget/sections",
+                "id": "todo-items",
+                "options": {
+                  "position": "todo-items:index"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "todo-des",
+      "description": "Sort section by descending order",
+      "sequence": [
+        {
+          "dsAction": "set/dataValue",
+          "dsArgs": {
+            "name": "dsQuery/sort",
+            "value": {
+              "options": "descending",
+              "id": "query-todo-content"
+            },
+            "options": {
+              "id": "query-todo"
+            }
+          }
+        },
+        {
+          "dsAction": "dsQuery/addToSection",
+          "dsArgs": {
+            "id": "query-todo",
+            "dsSectionId": {
+              "dsAction": "get/dataValue",
+              "dsArgs": {
+                "name": "dsWidget/sections",
+                "id": "todo-items",
+                "options": {
+                  "position": "todo-items:index"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "todo-active",
+      "description": "Show active todo items",
+      "sequence": [
+        {
+          "dsAction": "set/dataValue",
+          "dsArgs": {
+            "name": "dsQuery/where",
+            "value": {
+              "options": [{
+                "name": "==",
+                "value": false
+              }],
+              "id": "query-todo-active"
+            },
+            "options": {
+              "id": "query-todo"
+            }
+          }
+        },
+        {
+          "dsAction": "dsQuery/addToSection",
+          "dsArgs": {
+            "id": "query-todo",
+            "dsSectionId": {
+              "dsAction": "get/dataValue",
+              "dsArgs": {
+                "name": "dsWidget/sections",
+                "id": "todo-items",
+                "options": {
+                  "position": "todo-items:index"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "todo-completed",
+      "description": "Show completed todo items",
+      "sequence": [
+        {
+          "dsAction": "set/dataValue",
+          "dsArgs": {
+            "name": "dsQuery/where",
+            "value": {
+              "options": [{
+                "name": "==",
+                "value": true
+              }],
+              "id": "query-todo-active"
+            },
+            "options": {
+              "id": "query-todo"
+            }
+          }
+        },
+        {
+          "dsAction": "dsQuery/addToSection",
+          "dsArgs": {
+            "id": "query-todo",
+            "dsSectionId": {
+              "dsAction": "get/dataValue",
+              "dsArgs": {
+                "name": "dsWidget/sections",
+                "id": "todo-items",
+                "options": {
+                  "position": "todo-items:index"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "todo-none",
+      "description": "remove sort",
+      "sequence": [
+        {
+          "dsAction": "delete/dataValue",
+          "dsArgs": {
+            "name": "dsQuery/sort",
+            "value": {
+              "id": "query-todo"
+            }
+          }
+        },
+        {
+          "dsAction": "delete/dataValue",
+          "dsArgs": {
+            "name": "dsQuery/where",
+            "value": {
+              "id": "query-todo"
+            }
+          }
+        },
+        {
+          "dsAction": "delete/dataValue",
+          "dsArgs": {
+            "name": "dsSection/query",
+            "value": {
+              "id": {
+                "dsAction": "get/dataValue",
+                "dsArgs": {
+                  "name": "dsWidget/sections",
+                  "id": "todo-items",
+                  "options": {
+                    "position": "todo-items:index"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

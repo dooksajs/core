@@ -1,6 +1,6 @@
-# # Dooksa testing
-# /app
-# /ds-config.js
+# Dooksa
+ds_data
+ds.config.js
 
 # Dependencies
 node_modules
@@ -13,7 +13,6 @@ packages/*/LICENSE
 
 # Logs
 *.log
-.history
 
 # Temp directories
 .temp
