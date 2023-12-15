@@ -47,7 +47,7 @@ export default definePlugin({
       const hours = this._timeToString(now.getHours())
       const minutes = this._timeToString(now.getMinutes())
       const seconds = this._timeToString(now.getSeconds())
-      const milliseconds = now.getMilliseconds().toString().padStart(3, 0)
+      const milliseconds = now.getMilliseconds().toString().padStart(3, '0')
 
       this[logType](`${hours}:${minutes}:${seconds}.${milliseconds}`, message, store, code, cause)
     },
@@ -65,7 +65,7 @@ export default definePlugin({
     '_log/warn' (time, message, store, code = '400', cause) {
       code = code ? ` {blue[${code}]} ` : ' '
 
-      console.warn(template(`{grey ${time}} {yellow Warning:} ${code} ${message}`))
+      console.warn(template(`{grey ${time}} {yellow Warning:}${code}${message}`))
 
       if (store) {
         const error = this._error(message, code, cause)
@@ -97,7 +97,7 @@ export default definePlugin({
       })
     },
     _timeToString (time) {
-      return time.toString().padStart(2, 0)
+      return time.toString().padStart(2, '0')
     }
   }
 })
