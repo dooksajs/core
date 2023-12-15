@@ -3,7 +3,6 @@ import { readFileSync, readdirSync, existsSync } from 'fs'
 import { extname, join } from 'path'
 import { JSDOM } from 'jsdom'
 import { parseAction } from '@dooksa/parse'
-import { createHash } from 'node:crypto'
 
 /**
  * @namespace dsTemplateBuild
@@ -18,15 +17,6 @@ export default definePlugin({
     }
   ],
   data: {
-    watchFiles: {
-      private: true,
-      schema: {
-        type: 'array',
-        items: {
-          type: 'string'
-        }
-      }
-    },
     buildDir: {
       private: true,
       schema: {
@@ -71,6 +61,28 @@ export default definePlugin({
     })
   },
   methods: {
+    create ({ path }) {
+      const fileExtension = extname(path)
+
+      if (fileExtension === '.json') {
+        const file = readFileSync(path, { encoding: 'utf-8' })
+
+        // build actions
+        const json = JSON.parse(file)
+
+        if (json.actions) {
+          this._parseAction(json.actions)
+        }
+      }
+
+      // process html files
+      if (fileExtension === '.html') {
+        const file = readFileSync(path, { encoding: 'utf-8' })
+
+        // rebuild template
+        this._parseTemplate(file)
+      }
+    },
     _build (request, response, next) {
       const id = request.params.id
       const template = this.$getDataValue('dsTemplate/items', {
@@ -109,57 +121,13 @@ export default definePlugin({
     },
     _getFiles () {
       const fileNames = readdirSync(this.buildDir)
-      const templatePaths = []
 
       // process all the action files
       for (let i = 0; i < fileNames.length; i++) {
-        const fileName = fileNames[i]
-        const fileExtension = extname(fileName)
+        const path = join(this.buildDir, fileNames[i])
 
-        if (fileExtension === '.json') {
-          const path = join(this.buildDir, fileName)
-          const file = readFileSync(path, { encoding: 'utf-8' })
-          const watchFile = this.watchFiles[path]
-          const fileChecksum = this._hash(file)
-
-          // build actions
-          if (!watchFile || watchFile !== fileChecksum) {
-            const json = JSON.parse(file)
-
-            if (json.actions) {
-              this._parseAction(json.actions)
-            }
-          }
-
-          this.watchFiles[path] = fileChecksum
-        }
-
-        if (fileExtension === '.html') {
-          const path = join(this.buildDir, fileName)
-
-          templatePaths.push(path)
-        }
+        this.create({ path })
       }
-
-      // process html files
-      for (let i = 0; i < templatePaths.length; i++) {
-        const path = templatePaths[i]
-        const file = readFileSync(path, { encoding: 'utf-8' })
-        const watchFile = this.watchFiles[path]
-        const fileChecksum = this._hash(file)
-
-        // rebuild template
-        if (!watchFile || watchFile !== fileChecksum) {
-          this._parseTemplate(file)
-        }
-
-        this.watchFiles[path] = fileChecksum
-      }
-    },
-    _hash (item) {
-      const hash = createHash('sha256')
-
-      return hash.update(item, 'utf-8').digest('base64')
     },
     _parseAction (items) {
       for (let i = 0; i < items.length; i++) {
