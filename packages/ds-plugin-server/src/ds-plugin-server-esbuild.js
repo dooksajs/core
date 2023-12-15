@@ -50,6 +50,17 @@ export default definePlugin({
         }
       })
 
+      this.$addDataListener('dsEsbuild/rebuildServer', {
+        on: 'update',
+        handler: {
+          id,
+          value: (data) => {
+            response.write('event: rebuild-client\n')
+            response.write('data: ' + JSON.stringify(data) + '\n\n')
+          }
+        }
+      })
+
       // Close the connection when the client disconnects
       request.on('close', () => {
         this.$deleteDataListener('dsEsbuild/rebuildClient', {
