@@ -6,6 +6,10 @@ eventSource.addEventListener('rebuild-client', () => {
   window.location.reload()
 })
 
+eventSource.addEventListener('rebuild-server', () => {
+  window.location.reload()
+})
+
 const data = __ds__ // eslint-disable-line
 
 dsAppClient.start({
