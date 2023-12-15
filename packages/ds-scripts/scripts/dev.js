@@ -4,14 +4,33 @@ import { appDirectory, scriptDirectory } from '../utils/paths.js'
 import dsApp from '@dooksa/ds-app-server'
 import { dsEsbuild, dsTemplateBuild } from '@dooksa/ds-plugin-server'
 import chalk from 'chalk'
-import { existsSync } from 'fs'
-const log = console.log
+import { existsSync, watch } from 'fs'
 const devDirectory = path.resolve(appDirectory, 'app')
 const buildDirectory = path.resolve(scriptDirectory, 'entry', 'dev')
 const dsAppClientEntryPoint = path.resolve(buildDirectory, 'ds-app-client.js')
 let dsAppServer
 
 const dsConfigPath = path.resolve(appDirectory, 'ds-config.js')
+const widgetTemplateDir = path.resolve(devDirectory, 'widgets')
+
+function log (message, timer = 0) {
+  const now = new Date()
+  const hours = now.getHours().toString().padStart(2, '0')
+  const minutes = now.getMinutes().toString().padStart(2, '0')
+  const seconds = now.getSeconds().toString().padStart(2, '0')
+  const milliseconds = now.getMilliseconds().toString().padStart(3, '0')
+
+  message =
+    chalk.grey(`${hours}:${minutes}:${seconds}.${milliseconds} `) +
+    chalk.white('Info: ') +
+    chalk.green(message)
+
+  if (timer) {
+    message = message + ' ' + chalk.blue(Math.floor(timer) + ' ms')
+  }
+
+  console.log(message)
+}
 
 // no config found
 if (!existsSync(dsConfigPath)) {
@@ -53,7 +72,7 @@ function initApp (options = []) {
     {
       name: 'dsTemplateBuild',
       setup: {
-        buildDir: path.resolve(devDirectory, 'widgets')
+        buildDir: widgetTemplateDir
       }
     }
   ]
@@ -107,6 +126,13 @@ function initApp (options = []) {
       app.$method('dsWebServer/start')
 
       dsAppServer = app
+
+      watch(widgetTemplateDir, (eventType, filename) => {
+        app.$method('dsTemplateBuild/create', { path: path.resolve(widgetTemplateDir, filename) })
+        app.$setDataValue('dsEsbuild/rebuildServer', 1)
+
+        log('Template ' + chalk.magenta(filename) + ' ' + chalk.blue('[' + eventType + ']'))
+      })
     },
     onError (error) {
       console.log(error)
@@ -124,23 +150,13 @@ function initApp (options = []) {
       })
 
       build.onEnd(result => {
-        const timer = performance.now() - timerStart
-        const now = new Date()
-        const hours = now.getHours().toString().padStart(2, '0')
-        const minutes = now.getMinutes().toString().padStart(2, '0')
-        const seconds = now.getSeconds().toString().padStart(2, '0')
-        const milliseconds = now.getMilliseconds().toString().padStart(3, '0')
-
-        log(
-          chalk.grey(`${hours}:${minutes}:${seconds}.${milliseconds} `) +
-          chalk.white('Info:') +
-          chalk.green(' Client built in: ') +
-          chalk.blue(Math.floor(timer) + ' ms')
-        )
-
         if (result.errors.length) {
           return { errors: result.errors }
         }
+
+        const timer = performance.now() - timerStart
+
+        log('Client built in:', timer)
 
         if (result.outputFiles.length) {
           // set app script
