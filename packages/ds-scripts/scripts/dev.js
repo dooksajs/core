@@ -4,7 +4,9 @@ import { appDirectory, scriptDirectory } from '../utils/paths.js'
 import dsApp from '@dooksa/ds-app-server'
 import { dsEsbuild, dsTemplateBuild } from '@dooksa/ds-plugin-server'
 import chalk from 'chalk'
-import { existsSync, watch } from 'fs'
+import { existsSync } from 'fs'
+import chokidar from 'chokidar'
+
 const devDirectory = path.resolve(appDirectory, 'app')
 const buildDirectory = path.resolve(scriptDirectory, 'entry', 'dev')
 const dsAppClientEntryPoint = path.resolve(buildDirectory, 'ds-app-client.js')
@@ -105,6 +107,12 @@ function initApp (options = []) {
     defaultOptions.push(option)
   }
 
+  // watch widget template files
+  const watcher = chokidar.watch(widgetTemplateDir, {
+    ignored: /(^|[\/\\])\../, // ignore dotfiles
+    persistent: true
+  })
+
   dsApp.use([
     {
       name: dsEsbuild.name,
@@ -127,12 +135,22 @@ function initApp (options = []) {
 
       dsAppServer = app
 
-      watch(widgetTemplateDir, (eventType, filename) => {
-        app.$method('dsTemplateBuild/create', { path: path.resolve(widgetTemplateDir, filename) })
-        app.$setDataValue('dsEsbuild/rebuildServer', 1)
-
-        log('Template ' + chalk.magenta(filename) + ' ' + chalk.blue('[' + eventType + ']'))
-      })
+      watcher
+        .on('add', path => {
+          app.$method('dsTemplateBuild/create', { path })
+          app.$setDataValue('dsEsbuild/rebuildServer', 1)
+          log(`Template ${chalk.blue(path)} has been added`)
+        })
+        .on('change', path => {
+          app.$method('dsTemplateBuild/create', { path })
+          app.$setDataValue('dsEsbuild/rebuildServer', 1)
+          log(`Template ${chalk.blue(path)} has been changed`)
+        })
+        .on('unlink', path => {
+          app.$method('dsTemplateBuild/create', { path })
+          app.$setDataValue('dsEsbuild/rebuildServer', 1)
+          log(`Template ${chalk.blue(path)} has been removed`)
+        })
     },
     onError (error) {
       console.log(error)
