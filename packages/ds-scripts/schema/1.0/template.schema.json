@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://dooksa.org/widget-template.schema.json",
+  "$id": "https://dooksa.org/schemas/1.0/template.schema.json",
   "title": "Widget template",
   "type": "object",
   "properties": {
@@ -56,18 +56,7 @@
           "sequence": {
             "type": "array",
             "items": {
-              "type": "object",
-              "properties": {
-                "async": {
-                  "type": "boolean"
-                },
-                "dsAction": {
-                  "type": "string"
-                },
-                "dsArg": {
-                  "type": "object"
-                }
-              }
+              "$ref": "./base.schema.json#/$defs/action"
             }
           }
         }
