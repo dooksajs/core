@@ -1,4 +1,5 @@
-import { definePlugin, getNodeValue } from '@dooksa/utils'
+import { definePlugin } from '@dooksa/ds-scripts'
+import { getNodeValue } from '@dooksa/utils'
 
 /**
  * @typedef {string} dsViewId - dsView node id

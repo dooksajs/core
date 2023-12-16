@@ -1,4 +1,4 @@
-import { definePlugin } from '@dooksa/utils'
+import { definePlugin } from '@dooksa/ds-scripts'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 

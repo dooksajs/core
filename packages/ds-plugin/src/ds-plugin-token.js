@@ -1,4 +1,4 @@
-import { definePlugin } from '@dooksa/utils'
+import { definePlugin } from '@dooksa/ds-scripts'
 
 export default definePlugin({
   name: 'dsToken',

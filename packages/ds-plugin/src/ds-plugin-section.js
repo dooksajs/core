@@ -1,4 +1,4 @@
-import { definePlugin } from '@dooksa/utils'
+import { definePlugin } from '@dooksa/ds-scripts'
 
 /**
  * @typedef {string} dsSectionId - Id for a collection of widgets
@@ -81,7 +81,6 @@ export default definePlugin({
       }
     }
   },
-  /** @lends dsSection */
   methods: {
     append ({
       id,

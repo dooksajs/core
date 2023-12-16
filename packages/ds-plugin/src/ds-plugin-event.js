@@ -1,4 +1,4 @@
-import { definePlugin } from '@dooksa/utils'
+import { definePlugin } from '@dooksa/ds-scripts'
 
 /**
  * @typedef {string} dsEventId - Event id is the listener reference item

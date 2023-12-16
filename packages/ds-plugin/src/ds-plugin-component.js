@@ -1,4 +1,4 @@
-import { definePlugin } from '@dooksa/utils'
+import { definePlugin } from '@dooksa/ds-scripts'
 
 /**
  * @typedef {Object} dsComponent - Component schema used to construct an Text node or Element

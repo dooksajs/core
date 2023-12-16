@@ -1,4 +1,4 @@
-import { definePlugin } from '@dooksa/utils'
+import { definePlugin } from '@dooksa/ds-scripts'
 import { readFileSync, readdirSync, existsSync } from 'fs'
 import { extname, join } from 'path'
 import { JSDOM } from 'jsdom'
@@ -66,10 +66,9 @@ export default definePlugin({
 
       if (fileExtension === '.json') {
         const file = readFileSync(path, { encoding: 'utf-8' })
-
-        // build actions
         const json = JSON.parse(file)
 
+        // build actions
         if (json.actions) {
           this._parseAction(json.actions)
         }

@@ -1,4 +1,4 @@
-import { definePlugin } from '@dooksa/utils'
+import { definePlugin } from '@dooksa/ds-scripts'
 import { template } from 'chalk-template'
 import chalk from 'chalk'
 

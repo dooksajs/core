@@ -1,8 +1,8 @@
-import { definePlugin } from '@dooksa/utils'
+import { definePlugin } from '@dooksa/ds-scripts'
 import DsPlugin from './DsPlugin.js'
 
-/** @typedef {import('@dooksa/utils/src/types.js').DsPluginData} DsPluginData */
-/** @typedef {import('@dooksa/utils/src/types.js').DsPluginOptions} DsPluginOptions */
+/** @typedef {import('@dooksa/ds-scripts/src/types.js').DsPluginData} DsPluginData */
+/** @typedef {import('@dooksa/ds-scripts/src/types.js').DsPluginOptions} DsPluginOptions */
 
 /**
  * This callback handles the plugin once loaded

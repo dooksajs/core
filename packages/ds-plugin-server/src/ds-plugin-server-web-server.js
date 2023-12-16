@@ -1,4 +1,4 @@
-import { definePlugin } from '@dooksa/utils'
+import { definePlugin } from '@dooksa/ds-scripts'
 import express from 'express'
 import helmet from 'helmet'
 import cookieParser from 'cookie-parser'

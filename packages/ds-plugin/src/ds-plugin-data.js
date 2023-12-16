@@ -1,4 +1,5 @@
-import { deepClone, uuid, definePlugin } from '@dooksa/utils'
+import { definePlugin } from '@dooksa/ds-scripts'
+import { deepClone, uuid } from '@dooksa/utils'
 import DataResult from './utils/DataResult.js'
 
 function SchemaException (details) {

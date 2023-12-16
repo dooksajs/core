@@ -1,8 +1,8 @@
-import { definePlugin } from '@dooksa/utils'
+import { definePlugin } from '@dooksa/ds-scripts'
 import DsPlugin from './DsPlugin.js'
 import dsLoader from './ds-plugin-loader.js'
 
-/** @typedef {import('@dooksa/utils/src/types.js').DsPluginData} DsPluginData */
+/** @typedef {import('@dooksa/ds-scripts/src/types.js').DsPluginData} DsPluginData */
 /** @typedef {import('./ds-plugin-loader.js').DsPluginOptions} DsPluginOptions  */
 
 /**
@@ -377,7 +377,7 @@ export default definePlugin({
       try {
         return this.methods[name](params)
       } catch (error) {
-        console.error(name, error)
+        console.error(error)
       }
     },
     _token (name, dsViewId, value) {

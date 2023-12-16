@@ -1,4 +1,5 @@
-import { deepClone, definePlugin } from '@dooksa/utils'
+import { definePlugin } from '@dooksa/ds-scripts'
+import { deepClone } from '@dooksa/utils'
 import objectHash from '@dooksa/object-hash'
 
 /**
