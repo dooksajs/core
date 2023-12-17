@@ -156,7 +156,7 @@ function getLastSequenceChildren (sequences, length) {
     const sequence = sequences[i]
 
     // check for nested functions and ignore
-    if (sequence.path.indexOf('$arg') === sequence.path.lastIndexOf('$arg')) {
+    if (sequence.path.indexOf('_$arg') === sequence.path.lastIndexOf('_$arg')) {
       children.push(i)
     }
   }
