@@ -103,13 +103,13 @@ export default definePlugin({
         return
       }
 
-      const currentProcess = {
+      const sequenceProcess = {
         position: 0,
         items: [],
         results: {}
       }
-      currentProcess.next = () => {
-        this._nextProcess(currentProcess)
+      sequenceProcess.next = () => {
+        this._nextProcess(sequenceProcess)
       }
 
       for (let i = 0; i < actions.item.length; i++) {
@@ -144,7 +144,7 @@ export default definePlugin({
           sequence = sequence.item
         }
 
-        currentProcess.items.push(() => {
+        sequenceProcess.items.push(() => {
           this._processSequence(
             sequence,
             payload,
@@ -152,34 +152,59 @@ export default definePlugin({
             expand,
             expandIndexes,
             i,
-            currentProcess
+            sequenceProcess
           )
         })
       }
 
-      currentProcess.next()
+      sequenceProcess.next()
     },
     _nextProcess (process) {
       const item = process.items[process.position++]
 
-      if (item) {
-        return item()
+      // go next
+      if (typeof item === 'function') {
+        item()
+
+        return true
       }
+
+      return false
     },
     _nextBranchProcess (process) {
       process.position = process.goto[process.gotoIndex++]
 
       const item = process.items[process.position]
 
-      if (item) {
-        return item()
+      // go next
+      if (typeof item === 'function') {
+        item()
+
+        return true
       }
+
+      return false
     },
     _processSequence (sequence, payload, blocks = {}, expand, expandIndexes, position, currentProcess) {
       const sequenceEnd = sequence.length - 1
-      const actionData = {}
+      const blockProcess = {
+        position: 0,
+        items: [],
+        results: {}
+      }
 
-      for (let i = 0; i < sequenceEnd; i++) {
+      // Add next block process
+      blockProcess.next = () => {
+        const isNext = this._nextProcess(blockProcess)
+
+        if (!isNext) {
+          // append final result to sequence process
+          currentProcess.results[position] = blockProcess.results[blockProcess.results.length - 1]
+          currentProcess.next()
+        }
+      }
+
+      for (let i = 0; i < sequence.length; i++) {
         const item = sequence[i]
         const block = { id: item.id }
         const blockOverwrites = blocks[i]
@@ -198,67 +223,47 @@ export default definePlugin({
           }
         }
 
-        const action = this._processAction(item, block, actionData)
-        const methodName = '_process/' + action.name
+        const blockItem = () => {
+          const action = this._createAction(item, block, blockProcess.results)
+          const methodName = '_process/' + action.name
 
-        if (this[methodName]) {
-          actionData[i] = {
-            item: this[methodName](action.params, payload, actionData, currentProcess),
-            path: item.path
-          }
-        } else {
-          actionData[i] = {
-            item: this.$method(action.name, action.params),
-            path: item.path
+          if (this[methodName]) {
+            const lastBlock = sequenceEnd === i
+
+            blockProcess.results[i] = {
+              item: this[methodName](action.params, payload, lastBlock, blockProcess, currentProcess),
+              path: item.path
+            }
+            blockProcess.next()
+          } else if (action.async) {
+            this.$action(action.name, action.params, {
+              onSuccess: (result) => {
+                blockProcess.results[i] = {
+                  item: result,
+                  path: item.path
+                }
+                blockProcess.next()
+              },
+              onError: (error) => {
+                this.$log('error', { message: 'Action block', cause: error })
+              }
+            })
+          } else {
+            blockProcess.results[i] = {
+              item: this.$method(action.name, action.params),
+              path: item.path
+            }
+            blockProcess.next()
           }
         }
+
+        blockProcess.items.push(blockItem)
       }
 
-      // this is repeating for last item
-      const item = sequence[sequenceEnd]
-      const block = { id: item.id }
-      const blockOverwrites = blocks[sequenceEnd]
-
-      if (blockOverwrites) {
-        block.id = blockOverwrites.id
-        block.values = blockOverwrites.values
-      }
-
-      if (expand) {
-        const key = expandIndexes['dsAction/blocks/' + block.id]
-        const blockData = expand[key]
-
-        if (blockData) {
-          block.item = blockData.item
-        }
-      }
-
-      // process last action
-      const action = this._processAction(item, block, actionData)
-
-      if (action.async) {
-        this.$action(action.name, action.params, {
-          onSuccess: (result) => {
-            currentProcess.results[position] = result
-            currentProcess.next()
-          },
-          onError: (error) => {
-            console.error(error)
-          }
-        })
-      } else {
-        const methodName = '_process/' + action.name
-
-        if (this[methodName]) {
-          currentProcess.results[position] = this[methodName](action.params, payload, actionData, currentProcess)
-        } else {
-          currentProcess.results[position] = this.$method(action.name, action.params)
-        }
-
-        currentProcess.next()
-      }
+      // run block process
+      blockProcess.next()
     },
-    _processAction (item, block, data) {
+    _createAction (item, block, data) {
       if (!block.item) {
         const blockData = this.$getDataValue('dsAction/blocks', { id: item.id })
 
@@ -326,7 +331,7 @@ export default definePlugin({
         listeners: params.listeners
       })
     },
-    '_process/condition' (params, payload, actionData, currentProcess) {
+    '_process/condition' (params, payload, lastBlock, blockProcess, currentProcess) {
       let isValid
 
       if (params.if.length > 1) {
@@ -357,21 +362,29 @@ export default definePlugin({
         })
       }
 
-      if (isValid) {
-        currentProcess.goto = params.then
-      } else {
-        currentProcess.goto = params.else
+      // sequence conditional
+      let process = currentProcess
+
+      // action block conditional
+      if (!lastBlock) {
+        process = blockProcess
       }
 
-      currentProcess.gotoIndex = 0
-      currentProcess.next = () => {
+      if (isValid) {
+        process.goto = params.then
+      } else {
+        process.goto = params.else
+      }
+
+      process.gotoIndex = 0
+      process.next = () => {
         this._nextBranchProcess(currentProcess)
       }
     },
     '_process/get/eventValue' (params, payload) {
       return this._getValue(payload, params)
     },
-    '_process/get/sequenceValue' (params, payload, actionData, currentProcess) {
+    '_process/get/sequenceValue' (params, payload, lastBlock, blockProcess, currentProcess) {
       return this._getValue(currentProcess.results, params)
     },
     '_process/get/dataValue' (params) {
