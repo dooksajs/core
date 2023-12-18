@@ -512,62 +512,6 @@ export default definePlugin({
       }
 
       return result
-    },
-    _compare (conditions, { instanceId, parentItemId, data }) {
-      let result = false
-      let hasLogicalOperator = false
-      let results = []
-
-      for (let i = 0; i < conditions.length; i++) {
-        const condition = conditions[i]
-        const operator = condition.name
-
-        if (operator === '&&' || operator === '||') {
-          results = [...results, operator]
-          hasLogicalOperator = true
-        } else {
-          const values = []
-          const length = condition.values.length - 1
-
-          for (let i = 0; i < condition.values.length; i++) {
-            const item = condition.values[i]
-            let value = item.value
-
-            if (Object.hasOwnProperty.call(item, 'entry')) {
-              value = this._action({
-                instanceId,
-                entry: item.entry,
-                parentItemId,
-                paramItems: condition.params,
-                data,
-                lastItem: length === i,
-                ...condition.blocks[item.entry]
-              })
-            }
-
-            values.push(value)
-          }
-
-          const compareResults = this.$method('dsOperators/eval', { name: operator, values })
-
-          results.push(compareResults)
-        }
-      }
-
-      if (hasLogicalOperator) {
-        result = this.$method('dsOperators/compare', results)
-      } else {
-        for (let i = 0; i < results.length; i++) {
-          result = true
-
-          if (!results[i]) {
-            result = false
-            break
-          }
-        }
-      }
-
-      return result
     }
   }
 })
