@@ -103,12 +103,13 @@ export default definePlugin({
         return
       }
 
-      const processId = performance.now()
-
-      this.process[processId] = {
-        position: -1,
+      const currentProcess = {
+        position: 0,
         items: [],
         results: {}
+      }
+      currentProcess.next = () => {
+        this._nextProcess(currentProcess)
       }
 
       for (let i = 0; i < actions.item.length; i++) {
@@ -143,7 +144,7 @@ export default definePlugin({
           sequence = sequence.item
         }
 
-        this.process[processId].items.push(() => {
+        currentProcess.items.push(() => {
           this._processSequence(
             sequence,
             payload,
@@ -151,28 +152,32 @@ export default definePlugin({
             expand,
             expandIndexes,
             i,
-            processId
+            currentProcess
           )
         })
       }
 
-      this._nextProcess(processId)
+      currentProcess.next()
     },
-    _nextProcess (processId) {
-      const process = this.process[processId]
-      const item = process.items[++process.position]
+    _nextProcess (process) {
+      const item = process.items[process.position++]
 
       if (item) {
         return item()
       }
-
-      // clean up process
-      delete this.process[processId]
     },
-    _processSequence (sequence, payload, blocks = {}, expand, expandIndexes, position, processId) {
+    _nextBranchProcess (process) {
+      process.position = process.goto[process.gotoIndex++]
+
+      const item = process.items[process.position]
+
+      if (item) {
+        return item()
+      }
+    },
+    _processSequence (sequence, payload, blocks = {}, expand, expandIndexes, position, currentProcess) {
       const sequenceEnd = sequence.length - 1
       const actionData = {}
-      const results = this.process[processId].results
 
       for (let i = 0; i < sequenceEnd; i++) {
         const item = sequence[i]
@@ -198,7 +203,7 @@ export default definePlugin({
 
         if (this[methodName]) {
           actionData[i] = {
-            item: this[methodName](action.params, payload, actionData, results),
+            item: this[methodName](action.params, payload, actionData, currentProcess),
             path: item.path
           }
         } else {
@@ -234,26 +239,23 @@ export default definePlugin({
       if (action.async) {
         this.$action(action.name, action.params, {
           onSuccess: (result) => {
-            results[position] = result
-
-            this._nextProcess(processId)
+            currentProcess.results[position] = result
+            currentProcess.next()
           },
           onError: (error) => {
             console.error(error)
-
-            delete this.process[processId]
           }
         })
       } else {
         const methodName = '_process/' + action.name
 
         if (this[methodName]) {
-          results[position] = this[methodName](action.params, payload, actionData, results)
+          currentProcess.results[position] = this[methodName](action.params, payload, actionData, currentProcess)
         } else {
-          results[position] = this.$method(action.name, action.params)
+          currentProcess.results[position] = this.$method(action.name, action.params)
         }
 
-        this._nextProcess(processId)
+        currentProcess.next()
       }
     },
     _processAction (item, block, data) {
@@ -324,11 +326,53 @@ export default definePlugin({
         listeners: params.listeners
       })
     },
+    '_process/condition' (params, payload, actionData, currentProcess) {
+      let isValid
+
+      if (params.if.length > 1) {
+        const compareValues = []
+
+        for (let i = 0; i < params.if.length; i++) {
+          const item = params.if[i]
+
+          // compare one or more results
+          let compareItem = item
+
+          if (item !== '&&' || item !== '||') {
+            compareItem = this.$method('dsOperator/eval', {
+              name: item.op,
+              values: [item.from, item.to]
+            })
+          }
+
+          compareValues.push(compareItem)
+        }
+
+        isValid = this.$method('dsOperator/compare', compareValues)
+      } else {
+        const item = params.if[0]
+        isValid = this.$method('dsOperator/eval', {
+          name: item.op,
+          values: [item.from, item.to]
+        })
+      }
+
+      if (isValid) {
+        currentProcess.goto = params.then
+      } else {
+        currentProcess.goto = params.else
+      }
+
+      currentProcess.gotoIndex = 0
+      currentProcess.next = () => {
+        this._nextBranchProcess(currentProcess)
+      }
+    },
     '_process/get/eventValue' (params, payload) {
       return this._getValue(payload, params)
     },
-    '_process/get/sequenceValue' (params, payload, actionData, results) {
-      return this._getValue(results, params)
+    '_process/get/sequenceValue' (params, payload, actionData, currentProcess) {
+      return this._getValue(currentProcess.results, params)
     },
     '_process/get/dataValue' (params) {
       const result = this.$getDataValue(params.name, {
@@ -344,7 +388,7 @@ export default definePlugin({
 
       return result.item
     },
-    '_process/map/actionValue' (params) {
+    '_process/get/actionValue' (params) {
       return this._getValue(params.value, params.map)
     },
     '_process/set/dataValue' (data) {
