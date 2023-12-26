@@ -85,9 +85,22 @@ export default definePlugin({
       schema: {
         type: 'object'
       }
+    },
+    values: {
+      schema: {
+        type: 'collection',
+        items: {
+          type: 'object',
+          properties: {
+            _id: {
+              type: 'string',
+              relation: 'dsAction/items'
+            }
+          }
+        }
+      }
     }
   },
-  /** @lends dsAction */
   methods: {
     /**
      * Dispatch an action
