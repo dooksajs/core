@@ -12,6 +12,15 @@ export default definePlugin({
   name: 'dsWidget',
   version: 1,
   data: {
+    actionGroups: {
+      schema: {
+        type: 'collection',
+        items: {
+          type: 'string',
+          relation: 'dsAction/items'
+        }
+      }
+    },
     uniqueId: {
       description: 'Unique identifier used to allow instances to be shared but contain different related content',
       schema: {
