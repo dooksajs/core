@@ -1,4 +1,4 @@
-import path from 'path'
+import path, { extname } from 'path'
 import esbuild from 'esbuild'
 import { appDirectory, scriptDirectory } from '../utils/paths.js'
 import dsApp from '@dooksa/ds-app-server'
@@ -178,8 +178,16 @@ function initApp (options = []) {
 
         if (result.outputFiles.length) {
           // set app script
-          dsAppServer.$method('dsPage/setApp', result.outputFiles[0].text)
-          dsAppServer.$method('dsPage/setCSS', result.outputFiles[1].text)
+          for (let i = 0; i < result.outputFiles.length; i++) {
+            const file = result.outputFiles[i]
+            const fileExtension = extname(file.path)
+
+            if (fileExtension === '.js') {
+              dsAppServer.$method('dsPage/setApp', result.outputFiles[i].text)
+            } else {
+              dsAppServer.$method('dsPage/setCSS', result.outputFiles[i].text)
+            }
+          }
 
           // notify sse to reload
           dsAppServer.$setDataValue('dsEsbuild/rebuildClient', ++rebuildClientNum)
