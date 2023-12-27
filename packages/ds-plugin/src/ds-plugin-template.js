@@ -595,10 +595,11 @@ export default definePlugin({
      * @param {Object} refs
      * @param {string[]} blockKeys - The keys used to lead to the block value
      * @param {BlockValue[]} blockValues - Collection of block overwrites
+     * @param {number} index - Current depth
      * @param {boolean} [isEntry=true] - The head of the recursive function
      * @returns {BlockRefs}
      */
-    _replaceActionRef (items, refs, blockKeys = [], blockValues = [], isEntry = true) {
+    _replaceActionRef (items, refs, blockKeys = [], blockValues = [], index = 0, isEntry = true) {
       for (const key in items) {
         if (Object.hasOwnProperty.call(items, key)) {
           const item = items[key]
@@ -608,17 +609,20 @@ export default definePlugin({
             blockKeys.push(key)
             blockValues.push({ keys: blockKeys, value: refs[item] })
 
-            // remove last key
+            // Moving up the tree
             blockKeys = blockKeys.slice(0, -1)
           } else if (typeof item === 'object') {
             blockKeys.push(key)
 
-            this._replaceActionRef(item, refs, blockKeys, blockValues, false)
+            this._replaceActionRef(item, refs, blockKeys, blockValues, index + 1, false)
+
+            // Moving up the tree
+            blockKeys = blockKeys.slice(0, index)
           }
         }
       }
 
-      // reset keys
+      // Moving back to the root
       blockKeys = []
 
       if (isEntry) {
@@ -627,8 +631,6 @@ export default definePlugin({
           blockValues
         }
       }
-
-      return items
     }
   }
 })
