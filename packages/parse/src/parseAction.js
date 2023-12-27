@@ -1,11 +1,15 @@
 import objectHash from '@dooksa/object-hash'
 
 /**
+ * @typedef {Object} ActionSequence - The sequence that will construct the final action
+ * @property {string} id - Reference id to an action item
+ * @property {Array.<string>} path - A list of keys related to the target object that is used to place the returned action value
+ */
+
+/**
  * @typedef {Object} Action
  * @property {Object.<string, ActionBlock>} action.items - Collection of actions
- * @property {Object[]} action.sequence - The sequence that will construct the final action
- * @property {string} action.sequence[].id - Reference id to an action item
- * @property {Array.<string>} action.sequence[].path - A list of keys related to the target object that is used to place the returned action value
+ * @property {ActionSequence[]} action.sequence - The sequence that will construct the final action
  */
 
 /**
@@ -146,7 +150,8 @@ function findActions ({
 
 /**
  * Get the last sequence children "data"
- * @param {Array} sequences - List of sequences
+ * @param {ActionSequence} sequences - List of sequences
+ * @param {number} length - Last index of sequence
  * @returns {Array}
  */
 function getLastSequenceChildren (sequences, length) {
