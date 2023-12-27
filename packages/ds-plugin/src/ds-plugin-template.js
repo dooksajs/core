@@ -186,19 +186,22 @@ export default definePlugin({
      * @param {Object} param
      * @param {string} param.id - Id of template
      * @param {string} [param.mode="default"] - Suffix used to categories the instances
-     * @param {string} param.language - Language used to label the content
+     * @param {string} [param.language] - Language used to label the content
      * @param {string} param.dsSectionId - Id related to a dsSection/item
-     * @param {Object} param.options
-     * @param {Object} [param.options.content] - Collection of content overwrites by matching a ref id
-     * @param {Function} _callback - Private callback that is called to resolve a fetched template
+     * @param {Object} [param.contentOptions={}] - Collection of content overwrites by matching a ref id
+     * @param {Object} [param.widgetOptions={}] - Collection of widget overwrites by matching a ref id
+     * @param {string} [param.actionGroupId] - Action group id
+     * @param {Function} [_callback] - Private callback that is called to resolve a fetched template
      * @returns {(TemplateResult|Promise)}
      */
     create ({
       id,
       mode = 'default',
       language,
-      dsSectionId,
-      options = {}
+      contentOptions = {},
+      widgetOptions = {},
+      actionGroupId,
+      dsSectionId
     }, _callback) {
       const template = this.$getDataValue('dsTemplate/items', { id })
 
@@ -240,7 +243,9 @@ export default definePlugin({
                 id,
                 mode,
                 language,
-                options,
+                contentOptions,
+                widgetOptions,
+                actionGroupId,
                 dsSectionId
               }, resolve)
             })
@@ -252,8 +257,8 @@ export default definePlugin({
       language = language || this.$getDataValue('dsMetadata/language').item
       dsSectionId = dsSectionId || this.$method('dsData/generateId')
 
+      const dsWidgetGroupId = widgetOptions.groupId || this.$method('dsData/generateId')
       const dsWidgetItems = []
-      const dsWidgetGroupId = this.$method('dsData/generateId')
       const actionRefs = {}
       const events = []
       let rootWidgetId
@@ -296,9 +301,9 @@ export default definePlugin({
           let content = contentItems[j]
 
           // change content value
-          if (options.content && options.content[contentRef]) {
+          if (contentOptions[contentRef]) {
             content = deepClone({}, contentItems[j])
-            content.item = options.content[contentRef]
+            content.item = contentOptions[contentRef]
           }
 
           const dsContent = this.$setDataValue('dsContent/items', content.item, {
@@ -385,6 +390,12 @@ export default definePlugin({
             method: 'push'
           }
         })
+
+        if (actionGroupId) {
+          this.$setDataValue('dsWidget/actionGroups', actionGroupId, {
+            id: widget.id
+          })
+        }
 
         // set widget instance
         this.$setDataValue('dsWidget/items', dsWidgetGroupId, {
@@ -506,6 +517,9 @@ export default definePlugin({
       }
 
       return result
+    },
+    fetch () {
+
     },
     /**
      * Create action block overwrites
