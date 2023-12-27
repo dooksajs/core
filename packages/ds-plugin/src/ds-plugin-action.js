@@ -116,6 +116,9 @@ export default definePlugin({
         return
       }
 
+      // set action item id to payload for grouping
+      payload.id = id
+
       const sequenceProcess = {
         position: 0,
         items: [],
@@ -198,12 +201,12 @@ export default definePlugin({
 
       return false
     },
-    _processSequence (sequence, payload, blocks = {}, expand, expandIndexes, position, currentProcess) {
+    _processSequence (sequence, payload, blocks = {}, expand, expandIndexes, position, sequenceProcess) {
       const sequenceEnd = sequence.length - 1
       const blockProcess = {
         position: 0,
         items: [],
-        results: {}
+        results: []
       }
 
       // Add next block process
@@ -212,8 +215,8 @@ export default definePlugin({
 
         if (!isNext) {
           // append final result to sequence process
-          currentProcess.results[position] = blockProcess.results[blockProcess.results.length - 1]
-          currentProcess.next()
+          sequenceProcess.results[position] = blockProcess.results[blockProcess.results.length - 1].item
+          sequenceProcess.next()
         }
       }
 
@@ -243,29 +246,30 @@ export default definePlugin({
           if (this[methodName]) {
             const lastBlock = sequenceEnd === i
 
-            blockProcess.results[i] = {
-              item: this[methodName](action.params, payload, lastBlock, blockProcess, currentProcess),
+            blockProcess.results.push({
+              item: this[methodName](action.params, payload, lastBlock, blockProcess, sequenceProcess),
               path: item.path
-            }
+            })
             blockProcess.next()
           } else if (action.async) {
             this.$action(action.name, action.params, {
               onSuccess: (result) => {
-                blockProcess.results[i] = {
+                blockProcess.results.push({
                   item: result,
                   path: item.path
-                }
+                })
                 blockProcess.next()
               },
               onError: (error) => {
+                console.error(error)
                 this.$log('error', { message: 'Action block', cause: error })
               }
             })
           } else {
-            blockProcess.results[i] = {
+            blockProcess.results.push({
               item: this.$method(action.name, action.params),
               path: item.path
-            }
+            })
             blockProcess.next()
           }
         }
@@ -338,20 +342,20 @@ export default definePlugin({
         params
       }
     },
-    '_process/delete/dataValue' (params) {
-      return this.$deleteDataValue(params.name, params.id, {
-        cascade: params.cascade,
-        listeners: params.listeners
+    '_process/delete/dataValue' (props) {
+      return this.$deleteDataValue(props.name, props.id, {
+        cascade: props.cascade,
+        listeners: props.listeners
       })
     },
-    '_process/condition' (params, payload, lastBlock, blockProcess, currentProcess) {
+    '_process/condition' (props, payload, lastBlock, blockProcess, sequenceProcess) {
       let isValid
 
-      if (params.if.length > 1) {
+      if (props.if.length > 1) {
         const compareValues = []
 
-        for (let i = 0; i < params.if.length; i++) {
-          const item = params.if[i]
+        for (let i = 0; i < props.if.length; i++) {
+          const item = props.if[i]
 
           // compare one or more results
           let compareItem = item
@@ -368,7 +372,7 @@ export default definePlugin({
 
         isValid = this.$method('dsOperator/compare', compareValues)
       } else {
-        const item = params.if[0]
+        const item = props.if[0]
         isValid = this.$method('dsOperator/eval', {
           name: item.op,
           values: [item.from, item.to]
@@ -376,7 +380,7 @@ export default definePlugin({
       }
 
       // sequence conditional
-      let process = currentProcess
+      let process = sequenceProcess
 
       // action block conditional
       if (!lastBlock) {
@@ -384,29 +388,46 @@ export default definePlugin({
       }
 
       if (isValid) {
-        process.goto = params.then
+        process.goto = props.then
       } else {
-        process.goto = params.else
+        process.goto = props.else
       }
 
       process.gotoIndex = 0
       process.next = () => {
-        this._nextBranchProcess(currentProcess)
+        this._nextBranchProcess(sequenceProcess)
       }
     },
-    '_process/get/eventValue' (params, payload) {
-      return this._getValue(payload, params)
+    '_process/get/actionValue' (props, payload) {
+      let id = this.$getDataValue('dsWidget/actionGroups', { id: payload.dsWidgetId }).item
+
+      if (!id) {
+        id = payload.id
+      }
+
+      const value = this.$getDataValue('dsAction/values', { id })
+
+      if (!value.isEmpty) {
+        return this._getValue(value.item, props)
+      } else {
+        this.$log('error', { message: 'Action variables not found', code: '44' })
+      }
     },
-    '_process/get/sequenceValue' (params, payload, lastBlock, blockProcess, currentProcess) {
-      return this._getValue(currentProcess.results, params)
+    '_process/get/blockValue' (props) {
+      return this._getValue(props.value, props.map)
     },
-    '_process/get/dataValue' (params) {
-      const result = this.$getDataValue(params.name, {
-        id: params.id,
-        prefixId: params.prefixId,
-        suffixId: params.suffixId,
-        options: params.options
-      })
+    '_process/get/dataValue' (props) {
+      const options = {
+        prefixId: props.prefixId,
+        suffixId: props.suffixId,
+        options: props.options
+      }
+
+      if (props.id) {
+        options.id = props.id
+      }
+
+      const result = this.$getDataValue(props.name, options)
 
       if (result.isEmpty) {
         return
@@ -414,11 +435,28 @@ export default definePlugin({
 
       return result.item
     },
-    '_process/get/actionValue' (params) {
-      return this._getValue(params.value, params.map)
+    '_process/get/eventValue' (props, payload) {
+      return this._getValue(payload, props)
     },
-    '_process/set/dataValue' (data) {
-      return this.$setDataValue(data.name, data.value, data.options)
+    '_process/get/sequenceValue' (props, payload, lastBlock, blockProcess, sequenceProcess) {
+      return this._getValue(sequenceProcess.results, props)
+    },
+    '_process/set/actionValue' (props, payload) {
+      const values = {}
+
+      for (let i = 0; i < props.values.length; i++) {
+        const item = props.values[i]
+
+        values[item.id] = item.value
+      }
+
+      this.$setDataValue('dsAction/values', values, {
+        id: payload.id,
+        merge: true
+      })
+    },
+    '_process/set/dataValue' (props) {
+      return this.$setDataValue(props.name, props.value, props.options)
     },
     _getDataByKey (data, keys) {
       let lastKey
