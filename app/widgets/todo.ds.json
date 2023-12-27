@@ -20,14 +20,12 @@
           "dsAction": "dsTemplate/create",
           "dsArgs": {
             "id": "todo-item",
-            "options": {
-              "content": {
-                "todo-text": {
-                  "dsAction": "get/dataValue",
-                  "dsArgs": {
-                    "name": "dsContent/items",
-                    "id": "todo-input"
-                  }
+            "contentOptions": {
+              "todo-text": {
+                "dsAction": "get/dataValue",
+                "dsArgs": {
+                  "name": "dsContent/items",
+                  "id": "todo-input"
                 }
               }
             }
