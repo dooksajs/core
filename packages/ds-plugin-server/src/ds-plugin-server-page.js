@@ -79,17 +79,13 @@ export default definePlugin({
       const dsApp = this._getApp(request.dsPageData)
       const dsAppHash = this._hash(dsApp)
 
-      let csp = "script-src 'wasm-unsafe-eval' 'sha256-" + dsAppHash + "'"
-
-      if (this.dsCSSHash) {
-        csp += " style-src 'sha256-" + this.dsCSSHash + "'"
-      }
+      const csp = "script-src 'sha256-" + dsAppHash + "'"
 
       response.set('Content-Security-Policy', csp)
 
       response.status(200).send(
         `${this.templateStart}
-          ${this.dsCSS}
+          <style>${this.dsCSS}</style>
           <script>${dsApp}</script>
         ${this.templateEnd}`
       )
@@ -98,12 +94,11 @@ export default definePlugin({
       this.dsApp = item
     },
     setCSS (item = '') {
-      this.dsCSS = '<style>' + item + '</style>'
-      this.dsCSSHash = this._hash(item)
+      this.dsCSS = item
     },
     _appendExpand: dsPage.methods._appendExpand,
     _getApp (data = []) {
-      return '(async () => {const __ds__ =' + JSON.stringify(data) + ';' + this.dsApp + '})()'
+      return '(() => {const __ds__ =' + JSON.stringify(data) + ';' + this.dsApp + '})()'
     },
     _get (request, response, next) {
       const pageData = this.getById(request.path)
