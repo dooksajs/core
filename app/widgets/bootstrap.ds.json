@@ -1,24 +1,26 @@
 {
   "actions": [
     {
-      "id": "widget-add",
-      "name": "Add new widget",
+      "id": "widget-fetch-add-button",
+      "name": "Append add new button",
       "sequence": [
-        {
-          "async": true,
-          "dsAction": "dsTemplate/create",
-          "dsArgs": {
-            "id": "bootstrap-widget-add"
-          }
-        },
         {
           "dsAction": "set/dataValue",
           "dsArgs": {
             "name": "dsSection/items",
             "value": {
-              "dsAction": "get/sequenceValue",
+              "dsAction": "get/blockValue",
               "dsArgs": {
-                "$key": ["0", "dsWidgetId"]
+                "value": {
+                  "async": true,
+                  "dsAction": "dsTemplate/create",
+                  "dsArgs": {
+                    "id": "bootstrap-widget-add-button"
+                  }
+                },
+                "map": {
+                  "$key": ["dsWidgetId"]
+                }
               }
             },
             "options": {
@@ -41,36 +43,172 @@
       ]
     },
     {
-      "id": "widget-add-close",
-      "name": "Close add widget",
-      "sequence": [{
-        "dsAction": "set/dataValue",
-        "dsArgs": {
-          "name": "dsSection/items",
-          "value": "widget:id",
-          "options": {
-            "id": {
-              "dsAction": "get/dataValue",
+      "id": "widget-add",
+      "name": "Add new widget",
+      "sequence": [
+        {
+          "dsAction": "condition",
+          "dsArgs": {
+            "if": [
+              {
+                "op": "==",
+                "from": {
+                  "dsAction": "get/blockValue",
+                  "dsArgs": {
+                    "value": {
+                      "dsAction": "get/dataValue",
+                      "dsArgs": {
+                        "name": "dsContent/items",
+                        "id": "widget-add-button"
+                      }
+                    },
+                    "map": {
+                      "$key": ["values", "checked"]
+                    }
+                  }
+                },
+                "to": true       
+              }
+            ],
+            "then": [1, 2, 3],
+            "else": [4]
+          }
+        },
+        {
+          "async": true,
+          "dsAction": "dsTemplate/create",
+          "dsArgs": {
+            "id": "bootstrap-widget-add",
+            "actionGroupId": {
+              "dsAction": "get/eventValue",
               "dsArgs": {
-                "name": "dsWidget/attached",
-                "id": "widget:id"
+                "$key": ["id"]
+              }
+            }
+          }
+        },
+        {
+          "dsAction": "set/actionValue",
+          "dsArgs": {
+            "values": [
+              {
+                "id": "bootstrap-widget-add-close__widget-id",
+                "value": {
+                  "dsAction": "get/sequenceValue",
+                  "dsArgs": {
+                    "$key": ["1", "dsWidgetId"]
+                  }
+                }
+              },
+              {
+                "id": "bootstrap-widget-add__content-id",
+                "value": "widget-add-button"
+              }
+            ]
+          }
+        },
+        {
+          "dsAction": "set/dataValue",
+          "dsArgs": {
+            "name": "dsSection/items",
+            "value": {
+              "dsAction": "get/sequenceValue",
+              "dsArgs": {
+                "$key": ["1", "dsWidgetId"]
               }
             },
-            "update": {
-              "method": "pull"
+            "options": {
+              "id": {
+                "dsAction": "get/dataValue",
+                "dsArgs": {
+                  "name": "dsWidget/attached",
+                  "id": "widget:id"
+                }
+              },
+              "update": {
+                "method": "push"
+              }
+            }
+          }
+        },
+        {
+          "dsAction": "set/dataValue",
+          "dsArgs": {
+            "name": "dsSection/items",
+            "value": {
+              "dsAction": "get/actionValue",
+              "dsArgs": {
+                "$key": ["bootstrap-widget-add-close__widget-id"]
+              }
+            },
+            "options": {
+              "id": {
+                "dsAction": "get/eventValue",
+                "dsArgs": {
+                  "$key": ["dsSectionId"]
+                }
+              },
+              "update": {
+                "method": "pull"
+              }
             }
           }
         }
-      }]
+      ]
     },
     {
-      "id": "widget-add-fetch",
-      "name": "Fetch widgets",
+      "id": "widget-add-close",
+      "name": "Close add widget",
       "sequence": [
         {
-          "dsAction": "dsTemplate/fetch",
-          "dsArg": {
-            "name": ""
+          "dsAction": "set/dataValue",
+          "dsArgs": {
+            "name": "dsSection/items",
+            "value": "widget:id",
+            "options": {
+              "id": {
+                "dsAction": "get/dataValue",
+                "dsArgs": {
+                  "name": "dsWidget/attached",
+                  "id": "widget:id"
+                }
+              },
+              "update": {
+                "method": "pull"
+              }
+            }
+          }
+        },
+        {
+          "dsAction": "set/dataValue",
+          "dsArgs": {
+            "name": "dsContent/items",
+            "value": false,
+            "options": {
+              "id": {
+                "dsAction": "dsOperator/eval",
+                "dsArgs": {
+                  "name": "+",
+                  "values": [
+                    {
+                      "dsAction": "get/actionValue",
+                      "dsArgs": {
+                        "$key": ["bootstrap-widget-add__content-id"]
+                      }
+                    },
+                    {
+                      "dsAction": "get/dataValue",
+                      "dsArgs": {
+                        "name": "dsMetadata/language"
+                      }
+                    }
+                  ]
+                }
+              },
+              "update": {
+                "position": ["values", "checked"]
+              }
+            }
           }
         }
       ]

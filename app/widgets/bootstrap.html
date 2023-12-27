@@ -18,29 +18,18 @@
             </div>
           </div>
         </div>
-        <div class="p-3 position-relative" ds-section="true" ds-section-ref="section-entry">
-          <div class="d-flex align-items-center">
-            <hr class="flex-grow-1 border-dashed">
-            <div class="px-2">
-              <input type="checkbox" class="btn-check" ds-computed-id="uuid:0" autocomplete="off" ds-on-input="widget-add">
-              <label class="btn btn-outline-secondary" ds-computed-for="uuid:0">
-                <iconify-icon icon="mdi:plus-circle-outline" inline=""></iconify-icon> Add widget
-              </label>
-            </div>
-            <hr class="flex-grow-1 border-dashed">
-          </div>
-        </div>
+        <div class="p-3 position-relative" ds-section="true" ds-section-ref="section-entry" ds-on-mount="widget-fetch-add-button"></div>
       </div>
     </div>
   </div>
 </template>
 
 <template ds-template-id="bootstrap-widget-add-button">
-  <div class="d-flex mb-4 align-items-center">
+  <div class="d-flex align-items-center">
     <hr class="flex-grow-1 border-dashed">
     <div class="px-2">
-      <input type="checkbox" class="btn-check" id="btn-check" autocomplete="off">
-      <label class="btn btn-primary" for="btn-check">
+      <input type="checkbox" class="btn-check" ds-computed-id="uuid:0" autocomplete="off" ds-on-input="widget-add" ds-content-ref="widget-add-button">
+      <label class="btn btn-outline-secondary" ds-computed-for="uuid:0">
         <iconify-icon icon="mdi:plus-circle-outline" inline=""></iconify-icon> Add widget
       </label>
     </div>
