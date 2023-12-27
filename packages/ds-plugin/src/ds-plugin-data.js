@@ -26,10 +26,6 @@ function SchemaException (details) {
  * @param {string} response.message
  */
 
-/**
- * Dooksa content management plugin
- * @namespace dsData
- */
 export default definePlugin({
   name: 'dsData',
   version: 1,
@@ -113,7 +109,6 @@ export default definePlugin({
       })
     }
   },
-  /** @lends dsData */
   methods: {
     /**
      * Add data listener
@@ -398,6 +393,8 @@ export default definePlugin({
 
         if (result.item == null) {
           return result
+        } else {
+          result.isEmpty = false
         }
 
         if (options) {
@@ -1367,16 +1364,16 @@ export default definePlugin({
 
       // update target position
       if (options.update.position) {
-        const length = options.position.length - 1
-        const lastKey = options.position[length]
+        const length = options.update.position.length - 1
+        const lastKey = options.update.position[length]
         let path = schemaPath
 
         for (let i = 0; i < length; i++) {
-          const key = options.position[i]
+          const key = options.update.position[i]
           path = path + '/' + key
 
           if (!targetItem[key]) {
-            return this.$log('error', { message: 'Update position does not exist' + options.position })
+            return this.$log('error', { message: 'Update position does not exist' + options.update.position })
           }
 
           targetItem = targetItem[key]
