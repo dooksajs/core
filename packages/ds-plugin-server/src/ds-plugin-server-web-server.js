@@ -179,6 +179,11 @@ export default definePlugin({
         log('info', { message: `{magenta.bold Dooksa!} ✨ {cyan.underline ${path + ':' + port}}` })
       })
     },
+    stop () {
+      this.server.close()
+
+      this.$setDataValue('dsWebServer/status', 'stop')
+    },
     _useRoutes (port, path) {
       const apiRoutes = this.routes[this.apiSuffix]
 
