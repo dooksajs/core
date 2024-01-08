@@ -19,6 +19,7 @@ export default definePlugin({
   },
   setup () {
     this.$seedDatabase('ds-template-items')
+    this.$seedDatabase('ds-template-metadata')
 
     // route: get a list of section
     this.$setWebServerRoute('/template', {
@@ -35,6 +36,14 @@ export default definePlugin({
       middleware: ['dsUser/auth', 'request/queryIsArray'],
       handlers: [
         this.$deleteDatabaseValue(['dsTemplate/items'])
+      ]
+    })
+
+    // route: get a list of section
+    this.$setWebServerRoute('/template/metadata', {
+      method: 'get',
+      handlers: [
+        this.$getDatabaseValue(['dsTemplate/metadata'])
       ]
     })
   },
@@ -158,6 +167,14 @@ export default definePlugin({
         widgetEvent: template.widgetEvent,
         widgetSection: template.widgetSection,
         section: template.section
+      }, {
+        id: template.id
+      })
+
+      this.$setDataValue('dsTemplate/metadata', {
+        name: template.name,
+        description: template.description,
+        icon: template.icon
       }, {
         id: template.id
       })
