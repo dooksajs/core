@@ -1,0 +1,16 @@
+{
+  "metadata": [
+    {
+      "id": "fragment-card",
+      "name": "Card",
+      "description": "Card container",
+      "icon": "mdi:card-plus"
+    },
+    {
+      "id": "fragment-card-header",
+      "name": "Card header",
+      "description": "Card header",
+      "icon": "mdi:card-plus"
+    }
+  ]
+}
