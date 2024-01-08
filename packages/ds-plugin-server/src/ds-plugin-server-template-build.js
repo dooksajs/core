@@ -66,11 +66,22 @@ export default definePlugin({
 
       if (fileExtension === '.json') {
         const file = readFileSync(path, { encoding: 'utf-8' })
-        const json = JSON.parse(file)
+        const template = JSON.parse(file)
 
         // build actions
-        if (json.actions) {
-          this._parseAction(json.actions)
+        if (template.actions) {
+          this._parseAction(template.actions)
+        }
+
+        if (template.metadata) {
+          for (let i = 0; i < template.metadata.length; i++) {
+            const metadata = template.metadata[i]
+            const options = { id: metadata.id }
+
+            delete metadata.id
+
+            this.$setDataValue('dsTemplate/metadata', metadata, options)
+          }
         }
       }
 
