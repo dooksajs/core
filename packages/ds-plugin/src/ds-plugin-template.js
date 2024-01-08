@@ -178,6 +178,25 @@ export default definePlugin({
           }
         }
       }
+    },
+    metadata: {
+      schema: {
+        type: 'collection',
+        items: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string'
+            },
+            description: {
+              type: 'string'
+            },
+            icon: {
+              type: 'string'
+            }
+          }
+        }
+      }
     }
   },
   methods: {
