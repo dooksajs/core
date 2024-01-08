@@ -139,17 +139,14 @@ function initApp (options = []) {
         .on('add', path => {
           app.$method('dsTemplateBuild/create', { path })
           app.$setDataValue('dsEsbuild/rebuildServer', 1)
-          log(`Template ${chalk.blue(path)} has been added`)
         })
         .on('change', path => {
           app.$method('dsTemplateBuild/create', { path })
           app.$setDataValue('dsEsbuild/rebuildServer', 1)
-          log(`Template ${chalk.blue(path)} has been changed`)
         })
         .on('unlink', path => {
           app.$method('dsTemplateBuild/create', { path })
           app.$setDataValue('dsEsbuild/rebuildServer', 1)
-          log(`Template ${chalk.blue(path)} has been removed`)
         })
     },
     onError (error) {
