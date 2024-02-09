@@ -1,7 +1,8 @@
 import { deepClone } from '@dooksa/utils'
 
 /**
- * Data result
+ * The data result from dsData
+ * @constructor
  * @param {string} [collection=''] - Collection name
  * @param {string} [id=''] - Document id
  */
@@ -15,8 +16,12 @@ function DataResult (collection = '', id = '') {
   this.isCollectionEmpty = false
   this.isAffixEmpty = true
   this.noAffixId = true
+
+  /** @type {(Object|null)} */
   this.item = null
+  /** @type {(Object|null)} */
   this.metadata = null
+  /** @type {(Object|null)} */
   this.previous = null
 
   Object.defineProperty(this, 'noAffixId', {
