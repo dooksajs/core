@@ -51,10 +51,8 @@ export default definePlugin({
 
       this[logType](`${hours}:${minutes}:${seconds}.${milliseconds}`, message, store, code, cause)
     },
-    '_log/info' (time, message, store, code) {
-      code = code ? ` {blue[${code}]} ` : ' '
-
-      console.log(template(`{grey ${time}} {white Info:}${code}${message}`))
+    '_log/info' (time, message, store, code = '20') {
+      console.log(template(`{grey ${time}} {white Info:} {blue [${code}]} ${message}`))
 
       if (store) {
         const error = this._error(message, code)
@@ -62,10 +60,8 @@ export default definePlugin({
         this.$setDataValue('dsLog/info', error)
       }
     },
-    '_log/warn' (time, message, store, code = '400', cause) {
-      code = code ? ` {blue[${code}]} ` : ' '
-
-      console.warn(template(`{grey ${time}} {yellow Warning:}${code}${message}`))
+    '_log/warn' (time, message, store, code = '40', cause) {
+      console.warn(template(`{grey ${time}} {yellow Warning:} {blue [${code}]} ${message}`))
 
       if (store) {
         const error = this._error(message, code, cause)
@@ -73,10 +69,8 @@ export default definePlugin({
         this.$setDataValue('dsLog/warning', error)
       }
     },
-    '_log/error' (time, message, store, code = '500', cause) {
-      code = code ? ` {blue[${code}]} ` : ' '
-
-      console.error(template(`{grey ${time}} {red Error:}${code}${message}`))
+    '_log/error' (time, message, store, code = '50', cause) {
+      console.error(template(`{grey ${time}} {red Error:} {blue [${code}]} ${message}`))
 
       const error = this._error(message, code, cause)
 
