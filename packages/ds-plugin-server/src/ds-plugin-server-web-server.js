@@ -40,6 +40,12 @@ export default definePlugin({
     }
   ],
   data: {
+    status: {
+      description: 'Web server status',
+      schema: {
+        type: 'string'
+      }
+    },
     apiSuffix: {
       private: true,
       default: () => '/_'
@@ -51,6 +57,12 @@ export default definePlugin({
       }
     },
     app: {
+      private: true,
+      schema: {
+        type: 'function'
+      }
+    },
+    server: {
       private: true,
       schema: {
         type: 'function'
@@ -171,12 +183,12 @@ export default definePlugin({
     start (port = 6362, path = 'http://localhost') {
       this._useRoutes(port, path)
 
-      const log = this.$log
-
-      this.app.listen(port, function () {
+      const self = this
+      this.server = this.app.listen(port, function () {
         port = port || this.address().port
 
-        log('info', { message: `{magenta.bold Dooksa!} ✨ {cyan.underline ${path + ':' + port}}` })
+        self.$log('info', { message: `{magenta.bold Dooksa!} ✨ {cyan.underline ${path + ':' + port}}` })
+        self.$setDataValue('dsWebServer/status', 'start')
       })
     },
     stop () {
