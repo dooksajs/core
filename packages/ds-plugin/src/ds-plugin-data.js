@@ -387,8 +387,33 @@ export default definePlugin({
             }
           }
         } else {
+          let values = this.values[name]
+
           // dump whole collection
-          result.item = this.values[name]
+          if (schema.type === 'collection') {
+            const valueItems = []
+
+            for (const id in values) {
+              if (Object.hasOwnProperty.call(values, id)) {
+                const value = values[id]
+                const dataResult = new DataResult(name, id)
+
+                dataResult.isEmpty = false
+                dataResult.isCollection = false
+                dataResult.item = value._item
+                dataResult.metadata = value._metadata
+                dataResult.previous = value._previous
+
+                valueItems.push(dataResult)
+              }
+            }
+
+            values = valueItems
+          }
+
+          result.isCollection = true
+          result.isCollectionEmpty = false
+          result.item = values
         }
 
         if (result.item == null) {
