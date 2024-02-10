@@ -44,7 +44,7 @@ export default definePlugin({
       private: true,
       default: () => 'HS256'
     },
-    cookieSecret: {
+    secret: {
       private: true,
       schema: {
         type: 'string'
