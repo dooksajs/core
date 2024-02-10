@@ -14,6 +14,7 @@ function DataResult (collection = '', id = '') {
   this.expand = []
   this.expandIncluded = {}
   this.isCollectionEmpty = false
+  this.isCollection = false
   this.isAffixEmpty = true
   this.noAffixId = true
 

@@ -1,3 +1,4 @@
+import { dsOperator } from '@dooksa/ds-plugin'
 import {
   dsMiddleware,
   dsWebServer,
@@ -35,6 +36,11 @@ const plugins = [
     name: dsDatabase.name,
     version: dsDatabase.version,
     value: dsDatabase
+  },
+  {
+    name: dsOperator.name,
+    version: dsOperator.version,
+    value: dsOperator
   },
   {
     name: dsContent.name,

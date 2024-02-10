@@ -13,15 +13,6 @@ export default definePlugin({
   name: 'dsOperator',
   version: 1,
   methods: {
-    iterate ({ item, dsActionId }) {
-      for (const key in item) {
-        if (Object.hasOwnProperty.call(item, key)) {
-          const value = item[key]
-
-          this.$method('dsAction/dispatch', { id: dsActionId, payload: { key, value } })
-        }
-      }
-    },
     /**
      * Evaluate two values
      * @param {Object} eval - The Object containing the data to evaluate two values
@@ -172,13 +163,13 @@ export default definePlugin({
      * @param {OperatorValues} v
      * @returns {boolean}
      */
-    '_operator/boolean': v => Boolean(v[0]),
+    '_operator/!!': v => Boolean(v[0]),
     /**
      * Check if value is within an string or array
      * @private
      * @param {(string|Array)} v
      * @return {boolean}
      */
-    '_operator/includes': v => v[0].includes(v[1])
+    '_operator/~': v => v[0].includes(v[1])
   }
 })
