@@ -1,24 +1,24 @@
 import { definePlugin } from '@dooksa/ds-scripts'
 
 /**
- * @typedef {Object} SortContent
+ * @typedef {Object} ArraySortContent
  * @property {string} contentId - dsContent/item id
  * @property {string} widgetId - dsWidget/item id
  * @property {string[]} content - The content value position within the content object
  */
 
 /**
- * @typedef {Object} FilterBy
+ * @typedef {Object} ArrayFilterBy
  * @property {string} name - Name of operator
  * @property {*} value - Value to compare with content value
  */
 
 /**
- * @typedef {('ascending'|'descending')} SortBy
+ * @typedef {('ascending'|'descending')} ArraySortBy
  */
 
 /**
- * @typedef {Object} SortValue
+ * @typedef {Object} ArraySortValue
  * @property {(string|number)} value - Content value
  * @property {string} widgetId - dsWidget/item id
  */
@@ -30,8 +30,8 @@ export default definePlugin({
     /**
      * Filter items based on conditions
      * @param {Object} param
-     * @param {SortValue[]} param.items
-     * @param {FilterBy[]} param.options
+     * @param {ArraySortValue[]} param.items
+     * @param {ArrayFilterBy[]} param.options
      * @returns {Object}
      */
     filter ({ items, options }) {
@@ -85,70 +85,6 @@ export default definePlugin({
       }
 
       return result
-    },
-    /**
-     * Remove items from an array
-     * @param {Object} arrayRemove - The Object containing the data to remove a group of items from an array
-     * @param {*[]} arrayRemove.list - The source array
-     * @param {number[]} arrayRemove.items - A list of indexes that will be removed
-     */
-    remove ({ list, items }) {
-      const newList = []
-
-      for (let i = 0; i < list.length; i++) {
-        let hasItem = false
-
-        for (let j = 0; j < items.length; j++) {
-          if (i === items[j]) {
-            hasItem = true
-            break
-          }
-        }
-
-        if (!hasItem) {
-          newList.push(list[i])
-        }
-      }
-
-      return newList
-    },
-    /**
-     * Find the next key value pair in a list
-     * @param {Object} nextKeyValue - The Object containing the params
-     * @param {*[]} nextKeyValue.list - An array of objects
-     * @param {string} nextKeyValue.key - The key used to compare
-     * @param {number} nextKeyValue.index - The index starting point
-     * @returns {[*, number]} An array with the found value and index
-     */
-    nextKeyValue ({ list, key, index = 0 }) {
-      const currentValue = list[index][key]
-
-      for (let i = index; i < list.length; i++) {
-        if (list[i][key] !== currentValue) {
-          return [list[i][key], i]
-        }
-      }
-
-      return [currentValue, index]
-    },
-    /**
-     * Find the previous key value pair in a list
-     * @param {Object} prevKeyValue - The Object containing the params
-     * @param {*[]} prevKeyValue.list - An array of objects
-     * @param {string} prevKeyValue.key - The key used to compare
-     * @param {number} prevKeyValue.index - The index starting point
-     * @returns {[*, number]} An array with the found value and index
-     */
-    prevKeyValue ({ list, key, index = 0 }) {
-      const currentValue = list[index][key]
-
-      for (let i = index; i >= 0; i--) {
-        if (list[i][key] !== currentValue) {
-          return [list[i][key], i]
-        }
-      }
-
-      return [currentValue, index]
     },
     /**
      * Find the indexes of objects within a list by key value pairs
@@ -210,6 +146,15 @@ export default definePlugin({
               }
             }
           }
+        }
+      }
+    },
+    iterate ({ item, dsActionId }) {
+      for (const key in item) {
+        if (Object.hasOwnProperty.call(item, key)) {
+          const value = item[key]
+
+          this.$method('dsAction/dispatch', { id: dsActionId, payload: { key, value } })
         }
       }
     },
@@ -284,6 +229,70 @@ export default definePlugin({
       }
 
       return list
+    },
+    /**
+     * Find the next key value pair in a list
+     * @param {Object} nextKeyValue - The Object containing the params
+     * @param {*[]} nextKeyValue.list - An array of objects
+     * @param {string} nextKeyValue.key - The key used to compare
+     * @param {number} nextKeyValue.index - The index starting point
+     * @returns {[*, number]} An array with the found value and index
+     */
+    nextKeyValue ({ list, key, index = 0 }) {
+      const currentValue = list[index][key]
+
+      for (let i = index; i < list.length; i++) {
+        if (list[i][key] !== currentValue) {
+          return [list[i][key], i]
+        }
+      }
+
+      return [currentValue, index]
+    },
+    /**
+     * Find the previous key value pair in a list
+     * @param {Object} prevKeyValue - The Object containing the params
+     * @param {*[]} prevKeyValue.list - An array of objects
+     * @param {string} prevKeyValue.key - The key used to compare
+     * @param {number} prevKeyValue.index - The index starting point
+     * @returns {[*, number]} An array with the found value and index
+     */
+    prevKeyValue ({ list, key, index = 0 }) {
+      const currentValue = list[index][key]
+
+      for (let i = index; i >= 0; i--) {
+        if (list[i][key] !== currentValue) {
+          return [list[i][key], i]
+        }
+      }
+
+      return [currentValue, index]
+    },
+    /**
+     * Remove items from an array
+     * @param {Object} arrayRemove - The Object containing the data to remove a group of items from an array
+     * @param {*[]} arrayRemove.list - The source array
+     * @param {number[]} arrayRemove.items - A list of indexes that will be removed
+     */
+    remove ({ list, items }) {
+      const newList = []
+
+      for (let i = 0; i < list.length; i++) {
+        let hasItem = false
+
+        for (let j = 0; j < items.length; j++) {
+          if (i === items[j]) {
+            hasItem = true
+            break
+          }
+        }
+
+        if (!hasItem) {
+          newList.push(list[i])
+        }
+      }
+
+      return newList
     },
     /**
      * Sort list
