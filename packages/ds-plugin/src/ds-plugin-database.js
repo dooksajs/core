@@ -1,69 +1,27 @@
 import { definePlugin } from '@dooksa/ds-scripts'
 
 /**
+ * @typedef {import('@dooksa/ds-scripts/src/types.js').DsDataWhere} DsDataWhere
+ */
+
+/**
  * @namespace dsDatabase
  */
 export default definePlugin({
   name: 'dsDatabase',
   version: 1,
   data: {
-    adapter: {
+    hostname: {
       private: true,
-      default: () => 'dsDatabaseLocal'
-    },
-    createName: {
-      private: true,
-      default: () => 'create'
-    },
-    deleteName: {
-      private: true,
-      default: () => 'delete'
-    },
-    getListName: {
-      private: true,
-      default: () => 'getList'
-    },
-    getOneName: {
-      private: true,
-      default: () => 'getOne'
-    },
-    updateName: {
-      private: true,
-      default: () => 'update'
+      default: () => 'http://localhost:6362/_/'
     }
   },
-  /** @lends dsDatabase */
+  setup ({ hostname } = {}) {
+    if (hostname) {
+      this.hostname = hostname + '/_/'
+    }
+  },
   methods: {
-    /**
-     * Get a list of documents
-     * @param {Object} param
-     * @param {string} param.collection - ID or name of the records' collection.
-     * @param {number} param.page - The page (aka. offset) of the paginated list (default to 1).
-     * @param {number} param.perPage - The max returned records per page (default to 25).
-     */
-    getList ({ collection, page = 1, perPage = 25, options = {} }) {
-      return new Promise((resolve, reject) => {
-        this.$action(this.getListName,
-          { collection, page, perPage, options },
-          {
-            onSuccess: (result) => resolve(result),
-            onError: (error) => reject(error)
-          })
-      })
-    },
-    getOne ({ collection, id, options = {} }) {
-      return new Promise((resolve, reject) => {
-        this.$action(this.getOneName, {
-          collection,
-          id,
-          options
-        },
-        {
-          onSuccess: (result) => resolve(result),
-          onError: (error) => reject(error)
-        })
-      })
-    },
     create ({ collection, id, data, options = {} }) {
       return new Promise((resolve, reject) => {
         this.getOne({ collection, id, options })
@@ -93,6 +51,131 @@ export default definePlugin({
           })
       })
     },
+    delete ({ collection, id }) {
+      return new Promise((resolve, reject) => {
+        this.$action(this.deleteName, {
+          collection,
+          id
+        },
+        {
+          onSuccess: (result) => resolve(result),
+          onError: (error) => reject(error)
+        })
+      })
+    },
+    /**
+     * Get a list of documents
+     * @param {Object} param
+     * @param {string} param.collection - Name of the records' collection.
+     * @param {number} [param.expand] - Fetch related documents.
+     * @param {number} [param.page] - The page (aka. offset) of the paginated list (default to 1).
+     * @param {number} [param.perPage] - The max returned records per page (default to 25).
+     * @param {number} [param.limit] - The max returned records per page (default to 25).
+     * @param {DsDataWhere} [param.where] -
+     */
+    getAll ({ collection, page, perPage, limit, where, expand }) {
+      return new Promise((resolve, reject) => {
+        if (!collection) {
+          throw new Error('Collection was not defined')
+        }
+
+        const and = '&'
+        let query = '?'
+        let firstQuery = true
+
+        if (page) {
+          if (firstQuery) {
+            firstQuery = false
+            query += and
+          }
+
+          query += 'page=' + page
+        }
+
+        if (perPage) {
+          if (firstQuery) {
+            firstQuery = false
+            query += and
+          }
+
+          query += 'perPage=' + perPage
+        }
+
+        if (limit) {
+          if (firstQuery) {
+            firstQuery = false
+            query += and
+          }
+
+          query += 'limit=' + limit
+        }
+
+        if (where) {
+          if (firstQuery) {
+            firstQuery = false
+            query += and
+          }
+
+          query += 'where=' + where
+        }
+
+        if (expand) {
+          if (firstQuery) {
+            firstQuery = false
+            query += and
+          }
+
+          query += expand
+        }
+
+        // reset query
+        if (query === '?') {
+          query = ''
+        }
+
+        fetch(this.hostname + collection + query)
+          .then(docs => {
+            resolve(docs)
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    },
+    getById ({ collection, id, expand }) {
+      return new Promise((resolve, reject) => {
+        if (!collection) {
+          throw new Error('Collection was not defined')
+        }
+        if (!Array.isArray(id) && !id.length) {
+          reject(new Error('Document id was not defined'))
+        }
+
+        let query = '?id=' + id[0]
+
+        for (let i = 1; i < id.length; i++) {
+          const value = id[i]
+
+          query += '&id=' + value
+        }
+
+        if (expand) {
+          query += '&expand=true'
+        }
+
+        fetch(this.hostname + collection + query)
+          .then(response => {
+            if (response.ok) {
+              resolve(response.json())
+            }
+
+            resolve(false)
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    },
     update ({ collection, id, data }) {
       return new Promise((resolve, reject) => {
         this.$action(this.updateName, {
@@ -106,18 +189,7 @@ export default definePlugin({
         })
       })
     },
-    delete ({ collection, id }) {
-      return new Promise((resolve, reject) => {
-        this.$action(this.deleteName, {
-          collection,
-          id
-        },
-        {
-          onSuccess: (result) => resolve(result),
-          onError: (error) => reject(error)
-        })
-      })
-    },
+
     _updateNames () {
       this.createName = this.adapter + '/' + this.createName
       this.deleteName = this.adapter + '/' + this.deleteName
