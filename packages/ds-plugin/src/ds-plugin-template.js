@@ -227,15 +227,16 @@ export default definePlugin({
       // fetch template
       if (template.isEmpty) {
         return new Promise((resolve, reject) => {
-          fetch('/_/template?expand=true&id=' + id)
-            .then(response => {
-              if (response.ok) {
-                return response.json()
+          this.$action('dsDatabase/getById', {
+            collection: 'template',
+            id: [id],
+            expand: true
+          }, {
+            onSuccess: data => {
+              if (!data) {
+                resolve(false)
               }
 
-              resolve(false)
-            })
-            .then(data => {
               const dataItem = data[0]
               const templateData = this.$setDataValue(dataItem.collection, dataItem.item, { id: dataItem.id })
 
@@ -267,8 +268,9 @@ export default definePlugin({
                 actionGroupId,
                 dsSectionId
               }, resolve)
-            })
-            .catch(error => reject(error))
+            },
+            onError: error => reject(error)
+          })
         })
       }
 
@@ -536,9 +538,6 @@ export default definePlugin({
       }
 
       return result
-    },
-    fetch () {
-
     },
     /**
      * Create action block overwrites
