@@ -26,9 +26,19 @@ function SchemaException (details) {
  * @param {string} response.message
  */
 
+/**
+ * @typedef {import('@dooksa/ds-scripts/src/types.js').DsDataWhere} DsDataWhere
+ */
+
 export default definePlugin({
   name: 'dsData',
   version: 1,
+  dependencies: [
+    {
+      name: 'dsOperator',
+      version: 1
+    }
+  ],
   data: {
     'data/listener/delete': {
       private: true,
@@ -299,7 +309,7 @@ export default definePlugin({
        */
       value (name, { id, prefixId, suffixId, options } = {}) {
         if (this.values[name] == null) {
-          this.$log('error', { message: 'No such collection: ' + name, code: 54 })
+          this.$log('error', { message: 'No such collection: ' + name, code: 44 })
 
           // create result
           const result = new DataResult(name, id)
@@ -312,11 +322,15 @@ export default definePlugin({
         const result = new DataResult(name, id)
         const schema = this.schema[name]
 
-        if (arguments[1] && Object.hasOwnProperty.call(arguments[1], 'id') && id == null) {
+        if (schema.type === 'collection' && id == null) {
           result.isEmpty = true
 
           return result
-        } else if (id != null) {
+        } else {
+          result.item = this.values[name]
+        }
+
+        if (id != null) {
           // find document using custom affixes
           if (prefixId || suffixId) {
             let itemId
@@ -386,117 +400,91 @@ export default definePlugin({
               }
             }
           }
-        } else {
-          let values = this.values[name]
-
-          // dump whole collection
-          if (schema.type === 'collection') {
-            const valueItems = []
-
-            for (const id in values) {
-              if (Object.hasOwnProperty.call(values, id)) {
-                const value = values[id]
-                const dataResult = new DataResult(name, id)
-
-                dataResult.isEmpty = false
-                dataResult.isCollection = false
-                dataResult.item = value._item
-                dataResult.metadata = value._metadata
-                dataResult.previous = value._previous
-
-                valueItems.push(dataResult)
-              }
-            }
-
-            values = valueItems
-          }
-
-          result.isCollection = true
-          result.isCollectionEmpty = false
-          result.item = values
         }
 
         if (result.item == null) {
           return result
-        } else {
-          result.isEmpty = false
         }
 
-        if (options) {
-          const relations = this.relation[name + '/' + result.id]
+        result.isEmpty = false
 
-          result.isExpandEmpty = !relations
+        if (!options) {
+          return result
+        }
 
-          if (options.expand && relations) {
-            result.isExpandEmpty = false
-            result.expandIncluded = options.expandExclude ?? {}
+        const relations = this.relation[name + '/' + result.id]
 
-            for (let i = 0; i < relations.length; i++) {
-              const relation = relations[i]
+        result.isExpandEmpty = !relations
 
-              // prevent duplication and infinite loop
-              if (result.expandIncluded[relation] != null) {
-                continue
-              }
+        if (options.expand && relations) {
+          result.isExpandEmpty = false
+          result.expandIncluded = options.expandExclude ?? {}
 
-              result.expandIncluded[relation] = true
+          for (let i = 0; i < relations.length; i++) {
+            const relation = relations[i]
 
-              const item = relation.split('/')
-              const name = item[0] + '/' + item[1]
-              const id = item[2]
-              const value = this.$getDataValue(name, {
-                id,
-                options: {
-                  expand: true,
-                  expandExclude: result.expandIncluded,
-                  expandWritable: options.expandWritable,
-                  writable: options.expandWritable
-                }
-              })
-
-              if (value.isEmpty) {
-                continue
-              }
-
-              if (!value.isExpandEmpty) {
-                for (let i = 0; i < value.expand.length; i++) {
-                  const item = value.expand[i]
-                  const name = item.collection + '/' + item.id
-
-                  if (options.expandWritable) {
-                    item.item = item.clone()
-                  }
-
-                  result.expandIncluded[name] = result.expand.length
-                  result.expand.push(item)
-                }
-              }
-
-              result.expandIncluded[relation] = result.expand.length
-
-              result.expand.push({
-                collection: name,
-                id: value.id,
-                item: !options.expandWritable ? value.item : value.clone(),
-                metadata: value.metadata
-              })
+            // prevent duplication and infinite loop
+            if (result.expandIncluded[relation] != null) {
+              continue
             }
-          }
 
-          // return a mutable item
-          if (options.writable) {
-            result.item = result.clone()
-          }
+            result.expandIncluded[relation] = true
 
-          // return a value from position
-          if (Number.isInteger(options.position)) {
-            if (result.item[options.position]) {
-              result.item = result.item[options.position]
-            } else {
-              result.isEmpty = true
+            const item = relation.split('/')
+            const name = item[0] + '/' + item[1]
+            const id = item[2]
+            const value = this.$getDataValue(name, {
+              id,
+              options: {
+                expand: true,
+                expandExclude: result.expandIncluded,
+                expandWritable: options.expandWritable,
+                writable: options.expandWritable
+              }
+            })
 
-              return result
+            if (value.isEmpty) {
+              continue
             }
+
+            if (!value.isExpandEmpty) {
+              for (let i = 0; i < value.expand.length; i++) {
+                const item = value.expand[i]
+                const name = item.collection + '/' + item.id
+
+                if (options.expandWritable) {
+                  item.item = item.clone()
+                }
+
+                result.expandIncluded[name] = result.expand.length
+                result.expand.push(item)
+              }
+            }
+
+            result.expandIncluded[relation] = result.expand.length
+
+            result.expand.push({
+              collection: name,
+              id: value.id,
+              item: !options.expandWritable ? value.item : value.clone(),
+              metadata: value.metadata
+            })
+          }
+        }
+
+        // return a mutable item
+        if (options.writable) {
+          result.item = result.clone()
+        }
+
+        // return a value from position
+        if (Number.isInteger(options.position)) {
+          if (result.item[options.position]) {
+            result.item = result.item[options.position]
+          } else {
+            result.isEmpty = true
+
+            return result
           }
         }
 
@@ -622,6 +610,81 @@ export default definePlugin({
      */
     generateId () {
       return '_' + uuid() + '_'
+    },
+    /**
+     * Retrieve all entities from collection
+     * @param {Object} param
+     * @param {string} param.name - Name of collection
+     * @param {DsDataWhere} param.where
+     */
+    find ({ name, where }) {
+      const values = this.values[name]
+
+      if (values == null) {
+        this.$log('error', { message: 'No such collection: ' + name, code: 44 })
+
+        // create result
+        const result = new DataResult(name)
+
+        result.isCollectionEmpty = true
+
+        return result
+      }
+
+      const result = new DataResult(name)
+      const schema = this.schema[name]
+
+      if (schema.type === 'collection') {
+        const valueItems = []
+
+        for (const id in values) {
+          if (Object.hasOwnProperty.call(values, id)) {
+            const value = values[id]
+            const dataResult = new DataResult(name, id)
+            let isValid = true
+
+            dataResult.isEmpty = false
+            dataResult.isCollection = false
+            dataResult.item = value._item
+            dataResult.metadata = value._metadata
+            dataResult.previous = value._previous
+
+            if (where) {
+              isValid = this._filter(dataResult, where)
+            }
+
+            if (isValid) {
+              valueItems.push(dataResult)
+            }
+          }
+        }
+
+        result.isCollection = true
+        result.isCollectionEmpty = false
+        result.item = valueItems
+
+        return result
+      }
+
+      let isValid = true
+
+      result.isEmpty = false
+      result.isCollection = false
+      result.item = values._item
+      result.metadata = values._metadata
+      result.previous = values._previous
+
+      if (where) {
+        isValid = this._filter(result, where)
+      }
+
+      if (!isValid) {
+        result.isEmpty = true
+
+        return result
+      }
+
+      return result
     },
     unsafeSetData ({ name, data, options }) {
       const result = new DataResult(name, options.id)
@@ -922,6 +985,98 @@ export default definePlugin({
         id: prefix + id + suffix,
         noAffixId: id
       }
+    },
+    /**
+     * Filter data result based on condition
+     * @private
+     * @param {DataResult} data
+     * @param {DsDataWhere} where
+     * @returns {boolean}
+     */
+    _filter (data, where) {
+      let isAndValid = false
+      let isOrValid = false
+      let isValid = false
+
+      if (where.and) {
+        for (let i = 0; i < where.and.length; i++) {
+          const condition = where.and[i]
+
+          if (condition.and || condition.or) {
+            isAndValid = this._filter(data, condition)
+
+            if (!isAndValid) {
+              break
+            }
+          }
+
+          isAndValid = this._filterValidateValue(data, condition)
+
+          if (!isAndValid) {
+            break
+          }
+        }
+      }
+
+      if (where.or) {
+        for (let i = 0; i < where.or.length; i++) {
+          const condition = where.or[i]
+
+          if (condition.and || condition.or) {
+            isOrValid = this._filter(data, condition)
+
+            if (!isOrValid) {
+              break
+            }
+          }
+
+          isOrValid = this._filterValidateValue(data, condition)
+
+          if (isOrValid) {
+            break
+          }
+        }
+      }
+
+      if (where.name) {
+        isValid = this._filterValidateValue(data, where)
+      }
+
+      return (isAndValid || isOrValid || isValid)
+    },
+    /**
+     * Process where condition
+     * @private
+     * @param {DataResult} data - Data result
+     * @param {DsDataWhere} condition - Where condition
+     * @returns {Boolean}
+     */
+    _filterValidateValue (data, condition) {
+      let value
+
+      if (Object.hasOwnProperty.call(data.metadata, condition.name)) {
+        value = data.metadata[condition.name]
+      } else {
+        const properties = condition.name.split('.')
+
+        for (let i = 0; i < properties.length; i++) {
+          const property = properties[i]
+
+          if (Object.hasOwnProperty.call(data.item, property)) {
+            value = data.item[property]
+          } else {
+            break
+          }
+        }
+      }
+
+      return this.$method('dsOperator/eval', {
+        name: condition.op,
+        values: [
+          value,
+          condition.value
+        ]
+      })
     },
     /**
      * Get data listeners
