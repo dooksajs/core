@@ -11,7 +11,8 @@ export default definePlugin({
   version: 1,
   dependencies: [
     {
-      name: 'dsUser'
+      name: 'dsUser',
+      version: 1
     }
   ],
   data: {
@@ -167,14 +168,6 @@ export default definePlugin({
         widgetEvent: template.widgetEvent,
         widgetSection: template.widgetSection,
         section: template.section
-      }, {
-        id: template.id
-      })
-
-      this.$setDataValue('dsTemplate/metadata', {
-        name: template.name,
-        description: template.description,
-        icon: template.icon
       }, {
         id: template.id
       })
