@@ -326,8 +326,6 @@ export default definePlugin({
           result.isEmpty = true
 
           return result
-        } else {
-          result.item = this.values[name]
         }
 
         if (id != null) {
@@ -400,6 +398,8 @@ export default definePlugin({
               }
             }
           }
+        } else {
+          result.item = this.values[name]
         }
 
         if (result.item == null) {
