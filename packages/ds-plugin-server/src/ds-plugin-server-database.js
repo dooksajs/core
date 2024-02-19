@@ -99,8 +99,8 @@ export default definePlugin({
         const result = []
         let where
 
-        if (request.query.filter) {
-          where = this._stringToCondition(request.query.filter)
+        if (request.query.where) {
+          where = this._stringToCondition(request.query.where)
         }
 
         for (let i = 0; i < collections.length; i++) {
@@ -123,7 +123,7 @@ export default definePlugin({
             if (request.query.expand) {
               args.options = {
                 expand: true
-              }``
+              }
 
               value.expand = []
             }
@@ -142,8 +142,8 @@ export default definePlugin({
               value.expand = data.expand
             }
 
-            if (filter) {
-              const data = this._filterData(value, filter)
+            if (where) {
+              const data = this._filterData(value, where)
 
               if (data) {
                 result.push(data)
