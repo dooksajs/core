@@ -22,7 +22,7 @@ export default definePlugin({
     this.$seedDatabase('ds-template-items')
     this.$seedDatabase('ds-template-metadata')
 
-    // route: get a list of section
+    // route: get a list or one template
     this.$setWebServerRoute('/template', {
       method: 'get',
       middleware: ['request/queryIsArray'],
@@ -40,7 +40,7 @@ export default definePlugin({
       ]
     })
 
-    // route: get a list of section
+    // route: get a list or one template metadata
     this.$setWebServerRoute('/template/metadata', {
       method: 'get',
       handlers: [
