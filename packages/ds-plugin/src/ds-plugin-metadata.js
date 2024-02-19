@@ -15,7 +15,7 @@ export default definePlugin({
       }
     },
     availableLanguages: {
-      default: ['en'],
+      default: () => ['en'],
       schema: {
         type: 'array',
         items: {
