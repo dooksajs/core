@@ -111,6 +111,10 @@ export default definePlugin({
       id: 'request/json'
     })
 
+    this.$setDataValue('dsMiddleware/items', express.urlencoded({ extended: false }), {
+      id: 'request/urlencoded'
+    })
+
     if (webServerLogger) {
       this.app.use(webServerLogger)
     }
