@@ -101,13 +101,15 @@ export default definePlugin({
 
     // setup plugins
     this.app.use(helmet())
-    this.app.use(express.json())
-    this.app.use(express.urlencoded({ extended: true }))
     this.app.use(cookieParser(cookieSecret, {
       httpOnly: true,
       sameSite: true,
       secure: !this.isDev
     }))
+
+    this.$setDataValue('dsMiddleware/items', express.json(), {
+      id: 'request/json'
+    })
 
     if (webServerLogger) {
       this.app.use(webServerLogger)

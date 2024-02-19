@@ -67,7 +67,7 @@ export default definePlugin({
     this.$setWebServerRoute('/', {
       method: 'post',
       suffix: '',
-      middleware: ['dsUser/auth'],
+      middleware: ['request/json', 'dsUser/auth'],
       handlers: [this._save.bind(this)]
     })
   },

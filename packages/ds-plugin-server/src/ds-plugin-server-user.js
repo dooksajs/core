@@ -85,6 +85,7 @@ export default definePlugin({
     // add routes
     this.$setWebServerRoute('/user/register', {
       method: 'post',
+      middleware: ['request/json'],
       handlers: [
         this._checkPassword.bind(this),
         this._create.bind(this)
@@ -93,6 +94,7 @@ export default definePlugin({
 
     this.$setWebServerRoute('/user/login', {
       method: 'post',
+      middleware: ['request/json'],
       handlers: [
         this._checkPassword.bind(this),
         this._login.bind(this)]
