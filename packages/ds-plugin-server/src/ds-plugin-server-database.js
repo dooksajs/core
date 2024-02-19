@@ -5,12 +5,7 @@ import { definePlugin } from '@dooksa/ds-scripts'
 
 /**
  * @typedef {import('@dooksa/ds-plugin/src/utils/DataResult.js')} DataResult
-
-/**
- * @typedef {Object} Filter
- * @property {Array.<Array>} sequences - List of AND OR
- * @property {Array.<Array>} fields - List of field names and their position within the compare array to be replaced with the value from the result fields
- * @property {Array.<Array>} compare - List of conditionals
+ * @typedef {import('@dooksa/ds-scripts/src/types.js').DsDataWhere} DsDataWhere
  */
 
 /**
@@ -19,12 +14,6 @@ import { definePlugin } from '@dooksa/ds-scripts'
 export default definePlugin({
   name: 'dsDatabase',
   version: 1,
-  dependencies: [
-    {
-      name: 'dsOperator',
-      version: 1
-    }
-  ],
   data: {
     path: {
       private: true,
@@ -54,17 +43,6 @@ export default definePlugin({
         type: 'object'
       }
     },
-    filterTypes: {
-      private: true,
-      default: () => ({
-        f: [['f', 'a', 'l', 's', 'e'], false],
-        t: [['t', 'r', 'u', 'e'], true],
-        n: [['n', 'u', 'l', 'l'], null]
-      }),
-      schema: {
-        type: 'object'
-      }
-    },
     operators: {
       private: true,
       default: () => ({
@@ -79,6 +57,17 @@ export default definePlugin({
         '(': true,
         '&': true,
         '|': true
+      }),
+      schema: {
+        type: 'object'
+      }
+    },
+    types: {
+      private: true,
+      default: () => ({
+        f: [['f', 'a', 'l', 's', 'e'], false],
+        t: [['t', 'r', 'u', 'e'], true],
+        n: [['n', 'u', 'l', 'l'], null]
       }),
       schema: {
         type: 'object'
@@ -108,10 +97,10 @@ export default definePlugin({
     $getDatabaseValue (collections) {
       return (request, response) => {
         const result = []
-        let filter
+        let where
 
         if (request.query.filter) {
-          filter = this._queryToFilter(request.query.filter)
+          where = this._stringToCondition(request.query.filter)
         }
 
         for (let i = 0; i < collections.length; i++) {
@@ -119,28 +108,9 @@ export default definePlugin({
 
           // fetch collection
           if (!request.query.id) {
-            const dataValues = this.$getDataValue(collection)
+            const dataValues = this.$method('dsData/find', { name: collection, where })
 
-            if (filter) {
-              if (dataValues.isCollection) {
-                for (let i = 0; i < dataValues.item.length; i++) {
-                  const data = dataValues.item[i]
-                  const isValid = this._filterData(data, filter)
-
-                  if (isValid) {
-                    result.push(data)
-                  }
-                }
-              } else {
-                const isValid = this._filterData(dataValues, filter)
-
-                if (isValid) {
-                  result.push(dataValues)
-                }
-              }
-            } else {
-              result.push(dataValues)
-            }
+            result.push(dataValues)
 
             continue
           }
@@ -153,7 +123,7 @@ export default definePlugin({
             if (request.query.expand) {
               args.options = {
                 expand: true
-              }
+              }``
 
               value.expand = []
             }
@@ -313,411 +283,6 @@ export default definePlugin({
         message: 'Successfully saved'
       }
     },
-    /**
-     *
-     * @param {DataResult} data
-     * @param {Filter} filter
-     */
-    _filterData (data, filter) {
-      const notValid = false
-      const compare = filter.compare.slice()
-      const compareCloned = {}
-
-      for (let i = 0; i < filter.fields.length; i++) {
-        const [name, compareIndex, index] = filter.fields[i]
-
-        if (name === 'createdAt' || name === 'updatedAt') {
-          if (!compareCloned[compareIndex]) {
-            compare[compareIndex] = compare[compareIndex].slice()
-            compareCloned[compareIndex] = true
-          }
-
-          // update compare value with metadata
-          compare[compareIndex][index] = data.metadata[name]
-        } else {
-          const properties = name.split('.')
-          let value = data.item
-
-          for (let i = 0; i < properties.length; i++) {
-            const property = properties[i]
-
-            if (value[property] == null) {
-              value = undefined
-              break
-            }
-
-            value = value[property]
-          }
-
-          if (value === undefined) {
-            return notValid
-          }
-
-          if (!compareCloned[compareIndex]) {
-            compare[compareIndex] = compare[compareIndex].slice()
-            compareCloned[compareIndex] = true
-          }
-
-          // update compare value
-          compare[compareIndex][index] = value
-        }
-      }
-
-      const results = {}
-      const sequences = filter.sequences
-      let prevIndex
-
-      /* eslint no-labels: ["error", { "allowLoop": true }] */
-      sequence: for (let i = 0; i < sequences.length; i++) {
-        const sequence = sequences[i]
-
-        if (!results[i]) {
-          results[i] = {}
-        }
-
-        for (let j = 0; j < 3; j = j + 2) {
-          let index = sequence[j]
-
-          if (index === undefined) {
-            break
-          }
-
-          // check if condition has already been processed
-          if (Object.hasOwnProperty.call(results[i], j)) {
-            continue
-          }
-
-          if (index < 0) {
-            index = Math.abs(index) - 1
-            const result = results[index]
-
-            // check sequence
-            if (result == null) {
-              prevIndex = i - 1
-              i = index - 1
-
-              continue sequence
-            }
-
-            const left = result[0]
-            const right = result[2]
-            const andOr = sequences[index][1]
-
-            if (andOr === '&&' && (!left || !right)) {
-              return notValid
-            }
-
-            if (andOr === '||' && (!left && !right)) {
-              return notValid
-            }
-
-            results[i][j] = true
-          } else {
-            results[i][j] = this.$method('dsOperator/eval', {
-              name: compare[index][1],
-              values: [compare[index][0], compare[index][2]]
-            })
-          }
-
-          if (sequences.length === 1 && !results[i][j]) {
-            return notValid
-          }
-
-          if (prevIndex != null && j === 2) {
-            const result = results[i]
-
-            if (sequence[1] === '&&' && (!result[0] || !result[2])) {
-              return notValid
-            } else if (!result[0] && !result[2]) {
-              return notValid
-            }
-          }
-        }
-
-        if (prevIndex != null) {
-          i = prevIndex
-          prevIndex = null
-        }
-
-        return !notValid
-      }
-    },
-    /**
-     * Convert filter query
-     * @param {string} query - Conditional query {@link https://eslint.style/rules/js/no-mixed-operators}
-     * @returns {Filter}
-     */
-    _queryToFilter (query) {
-      const result = {
-        sequences: [],
-        fields: [],
-        compare: []
-      }
-      const brackets = []
-      let sequenceIndex = -1
-      let compare = []
-      let value = ''
-
-      for (let i = 0; i < query.length; i++) {
-        let char = query[i]
-
-        // ignore whitespace
-        if (char === ' ') {
-          continue
-        }
-
-        // open bracket
-        if (char === '(') {
-          result.sequences.push([])
-
-          sequenceIndex++
-
-          const bracketIndex = sequenceIndex + 1
-
-          brackets.push(bracketIndex - bracketIndex * 2)
-
-          continue
-        }
-
-        // close bracket
-        if (char === ')') {
-          if (compare.length) {
-            const sequence = result.sequences[sequenceIndex]
-
-            sequence.push(result.compare.length)
-            result.compare.push(compare.slice())
-
-            // reset compare
-            compare = []
-
-            if (sequence.length > 2) {
-              result.sequences.push([])
-              sequenceIndex++
-            }
-          }
-
-          continue
-        }
-
-        // store string
-        if (char === "'" || char === '"') {
-          let j = i + 1
-          let char = query[j]
-          const length = query.length - 1
-
-          do {
-            value += char
-            j++
-            char = query[j]
-
-            if (j > length) {
-              throw new Error('String missing end quote')
-            }
-          } while (char !== "'" && char !== '"')
-
-          i = j
-
-          compare.push(value)
-          value = ''
-
-          if (compare.length > 2) {
-            const sequence = result.sequences[sequenceIndex]
-
-            sequence.push(result.compare.length)
-            result.compare.push(compare.slice())
-
-            compare = []
-
-            if (sequence.length > 2) {
-              result.sequences.push([])
-              sequenceIndex++
-            }
-          }
-
-          continue
-        }
-
-        // store and or
-        if (char === '&' || char === '|') {
-          char = query[++i]
-
-          if (char !== '&' && char !== '|') {
-            throw new Error('AND OR Unexpected character "' + char + '"')
-          }
-
-          const sequence = result.sequences[sequenceIndex]
-
-          if (!sequence.length) {
-            if (!brackets.length) {
-              throw new Error('Expected brackets on left but was undefined')
-            }
-
-            sequence.push(brackets[brackets.length - 1])
-            brackets.pop()
-            sequence.push(char + char)
-          } else {
-            sequence.push(char + char)
-          }
-
-          for (let j = i + 1; j < query.length; j++) {
-            const char = query[j]
-
-            if (char === ' ') {
-              continue
-            }
-
-            if (char !== '(') {
-              i = j - 1
-
-              break
-            } else {
-              const bracketIndex = sequenceIndex + 2
-
-              sequence.push(bracketIndex - bracketIndex * 2)
-              result.sequences.push([])
-
-              i = j
-              sequenceIndex++
-              break
-            }
-          }
-
-          continue
-        }
-
-        if (!value) {
-          // store number
-          if (!isNaN(parseInt(char))) {
-            let j = i
-            let num = query[j]
-
-            while (!isNaN(parseInt(num))) {
-              value += num
-              num = query[++j]
-            }
-
-            i = j - 1
-
-            const nextChar = query[j]
-
-            if (!this.operators[nextChar]) {
-              continue
-            }
-
-            compare.push(parseInt(value))
-
-            value = ''
-
-            if (compare.length > 2) {
-              const sequence = result.sequences[sequenceIndex]
-
-              sequence.push(result.compare.length)
-              result.compare.push(compare.slice())
-
-              compare = []
-
-              if (sequence.length > 2) {
-                result.sequences.push([])
-                sequenceIndex++
-              }
-            }
-
-            continue
-          }
-
-          const types = this.filterTypes[char]
-
-          if (types) {
-            const [chars, newValue] = types
-            let isValid = true
-
-            for (let j = 0; j < chars.length; j++) {
-              const char = chars[j]
-
-              if (char !== query[i + j]) {
-                isValid = false
-                break
-              }
-            }
-
-            if (!isValid) {
-              value += char
-
-              continue
-            }
-
-            // test next char
-            if (/[^a-zA-Z0-9_ ]/.test(query[i + chars.length])) {
-              value += char
-
-              continue
-            }
-
-            // set index after value
-            i = i + chars.length
-            // reset value
-            value = ''
-
-            compare.push(newValue)
-
-            if (compare.length > 2) {
-              const sequence = result.sequences[sequenceIndex]
-
-              sequence.push(result.compare.length)
-              result.compare.push(compare.slice())
-
-              compare = []
-
-              if (sequence.length > 2) {
-                result.sequences.push([])
-                sequenceIndex++
-              }
-            }
-
-            continue
-          }
-        }
-
-        const oneOp = this.operators[char]
-        const twoOp = this.operators[char + query[i + 1]]
-
-        if (!oneOp && !twoOp) {
-          value += char
-        } else {
-          if (compare.length < 2) {
-            result.fields.push([value, result.compare.length, compare.length])
-            compare.push(value)
-            value = ''
-          }
-
-          if (twoOp) {
-            compare.push(char + query[++i])
-          } else {
-            compare.push(char)
-          }
-
-          if (compare.length > 2) {
-            result.sequences[sequenceIndex].push(result.compare.length)
-            result.compare.push(compare.slice())
-
-            compare = []
-            continue
-          }
-
-          if (result.sequences[sequenceIndex].length > 2) {
-            result.sequences[sequenceIndex].push([])
-            sequenceIndex++
-          }
-        }
-      }
-
-      // remove empty sequence
-      if (!result.sequences[result.sequences.length - 1].length) {
-        result.sequences.pop()
-      }
-
-      return result
-    },
     _setSnapshot (collection) {
       // Exit early if error
       if (this.snapshotError[collection]) {
@@ -778,6 +343,290 @@ export default definePlugin({
           console.error(error)
           this.snapshotError[collection] = error
         })
+    },
+    /**
+     * Convert conditional string to Where object
+     * @private
+     * @param {string} string - Conditional string
+     * @returns {DsDataWhere}
+     */
+    _stringToCondition (string) {
+      const result = {}
+      const sequence = {
+        index: 0,
+        openBracket: false,
+        closedBracket: false,
+        list: [result],
+        currentAndOr: '',
+        current: result
+      }
+      let stringStart = 0
+      let stringEnd = string.length
+      let stringEndIndex = stringEnd - 1
+      let condition = {}
+      let value = ''
+
+      if (string[0] === '(' && string[stringEndIndex] === ')') {
+        stringStart++
+        stringEnd--
+        stringEndIndex--
+      }
+
+      // remove whitespace
+      string = string.trim()
+
+      for (let i = stringStart; i < stringEnd; i++) {
+        let char = string[i]
+
+        if (char === ' ') {
+          continue
+        }
+
+        // store string
+        if (char === "'" || char === '"') {
+          let j = i + 1
+          let char = string[j]
+
+          do {
+            value += char
+            j++
+            char = string[j]
+
+            if (j > string.length) {
+              throw new Error('String missing end quote')
+            }
+          } while (char !== "'" && char !== '"')
+
+          i = j
+
+          condition.value = value
+
+          // end of condition
+          if (i === stringEndIndex) {
+            if (Array.isArray(sequence.current)) {
+              sequence.current.push(condition)
+            } else {
+              sequence.current.name = condition.name
+              sequence.current.op = condition.op
+              sequence.current.value = condition.value
+            }
+
+            break
+          }
+
+          value = ''
+
+          continue
+        }
+
+        const types = this.types[char]
+
+        // store by (boolean/null)
+        if (types) {
+          const [chars, newValue] = types
+          let isValid = true
+
+          for (let j = 0; j < chars.length; j++) {
+            const char = chars[j]
+
+            if (char !== string[i + j]) {
+              isValid = false
+              break
+            }
+          }
+
+          if (!isValid) {
+            value += char
+
+            continue
+          }
+
+          // test next char
+          if (/[^a-zA-Z0-9_ ]/.test(string[i + chars.length])) {
+            value += char
+
+            continue
+          }
+
+          condition.value = newValue
+
+          // end of condition
+          if (i === stringEndIndex) {
+            if (Array.isArray(sequence.current)) {
+              sequence.current.push(condition)
+            } else {
+              sequence.current.name = condition.name
+              sequence.current.op = condition.op
+              sequence.current.value = condition.value
+            }
+
+            break
+          }
+
+          // set index after value
+          i = i + chars.length
+          // reset value
+          value = ''
+
+          continue
+        }
+
+        // store number
+        if (!isNaN(parseInt(char))) {
+          let j = i
+          let num = string[j]
+
+          while (!isNaN(parseInt(num))) {
+            value += num
+            num = string[++j]
+          }
+
+          i = j - 1
+
+          const nextChar = string[j]
+
+          if (!this.operators[nextChar] && nextChar !== ' ' && i !== stringEnd) {
+            continue
+          }
+
+          condition.value = parseInt(value)
+
+          // end of condition
+          if (i === stringEndIndex) {
+            if (Array.isArray(sequence.current)) {
+              sequence.current.push(condition)
+            } else {
+              sequence.current.name = condition.name
+              sequence.current.op = condition.op
+              sequence.current.value = condition.value
+            }
+
+            break
+          }
+
+          value = ''
+
+          continue
+        }
+
+        if (char === '(') {
+          sequence.openBracket = true
+
+          continue
+        }
+
+        if (char === ')') {
+          --sequence.index
+          sequence.closedBracket = true
+
+          continue
+        }
+
+        if (char === '&' || char === '|') {
+          char = string[++i]
+
+          if (char !== '&' && char !== '|') {
+            throw new Error('AND OR Unexpected character "' + char + '"')
+          }
+
+          let andOr = 'and'
+
+          if (char === '|') {
+            andOr = 'or'
+          }
+
+          if (sequence.closedBracket && condition.value !== '' && condition.op !== '' && condition.name !== '') {
+            sequence.closedBracket = false
+            sequence.current.push(condition)
+            condition = {
+              name: '',
+              op: '',
+              value: ''
+            }
+          }
+
+          const currentIndex = sequence.list.indexOf(sequence.current)
+          let listChange = false
+
+          if (currentIndex !== sequence.index) {
+            sequence.current = sequence.list[sequence.index]
+            listChange = true
+          }
+
+          if (sequence.openBracket || listChange || !sequence.currentAndOr) {
+            if (Array.isArray(sequence.current)) {
+              sequence.current.push({
+                [andOr]: []
+              })
+              sequence.current = sequence.current[sequence.current.length - 1][andOr]
+            } else {
+              if (!sequence.current[andOr]) {
+                sequence.current[andOr] = []
+              }
+
+              sequence.current = sequence.current[andOr]
+            }
+
+            sequence.openBracket = false
+            sequence.index = sequence.list.length
+            sequence.list.push(sequence.current)
+            sequence.currentAndOr = andOr
+          } else if (sequence.currentAndOr !== andOr) {
+            throw new Error("Unexpected mix of '&&' and '||'. Use parentheses to clarify the intended order of operations.")
+          }
+
+          if (value !== '') {
+            condition.value = value
+            value = ''
+          }
+
+          if (condition.value !== '' && condition.op !== '' && condition.name !== '') {
+            sequence.current.push(condition)
+            condition = {
+              name: '',
+              op: '',
+              value: ''
+            }
+          }
+
+          continue
+        }
+
+        const op1 = this.operators[char]
+        const op2 = this.operators[char + string[i + 1]]
+        if (op1 || op2) {
+          if (op1) {
+            condition.op = char
+          } else if (op2) {
+            condition.op = char + string[++i]
+          }
+
+          if (value === '') {
+            throw new Error('Missing value before operator')
+          }
+
+          condition.name = value
+
+          value = ''
+
+          continue
+        }
+
+        value += char
+
+        // end of condition
+        if (i === stringEndIndex) {
+          if (Array.isArray(sequence.current)) {
+            sequence.current.push(condition)
+          } else {
+            sequence.current.name = condition.name
+            sequence.current.op = condition.op
+            sequence.current.value = value
+          }
+        }
+      }
+
+      return result
     }
   }
 })
