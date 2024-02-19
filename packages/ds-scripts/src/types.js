@@ -126,6 +126,22 @@
  * @property {Object} [script] - This is to load an external plugin (refer to {@link https://bitbucket.org/dooksa/resource-loader/src/master/README.md resource-loader})
  */
 
+/**
+ * @typedef {Object} DsDataWhereProperty
+ * @property {string} name - Property name
+ * @property {'=='|'>'|'>='|'<'|'<='|'!='|'~'|'!~'} op - Operator
+ * @property {string|number|boolean} value - Value to compare
+ */
+
+/**
+ * @typedef {Object} DsDataWhere
+ * @property {DsDataWhere[]} [and] - And
+ * @property {DsDataWhere[]} [or] - And
+ * @property {string} [name] - Property name
+ * @property {'=='|'>'|'>='|'<'|'<='|'!='|'~'|'!~'} [op] - Operator
+ * @property {string|number|boolean} [value] - Value to compare
+ */
+
 // * @property {Object.<string, (DsMethodContext|DsMethod)>} [methods.context] - Context methods are bound to each plugins scope unless specified otherwise
 // * @property {Object.<string, DsMethod>} [methods.public] - Public methods are available within the plugins local scope and shared with other plugins via this.$method('dsExample/methodName')
 // * @property {Object.<string, Function>} [methods.private] - Private methods scope is bound to the plugin only
