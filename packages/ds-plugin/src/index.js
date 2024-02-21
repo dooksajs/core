@@ -20,6 +20,7 @@ import dsView from './ds-plugin-view.js'
 import dsWidget from './ds-plugin-widget.js'
 import dsQuery from './ds-plugin-query.js'
 import dsField from './ds-plugin-field.js'
+import dsList from './ds-plugin-list.js'
 
 export {
   DsPlugin,
@@ -43,5 +44,6 @@ export {
   dsView,
   dsWidget,
   dsQuery,
-  dsField
+  dsField,
+  dsList
 }
