@@ -302,13 +302,19 @@ export default definePlugin({
       return result
     },
     _sync (data, id) {
+      const requestCache = []
+
       for (let i = 0; i < data.length; i++) {
         const dataItem = data[i]
-        const requestCache = []
 
-        if (Array.isArray(dataItem)) {
-          for (let i = 0; i < dataItem.length; i++) {
-            const data = dataItem[i]
+        this.$setDataValue(dataItem.collection, dataItem.item, {
+          id: dataItem.id,
+          metadata: dataItem.metadata
+        })
+
+        if (dataItem.expand) {
+          for (let i = 0; i < dataItem.expand.length; i++) {
+            const data = dataItem.expand[i]
 
             this.$setDataValue(data.collection, data.item, {
               id: data.id,
@@ -320,34 +326,18 @@ export default definePlugin({
               collection: data.collection
             })
           }
-        } else {
-          this.$setDataValue(dataItem.collection, dataItem.item, {
-            id: dataItem.id,
-            metadata: dataItem.metadata
-          })
-
-          if (dataItem.expand) {
-            for (let i = 0; i < dataItem.expand.length; i++) {
-              const data = dataItem.expand[i]
-
-              this.$setDataValue(data.collection, data.item, {
-                id: data.id,
-                metadata: data.metadata
-              })
-            }
-          }
-
-          requestCache.push({
-            id: dataItem.id,
-            collection: dataItem.collection
-          })
         }
 
-        this.$setDataValue('dsDatabase/requestCache', {
-          expireIn: Date.now() + this.requestCacheExpire,
-          data: requestCache
-        }, { id })
+        requestCache.push({
+          id: dataItem.id,
+          collection: dataItem.collection
+        })
       }
+
+      this.$setDataValue('dsDatabase/requestCache', {
+        expireIn: Date.now() + this.requestCacheExpire,
+        data: requestCache
+      }, { id })
     }
   }
 })
