@@ -214,12 +214,106 @@
       ]
     },
     {
-      "id": "widget-add-fetch",
-      "name": "Fetch widgets",
+      "id": "widget-add-item",
+      "name": "Add widget item",
       "sequence": [
         {
           "async": true,
-          "dsAction": "dsTemplate/fetch"
+          "dsAction": "dsTemplate/create",
+          "dsArgs": {
+            "id": "bootstrap-widget-add-item",
+            "contentOptions": {
+              "icon": {
+                "values": {
+                  "value": {
+                    "dsAction": "get/eventValue",
+                    "dsArgs": {
+                      "$key": "value.item.icon"
+                    }
+                  }
+                }
+              },
+              "title": {
+                "tokens": {
+                  "value": false
+                },
+                "values": {
+                  "value": {
+                    "dsAction": "get/eventValue",
+                    "dsArgs": {
+                      "$key": "value.item.name"
+                    }
+                  }
+                }
+              },
+              "text": {
+                "tokens": {
+                  "value": false
+                },
+                "values": {
+                  "value": {
+                    "dsAction": "get/eventValue",
+                    "dsArgs": {
+                      "$key": "value.item.description"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "dsAction": "set/dataValue",
+          "dsArgs": {
+            "name": "dsSection/items",
+            "value": {
+              "dsAction": "get/sequenceValue",
+              "dsArgs": {
+                "$key": ["0", "dsWidgetId"]
+              }
+            },
+            "options": {
+              "id": {
+                "dsAction": "get/dataValue",
+                "dsArgs": {
+                  "name": "dsWidget/sections",
+                  "id": "widget-add-list",
+                  "options": {
+                    "position": "widget-add-list:index"
+                  }
+                }
+              },
+              "update": {
+                "method": "push"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "widget-add-fetch",
+      "name": "Fetch widgets",
+      "dependencies": ["widget-add-item"],
+      "sequence": [
+        {
+          "async": true,
+          "dsAction": "dsDatabase/getAll",
+          "dsArgs": {
+            "collection": "template/metadata"
+          }
+        },
+        {
+          "dsAction": "dsList/iterate",
+          "dsArgs": {
+            "items": {
+              "dsAction": "get/sequenceValue",
+              "dsArgs": {
+                "$key": ["0"]
+              }
+            },
+            "dsActionId": "widget-add-item"
+          }
         }
       ]
     }
