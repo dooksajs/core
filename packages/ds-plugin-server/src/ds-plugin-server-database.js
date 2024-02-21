@@ -96,7 +96,7 @@ export default definePlugin({
   methods: {
     $getDatabaseValue (collections) {
       return (request, response) => {
-        const result = []
+        let result = []
         let where
 
         if (request.query.where) {
@@ -110,7 +110,7 @@ export default definePlugin({
           if (!request.query.id) {
             const dataValues = this.$method('dsData/find', { name: collection, where })
 
-            result.push(dataValues)
+            result = result.concat(dataValues)
 
             continue
           }
