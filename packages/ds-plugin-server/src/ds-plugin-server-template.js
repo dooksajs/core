@@ -113,17 +113,7 @@ export default definePlugin({
                 const actionId = event.value[i]
 
                 if (actions[actionId]) {
-                  const action = actions[actionId]
-
-                  this.$setDataValue('dsAction/blocks', action.blocks, { merge: true })
-                  this.$setDataValue('dsAction/items', action.items[actionId], { id: actionId })
-                  this.$setDataValue('dsAction/sequences', action.sequences, { merge: true })
-
-                  template.actions.push({
-                    blocks: Object.keys(action.blocks),
-                    items: actionId,
-                    sequences: Object.keys(action.sequences)
-                  })
+                  this._processActions(template, actions, actionId)
                 }
               }
             }
@@ -176,6 +166,25 @@ export default definePlugin({
         id: result.id,
         mode: template.mode
       }
+    },
+    _processActions (template, actions, actionId) {
+      const action = actions[actionId]
+      const item = { items: actionId }
+
+      // process dependencies
+      if (action.dependencies) {
+        for (let i = 0; i < action.dependencies.length; i++) {
+          this._processActions(template, actions, action.dependencies[i])
+        }
+      }
+
+      this.$setDataValue('dsAction/blocks', action.blocks, { merge: true })
+      this.$setDataValue('dsAction/items', action.items[actionId], { id: actionId })
+      this.$setDataValue('dsAction/sequences', action.sequences, { merge: true })
+
+      item.blocks = Object.keys(action.blocks)
+      item.sequences = Object.keys(action.sequences)
+      template.actions.push(item)
     },
     '_compute/uuid' (data, args = [0]) {
       const index = args[0]
