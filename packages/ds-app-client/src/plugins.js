@@ -15,7 +15,8 @@ import {
   dsPage,
   dsDatabase,
   dsTemplate,
-  dsQuery
+  dsQuery,
+  dsList
 } from '@dooksa/ds-plugin'
 
 const plugins = [
@@ -28,6 +29,11 @@ const plugins = [
     name: dsMetadata.name,
     version: dsMetadata.version,
     value: dsMetadata
+  },
+  {
+    name: dsList.name,
+    version: dsList.version,
+    value: dsList
   },
   {
     name: dsQuery.name,
