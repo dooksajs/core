@@ -112,8 +112,27 @@ export default definePlugin({
       const actions = this.$getDataValue('dsAction/items', { id, options: { expand: true } })
 
       if (actions.isEmpty) {
-        this.$log('error', { message: 'Expected action item is missing: ' + id })
-        return
+        return this.$action('dsDatabase/getById', {
+          collection: 'action',
+          id,
+          expand: true
+        }, {
+          onSuccess: (data) => {
+            if (!data.isEmpty) {
+              this.dispatch({ id, payload })
+            } else {
+              this.$log('warning', {
+                message: 'No action found: ' + id
+              })
+            }
+          },
+          onError: (error) => {
+            this.$log('error', {
+              message: 'No action found: ' + id,
+              error
+            })
+          }
+        })
       }
 
       // set action item id to payload for grouping
