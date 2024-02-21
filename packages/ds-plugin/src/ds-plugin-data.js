@@ -615,7 +615,7 @@ export default definePlugin({
      * Retrieve all entities from collection
      * @param {Object} param
      * @param {string} param.name - Name of collection
-     * @param {DsDataWhere} param.where
+     * @param {DsDataWhere[]} param.where
      */
     find ({ name, where }) {
       const values = this.values[name]
