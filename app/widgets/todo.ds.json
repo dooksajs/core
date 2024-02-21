@@ -101,7 +101,7 @@
           }
         },
         {
-          "dsAction": "dsQuery/addToSection",
+          "dsAction": "dsQuery/filter",
           "dsArgs": {
             "id": "query-todo",
             "dsSectionId": {
@@ -136,7 +136,7 @@
           }
         },
         {
-          "dsAction": "dsQuery/addToSection",
+          "dsAction": "dsQuery/filter",
           "dsArgs": {
             "id": "query-todo",
             "dsSectionId": {
@@ -174,7 +174,7 @@
           }
         },
         {
-          "dsAction": "dsQuery/addToSection",
+          "dsAction": "dsQuery/filter",
           "dsArgs": {
             "id": "query-todo",
             "dsSectionId": {
@@ -212,7 +212,7 @@
           }
         },
         {
-          "dsAction": "dsQuery/addToSection",
+          "dsAction": "dsQuery/filter",
           "dsArgs": {
             "id": "query-todo",
             "dsSectionId": {
