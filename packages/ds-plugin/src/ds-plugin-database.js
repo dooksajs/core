@@ -13,7 +13,50 @@ export default definePlugin({
   data: {
     hostname: {
       private: true,
-      default: () => 'http://localhost:6362/_/'
+      default: () => 'http://localhost:6362/_/',
+      schema: {
+        type: 'string'
+      }
+    },
+    requestQueue: {
+      private: true,
+      schema: {
+        type: 'collection'
+      }
+    },
+    requestCacheExpire: {
+      private: true,
+      default: () => 300000,
+      schema: {
+        type: 'number'
+      }
+    },
+    requestCache: {
+      schema: {
+        type: 'collection',
+        items: {
+          type: 'object',
+          properties: {
+            expireIn: {
+              type: 'number'
+            },
+            data: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  id: {
+                    type: 'string'
+                  },
+                  collection: {
+                    type: 'string'
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   setup ({ hostname } = {}) {
@@ -72,109 +115,154 @@ export default definePlugin({
      * @param {number} [param.perPage] - The max returned records per page (default to 25).
      * @param {number} [param.limit] - The max returned records per page (default to 25).
      * @param {DsDataWhere} [param.where] -
+     * @param {boolean} [param.sync] - Sync data with local database
      */
-    getAll ({ collection, page, perPage, limit, where, expand }) {
+    getAll ({ collection, page, perPage, limit, where, expand, sync = true }) {
+      if (!collection) {
+        return this.$log('error', {
+          message: 'Collection was not defined'
+        })
+      }
+
+      const and = '&'
+      let query = '?'
+      let firstQuery = true
+
+      if (page) {
+        if (firstQuery) {
+          firstQuery = false
+          query += and
+        }
+
+        query += 'page=' + page
+      }
+
+      if (perPage) {
+        if (firstQuery) {
+          firstQuery = false
+          query += and
+        }
+
+        query += 'perPage=' + perPage
+      }
+
+      if (limit) {
+        if (firstQuery) {
+          firstQuery = false
+          query += and
+        }
+
+        query += 'limit=' + limit
+      }
+
+      if (where) {
+        if (firstQuery) {
+          firstQuery = false
+          query += and
+        }
+
+        query += 'where=' + where
+      }
+
+      if (expand) {
+        if (firstQuery) {
+          firstQuery = false
+          query += and
+        }
+
+        query += expand
+      }
+
+      // reset query
+      if (query === '?') {
+        query = ''
+      }
+
+      const path = collection + query
+      const cacheData = this._getCache(path)
+
+      if (cacheData) {
+        return cacheData
+      }
+
       return new Promise((resolve, reject) => {
-        if (!collection) {
-          throw new Error('Collection was not defined')
-        }
+        fetch(this.hostname + path)
+          .then(response => {
+            if (response.ok) {
+              return response.json()
+            }
 
-        const and = '&'
-        let query = '?'
-        let firstQuery = true
+            resolve(false)
+          })
+          .then(data => {
+            if (sync) {
+              this._sync(data, path)
+            }
 
-        if (page) {
-          if (firstQuery) {
-            firstQuery = false
-            query += and
-          }
-
-          query += 'page=' + page
-        }
-
-        if (perPage) {
-          if (firstQuery) {
-            firstQuery = false
-            query += and
-          }
-
-          query += 'perPage=' + perPage
-        }
-
-        if (limit) {
-          if (firstQuery) {
-            firstQuery = false
-            query += and
-          }
-
-          query += 'limit=' + limit
-        }
-
-        if (where) {
-          if (firstQuery) {
-            firstQuery = false
-            query += and
-          }
-
-          query += 'where=' + where
-        }
-
-        if (expand) {
-          if (firstQuery) {
-            firstQuery = false
-            query += and
-          }
-
-          query += expand
-        }
-
-        // reset query
-        if (query === '?') {
-          query = ''
-        }
-
-        fetch(this.hostname + collection + query)
-          .then(docs => {
-            resolve(docs)
+            resolve(data)
           })
           .catch(error => {
             reject(error)
           })
       })
     },
-    getById ({ collection, id, expand }) {
-      return new Promise((resolve, reject) => {
-        if (!collection) {
-          throw new Error('Collection was not defined')
-        }
-        if (!Array.isArray(id) && !id.length) {
-          reject(new Error('Document id was not defined'))
-        }
+    getById ({ collection, id, expand, sync = true }) {
+      if (!collection) {
+        return this.$log('error', {
+          message: 'Collection was not defined'
+        })
+      }
 
-        let query = '?id=' + id[0]
+      if (!Array.isArray(id)) {
+        id = [id]
+      }
 
-        for (let i = 1; i < id.length; i++) {
-          const value = id[i]
+      let query = '?id=' + id[0]
 
-          query += '&id=' + value
-        }
+      for (let i = 1; i < id.length; i++) {
+        const value = id[i]
 
-        if (expand) {
-          query += '&expand=true'
-        }
+        query += '&id=' + value
+      }
 
-        fetch(this.hostname + collection + query)
+      if (expand) {
+        query += '&expand=true'
+      }
+
+      const path = collection + query
+      const cacheData = this._getCache(path)
+
+      if (cacheData) {
+        return cacheData
+      }
+
+      const request = new Promise((resolve, reject) => {
+        fetch(this.hostname + path)
           .then(response => {
             if (response.ok) {
-              resolve(response.json())
+              return response.json()
             }
 
-            resolve(false)
+            resolve({
+              isEmpty: true
+            })
+          })
+          .then(data => {
+            if (sync) {
+              this._sync(data, path)
+            }
+
+            resolve(data)
           })
           .catch(error => {
             reject(error)
           })
       })
+
+      // add to queue
+      this.requestQueue[path] = request
+
+      return request
     },
     update ({ collection, id, data }) {
       return new Promise((resolve, reject) => {
@@ -189,13 +277,77 @@ export default definePlugin({
         })
       })
     },
+    _getCache (id) {
+      const cache = this.$getDataValue('dsDatabase/requestCache', { id })
 
-    _updateNames () {
-      this.createName = this.adapter + '/' + this.createName
-      this.deleteName = this.adapter + '/' + this.deleteName
-      this.getListName = this.adapter + '/' + this.getListName
-      this.getOneName = this.adapter + '/' + this.getOneName
-      this.updateName = this.adapter + '/' + this.updateName
+      if (cache.isEmpty) {
+        return this.requestQueue[id]
+      }
+
+      if (cache.item.expireIn && cache.item.expireIn < Date.now()) {
+        this.$deleteDataValue('dsDatabase/requestCache', { id })
+
+        return
+      }
+
+      const result = []
+
+      for (let i = 0; i < cache.item.data.length; i++) {
+        const item = cache.item.data[i]
+        const data = this.$getDataValue(item.collection, { id: item.id })
+
+        result.push(data.item)
+      }
+
+      return result
+    },
+    _sync (data, id) {
+      for (let i = 0; i < data.length; i++) {
+        const dataItem = data[i]
+        const requestCache = []
+
+        if (Array.isArray(dataItem)) {
+          for (let i = 0; i < dataItem.length; i++) {
+            const data = dataItem[i]
+
+            this.$setDataValue(data.collection, data.item, {
+              id: data.id,
+              metadata: data.metadata
+            })
+
+            requestCache.push({
+              id: data.id,
+              collection: data.collection
+            })
+          }
+        } else {
+          this.$setDataValue(dataItem.collection, dataItem.item, {
+            id: dataItem.id,
+            metadata: dataItem.metadata
+          })
+
+          if (dataItem.expand) {
+            for (let i = 0; i < dataItem.expand.length; i++) {
+              const data = dataItem.expand[i]
+
+              this.$setDataValue(data.collection, data.item, {
+                id: data.id,
+                metadata: data.metadata
+              })
+            }
+          }
+
+          requestCache.push({
+            id: dataItem.id,
+            collection: dataItem.collection
+          })
+        }
+
+        this.$setDataValue('dsDatabase/requestCache', {
+          expireIn: Date.now() + this.requestCacheExpire,
+          data: requestCache
+        }, { id })
+      }
     }
   }
 })
