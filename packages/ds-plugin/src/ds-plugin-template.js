@@ -616,6 +616,9 @@ export default definePlugin({
         const newItem = this.$setDataValue('dsAction/items', newItems)
 
         newActions[id] = newItem.id
+
+        // add new action item id to ref for dependent replacements
+        refs[id] = newItem.id
       }
 
       return newActions
