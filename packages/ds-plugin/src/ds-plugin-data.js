@@ -626,12 +626,11 @@ export default definePlugin({
         // create result
         const result = new DataResult(name)
 
-        result.isCollectionEmpty = true
+        result.isEmpty = true
 
         return result
       }
 
-      const result = new DataResult(name)
       const schema = this.schema[name]
 
       if (schema.type === 'collection') {
@@ -643,33 +642,30 @@ export default definePlugin({
             const dataResult = new DataResult(name, id)
             let isValid = true
 
+            if (where) {
+              isValid = this._filter(dataResult, where)
+            }
+
+            if (!isValid) {
+              continue
+            }
+
             dataResult.isEmpty = false
             dataResult.isCollection = false
             dataResult.item = value._item
             dataResult.metadata = value._metadata
             dataResult.previous = value._previous
-
-            if (where) {
-              isValid = this._filter(dataResult, where)
-            }
-
-            if (isValid) {
-              valueItems.push(dataResult)
-            }
+            valueItems.push(dataResult)
           }
         }
 
-        result.isCollection = true
-        result.isCollectionEmpty = false
-        result.item = valueItems
-
-        return result
+        return valueItems
       }
 
+      const result = new DataResult(name)
       let isValid = true
 
       result.isEmpty = false
-      result.isCollection = false
       result.item = values._item
       result.metadata = values._metadata
       result.previous = values._previous
@@ -684,7 +680,7 @@ export default definePlugin({
         return result
       }
 
-      return result
+      return [result]
     },
     unsafeSetData ({ name, data, options }) {
       const result = new DataResult(name, options.id)
