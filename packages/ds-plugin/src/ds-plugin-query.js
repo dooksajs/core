@@ -26,6 +26,12 @@ import { definePlugin } from '@dooksa/ds-scripts'
 export default definePlugin({
   name: 'dsQuery',
   version: 1,
+  dependencies: [
+    {
+      name: 'dsList',
+      version: 1
+    }
+  ],
   data: {
     items: {
       schema: {
