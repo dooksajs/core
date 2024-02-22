@@ -198,7 +198,7 @@ export default definePlugin({
       for (let i = 0; i < widgets.length; i++) {
         const { id } = widgets[i]
 
-        this.$deleteDataValue('dsWidget/mode', { id })
+        this.$deleteDataValue('dsWidget/mode', id)
         this._removeLayout(id)
         this._removeContent(id)
         this._removeEvent(id)

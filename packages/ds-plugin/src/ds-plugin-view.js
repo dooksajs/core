@@ -123,9 +123,7 @@ export default definePlugin({
         handler: {
           id: sourceId,
           value: () => {
-            this.$deleteDataValue('dsView/items', {
-              id: sourceId
-            })
+            this.$deleteDataValue('dsView/items', sourceId)
           }
         }
       })
@@ -266,7 +264,8 @@ export default definePlugin({
     },
     /**
      * Remove node from DOM
-     * @param {string} id - dsView node id
+     * @param {object} param - dsView node id
+     * @param {string} param.id - dsView node id
      */
     remove ({ id }) {
       const dsView = this.$getDataValue('dsView/items', { id })
@@ -275,7 +274,7 @@ export default definePlugin({
         // remove content attachment
         this._unmount(id)
 
-        this.$deleteDataValue('dsView/handlers', { id })
+        this.$deleteDataValue('dsView/handlers', id)
 
         dsView.item.remove()
       }
@@ -473,9 +472,7 @@ export default definePlugin({
         payload: { dsViewId }
       })
 
-      this.$deleteDataValue('dsView/itemParent', {
-        id: dsViewId
-      })
+      this.$deleteDataValue('dsView/itemParent', dsViewId)
     }
   }
 })

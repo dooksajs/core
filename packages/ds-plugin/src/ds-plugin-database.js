@@ -285,7 +285,7 @@ export default definePlugin({
       }
 
       if (cache.item.expireIn && cache.item.expireIn < Date.now()) {
-        this.$deleteDataValue('dsDatabase/requestCache', { id })
+        this.$deleteDataValue('dsDatabase/requestCache', id)
 
         return
       }
@@ -332,12 +332,24 @@ export default definePlugin({
           id: dataItem.id,
           collection: dataItem.collection
         })
+
+        this.$addDataListener(dataItem.collection, {
+          on: 'delete',
+          id: dataItem.id,
+          handler: {
+            id,
+            value: this._deleteCache
+          }
+        })
       }
 
       this.$setDataValue('dsDatabase/requestCache', {
         expireIn: Date.now() + this.requestCacheExpire,
         data: requestCache
       }, { id })
+    },
+    _deleteCache (id) {
+      this.$deleteDataValue('dsDatabase/requestCache', id)
     }
   }
 })
