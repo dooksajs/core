@@ -428,9 +428,9 @@ export default definePlugin({
 
       if (!value.isEmpty) {
         return this._getValue(value.item, props)
-      } else {
-        this.$log('error', { message: 'Action variables not found', code: '44' })
       }
+
+      this.$log('error', { message: 'Action variables not found', code: '44' })
     },
     '_process/get/blockValue' (props) {
       return this._getValue(props.value, props.map)
