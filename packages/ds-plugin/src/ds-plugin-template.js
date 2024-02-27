@@ -99,6 +99,22 @@ export default definePlugin({
                 }
               }
             },
+            eventListeners: {
+              type: 'object',
+              patternProperties: {
+                '^[0-9]+$': {
+                  type: 'object',
+                  patternProperties: {
+                    '^[0-9]+$': {
+                      type: 'array',
+                      items: {
+                        type: 'string'
+                      }
+                    }
+                  }
+                }
+              }
+            },
             layout: {
               type: 'array',
               items: {
@@ -297,11 +313,13 @@ export default definePlugin({
         const queryIndexes = template.item.queryIndexes[i]
         const contentRefs = template.item.contentRefs[i]
         const contentItems = template.item.content[i]
-        const event = template.item.widgetEvent[i]
+        const eventListener = template.item.eventListeners[i]
+        const widgetEvent = template.item.widgetEvent[i]
+        const layoutId = template.item.layoutId[i]
         const widget = {
           id: this.$method('dsData/generateId'),
           content: [],
-          layout: template.item.layoutId[i]
+          layout: layoutId
         }
 
         if (!rootWidgetId) {
@@ -311,9 +329,16 @@ export default definePlugin({
 
         dsWidgetItems.push(widget)
 
+        // set event listener edit modes
+        if (eventListener) {
+          this.$setDataValue('dsLayout/eventListeners', eventListener, {
+            id: layoutId
+          })
+        }
+
         // add events to instance
-        if (Object.keys(event).length) {
-          events.push([widget.id, event])
+        if (Object.keys(widgetEvent).length) {
+          events.push([widget.id, widgetEvent])
         }
 
         for (let j = 0; j < contentItems.length; j++) {

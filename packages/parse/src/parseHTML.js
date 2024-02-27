@@ -18,6 +18,7 @@ const parseHTML = (
     content: [],
     contentRefs: {},
     computedAttributes: [],
+    eventListeners: {},
     queryIndexes: {},
     sectionRefs: {},
     layout: [],
@@ -50,6 +51,7 @@ const parseHTML = (
   const content = []
   const contentRefs = {}
   const computedAttributes = []
+  const eventListeners = {}
   const queryIndexes = {}
   const layoutNodes = []
   const layout = []
@@ -57,6 +59,8 @@ const parseHTML = (
   const widgetEvent = {}
   const widgetSection = []
   let sectionIndex = 0
+  let hasListeners = false
+  let hasEvent = false
 
   data.content[data.layoutIndex] = content
   data.contentRefs[data.layoutIndex] = contentRefs
@@ -64,6 +68,7 @@ const parseHTML = (
   data.queryIndexes[data.layoutIndex] = queryIndexes
   data.layout[data.layoutIndex] = layout
   data.layoutEntry[data.layoutIndex] = layoutEntry
+  data.eventListeners[data.layoutIndex] = eventListeners
   data.widgetEvent[data.layoutIndex] = widgetEvent
   data.widgetSection[data.layoutIndex] = widgetSection
 
@@ -123,6 +128,7 @@ const parseHTML = (
 
           if (result.bind.on) {
             widgetEvent[layoutNodes.length - 1] = result.bind.on
+            hasEvent = true
           }
 
           const contentRef = result.options['ds-content-ref']
@@ -142,6 +148,13 @@ const parseHTML = (
             }
 
             queryIndexes[item.contentIndex] = queryValue
+          }
+
+          const eventListener = result.options['ds-event']
+
+          if (eventListener) {
+            eventListeners[layoutNodes.length - 1] = eventListener.split(' ')
+            hasListeners = true
           }
         }
 
@@ -172,6 +185,7 @@ const parseHTML = (
 
           if (result.bind.on) {
             widgetEvent[layoutNodes.length - 1] = result.bind.on
+            hasEvent = true
           }
 
           if (result.options) {
@@ -208,6 +222,13 @@ const parseHTML = (
 
             if (sectionRef) {
               element.sectionRef = sectionRef
+            }
+
+            const eventListener = result.options['ds-event']
+
+            if (eventListener) {
+              eventListeners[layoutNodes.length - 1] = eventListener.split(' ')
+              hasListeners = true
             }
           }
 
@@ -260,6 +281,15 @@ const parseHTML = (
       data.component[componentId] = component
     }
   }
+
+  if (!hasListeners) {
+    delete data.eventListeners[data.layoutIndex]
+  }
+
+  if (!hasEvent) {
+    delete data.widgetEvent[data.layoutIndex]
+  }
+
   // create layout ids
   if (head) {
     for (let i = 0; i < data.layout.length; i++) {

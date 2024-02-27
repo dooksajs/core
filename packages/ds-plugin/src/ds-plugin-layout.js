@@ -32,6 +32,22 @@ export default definePlugin({
         }
       }
     },
+    eventListeners: {
+      schema: {
+        type: 'collection',
+        items: {
+          type: 'object',
+          patternProperties: {
+            '^[0-9]+$': {
+              type: 'array',
+              items: {
+                type: 'string'
+              }
+            }
+          }
+        }
+      }
+    },
     eventNames: {
       private: true,
       default: () => ({
@@ -50,7 +66,13 @@ export default definePlugin({
       dsWidgetMode,
       dsViewId
     }) {
-      const { items, events, viewItems, parentViewItems } = this._getItems(dsLayoutId, dsWidgetId, dsWidgetMode)
+      const {
+        items,
+        events,
+        listeners,
+        viewItems,
+        parentViewItems
+      } = this._getItems(dsLayoutId, dsWidgetId, dsWidgetMode)
       const layoutItems = []
 
       if (parentViewItems.length) {
@@ -69,6 +91,7 @@ export default definePlugin({
       for (let i = 0; i < items.length; i++) {
         const element = items[i]
         const event = events[i]
+        const listener = listeners[i]
         const item = {}
         let parentViewId = dsViewId
         let sectionId = dsSectionId
@@ -128,6 +151,22 @@ export default definePlugin({
           this._eventItem(event, childViewId)
         }
 
+        // only include if in edit mode
+        // dsSectionMode || dsPageMode === 'edit'
+        if (listener) {
+          this.$setDataValue('dsWidget/eventListeners', {
+            types: listener,
+            dsViewId: childViewId
+          }, {
+            id: dsWidgetId,
+            prefixId: dsSectionUniqueId,
+            suffixId: dsWidgetMode,
+            update: {
+              method: 'push'
+            }
+          })
+        }
+
         this.$method('dsView/insert', {
           sourceId: childViewId,
           targetId: parentViewId
@@ -154,6 +193,10 @@ export default definePlugin({
         suffixId: dsWidgetMode
       }).item || {}
 
+      const listeners = this.$getDataValue('dsLayout/eventListeners', {
+        id: dsLayoutId
+      }).item || {}
+
       const parentViewItems = this.$getDataValue('dsWidget/parentViews', {
         id: dsWidgetId,
         suffixId: dsWidgetMode
@@ -167,6 +210,7 @@ export default definePlugin({
       return {
         items: layout.item,
         events,
+        listeners,
         viewItems: viewItems.item || [],
         parentViewItems: parentViewItems.item || []
       }

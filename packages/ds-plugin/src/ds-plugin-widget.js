@@ -94,6 +94,29 @@ export default definePlugin({
         }
       }
     },
+    eventListeners: {
+      schema: {
+        type: 'collection',
+        items: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              types: {
+                type: 'array',
+                items: {
+                  type: 'string'
+                }
+              },
+              dsViewId: {
+                type: 'string',
+                relation: 'dsView/items'
+              }
+            }
+          }
+        }
+      }
+    },
     groups: {
       description: 'Group instances',
       schema: {

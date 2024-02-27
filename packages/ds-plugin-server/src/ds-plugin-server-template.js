@@ -148,16 +148,17 @@ export default definePlugin({
       })
 
       const result = this.$setDataValue('dsTemplate/items', {
-        queryIndexes: template.queryIndexes,
-        contentRefs: template.contentRefs,
-        sectionRefs: template.sectionRefs,
         actions: template.actions,
         content: template.content,
+        contentRefs: template.contentRefs,
+        eventListeners: template.eventListeners,
         layout: template.layout,
         layoutId: template.layoutId,
+        queryIndexes: template.queryIndexes,
+        section: template.section,
+        sectionRefs: template.sectionRefs,
         widgetEvent: template.widgetEvent,
-        widgetSection: template.widgetSection,
-        section: template.section
+        widgetSection: template.widgetSection
       }, {
         id: template.id
       })
