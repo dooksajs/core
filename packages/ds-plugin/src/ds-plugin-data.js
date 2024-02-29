@@ -806,18 +806,32 @@ export default definePlugin({
 
       for (const id in sources) {
         if (Object.hasOwnProperty.call(sources, id)) {
-          const source = deepClone(this.defaultTypes[schema.type](), sources[id], true)
-          const resultItem = source._item || source
+          const source = deepClone(this.defaultTypes[schema.type](), sources[id])
           const resultMetadata = source._metadata || metadata
+          const resultItem = source._item || source
 
           this._checkType(path, resultItem, schema.type)
 
           // set current merge root id
           data.id = id
 
-          this[schemaCheck](data, path, resultItem)
-
           const result = this._createTarget(schema.type, resultMetadata)
+          const target = data.target[id]
+
+          // merge target and source objects
+          if (target && target._item instanceof Object) {
+            const item = target._item
+
+            for (const key in item) {
+              if (Object.hasOwnProperty.call(item, key)) {
+                const value = item[key]
+
+                resultItem[key] = value
+              }
+            }
+          }
+
+          this[schemaCheck](data, path, resultItem)
 
           // add new item value
           result._item = resultItem
@@ -1489,6 +1503,15 @@ export default definePlugin({
         const id = this._createCollectionId(data.collection, options)
 
         data.id = id
+
+        if (options.merge) {
+          this._checkCollectionItems(data, schemaPath, { [id]: source }, options.metadata)
+
+          return {
+            complete: true,
+            isValid: true
+          }
+        }
       } else {
         if (options.merge) {
           this._checkCollectionItems(data, schemaPath, source, options.metadata)
