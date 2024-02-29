@@ -81,7 +81,9 @@ export default definePlugin({
 
           this.$method('dsView/insert', {
             sourceId,
-            targetId: dsViewId
+            targetId: dsViewId,
+            dsWidgetId,
+            dsWidgetMode
           })
         }
 
@@ -169,7 +171,9 @@ export default definePlugin({
 
         this.$method('dsView/insert', {
           sourceId: childViewId,
-          targetId: parentViewId
+          targetId: parentViewId,
+          dsWidgetId,
+          dsWidgetMode
         })
       }
 

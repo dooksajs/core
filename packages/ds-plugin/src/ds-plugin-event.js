@@ -38,7 +38,7 @@ export default definePlugin({
      * @param {dsEventOn} param.on - Event fired "on" an event name
      * @param {Object.<string, any>} param.payload - The action that runs on the event
      */
-    $emit (name, { id, payload }) {
+    $emit (name, { id, context, payload }) {
       const listeners = this.$getDataValue('dsEvent/listeners', {
         id,
         suffixId: name
@@ -48,6 +48,7 @@ export default definePlugin({
         for (let i = 0; i < listeners.item.length; i++) {
           this.$method('dsAction/dispatch', {
             id: listeners.item[i],
+            context,
             payload
           })
         }

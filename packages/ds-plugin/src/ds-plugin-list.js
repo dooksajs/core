@@ -149,12 +149,12 @@ export default definePlugin({
         }
       }
     },
-    iterate ({ items, dsActionId }) {
+    iterate ({ context, items, dsActionId }) {
       for (const key in items) {
         if (Object.hasOwnProperty.call(items, key)) {
           const value = items[key]
 
-          this.$method('dsAction/dispatch', { id: dsActionId, payload: { key, value } })
+          this.$method('dsAction/dispatch', { id: dsActionId, context, payload: { key, value } })
         }
       }
     },

@@ -106,9 +106,10 @@ export default definePlugin({
      * Dispatch an action
      * @param {Object} param
      * @param {string} param.id - The Id of action
+ce     * @param {Object} param.context - The context of where the actions was emitted
      * @param {Object} param.payload - The data to pass to the action
      */
-    dispatch ({ id, payload }) {
+    dispatch ({ id, context, payload }) {
       const actions = this.$getDataValue('dsAction/items', { id, options: { expand: true } })
 
       if (actions.isEmpty) {
@@ -119,7 +120,7 @@ export default definePlugin({
         }, {
           onSuccess: (data) => {
             if (!data.isEmpty) {
-              this.dispatch({ id, payload })
+              this.dispatch({ id, context, payload })
             } else {
               this.$log('warning', {
                 message: 'No action found: ' + id
@@ -136,7 +137,7 @@ export default definePlugin({
       }
 
       // set action item id to payload for grouping
-      payload.id = id
+      context.id = id
 
       const sequenceProcess = {
         position: 0,
@@ -182,6 +183,7 @@ export default definePlugin({
         sequenceProcess.items.push(() => {
           this._processSequence(
             sequence,
+            context,
             payload,
             item.blocks,
             expand,
@@ -220,7 +222,7 @@ export default definePlugin({
 
       return false
     },
-    _processSequence (sequence, payload, blocks = {}, expand, expandIndexes, position, sequenceProcess) {
+    _processSequence (sequence, context, payload, blocks = {}, expand, expandIndexes, position, sequenceProcess) {
       const sequenceEnd = sequence.length - 1
       const blockProcess = {
         position: 0,
@@ -266,7 +268,7 @@ export default definePlugin({
             const lastBlock = sequenceEnd === i
 
             blockProcess.results.push({
-              item: this[methodName](action.params, payload, lastBlock, blockProcess, sequenceProcess),
+              item: this[methodName](action.params, context, payload, lastBlock, blockProcess, sequenceProcess),
               path: item.path
             })
             blockProcess.next()
@@ -367,7 +369,7 @@ export default definePlugin({
         listeners: props.listeners
       })
     },
-    '_process/condition' (props, payload, lastBlock, blockProcess, sequenceProcess) {
+    '_process/condition' (props, context, payload, lastBlock, blockProcess, sequenceProcess) {
       let isValid
 
       if (props.if.length > 1) {
@@ -417,11 +419,11 @@ export default definePlugin({
         this._nextBranchProcess(sequenceProcess)
       }
     },
-    '_process/get/actionValue' (props, payload) {
-      let id = this.$getDataValue('dsWidget/actionGroups', { id: payload.dsWidgetId }).item
+    '_process/get/actionValue' (props, context) {
+      let id = this.$getDataValue('dsWidget/actionGroups', { id: context.dsWidgetId }).item
 
       if (!id) {
-        id = payload.id
+        id = context.id
       }
 
       const value = this.$getDataValue('dsAction/values', { id })
@@ -454,14 +456,22 @@ export default definePlugin({
 
       return result.item
     },
-    '_process/get/eventValue' (props, payload) {
+    '_process/get/contextValue' (props, context) {
+      return this._getValue(context, props)
+    },
+    '_process/get/payloadValue' (props, context, payload) {
       return this._getValue(payload, props)
     },
-    '_process/get/sequenceValue' (props, payload, lastBlock, blockProcess, sequenceProcess) {
+    '_process/get/sequenceValue' (props, context, payload, lastBlock, blockProcess, sequenceProcess) {
       return this._getValue(sequenceProcess.results, props)
     },
-    '_process/set/actionValue' (props, payload) {
+    '_process/set/actionValue' (props, context) {
       const values = {}
+      let id = this.$getDataValue('dsWidget/actionGroups', { id: context.dsWidgetId }).item
+
+      if (!id) {
+        id = context.id
+      }
 
       for (let i = 0; i < props.values.length; i++) {
         const item = props.values[i]
@@ -470,7 +480,7 @@ export default definePlugin({
       }
 
       this.$setDataValue('dsAction/values', values, {
-        id: payload.id,
+        id,
         merge: true
       })
     },

@@ -98,8 +98,11 @@ export default definePlugin({
      * @param {Object} item
      * @param {dsViewId} item.targetId - Child dsView node id
      * @param {dsViewId} item.sourceId - Parent dsView node id
+     * @param {string} item.dsWidgetId - Widget id
+     * @param {string} item.dsWidgetMode - Widget mode
+     * @param {string} [item.type] - type of insert method
      */
-    insert ({ targetId, sourceId, type = 'append' }) {
+    insert ({ targetId, sourceId, dsWidgetId, dsWidgetMode, type = 'append' }) {
       const target = this.$getDataValue('dsView/items', {
         id: targetId
       })
@@ -111,9 +114,11 @@ export default definePlugin({
 
       this.$emit('dsView/mount', {
         id: sourceId,
-        payload: {
+        context: {
           targetId,
-          sourceId
+          sourceId,
+          dsWidgetId,
+          dsWidgetMode
         }
       })
 
@@ -196,7 +201,7 @@ export default definePlugin({
 
             this.$emit(name, {
               id: dsViewId,
-              payload: {
+              context: {
                 dsViewId,
                 dsContentId: dsViewContent.item,
                 dsWidgetId,
@@ -300,7 +305,7 @@ export default definePlugin({
 
         this.$emit('dsView/unmount', {
           id: dsViewId,
-          payload: { dsViewId }
+          context: { dsViewId }
         })
       }
     },
@@ -342,7 +347,7 @@ export default definePlugin({
         // emit new child mount
         this.$emit('dsView/mount', {
           id: dsViewId,
-          payload: { dsViewId }
+          context: { dsViewId }
         })
 
         // update parents
@@ -469,7 +474,7 @@ export default definePlugin({
     _unmount (dsViewId) {
       this.$emit('dsView/unmount', {
         id: dsViewId,
-        payload: { dsViewId }
+        context: { dsViewId }
       })
 
       this.$deleteDataValue('dsView/itemParent', dsViewId)
