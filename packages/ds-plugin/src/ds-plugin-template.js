@@ -338,7 +338,7 @@ export default definePlugin({
 
         // add events to instance
         if (
-          typeof widgetEvent === 'object' &&
+          widgetEvent != null &&
           Object.keys(widgetEvent).length
         ) {
           events.push([widget.id, widgetEvent])
