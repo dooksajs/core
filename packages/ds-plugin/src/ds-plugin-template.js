@@ -516,14 +516,6 @@ export default definePlugin({
         }
       }
 
-      // this might be bad for empty sections, it would be better to compare to layout "hasSection"
-      if (rootSection.length) {
-        this.$setDataValue('dsSection/items', rootSection, {
-          id: dsSectionId,
-          suffixId: mode
-        })
-      }
-
       const newActions = this._updateActions(template.item.actions, actionRefs)
 
       for (let i = 0; i < events.length; i++) {
@@ -552,6 +544,14 @@ export default definePlugin({
 
         this.$setDataValue('dsWidget/events', newEvent, {
           id: widgetId,
+          suffixId: mode
+        })
+      }
+
+      // this might be bad for empty sections, it would be better to compare to layout "hasSection"
+      if (rootSection.length) {
+        this.$setDataValue('dsSection/items', rootSection, {
+          id: dsSectionId,
           suffixId: mode
         })
       }
