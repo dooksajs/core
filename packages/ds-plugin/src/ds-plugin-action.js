@@ -23,30 +23,8 @@ export default definePlugin({
         items: {
           type: 'array',
           items: {
-            type: 'object',
-            properties: {
-              id: {
-                type: 'string',
-                relation: 'dsAction/sequences'
-              },
-              blocks: {
-                type: 'object',
-                patternProperties: {
-                  '^[0-9]+$': {
-                    type: 'object',
-                    properties: {
-                      id: {
-                        type: 'string',
-                        relation: 'dsAction/blocks'
-                      },
-                      values: {
-                        type: 'array'
-                      }
-                    }
-                  }
-                }
-              }
-            }
+            type: 'string',
+            relation: 'dsAction/sequences'
           }
         }
       }
@@ -106,7 +84,7 @@ export default definePlugin({
      * Dispatch an action
      * @param {Object} param
      * @param {string} param.id - The Id of action
-ce     * @param {Object} param.context - The context of where the actions was emitted
+     * @param {Object} param.context - The context of where the actions was emitted
      * @param {Object} param.payload - The data to pass to the action
      */
     dispatch ({ id, context, payload }) {
@@ -136,8 +114,24 @@ ce     * @param {Object} param.context - The context of where the actions was em
         })
       }
 
-      // set action item id to payload for grouping
-      context.id = id
+      let blocks = {}
+
+      // fetch block modifiers
+      if (context.dsWidgetId) {
+        blocks = this.$getDataValue('dsWidget/actions', {
+          id: context.dsWidgetId,
+          suffixId: context.dsWidgetMode
+        })
+
+        if (!blocks.isEmpty && blocks.item[id]) {
+          blocks = blocks.item[id]
+        }
+
+        // set action item id to payload for grouping
+        context.id = context.dsWidgetId
+      } else {
+        context.id = context.dsSectionId || context.dsViewId || context.dsContentId
+      }
 
       const sequenceProcess = {
         position: 0,
@@ -149,13 +143,13 @@ ce     * @param {Object} param.context - The context of where the actions was em
       }
 
       for (let i = 0; i < actions.item.length; i++) {
-        const item = actions.item[i]
+        const sequenceId = actions.item[i]
         let sequence
         let expand = []
         let expandIndexes = {}
 
         if (!actions.isExpandEmpty) {
-          const key = actions.expandIncluded['dsAction/sequences/' + item.id]
+          const key = actions.expandIncluded['dsAction/sequences/' + sequenceId]
 
           sequence = actions.expand[key]
 
@@ -169,7 +163,7 @@ ce     * @param {Object} param.context - The context of where the actions was em
           expand = actions.expand
           expandIndexes = actions.expandIncluded
         } else {
-          sequence = this.$getDataValue('dsAction/sequences', { id: item.id })
+          sequence = this.$getDataValue('dsAction/sequences', { id: sequenceId })
 
           if (sequence.isEmpty) {
             this.$log('error', { message: 'Broken action sequence', code: '50' })
@@ -185,7 +179,7 @@ ce     * @param {Object} param.context - The context of where the actions was em
             sequence,
             context,
             payload,
-            item.blocks,
+            blocks[sequenceId] || {},
             expand,
             expandIndexes,
             i,
@@ -222,7 +216,7 @@ ce     * @param {Object} param.context - The context of where the actions was em
 
       return false
     },
-    _processSequence (sequence, context, payload, blocks = {}, expand, expandIndexes, position, sequenceProcess) {
+    _processSequence (sequence, context, payload, blocks, expand, expandIndexes, position, sequenceProcess) {
       const sequenceEnd = sequence.length - 1
       const blockProcess = {
         position: 0,

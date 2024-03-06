@@ -65,6 +65,12 @@ export default definePlugin({
                       type: 'string',
                       relation: 'dsAction/sequences'
                     }
+                  },
+                  dependencies: {
+                    type: 'array',
+                    items: {
+                      type: 'string'
+                    }
                   }
                 }
               }
@@ -342,6 +348,11 @@ export default definePlugin({
           Object.keys(widgetEvent).length
         ) {
           events.push([widget.id, widgetEvent])
+
+          this.$setDataValue('dsWidget/events', widgetEvent, {
+            id: widget.id,
+            mode
+          })
         }
 
         for (let j = 0; j < contentItems.length; j++) {
@@ -440,11 +451,9 @@ export default definePlugin({
           }
         })
 
-        if (actionGroupId) {
-          this.$setDataValue('dsWidget/actionGroups', actionGroupId, {
-            id: widget.id
-          })
-        }
+        this.$setDataValue('dsWidget/actionGroups', actionGroupId || widget.id, {
+          id: widget.id
+        })
 
         // set widget instance
         this.$setDataValue('dsWidget/items', dsWidgetGroupId, {
@@ -516,36 +525,43 @@ export default definePlugin({
         }
       }
 
-      const newActions = this._updateActions(template.item.actions, actionRefs)
+      if (events.length) {
+        const newActions = this._updateActions(template.actions, actionRefs)
 
-      for (let i = 0; i < events.length; i++) {
-        const [widgetId, event] = events[i]
-        const newEvent = {}
+        for (let i = 0; i < events.length; i++) {
+          const [widgetId, event] = events[i]
+          const actions = {}
 
-        for (const key in event) {
-          if (Object.hasOwnProperty.call(event, key)) {
-            const item = event[key]
+          for (const key in event) {
+            if (Object.hasOwnProperty.call(event, key)) {
+              const item = event[key]
 
-            newEvent[key] = {
-              name: item.name,
-              value: item.value.slice()
-            }
+              for (let i = 0; i < item.value.length; i++) {
+                const value = item.value[i]
 
-            for (let i = 0; i < item.value.length; i++) {
-              const value = item.value[i]
+                // update event action item id
+                if (newActions.items[value]) {
+                  actions[value] = newActions.items[value]
 
-              // update event action item id
-              if (newActions[value]) {
-                newEvent[key].value[i] = newActions[value]
+                  const dependencies = newActions.dependencies[value]
+
+                  if (dependencies) {
+                    for (let i = 0; i < dependencies.length; i++) {
+                      const id = dependencies[i]
+
+                      actions[id] = newActions.items[id]
+                    }
+                  }
+                }
               }
             }
           }
-        }
 
-        this.$setDataValue('dsWidget/events', newEvent, {
-          id: widgetId,
-          suffixId: mode
-        })
+          this.$setDataValue('dsWidget/actions', actions, {
+            id: widgetId,
+            suffixId: mode
+          })
+        }
       }
 
       // this might be bad for empty sections, it would be better to compare to layout "hasSection"
@@ -575,7 +591,10 @@ export default definePlugin({
      * @returns {Object}
      */
     _updateActions (actions, refs) {
-      const newActions = {}
+      const newActions = {
+        items: {},
+        dependencies: {}
+      }
 
       for (let i = 0; i < actions.length; i++) {
         const action = actions[i]
@@ -605,14 +624,16 @@ export default definePlugin({
           const id = action.sequences[i]
           const sequences = this.$getDataValue('dsAction/sequences', { id })
 
-          blockValues[id] = {}
-
           for (let i = 0; i < sequences.item.length; i++) {
             const sequence = sequences.item[i]
             const block = newBlocks[sequence.id]
 
             if (block) {
               const blockId = objectHash(block.item)
+
+              if (!blockValues[id]) {
+                blockValues[id] = {}
+              }
 
               blockValues[id][i] = { id: blockId }
 
@@ -627,26 +648,23 @@ export default definePlugin({
         const items = this.$getDataValue('dsAction/items', { id })
 
         // copy action items
-        const newItems = items.item.slice()
+        const newItems = {}
 
-        for (let i = 0; i < newItems.length; i++) {
-          const { id } = newItems[i]
-          const blockOverwrites = blockValues[id]
+        for (let i = 0; i < items.item.length; i++) {
+          const sequenceId = items.item[i]
+          const blockOverwrites = blockValues[sequenceId]
 
           if (blockOverwrites) {
-            newItems[i] = {
-              id,
-              blocks: blockOverwrites
-            }
+            newItems[sequenceId] = blockOverwrites
           }
         }
 
-        const newItem = this.$setDataValue('dsAction/items', newItems)
+        // join actions
+        if (action.dependencies) {
+          newActions.dependencies[id] = action.dependencies
+        }
 
-        newActions[id] = newItem.id
-
-        // add new action item id to ref for dependent replacements
-        refs[id] = newItem.id
+        newActions.items[id] = newItems
       }
 
       return newActions

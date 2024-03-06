@@ -12,6 +12,15 @@ export default definePlugin({
   name: 'dsWidget',
   version: 1,
   data: {
+    actions: {
+      schema: {
+        type: 'collection',
+        suffixId: 'default',
+        items: {
+          type: 'object'
+        }
+      }
+    },
     actionGroups: {
       schema: {
         type: 'collection',
