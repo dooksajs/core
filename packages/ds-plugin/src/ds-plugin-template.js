@@ -244,7 +244,7 @@ export default definePlugin({
       actionGroupId,
       dsSectionId
     }, _callback) {
-      const template = this.$getDataValue('dsTemplate/items', { id })
+      let template = this.$getDataValue('dsTemplate/items', { id })
 
       // fetch template
       if (template.isEmpty) {
@@ -296,6 +296,7 @@ export default definePlugin({
         })
       }
 
+      template = template.item
       // set default values here to avoid exec unnecessary functions if there is no template found
       language = language || this.$getDataValue('dsMetadata/language').item
       dsSectionId = dsSectionId || this.$method('dsData/generateId')
@@ -315,13 +316,14 @@ export default definePlugin({
         id: dsSectionId
       })
 
-      for (let i = 0; i < template.item.layoutId.length; i++) {
-        const queryIndexes = template.item.queryIndexes[i]
-        const contentRefs = template.item.contentRefs[i]
-        const contentItems = template.item.content[i]
-        const eventListener = template.item.eventListeners[i]
-        const widgetEvent = template.item.widgetEvent[i]
-        const layoutId = template.item.layoutId[i]
+      for (let i = 0; i < template.layoutId.length; i++) {
+        const queryIndexes = template.queryIndexes[i]
+        const contentRefs = template.contentRefs[i]
+        const contentItems = template.content[i]
+        const eventListener = template.eventListeners[i]
+        const widgetEvent = template.widgetEvent[i]
+        const layoutId = template.layoutId[i]
+        const computedAttributes = template.computedAttributes[i]
         const widget = {
           id: this.$method('dsData/generateId'),
           content: [],
@@ -331,6 +333,12 @@ export default definePlugin({
         if (!rootWidgetId) {
           rootWidgetId = widget.id
           actionRefs['widget:id'] = widget.id
+        }
+
+        if (computedAttributes.length) {
+          this.$setDataValue('dsLayout/additionalAttributes', computedAttributes, {
+            id: layoutId
+          })
         }
 
         dsWidgetItems.push(widget)
@@ -474,17 +482,17 @@ export default definePlugin({
       const usedWidgets = []
 
       // sort sections
-      for (let i = 0; i < template.item.widgetSection.length; i++) {
-        const sectionIndexes = template.item.widgetSection[i]
+      for (let i = 0; i < template.widgetSection.length; i++) {
+        const sectionIndexes = template.widgetSection[i]
         const dsWidgetId = dsWidgetItems[i].id
         const dsWidgetSection = []
 
         // get section within widget
         for (let i = 0; i < sectionIndexes.length; i++) {
           const index = sectionIndexes[i]
-          const templateSection = template.item.section[index]
+          const templateSection = template.section[index]
           const dsSection = []
-          const sectionRef = template.item.sectionRefs[i]
+          const sectionRef = template.sectionRefs[i]
 
           if (sectionRef) {
             if (actionRefs[sectionRef]) {

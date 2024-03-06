@@ -121,28 +121,6 @@ export default definePlugin({
         }
       }
 
-      for (let i = 0; i < template.computedAttributes.length; i++) {
-        const computedAttributes = template.computedAttributes[i]
-        const data = { uuid: {} }
-
-        for (let j = 0; j < computedAttributes.length; j++) {
-          const computedAttribute = computedAttributes[j]
-          const componentId = template.layout[i][computedAttribute.index].componentId
-          const component = template.component[componentId]
-
-          if (!component.attributes) {
-            component.attributes = []
-          }
-
-          for (let k = 0; k < computedAttribute.values.length; k++) {
-            const attribute = computedAttribute.values[k]
-            const result = this['_compute/' + attribute.value](data, attribute.arguments)
-
-            component.attributes.push([attribute.name, result])
-          }
-        }
-      }
-
       this.$setDataValue('dsComponent/items', template.component, {
         merge: true
       })
@@ -151,6 +129,7 @@ export default definePlugin({
         actions: template.actions,
         content: template.content,
         contentRefs: template.contentRefs,
+        computedAttributes: template.computedAttributes,
         eventListeners: template.eventListeners,
         layout: template.layout,
         layoutId: template.layoutId,
@@ -186,17 +165,6 @@ export default definePlugin({
       item.blocks = Object.keys(action.blocks)
       item.sequences = Object.keys(action.sequences)
       template.actions.push(item)
-    },
-    '_compute/uuid' (data, args = [0]) {
-      const index = args[0]
-
-      if (data[index]) {
-        return data[index]
-      }
-
-      data[index] = this.$method('dsData/generateId')
-
-      return data[index]
     }
   }
 })

@@ -192,11 +192,15 @@ const parseHTML = (
             if (result.options.computed) {
               // set component to have computed attributes (for hash reasons)
               component.computed = true
+              const index = layoutNodes.length - 1
 
-              computedAttributes.push({
-                index: layoutNodes.length - 1,
-                values: result.options.computed
-              })
+              for (let i = 0; i < result.options.computed.length; i++) {
+                const values = result.options.computed[i]
+
+                values.index = index
+                values.computed = true
+                computedAttributes.push(values)
+              }
             }
 
             const contentRef = result.options['ds-content-ref']

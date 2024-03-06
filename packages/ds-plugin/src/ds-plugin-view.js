@@ -136,15 +136,18 @@ export default definePlugin({
     /**
      * Creates node
      * @param {Object} item
-     * @param {dsComponent} item.dsComponentId - Component id
+     * @param {string} item.dsViewId - View id
+     * @param {string} item.dsComponentId - Component id
      * @param {string} item.dsSectionId - Section id from dsWidget
      * @param {string} item.dsWidgetId - Instance id from dsWidget
+     * @param {Array.<string[]>} item.additionalAttributes - Additional element attributes
      */
     createNode ({
       dsViewId,
       dsComponentId,
       dsSectionId,
-      dsWidgetId
+      dsWidgetId,
+      additionalAttributes
     }) {
       let dsComponent = this.$getDataValue('dsComponent/items', {
         id: dsComponentId
@@ -174,6 +177,10 @@ export default definePlugin({
           id: dsViewId
         }
       })
+
+      if (additionalAttributes) {
+        this._setAttributes(element, additionalAttributes)
+      }
 
       if (dsComponent.attributes) {
         this._setAttributes(element, dsComponent.attributes)
