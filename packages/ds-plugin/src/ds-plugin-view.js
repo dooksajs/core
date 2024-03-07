@@ -412,6 +412,38 @@ export default definePlugin({
         }
       }
     },
+    /**
+     * Remove attribute to element
+     * @param {Object} param
+     * @param {string} param.dsViewId - Element id
+     * @param {string} param.name - Attribute name
+     * @param {string} param.value - Attribute value
+     */
+    removeAttribute ({ dsViewId, name, value }) {
+      const dsView = this.$getDataValue('dsView/items', {
+        id: dsViewId
+      })
+
+      if (!dsView.isEmpty) {
+        dsView.item.removeAttribute(name, value)
+      }
+    },
+    /**
+     * Set attribute to element
+     * @param {Object} param
+     * @param {string} param.dsViewId - Element id
+     * @param {string} param.name - Attribute name
+     * @param {string} param.value - Attribute value
+     */
+    setAttribute ({ dsViewId, name, value }) {
+      const dsView = this.$getDataValue('dsView/items', {
+        id: dsViewId
+      })
+
+      if (!dsView.isEmpty) {
+        dsView.item.setAttribute(name, value)
+      }
+    },
     '_insert/append' (target, source) {
       target.appendChild(source)
     },
