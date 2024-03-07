@@ -140,14 +140,12 @@ export default definePlugin({
      * @param {string} item.dsComponentId - Component id
      * @param {string} item.dsSectionId - Section id from dsWidget
      * @param {string} item.dsWidgetId - Instance id from dsWidget
-     * @param {Array.<string[]>} item.additionalAttributes - Additional element attributes
      */
     createNode ({
       dsViewId,
       dsComponentId,
       dsSectionId,
-      dsWidgetId,
-      additionalAttributes
+      dsWidgetId
     }) {
       let dsComponent = this.$getDataValue('dsComponent/items', {
         id: dsComponentId

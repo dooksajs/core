@@ -287,9 +287,6 @@ export default definePlugin({
     }
   ],
   methods: {
-    compute ({ data, name, options }) {
-      return this['_compute/' + name](data, options)
-    },
     fetch (id) {
       const component = this.$getDataValue('dsComponent/items', { id })
 
@@ -308,17 +305,6 @@ export default definePlugin({
           attributes: component.attributes
         }
       }
-    },
-    '_compute/uuid' (data, args = [0]) {
-      const index = args[0]
-
-      if (data[index]) {
-        return data[index]
-      }
-
-      data[index] = this.$method('dsData/generateId')
-
-      return data[index]
     }
   }
 })

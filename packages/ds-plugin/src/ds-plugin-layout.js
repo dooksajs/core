@@ -8,34 +8,6 @@ export default definePlugin({
   name: 'dsLayout',
   version: 1,
   data: {
-    additionalAttributes: {
-      schema: {
-        type: 'collection',
-        items: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              index: {
-                type: 'number'
-              },
-              computed: {
-                type: 'boolean'
-              },
-              name: {
-                type: 'string'
-              },
-              arguments: {
-                type: 'array'
-              },
-              value: {
-                type: 'string'
-              }
-            }
-          }
-        }
-      }
-    },
     items: {
       schema: {
         type: 'collection',
@@ -119,35 +91,6 @@ export default definePlugin({
       }
 
       const sections = []
-      const attributes = {}
-      const additionalAttributes = this.$getDataValue('dsLayout/additionalAttributes', {
-        id: dsLayoutId
-      })
-
-      if (!additionalAttributes.isEmpty) {
-        const data = { uuid: {} }
-
-        for (let i = 0; i < additionalAttributes.item.length; i++) {
-          const attribute = additionalAttributes.item[i]
-          let list = attributes[attribute.index]
-          let value = attribute.value
-
-          if (!list) {
-            attributes[attribute.index] = []
-            list = attributes[attribute.index]
-          }
-
-          if (attribute.computed) {
-            value = this.$method('dsComponent/compute', {
-              data,
-              name: attribute.value,
-              options: attribute.arguments
-            })
-          }
-
-          list.push([attribute.name, value])
-        }
-      }
 
       for (let i = 0; i < items.length; i++) {
         const element = items[i]
@@ -188,8 +131,7 @@ export default definePlugin({
           dsViewId: viewItems[i],
           dsSectionId: sectionId,
           dsWidgetId,
-          dsComponentId: element.componentId,
-          additionalAttributes: attributes[i]
+          dsComponentId: element.componentId
         })
 
         if (!isChild) {

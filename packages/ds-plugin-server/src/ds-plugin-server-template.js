@@ -129,7 +129,6 @@ export default definePlugin({
         actions: template.actions,
         content: template.content,
         contentRefs: template.contentRefs,
-        computedAttributes: template.computedAttributes,
         eventListeners: template.eventListeners,
         layout: template.layout,
         layoutId: template.layoutId,
@@ -156,6 +155,8 @@ export default definePlugin({
         for (let i = 0; i < action.dependencies.length; i++) {
           this._processActions(template, actions, action.dependencies[i])
         }
+
+        item.dependencies = action.dependencies
       }
 
       this.$setDataValue('dsAction/blocks', action.blocks, { merge: true })

@@ -323,7 +323,6 @@ export default definePlugin({
         const eventListener = template.eventListeners[i]
         const widgetEvent = template.widgetEvent[i]
         const layoutId = template.layoutId[i]
-        const computedAttributes = template.computedAttributes[i]
         const widget = {
           id: this.$method('dsData/generateId'),
           content: [],
@@ -333,12 +332,6 @@ export default definePlugin({
         if (!rootWidgetId) {
           rootWidgetId = widget.id
           actionRefs['widget:id'] = widget.id
-        }
-
-        if (computedAttributes.length) {
-          this.$setDataValue('dsLayout/additionalAttributes', computedAttributes, {
-            id: layoutId
-          })
         }
 
         dsWidgetItems.push(widget)

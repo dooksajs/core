@@ -17,7 +17,6 @@ const parseHTML = (
     component: {},
     content: [],
     contentRefs: {},
-    computedAttributes: [],
     eventListeners: {},
     queryIndexes: {},
     sectionRefs: {},
@@ -50,7 +49,6 @@ const parseHTML = (
 
   const content = []
   const contentRefs = {}
-  const computedAttributes = []
   const eventListeners = {}
   const queryIndexes = {}
   const layoutNodes = []
@@ -64,7 +62,6 @@ const parseHTML = (
 
   data.content[data.layoutIndex] = content
   data.contentRefs[data.layoutIndex] = contentRefs
-  data.computedAttributes[data.layoutIndex] = computedAttributes
   data.queryIndexes[data.layoutIndex] = queryIndexes
   data.layout[data.layoutIndex] = layout
   data.layoutEntry[data.layoutIndex] = layoutEntry
@@ -189,20 +186,6 @@ const parseHTML = (
           }
 
           if (result.options) {
-            if (result.options.computed) {
-              // set component to have computed attributes (for hash reasons)
-              component.computed = true
-              const index = layoutNodes.length - 1
-
-              for (let i = 0; i < result.options.computed.length; i++) {
-                const values = result.options.computed[i]
-
-                values.index = index
-                values.computed = true
-                computedAttributes.push(values)
-              }
-            }
-
             const contentRef = result.options['ds-content-ref']
 
             if (contentRef) {
@@ -327,22 +310,7 @@ const parseAttributes = (attributes, ignore = []) => {
           item.bind.on = {
             name: bind.slice(2).join('-'),
             value: value.split(' ')
-          }
-        } else if (bind[1] === 'computed') {
-          // Computed attributes
-          const computedName = bind.slice(2).join('-')
-          const computedValue = value.split(':')
-          const result = {
-            name: computedName,
-            value: computedValue[0],
-            arguments: computedValue.slice(1)
-          }
-
-          if (!item.options.computed) {
-            item.options.computed = [result]
-          } else {
-            item.options.computed.push(result)
-          }
+          })
         } else if (bind[1] === 'section' && !bind[2]) {
           // set element to be a section
           item.bind.hasSection = true
