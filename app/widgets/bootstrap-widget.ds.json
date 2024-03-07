@@ -5,6 +5,16 @@
       "name": "Append add new button",
       "sequence": [
         {
+          "dsAction": "get/dataValue",
+          "dsArgs": {
+            "name": "dsWidget/sections",
+            "id": "section-entry",
+            "options": {
+              "position": "section-entry:index"
+            }
+          }
+        },
+        {
           "dsAction": "set/dataValue",
           "dsArgs": {
             "name": "dsSection/items",
@@ -15,7 +25,13 @@
                   "async": true,
                   "dsAction": "dsTemplate/create",
                   "dsArgs": {
-                    "id": "bootstrap-widget-add-button"
+                    "id": "bootstrap-widget-add-button",
+                    "actionGroupId": {
+                      "dsAction": "get/contextValue",
+                      "dsArgs": {
+                        "$key": ["id"]
+                      }
+                    }
                   }
                 },
                 "map": {
@@ -25,19 +41,31 @@
             },
             "options": {
               "id": {
-                "dsAction": "get/dataValue",
+                "dsAction": "get/sequenceValue",
                 "dsArgs": {
-                  "name": "dsWidget/sections",
-                  "id": "section-entry",
-                  "options": {
-                    "position": "section-entry:index"
-                  }
+                  "$key": ["0"]
                 }
               },
               "update": {
                 "method": "push"
               }
             }
+          }
+        },
+        {
+          "dsAction": "set/actionValue",
+          "dsArgs": {
+            "values": [
+              {
+                "id": "bootstrap-widget-add__section-id",
+                "value": {
+                  "dsAction": "get/sequenceValue",
+                  "dsArgs": {
+                    "$key": ["0"]
+                  }
+                }
+              }
+            ]
           }
         }
       ]
@@ -46,6 +74,22 @@
       "id": "widget-add",
       "name": "Add new widget",
       "sequence": [
+        {
+          "dsAction": "set/actionValue",
+          "dsArgs": {
+            "values": [
+              {
+                "id": "bootstrap-widget-add__section-id",
+                "value": {
+                  "dsAction": "get/contextValue",
+                  "dsArgs": {
+                    "$key": ["dsSectionId"]
+                  }
+                }
+              }
+            ]
+          }
+        },
         {
           "dsAction": "condition",
           "dsArgs": {
@@ -70,8 +114,8 @@
                 "to": true       
               }
             ],
-            "then": [1, 2, 3],
-            "else": [4]
+            "then": [2, 3, 4],
+            "else": [5]
           }
         },
         {
@@ -80,9 +124,10 @@
           "dsArgs": {
             "id": "bootstrap-widget-add",
             "actionGroupId": {
-              "dsAction": "get/eventValue",
+              "dsAction": "get/dataValue",
               "dsArgs": {
-                "$key": ["id"]
+                "name": "dsWidget/actionGroups",
+                "id": "widget:id"
               }
             }
           }
@@ -96,7 +141,7 @@
                 "value": {
                   "dsAction": "get/sequenceValue",
                   "dsArgs": {
-                    "$key": ["1", "dsWidgetId"]
+                    "$key": ["2", "dsWidgetId"]
                   }
                 }
               },
@@ -114,7 +159,7 @@
             "value": {
               "dsAction": "get/sequenceValue",
               "dsArgs": {
-                "$key": ["1", "dsWidgetId"]
+                "$key": ["2", "dsWidgetId"]
               }
             },
             "options": {
@@ -143,7 +188,7 @@
             },
             "options": {
               "id": {
-                "dsAction": "get/eventValue",
+                "dsAction": "get/contextValue",
                 "dsArgs": {
                   "$key": ["dsSectionId"]
                 }
@@ -159,6 +204,7 @@
     {
       "id": "widget-add-close",
       "name": "Close add widget",
+      "groupId": "widget-fetch-add-button",
       "sequence": [
         {
           "dsAction": "set/dataValue",
@@ -214,7 +260,7 @@
       ]
     },
     {
-      "id": "widget-add-item",
+      "id": "widget-display-add-item",
       "name": "Add widget item",
       "sequence": [
         {
@@ -226,7 +272,7 @@
               "icon": {
                 "values": {
                   "value": {
-                    "dsAction": "get/eventValue",
+                    "dsAction": "get/payloadValue",
                     "dsArgs": {
                       "$key": "value.item.icon"
                     }
@@ -239,7 +285,7 @@
                 },
                 "values": {
                   "value": {
-                    "dsAction": "get/eventValue",
+                    "dsAction": "get/payloadValue",
                     "dsArgs": {
                       "$key": "value.item.name"
                     }
@@ -252,12 +298,19 @@
                 },
                 "values": {
                   "value": {
-                    "dsAction": "get/eventValue",
+                    "dsAction": "get/payloadValue",
                     "dsArgs": {
                       "$key": "value.item.description"
                     }
                   }
                 }
+              }
+            },
+            "actionGroupId": {
+              "dsAction": "get/dataValue",
+              "dsArgs": {
+                "name": "dsWidget/actionGroups",
+                "id": "widget:id"
               }
             }
           }
@@ -288,13 +341,42 @@
               }
             }
           }
+        },
+        {
+          "dsAction": "set/actionValue",
+          "dsArgs": {
+            "values": [
+              {
+                "id": "bootstrap-widget-template-id",
+                "value": {
+                  "dsAction": "get/payloadValue",
+                  "dsArgs": {
+                    "$key": "value.id"
+                  }
+                }
+              },
+              {
+                "id": "bootstrap-widget-add-list__section-id",
+                "value": {
+                  "dsAction": "get/dataValue",
+                  "dsArgs": {
+                    "name": "dsWidget/sections",
+                    "id": "widget-add-list",
+                    "options": {
+                      "position": "widget-add-list:index"
+                    }
+                  }
+                }
+              }
+            ]
+          }
         }
       ]
     },
     {
       "id": "widget-add-fetch",
       "name": "Fetch widgets",
-      "dependencies": ["widget-add-item"],
+      "dependencies": ["widget-display-add-item"],
       "sequence": [
         {
           "async": true,
@@ -306,13 +388,131 @@
         {
           "dsAction": "dsList/iterate",
           "dsArgs": {
+            "context": {
+              "dsAction": "get/contextValue"
+            },
             "items": {
               "dsAction": "get/sequenceValue",
               "dsArgs": {
                 "$key": ["0"]
               }
             },
-            "dsActionId": "widget-add-item"
+            "dsActionId": "widget-display-add-item"
+          }
+        }
+      ]
+    },
+    {
+      "id": "widget-add-item",
+      "name": "Add widget",
+      "sequence": [
+        {
+          "async": true,
+          "dsAction": "dsTemplate/create",
+          "dsArgs": {
+            "id": {
+              "dsAction": "get/actionValue",
+              "dsArgs": {
+                "$key": ["bootstrap-widget-template-id"]
+              }
+            },
+            "actionGroupId": {
+              "dsAction": "get/dataValue",
+              "dsArgs": {
+                "name": "dsWidget/actionGroups",
+                "id": "widget:id"
+              }
+            }
+          }
+        },
+        {
+          "dsAction": "set/dataValue",
+          "dsArgs": {
+            "name": "dsSection/items",
+            "value": {
+              "dsAction": "get/sequenceValue",
+              "dsArgs": {
+                "$key": ["0", "dsWidgetId"]
+              }
+            },
+            "options": {
+              "id": {
+                "dsAction": "get/actionValue",
+                "dsArgs": {
+                  "$key": ["bootstrap-widget-add__section-id"]
+                }
+              },
+              "update": {
+                "method": "push"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "attribute-id-uuid",
+      "name": "Create unique id and set",
+      "sequence": [
+        {
+          "dsAction": "dsData/generateId"
+        },
+        {
+          "dsAction": "dsView/setAttribute",
+          "dsArgs": {
+            "dsViewId": {
+              "dsAction": "get/contextValue",
+              "dsArgs": {
+                "$key": ["dsViewId"]
+              }
+            },
+            "name": "id",
+            "value": {
+              "dsAction": "get/sequenceValue",
+              "dsArgs": {
+                "$key": ["0"]
+              }
+            }
+          }
+        },
+        {
+          "dsAction": "set/actionValue",
+          "dsArgs": {
+            "values": [
+              {
+                "id": "uuid",
+                "value": {
+                  "dsAction": "get/sequenceValue",
+                  "dsArgs": {
+                    "$key": ["0"]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "attribute-for-uuid",
+      "name": "Get uuid from sequence value",
+      "sequence": [
+        {
+          "dsAction": "dsView/setAttribute",
+          "dsArgs": {
+            "dsViewId": {
+              "dsAction": "get/contextValue",
+              "dsArgs": {
+                "$key": ["dsViewId"]
+              }
+            },
+            "name": "for",
+            "value": {
+              "dsAction": "get/actionValue",
+              "dsArgs": {
+                "$key": ["uuid"]
+              }
+            }
           }
         }
       ]
