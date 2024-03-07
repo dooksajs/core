@@ -96,8 +96,8 @@ export default definePlugin({
     /**
      * Adds a node to the end of the list of children of a specified parent node
      * @param {Object} item
-     * @param {dsViewId} item.targetId - Child dsView node id
-     * @param {dsViewId} item.sourceId - Parent dsView node id
+     * @param {dsViewId} item.targetId - parentViewId dsView node id
+     * @param {dsViewId} item.sourceId - Child dsView node id
      * @param {string} item.dsWidgetId - Widget id
      * @param {string} item.dsWidgetMode - Widget mode
      * @param {string} [item.type] - type of insert method
@@ -115,8 +115,8 @@ export default definePlugin({
       this.$emit('dsView/mount', {
         id: sourceId,
         context: {
-          targetId,
-          sourceId,
+          dsViewIdParent: targetId,
+          dsViewId: sourceId,
           dsWidgetId,
           dsWidgetMode
         }
@@ -175,10 +175,6 @@ export default definePlugin({
           id: dsViewId
         }
       })
-
-      if (additionalAttributes) {
-        this._setAttributes(element, additionalAttributes)
-      }
 
       if (dsComponent.attributes) {
         this._setAttributes(element, dsComponent.attributes)

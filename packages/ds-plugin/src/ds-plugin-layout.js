@@ -152,7 +152,11 @@ export default definePlugin({
         }
 
         if (event) {
-          this._eventItem(event, childViewId)
+          for (let i = 0; i < event.length; i++) {
+            const item = event[i]
+
+            this._eventItem(item, childViewId)
+          }
         }
 
         // only include if in edit mode

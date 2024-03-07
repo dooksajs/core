@@ -155,15 +155,18 @@ export default definePlugin({
                 type: 'object',
                 patternProperties: {
                   '[0-9]': {
-                    type: 'object',
-                    properties: {
-                      name: {
-                        type: 'string'
-                      },
-                      value: {
-                        type: 'array',
-                        items: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        name: {
                           type: 'string'
+                        },
+                        value: {
+                          type: 'array',
+                          items: {
+                            type: 'string'
+                          }
                         }
                       }
                     }
@@ -304,7 +307,7 @@ export default definePlugin({
       const dsWidgetGroupId = widgetOptions.groupId || this.$method('dsData/generateId')
       const dsWidgetItems = []
       const actionRefs = {}
-      const events = []
+      const activeEvents = []
       let rootWidgetId
 
       this.$setDataValue('dsSection/templates', id, {
@@ -344,11 +347,8 @@ export default definePlugin({
         }
 
         // add events to instance
-        if (
-          widgetEvent != null &&
-          Object.keys(widgetEvent).length
-        ) {
-          events.push([widget.id, widgetEvent])
+        if (widgetEvent != null) {
+          activeEvents.push([widget.id, widgetEvent])
 
           this.$setDataValue('dsWidget/events', widgetEvent, {
             id: widget.id,
@@ -526,31 +526,36 @@ export default definePlugin({
         }
       }
 
-      if (events.length) {
+      // Update unique token action value
+      if (activeEvents.length) {
         const newActions = this._updateActions(template.actions, actionRefs)
 
-        for (let i = 0; i < events.length; i++) {
-          const [widgetId, event] = events[i]
+        for (let i = 0; i < activeEvents.length; i++) {
+          const [widgetId, activeEvent] = activeEvents[i]
           const actions = {}
 
-          for (const key in event) {
-            if (Object.hasOwnProperty.call(event, key)) {
-              const item = event[key]
+          for (const key in activeEvent) {
+            if (Object.hasOwnProperty.call(activeEvent, key)) {
+              const events = activeEvent[key]
 
-              for (let i = 0; i < item.value.length; i++) {
-                const value = item.value[i]
+              for (let i = 0; i < events.length; i++) {
+                const event = events[i]
 
-                // update event action item id
-                if (newActions.items[value]) {
-                  actions[value] = newActions.items[value]
+                for (let i = 0; i < event.value.length; i++) {
+                  const value = event.value[i]
 
-                  const dependencies = newActions.dependencies[value]
+                  // update event action item id
+                  if (newActions.items[value]) {
+                    actions[value] = newActions.items[value]
 
-                  if (dependencies) {
-                    for (let i = 0; i < dependencies.length; i++) {
-                      const id = dependencies[i]
+                    const dependencies = newActions.dependencies[value]
 
-                      actions[id] = newActions.items[id]
+                    if (dependencies) {
+                      for (let i = 0; i < dependencies.length; i++) {
+                        const id = dependencies[i]
+
+                        actions[id] = newActions.items[id]
+                      }
                     }
                   }
                 }

@@ -85,16 +85,19 @@ export default definePlugin({
           type: 'object',
           patternProperties: {
             '[0-9]': {
-              type: 'object',
-              properties: {
-                name: {
-                  type: 'string'
-                },
-                value: {
-                  type: 'array',
-                  items: {
-                    type: 'string',
-                    relation: 'dsAction/items'
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  name: {
+                    type: 'string'
+                  },
+                  value: {
+                    type: 'array',
+                    items: {
+                      type: 'string',
+                      relation: 'dsAction/items'
+                    }
                   }
                 }
               }

@@ -101,13 +101,15 @@ export default definePlugin({
       }
 
       // Add used actions by widget
-      if (template.widgetEvent) {
-        for (let i = 0; i < template.widgetEvent.length; i++) {
-          const events = template.widgetEvent[i]
+      for (let i = 0; i < template.widgetEvent.length; i++) {
+        const widgetEvent = template.widgetEvent[i]
 
-          for (const key in events) {
-            if (Object.hasOwnProperty.call(events, key)) {
-              const event = events[key]
+        for (const key in widgetEvent) {
+          if (Object.hasOwnProperty.call(widgetEvent, key)) {
+            const events = widgetEvent[key]
+
+            for (let i = 0; i < events.length; i++) {
+              const event = events[i]
 
               for (let i = 0; i < event.value.length; i++) {
                 const actionId = event.value[i]

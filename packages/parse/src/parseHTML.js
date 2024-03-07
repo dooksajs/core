@@ -123,8 +123,8 @@ const parseHTML = (
         if (node.attributes.length) {
           const result = parseAttributes(node.attributes, ignoreAttributes[component.id])
 
-          if (result.bind.on) {
-            widgetEvent[layoutNodes.length - 1] = result.bind.on
+          if (result.bind.length) {
+            widgetEvent[layoutNodes.length - 1] = result.bind
             hasEvent = true
           }
 
@@ -180,8 +180,8 @@ const parseHTML = (
         if (node.attributes.length) {
           const result = parseAttributes(node.attributes, ignoreAttributes[component.id])
 
-          if (result.bind.on) {
-            widgetEvent[layoutNodes.length - 1] = result.bind.on
+          if (result.bind.length) {
+            widgetEvent[layoutNodes.length - 1] = result.bind
             hasEvent = true
           }
 
@@ -219,7 +219,7 @@ const parseHTML = (
             }
           }
 
-          element.isSection = result.bind.hasSection
+          element.isSection = result.hasSection
 
           if (result.attributes.length) {
             component.attributes = result.attributes
@@ -291,9 +291,9 @@ const parseHTML = (
 
 const parseAttributes = (attributes, ignore = []) => {
   const item = {
-    options: {},
     attributes: [],
-    bind: {}
+    bind: [],
+    hasSection: false
   }
 
   for (let i = 0; i < attributes.length; i++) {
@@ -307,19 +307,23 @@ const parseAttributes = (attributes, ignore = []) => {
 
         if (bind[1] === 'on') {
           // Event attributes
-          item.bind.on = {
+          item.bind.push({
             name: bind.slice(2).join('-'),
             value: value.split(' ')
           })
         } else if (bind[1] === 'section' && !bind[2]) {
           // set element to be a section
-          item.bind.hasSection = true
+          item.hasSection = true
         } else if (name === 'class') {
           // Need to make this optional, sometimes class order matters, specially for tailwind
           const valueSorted = value.split(' ').sort().join(' ')
 
           item.attributes.push([name, valueSorted])
         } else {
+          if (!item.options) {
+            item.options = {}
+          }
+
           item.options[name] = value
         }
       } else {
