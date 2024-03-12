@@ -42,18 +42,31 @@ export default (source) => {
     let node = source
 
     if (depth !== action.path.length) {
+      let split = false
+
+      // check if child values belong to current action
       for (let i = 0; i < children.length; i++) {
         const childAction = actions[children[i]]
 
-        for (let k = 0; k < action.path.length; k++) {
-          if (action.path[k] !== childAction.path[k]) {
-            children.splice(i, 1)
-            break
+        // check if previous action belongs to the same parent action
+        if (action.path.lastIndexOf('_$arg') !== childAction.path.lastIndexOf('_$arg')) {
+          // check if actions belong to the same lineage
+          for (let k = 0; k < action.path.length; k++) {
+            const a = action.path[k]
+            const b = childAction.path[k]
+
+            if (a !== b) {
+              children.splice(i, 1)
+              break
+            }
           }
+
+          split = true
+          break
         }
       }
 
-      if (children.length) {
+      if (split && children.length) {
         item.children = children.slice()
         children = []
       }
