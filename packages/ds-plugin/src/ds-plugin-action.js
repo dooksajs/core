@@ -444,11 +444,11 @@ export default definePlugin({
 
       const result = this.$getDataValue(props.name, options)
 
-      if (result.isEmpty) {
-        return
+      if (!result.isEmpty) {
+        return result.item
       }
 
-      return result.item
+      this.$log('warn', { message: 'Action get data value was empty: "' + props.name + '/' + props.id + '"' })
     },
     '_process/get/contextValue' (props, context) {
       return this._getValue(context, props)
