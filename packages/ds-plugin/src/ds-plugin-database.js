@@ -296,7 +296,7 @@ export default definePlugin({
         const item = cache.item.data[i]
         const data = this.$getDataValue(item.collection, { id: item.id })
 
-        result.push(data.item)
+        result.push(data)
       }
 
       return result
