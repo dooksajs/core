@@ -471,7 +471,6 @@ export default definePlugin({
         })
       }
 
-      const rootSection = []
       const usedWidgets = []
 
       // sort sections
@@ -522,7 +521,13 @@ export default definePlugin({
         })
 
         if (!usedWidgets.includes(dsWidgetId)) {
-          rootSection.push(dsWidgetId)
+          this.$setDataValue('dsSection/items', dsWidgetId, {
+            id: dsSectionId,
+            suffixId: mode,
+            update: {
+              method: 'push'
+            }
+          })
         }
       }
 
@@ -568,14 +573,6 @@ export default definePlugin({
             suffixId: mode
           })
         }
-      }
-
-      // this might be bad for empty sections, it would be better to compare to layout "hasSection"
-      if (rootSection.length) {
-        this.$setDataValue('dsSection/items', rootSection, {
-          id: dsSectionId,
-          suffixId: mode
-        })
       }
 
       const result = {
