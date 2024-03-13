@@ -159,7 +159,6 @@ export default definePlugin({
       }
 
       const section = this.$getDataValue('dsSection/items', { id })
-
       const previousWidgets = {}
       const nextItems = section.item
       const prevItems = section.previous ? section.previous._item : []
