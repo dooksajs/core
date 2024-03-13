@@ -282,11 +282,12 @@ export default definePlugin({
 
       if (collection[id]) {
         delete collection[id]
+
+        this._onDelete(name, id)
       }
 
-      this._onDelete(name, id)
-
       return {
+        inUse: false,
         deleted: true
       }
     },
@@ -806,34 +807,37 @@ export default definePlugin({
 
       for (const id in sources) {
         if (Object.hasOwnProperty.call(sources, id)) {
-          const source = deepClone(this.defaultTypes[schema.type](), sources[id])
+          let resultItem = this.defaultTypes[schema.type]()
+          let source = deepClone(this.defaultTypes[schema.type](), sources[id])
           const resultMetadata = source._metadata || metadata
-          const resultItem = source._item || source
+          source = source._item || source
 
-          this._checkType(path, resultItem, schema.type)
+          this._checkType(path, source, schema.type)
 
           // set current merge root id
           data.id = id
 
-          const result = this._createTarget(schema.type, resultMetadata)
           const target = data.target[id]
 
           // merge target and source objects
           if (target && target._item instanceof Object) {
-            const item = target._item
+            deepClone(resultItem, target)
+            resultItem = resultItem._item
 
-            for (const key in item) {
-              if (Object.hasOwnProperty.call(item, key)) {
-                const value = item[key]
-
-                resultItem[key] = value
+            for (const key in source) {
+              if (Object.hasOwnProperty.call(source, key)) {
+                resultItem[key] = source[key]
               }
             }
+          } else {
+            resultItem = source
           }
 
           this[schemaCheck](data, path, resultItem)
 
           // add new item value
+          const result = this._createTarget(schema.type, resultMetadata)
+
           result._item = resultItem
 
           // store old values
