@@ -242,17 +242,19 @@ export default definePlugin({
             if (response.ok) {
               return response.json()
             }
-
-            resolve({
-              isEmpty: true
-            })
           })
           .then(data => {
-            if (sync) {
-              this._sync(data, path)
-            }
+            if (data) {
+              if (sync) {
+                this._sync(data, path)
+              }
 
-            resolve(data)
+              resolve(data)
+            } else {
+              resolve({
+                isEmpty: true
+              })
+            }
           })
           .catch(error => {
             reject(error)
