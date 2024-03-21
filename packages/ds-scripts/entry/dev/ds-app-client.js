@@ -19,6 +19,8 @@ import dsAppClient from '@dooksa/ds-app-client'
         return
       }
 
+      const currentPath = app.$method('dsRouter/currentPath')
+
       // set data
       for (let i = 0; i < data.item.length; i++) {
         const item = data.item[i]
@@ -30,44 +32,38 @@ import dsAppClient from '@dooksa/ds-app-client'
         })
       }
 
-      const page = app.$getDataValue('dsPage/items', {
-        id: window.location.pathname
+      const widget = app.$getDataValue('dsSection/items', {
+        id: currentPath
       })
 
-      if (!page.isEmpty) {
-      // Render page
-        for (let i = 0; i < page.item.length; i++) {
-          app.$method('dsSection/append', { id: page.item[i] })
-        }
+      if (!widget.isEmpty) {
+        // Render page
+        app.$method('dsSection/append', { id: currentPath })
 
         return
       }
 
       if (data.templates) {
-        const currentPath = app.$method('dsRouter/currentPath')
-
         for (let i = 0; i < data.templates.length; i++) {
           const templateId = data.templates[i]
           app.$action('dsTemplate/create', { id: templateId }, {
-            onSuccess: (result) => {
-              app.$setDataValue('dsPage/items', result.dsSectionId, {
+            onSuccess: (dsWidgetId) => {
+              app.$setDataValue('dsSection/items', dsWidgetId, {
                 id: currentPath,
                 update: {
                   method: 'push'
                 }
               })
-
-              const page = app.$getDataValue('dsPage/items', {
-                id: window.location.pathname
-              })
-
-              if (!page.isEmpty) {
-                for (let i = 0; i < page.item.length; i++) {
-                  app.$method('dsSection/append', { id: page.item[i] })
-                }
-              }
             }
           })
+
+          const widget = app.$getDataValue('dsSection/items', {
+            id: currentPath
+          })
+
+          if (!widget.isEmpty) {
+            app.$method('dsSection/append', { id: currentPath })
+          }
         }
       }
     },
