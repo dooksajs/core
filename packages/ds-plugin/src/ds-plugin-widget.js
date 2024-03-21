@@ -222,26 +222,28 @@ export default definePlugin({
 
       // remove all nodes from DOM
       if (!view.isEmpty) {
-        for (let i = 0; i < view.item.length; i++) {
-          const id = view.item[i]
+        this.$method('dsView/detach', { id: view.item[0] })
 
-          this.$method('dsView/remove', { id })
+        for (let i = 0; i < view.item.length; i++) {
+          const dsViewId = view.item[i]
+
+          this.$emit('dsView/unmount', {
+            id: dsViewId,
+            context: { dsViewId, dsWidgetId: id }
+          })
+          this.$deleteDataValue('dsEvent/handlers', dsViewId)
         }
       }
 
-      const widget = this.$getDataValue('dsWidget/groups', {
-        id,
-        options: {
-          expand: true
-        }
-      })
+      const groupId = this.$getDataValue('dsWidget/items', { id }).item
+      const widgets = this.$getDataValue('dsWidget/groups', { id: groupId })
 
-      const widgets = widget.expand || []
+      if (widgets.isEmpty) {
+        return
+      }
 
-      widgets.push({ id })
-
-      for (let i = 0; i < widgets.length; i++) {
-        const { id } = widgets[i]
+      for (let i = 0; i < widgets.item.length; i++) {
+        const id = widgets.item[i]
 
         this.$deleteDataValue('dsWidget/mode', id)
         this._removeLayout(id)
