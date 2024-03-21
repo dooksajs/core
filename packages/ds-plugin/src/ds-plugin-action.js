@@ -375,11 +375,13 @@ export default definePlugin({
           // compare one or more results
           let compareItem = item
 
-          if (item !== '&&' || item !== '||') {
+          if (item.andOr !== '&&' && item.andOr !== '||') {
             compareItem = this.$method('dsOperator/eval', {
               name: item.op,
               values: [item.from, item.to]
             })
+          } else {
+            compareItem = item.andOr
           }
 
           compareValues.push(compareItem)
