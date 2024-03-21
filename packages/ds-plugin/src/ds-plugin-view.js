@@ -216,6 +216,15 @@ export default definePlugin({
 
       return dsViewId
     },
+    detach ({ id }) {
+      const dsView = this.$getDataValue('dsView/items', { id })
+
+      if (!dsView.isEmpty) {
+        this._unmount(id)
+
+        dsView.item.remove()
+      }
+    },
     /**
      * Get value from node item
      * @param {dsViewId} dsViewId - dsView node id
