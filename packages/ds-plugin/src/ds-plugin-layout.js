@@ -51,8 +51,10 @@ export default definePlugin({
     eventNames: {
       private: true,
       default: () => ({
-        mount: 'dsView/mount',
-        unmount: 'dsView/unmount'
+        'section-attach': 'dsSection/attach',
+        'section-update': 'dsSection/update',
+        'view-mount': 'dsView/mount',
+        'view-unmount': 'dsView/unmount'
       })
     }
   },
