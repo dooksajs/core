@@ -76,7 +76,6 @@ export default definePlugin({
       dsViewId = this.$getDataValue('dsView/rootViewId').item
     }) {
       const dsSectionUniqueId = this.$getDataValue('dsSection/uniqueId').item
-
       const mode = this.$getDataValue('dsSection/mode', {
         id,
         prefixId: dsSectionUniqueId
@@ -98,6 +97,9 @@ export default definePlugin({
         suffixId: mode
       })
 
+      // event context
+      const dsWidgets = []
+
       for (let i = 0; i < dsSection.item.length; i++) {
         const dsWidgetId = dsSection.item[i]
         const widgetMode = this.$getDataValue('dsWidget/mode', {
@@ -111,6 +113,8 @@ export default definePlugin({
           prefixId: dsSectionUniqueId
         }).item
 
+        dsWidgets.push(dsWidgetId)
+
         this.$method('dsLayout/create', {
           dsLayoutId,
           dsSectionId: id,
@@ -120,6 +124,15 @@ export default definePlugin({
           dsViewId
         })
       }
+
+      this.$emit('dsSection/attach', {
+        id: dsViewId,
+        context: {
+          dsSectionId: id,
+          dsViewId,
+          dsWidgets
+        }
+      })
 
       return dsSection
     },
@@ -148,6 +161,7 @@ export default definePlugin({
       }
 
       const section = this.$getDataValue('dsSection/items', { id })
+      const dsWidgets = []
       const previousWidgets = {}
       const nextItems = section.item
       const prevItems = section.previous ? section.previous._item : []
@@ -170,6 +184,9 @@ export default definePlugin({
               expand: true
             }
           })
+
+          // event context data
+          dsWidgets.push(prevWidgetId)
 
           if (!previousView.expandIsEmpty) {
             previousWidgets[nextIndex] = []
@@ -220,8 +237,20 @@ export default definePlugin({
             dsWidgetMode,
             dsViewId
           })
+
+          // event context data
+          dsWidgets.push(dsWidgetId)
         }
       }
+
+      this.$emit('dsSection/update', {
+        id: dsViewId,
+        context: {
+          dsSectionId: id,
+          dsViewId,
+          dsWidgets
+        }
+      })
     },
     _updateByQuery (queryId, dsViewId, id, uniqueId, mode) {
       const result = this.$method('dsQuery/fetch', { id: queryId })
