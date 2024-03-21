@@ -45,17 +45,6 @@ export default definePlugin({
         }
       }
     },
-    templates: {
-      description: 'Templates used by section sorted by modes',
-      schema: {
-        type: 'collection',
-        suffixId: 'default',
-        items: {
-          type: 'string',
-          relation: 'dsTemplate/items'
-        }
-      }
-    },
     query: {
       description: 'Active queries applied to section',
       schema: {
