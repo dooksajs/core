@@ -431,7 +431,9 @@ export default definePlugin({
       this.$log('error', { message: 'Action variables not found', code: '44' })
     },
     '_process/get/blockValue' (props) {
-      return this._getValue(props.value, props.map)
+      if (props.value) {
+        return this._getValue(props.value, props.map)
+      }
     },
     '_process/get/dataValue' (props) {
       const options = {
