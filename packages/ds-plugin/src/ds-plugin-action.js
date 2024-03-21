@@ -100,7 +100,7 @@ export default definePlugin({
             if (!data.isEmpty) {
               this.dispatch({ id, context, payload })
             } else {
-              this.$log('warning', {
+              this.$log('warn', {
                 message: 'No action found: ' + id
               })
             }
