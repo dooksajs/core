@@ -22,7 +22,6 @@ const parseHTML = (
     sectionRefs: {},
     layout: [],
     layoutId: [],
-    layoutEntry: [],
     widgetEvent: [],
     section: [],
     widgetSection: [],
@@ -53,7 +52,6 @@ const parseHTML = (
   const queryIndexes = {}
   const layoutNodes = []
   const layout = []
-  const layoutEntry = []
   const widgetEvent = {}
   const widgetSection = []
   let sectionIndex = 0
@@ -64,7 +62,6 @@ const parseHTML = (
   data.contentRefs[data.layoutIndex] = contentRefs
   data.queryIndexes[data.layoutIndex] = queryIndexes
   data.layout[data.layoutIndex] = layout
-  data.layoutEntry[data.layoutIndex] = layoutEntry
   data.eventListeners[data.layoutIndex] = eventListeners
   data.widgetEvent[data.layoutIndex] = widgetEvent
   data.widgetSection[data.layoutIndex] = widgetSection
@@ -94,8 +91,6 @@ const parseHTML = (
         if (parentIndex !== -1) {
           item.parentIndex = parentIndex
         }
-      } else {
-        layoutEntry.push(data.layoutIndex)
       }
 
       if (isTextNode) {
