@@ -92,13 +92,12 @@ export default definePlugin({
         return
       }
 
-      const sections = []
-
       for (let i = 0; i < items.length; i++) {
         const element = items[i]
-        const event = events[i]
         const listener = listeners[i]
         const item = {}
+        const isSection = !!Number.isInteger(element.sectionIndex)
+        let event = events[i] || []
         let parentViewId = dsViewId
         let sectionId = dsSectionId
         let isChild = true
@@ -149,16 +148,59 @@ export default definePlugin({
           this._contentItem(dsWidgetId, dsWidgetMode, dsSectionUniqueId, dsViewId, childViewId, element.contentIndex)
         }
 
-        if (Number.isInteger(element.sectionIndex)) {
+        if (isSection) {
+          this.$setDataValue('dsEvent/handlers', () => {
+            this.$emit('dsSection/attach', {
+              id: childViewId,
+              context: {
+                dsViewId,
+                dsWidgetId,
+                dsSectionId
+              }
+            })
+          }, {
+            id: childViewId,
+            update: {
+              method: 'push'
+            }
+          })
+
+          this.$setDataValue('dsEvent/handlers', () => {
+            this.$emit('dsSection/update', {
+              id: childViewId,
+              context: {
+                dsViewId,
+                dsWidgetId,
+                dsSectionId
+              }
+            })
+          }, {
+            id: childViewId,
+            update: {
+              method: 'push'
+            }
+          })
+
+          if (event) {
+            event = event.slice()
+
+            for (let i = 0; i < event.length; i++) {
+              const item = event[i]
+
+              if (item.name === 'section-attach' || item.name === 'section-update') {
+                this._eventItem(item, childViewId)
+                event.splice(i, 0)
+              }
+            }
+          }
+
           this._sectionItem(dsWidgetId, dsWidgetMode, dsSectionUniqueId, childViewId, element.sectionIndex)
         }
 
-        if (event) {
-          for (let i = 0; i < event.length; i++) {
-            const item = event[i]
+        for (let i = 0; i < event.length; i++) {
+          const item = event[i]
 
-            this._eventItem(item, childViewId)
-          }
+          this._eventItem(item, childViewId)
         }
 
         // only include if in edit mode
@@ -261,12 +303,12 @@ export default definePlugin({
         }
       })
     },
-    _eventItem (event, dsView) {
+    _eventItem (event, id) {
       // match core event names with namespaced core plugins
       const eventName = this.eventNames[event.name] || event.name
 
       const dsEvent = this.$setDataValue('dsEvent/listeners', event.value, {
-        id: dsView,
+        id,
         suffixId: eventName,
         merge: true
       })
@@ -337,6 +379,8 @@ export default definePlugin({
             value: handlerValue
           }
         })
+
+        return section.id
       }
     }
   }
