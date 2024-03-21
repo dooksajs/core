@@ -442,8 +442,12 @@ export default definePlugin({
         options: props.options
       }
 
-      if (props.id) {
-        options.id = props.id
+      if (Object.hasOwnProperty.call(props, 'id')) {
+        if (props.id) {
+          options.id = props.id
+        } else {
+          return
+        }
       }
 
       const result = this.$getDataValue(props.name, options)
@@ -451,8 +455,6 @@ export default definePlugin({
       if (!result.isEmpty) {
         return result.item
       }
-
-      this.$log('warn', { message: 'Action get data value was empty: "' + props.name + '/' + props.id + '"' })
     },
     '_process/get/contextValue' (props, context) {
       return this._getValue(context, props)
