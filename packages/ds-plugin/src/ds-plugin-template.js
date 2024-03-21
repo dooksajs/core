@@ -236,7 +236,7 @@ export default definePlugin({
      * @param {Object} [param.widgetOptions={}] - Collection of widget overwrites by matching a ref id
      * @param {string} [param.actionGroupId] - Action group id
      * @param {Function} [_callback] - Private callback that is called to resolve a fetched template
-     * @returns {(TemplateResult|Promise)}
+     * @returns {(string|Promise)}
      */
     create ({
       id,
@@ -244,8 +244,7 @@ export default definePlugin({
       language,
       contentOptions = {},
       widgetOptions = {},
-      actionGroupId,
-      dsSectionId
+      actionGroupId
     }, _callback) {
       let template = this.$getDataValue('dsTemplate/items', { id })
 
@@ -280,18 +279,13 @@ export default definePlugin({
                 }
               }
 
-              // set default values here to avoid exec unnecessary functions if there is no template found
-              language = language || this.$getDataValue('dsMetadata/language').item
-              dsSectionId = dsSectionId || this.$method('dsData/generateId')
-
               this.create({
                 id,
                 mode,
                 language,
                 contentOptions,
                 widgetOptions,
-                actionGroupId,
-                dsSectionId
+                actionGroupId
               }, resolve)
             },
             onError: error => reject(error)
@@ -302,22 +296,12 @@ export default definePlugin({
       template = template.item
       // set default values here to avoid exec unnecessary functions if there is no template found
       language = language || this.$getDataValue('dsMetadata/language').item
-      dsSectionId = dsSectionId || this.$method('dsData/generateId')
 
       const dsWidgetGroupId = widgetOptions.groupId || this.$method('dsData/generateId')
       const dsWidgetItems = []
-      const actionRefs = {}
       const activeEvents = []
-      let rootWidgetId
-
-      this.$setDataValue('dsSection/templates', id, {
-        id: dsSectionId,
-        suffixId: mode
-      })
-
-      this.$setDataValue('dsSection/mode', mode, {
-        id: dsSectionId
-      })
+      const actionRefs = {}
+      let dsWidgetId = ''
 
       for (let i = 0; i < template.layoutId.length; i++) {
         const queryIndexes = template.queryIndexes[i]
@@ -332,12 +316,12 @@ export default definePlugin({
           layout: layoutId
         }
 
-        if (!rootWidgetId) {
-          rootWidgetId = widget.id
-          actionRefs['widget:id'] = widget.id
-        }
-
         dsWidgetItems.push(widget)
+
+        if (!dsWidgetId) {
+          dsWidgetId = widget.id
+          actionRefs['widget:id'] = dsWidgetId
+        }
 
         // set event listener edit modes
         if (eventListener) {
@@ -389,7 +373,7 @@ export default definePlugin({
           if (queryIndex) {
             const dataValue = {
               contentId,
-              widgetId: rootWidgetId
+              widgetId: dsWidgetId
             }
 
             if (queryIndex.content) {
@@ -469,21 +453,24 @@ export default definePlugin({
           id: widget.id,
           suffixId: mode
         })
-      }
 
-      const usedWidgets = []
+        this.$setDataValue('dsWidget/templates', id, {
+          id: widget.id,
+          suffixId: mode
+        })
+      }
 
       // sort sections
       for (let i = 0; i < template.widgetSection.length; i++) {
         const sectionIndexes = template.widgetSection[i]
-        const dsWidgetId = dsWidgetItems[i].id
+        const id = dsWidgetItems[i].id
         const dsWidgetSection = []
 
         // get section within widget
         for (let i = 0; i < sectionIndexes.length; i++) {
           const index = sectionIndexes[i]
           const templateSection = template.section[index]
-          const dsSection = []
+          const widgets = []
           const sectionRef = template.sectionRefs[i]
 
           if (sectionRef) {
@@ -491,20 +478,18 @@ export default definePlugin({
               throw new Error('Action reference id must be unique: "' + sectionRef + '"')
             }
 
-            actionRefs[sectionRef] = dsWidgetId
+            actionRefs[sectionRef] = id
             actionRefs[sectionRef + ':index'] = i
           }
 
           for (let i = 0; i < templateSection.length; i++) {
             const index = templateSection[i]
-            const dsWidgetId = dsWidgetItems[index].id
+            const id = dsWidgetItems[index].id
             // include instance in current section
-            dsSection.push(dsWidgetId)
-            // mark instance as used
-            usedWidgets.push(dsWidgetId)
+            widgets.push(id)
           }
 
-          const section = this.$setDataValue('dsSection/items', dsSection, {
+          const section = this.$setDataValue('dsSection/items', widgets, {
             suffixId: mode
           })
 
@@ -516,19 +501,9 @@ export default definePlugin({
         }
 
         this.$setDataValue('dsWidget/sections', dsWidgetSection, {
-          id: dsWidgetId,
+          id,
           suffixId: mode
         })
-
-        if (!usedWidgets.includes(dsWidgetId)) {
-          this.$setDataValue('dsSection/items', dsWidgetId, {
-            id: dsSectionId,
-            suffixId: mode,
-            update: {
-              method: 'push'
-            }
-          })
-        }
       }
 
       // Update unique token action value
@@ -575,16 +550,11 @@ export default definePlugin({
         }
       }
 
-      const result = {
-        dsSectionId,
-        dsWidgetId: rootWidgetId
-      }
-
       if (_callback) {
-        return _callback(result)
+        return _callback(dsWidgetId)
       }
 
-      return result
+      return dsWidgetId
     },
     /**
      * Create action block overwrites
