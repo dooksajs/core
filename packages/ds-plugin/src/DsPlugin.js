@@ -159,7 +159,7 @@ function DsPlugin (plugin) {
  * @param {Object.<string, (*)>} params - These are the parameters required by the setup function
  * @returns {*}
  */
-DsPlugin.prototype.init = function (params) {
+DsPlugin.prototype.init = function (params = {}) {
   if (this.setup) {
     return this.setup(params)
   }
