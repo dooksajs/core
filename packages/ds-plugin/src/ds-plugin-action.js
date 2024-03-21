@@ -475,8 +475,17 @@ export default definePlugin({
 
       for (let i = 0; i < props.values.length; i++) {
         const item = props.values[i]
+        let id = item.id
 
-        values[item.id] = item.value
+        if (item.prefixId) {
+          id = item.prefixId + id
+        }
+
+        if (item.suffixId) {
+          id = id + item.suffixId
+        }
+
+        values[id] = item.value
       }
 
       this.$setDataValue('dsAction/values', values, {
