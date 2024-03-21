@@ -204,6 +204,16 @@ export default definePlugin({
         },
         suffixId: 'default'
       }
+    },
+    templates: {
+      schema: {
+        type: 'collection',
+        suffixId: 'default',
+        items: {
+          type: 'string',
+          relation: 'dsTemplate/items'
+        }
+      }
     }
   },
   methods: {
