@@ -498,6 +498,7 @@ export default definePlugin({
     },
     _getDataByKey (data, keys) {
       let lastKey
+      let result
 
       if (typeof keys === 'string') {
         keys = keys.split('.')
@@ -509,10 +510,11 @@ export default definePlugin({
         if (Object.hasOwnProperty.call(data, key)) {
           data = data[key]
           lastKey = key
+          result = data
         }
       }
 
-      return { result: data, key: lastKey }
+      return { result, key: lastKey }
     },
     /**
      * Get result value
