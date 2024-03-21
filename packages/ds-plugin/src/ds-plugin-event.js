@@ -27,6 +27,15 @@ export default definePlugin({
           }
         }
       }
+    },
+    handlers: {
+      schema: {
+        type: 'collection',
+        uniqueItems: true,
+        items: {
+          type: 'array'
+        }
+      }
     }
   },
   /** @lends dsEvent */

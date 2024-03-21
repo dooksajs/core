@@ -37,15 +37,6 @@ export default definePlugin({
         }
       }
     },
-    handlers: {
-      schema: {
-        type: 'collection',
-        uniqueItems: true,
-        items: {
-          type: 'array'
-        }
-      }
-    },
     items: {
       schema: {
         type: 'collection',
@@ -214,7 +205,7 @@ export default definePlugin({
 
           element.addEventListener(name, handler)
 
-          this.$setDataValue('dsView/handlers', handler, {
+          this.$setDataValue('dsEvent/handlers', handler, {
             id: dsViewId,
             update: {
               method: 'push'
@@ -280,9 +271,7 @@ export default definePlugin({
         // remove content attachment
         this._unmount(id)
 
-        this.$deleteDataValue('dsView/handlers', id)
-
-        dsView.item.remove()
+        this.$deleteDataValue('dsEvent/handlers', id)
       }
     },
     /**
