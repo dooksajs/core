@@ -1,7 +1,7 @@
 import { dsManager, dsData, dsOperator, DsPlugin } from '@dooksa/ds-plugin'
 
-/** @typedef {import('@dooksa/utils/src/types.js').DsPluginData} DsPluginData */
-/** @typedef {import('@dooksa/utils/src/types.js').DsPluginOptions} DsPluginOptions */
+/** @typedef {import('@dooksa/scripts/../ds-scripts/src/types.js').DsPluginData} DsPluginData */
+/** @typedef {import('@dooksa/scripts/../ds-scripts/src/types.js').DsPluginOptions} DsPluginOptions */
 
 export default () => ({
   /**
