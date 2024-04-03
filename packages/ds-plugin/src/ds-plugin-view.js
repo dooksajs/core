@@ -155,6 +155,13 @@ export default definePlugin({
         element = document.createTextNode('')
       } else {
         element = document.createElement(dsComponent.id)
+
+        if (this.isDev) {
+          element.dataset.dsViewId = dsViewId
+          element.dataset.dsSectionId = dsSectionId
+          element.dataset.dsWidgetId = dsWidgetId
+          element.dataset.dsComponentId = dsComponentId
+        }
       }
 
       element.dsViewId = dsViewId
