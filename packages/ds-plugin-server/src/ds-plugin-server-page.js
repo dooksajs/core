@@ -85,8 +85,8 @@ export default definePlugin({
 
       response.status(200).send(
         `${this.templateStart}
-          <style>${this.dsCSS}</style>
           <script>${dsApp}</script>
+          <style>${this.dsCSS}</style>
         ${this.templateEnd}`
       )
     },
