@@ -119,9 +119,20 @@ export default definePlugin({
      * Increment operator
      * @private
      * @param {number[]} v
-     * @returns {number}
+     * @returns {number|string}
      */
-    '_operator/++': v => ++v[0],
+    '_operator/++': v => {
+      let num = v[0]
+
+      if (v instanceof String) {
+        num = parseInt(v[0])
+        num++
+
+        return num.toString()
+      }
+
+      return ++num
+    },
     /**
      * Decrement operator
      * @private
