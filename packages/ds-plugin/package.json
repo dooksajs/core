@@ -9,6 +9,7 @@
   "main": "./src/index.js",
   "dependencies": {
     "@dooksa/object-hash": "workspace:^",
-    "@dooksa/utils": "workspace:^"
+    "@dooksa/utils": "workspace:^",
+    "iconify-icon": "^1.0.8"
   }
 }

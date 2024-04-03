@@ -102,6 +102,9 @@ importers:
       '@dooksa/utils':
         specifier: workspace:^
         version: link:../utils
+      iconify-icon:
+        specifier: ^1.0.8
+        version: 1.0.8
 
   packages/ds-plugin-server:
     dependencies:
@@ -135,9 +138,6 @@ importers:
       helmet:
         specifier: ^7.0.0
         version: 7.0.0
-      iconify-icon:
-        specifier: ^1.0.8
-        version: 1.0.8
       jsdom:
         specifier: ^22.1.0
         version: 22.1.0
