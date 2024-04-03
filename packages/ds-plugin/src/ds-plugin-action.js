@@ -414,6 +414,8 @@ export default definePlugin({
       process.next = () => {
         this._nextBranchProcess(sequenceProcess)
       }
+
+      return isValid
     },
     '_process/get/actionValue' (props, context) {
       let id = this.$getDataValue('dsWidget/actionGroups', { id: context.dsWidgetId }).item
@@ -488,7 +490,7 @@ export default definePlugin({
         values[id] = item.value
       }
 
-      this.$setDataValue('dsAction/values', values, {
+      return this.$setDataValue('dsAction/values', values, {
         id,
         merge: true
       })
