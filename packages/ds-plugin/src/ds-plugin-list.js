@@ -149,7 +149,13 @@ export default definePlugin({
         }
       }
     },
-    iterate ({ context, items, dsActionId }) {
+    splice ({ target, source, start, deleteCount = 0 }) {
+      if (Array.isArray(source)) {
+        return target.splice(start, deleteCount, ...source)
+      }
+
+      return target.splice(start, deleteCount, source)
+    },
       for (const key in items) {
         if (Object.hasOwnProperty.call(items, key)) {
           const value = items[key]
