@@ -303,8 +303,9 @@ export default definePlugin({
        * @param {Object} [param.options] - Options
        * @param {boolean} [param.options.expand] - Expand all relational data
        * @param {Object} [param.options.expandExclude] - Exclude items from expanding
-       * @param {boolean} [param.options.expandWritable] - Expanded items returns a deep clone of the item value
+       * @param {boolean} [param.options.expandClone] - Expanded items returns a deep clone of the item value
        * @param {string|number} [param.options.position] - Return the value by key of the data value
+       * @param {boolean} [param.options.clone] - Returns a deep clone of the item value
        * @param {boolean} [param.options.stopPropagation] - Prevents further propagation of the update event
        * @returns {DataResult}
        */
@@ -439,8 +440,8 @@ export default definePlugin({
               options: {
                 expand: true,
                 expandExclude: result.expandIncluded,
-                expandWritable: options.expandWritable,
-                writable: options.expandWritable
+                expandClone: options.expandClone,
+                clone: options.expandClone
               }
             })
 
@@ -453,7 +454,7 @@ export default definePlugin({
                 const item = value.expand[i]
                 const name = item.collection + '/' + item.id
 
-                if (options.expandWritable) {
+                if (options.expandClone) {
                   item.item = item.clone()
                 }
 
@@ -467,14 +468,14 @@ export default definePlugin({
             result.expand.push({
               collection: name,
               id: value.id,
-              item: !options.expandWritable ? value.item : value.clone(),
+              item: !options.expandClone ? value.item : value.clone(),
               metadata: value.metadata
             })
           }
         }
 
         // return a mutable item
-        if (options.writable) {
+        if (options.clone) {
           result.item = result.clone()
         }
 
@@ -489,7 +490,7 @@ export default definePlugin({
           }
         }
 
-        // TODO: create copy (structuredClone) if options.writable is true
+        // TODO: create copy (structuredClone) if options.clone is true
 
         return result
       },

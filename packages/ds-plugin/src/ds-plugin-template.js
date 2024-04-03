@@ -396,7 +396,7 @@ export default definePlugin({
                 value: () => {
                   const queryData = this.$getDataValue('dsQuery/items', {
                     id: queryIndex.id,
-                    writable: true
+                    clone: true
                   })
 
                   if (queryData.isEmpty) {
