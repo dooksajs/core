@@ -305,7 +305,7 @@ export default definePlugin({
        * @param {Object} [param.options.expandExclude] - Exclude items from expanding
        * @param {boolean} [param.options.expandWritable] - Expanded items returns a deep clone of the item value
        * @param {string|number} [param.options.position] - Return the value by key of the data value
-       * @param {boolean} [param.options.writable] - Returns a deep clone of the item value
+       * @param {boolean} [param.options.stopPropagation] - Prevents further propagation of the update event
        * @returns {DataResult}
        */
       value (name, { id, prefixId, suffixId, options } = {}) {
@@ -543,7 +543,9 @@ export default definePlugin({
           this.values[name] = result.target
 
           // notify listeners
-          this._onUpdate(name, result)
+          if (!options || !options.stopPropagation) {
+            this._onUpdate(name, result)
+          }
 
           return {
             collection: name,
