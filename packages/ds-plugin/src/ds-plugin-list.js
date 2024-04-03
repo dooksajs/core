@@ -156,13 +156,50 @@ export default definePlugin({
 
       return target.splice(start, deleteCount, source)
     },
+    iterate ({ context, items, dsActionId, async }) {
+      if (async) {
+        return new Promise((resolve, reject) => {
+          const promises = []
+
+          for (const key in items) {
+            if (Object.hasOwnProperty.call(items, key)) {
+              const promise = new Promise((resolve, reject) => {
+                this.$action('dsAction/dispatch', {
+                  id: dsActionId,
+                  context,
+                  payload: {
+                    key,
+                    value: items[key]
+                  }
+                }, {
+                  onSuccess: () => resolve(),
+                  onError: (error) => reject(error)
+                })
+              })
+
+              promises.push(promise)
+            }
+          }
+
+          Promise.all(promises)
+            .then(() => resolve())
+            .catch(error => reject(error))
+        })
+      }
+
       for (const key in items) {
         if (Object.hasOwnProperty.call(items, key)) {
-          const value = items[key]
-
-          this.$method('dsAction/dispatch', { id: dsActionId, context, payload: { key, value } })
+          this.$method('dsAction/dispatch', {
+            id: dsActionId,
+            context,
+            payload: {
+              key,
+              value: items[key]
+            }
+          })
         }
       }
+    },
     },
     /**
      * Move a group of items to a new position in an array
