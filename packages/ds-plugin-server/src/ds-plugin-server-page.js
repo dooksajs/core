@@ -11,7 +11,12 @@ export default definePlugin({
   version: 1,
   dependencies: [
     {
-      name: 'dsUser'
+      name: 'dsUser',
+      version: 1
+    },
+    {
+      name: 'dsAction',
+      version: 1
     }
   ],
   data: {
