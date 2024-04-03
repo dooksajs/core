@@ -128,6 +128,7 @@ function initApp (options = []) {
 
   dsApp.start({
     isDev: true,
+    isServer: true,
     options: defaultOptions
   }, {
     onSuccess (app) {
