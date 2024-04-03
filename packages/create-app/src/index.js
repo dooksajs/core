@@ -30,9 +30,10 @@ export default () => ({
    * @param {Object} setup
    * @param {DsPluginOptions[]} setup.options[]
    * @param {boolean} [setup.isDev] - Set the app in development mode
+   * @param {boolean} [setup.isServer] - Set if the current app is server side
    * @returns {Object|undefined} - Development mode functions used to interact with the app
    */
-  start ({ options = [], isDev }, { onSuccess, onError }) {
+  start ({ options = [], isDev, isServer }, { onSuccess, onError }) {
     const pluginManager = new DsPlugin(dsManager)
 
     for (let i = 0; i < options.length; i++) {
@@ -60,6 +61,7 @@ export default () => ({
     pluginManager.init({
       plugins: this._plugins,
       isDev,
+      isServer,
       onSuccess,
       onError
     })

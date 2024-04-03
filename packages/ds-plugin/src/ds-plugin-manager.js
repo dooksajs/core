@@ -92,13 +92,15 @@ export default definePlugin({
    * @param {number} setup.plugins[].version - The version of the plugin
    * @param {DsPluginData} setup.plugins[].item - The plugin object
    * @param {DsPluginOptions} setup.plugins[].options - Options used by the plugin
-   * @param {boolean} setup.isDev - Toggle development mode
+   * @param {boolean} setup.isDev - Set app to development mode
+   * @param {boolean} setup.isServer - Set if the current app is server side
    * @returns {Object} Development tools used by browser extension if it is enabled
    * @inner
    */
   setup ({
     plugins = [],
     isDev = false,
+    isServer = false,
     onSuccess = () => {},
     onError = () => {}
   }) {
