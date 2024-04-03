@@ -136,7 +136,12 @@ export default definePlugin({
 
       return dsSection
     },
-    update ({ id, dsViewId }) {
+    render ({
+      id,
+      dsViewId,
+      uniqueId,
+      mode
+    }) {
       if (!dsViewId) {
         const view = this.$getDataValue('dsSection/view', {
           id
@@ -149,19 +154,12 @@ export default definePlugin({
         dsViewId = view.item
       }
 
-      const query = this.$getDataValue('dsSection/query', { id })
-      const uniqueId = this.$getDataValue('dsSection/uniqueId').item
-      const mode = this.$getDataValue('dsSection/mode', {
-        id,
-        prefixId: uniqueId
-      }).item
-
-      if (!query.isEmpty) {
-        return this._updateByQuery(query.item, dsViewId, id, uniqueId, mode)
+      if (!mode) {
+        uniqueId = this.$getDataValue('dsSection/uniqueId').item
+        mode = this.$getDataValue('dsSection/mode', { id, prefixId: uniqueId }).item
       }
 
       const section = this.$getDataValue('dsSection/items', { id })
-      const dsWidgets = []
       const previousWidgets = {}
       const nextItems = section.item
       const prevItems = section.previous ? section.previous._item : []
@@ -184,9 +182,6 @@ export default definePlugin({
               expand: true
             }
           })
-
-          // event context data
-          dsWidgets.push(prevWidgetId)
 
           if (!previousView.expandIsEmpty) {
             previousWidgets[nextIndex] = []
@@ -237,11 +232,24 @@ export default definePlugin({
             dsWidgetMode,
             dsViewId
           })
-
-          // event context data
-          dsWidgets.push(dsWidgetId)
         }
       }
+
+      return nextItems
+    },
+    update ({ id, dsViewId }) {
+      const query = this.$getDataValue('dsSection/query', { id })
+      const uniqueId = this.$getDataValue('dsSection/uniqueId').item
+      const mode = this.$getDataValue('dsSection/mode', {
+        id,
+        prefixId: uniqueId
+      }).item
+
+      if (!query.isEmpty) {
+        return this._updateByQuery(query.item, dsViewId, id, uniqueId, mode)
+      }
+
+      const dsWidgets = this.render({ id, dsViewId, uniqueId, mode })
 
       this.$emit('dsSection/update', {
         id: dsViewId,
