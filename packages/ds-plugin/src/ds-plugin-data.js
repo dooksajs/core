@@ -1650,7 +1650,7 @@ export default definePlugin({
         }
 
         // update target array
-        this._updateArray(targetItem, source, updateMethod)
+        this._updateArray(targetItem, source, options.update)
 
         // check schema options of array
         const schema = this.schema[schemaPath]
@@ -1756,10 +1756,10 @@ export default definePlugin({
     '_unfreeze/array' (value) {
       return value.slice()
     },
-    _updateArray (target, source, method) {
+    _updateArray (target, source, options) {
       source = Array.isArray(source) ? source : [source]
 
-      switch (method) {
+      switch (options.method) {
         case 'push':
           for (let i = 0; i < source.length; i++) {
             target.push(source[i])
@@ -1795,6 +1795,15 @@ export default definePlugin({
           this._updateArrayItemFreeze(target, source.length)
 
           break
+        case 'splice':
+          this.$method('dsList/splice', {
+            target,
+            start: options.startIndex,
+            source,
+            deleteCount: options.deleteCount
+          })
+
+          this._updateArrayItemFreeze(target, source.length)
       }
     },
     _updateArrayItemFreeze (items, length) {
