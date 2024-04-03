@@ -16,7 +16,7 @@
             </button>
           </div>
         </div>
-        <div class="p-3 position-relative" ds-section="true" ds-section-ref="section-entry"></div>
+        <div class="p-3 position-relative" ds-section="true" ds-section-ref="section-entry" ds-on-section-attach="widget-attach-button" ds-on-section-update="widget-attach-button"></div>
       </div>
     </div>
   </div>
@@ -26,8 +26,8 @@
   <div class="d-flex align-items-center">
     <hr class="flex-grow-1 border-dashed">
     <div class="px-2">
-      <input type="checkbox" class="btn-check" autocomplete="off" ds-on-mount="attribute-id-uuid" ds-on-input="widget-add" ds-content-ref="widget-add-button" ds-event="click input">
-      <label class="btn btn-outline-secondary" ds-on-mount="attribute-for-uuid">
+      <input type="checkbox" class="btn-check" autocomplete="off" ds-on-view-mount="attribute-id-uuid" ds-on-input="widget-add" ds-content-ref="widget-add-button" ds-event="click input">
+      <label class="btn btn-outline-secondary" ds-on-view-mount="attribute-for-uuid">
         <iconify-icon icon="mdi:plus-circle-outline" inline=""></iconify-icon> Add widget
       </label>
     </div>
@@ -61,7 +61,7 @@
       <span class="input-group-text bg-white"><iconify-icon icon="mdi:search" inline=""></iconify-icon></span>
       <input type="search" class="form-control border-start-0" placeholder="Search for widget">
     </div>
-    <div class="list-group list-group-flush" ds-section ds-section-ref="widget-add-list" ds-on-mount="widget-add-fetch">
+    <div class="list-group list-group-flush" ds-section ds-section-ref="widget-add-list" ds-on-view-mount="widget-add-fetch">
     </div>
   </div>
 </template>
