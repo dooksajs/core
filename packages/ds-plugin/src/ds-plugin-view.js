@@ -44,14 +44,6 @@ export default definePlugin({
           type: 'node'
         }
       }
-    },
-    itemParent: {
-      schema: {
-        type: 'collection',
-        items: {
-          type: 'string'
-        }
-      }
     }
   },
   /**
@@ -355,11 +347,6 @@ export default definePlugin({
           id: dsViewId,
           context: { dsViewId }
         })
-
-        // update parents
-        this.$setDataValue('dsView/itemParent', dsViewParent.item.dsViewId, {
-          id: dsViewId
-        })
       }
     },
     /**
@@ -514,8 +501,6 @@ export default definePlugin({
         id: dsViewId,
         context: { dsViewId }
       })
-
-      this.$deleteDataValue('dsView/itemParent', dsViewId)
     }
   }
 })
