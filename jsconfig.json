@@ -1,10 +1,8 @@
 {
   "compilerOptions": {
-    "checkJs": true
+    "checkJs": true,
+    "module": "NodeNext"
   },
-  "include": [
-    "packages/**/*.js",
-  ],
   "exclude": [
     "dist",
     "node_modules",
