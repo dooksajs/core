@@ -1486,6 +1486,7 @@ export default definePlugin({
 
         data.target = target
 
+        result.target = target._item
         result.item = target._item
         result.previous = target._previous
         result.metadata = target._metadata
