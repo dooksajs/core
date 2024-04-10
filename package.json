@@ -11,7 +11,7 @@
   "license": "MPL-2.0",
   "packageManager": "pnpm@8.15.6",
   "engines": {
-    "node": ">=20.12.1"
+    "node": ">=20"
   },
   "devDependencies": {
     "@dooksa/ds-scripts": "workspace:^",
