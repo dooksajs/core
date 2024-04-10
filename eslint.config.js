@@ -11,7 +11,7 @@ export default [
         VariableDeclarator: 'first',
         outerIIFEBody: 'off',
         MemberExpression: 1,
-        FunctionExpression: { body: 1, parameters: 2 },
+        FunctionExpression: { body: 1, parameters: 1 },
         CallExpression: { arguments: 1 },
         ArrayExpression: 1,
         ObjectExpression: 1,
