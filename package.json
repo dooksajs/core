@@ -9,9 +9,9 @@
     "test": "ds-scripts test"
   },
   "license": "MPL-2.0",
-  "packageManager": "pnpm@8.10.2",
+  "packageManager": "pnpm@8.15.6",
   "engines": {
-    "node": ">=16.10.0"
+    "node": ">=20.12.1"
   },
   "devDependencies": {
     "@dooksa/ds-scripts": "workspace:^",
