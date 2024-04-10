@@ -1,6 +1,7 @@
 import { definePlugin } from '@dooksa/ds-scripts'
-import { readFileSync, readdirSync, existsSync } from 'fs'
-import { extname, join } from 'path'
+import { readFileSync, readdirSync, existsSync } from 'node:fs'
+import { extname, join, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { JSDOM } from 'jsdom'
 import { parseAction } from '@dooksa/parse'
 
@@ -17,7 +18,7 @@ export default definePlugin({
     }
   ],
   data: {
-    buildDir: {
+    buildPaths: {
       private: true,
       schema: {
         type: 'string'
@@ -42,12 +43,22 @@ export default definePlugin({
       }
     }
   },
-  setup ({ buildDir }) {
-    if (!buildDir || !existsSync(buildDir)) {
-      this.$log('error', { message: 'Widget directory could not be found: ' + buildDir })
+  /**
+   * @param {Object} param 
+   * @param {string[]} param.buildPaths - Location of template files 
+   */
+  setup ({ buildPaths = [] }) {
+    buildPaths.unshift(resolve(import.meta.dirname, 'theme', 'templates'))
+    
+    for (let i = 0; i < buildPaths.length; i++) {
+      const buildPath = buildPaths[i]
+      
+      if (!existsSync(buildPath)) {
+        this.$log('error', { message: 'Template directory could not be found: ' + buildPath })
+      }
     }
 
-    this.buildDir = buildDir
+    this.buildPaths = buildPaths
     this._getFiles()
 
     this.$setWebServerRoute('/build/template/:id', {
@@ -61,26 +72,31 @@ export default definePlugin({
     })
   },
   methods: {
+    /**
+     * Build Dooksa template files
+     * @param {Object} param 
+     * @param {string} param.path - Template file path  
+     */
     create ({ path }) {
       const fileExtension = extname(path)
 
       if (fileExtension === '.json') {
         const file = readFileSync(path, { encoding: 'utf-8' })
-        const template = JSON.parse(file)
+        const item = JSON.parse(file)
 
         // build actions
-        if (template.actions) {
-          this._parseAction(template.actions)
+        if (item.actions) {
+          this._parseAction(item.actions)
         }
 
-        if (template.metadata) {
-          for (let i = 0; i < template.metadata.length; i++) {
-            const metadata = template.metadata[i]
-            const options = { id: metadata.id }
+        if (item.templates) {
+          for (let i = 0; i < item.templates.length; i++) {
+            const template = item.templates[i]
+            const options = { id: template.id }
 
-            delete metadata.id
+            delete template.id
 
-            this.$setDataValue('dsTemplate/metadata', metadata, options)
+            this.$setDataValue('dsTemplate/metadata', template, options)
           }
         }
       }
@@ -130,13 +146,23 @@ export default definePlugin({
       next()
     },
     _getFiles () {
-      const fileNames = readdirSync(this.buildDir)
+      for (let i = 0; i < this.buildPaths.length; i++) {
+        const buildPath = this.buildPaths[i]
+        const files = readdirSync(buildPath, {
+          recursive: true,
+          withFileTypes: true
+        })
+  
+        // process all the action files
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i]
 
-      // process all the action files
-      for (let i = 0; i < fileNames.length; i++) {
-        const path = join(this.buildDir, fileNames[i])
-
-        this.create({ path })
+          if (file.isFile()) {
+            this.create({
+              path: resolve(file.path, file.name) 
+            })
+          }
+        }
       }
     },
     _parseAction (items) {
