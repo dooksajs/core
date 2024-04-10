@@ -15,7 +15,6 @@ export default definePlugin({
   ],
   data: {
     sassPath: {
-      private: true,
       schema: {
         type: 'string'
       }
@@ -36,54 +35,60 @@ export default definePlugin({
       }
     }
 
-    this.sassPath = resolve(import.meta.dirname, 'theme', 'scss')
+    this.$setDataValue('dsTheme/sassPath', resolve(import.meta.dirname, 'theme', 'scss'))
     this.compile()
   },
   methods: {
     compile () {
-      const sassString = this._getSass()
-      const sassTempPath = resolve(tmpdir(), 'ds-sass.scss')
+      return new Promise((pResolve, pReject) => {
+        const tempDir = tmpdir()
+        const sassString = this._getSass()
+        const sassTempPath = resolve(tempDir, 'ds-sass.scss')
 
-      writeFileSync(sassTempPath, sassString)
+        writeFileSync(sassTempPath, sassString)
 
-      const options = {
-        style: 'compressed'
-      }
+        const options = {
+          style: 'compressed'
+        }
 
-      if (this.isDev) {
-        options.logger = {
-          warn: (message, options) => {
-            let log = ''
+        if (this.isDev) {
+          options.logger = {
+            warn: (message, options) => {
+              let log = ''
 
-            if (options.span) {
-              const span = options.span
+              if (options.span) {
+                const span = options.span
 
-              log += `${span.url}:${span.start.line}:${span.start.column}: ${message}\n`
-            } else {
-              log += `::: ${message}\n`
+                log += `${span.url}:${span.start.line}:${span.start.column}: ${message}\n`
+              } else {
+                log += `::: ${message}\n`
+              }
+
+              this.$log('warn', { message: log })
             }
-
-            this.$log('warn', { message: log })
           }
         }
-      }
 
-      sass.compileAsync(sassTempPath, options)
-        .then(result => {
-          this.$setDataValue('dsPage/css', result.css)
-        })
-        .catch(error => {
-          this.$log('error', { message: 'Sass failed to compile', cause: error })
-        })
+        sass.compileAsync(sassTempPath, options)
+          .then(result => {
+            this.$setDataValue('dsPage/css', result.css)
+            pResolve()
+          })
+          .catch(error => {
+            this.$log('error', { message: 'Sass failed to compile', cause: error })
+            pReject(error)
+          })
+      })
     },
     _getSass () {
+      const sassPath = this.$getDataValue('dsTheme/sassPath')
       const sass = {
         variables: '',
         maps: '',
         custom: ''
       }
 
-      const customFiles = readdirSync(resolve(this.sassPath, 'custom'), {
+      const customFiles = readdirSync(resolve(sassPath.item, 'custom'), {
         withFileTypes: true
       })
 
@@ -124,7 +129,7 @@ export default definePlugin({
         }
       }
 
-      const bootstrapPath = resolve(this.sassPath, 'bootstrap')
+      const bootstrapPath = resolve(sassPath.item, 'bootstrap')
       let result = `@import "${bootstrapPath}/_bootstrap-functions.scss";`
 
       // create sass import order

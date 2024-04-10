@@ -13,7 +13,12 @@ const dsAppClientEntryPoint = resolve(buildDirectory, 'ds-app-client.js')
 let dsAppServer
 
 const dsConfigPath = resolve(appDirectory, 'ds-config.js')
-const customThemeDir = resolve(devDirectory, 'theme')
+let customThemeDir = resolve(devDirectory, 'theme')
+
+// check if customThemeDir exists
+if (!existsSync(customThemeDir)) {
+  customThemeDir = ''
+}
 
 function log (message, timer = 0) {
   const now = new Date()
@@ -113,12 +118,6 @@ function initApp (options = []) {
     defaultOptions.push(option)
   }
 
-  // watch widget template files
-  const watcher = chokidar.watch(customThemeDir, {
-    ignored: /(^|[\/\\])\../, // ignore dotfiles
-    persistent: true
-  })
-
   dsApp.use([
     {
       name: dsEsbuild.name,
@@ -142,16 +141,69 @@ function initApp (options = []) {
 
       dsAppServer = app
 
-      watcher
-        .on('add', path => {
+      const templateDir = app.$getDataValue('dsTemplateBuild/templatePath')
+      const sassDir = app.$getDataValue('dsTheme/sassPath')
+      const templateWatchDirs = [templateDir.item]
+      const sassWatchDirs = [sassDir.item]
+
+      if (customThemeDir) {
+        const customTemplateDir = resolve(customThemeDir, 'templates')
+        const customSassDir = resolve(customThemeDir, 'sass')
+
+        if (existsSync(customTemplateDir)) {
+          templateWatchDirs.push(customTemplateDir)
+        }
+
+        if (existsSync(customSassDir)) {
+          sassWatchDirs.push(customSassDir)
+        }
+      }
+
+      // watch template files
+      const templateWatcher = chokidar.watch(templateWatchDirs, {
+        ignored: /(^|[\/\\])\../, // ignore dotfiles
+        persistent: true
+      })
+
+      // watch sass files
+      const sassWatcher = chokidar.watch(sassWatchDirs, {
+        ignored: /(^|[\/\\])\../, // ignore dotfiles
+        persistent: true
+      })
+
+      sassWatcher
+        .on('add', () => {
+          app.$action('dsTheme/compile', null, {
+            onSuccess: () => {
+              app.$setDataValue('dsEsbuild/rebuildServer', 1)
+            }
+          })
+        })
+        .on('change', () => {
+          app.$action('dsTheme/compile', null, {
+            onSuccess: () => {
+              app.$setDataValue('dsEsbuild/rebuildServer', 1)
+            }
+          })
+        })
+        .on('unlink', () => {
+          app.$action('dsTheme/compile', null, {
+            onSuccess: () => {
+              app.$setDataValue('dsEsbuild/rebuildServer', 1)
+            }
+          })
+        })
+
+      templateWatcher
+        .on('add', (path) => {
           app.$method('dsTemplateBuild/create', { path })
           app.$setDataValue('dsEsbuild/rebuildServer', 1)
         })
-        .on('change', path => {
+        .on('change', (path) => {
           app.$method('dsTemplateBuild/create', { path })
           app.$setDataValue('dsEsbuild/rebuildServer', 1)
         })
-        .on('unlink', path => {
+        .on('unlink', (path) => {
           app.$method('dsTemplateBuild/create', { path })
           app.$setDataValue('dsEsbuild/rebuildServer', 1)
         })

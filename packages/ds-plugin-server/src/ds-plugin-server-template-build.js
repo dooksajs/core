@@ -18,6 +18,11 @@ export default definePlugin({
     }
   ],
   data: {
+    templatePath: {
+      schema: {
+        type: 'string'
+      }
+    },
     buildPaths: {
       private: true,
       schema: {
@@ -44,15 +49,19 @@ export default definePlugin({
     }
   },
   /**
-   * @param {Object} param 
-   * @param {string[]} param.buildPaths - Location of template files 
+   * @param {Object} param
+   * @param {string[]} param.buildPaths - Location of template files
    */
   setup ({ buildPaths = [] }) {
-    buildPaths.unshift(resolve(import.meta.dirname, 'theme', 'templates'))
-    
+    const templatePath = resolve(import.meta.dirname, 'theme', 'templates')
+
+    this.$setDataValue('dsTemplateBuild/templatePath', templatePath)
+
+    buildPaths.unshift(templatePath)
+
     for (let i = 0; i < buildPaths.length; i++) {
       const buildPath = buildPaths[i]
-      
+
       if (!existsSync(buildPath)) {
         this.$log('error', { message: 'Template directory could not be found: ' + buildPath })
       }
@@ -74,8 +83,8 @@ export default definePlugin({
   methods: {
     /**
      * Build Dooksa template files
-     * @param {Object} param 
-     * @param {string} param.path - Template file path  
+     * @param {Object} param
+     * @param {string} param.path - Template file path
      */
     create ({ path }) {
       const fileExtension = extname(path)
@@ -152,14 +161,14 @@ export default definePlugin({
           recursive: true,
           withFileTypes: true
         })
-  
+
         // process all the action files
         for (let i = 0; i < files.length; i++) {
           const file = files[i]
 
           if (file.isFile()) {
             this.create({
-              path: resolve(file.path, file.name) 
+              path: resolve(file.path, file.name)
             })
           }
         }
