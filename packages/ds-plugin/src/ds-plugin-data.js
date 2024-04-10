@@ -27,6 +27,17 @@ function SchemaException (details) {
  */
 
 /**
+ * @typedef {Object} DsSetDataOptions
+ * @property {string} [id] - Document Id
+ * @property {Object} [metadata] - Document metadata
+ * @property {boolean} [stopPropagation] - Prevents further propagation of the update event
+ * @property {boolean} [merge] - Merge target with source
+ * @property {Object} [update] - Update target with source
+ * @property {(string[] & number[]) | (string[] | number[])} [update.position] - Update nested data within target with source
+ * @property {'push'|'pull'|'pop'|'shift'|'unshift'|'splice'} [update.method] - Type of update method
+ */
+
+/**
  * @typedef {import('@dooksa/ds-scripts/src/types.js').DsDataWhere} DsDataWhere
  */
 
@@ -306,7 +317,6 @@ export default definePlugin({
        * @param {boolean} [param.options.expandClone] - Expanded items returns a deep clone of the item value
        * @param {string|number} [param.options.position] - Return the value by key of the data value
        * @param {boolean} [param.options.clone] - Returns a deep clone of the item value
-       * @param {boolean} [param.options.stopPropagation] - Prevents further propagation of the update event
        * @returns {DataResult}
        */
       value (name, { id, prefixId, suffixId, options } = {}) {
@@ -502,7 +512,7 @@ export default definePlugin({
        * @alias $setDataValue
        * @param {string} name - Name of collection
        * @param {*} data - Data to be set
-       * @param {*} options
+       * @param {DsSetDataOptions} options - Set data options
        * @returns {DataResult}
        */
       value (name, data, options) {
@@ -1409,6 +1419,14 @@ export default definePlugin({
         this._setRelation(data.collection, data.id, schema.options.relation, source)
       }
     },
+    /**
+     * Validate data
+     * @param {string} collection
+     * @param {*} target
+     * @param {*} source
+     * @param {DsSetDataOptions} [options]
+     * @returns {Object}
+     */
     _setData (collection, target, source, options) {
       const data = { target, collection }
       const schema = this.schema[collection]
