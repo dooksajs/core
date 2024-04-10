@@ -374,13 +374,15 @@ export default definePlugin({
     },
     /**
      * Higher order function to allow plugins to run other plugins methods
+     * @param {string} name - Name of method
+     * @param {Object} args - Arguments to be given to the method
      */
-    _method (name, params) {
-      try {
-        return this.methods[name](params)
-      } catch (error) {
-        console.error(error)
+    _method (name, args) {
+      if (this.methods[name]) {
+        return this.methods[name](args)
       }
+
+      this.$log('warn', { message: 'Method not found: ' + name })
     },
     _token (name, dsViewId, value) {
       if (this.tokens[name]) {
