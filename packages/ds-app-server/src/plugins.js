@@ -12,7 +12,8 @@ import {
   dsSection,
   dsComponent,
   dsUser,
-  dsWidget
+  dsWidget,
+  dsTheme
 } from '@dooksa/ds-plugin-server'
 
 const plugins = [
@@ -40,6 +41,11 @@ const plugins = [
     name: dsContent.name,
     version: dsContent.version,
     value: dsContent
+  },
+  {
+    name: dsTheme.name,
+    version: dsTheme.version,
+    value: dsTheme
   },
   {
     name: dsPage.name,

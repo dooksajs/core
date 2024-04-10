@@ -14,6 +14,7 @@ import dsUser from './ds-plugin-server-user.js'
 import dsWebServer from './ds-plugin-server-web-server.js'
 import dsWidget from './ds-plugin-server-widget.js'
 import dsEsbuild from './ds-plugin-server-esbuild.js'
+import dsTheme from './ds-plugin-server-theme.js'
 
 export {
   dsAction,
@@ -29,6 +30,7 @@ export {
   dsSection,
   dsTemplate,
   dsTemplateBuild,
+  dsTheme,
   dsUser,
   dsWebServer,
   dsWidget

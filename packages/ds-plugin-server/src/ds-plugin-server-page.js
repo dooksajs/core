@@ -29,30 +29,26 @@ export default definePlugin({
       private: true,
       default: () => '</body></html>'
     },
-    dsApp: {
+    app: {
       private: true,
       schema: {
         type: 'string'
       }
     },
-    dsCSS: {
-      private: true,
+    css: {
+      default: () => '',
       schema: {
         type: 'string'
       }
     },
-    dsCSSHash: {
+    cssHash: {
       private: true,
       schema: {
         type: 'string'
       }
     }
   },
-  setup ({ dsApp, dsCSS }) {
-    if (dsCSS) {
-      this.setCSS(dsCSS)
-    }
-
+  setup ({ dsApp }) {
     if (dsApp) {
       this.setApp(dsApp)
     }
@@ -81,25 +77,29 @@ export default definePlugin({
     create ({ request, response }) {
       response.set('Content-Type', 'text/html')
 
-      const dsApp = this._getApp(request.dsPageData)
-      const dsAppHash = this._hash(dsApp)
+      const app = this._getApp(request.dsPageData)
+      const appHash = this._hash(app)
+      const css = this.$getDataValue('dsPage/css').item || ''
+      let csp = "script-src 'sha256-" + appHash + "';"
 
-      const csp = "script-src 'sha256-" + dsAppHash + "'"
+      if (css) {
+        const cssHash = this._hash(css)
 
+        csp += "style-src 'sha256-" + cssHash + "'"
+      }
+
+      
       response.set('Content-Security-Policy', csp)
 
       response.status(200).send(
         `${this.templateStart}
-          <script>${dsApp}</script>
-          <style>${this.dsCSS}</style>
+          <script>${app}</script>
+          <style>${css}</style>
         ${this.templateEnd}`
       )
     },
     setApp (item) {
       this.dsApp = item
-    },
-    setCSS (item = '') {
-      this.dsCSS = item
     },
     _appendExpand: dsPage.methods._appendExpand,
     _getApp (data = []) {

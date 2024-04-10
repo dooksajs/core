@@ -1,19 +1,19 @@
-import path, { extname } from 'path'
-import esbuild from 'esbuild'
+import { resolve, extname } from 'node:path'
+import { existsSync } from 'node:fs'
 import { appDirectory, scriptDirectory } from '../utils/paths.js'
-import dsApp from '@dooksa/ds-app-server'
 import { dsEsbuild, dsTemplateBuild } from '@dooksa/ds-plugin-server'
+import dsApp from '@dooksa/ds-app-server'
+import esbuild from 'esbuild'
 import chalk from 'chalk'
-import { existsSync } from 'fs'
 import chokidar from 'chokidar'
 
-const devDirectory = path.resolve(appDirectory, 'app')
-const buildDirectory = path.resolve(scriptDirectory, 'entry', 'dev')
-const dsAppClientEntryPoint = path.resolve(buildDirectory, 'ds-app-client.js')
+const devDirectory = resolve(appDirectory, 'app')
+const buildDirectory = resolve(scriptDirectory, 'entry', 'dev')
+const dsAppClientEntryPoint = resolve(buildDirectory, 'ds-app-client.js')
 let dsAppServer
 
-const dsConfigPath = path.resolve(appDirectory, 'ds-config.js')
-const widgetTemplateDir = path.resolve(devDirectory, 'widgets')
+const dsConfigPath = resolve(appDirectory, 'ds-config.js')
+const customThemeDir = resolve(devDirectory, 'theme')
 
 function log (message, timer = 0) {
   const now = new Date()
@@ -34,29 +34,29 @@ function log (message, timer = 0) {
   console.log(message)
 }
 
-// no config found
+// Init app
 if (!existsSync(dsConfigPath)) {
   initApp()
+} else {
+  import(resolve(appDirectory, 'ds-config.js'))
+    .then(({ default: options }) => {
+      initApp(options)
+    })
 }
-
-import(path.resolve(appDirectory, 'ds-config.js'))
-  .then(({ default: options }) => {
-    initApp(options)
-  })
 
 function initApp (options = []) {
   const defaultOptions = [
     {
       name: 'dsDatabase',
       setup: {
-        storage: path.resolve(devDirectory, '.ds_snapshots')
+        storage: resolve(devDirectory, '.ds_snapshots')
       }
     },
     {
       name: 'dsWebServer',
       setup: {
         cookieSecret: 'RTRe50oe-wX8gd9qzrWUY71W4yGob10c',
-        publicPath: path.resolve(devDirectory, 'assets')
+        publicPath: resolve(devDirectory, 'assets')
       }
     },
     {
@@ -74,7 +74,13 @@ function initApp (options = []) {
     {
       name: 'dsTemplateBuild',
       setup: {
-        buildDir: widgetTemplateDir
+        buildPaths: [customThemeDir]
+      }
+    },
+    {
+      name: 'dsTheme',
+      setup: {
+        customSassPath: resolve(customThemeDir, 'sass')
       }
     }
   ]
@@ -108,7 +114,7 @@ function initApp (options = []) {
   }
 
   // watch widget template files
-  const watcher = chokidar.watch(widgetTemplateDir, {
+  const watcher = chokidar.watch(customThemeDir, {
     ignored: /(^|[\/\\])\../, // ignore dotfiles
     persistent: true
   })
@@ -182,8 +188,6 @@ function initApp (options = []) {
 
             if (fileExtension === '.js') {
               dsAppServer.$method('dsPage/setApp', result.outputFiles[i].text)
-            } else {
-              dsAppServer.$method('dsPage/setCSS', result.outputFiles[i].text)
             }
           }
 
@@ -195,7 +199,7 @@ function initApp (options = []) {
   }
 
   esbuild.context({
-    entryPoints: [dsAppClientEntryPoint, path.resolve(devDirectory, 'assets', 'styles.css')],
+    entryPoints: [dsAppClientEntryPoint, resolve(devDirectory, 'assets', 'styles.css')],
     bundle: true,
     outdir: devDirectory,
     format: 'esm',
