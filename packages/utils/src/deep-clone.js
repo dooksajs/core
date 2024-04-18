@@ -14,8 +14,11 @@ function deepClone (target, source, freeze) {
         target[prop] = deepClone([], nextSource)
       } else if (nextSource.constructor === Object) {
         target[prop] = deepClone({}, nextSource)
+      } else if (typeof nextSource === 'number') {
+        target[prop] = new Number(nextSource).valueOf()
+      } else if (typeof nextSource === 'string') {
+        target[prop] = new String(nextSource).valueOf()
       } else {
-        // update value
         target[prop] = nextSource
       }
     }
