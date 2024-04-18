@@ -436,7 +436,7 @@ export default definePlugin({
 
             const item = relation.split('/')
             const name = item[0] + '/' + item[1]
-            const id = item[2]
+            const id = item.splice(2).join('/')
             const value = this.$getDataValue(name, {
               id,
               options: {
