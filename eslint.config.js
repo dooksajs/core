@@ -27,7 +27,10 @@ export default [
         allowSingleLine: false
       }],
       '@stylistic/js/semi': ['error', 'never'],
-      '@stylistic/js/quotes': ['error', 'single'],
+      '@stylistic/js/quotes': ['error', 'single', {
+        avoidEscape: true,
+        allowTemplateLiterals: true
+      }],
       '@stylistic/js/comma-dangle': ['error', 'never'],
       '@stylistic/js/comma-spacing': ['error', {
         before: false,
