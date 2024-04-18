@@ -171,6 +171,8 @@ export default definePlugin({
           for (let i = 0; i < context.length; i++) {
             const method = context[i]
 
+            this[method.name] = method.value
+
             if (method.export) {
               result[method.name] = method.value
             }
