@@ -273,6 +273,8 @@ export default definePlugin({
      */
     _import (fileName, callback) {
       return new Promise((resolve, reject) => {
+        this.totalInQueue += 1
+
         import(`./plugins/${fileName}.js`)
           .then(({ default: plugin }) => {
             const dsPlugin = new DsPlugin(plugin)
