@@ -17,7 +17,7 @@ export default definePlugin({
       schema: {
         type: 'collection',
         defaultId () {
-          return this.$method('dsRouter/currentPath')
+          return this.$method('dsRouter/currentId')
         },
         suffixId () {
           return this.$getDataValue('dsMetadata/language').item

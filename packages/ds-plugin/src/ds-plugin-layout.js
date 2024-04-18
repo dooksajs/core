@@ -315,7 +315,7 @@ export default definePlugin({
       // Store used events on page used by "save page"
       // ISSUE: not sure if this is needed since schema relation
       this.$setDataValue('dsPage/events', dsEvent.id, {
-        id: this.$method('dsRouter/currentPath'),
+        id: this.$method('dsRouter/currentId'),
         update: {
           method: 'push'
         }

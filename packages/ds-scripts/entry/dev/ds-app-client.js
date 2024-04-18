@@ -19,7 +19,7 @@ import dsAppClient from '@dooksa/ds-app-client'
         return
       }
 
-      const currentPath = app.$method('dsRouter/currentPath')
+      const currentPathId = app.$method('dsRouter/currentId') + 'default'
 
       // set data
       for (let i = 0; i < data.item.length; i++) {
@@ -33,12 +33,12 @@ import dsAppClient from '@dooksa/ds-app-client'
       }
 
       const widget = app.$getDataValue('dsSection/items', {
-        id: currentPath
+        id: currentPathId
       })
 
       if (!widget.isEmpty) {
         // Render page
-        app.$method('dsSection/append', { id: currentPath })
+        app.$method('dsSection/append', { id: currentPathId })
 
         return
       }
@@ -49,7 +49,7 @@ import dsAppClient from '@dooksa/ds-app-client'
           app.$action('dsTemplate/create', { id: templateId }, {
             onSuccess: (dsWidgetId) => {
               app.$setDataValue('dsSection/items', dsWidgetId, {
-                id: currentPath,
+                id: currentPathId,
                 update: {
                   method: 'push'
                 }
@@ -58,7 +58,7 @@ import dsAppClient from '@dooksa/ds-app-client'
           })
 
           const widget = app.$getDataValue('dsSection/items', {
-            id: currentPath
+            id: currentPathId
           })
 
           if (!widget.isEmpty) {

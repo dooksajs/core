@@ -12,7 +12,7 @@ export default definePlugin({
       schema: {
         type: 'collection',
         defaultId () {
-          return this.$method('dsRouter/currentPath')
+          return this.$method('dsRouter/currentId')
         },
         items: {
           type: 'object'
@@ -82,6 +82,9 @@ export default definePlugin({
     },
     currentPath () {
       return window.location.pathname || '/'
+    },
+    currentId () {
+      return '_' + this.currentPath() + '_'
     },
     cleanPath (value) {
       const text = value.toString().trim().toLocaleLowerCase('en-US')
