@@ -61,8 +61,10 @@ export default definePlugin({
 
     // Set root element
     const dsViewId = this.createNode({
-      dsViewId: 'rootElement',
-      dsComponentId: '43f4f4c34d66e648'
+      dsViewId: rootElementId,
+      dsComponentId: '43f4f4c34d66e648',
+      dsSectionId: rootElementId,
+      dsWidgetId: rootElementId
     })
 
     this.$setDataValue('dsView/rootViewId', dsViewId)
