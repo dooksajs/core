@@ -88,107 +88,110 @@ export default definePlugin({
      * @param {Object} param.payload - The data to pass to the action
      */
     dispatch ({ id, context, payload }) {
-      const actions = this.$getDataValue('dsAction/items', { id, options: { expand: true } })
+      return new Promise((resolve) => {
+        const actions = this.$getDataValue('dsAction/items', { id, options: { expand: true } })
 
-      if (actions.isEmpty) {
-        return this.$action('dsDatabase/getById', {
-          collection: 'action',
-          id,
-          expand: true
-        }, {
-          onSuccess: (data) => {
-            if (!data.isEmpty) {
-              this.dispatch({ id, context, payload })
-            } else {
-              this.$log('warn', {
-                message: 'No action found: ' + id
+        if (actions.isEmpty) {
+          return this.$action('dsDatabase/getById', {
+            collection: 'action',
+            id,
+            expand: true
+          }, {
+            onSuccess: (data) => {
+              if (!data.isEmpty) {
+                this.dispatch({ id, context, payload })
+              } else {
+                this.$log('warn', {
+                  message: 'No action found: ' + id
+                })
+              }
+            },
+            onError: (error) => {
+              this.$log('error', {
+                message: 'No action found: ' + id,
+                error
               })
             }
-          },
-          onError: (error) => {
-            this.$log('error', {
-              message: 'No action found: ' + id,
-              error
-            })
-          }
-        })
-      }
-
-      let blocks = {}
-
-      // fetch block modifiers
-      if (context.dsWidgetId) {
-        blocks = this.$getDataValue('dsWidget/actions', {
-          id: context.dsWidgetId,
-          suffixId: context.dsWidgetMode
-        })
-
-        if (!blocks.isEmpty && blocks.item[id]) {
-          blocks = blocks.item[id]
+          })
         }
 
-        // set action item id to payload for grouping
-        context.id = context.dsWidgetId
-      } else {
-        context.id = context.dsSectionId || context.dsViewId || context.dsContentId
-      }
+        let blocks = {}
 
-      const sequenceProcess = {
-        position: 0,
-        items: [],
-        results: {}
-      }
-      sequenceProcess.next = () => {
-        this._nextProcess(sequenceProcess)
-      }
+        // fetch block modifiers
+        if (context.dsWidgetId) {
+          blocks = this.$getDataValue('dsWidget/actions', {
+            id: context.dsWidgetId,
+            suffixId: context.dsWidgetMode
+          })
 
-      for (let i = 0; i < actions.item.length; i++) {
-        const sequenceId = actions.item[i]
-        let sequence
-        let expand = []
-        let expandIndexes = {}
-
-        if (!actions.isExpandEmpty) {
-          const key = actions.expandIncluded['dsAction/sequences/' + sequenceId]
-
-          sequence = actions.expand[key]
-
-          if (!sequence) {
-            this.$log('error', { message: 'Broken action sequence', code: '50' })
-
-            return
+          if (!blocks.isEmpty && blocks.item[id]) {
+            blocks = blocks.item[id]
           }
 
-          sequence = sequence.item
-          expand = actions.expand
-          expandIndexes = actions.expandIncluded
+          // set action item id to payload for grouping
+          context.id = context.dsWidgetId
         } else {
-          sequence = this.$getDataValue('dsAction/sequences', { id: sequenceId })
-
-          if (sequence.isEmpty) {
-            this.$log('error', { message: 'Broken action sequence', code: '50' })
-
-            return
-          }
-
-          sequence = sequence.item
+          context.id = context.dsSectionId || context.dsViewId || context.dsContentId
         }
 
-        sequenceProcess.items.push(() => {
-          this._processSequence(
-            sequence,
-            context,
-            payload,
-            blocks[sequenceId] || {},
-            expand,
-            expandIndexes,
-            i,
-            sequenceProcess
-          )
-        })
-      }
+        const sequenceProcess = {
+          position: 0,
+          items: [],
+          results: {},
+          resolve: resolve
+        }
+        sequenceProcess.next = () => {
+          this._nextProcess(sequenceProcess)
+        }
 
-      sequenceProcess.next()
+        for (let i = 0; i < actions.item.length; i++) {
+          const sequenceId = actions.item[i]
+          let sequence
+          let expand = []
+          let expandIndexes = {}
+
+          if (!actions.isExpandEmpty) {
+            const key = actions.expandIncluded['dsAction/sequences/' + sequenceId]
+
+            sequence = actions.expand[key]
+
+            if (!sequence) {
+              this.$log('error', { message: 'Broken action sequence', code: '50' })
+
+              return
+            }
+
+            sequence = sequence.item
+            expand = actions.expand
+            expandIndexes = actions.expandIncluded
+          } else {
+            sequence = this.$getDataValue('dsAction/sequences', { id: sequenceId })
+
+            if (sequence.isEmpty) {
+              this.$log('error', { message: 'Broken action sequence', code: '50' })
+
+              return
+            }
+
+            sequence = sequence.item
+          }
+
+          sequenceProcess.items.push(() => {
+            this._processSequence(
+              sequence,
+              context,
+              payload,
+              blocks[sequenceId] || {},
+              expand,
+              expandIndexes,
+              i,
+              sequenceProcess
+            )
+          })
+        }
+
+        sequenceProcess.next()
+      })
     },
     _nextProcess (process) {
       const item = process.items[process.position++]
@@ -198,6 +201,10 @@ export default definePlugin({
         item()
 
         return true
+      }
+
+      if (process.resolve) {
+        process.resolve()
       }
 
       return false
@@ -212,6 +219,10 @@ export default definePlugin({
         item()
 
         return true
+      }
+
+      if (process.resolve) {
+        process.resolve()
       }
 
       return false
