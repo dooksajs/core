@@ -10,6 +10,8 @@
   "dependencies": {
     "@dooksa/object-hash": "workspace:^",
     "@dooksa/utils": "workspace:^",
+    "@popperjs/core": "^2.11.8",
+    "bootstrap": "^5.3.3",
     "iconify-icon": "^1.0.8"
   }
 }

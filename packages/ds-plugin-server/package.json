@@ -24,7 +24,6 @@
     "sass-embedded": "^1.74.1"
   },
   "devDependencies": {
-    "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.3"
   }
 }

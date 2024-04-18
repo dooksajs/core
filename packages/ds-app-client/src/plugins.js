@@ -109,6 +109,14 @@ const plugins = [
     name: dsTemplate.name,
     version: dsTemplate.version,
     value: dsTemplate
+  },
+  {
+    name: 'dsViewModal',
+    version: 1,
+    options: {
+      import: 'ds-plugin-view-modal',
+      setupOnRequest: true
+    }
   }
 ]
 
