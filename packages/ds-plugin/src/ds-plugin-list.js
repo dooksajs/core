@@ -149,9 +149,24 @@ export default definePlugin({
         }
       }
     },
+    /**
+     * Adds the specified elements to the end of an array
+     * @param {Object} param
+     * @param {Array} param.target - Array which the new element will be appended
+     * @param {*} param.source - The element that will be appended to the end of the array
+     */
     push ({ target, source }) {
       target.push(source)
     },
+    /**
+     * Changes the contents of an array by removing or replacing existing elements and/or adding new elements in place
+     * @param {Object} param
+     * @param {Array} param.target - The array which will be modified
+     * @param {*} param.source - The elements to add to the array, beginning from start.
+     * @param {number} param.start - Zero-based index at which to start changing the array, converted to an integer.
+     * @param {number} param.deleteCount - An integer indicating the number of elements in the array to remove from start.
+     * @returns {Array}
+     */
     splice ({ target, source, start, deleteCount = 0 }) {
       if (start == null) {
         return target.splice()
@@ -163,6 +178,15 @@ export default definePlugin({
 
       return target.splice(start, deleteCount, source)
     },
+    /**
+     * Executes a provided action once for each array element.
+     * @param {Object} param
+     * @param {Object} param.context - Context for action, A new property named "_list_" is created with the data type of the "item"
+     * @param {Array|Object} param.items - Array used for iteration
+     * @param {string} param.dsActionId - Action ID used to execute
+     * @param {boolean} param.async - Indicates the iteration will return a promise
+     * @returns {Array|Promise}
+     */
     forEach ({ context, items, dsActionId, async }) {
       context._list_ = {}
 
