@@ -88,7 +88,6 @@ export default definePlugin({
         csp += "style-src 'sha256-" + cssHash + "'"
       }
 
-      
       response.set('Content-Security-Policy', csp)
 
       response.status(200).send(
