@@ -258,9 +258,9 @@ export default definePlugin({
       for (let i = 0; i < listeners.length; i++) {
         const listener = listeners[i]
 
-        if (this.dependencyQueue[listener] > 1) {
-          this.dependencyQueue[listener] -= 1
-        } else if (!this.isPluginLoaded[listener]) {
+        this.dependencyQueue[listener] -= 1
+
+        if (!this.isPluginLoaded[listener] && this.dependencyQueue[listener] === 0) {
           this._use(this.plugins[listener], this.options[listener], callback)
         }
       }
