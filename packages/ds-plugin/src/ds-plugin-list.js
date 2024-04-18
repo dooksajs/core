@@ -149,6 +149,9 @@ export default definePlugin({
         }
       }
     },
+    push ({ target, source }) {
+      target.push(source)
+    },
     splice ({ target, source, start, deleteCount = 0 }) {
       if (Array.isArray(source)) {
         return target.splice(start, deleteCount, ...source)
