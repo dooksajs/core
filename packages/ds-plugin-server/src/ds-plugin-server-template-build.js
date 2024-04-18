@@ -91,7 +91,11 @@ export default definePlugin({
 
       if (fileExtension === '.json') {
         const file = readFileSync(path, { encoding: 'utf-8' })
-        const item = JSON.parse(file)
+        let item
+
+        if (file) {
+          item = JSON.parse(file)
+        }
 
         // build actions
         if (item.actions) {
