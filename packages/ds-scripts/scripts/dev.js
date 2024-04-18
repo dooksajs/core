@@ -180,15 +180,25 @@ function initApp (options = []) {
           })
         })
         .on('change', () => {
+          const timerStart = performance.now()
+
           app.$action('dsTheme/compile', null, {
             onSuccess: () => {
+              const timer = performance.now() - timerStart
+
+              log('Theme rebuilt in:', timer)
               app.$setDataValue('dsEsbuild/rebuildServer', 1)
             }
           })
         })
         .on('unlink', () => {
+          const timerStart = performance.now()
+
           app.$action('dsTheme/compile', null, {
             onSuccess: () => {
+              const timer = performance.now() - timerStart
+
+              log('Theme rebuilt in:', timer)
               app.$setDataValue('dsEsbuild/rebuildServer', 1)
             }
           })
@@ -202,9 +212,12 @@ function initApp (options = []) {
         .on('change', (path) => {
           app.$method('dsTemplateBuild/create', { path })
           app.$setDataValue('dsEsbuild/rebuildServer', 1)
+
+          log('Template rebuilt: ' + path)
         })
         .on('unlink', (path) => {
-          app.$method('dsTemplateBuild/create', { path })
+          // Need to delete any built data
+          // app.$method('dsTemplateBuild/delete', { path })
           app.$setDataValue('dsEsbuild/rebuildServer', 1)
         })
     },
