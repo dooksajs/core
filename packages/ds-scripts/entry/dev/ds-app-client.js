@@ -62,7 +62,40 @@ import dsAppClient from '@dooksa/ds-app-client'
           })
 
           if (!widget.isEmpty) {
-            app.$method('dsSection/append', { id: currentPath })
+            app.$method('dsSection/append', { id: currentPathId })
+
+            const dsViewId = app.$getDataValue('dsView/rootViewId').item
+            const handlerValue = () => {
+              app.$method('dsSection/update', { id: currentPathId, dsViewId })
+            }
+
+            // update section elements
+            app.$addDataListener('dsSection/items', {
+              on: 'update',
+              id: currentPathId,
+              handler: {
+                id: dsViewId,
+                value: handlerValue
+              }
+            })
+
+            app.$addDataListener('dsSection/query', {
+              on: 'update',
+              id: currentPathId,
+              handler: {
+                id: dsViewId,
+                value: handlerValue
+              }
+            })
+
+            app.$addDataListener('dsSection/query', {
+              on: 'delete',
+              id: currentPathId,
+              handler: {
+                id: dsViewId,
+                value: handlerValue
+              }
+            })
           }
         }
       }
