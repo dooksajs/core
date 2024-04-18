@@ -55,8 +55,6 @@ const parseHTML = (
   const widgetEvent = {}
   const widgetSection = []
   let sectionIndex = 0
-  let hasListeners = false
-  let hasEvent = false
 
   data.content[data.layoutIndex] = content
   data.contentRefs[data.layoutIndex] = contentRefs
@@ -120,7 +118,6 @@ const parseHTML = (
 
           if (result.bind.length) {
             widgetEvent[layoutNodes.length - 1] = result.bind
-            hasEvent = true
           }
 
           const contentRef = result.options['ds-content-ref']
@@ -146,7 +143,6 @@ const parseHTML = (
 
           if (eventListener) {
             eventListeners[layoutNodes.length - 1] = eventListener.split(' ')
-            hasListeners = true
           }
         }
 
@@ -157,6 +153,7 @@ const parseHTML = (
           }
         }
       } else {
+        const componentId = node.tagName.toLowerCase()
         const element = {
           isSection: false
         }
@@ -164,7 +161,7 @@ const parseHTML = (
         layoutNodes.push(node)
 
         // set component id
-        component.id = node.tagName.toLowerCase()
+        component.id = componentId
 
         if (contentTypes[component.id]) {
           item.contentIndex = content.length
@@ -177,7 +174,6 @@ const parseHTML = (
 
           if (result.bind.length) {
             widgetEvent[layoutNodes.length - 1] = result.bind
-            hasEvent = true
           }
 
           if (result.options) {
@@ -210,7 +206,6 @@ const parseHTML = (
 
             if (eventListener) {
               eventListeners[layoutNodes.length - 1] = eventListener.split(' ')
-              hasListeners = true
             }
           }
 
@@ -264,20 +259,34 @@ const parseHTML = (
     }
   }
 
-  if (!hasListeners) {
-    delete data.eventListeners[data.layoutIndex]
-  }
-
-  if (!hasEvent) {
-    delete data.widgetEvent[data.layoutIndex]
-  }
-
   // create layout ids
   if (head) {
     for (let i = 0; i < data.layout.length; i++) {
       const layoutId = objectHash(data.layout[i])
 
       data.layoutId.push(layoutId)
+    }
+
+    for (const key in data.widgetEvent) {
+      if (Object.hasOwnProperty.call(data.widgetEvent, key)) {
+        const events = data.widgetEvent[key]
+        const hasEvent = Object.keys(events).length
+
+        if (!hasEvent) {
+          delete data.widgetEvent[key]
+        }
+      }
+    }
+
+    for (const key in data.eventListeners) {
+      if (Object.hasOwnProperty.call(data.eventListeners, key)) {
+        const listeners = data.eventListeners[key]
+        const hasListeners = Object.keys(listeners).length
+
+        if (!hasListeners) {
+          delete data.eventListeners[key]
+        }
+      }
     }
   }
 
