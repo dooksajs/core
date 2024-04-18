@@ -163,7 +163,13 @@ export default definePlugin({
 
       return target.splice(start, deleteCount, source)
     },
-    iterate ({ context, items, dsActionId, async }) {
+    forEach ({ context, items, dsActionId, async }) {
+      context._list_ = {}
+
+      if (Array.isArray(items)) {
+        context._list_ = []
+      }
+
       if (async) {
         return new Promise((resolve, reject) => {
           const promises = []
@@ -189,7 +195,7 @@ export default definePlugin({
           }
 
           Promise.all(promises)
-            .then(() => resolve())
+            .then(() => resolve(context._list_))
             .catch(error => reject(error))
         })
       }
@@ -206,6 +212,8 @@ export default definePlugin({
           })
         }
       }
+
+      return context._list_
     },
     },
     /**
