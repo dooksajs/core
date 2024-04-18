@@ -119,65 +119,69 @@ export default definePlugin({
     }
   },
   methods: {
-    /**
-     * Add data listener
-     * @param {string} name - Collection name
-     * @param {Object} param
-     * @param {string} param.on - Data event name
-     * @param {string} param.id - Data collection Id
-     * @param {number} param.priority
-     * @param {Object} param.handler
-     * @param {string} param.handler.id - Id of handler
-     * @param {Function|dsActionId} param.handler.value - Function or action that will be called
-     */
-    $addDataListener (name, { on, id, priority, handler }) {
-      const listeners = this._getListeners(name, on, id)
+    $addDataListener: {
+      /**
+       * Add data listener
+       * @alias DsPluginData~$addDataListener
+       * @param {string} name - Collection name
+       * @param {Object} param
+       * @param {string} param.on - Data event name
+       * @param {string} param.id - Data collection Id
+       * @param {number} param.priority
+       * @param {Object} param.handler
+       * @param {string} param.handler.id - Id of handler
+       * @param {Function|dsActionId} param.handler.value - Function or action that will be called
+       */
+      value (name, { on, id, priority, handler }) {
+        const listeners = this._getListeners(name, on, id)
 
-      // set default listener value
-      if (!listeners.items) {
-        const type = 'data/listener/' + on
+        // set default listener value
+        if (!listeners.items) {
+          const type = 'data/listener/' + on
+
+          if (id) {
+            this[type][name][id] = []
+            this[type + '/priority'][name][id] = []
+
+            listeners.items = this[type][name][id] = []
+            listeners.priority = this[type + '/priority'][name][id] = []
+          } else {
+            this[type][name] = []
+            this[type + '/priority'][name] = []
+
+            listeners.items = this[type][name]
+            listeners.priority = this[type + '/priority'][name]
+          }
+        }
+
+        const handlers = this['data/handler/' + on][name]
+
+        let handlerId = handler.id
 
         if (id) {
-          this[type][name][id] = []
-          this[type + '/priority'][name][id] = []
-
-          listeners.items = this[type][name][id] = []
-          listeners.priority = this[type + '/priority'][name][id] = []
-        } else {
-          this[type][name] = []
-          this[type + '/priority'][name] = []
-
-          listeners.items = this[type][name]
-          listeners.priority = this[type + '/priority'][name]
+          handlerId = id + handler.id
         }
-      }
 
-      const handlers = this['data/handler/' + on][name]
+        // add listener
+        if (!handlers[handlerId]) {
+          if (!priority) {
+            listeners.items.push(handler.value)
+            handlers[handlerId] = handler.value
 
-      let handlerId = handler.id
+            return
+          }
 
-      if (id) {
-        handlerId = id + handler.id
-      }
+          listeners.priority.push({
+            priority,
+            value: handler.value
+          })
 
-      // add listener
-      if (!handlers[handlerId]) {
-        if (!priority) {
-          listeners.items.push(handler.value)
+          listeners.priority.sort((a, b) => a.priority - b.priority)
+
           handlers[handlerId] = handler.value
-
-          return
         }
-
-        listeners.priority.push({
-          priority,
-          value: handler.value
-        })
-
-        listeners.priority.sort((a, b) => a.priority - b.priority)
-
-        handlers[handlerId] = handler.value
-      }
+      },
+      export: true
     },
     /**
      * Delete data listeners
