@@ -830,9 +830,13 @@ export default definePlugin({
             deepClone(resultItem, target)
             resultItem = resultItem._item
 
-            for (const key in source) {
-              if (Object.hasOwnProperty.call(source, key)) {
-                resultItem[key] = source[key]
+            if (Array.isArray(resultItem)) {
+              resultItem = source
+            } else {
+              for (const key in source) {
+                if (Object.hasOwnProperty.call(source, key)) {
+                  resultItem[key] = source[key]
+                }
               }
             }
           } else {
