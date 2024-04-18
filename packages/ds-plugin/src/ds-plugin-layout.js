@@ -309,8 +309,7 @@ export default definePlugin({
 
       const dsEvent = this.$setDataValue('dsEvent/listeners', event.value, {
         id,
-        suffixId: eventName,
-        merge: true
+        suffixId: eventName
       })
 
       // Store used events on page used by "save page"
