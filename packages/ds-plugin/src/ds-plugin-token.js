@@ -15,6 +15,9 @@ export default definePlugin({
       default: () => ({
         heading: {
           default: 'Add title'
+        },
+        img: {
+          default: 'data:image/gif;base64,R0lGODdhAQABAPAAAP8AAAAAACwAAAAAAQABAAACAkQBADs='
         }
       })
     }
@@ -25,13 +28,13 @@ export default definePlugin({
     },
     placeholder (args) {
       const language = this.$getDataValue('dsMetadata/language')
-      const heading = this.values[args[2]]
+      const placeholder = this.values[args[2]]
 
-      if (heading[language.item]) {
-        return heading[language.item]
+      if (placeholder[language.item]) {
+        return placeholder[language.item]
       }
 
-      return heading.default
+      return placeholder.default
     }
   },
   methods: {
