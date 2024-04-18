@@ -116,18 +116,6 @@ export default definePlugin({
       schema: {
         type: 'object'
       }
-    },
-    defaultTypes: {
-      private: true,
-      default: () => ({
-        string: String,
-        number: Number,
-        object: Object,
-        array: Array,
-        boolean: Boolean,
-        function: Function,
-        node: Object
-      })
     }
   },
   methods: {
@@ -540,7 +528,7 @@ export default definePlugin({
 
           if (target == null) {
             // set default value
-            target = this.defaultTypes[schema.type]()
+            target = this._types(schema.type)
           }
 
           result = this._setData(
@@ -600,7 +588,7 @@ export default definePlugin({
       const id = data.id
 
       // add values
-      this.values[id] = data.default ?? this.defaultTypes[data.type]()
+      this.values[id] = data.default ?? this._types(data.type)
 
       // prepare listeners
       if (data.collection) {
@@ -753,7 +741,7 @@ export default definePlugin({
       if (newTarget) {
         return newTarget
       } else if (!newTarget && type) {
-        target[position] = this.defaultTypes[type]()
+        target[position] = this._types(type)
 
         return target[position]
       } else {
@@ -789,7 +777,8 @@ export default definePlugin({
       if (!this[schemaCheck]) {
         for (const id in sources) {
           if (Object.hasOwnProperty.call(sources, id)) {
-            const source = deepClone(this.defaultTypes[schema.type](), sources[id], true)
+            const clone = this._types(schema.type)
+            const source = deepClone(clone, sources[id], true)
             const target = {
               _item: source._item || source,
               _metadata: source._metadata || metadata
@@ -820,8 +809,8 @@ export default definePlugin({
 
       for (const id in sources) {
         if (Object.hasOwnProperty.call(sources, id)) {
-          let resultItem = this.defaultTypes[schema.type]()
-          let source = deepClone(this.defaultTypes[schema.type](), sources[id])
+          let resultItem = this._types(schema.type)
+          let source = deepClone(this._types(schema.type), sources[id])
           const resultMetadata = source._metadata || metadata
           source = source._item || source
 
@@ -957,7 +946,7 @@ export default definePlugin({
     _createTarget (type, metadata, target) {
       if (target == null) {
         target = {
-          _item: this.defaultTypes[type](),
+          _item: this._types(type),
           _metadata: {}
         }
       }
@@ -1755,6 +1744,30 @@ export default definePlugin({
         this.relationUsed[usedName] = [name]
       } else if (!this.relationUsed[usedName].includes(name)) {
         this.relationUsed[usedName].push(name)
+      }
+    },
+    /**
+     * Get new data type
+     * @private
+     * @param {string} type - Data type name
+     * @returns {Array|Boolean|Function|number|Object|string}
+     */
+    _types (type) {
+      switch (type) {
+        case 'array':
+          return new Array()
+        case 'boolean':
+          return new Boolean().valueOf()
+        case 'function':
+          return new Function()
+        case 'node':
+          return new Object()
+        case 'number':
+          return new String().valueOf()
+        case 'object':
+          return new Object()
+        case 'string':
+          return new String().valueOf()
       }
     },
     '_unfreeze/object' (source) {
