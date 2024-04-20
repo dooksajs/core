@@ -120,12 +120,13 @@ export default definePlugin({
        * @param {Object} param
        * @param {string} param.on - Data event name
        * @param {string} param.id - Data collection Id
-       * @param {number} param.priority
+       * @param {number} [param.priority]
+       * @param {boolean} [param.force=false] - Force the event to fire
        * @param {Object} param.handler
        * @param {string} param.handler.id - Id of handler
-       * @param {Function|dsActionId} param.handler.value - Function or action that will be called
+       * @param {Function|string} param.handler.value - Function or action that will be called
        */
-      value (name, { on, id, priority, handler }) {
+      value (name, { on, id, priority, force = false, handler }) {
         const listeners = this._getListeners(name, on, id)
 
         // set default listener value
@@ -157,18 +158,23 @@ export default definePlugin({
 
         // add listener
         if (!handlers[handlerId]) {
-          if (!priority) {
-            listeners.items.push(handler.value)
+          if (!isNaN(priority)) {
+            listeners.items.push({
+              force,
+              value: handler.value
+            })
             handlers[handlerId] = handler.value
 
             return
           }
 
           listeners.priority.push({
+            force,
             priority,
             value: handler.value
           })
 
+          // sort by acceding order
           listeners.priority.sort((a, b) => a.priority - b.priority)
 
           handlers[handlerId] = handler.value
@@ -277,9 +283,13 @@ export default definePlugin({
       }
 
       if (collection[id]) {
-        delete collection[id]
+        const result = new DataResult(name, id)
 
-        this._onDelete(name, id)
+        result.item = collection[id]
+
+        this._fireDataListeners(name, 'delete', result)
+
+        delete collection[id]
       }
 
       return {
@@ -539,9 +549,7 @@ export default definePlugin({
           this.values[name] = result.target
 
           // notify listeners
-          if (!options || !options.stopPropagation) {
-            this._onUpdate(name, result)
-          }
+          this._fireDataListeners(name, 'update', result, (options && options.stopPropagation) ?? false)
 
           return {
             collection: name,
@@ -1132,39 +1140,32 @@ export default definePlugin({
     },
     /**
      * Process listeners on update event
+     * @private
      * @param {string} name - Collection name
+     * @param {string} on - Event name
      * @param {DataResult} item - Value that is being set
+     * @param {boolean} stopPropagation - Prevents further propagation of the update event
      */
-    _onUpdate (name, item) {
-      const listeners = this._getListeners(name, 'update', item.id)
+    _fireDataListeners (name, on, item, stopPropagation) {
+      const listeners = this._getListeners(name, on, item.id)
 
       if (listeners.priority) {
         for (let i = 0; i < listeners.priority.length; i++) {
-          listeners.priority[i].value(item)
+          const handler = listeners.priority[i]
+
+          if (!stopPropagation || handler.force) {
+            handler.value(item)
+          }
         }
       }
 
       if (listeners.items) {
         for (let i = 0; i < listeners.items.length; i++) {
-          listeners.items[i](item)
-        }
-      }
-    },
-    /**
-     * Process listeners on delete event
-     * @param {string} name - Collection name
-     * @param {string} id - Data id
-     */
-    _onDelete (name, id) {
-      let listeners = this['data/listener/delete'][name]
+          const handler = listeners.items[i]
 
-      if (id) {
-        listeners = listeners[id]
-      }
-
-      if (listeners) {
-        for (let i = 0; i < listeners.length; i++) {
-          listeners[i](id)
+          if (!stopPropagation || handler.force) {
+            handler.value(item)
+          }
         }
       }
     },
