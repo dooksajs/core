@@ -142,6 +142,17 @@
  * @property {string|number|boolean} [value] - Value to compare
  */
 
+/**
+ * @typedef {Object} DsSetDataOptions
+ * @property {string} [id] - Document Id
+ * @property {Object} [metadata] - Document metadata
+ * @property {boolean} [stopPropagation] - Prevents further propagation of the update event
+ * @property {boolean} [merge] - Merge target with source
+ * @property {Object} [update] - Update target with source
+ * @property {(string[] & number[]) | (string[] | number[])} [update.position] - Update nested data within target with source
+ * @property {'push'|'pull'|'pop'|'shift'|'unshift'|'splice'} [update.method] - Type of update method
+ */
+
 // * @property {Object.<string, (DsMethodContext|DsMethod)>} [methods.context] - Context methods are bound to each plugins scope unless specified otherwise
 // * @property {Object.<string, DsMethod>} [methods.public] - Public methods are available within the plugins local scope and shared with other plugins via this.$method('dsExample/methodName')
 // * @property {Object.<string, Function>} [methods.private] - Private methods scope is bound to the plugin only

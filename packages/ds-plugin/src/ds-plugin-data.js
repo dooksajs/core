@@ -27,18 +27,11 @@ function SchemaException (details) {
  */
 
 /**
- * @typedef {Object} DsSetDataOptions
- * @property {string} [id] - Document Id
- * @property {Object} [metadata] - Document metadata
- * @property {boolean} [stopPropagation] - Prevents further propagation of the update event
- * @property {boolean} [merge] - Merge target with source
- * @property {Object} [update] - Update target with source
- * @property {(string[] & number[]) | (string[] | number[])} [update.position] - Update nested data within target with source
- * @property {'push'|'pull'|'pop'|'shift'|'unshift'|'splice'} [update.method] - Type of update method
+ * @typedef {import('@dooksa/ds-scripts/src/types.js').DsDataWhere} DsDataWhere
  */
 
 /**
- * @typedef {import('@dooksa/ds-scripts/src/types.js').DsDataWhere} DsDataWhere
+ * @typedef {import('@dooksa/ds-scripts/src/types.js').DsSetDataOptions} DsSetDataOptions
  */
 
 export default definePlugin({
