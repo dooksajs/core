@@ -217,6 +217,17 @@ export default definePlugin({
     }
   },
   methods: {
+    attachedToIndex ({ id }) {
+      const sectionId = this.$getDataValue('dsWidget/attached', { id, expand: true })
+
+      if (sectionId.isEmpty) {
+        return -1
+      }
+
+      const section = this.$getDataValue('dsSection/items', { id: sectionId.item })
+
+      return section.item.indexOf(id)
+    },
     remove ({ id }) {
       const view = this.$getDataValue('dsWidget/views', { id })
 
@@ -249,17 +260,6 @@ export default definePlugin({
         this._removeEvent(id)
         this._removeSection(id)
       }
-    },
-    attachedToIndex ({ id }) {
-      const sectionId = this.$getDataValue('dsWidget/attached', { id, expand: true })
-
-      if (sectionId.isEmpty) {
-        return -1
-      }
-
-      const section = this.$getDataValue('dsSection/items', { id: sectionId.item })
-
-      return section.item.indexOf(id)
     },
     _removeContent (id) {
       const content = this.$getDataValue('dsWidget/content', { id })
