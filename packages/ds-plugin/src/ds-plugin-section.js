@@ -5,6 +5,10 @@ import { definePlugin } from '@dooksa/ds-scripts'
  */
 
 /**
+ * @typedef {import('@dooksa/ds-scripts/src/types.js').DsSetDataOptions} DsSetDataOptions
+ */
+
+/**
  * Dooksa sections.
  * @namespace dsSection
  */
@@ -236,6 +240,31 @@ export default definePlugin({
       }
 
       return nextItems
+    },
+    /**
+     * Set section data items
+     * @param {Object} param
+     * @param {string|string[]} param.value
+     * @param {DsSetDataOptions} param.options
+     */
+    set ({ value, options }) {
+      if (options && options.id){
+        const id = options.id
+        const view = this.$getDataValue('dsSection/view', { id })
+
+        // update attached widgets since there is no dataListener yet
+        if (view.isEmpty) {
+          if (typeof value === 'string') {
+            this.$setDataValue('dsWidget/attached', id, { id: value })
+          } else {
+            for (let i = 0; i < value.length; i++) {
+              this.$setDataValue('dsWidget/attached', id, { id: value[i] })
+            }
+          }
+        }
+      }
+
+      this.$setDataValue('dsSection/items', value, options)
     },
     update ({ id, dsViewId }) {
       const query = this.$getDataValue('dsSection/query', { id })
