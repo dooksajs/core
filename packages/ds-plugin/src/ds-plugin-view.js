@@ -278,10 +278,13 @@ export default definePlugin({
       const dsView = this.$getDataValue('dsView/items', { id })
 
       if (!dsView.isEmpty) {
-        // remove content attachment
-        this._unmount(id)
+        // remove from DOM
+        dsView.item.remove()
 
         this.$deleteDataValue('dsEvent/handlers', id)
+
+        // remove content attachment
+        this._unmount(id)
       }
     },
     /**
@@ -343,12 +346,6 @@ export default definePlugin({
 
         // emit old child unmount
         this._unmount(dsViewPrevChild.item.dsViewId)
-
-        // emit new child mount
-        this.$emit('dsView/mount', {
-          id: dsViewId,
-          context: { dsViewId }
-        })
       }
     },
     /**
@@ -503,6 +500,9 @@ export default definePlugin({
         id: dsViewId,
         context: { dsViewId }
       })
+
+      this.$deleteDataValue('dsView/items', dsViewId)
+      this.$deleteDataValue('dsView/content', dsViewId)
     }
   }
 })
