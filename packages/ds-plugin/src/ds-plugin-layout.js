@@ -54,7 +54,8 @@ export default definePlugin({
         'section-attach': 'dsSection/attach',
         'section-update': 'dsSection/update',
         'view-mount': 'dsView/mount',
-        'view-unmount': 'dsView/unmount'
+        'view-unmount': 'dsView/unmount',
+        'layout-mount': 'dsLayout/mount'
       })
     }
   },
@@ -77,6 +78,7 @@ export default definePlugin({
       } = this._getItems(dsLayoutId, dsWidgetId, dsWidgetMode)
       const layoutItems = []
 
+      // attach existing nodes
       if (parentViewItems.length) {
         for (let i = 0; i < parentViewItems.length; i++) {
           const sourceId = parentViewItems[i]
@@ -236,6 +238,20 @@ export default definePlugin({
         id: dsWidgetId,
         suffixId: dsWidgetMode
       })
+
+      // fire layout mounted events
+      for (let i = 0 ; i < viewItems.length; i++) {
+        const dsViewId = viewItems[i]
+
+        this.$emit('dsLayout/mount', {
+          id: dsViewId,
+          context: {
+            dsViewId,
+            dsWidgetId,
+            dsSectionId
+          }
+        })
+      }
     },
     _getItems (dsLayoutId, dsWidgetId, dsWidgetMode) {
       const layout = this.$getDataValue('dsLayout/items', {
