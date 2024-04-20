@@ -7,7 +7,8 @@ import DsPlugin from './DsPlugin.js'
 /**
  * This callback handles the plugin once loaded
  * @callback dsLoaderCallback
- * @returns {DsPluginData}
+ * @param {DsPlugin} plugin - DsPlugin instance
+ * @returns {DsPlugin}
  */
 
 /**
@@ -91,22 +92,25 @@ export default definePlugin({
     }
   },
   /**
-   *
-   * @param {Object[]} plugins - List of DsPlugins
-   * @param {string} plugins[].name - Name of plugin
-   * @param {string} plugins[].version - Version of plugin
-   * @param {DsPluginData} plugins[].value - Object used to create a DsPLugin
-   * @param {DsPluginOptions} plugins[].options - Setup options
-   * @param {dsLoaderCallback} plugin.onImport - This callback handles the plugin once loaded
-   * @param {dsLoaderCallback} plugin.onSuccess - This callback handles the plugin once loaded
+   * Load Dooksa plugins in sequential order
+   * @param {Object} param
+   * @param {Object[]} param.plugins - List of DsPlugins
+   * @param {string} param.plugins[].name - Name of plugin
+   * @param {string} param.plugins[].version - Version of plugin
+   * @param {DsPluginData} param.plugins[].value - Object used to create a DsPLugin
+   * @param {DsPluginOptions} param.plugins[].options - Setup options
+   * @param {Object} param.callback - This callback handles the plugin once loaded
+   * @param {dsLoaderCallback} param.callback.onImport - This callback handles the plugin once loaded
+   * @param {dsLoaderCallback} param.callback.onSuccess - This callback handles the plugin once loaded
+   * @param {Object} param.callback.onError - This callback handles the plugin once loaded
    */
   setup ({
     plugins,
     context,
     callback = {
-      onImport: () => {},
-      onSuccess: () => {},
-      onError: () => {}
+      onImport: (plugin) => plugin,
+      onSuccess: (plugin) => plugin,
+      onError: (error) => error
     }
   }) {
     this.context = context
