@@ -19,7 +19,7 @@ import dsAppClient from '@dooksa/ds-app-client'
         return
       }
 
-      const currentPathId = app.$method('dsRouter/currentId') + 'default'
+      const currentPathId = app.$method('dsRouter/currentId')
 
       // set data
       for (let i = 0; i < data.item.length; i++) {
@@ -32,13 +32,13 @@ import dsAppClient from '@dooksa/ds-app-client'
         })
       }
 
-      const widget = app.$getDataValue('dsSection/items', {
+      const section = app.$getDataValue('dsSection/items', {
         id: currentPathId
       })
 
-      if (!widget.isEmpty) {
+      if (!section.isEmpty) {
         // Render page
-        app.$method('dsSection/append', { id: currentPathId })
+        app.$method('dsSection/append', { id: section.id })
 
         return
       }
@@ -46,10 +46,12 @@ import dsAppClient from '@dooksa/ds-app-client'
       if (data.templates) {
         for (let i = 0; i < data.templates.length; i++) {
           const templateId = data.templates[i]
+
           app.$action('dsTemplate/create', { id: templateId }, {
             onSuccess: (dsWidgetId) => {
               app.$setDataValue('dsSection/items', dsWidgetId, {
                 id: currentPathId,
+                suffixId: 'default',
                 update: {
                   method: 'push'
                 }
@@ -57,31 +59,49 @@ import dsAppClient from '@dooksa/ds-app-client'
             }
           })
 
-          const widget = app.$getDataValue('dsSection/items', {
+          const section = app.$getDataValue('dsSection/items', {
             id: currentPathId
           })
 
-          if (!widget.isEmpty) {
-            app.$method('dsSection/append', { id: currentPathId })
+          if (!section.isEmpty) {
+            const id = section.id
+
+            app.$method('dsSection/append', { id })
 
             const dsViewId = app.$getDataValue('dsView/rootViewId').item
             const handlerValue = () => {
-              app.$method('dsSection/update', { id: currentPathId, dsViewId })
+              app.$method('dsSection/update', { id, dsViewId })
             }
 
             // update section elements
             app.$addDataListener('dsSection/items', {
               on: 'update',
-              id: currentPathId,
+              id,
               handler: {
                 id: dsViewId,
                 value: handlerValue
               }
             })
 
+            // update widget section attachment
+            app.$addDataListener('dsSection/items', {
+              on: 'update',
+              id,
+              force: true,
+              priority: 0,
+              handler: {
+                id: dsViewId,
+                value: ({ item }) => {
+                  for (let i = 0; i < item.length; i++) {
+                    app.$setDataValue('dsWidget/attached', id, { id: item[i] })
+                  }
+                }
+              }
+            })
+
             app.$addDataListener('dsSection/query', {
               on: 'update',
-              id: currentPathId,
+              id,
               handler: {
                 id: dsViewId,
                 value: handlerValue
@@ -90,7 +110,7 @@ import dsAppClient from '@dooksa/ds-app-client'
 
             app.$addDataListener('dsSection/query', {
               on: 'delete',
-              id: currentPathId,
+              id,
               handler: {
                 id: dsViewId,
                 value: handlerValue

@@ -347,7 +347,22 @@ export default definePlugin({
           suffixId: dsWidgetMode
         })
 
-        const handlerValue = () => {
+        // update widget section attachment
+        this.$addDataListener('dsSection/items', {
+          on: 'update',
+          id: section.id,
+          force: true,
+          handler: {
+            id: dsViewId,
+            value: ({ item }) => {
+              for (let i = 0; i < item.length; i++) {
+                this.$setDataValue('dsWidget/attached', section.id, { id: item[i] })
+              }
+            }
+          }
+        })
+
+        const handlerValue = (e) => {
           this.$method('dsSection/update', { id: section.id, dsViewId })
         }
 
