@@ -9,7 +9,7 @@ export default definePlugin({
       schema: {
         type: 'collection',
         items: {
-          type: 'function'
+          type: 'object'
         }
       }
     }
