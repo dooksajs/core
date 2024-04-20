@@ -9,7 +9,8 @@ export default definePlugin({
   version: 1,
   dependencies: [
     {
-      name: 'dsWidget'
+      name: 'dsWidget',
+      version: 1
     }
   ],
   data: {
