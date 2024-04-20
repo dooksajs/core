@@ -19,6 +19,7 @@ export default definePlugin({
      * Create Modal
      * @param {Object} param
      * @param {string} param.dsViewId - View id used to fetch the element.
+     * @param {string} param.dsWidgetId - Widget id the view element belongs to.
      * @param {Object} [param.options] - Modal options
      * @param {boolean|'static'} [param.options.backdrop=true] - Includes a modal-backdrop element. Alternatively, specify static for a backdrop which doesn’t close the modal when clicked.
      * @param {boolean} [param.options.focus=true] - Puts the focus on the modal when initialised.
@@ -26,6 +27,7 @@ export default definePlugin({
      */
     create ({
       dsViewId,
+      dsWidgetId,
       options = {
         backdrop: true,
         focus: true,
@@ -50,6 +52,32 @@ export default definePlugin({
 
       this.$setDataValue('dsViewModal/items', modal, { id: dsViewId })
 
+      view.item.addEventListener('hidden.bs.modal', () => {
+        const attachedSection = this.$getDataValue('dsWidget/attached', {
+          id: dsWidgetId,
+          options: {
+            expand: true,
+            expandClone: true
+          }
+        })
+
+        if (!attachedSection.isExpandEmpty) {
+          const section = attachedSection.expand[0]
+          const items = section.item
+
+          for (let i = 0; i < items.length; i++) {
+            const id = items[i]
+
+            if (id === dsWidgetId) {
+              items.splice(i, 1)
+              break
+            }
+          }
+
+          this.$setDataValue('dsSection/items', items, { id: section.id })
+        }
+      })
+
       // clean up modal
       this.$addDataListener('dsView/items', {
         on: 'delete',
@@ -58,6 +86,8 @@ export default definePlugin({
           this.$deleteDataValue('dsViewModal/items', dsViewId)
         }
       })
+
+      return modal
     }
   }
 })
