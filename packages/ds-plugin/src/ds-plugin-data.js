@@ -1761,7 +1761,7 @@ export default definePlugin({
         case 'boolean':
           return new Boolean().valueOf()
         case 'function':
-          return new Function()
+          return () => {}
         case 'node':
           return new Object()
         case 'number':
