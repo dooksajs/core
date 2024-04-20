@@ -178,7 +178,12 @@ export default definePlugin({
          */
         // detach previous nodes
         if (nextIndex === -1) {
-          this.$method('dsWidget/remove', { id: prevWidgetId })
+          const attachedSection = this.$getDataValue('dsWidget/attached', { id: prevWidgetId })
+
+          // complete remove widget since it belongs to no section
+          if (attachedSection.item === section.id) {
+            this.$method('dsWidget/remove', { id: prevWidgetId })
+          }
         } else {
           const previousView = this.$getDataValue('dsWidget/parentViews', {
             id: prevWidgetId,
