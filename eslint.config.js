@@ -56,7 +56,8 @@ export default [
         mode: 'strict'
       }],
       '@stylistic/js/no-trailing-spaces': 'error',
-      '@stylistic/js/no-multi-spaces': 'error'
+      '@stylistic/js/no-multi-spaces': 'error',
+      '@stylistic/js/no-confusing-arrow': 'error'
     }
   }
 ]
