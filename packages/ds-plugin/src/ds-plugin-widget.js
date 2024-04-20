@@ -222,16 +222,14 @@ export default definePlugin({
 
       // remove all nodes from DOM
       if (!view.isEmpty) {
-        this.$method('dsView/detach', { id: view.item[0] })
+        // remove view relations
+        this.$deleteDataValue('dsWidget/views', { id })
+        this.$deleteDataValue('dsWidget/parentViews', { id })
 
         for (let i = 0; i < view.item.length; i++) {
           const dsViewId = view.item[i]
 
-          this.$emit('dsView/unmount', {
-            id: dsViewId,
-            context: { dsViewId, dsWidgetId: id }
-          })
-          this.$deleteDataValue('dsEvent/handlers', dsViewId)
+          this.$method('dsView/remove', { id: dsViewId })
         }
       }
 
