@@ -1,4 +1,5 @@
 import { definePlugin } from '@dooksa/ds-scripts'
+import { hash } from '@dooksa/utils'
 
 /**
  * Dooksa widget plugin.
@@ -8,6 +9,15 @@ export default definePlugin({
   name: 'dsRouter',
   version: 1,
   data: {
+    hash: {
+      private: true,
+      schema: {
+        type: 'collection',
+        items: {
+          type: 'string'
+        }
+      }
+    },
     sections: {
       schema: {
         type: 'collection',
@@ -84,7 +94,23 @@ export default definePlugin({
       return window.location.pathname || '/'
     },
     currentId () {
-      return '_' + this.currentPath() + '_'
+      const path = this.currentPath()
+
+      // check in path hash cache
+      if (this.hash[path]) {
+        return this.hash[path]
+      }
+
+      // create hash
+      hash.init()
+
+      const target = this.currentPath()
+      const id = '_' + hash.update(target).digest('hex') + '_'
+
+      // cache id
+      this.hash[path] = id
+
+      return id
     },
     cleanPath (value) {
       const text = value.toString().trim().toLocaleLowerCase('en-US')
