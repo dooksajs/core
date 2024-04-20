@@ -88,6 +88,22 @@ export default definePlugin({
       })
 
       return modal
+    },
+    /**
+     * Show modal
+     * @param {Object} param
+     * @param {string} param.dsViewId - View id that the modal belongs to
+     */
+    show ({ dsViewId }) {
+      const modal = this.$getDataValue('dsViewModal/items', {
+        id: dsViewId
+      })
+
+      if (modal.isEmpty) {
+        return this.$log('warn', { message: 'No modal found: ' + dsViewId })
+      }
+
+      modal.item.show()
     }
   }
 })
