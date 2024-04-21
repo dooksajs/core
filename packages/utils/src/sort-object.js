@@ -29,7 +29,7 @@ function sortType (target, source) {
 
       if (Array.isArray(nextSource)) {
         target[prop] = sortType([], nextSource)
-      } else if (nextSource.constructor === Object) {
+      } else if (typeof nextSource === 'object' && nextSource !== null) {
         target[prop] = sortType({}, nextSource)
       } else {
         // update value
@@ -40,7 +40,7 @@ function sortType (target, source) {
 
   let sortedTarget = {}
 
-  if (target.constructor === Object) {
+  if (typeof target === 'object' && target !== null) {
     const keys = Object.keys(target)
 
     keys.sort()

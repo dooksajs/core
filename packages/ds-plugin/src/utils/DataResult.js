@@ -13,8 +13,6 @@ function DataResult (collection = '', id = '') {
   this.isExpandEmpty = true
   this.expand = []
   this.expandIncluded = {}
-  this.isCollectionEmpty = false
-  this.isCollection = false
   this.isAffixEmpty = true
   this.noAffixId = true
 
@@ -49,7 +47,7 @@ DataResult.prototype.clone = function () {
     return deepClone([], this.item)
   }
 
-  if (this.item.constructor === Object) {
+  if (typeof this.item === 'object' && this.item !== null) {
     return deepClone({}, this.item)
   }
 

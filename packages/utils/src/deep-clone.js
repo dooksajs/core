@@ -12,7 +12,7 @@ function deepClone (target, source, freeze) {
 
       if (Array.isArray(nextSource)) {
         target[prop] = deepClone([], nextSource)
-      } else if (nextSource.constructor === Object) {
+      } else if (typeof nextSource === 'object' && nextSource !== null) {
         target[prop] = deepClone({}, nextSource)
       } else if (typeof nextSource === 'number') {
         target[prop] = new Number(nextSource).valueOf()
