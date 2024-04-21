@@ -6,6 +6,7 @@ export default definePlugin({
   version: 1,
   data: {
     items: {
+      private: true,
       schema: {
         type: 'collection',
         items: {
@@ -35,11 +36,9 @@ export default definePlugin({
       }
     }) {
       // fetch existing modal
-      let modal = this.$getDataValue('dsViewModal/items', {
-        id: dsViewId
-      })
+      let modal = this.items[dsViewId]
 
-      if (!modal.isEmpty) {
+      if (modal instanceof Modal) {
         return
       }
 
@@ -50,19 +49,20 @@ export default definePlugin({
       // create new modal
       modal = new Modal(view.item, options)
 
-      this.$setDataValue('dsViewModal/items', modal, { id: dsViewId })
+      this.items[dsViewId] = modal
 
       view.item.addEventListener('hidden.bs.modal', () => {
         const attachedSection = this.$getDataValue('dsWidget/attached', {
-          id: dsWidgetId,
-          options: {
-            expand: true,
-            expandClone: true
-          }
+          id: dsWidgetId
         })
 
-        if (!attachedSection.isExpandEmpty) {
-          const section = attachedSection.expand[0]
+        if (!attachedSection.isEmpty) {
+          const section = this.$getDataValue('dsSection/items', {
+            id: attachedSection.item,
+            options: {
+              clone: true
+            }
+          })
           const items = section.item
 
           for (let i = 0; i < items.length; i++) {
@@ -83,7 +83,7 @@ export default definePlugin({
         on: 'delete',
         id: dsViewId,
         handler: () => {
-          this.$deleteDataValue('dsViewModal/items', dsViewId)
+          delete this.items[dsViewId]
         }
       })
 
@@ -95,15 +95,13 @@ export default definePlugin({
      * @param {string} param.dsViewId - View id that the modal belongs to
      */
     show ({ dsViewId }) {
-      const modal = this.$getDataValue('dsViewModal/items', {
-        id: dsViewId
-      })
+      const modal = this.items[dsViewId]
 
-      if (modal.isEmpty) {
+      if (!(modal instanceof Modal)) {
         return this.$log('warn', { message: 'No modal found: ' + dsViewId })
       }
 
-      modal.item.show()
+      modal.show()
     }
   }
 })
