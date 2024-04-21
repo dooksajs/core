@@ -545,6 +545,11 @@ export default definePlugin({
             options
           )
 
+          // freeze new item
+          if (typeof result.item === 'object') {
+            Object.freeze(result.item)
+          }
+
           // set new value
           this.values[name] = result.target
 
