@@ -120,29 +120,31 @@ const parseHTML = (
             widgetEvent[layoutNodes.length - 1] = result.bind
           }
 
-          const contentRef = result.options['ds-content-ref']
+          if (result.options) {
+            const contentRef = result.options['ds-content-ref']
 
-          if (contentRef) {
-            contentRefs[item.contentIndex] = contentRef
-          }
-
-          const queryIndex = result.options['ds-query']
-
-          if (queryIndex) {
-            const querySplit = queryIndex.split(':')
-            const queryValue = { id: querySplit[0] }
-
-            if (querySplit[1] === 'content') {
-              queryValue.content = querySplit.splice(2)
+            if (contentRef) {
+              contentRefs[item.contentIndex] = contentRef
             }
 
-            queryIndexes[item.contentIndex] = queryValue
-          }
+            const queryIndex = result.options['ds-query']
 
-          const eventListener = result.options['ds-event']
+            if (queryIndex) {
+              const querySplit = queryIndex.split(':')
+              const queryValue = { id: querySplit[0] }
 
-          if (eventListener) {
-            eventListeners[layoutNodes.length - 1] = eventListener.split(' ')
+              if (querySplit[1] === 'content') {
+                queryValue.content = querySplit.splice(2)
+              }
+
+              queryIndexes[item.contentIndex] = queryValue
+            }
+
+            const eventListener = result.options['ds-event']
+
+            if (eventListener) {
+              eventListeners[layoutNodes.length - 1] = eventListener.split(' ')
+            }
           }
         }
 
