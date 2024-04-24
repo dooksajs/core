@@ -232,6 +232,7 @@ export default definePlugin({
      * @param {string} [param.mode="default"] - Suffix used to categories the instances
      * @param {string} [param.language] - Language used to label the content
      * @param {string} param.dsSectionId - Id related to a dsSection/item
+     * @param {Object} [param.contentOptions={}] - Collection of content overwrites by matching a ref id
      * @param {Object} [param.widgetOptions={}] - Collection of widget overwrites by matching a ref id
      * @param {string} [param.actionGroupId] - Action group id
      * @param {Function} [_callback] - Private callback that is called to resolve a fetched template
@@ -241,6 +242,7 @@ export default definePlugin({
       id,
       mode = 'default',
       language,
+      contentOptions = {},
       widgetOptions = {},
       actionGroupId
     }, _callback) {
@@ -281,6 +283,7 @@ export default definePlugin({
                 id,
                 mode,
                 language,
+                contentOptions,
                 widgetOptions,
                 actionGroupId
               }, resolve)
@@ -341,6 +344,12 @@ export default definePlugin({
           const queryIndex = queryIndexes[j]
           const contentRef = contentRefs[j]
           let content = contentItems[j]
+
+          // change content value
+          if (contentOptions[contentRef]) {
+            content = deepClone({}, contentItems[j])
+            content.item = contentOptions[contentRef]
+          }
 
           const dsContent = this.$setDataValue('dsContent/items', content.item, {
             suffixId: language,
