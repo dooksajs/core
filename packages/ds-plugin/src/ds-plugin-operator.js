@@ -149,10 +149,10 @@ export default createPlugin('dsOperator', ({ defineActions }) => {
 
   defineActions({
     compare: {
-      schema: {
+      defineParameters: {
         name: 'Compare',
         description: 'Compare two or more values',
-        params: [
+        schema: [
           {
             type: 'array',
             items: {
@@ -195,10 +195,10 @@ export default createPlugin('dsOperator', ({ defineActions }) => {
       }
     },
     eval: {
-      schema: {
+      defineParameters: {
         name: 'Evaluate',
         description: 'Evaluate two values',
-        params: [
+        schema: [
           {
             type: 'object',
             properties: {

@@ -1,10 +1,10 @@
 /**
  * @typedef {Object} DsActionData
  * @property {Function} value
- * @property {Object} schema
- * @property {string} schema.name - Human readable name of action
- * @property {string} schema.description - Description of action
- * @property {DsActionSchema[]} [schema.params]
+ * @property {Object} defineParameters
+ * @property {string} defineParameters.name - Human readable name of action
+ * @property {string} defineParameters.description - Description of action
+ * @property {DsActionSchema[]} [defineParameters.schema]
  */
 
 /**
