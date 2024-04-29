@@ -1,4 +1,4 @@
-import { definePlugin } from '@dooksa/ds-scripts'
+import createPlugin from '@dooksa/create-plugin'
 
 /**
  * Two or one values to run an operator on
@@ -9,56 +9,8 @@ import { definePlugin } from '@dooksa/ds-scripts'
  * [0]
  */
 
-export default definePlugin({
-  name: 'dsOperator',
-  version: 1,
-  methods: {
-    /**
-     * Evaluate two values
-     * @param {Object} eval - The Object containing the data to evaluate two values
-     * @param {string} eval.name - Operator name
-     * @param {OperatorValues} eval.values - Contains two values to be evaluated
-     */
-    eval ({ name, values }) {
-      const operator = '_operator/' + name
-
-      if (this[operator]) {
-        return this[operator](values)
-      } else {
-        this.$log('error', { message: 'Unexpected operator name: "' + name + '"' })
-      }
-    },
-    /**
-     * Compare two or more values
-     * @param {*[]} values - Contains two values or more values which are compared
-     * @example
-     * const andValues = ['1', '&&', 1]
-     */
-    compare (values) {
-      let result = false
-
-      for (let i = 0; i < values.length; i++) {
-        const value = values[i]
-
-        if (value === '&&') {
-          if ((values[i - 1] && values[i + 1])) {
-            result = true
-          } else {
-            break
-          }
-        }
-
-        if (value === '||') {
-          if ((values[i - 1] || values[i + 1])) {
-            result = true
-          } else {
-            break
-          }
-        }
-      }
-
-      return result
-    },
+export default createPlugin('dsOperator', ({ defineActions }) => {
+  const operators = {
     /**
      * Equality
      * @private
@@ -194,4 +146,95 @@ export default definePlugin({
      */
     '_operator/~': v => v[0].includes(v[1])
   }
+
+  defineActions({
+    compare: {
+      schema: {
+        name: 'Compare',
+        description: 'Compare two or more values',
+        params: [
+          {
+            type: 'array',
+            items: {
+              anyOf: [
+                {
+                  type: 'string'
+                },
+                {
+                  type: 'number'
+                }
+              ]
+            }
+          }
+        ]
+      },
+      value (values) {
+        let result = false
+
+        for (let i = 0; i < values.length; i++) {
+          const value = values[i]
+
+          if (value === '&&') {
+            if ((values[i - 1] && values[i + 1])) {
+              result = true
+            } else {
+              break
+            }
+          }
+
+          if (value === '||') {
+            if ((values[i - 1] || values[i + 1])) {
+              result = true
+            } else {
+              break
+            }
+          }
+        }
+
+        return result
+      }
+    },
+    eval: {
+      schema: {
+        name: 'Evaluate',
+        description: 'Evaluate two values',
+        params: [
+          {
+            type: 'object',
+            properties: {
+              name: {
+                type: 'string'
+              },
+              values: {
+                type: 'array',
+                items: {
+                  oneOf: [
+                    {
+                      type: 'string'
+                    },
+                    {
+                      type: 'number'
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      /**
+       * Evaluate two values
+       * @param {Object} eval - The Object containing the data to evaluate two values
+       * @param {string} eval.name - Operator name
+       * @param {OperatorValues} eval.values - Contains two values to be evaluated
+       */
+      value ({ name, values }) {
+        if (operators[name]) {
+          return operators[name](values)
+        } else {
+          throw new Error('No operator found: ' + name)
+        }
+      }
+    }
+  })
 })
