@@ -1,0 +1,13 @@
+{
+  "name": "@dooksa/create-plugin",
+  "version": "0.0.0",
+  "description": "Create a Dooksa plugin",
+  "author": "Thomas David <tom@mightysmile.com>",
+  "repository": "git@github.com:dooksajs/dooksa.git",
+  "license": "MPL-2.0",
+  "type": "module",
+  "main": "src/index.js",
+  "dependencies": {
+    "@dooksa/ds-scripts": "workspace:^"
+  }
+}
