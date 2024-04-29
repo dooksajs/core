@@ -1,3 +1,5 @@
+import dsSchema from './utils/schema.js'
+
 /**
  * @typedef {import("@dooksa/ds-scripts/src/types.js").DsData} DsDataSchema
  * @typedef {import("@dooksa/ds-scripts/src/types.js").DsSetDataOptions} DsSetDataOptions
@@ -6,13 +8,14 @@
 
 /**
  *
- * @param {*} setDataSchema
+ * @param {*} setDataModal
  * @param {*} setDataValue
  * @param {*} getDataValue
  * @param {*} plugin
  * @param {Object.<string, DsDataSchema>} data
+ * @returns {DsData|DsDataCollection}
  */
-function createData (setDataSchema, setDataValue, getDataValue, plugin, data) {
+function createData (setDataModal, setDataValue, getDataValue, plugin, data) {
   for (const key in data) {
     if (Object.hasOwnProperty.call(data, key)) {
       const dataItem = data[key]
@@ -51,20 +54,27 @@ function createData (setDataSchema, setDataValue, getDataValue, plugin, data) {
 
       // data namespace
       const dataName = plugin.metadata.name + '/' + key
+      const isCollection = schema.type === 'collection'
 
       // set data schema
-      setDataSchema(dataName, schema)
+      setDataModal(dataName, {
+        default: dataValue,
+        schema: dsSchema.process({}, dataName, schema, [], true),
+        isCollection
+      })
 
       // set default data
-      const result = setDataValue(dataName, dataValue)
+      setDataValue(dataName, dataValue)
 
-      if (schema.type === 'collection') {
-        plugin.data[key] = new DsDataCollection(dataName, key, dataType, getDataValue, setDataSchema)
+      if (isCollection) {
+        plugin.data[key] = new DsDataCollection(dataName, key, dataType, getDataValue, setDataValue)
       } else {
-        plugin.data[key] = new DsData(dataName, key, dataType, getDataValue, setDataSchema)
+        plugin.data[key] = new DsData(dataName, key, dataType, getDataValue, setDataValue)
       }
     }
   }
+
+  return plugin.data
 }
 
 /**
