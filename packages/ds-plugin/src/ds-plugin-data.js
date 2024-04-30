@@ -10,7 +10,7 @@ import { dsOperator, dsList } from './index.js'
  * @typedef {import('@dooksa/ds-scripts/src/types.js').DsDataWhere} DsDataWhere
  */
 
-export default createPlugin('dsData', ({ defineActions, defineContextProperties }) => {
+export default createPlugin('dsData', ({ defineActions, defineActionSchema, defineContextProperties }) => {
   const dataListeners = {
     delete: {},
     deletePriority: {},
@@ -26,222 +26,219 @@ export default createPlugin('dsData', ({ defineActions, defineContextProperties 
   const databaseRelation = {}
   const databaseRelationInUse = {}
 
-  // add database actions
-  const actions = defineActions({
+  defineActionSchema({
     generateId: {
-      schema: {
-        name: 'UUID',
-        description: 'Generate a unique id'
-      },
-      /**
-       * Generate a unique id
-       * @returns {string}
-       */
-      value () {
-        return '_' + uuid() + '_'
-      }
+      name: 'UUID',
+      description: 'Generate a unique id'
     },
     find: {
-      schema: {
-        name: 'Find data',
-        description: 'Search for multiple instances',
-        params: [{
+      name: 'Find data',
+      description: 'Search for multiple instances',
+      schema: [{
+        type: 'object',
+        properties: {
+          name: {
+            type: 'string'
+          },
+          where: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                name: {
+                  type: 'string'
+                },
+                op: {
+                  type: 'string'
+                },
+                value: {
+                  type: 'string'
+                },
+                and: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      name: {
+                        type: 'string'
+                      },
+                      op: {
+                        type: 'string'
+                      },
+                      value: {
+                        type: 'string'
+                      }
+                    }
+                  }
+                },
+                or: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      name: {
+                        type: 'string'
+                      },
+                      op: {
+                        type: 'string'
+                      },
+                      value: {
+                        type: 'string'
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }]
+    },
+    unsafeSetData: {
+      name: 'Unsafe set data',
+      description: 'Set data without schema validation',
+      schema: [
+        {
           type: 'object',
           properties: {
             name: {
               type: 'string'
             },
-            where: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  name: {
-                    type: 'string'
-                  },
-                  op: {
-                    type: 'string'
-                  },
-                  value: {
-                    type: 'string'
-                  },
-                  and: {
-                    type: 'array',
-                    items: {
-                      type: 'object',
-                      properties: {
-                        name: {
-                          type: 'string'
-                        },
-                        op: {
-                          type: 'string'
-                        },
-                        value: {
-                          type: 'string'
-                        }
-                      }
-                    }
-                  },
-                  or: {
-                    type: 'array',
-                    items: {
-                      type: 'object',
-                      properties: {
-                        name: {
-                          type: 'string'
-                        },
-                        op: {
-                          type: 'string'
-                        },
-                        value: {
-                          type: 'string'
-                        }
-                      }
-                    }
-                  }
+            data: {
+              type: 'any'
+            },
+            options: {
+              type: 'object',
+              properties: {
+                id: {
+                  type: 'string'
                 }
               }
             }
           }
-        }]
-      },
-      /**
-       * Retrieve all entities from collection
-       * @param {Object} param
-       * @param {string} param.name - Name of collection
-       * @param {DsDataWhere[]} param.where
-       */
-      value ({ name, where }) {
-        const values = database[name]
-
-        if (values == null) {
-          throw new DsDataValueException('No collection found: ' + name)
         }
+      ]
+    }
+  })
 
-        const schema = databaseSchema[name]
-
-        if (schema.type === 'collection') {
-          const valueItems = []
-
-          valueLoop: for (const id in values) {
-            if (Object.hasOwnProperty.call(values, id)) {
-              const value = values[id]
-              const dataResult = new DataResult(name, id)
-              let isValid = true
-
-              if (where) {
-                for (let i = 0; i < where.length; i++) {
-                  isValid = filterData(dataResult, where[i])
-
-                  if (!isValid) {
-                    continue valueLoop
-                  }
-                }
-              }
-
-              dataResult.isEmpty = false
-              dataResult.item = value._item
-              dataResult.metadata = value._metadata
-              dataResult.previous = value._previous
-              valueItems.push(dataResult)
-            }
-          }
-
-          return valueItems
-        }
-
-        const result = new DataResult(name)
-        let isValid = true
-
-        result.isEmpty = false
-        result.item = values._item
-        result.metadata = values._metadata
-        result.previous = values._previous
-
-        if (where) {
-          for (let i = 0; i < where.length; i++) {
-            isValid = filterData(result, where[i])
-
-            if (!isValid) {
-              result.isEmpty = true
-
-              return result
-            }
-          }
-        }
-
-        if (!isValid) {
-          result.isEmpty = true
-
-          return result
-        }
-
-        return [result]
-      }
+  // add database actions
+  const actions = defineActions({
+    /**
+     * Generate a unique id
+     * @returns {string}
+     */
+    generateId () {
+      return '_' + uuid() + '_'
     },
-    unsafeSetData: {
-      schema: {
-        name: 'Unsafe set data',
-        description: 'Set data without schema validation',
-        params: [
-          {
-            type: 'object',
-            properties: {
-              name: {
-                type: 'string'
-              },
-              data: {
-                type: 'any'
-              },
-              options: {
-                type: 'object',
-                properties: {
-                  id: {
-                    type: 'string'
-                  }
+    /**
+     * Retrieve all entities from collection
+     * @param {Object} param
+     * @param {string} param.name - Name of collection
+     * @param {DsDataWhere[]} param.where
+     */
+    find ({ name, where }) {
+      const values = database[name]
+
+      if (values == null) {
+        throw new DsDataValueException('No collection found: ' + name)
+      }
+
+      const schema = databaseSchema[name]
+
+      if (schema.type === 'collection') {
+        const valueItems = []
+
+        valueLoop: for (const id in values) {
+          if (Object.hasOwnProperty.call(values, id)) {
+            const value = values[id]
+            const dataResult = new DataResult(name, id)
+            let isValid = true
+
+            if (where) {
+              for (let i = 0; i < where.length; i++) {
+                isValid = filterData(dataResult, where[i])
+
+                if (!isValid) {
+                  continue valueLoop
                 }
               }
             }
+
+            dataResult.isEmpty = false
+            dataResult.item = value._item
+            dataResult.metadata = value._metadata
+            dataResult.previous = value._previous
+            valueItems.push(dataResult)
           }
-        ]
-      },
-      /**
-       * Set data without schema validation
-       * @param {Object} param
-       * @param {string} param.name
-       * @param {*} param.data
-       * @param {Object} param.options
-       * @param {string} param.options.id
-       * @returns {DataResult}
-       */
-      value ({ name, data, options }) {
-        const result = new DataResult(name, options.id)
+        }
 
-        if (options) {
-          if (options.id == null) {
-            // update collection
-            database[name] = data
+        return valueItems
+      }
 
-            result.item = data
-          } else {
-            result.item = data._item || data
+      const result = new DataResult(name)
+      let isValid = true
 
-            const value = database[name][options.id] || {}
+      result.isEmpty = false
+      result.item = values._item
+      result.metadata = values._metadata
+      result.previous = values._previous
 
-            database[name][options.id] = {
-              _item: data._item || data,
-              _metadata: data._metadata || value._metadata || {}
-            }
+      if (where) {
+        for (let i = 0; i < where.length; i++) {
+          isValid = filterData(result, where[i])
+
+          if (!isValid) {
+            result.isEmpty = true
+
+            return result
           }
-        } else {
+        }
+      }
+
+      if (!isValid) {
+        result.isEmpty = true
+
+        return result
+      }
+
+      return [result]
+    },
+    /**
+     * Set data without schema validation
+     * @param {Object} param
+     * @param {string} param.name
+     * @param {*} param.data
+     * @param {Object} param.options
+     * @param {string} param.options.id
+     * @returns {DataResult}
+     */
+    unsafeSetData ({ name, data, options }) {
+      const result = new DataResult(name, options.id)
+
+      if (options) {
+        if (options.id == null) {
           // update collection
           database[name] = data
 
           result.item = data
-        }
+        } else {
+          result.item = data._item || data
 
-        return result
+          const value = database[name][options.id] || {}
+
+          database[name][options.id] = {
+            _item: data._item || data,
+            _metadata: data._metadata || value._metadata || {}
+          }
+        }
+      } else {
+        // update collection
+        database[name] = data
+
+        result.item = data
       }
+
+      return result
     }
   })
 
