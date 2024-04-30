@@ -1,4 +1,5 @@
-import { definePlugin } from '@dooksa/ds-scripts'
+import createPlugin from '@dooksa/create-plugin'
+import { dsOperator, dsAction } from './index.js'
 
 /**
  * @typedef {Object} ArraySortContent
@@ -23,10 +24,83 @@ import { definePlugin } from '@dooksa/ds-scripts'
  * @property {string} widgetId - dsWidget/item id
  */
 
-export default definePlugin({
-  name: 'dsList',
-  version: 1,
-  methods: {
+export default createPlugin('dsList', ({ defineActions, defineActionSchema }) => {
+  function sortAscending (a, b) {
+    // ignore upper and lowercase
+    const A = typeof a.value === 'string' ? a.value.toUpperCase() : a.value
+    const B = typeof b.value === 'string' ? b.value.toUpperCase() : b.value
+
+    if (A < B) {
+      return -1
+    }
+
+    if (A > B) {
+      return 1
+    }
+
+    // names must be equal
+    return 0
+  }
+
+  function sortDescending (a, b) {
+    // ignore upper and lowercase
+    const A = typeof a.value === 'string' ? a.value.toUpperCase() : a.value
+    const B = typeof b.value === 'string' ? b.value.toUpperCase() : b.value
+
+    if (A > B) {
+      return -1
+    }
+
+    if (A < B) {
+      return 1
+    }
+
+    // names must be equal
+    return 0
+  }
+
+  defineActionSchema({
+    filter: {
+      name: 'Filter',
+      description: 'Filter items based on conditions',
+      schema: [
+        {
+          type: 'object',
+          properties: {
+            items: {
+              type: 'array',
+              items: {
+                oneOf: [
+                  {
+                    type: 'string'
+                  },
+                  {
+                    type: 'number'
+                  }
+                ]
+              }
+            },
+            options: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  name: {
+                    type: 'string'
+                  },
+                  value: {
+                    type: 'any'
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  })
+
+  defineActions({
     /**
      * Filter items based on conditions
      * @param {Object} param
@@ -40,7 +114,6 @@ export default definePlugin({
         usedWidgets: {}
       }
 
-      /* eslint no-labels: ["error", { "allowLoop": true }] */
       filter: for (let i = 0; i < items.length; i++) {
         const item = items[i]
 
@@ -54,7 +127,7 @@ export default definePlugin({
             let compareItem = option
 
             if (typeof item !== 'string') {
-              compareItem = this.$method('dsOperator/eval', {
+              compareItem = dsOperator.actions.eval({
                 name: option.name,
                 values: [item.value, option.value]
               })
@@ -62,7 +135,7 @@ export default definePlugin({
 
             compareValues.push(compareItem)
 
-            const isValid = this.$method('dsOperator/compare', compareValues)
+            const isValid = dsOperator.actions.compare(compareValues)
 
             if (!isValid) {
               continue filter
@@ -70,7 +143,7 @@ export default definePlugin({
           }
         } else {
           const option = options[0]
-          const isValid = this.$method('dsOperator/eval', {
+          const isValid = dsOperator.actions.eval({
             name: option.name,
             values: [item.value, option.value]
           })
@@ -85,98 +158,6 @@ export default definePlugin({
       }
 
       return result
-    },
-    /**
-     * Find the indexes of objects within a list by key value pairs
-     * @param {Object} findByKeyValue - The Object containing the params
-     * @param {*[]} findByKeyValue.list - An array of objects
-     * @param {string} findByKeyValue.key - The key used to compare
-     * @param {[string, number]} findByKeyValue.valueIndex - The value uses to compare and the index starting point
-     * @returns {[number, number]} An array with the start and end numbered indexes, -1 indicates there was only 1 item found within a group
-     */
-    findByKeyValue ({ list, key, valueIndex }) {
-      const value = valueIndex[0]
-      const index = valueIndex[1] || 0
-      const hasValue = (i) => (list[i] && list[i][key] === value)
-      const rangeItem = []
-
-      for (let i = index; i < list.length; i++) {
-        const item = list[i]
-
-        if (item[key] === value) {
-          const nextIndex = i + 1
-
-          if (rangeItem.length) {
-            if (!hasValue(nextIndex)) {
-              rangeItem.push(i)
-
-              return rangeItem
-            }
-          } else {
-            let prevIndex = i - 1
-
-            if (index && hasValue(prevIndex)) {
-              while (hasValue(prevIndex)) {
-                prevIndex--
-              }
-
-              rangeItem.push(prevIndex + 1)
-
-              // check if item is not in a group
-              if (!hasValue(nextIndex)) {
-                rangeItem.push(i)
-
-                return rangeItem
-              }
-            } else {
-              rangeItem.push(i)
-
-              // check if item is not in a group
-              if (!hasValue(nextIndex)) {
-                rangeItem.push(i)
-
-                return rangeItem
-              }
-
-              // if last item in the list push the rangeItem
-              if (nextIndex === list.length) {
-                rangeItem.push(i)
-
-                return rangeItem
-              }
-            }
-          }
-        }
-      }
-    },
-    /**
-     * Adds the specified elements to the end of an array
-     * @param {Object} param
-     * @param {Array} param.target - Array which the new element will be appended
-     * @param {*} param.source - The element that will be appended to the end of the array
-     */
-    push ({ target, source }) {
-      target.push(source)
-    },
-    /**
-     * Changes the contents of an array by removing or replacing existing elements and/or adding new elements in place
-     * @param {Object} param
-     * @param {Array} param.target - The array which will be modified
-     * @param {*} param.source - The elements to add to the array, beginning from start.
-     * @param {number} param.start - Zero-based index at which to start changing the array, converted to an integer.
-     * @param {number} param.deleteCount - An integer indicating the number of elements in the array to remove from start.
-     * @returns {Array}
-     */
-    splice ({ target, source, start, deleteCount = 0 }) {
-      if (start == null) {
-        return target.splice()
-      }
-
-      if (Array.isArray(source)) {
-        return target.splice(start, deleteCount, ...source)
-      }
-
-      return target.splice(start, deleteCount, source)
     },
     /**
      * Executes a provided action once for each array element.
@@ -201,7 +182,7 @@ export default definePlugin({
           for (const key in items) {
             if (Object.hasOwnProperty.call(items, key)) {
               const promise = new Promise((resolve, reject) => {
-                this.$action('dsAction/dispatch', {
+                dsAction.actions.dispatch({
                   id: dsActionId,
                   context,
                   payload: {
@@ -226,7 +207,7 @@ export default definePlugin({
 
       for (const key in items) {
         if (Object.hasOwnProperty.call(items, key)) {
-          this.$method('dsAction/dispatch', {
+          dsAction.actions.dispatch({
             id: dsActionId,
             context,
             payload: {
@@ -239,142 +220,14 @@ export default definePlugin({
 
       return context._list_
     },
-    },
     /**
-     * Move a group of items to a new position in an array
-     * @param {Object} arrayMove - The Object containing the data to move a group of items within an array
-     * @param {*[]} arrayMove.list - The source array
-     * @param {number[]} arrayMove.items - A list of indexes that need to move
-     * @param {number} arrayMove.index - The location the items will move to within the array
-     * @returns {Array} - New transformed array
+     * Adds the specified elements to the end of an array
+     * @param {Object} param
+     * @param {Array} param.target - Array which the new element will be appended
+     * @param {*} param.source - The element that will be appended to the end of the array
      */
-    move ({ list, items, index }) {
-      const length = items.length
-      let indexEnd = index - (length - 1)
-
-      if (indexEnd > list.length - 1 || (indexEnd < 0 && index < 0)) {
-        return
-      } else if (indexEnd <= 0 && index >= 0) {
-        indexEnd = index
-      }
-
-      const listMiddle = []
-      // Create middle of array with new group items
-      for (let i = 0; i < length; i++) {
-        listMiddle.push(list[items[i]])
-      }
-
-      items.sort((a, b) => a - b)
-      const startList = list
-      let offset = 1
-      // Remove moved items
-      for (let i = 0; i < length; i++) {
-        startList.splice(items[i], 1)
-
-        const nextIndex = i + 1
-        if (nextIndex < length) {
-          items[nextIndex] = items[nextIndex] - offset
-          ++offset
-        }
-      }
-      // Create end of array
-      const listEnd = startList.splice(indexEnd)
-
-      return startList.concat(listMiddle, listEnd)
-    },
-    /**
-     * Merge items into array with the option to flatten
-     * @param {Object} arrayMerge - The Object containing the data to merge items into an array
-     * @param {array} arrayMerge.list - The source array
-     * @param {Object[]} arrayMerge.items - An array of objects which contains the item and position it should be placed into the array
-     * @param {*} arrayMerge.items[].value - The value to be merged into the original array
-     * @param {number} arrayMerge.items[]._$index - The index the value will be placed into the original array
-     * @param {number} arrayMerge.flat - Flatten height
-     * @returns {Array} - A new list
-     */
-    merge ({ list, items, flat }) {
-      let offset = 0
-      items.sort((a, b) => a._$index - b._$index)
-
-      for (let i = 0; i < items.length; i++) {
-        const item = items[i]
-        const index = item._$index + offset
-        delete item._$index
-        const listMiddle = [item]
-        const listEnd = list.splice(index)
-        list = list.concat(listMiddle, listEnd)
-        ++offset
-      }
-
-      if (flat) {
-        list = list.flat(flat)
-      }
-
-      return list
-    },
-    /**
-     * Find the next key value pair in a list
-     * @param {Object} nextKeyValue - The Object containing the params
-     * @param {*[]} nextKeyValue.list - An array of objects
-     * @param {string} nextKeyValue.key - The key used to compare
-     * @param {number} nextKeyValue.index - The index starting point
-     * @returns {[*, number]} An array with the found value and index
-     */
-    nextKeyValue ({ list, key, index = 0 }) {
-      const currentValue = list[index][key]
-
-      for (let i = index; i < list.length; i++) {
-        if (list[i][key] !== currentValue) {
-          return [list[i][key], i]
-        }
-      }
-
-      return [currentValue, index]
-    },
-    /**
-     * Find the previous key value pair in a list
-     * @param {Object} prevKeyValue - The Object containing the params
-     * @param {*[]} prevKeyValue.list - An array of objects
-     * @param {string} prevKeyValue.key - The key used to compare
-     * @param {number} prevKeyValue.index - The index starting point
-     * @returns {[*, number]} An array with the found value and index
-     */
-    prevKeyValue ({ list, key, index = 0 }) {
-      const currentValue = list[index][key]
-
-      for (let i = index; i >= 0; i--) {
-        if (list[i][key] !== currentValue) {
-          return [list[i][key], i]
-        }
-      }
-
-      return [currentValue, index]
-    },
-    /**
-     * Remove items from an array
-     * @param {Object} arrayRemove - The Object containing the data to remove a group of items from an array
-     * @param {*[]} arrayRemove.list - The source array
-     * @param {number[]} arrayRemove.items - A list of indexes that will be removed
-     */
-    remove ({ list, items }) {
-      const newList = []
-
-      for (let i = 0; i < list.length; i++) {
-        let hasItem = false
-
-        for (let j = 0; j < items.length; j++) {
-          if (i === items[j]) {
-            hasItem = true
-            break
-          }
-        }
-
-        if (!hasItem) {
-          newList.push(list[i])
-        }
-      }
-
-      return newList
+    push ({ target, source }) {
+      target.push(source)
     },
     /**
      * Sort list
@@ -384,47 +237,33 @@ export default definePlugin({
      * @returns {ArraySortValue[]}
      */
     sort ({ items, type }) {
-      const methodName = '_sort/by/' + type
-
-      if (typeof this[methodName] === 'function') {
-        return this[methodName](items)
+      if (type === 'ascending') {
+        return items.sort(sortAscending)
+      } else if (type === 'descending') {
+        return items.sort(sortDescending)
       } else {
-        this.$log('error', { message: 'Sort method does not exist: ' + methodName })
+        throw new Error('Sort method does not exist: ' + type )
       }
-    },
-    _sortDescending (a, b) {
-      // ignore upper and lowercase
-      const A = typeof a.value === 'string' ? a.value.toUpperCase() : a.value
-      const B = typeof b.value === 'string' ? b.value.toUpperCase() : b.value
-
-      if (A > B) {
-        return -1
-      }
-
-      if (A < B) {
-        return 1
-      }
-
-      // names must be equal
-      return 0
     },
     /**
-     * Sort by ascending
-     * @private
-     * @param {ArraySortValue[]} item
-     * @returns {ArraySortValue[]}
+     * Changes the contents of an array by removing or replacing existing elements and/or adding new elements in place
+     * @param {Object} param
+     * @param {Array} param.target - The array which will be modified
+     * @param {*} param.source - The elements to add to the array, beginning from start.
+     * @param {number} param.start - Zero-based index at which to start changing the array, converted to an integer.
+     * @param {number} param.deleteCount - An integer indicating the number of elements in the array to remove from start.
+     * @returns {Array}
      */
-    '_sort/by/ascending' (item) {
-      return item.sort(this._sortAscending)
-    },
-    /**
-     * Sort by descending
-     * @private
-     * @param {ArraySortValue[]} item
-     * @returns {ArraySortValue[]}
-     */
-    '_sort/by/descending' (item) {
-      return item.sort(this._sortDescending)
+    splice ({ target, source, start, deleteCount = 0 }) {
+      if (start == null) {
+        return target.splice(0)
+      }
+
+      if (Array.isArray(source)) {
+        return target.splice(start, deleteCount, ...source)
+      }
+
+      return target.splice(start, deleteCount, source)
     }
-  }
+  })
 })
