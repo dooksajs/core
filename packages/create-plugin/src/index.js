@@ -1,9 +1,10 @@
 import createData from './create-data.js'
 import createActions from './create-actions.js'
+import createActionSchema from './create-action-schema.js'
 
 /**
  * @typedef {import("@dooksa/ds-scripts/src/types.js").DsData} DsDataSchema
- * @typedef {import("./create-actions.js").DsActionData} DsActionData
+ * @typedef {import("./create-action-schema.js").DsActionSchemaData} DsActionSchemaData
  */
 
 /**
@@ -12,6 +13,7 @@ import createActions from './create-actions.js'
  * @param {Object} helper.context
  * @param {defineData} helper.defineData - Define plugin data
  * @param {defineActions} helper.defineActions - Define plugin actions
+ * @param {defineActionSchema} helper.defineActionSchema - Define plugin actions
  * @param {defineContextProperties} helper.defineContextProperties - Define global context properties
  */
 
@@ -27,7 +29,12 @@ import createActions from './create-actions.js'
 
 /**
  * @callback defineActions - Define plugin actions
- * @param {Object.<string, DsActionData>} actions
+ * @param {Object.<string, Function>} actions
+ */
+
+/**
+ * @callback defineActionSchema - Define plugin action schema
+ * @param {Object.<string, DsActionSchemaData>} actions
  */
 
 /**
@@ -52,7 +59,6 @@ function createPlugin (name, defineHelper) {
     defineActions (actions) {
       return createActions(
         setAction,
-        setActionSchema,
         plugin,
         actions
       )
@@ -62,6 +68,13 @@ function createPlugin (name, defineHelper) {
         setDataSchema,
         setDataValue,
         getDataValue,
+        plugin,
+        data
+      )
+    },
+    defineActionSchema (data) {
+      return createActionSchema(
+        setActionSchema,
         plugin,
         data
       )
@@ -77,6 +90,5 @@ function createPlugin (name, defineHelper) {
 
   return plugin
 }
-
 
 export default createPlugin
