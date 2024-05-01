@@ -1,0 +1,14 @@
+{
+  "name": "@dooksa/plugins",
+  "private": true,
+  "version": "0.0.0",
+  "author": "Thomas David <tom@mightysmile.com>",
+  "repository": "git@github.com:dooksajs/dooksa.git",
+  "license": "MPL-2.0",
+  "type": "module",
+  "main": "./src/index.js",
+  "dependencies": {
+    "@dooksa/utils": "workspace:^",
+    "@dooksa/create-plugin": "workspace:^"
+  }
+}
