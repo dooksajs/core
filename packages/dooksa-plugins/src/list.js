@@ -1,9 +1,9 @@
-import { createPlugin } from '@dooksa/create-plugin'
+import createPlugin from '@dooksa/create-plugin'
 import { operator, action } from './index.js'
 
-const dsActionDispatch = dsAction.actions.dispatch
-const dsOperatorEval = dsOperator.actions.eval
-const dsOperatorCompare = dsOperator.actions.compare
+const actionDispatch = action.actions.dispatch
+const operatorEval = operator.actions.eval
+const operatorCompare = operator.actions.compare
 
 /**
  * @typedef {Object} ArraySortContent
@@ -131,7 +131,7 @@ export default createPlugin('dsList', ({ defineActions, defineActionSchema }) =>
             let compareItem = option
 
             if (typeof item !== 'string') {
-              compareItem = dsOperatorEval({
+              compareItem = operatorEval({
                 name: option.name,
                 values: [item.value, option.value]
               })
@@ -139,7 +139,7 @@ export default createPlugin('dsList', ({ defineActions, defineActionSchema }) =>
 
             compareValues.push(compareItem)
 
-            const isValid = dsOperatorCompare(compareValues)
+            const isValid = operatorCompare(compareValues)
 
             if (!isValid) {
               continue filter
@@ -147,7 +147,7 @@ export default createPlugin('dsList', ({ defineActions, defineActionSchema }) =>
           }
         } else {
           const option = options[0]
-          const isValid = dsOperatorEval({
+          const isValid = operatorEval({
             name: option.name,
             values: [item.value, option.value]
           })
@@ -186,7 +186,7 @@ export default createPlugin('dsList', ({ defineActions, defineActionSchema }) =>
           for (const key in items) {
             if (Object.hasOwnProperty.call(items, key)) {
               const promise = new Promise((resolve, reject) => {
-                dsActionDispatch({
+                actionDispatch({
                   id: dsActionId,
                   context,
                   payload: {
@@ -211,7 +211,7 @@ export default createPlugin('dsList', ({ defineActions, defineActionSchema }) =>
 
       for (const key in items) {
         if (Object.hasOwnProperty.call(items, key)) {
-          dsActionDispatch({
+          actionDispatch({
             id: dsActionId,
             context,
             payload: {
