@@ -1,5 +1,5 @@
 {
-  "name": "@dooksa/plugins",
+  "name": "@dooksa/libraries",
   "private": true,
   "version": "0.0.0",
   "author": "Thomas David <tom@mightysmile.com>",
@@ -8,8 +8,6 @@
   "type": "module",
   "main": "./src/index.js",
   "dependencies": {
-    "@dooksa/utils": "workspace:^",
-    "@dooksa/create-plugin": "workspace:^",
-    "@dooksa/libraries": "workspace:^"
+    "@dooksa/utils": "workspace:^"
   }
 }

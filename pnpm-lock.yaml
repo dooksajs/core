@@ -21,18 +21,31 @@ importers:
         specifier: workspace:^
         version: link:../dooksa-plugins
 
-  packages/dooksa-create-plugin: {}
+  packages/dooksa-create-plugin:
+    dependencies:
+      '@dooksa/libraries':
+        specifier: workspace:^
+        version: link:../libraries
 
   packages/dooksa-plugins:
     dependencies:
       '@dooksa/create-plugin':
         specifier: workspace:^
         version: link:../dooksa-create-plugin
+      '@dooksa/libraries':
+        specifier: workspace:^
+        version: link:../libraries
       '@dooksa/utils':
         specifier: workspace:^
         version: link:../utils
 
   packages/dooksa-template:
+    dependencies:
+      '@dooksa/utils':
+        specifier: workspace:^
+        version: link:../utils
+
+  packages/libraries:
     dependencies:
       '@dooksa/utils':
         specifier: workspace:^

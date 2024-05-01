@@ -1,4 +1,4 @@
-class DsDataSchemaException extends Error {
+class DataSchemaException extends Error {
   /**
    * Dooksa data schema error exception
    * @param {Object} error
@@ -16,7 +16,7 @@ class DsDataSchemaException extends Error {
   }
 }
 
-class DsDataValueException extends Error {
+class DataValueException extends Error {
   /**
    * Dooksa data value error exception
    * @param {string} message
@@ -27,4 +27,4 @@ class DsDataValueException extends Error {
   }
 }
 
-export { DsDataSchemaException, DsDataValueException }
+export { DataSchemaException, DataValueException }

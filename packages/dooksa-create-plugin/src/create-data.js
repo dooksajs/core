@@ -1,15 +1,16 @@
 import dsSchema from './utils/schema.js'
+import { PluginData } from '@dooksa/libraries'
 
 /**
- * @typedef {import("@dooksa/ds-scripts/src/types.js").DsDataSchema} DsDataSchema
- * @typedef {import("@dooksa/ds-scripts/src/types.js").DsSetDataOptions} DsSetDataOptions
- * @typedef {import("@dooksa/ds-scripts/src/index.js").DataResult} DataResult
+ * @typedef {import("../../global-typedef.js").DataSchema} DataSchema
+ * @typedef {import("../../global-typedef.js").SetDataOptions} SetDataOptions
+ * @typedef {import("@dooksa/libraries").DataResult} DataResult
  */
 
 /**
  * @typedef {Object} DefineDsData - Dooksa plugin data
  * @property {(Function|string)} [default] - Default value to be set
- * @property {DsDataSchema} [schema] - The data schema
+ * @property {DataSchema} [schema] - The data schema
  * @property {string} [description] - Description of data set
  */
 
@@ -20,10 +21,10 @@ import dsSchema from './utils/schema.js'
  * @param {*} getDataValue
  * @param {*} plugin
  * @param {Object.<string, DefineDsData>} data
- * @returns {DsData}
+ * @returns {PluginData}
  */
 function createData (setDataModal, setDataValue, getDataValue, plugin, data) {
-  plugin.data = new DsData()
+  plugin.data = new PluginData()
 
   for (const key in data) {
     if (Object.hasOwnProperty.call(data, key)) {
@@ -81,46 +82,5 @@ function createData (setDataModal, setDataValue, getDataValue, plugin, data) {
 
   return plugin.data
 }
-
-/**
- * Set data value
- * @constructor
- */
-function DsData () {}
-
-/**
- * Add data getter/setter
- * @param {*} setDataValue
- * @param {*} getDataValue
- * @param {string} namespace
- * @param {string} key
- */
-DsData.prototype.add = function (setDataValue, getDataValue, namespace, key) {
-  Object.defineProperty(this, key, {
-    /**
-     * Get data value
-     * @returns {DataResult}
-     */
-    get () {
-      return getDataValue(namespace)
-    },
-    /**
-     * @param {Object} item
-     * @param {*} item.value
-     * @param {DsSetDataOptions} [item.options]
-     */
-    set (item) {
-      const dataType = typeof item
-
-      if (dataType !== 'object') {
-        throw Error('Unexpected value. expected object but found: ' + dataType)
-      }
-
-      setDataValue(namespace, item.value, item.options)
-    }
-  })
-}
-
-export { DsData }
 
 export default createData

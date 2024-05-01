@@ -14,14 +14,13 @@ function DataResult (collection = '', id = '') {
   this.expand = []
   this.expandIncluded = {}
   this.isAffixEmpty = true
-  this.noAffixId = true
 
-  /** @type {(Object|null)} */
-  this.item = null
-  /** @type {(Object|null)} */
-  this.metadata = null
-  /** @type {(Object|null)} */
-  this.previous = null
+  /** @type {(Object|undefined)} */
+  this.item = undefined
+  /** @type {(Object|undefined)} */
+  this.metadata = undefined
+  /** @type {(Object|undefined)} */
+  this.previous = undefined
 
   Object.defineProperty(this, 'noAffixId', {
     get () {

@@ -1,6 +1,6 @@
-import { createPlugin } from '@dooksa/create-plugin'
+import createPlugin from '@dooksa/create-plugin'
 import { operator, list } from './index.js'
-import { DataResult, DsDataSchemaException, DsDataValueException } from './utils/index.js'
+import { DataResult, DataSchemaException, DataValueException } from '@dooksa/libraries'
 import { deepClone, uuid } from '@dooksa/utils'
 
 /**
@@ -9,7 +9,7 @@ import { deepClone, uuid } from '@dooksa/utils'
  * @typedef {import('../../global-typedef.js').DataWhere} DataWhere
  */
 
-export default createPlugin('dsData', ({ defineActions, defineActionSchema, defineContextProperties }) => {
+export default createPlugin('data', ({ context, defineActions, defineActionSchema, defineContextProperties }) => {
   const dataListeners = {
     delete: {},
     deletePriority: {},
@@ -139,7 +139,7 @@ export default createPlugin('dsData', ({ defineActions, defineActionSchema, defi
       const values = database[name]
 
       if (values == null) {
-        throw new DsDataValueException('No collection found: ' + name)
+        throw new DataValueException('No collection found: ' + name)
       }
 
       const schema = databaseSchema[name]
@@ -265,7 +265,7 @@ export default createPlugin('dsData', ({ defineActions, defineActionSchema, defi
     const hasDuplicates = arrayHasDuplicates(source)
 
     if (hasDuplicates) {
-      throw new DsDataSchemaException({
+      throw new DataSchemaException({
         schemaPath: name,
         keyword: 'uniqueItems',
         message: 'Type error: expected a unique item'
@@ -396,7 +396,7 @@ export default createPlugin('dsData', ({ defineActions, defineActionSchema, defi
    * Filter data result based on condition
    * @private
    * @param {DataResult} data
-   * @param {DsDataWhere} where
+   * @param {DataWhere} where
    * @returns {boolean}
    */
   // this._filter
@@ -456,7 +456,7 @@ export default createPlugin('dsData', ({ defineActions, defineActionSchema, defi
    * Process where condition
    * @private
    * @param {DataResult} data - Data result
-   * @param {DsDataWhere} condition - Where condition
+   * @param {DataWhere} condition - Where condition
    * @returns {Boolean}
    */
   // this._filterValidateValue
@@ -479,7 +479,7 @@ export default createPlugin('dsData', ({ defineActions, defineActionSchema, defi
       }
     }
 
-    return dsOperator.actions.eval({
+    return operator.actions.eval({
       name: condition.op,
       values: [
         value,
@@ -785,7 +785,7 @@ export default createPlugin('dsData', ({ defineActions, defineActionSchema, defi
   // this['_setData/options']
   function setDataOptions (data, source, options) {
     if (Object.hasOwnProperty.call(options, 'id') && options.id == null) {
-      throw new DsDataSchemaException({
+      throw new DataSchemaException({
         schemaPath: data.collection,
         keyword: 'collection',
         message: 'Expected collection id to be a string but got undefined'
@@ -869,7 +869,7 @@ export default createPlugin('dsData', ({ defineActions, defineActionSchema, defi
         path = path + '/' + key
 
         if (!targetItem[key]) {
-          throw new DsDataValueException('Update position does not exist' + options.update.position)
+          throw new DataValueException('Update position does not exist' + options.update.position)
         }
 
         targetItem = targetItem[key]
@@ -890,7 +890,7 @@ export default createPlugin('dsData', ({ defineActions, defineActionSchema, defi
         if (Array.isArray(targetItem[lastKey])) {
           targetItem = targetItem[lastKey].slice()
         } else {
-          throw new DsDataValueException('Update position and update method expected an array')
+          throw new DataValueException('Update position and update method expected an array')
         }
       }
 
@@ -899,7 +899,7 @@ export default createPlugin('dsData', ({ defineActions, defineActionSchema, defi
 
     if (options.update.method) {
       if (!Array.isArray(targetItem)) {
-        throw new DsDataSchemaException({
+        throw new DataSchemaException({
           schemaPath,
           keyword: 'updateMethod',
           message: 'Expected target to be an array but found ' + typeof targetItem
@@ -1083,7 +1083,7 @@ export default createPlugin('dsData', ({ defineActions, defineActionSchema, defi
 
         break
       case 'splice':
-        dsList.actions.splice({
+        list.actions.splice({
           target,
           start: options.startIndex,
           source,
@@ -1116,7 +1116,7 @@ export default createPlugin('dsData', ({ defineActions, defineActionSchema, defi
   // this._checkType
   function validateDataType (path, value, type) {
     if (value == null) {
-      throw new DsDataSchemaException({
+      throw new DataSchemaException({
         schemaPath: path,
         keyword: 'type',
         message: 'Unexpected type, expected "' + type + '" but got "undefined"'
@@ -1128,7 +1128,7 @@ export default createPlugin('dsData', ({ defineActions, defineActionSchema, defi
         return true
       }
 
-      throw new DsDataSchemaException({
+      throw new DataSchemaException({
         schemaPath: path,
         keyword: 'type',
         message: 'Unexpected type, expected a node'
@@ -1142,7 +1142,7 @@ export default createPlugin('dsData', ({ defineActions, defineActionSchema, defi
       return true
     }
 
-    throw new DsDataSchemaException({
+    throw new DataSchemaException({
       schemaPath: path,
       keyword: 'type',
       message: 'Unexpected type, expected "' + type + '" but got "' + dataType + '"'
@@ -1265,7 +1265,7 @@ export default createPlugin('dsData', ({ defineActions, defineActionSchema, defi
       }
 
       if (additionalKeys.length) {
-        throw new SchemaException({
+        throw new DataSchemaException({
           schemaPath: path,
           keyword: 'additionalProperties',
           message: 'Additional properties are now allowed ' + JSON.stringify(additionalKeys)
@@ -1288,7 +1288,7 @@ export default createPlugin('dsData', ({ defineActions, defineActionSchema, defi
           const regex = new RegExp(property.name)
 
           if (!regex.test(key)) {
-            throw new DsDataSchemaException({
+            throw new DataSchemaException({
               schemaPath: path,
               keyword: 'patternProperty',
               message: 'Invalid property: ' + key
@@ -1342,7 +1342,7 @@ export default createPlugin('dsData', ({ defineActions, defineActionSchema, defi
 
       // check if field is required
       if (propertyOptions.required && value == null) {
-        throw new DsDataSchemaException({
+        throw new DataSchemaException({
           schemaPath: path,
           keyword: 'required',
           message: 'Invalid data (' + path + '): required property missing: "' + property.name + '"'
@@ -1530,7 +1530,7 @@ export default createPlugin('dsData', ({ defineActions, defineActionSchema, defi
       const collection = database[name]
 
       if (collection == null) {
-        throw new DsDataSchemaException({
+        throw new DataSchemaException({
           schemaPath: name,
           keyword: 'schema',
           message: 'Collection not found'
@@ -1612,7 +1612,7 @@ export default createPlugin('dsData', ({ defineActions, defineActionSchema, defi
      */
     getDataValue (name, { id, prefixId, suffixId, options } = {}) {
       if (database[name] == null) {
-        throw new DsDataValueException('No such collection "' + name +"'")
+        throw new DataValueException('No such collection "' + name +"'")
       }
 
       const result = new DataResult(name, id)
@@ -1799,7 +1799,7 @@ export default createPlugin('dsData', ({ defineActions, defineActionSchema, defi
       const schema = databaseSchema[name]
 
       if (!schema) {
-        throw new DsDataSchemaException({
+        throw new DataSchemaException({
           schemaPath: name,
           keyword: 'schema',
           message: 'Schema not found'
@@ -1807,7 +1807,7 @@ export default createPlugin('dsData', ({ defineActions, defineActionSchema, defi
       }
 
       if (data == null) {
-        throw new DsDataSchemaException({
+        throw new DataSchemaException({
           schemaPath: name,
           keyword: 'source',
           message: 'Source was undefined'
@@ -1857,7 +1857,7 @@ export default createPlugin('dsData', ({ defineActions, defineActionSchema, defi
      */
     setDataModal (namespace, schema) {
       if (!schema) {
-        throw new DsDataSchemaException({
+        throw new DataSchemaException({
           message: 'Data modal expects schema',
           schemaPath: 'modal',
           keyword: 'modal'
