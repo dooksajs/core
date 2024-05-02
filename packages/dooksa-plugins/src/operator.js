@@ -1,4 +1,4 @@
-import createPlugin from '@dooksa/create-plugin'
+import { createPlugin } from '@dooksa/create-plugin'
 
 /**
  * Two or one values to run an operator on
@@ -9,7 +9,7 @@ import createPlugin from '@dooksa/create-plugin'
  * [0]
  */
 
-export default createPlugin('dsOperator', ({ defineActions, defineActionSchema }) => {
+const operator = createPlugin('operator', ({ defineActions, defineActionSchema }) => {
   const operators = {
     /**
      * Equality
@@ -17,63 +17,63 @@ export default createPlugin('dsOperator', ({ defineActions, defineActionSchema }
      * @param {OperatorValues} v
      * @returns {boolean}
      */
-    '_operator/==': v => v[0] === v[1],
+    '==': v => v[0] === v[1],
     /**
      * Inequality
      * @private
      * @param {OperatorValues} v
      * @returns {boolean}
      */
-    '_operator/!=': v => v[0] !== v[1],
+    '!=': v => v[0] !== v[1],
     /**
      * Greater than
      * @private
      * @param {OperatorValues} v
      * @returns {boolean}
      */
-    '_operator/>': v => v[0] > v[1],
+    '>': v => v[0] > v[1],
     /**
      * Greater than or equal operator
      * @private
      * @param {OperatorValues} v
      * @returns {boolean}
      */
-    '_operator/>=': v => v[0] >= v[1],
+    '>=': v => v[0] >= v[1],
     /**
      * Less than
      * @private
      * @param {OperatorValues} v
      * @returns {boolean}
      */
-    '_operator/<': v => v[0] < v[1],
+    '<': v => v[0] < v[1],
     /**
      * Less than or equal operator
      * @private
      * @param {OperatorValues} v
      * @returns {boolean}
      */
-    '_operator/<=': v => v[0] <= v[1],
+    '<=': v => v[0] <= v[1],
     /**
      * Logical NOT
      * @private
      * @param {OperatorValues} v
      * @returns {boolean}
      */
-    '_operator/!': v => !v[0],
+    '!': v => !v[0],
     /**
      * Remainder operator
      * @private
      * @param {number[]} v
      * @returns {number}
      */
-    '_operator/%': v => v[0] % v[1],
+    '%': v => v[0] % v[1],
     /**
      * Increment operator
      * @private
      * @param {number[]} v
      * @returns {number|string}
      */
-    '_operator/++': v => {
+    '++': v => {
       let num = v[0]
 
       if (v instanceof String) {
@@ -91,7 +91,7 @@ export default createPlugin('dsOperator', ({ defineActions, defineActionSchema }
      * @param {number[]} v
      * @returns {number|string}
      */
-    '_operator/--': v => {
+    '--': v => {
       let num = v[0]
 
       if (v instanceof String) {
@@ -109,42 +109,42 @@ export default createPlugin('dsOperator', ({ defineActions, defineActionSchema }
      * @param {number[]} v
      * @returns {number}
      */
-    '_operator/-': v => v[0] - v[1],
+    '-': v => v[0] - v[1],
     /**
      * Plus operator
      * @private
      * @param {number[]} v
      * @returns {number}
      */
-    '_operator/+': v => v[0] + v[1],
+    '+': v => v[0] + v[1],
     /**
      * Multiplication operator
      * @private
      * @param {number[]} v
      * @returns {number}
      */
-    '_operator/*': v => v[0] * v[1],
+    '*': v => v[0] * v[1],
     /**
      * Exponentiation operator
      * @private
      * @param {number[]} v
      * @returns {number}
      */
-    '_operator/**': v => v[0] ** v[1],
+    '**': v => v[0] ** v[1],
     /**
      * Boolean value
      * @private
      * @param {OperatorValues} v
      * @returns {boolean}
      */
-    '_operator/!!': v => Boolean(v[0]),
+    '!!': v => Boolean(v[0]),
     /**
      * Check if value is within an string or array
      * @private
      * @param {(string|Array)} v
      * @return {boolean}
      */
-    '_operator/~': v => v[0].includes(v[1])
+    '~': v => v[0].includes(v[1])
   }
 
   defineActionSchema({
@@ -243,3 +243,13 @@ export default createPlugin('dsOperator', ({ defineActions, defineActionSchema }
     }
   })
 })
+
+const operatorEval = operator.actions.eval
+const operatorCompare = operator.actions.compare
+
+export {
+  operatorEval,
+  operatorCompare
+}
+
+export default operator
