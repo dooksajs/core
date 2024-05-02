@@ -1,4 +1,4 @@
-import createPlugin from '@dooksa/create-plugin'
+import { createPlugin } from '@dooksa/create-plugin'
 import { operator, list } from './index.js'
 import { DataResult, DataSchemaException, DataValueException } from '@dooksa/libraries'
 import { deepClone, uuid } from '@dooksa/utils'
@@ -9,7 +9,7 @@ import { deepClone, uuid } from '@dooksa/utils'
  * @typedef {import('../../global-typedef.js').DataWhere} DataWhere
  */
 
-export default createPlugin('data', ({ context, defineActions, defineActionSchema, defineContextProperties }) => {
+const data = createPlugin('data', ({ context, defineActions, defineActionSchema, defineContextProperties }) => {
   const dataListeners = {
     delete: {},
     deletePriority: {},
@@ -1426,7 +1426,7 @@ export default createPlugin('data', ({ context, defineActions, defineActionSchem
      * @param {string} param.handler.id - Id of handler
      * @param {Function|string} param.handler.value - Function or action that will be called
      */
-    addDataListener (name, { on, id, priority, force = false, handler }) {
+    $addDataListener (name, { on, id, priority, force = false, handler }) {
       const listeners = getDataListeners(name, on, id)
 
       // set default listener value
@@ -1488,7 +1488,7 @@ export default createPlugin('data', ({ context, defineActions, defineActionSchem
      * @param {string} item.id - Data collection Id
      * @param {string} item.handlerId - The reference handler Id that will be removed
      */
-    deleteDataListener (name, { on, id, handlerId }) {
+    $deleteDataListener (name, { on, id, handlerId }) {
       const listeners = getDataListeners(name, on, id)
 
       if (id) {
@@ -1526,7 +1526,7 @@ export default createPlugin('data', ({ context, defineActions, defineActionSchem
      * @param {boolean} [options.listeners] - Delete related listeners
      * @returns {Object}
      */
-    deleteDataValue (name, id, { cascade, listeners } = {}) {
+    $deleteDataValue (name, id, { cascade, listeners } = {}) {
       const collection = database[name]
 
       if (collection == null) {
@@ -1610,7 +1610,7 @@ export default createPlugin('data', ({ context, defineActions, defineActionSchem
      * @param {boolean} [param.options.clone] - Returns a deep clone of the item value
      * @returns {DataResult}
      */
-    getDataValue (name, { id, prefixId, suffixId, options } = {}) {
+    $getDataValue (name, { id, prefixId, suffixId, options } = {}) {
       if (database[name] == null) {
         throw new DataValueException('No such collection "' + name +"'")
       }
@@ -1795,7 +1795,7 @@ export default createPlugin('data', ({ context, defineActions, defineActionSchem
      * @param {DsSetDataOptions} options - Set data options
      * @returns {DataResult}
      */
-    setDataValue (name, data, options) {
+    $setDataValue (name, data, options) {
       const schema = databaseSchema[name]
 
       if (!schema) {
@@ -1855,7 +1855,7 @@ export default createPlugin('data', ({ context, defineActions, defineActionSchem
      * @param {string} namespace
      * @param {*} schema - Result of schema.process
      */
-    setDataModal (namespace, schema) {
+    $setDataModal (namespace, schema) {
       if (!schema) {
         throw new DataSchemaException({
           message: 'Data modal expects schema',
@@ -1889,3 +1889,15 @@ export default createPlugin('data', ({ context, defineActions, defineActionSchem
     }
   })
 })
+
+const dataGenerateId = data.actions.generateId
+const dataFind = data.actions.find
+const dataUnsafeSetData = data.actions.unsafeSetData
+
+export {
+  dataGenerateId,
+  dataFind,
+  dataUnsafeSetData
+}
+
+export default data
