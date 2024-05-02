@@ -1,14 +1,10 @@
-import createPlugin from '@dooksa/create-plugin'
-import { operator, action } from './index.js'
-
-const actionDispatch = action.actions.dispatch
-const operatorEval = operator.actions.eval
-const operatorCompare = operator.actions.compare
+import { createPlugin } from '@dooksa/create-plugin'
+import { actionDispatch, operatorCompare, operatorEval } from './index.js'
 
 /**
  * @typedef {Object} ArraySortContent
- * @property {string} contentId - dsContent/item id
- * @property {string} widgetId - dsWidget/item id
+ * @property {string} contentId - content/item id
+ * @property {string} widgetId - widget/item id
  * @property {string[]} content - The content value position within the content object
  */
 
@@ -25,10 +21,10 @@ const operatorCompare = operator.actions.compare
 /**
  * @typedef {Object} ArraySortValue
  * @property {(string|number)} value - Content value
- * @property {string} widgetId - dsWidget/item id
+ * @property {string} widgetId - widget/item id
  */
 
-export default createPlugin('dsList', ({ defineActions, defineActionSchema }) => {
+const list = createPlugin('list', ({ defineActions, defineActionSchema }) => {
   function sortAscending (a, b) {
     // ignore upper and lowercase
     const A = typeof a.value === 'string' ? a.value.toUpperCase() : a.value
@@ -168,11 +164,11 @@ export default createPlugin('dsList', ({ defineActions, defineActionSchema }) =>
      * @param {Object} param
      * @param {Object} param.context - Context for action, A new property named "_list_" is created with the data type of the "item"
      * @param {Array|Object} param.items - Array used for iteration
-     * @param {string} param.dsActionId - Action ID used to execute
+     * @param {string} param.actionId - Action ID used to execute
      * @param {boolean} param.async - Indicates the iteration will return a promise
      * @returns {Array|Promise}
      */
-    forEach ({ context, items, dsActionId, async }) {
+    forEach ({ context, items, actionId, async }) {
       context._list_ = {}
 
       if (Array.isArray(items)) {
@@ -187,7 +183,7 @@ export default createPlugin('dsList', ({ defineActions, defineActionSchema }) =>
             if (Object.hasOwnProperty.call(items, key)) {
               const promise = new Promise((resolve, reject) => {
                 actionDispatch({
-                  id: dsActionId,
+                  id: actionId,
                   context,
                   payload: {
                     key,
@@ -212,7 +208,7 @@ export default createPlugin('dsList', ({ defineActions, defineActionSchema }) =>
       for (const key in items) {
         if (Object.hasOwnProperty.call(items, key)) {
           actionDispatch({
-            id: dsActionId,
+            id: actionId,
             context,
             payload: {
               key,
@@ -271,3 +267,19 @@ export default createPlugin('dsList', ({ defineActions, defineActionSchema }) =>
     }
   })
 })
+
+const listFilter = list.actions.filter
+const listForEach = list.actions.forEach
+const listPush = list.actions.push
+const listSort = list.actions.sort
+const listSplice = list.actions.splice
+
+export {
+  listFilter,
+  listForEach,
+  listPush,
+  listSort,
+  listSplice
+}
+
+export default list
