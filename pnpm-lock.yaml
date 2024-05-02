@@ -38,6 +38,9 @@ importers:
       '@dooksa/utils':
         specifier: workspace:^
         version: link:../utils
+      bootstrap:
+        specifier: ^5.3.3
+        version: 5.3.3(@popperjs/core@2.11.8)
 
   packages/dooksa-template:
     dependencies:
@@ -113,6 +116,9 @@ packages:
   '@pacote/xxhash@0.3.2':
     resolution: {integrity: sha512-vj6qcyl9kaNXZFZ6xsm8hREMRF2wHk70X9okGVPua0bcL052ZHLvYnxIbc9Bdv6lX/9qvxjg9E0ufi7+CFB6NA==}
 
+  '@popperjs/core@2.11.8':
+    resolution: {integrity: sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==}
+
   '@stylistic/eslint-plugin-js@1.8.0':
     resolution: {integrity: sha512-jdvnzt+pZPg8TfclZlTZPiUbbima93ylvQ+wNgHLNmup3obY6heQvgewSu9i2CfS61BnRByv+F9fxQLPoNeHag==}
     engines: {node: ^16.0.0 || >=18.0.0}
@@ -154,6 +160,11 @@ packages:
 
   balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
+
+  bootstrap@5.3.3:
+    resolution: {integrity: sha512-8HLCdWgyoMguSO9o+aH+iuZ+aht+mzW0u3HIMzVu7Srrpv7EBBxTnrFlSCskwdY1+EOFQSm7uMJhNQHkdPcmjg==}
+    peerDependencies:
+      '@popperjs/core': ^2.11.8
 
   brace-expansion@1.1.11:
     resolution: {integrity: sha512-iCuPHDFgrHX7H2vEI/5xpz07zSHB00TpugqhmYtVmMO6518mCuRMoOYFldEBl0g187ufozdaHgWKcYFb61qGiA==}
@@ -490,6 +501,8 @@ snapshots:
     dependencies:
       '@pacote/u64': 0.2.2
 
+  '@popperjs/core@2.11.8': {}
+
   '@stylistic/eslint-plugin-js@1.8.0(eslint@9.1.1)':
     dependencies:
       '@types/eslint': 8.56.10
@@ -530,6 +543,10 @@ snapshots:
   argparse@2.0.1: {}
 
   balanced-match@1.0.2: {}
+
+  bootstrap@5.3.3(@popperjs/core@2.11.8):
+    dependencies:
+      '@popperjs/core': 2.11.8
 
   brace-expansion@1.1.11:
     dependencies:
