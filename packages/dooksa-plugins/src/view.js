@@ -1,8 +1,8 @@
 import { createPlugin } from '@dooksa/create-plugin'
 import { getNodeValue } from '@dooksa/utils'
-import { data, token } from './index.js'
+import { dataGenerateId, dataUnsafeSetData, tokenTextContent } from './index.js'
 
-export default createPlugin('view', ({
+const view = createPlugin('view', ({
   defineData,
   defineActions,
   defineSetup
@@ -53,7 +53,7 @@ export default createPlugin('view', ({
       }
     },
     token (node, content, name, property, type, viewId) {
-      token.textContent({
+      tokenTextContent({
         viewId,
         text: content[property],
         updateText: (value) => {
@@ -153,7 +153,7 @@ export default createPlugin('view', ({
         return
       }
 
-      viewId = viewId || data.generateId()
+      viewId = viewId || dataGenerateId()
       let element
 
       if (componentItem.id === 'text') {
@@ -172,7 +172,7 @@ export default createPlugin('view', ({
       element.viewId = viewId
 
       /** @ISSUE unsafe is used because the schema doesn't support nodes */
-      data.unsafeSetData({
+      dataUnsafeSetData({
         name: 'view/items',
         data: element,
         options: {
@@ -502,3 +502,29 @@ export default createPlugin('view', ({
     rootElement.parentElement.replaceChild(view.item, rootElement)
   })
 })
+
+const viewInsert = view.actions.insert
+const viewCreateNode = view.actions.createNode
+const viewDetach = view.actions.detach
+const viewGetValue = view.actions.getValue
+const viewRemove = view.actions.remove
+const viewRemoveChildren = view.actions.removeChildren
+const viewReplace = view.actions.replace
+const viewUpdateValue = view.actions.updateValue
+const viewRemoveAttribute = view.actions.removeAttribute
+const viewSetAttribute = view.actions.setAttribute
+
+export {
+  viewInsert,
+  viewCreateNode,
+  viewDetach,
+  viewGetValue,
+  viewRemove,
+  viewRemoveAttribute,
+  viewRemoveChildren,
+  viewReplace,
+  viewUpdateValue,
+  viewSetAttribute
+}
+
+export default view
