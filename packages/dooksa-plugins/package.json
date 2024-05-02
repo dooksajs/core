@@ -8,8 +8,9 @@
   "type": "module",
   "main": "./src/index.js",
   "dependencies": {
-    "@dooksa/utils": "workspace:^",
     "@dooksa/create-plugin": "workspace:^",
-    "@dooksa/libraries": "workspace:^"
+    "@dooksa/libraries": "workspace:^",
+    "@dooksa/utils": "workspace:^",
+    "bootstrap": "^5.3.3"
   }
 }
