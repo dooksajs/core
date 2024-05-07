@@ -1,4 +1,4 @@
-import { createPlugin } from '@dooksa/create-plugin'
+import { createPlugin } from '@dooksa/create'
 
 const fetchPlugin = createPlugin('fetch', ({ defineActions, defineSetup }, { $getDataValue, $setDataValue, $addDataListener }) => {
   const fetchRequestQueue = {}

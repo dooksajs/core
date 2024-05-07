@@ -1,4 +1,4 @@
-import { createPlugin } from '@dooksa/create-plugin'
+import { createPlugin } from '@dooksa/create'
 import { viewDetach } from './view.js'
 import { hash } from '@dooksa/utils'
 

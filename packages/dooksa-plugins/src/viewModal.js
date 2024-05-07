@@ -1,4 +1,4 @@
-import { createPlugin } from '@dooksa/create-plugin'
+import { createPlugin } from '@dooksa/create'
 import Modal from 'bootstrap/js/src/modal.js'
 
 const viewModal = createPlugin('viewModal', ({ defineActions }, { $getDataValue, $setDataValue, $addDataListener }) => {

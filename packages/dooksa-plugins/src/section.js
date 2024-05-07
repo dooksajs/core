@@ -1,8 +1,4 @@
-import { createPlugin } from '@dooksa/create-plugin'
-import { layoutCreate, widgetRemove, queryFetch } from './index.js'
-
-const section = createPlugin('section', ({ defineData, defineActions }, { $getDataValue, $setDataValue, $emit }) => {
-  defineData({
+import { createPlugin } from '@dooksa/create'
     uniqueId: {
       description: 'Unique identifier used to allow sections to be shared but contain different related content',
       default: '',

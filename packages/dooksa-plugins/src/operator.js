@@ -1,4 +1,4 @@
-import { createPlugin } from '@dooksa/create-plugin'
+import { createPlugin } from '@dooksa/create'
 
 /**
  * Two or one values to run an operator on

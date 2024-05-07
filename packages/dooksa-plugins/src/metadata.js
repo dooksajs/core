@@ -1,4 +1,4 @@
-import { createPlugin } from '@dooksa/create-plugin'
+import { createPlugin } from '@dooksa/create'
 
 export default createPlugin('metadata', ({ defineData, defineSetup }, { $setDataValue }) => {
   defineData({

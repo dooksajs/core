@@ -1,14 +1,5 @@
-import { createPlugin } from '@dooksa/create-plugin'
-import { view, router, section } from './index.js'
-
-export default createPlugin('layout', ({ defineActions, defineData }, { $setDataValue, $getDataValue, $addDataListener, $emit }) => {
-  const eventNames = {
-    'section-attach': 'section/attach',
-    'section-update': 'section/update',
-    'view-mount': 'view/mount',
-    'view-unmount': 'view/unmount',
-    'layout-mount': 'layout/mount'
-  }
+import { createPlugin } from '@dooksa/create'
+import {
 
   defineData({
     items: {

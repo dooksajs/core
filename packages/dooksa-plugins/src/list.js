@@ -1,4 +1,4 @@
-import { createPlugin } from '@dooksa/create-plugin'
+import { createPlugin } from '@dooksa/create'
 import { actionDispatch, operatorCompare, operatorEval } from './index.js'
 
 /**

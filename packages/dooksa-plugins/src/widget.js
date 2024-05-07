@@ -1,8 +1,4 @@
-import { createPlugin } from '@dooksa/create-plugin'
-import { dataGenerateId, viewRemove } from './index.js'
-
-const widget = createPlugin('widget', ({ defineData, defineActions }, { $getDataValue, $deleteDataValue }) => {
-  defineData({
+import { createPlugin } from '@dooksa/create'
     actions: {
       schema: {
         type: 'collection',

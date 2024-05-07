@@ -1,4 +1,5 @@
-import { createPlugin } from '@dooksa/create-plugin'
+import { createPlugin } from '@dooksa/create'
+import { $getDataValue, $setDataValue } from './data.js'
 
 export default createPlugin('component', ({ defineData, defineActions, defineComponents }, { $getDataValue, $component }) => {
   defineData({

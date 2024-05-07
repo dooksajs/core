@@ -14,14 +14,20 @@ importers:
 
   packages/dooksa:
     dependencies:
-      '@dooksa/create-plugin':
+      '@dooksa/create':
         specifier: workspace:^
-        version: link:../dooksa-create-plugin
+        version: link:../dooksa-create
       '@dooksa/plugins':
         specifier: workspace:^
         version: link:../dooksa-plugins
 
-  packages/dooksa-create-plugin:
+  packages/dooksa-client:
+    dependencies:
+      dooksa:
+        specifier: workspace:^
+        version: link:../dooksa
+
+  packages/dooksa-create:
     dependencies:
       '@dooksa/libraries':
         specifier: workspace:^
@@ -29,9 +35,9 @@ importers:
 
   packages/dooksa-plugins:
     dependencies:
-      '@dooksa/create-plugin':
+      '@dooksa/create':
         specifier: workspace:^
-        version: link:../dooksa-create-plugin
+        version: link:../dooksa-create
       '@dooksa/libraries':
         specifier: workspace:^
         version: link:../libraries

@@ -1,4 +1,4 @@
-import { createPlugin } from '@dooksa/create-plugin'
+import { createPlugin } from '@dooksa/create'
 import { deepClone } from '@dooksa/utils'
 import operator from './operator.js'
 import data from './data.js'

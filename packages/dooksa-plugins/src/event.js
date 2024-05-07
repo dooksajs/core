@@ -1,4 +1,4 @@
-import { createPlugin } from '@dooksa/create-plugin'
+import { createPlugin } from '@dooksa/create'
 import { action } from './index.js'
 
 export default createPlugin('event', ({ context, defineData, defineContextProperties }, { $getDataValue }) => {

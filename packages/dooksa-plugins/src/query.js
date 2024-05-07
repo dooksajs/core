@@ -1,8 +1,5 @@
-import { createPlugin } from '@dooksa/create-plugin'
-import { listFilter, listSort } from './index.js'
-
-const query = createPlugin('query', ({ defineActions, defineData }, { $getDataValue, $setDataValue, $addDataListener }) => {
-  defineData({
+import { createPlugin } from '@dooksa/create'
+import { listFilter, listSort, $addDataListener, $setDataValue, $getDataValue } from './index.js'
     items: {
       schema: {
         type: 'collection',

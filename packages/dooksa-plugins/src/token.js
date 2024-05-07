@@ -1,4 +1,4 @@
-import { createPlugin } from '@dooksa/create-plugin'
+import { createPlugin } from '@dooksa/create'
 
 const token = createPlugin('token', ({ defineTokens, defineActions }, { $getDataValue }) => {
   const tokenProcess = {}

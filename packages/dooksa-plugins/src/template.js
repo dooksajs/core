@@ -1,4 +1,4 @@
-import { createPlugin } from '@dooksa/create-plugin'
+import { createPlugin } from '@dooksa/create'
 import { objectHash } from '@dooksa/utils'
 import { fetchGetById, dataGenerateId } from './index.js'
 
