@@ -1,81 +1,128 @@
 import { createPlugin } from '@dooksa/create'
+import { dataGenerateId, viewRemove, $getDataValue, $deleteDataValue } from './index.js'
+
+
+function removeContent (id) {
+  const content = $getDataValue('widget/content', { id })
+
+  // remove related content
+  if (!content.isEmpty) {
+    for (let i = 0; i < content.item.length; i++) {
+      const id = content.item[i]
+
+      $deleteDataValue('content/items', id, { listeners: true })
+    }
+  }
+}
+
+function removeEvent (id) {
+  const event = $getDataValue('widget/events', {
+    id,
+    options: {
+      expand: true
+    }
+  })
+
+  // remove related content
+  if (!event.isEmpty && !event.isExpandEmpty) {
+    for (let i = 0; i < event.item.length; i++) {
+      const item = event.expand[i]
+
+      $deleteDataValue(item.collection, item.id, {
+        cascade: true,
+        listeners: true
+      })
+    }
+  }
+}
+
+function removeLayout (id) {
+  const layout = $getDataValue('widget/layouts', { id })
+
+  // remove unused layout
+  if (!layout.isEmpty) {
+    $deleteDataValue('layout/items', layout.item, {
+      cascade: true
+    })
+  }
+}
+
+function removeSection (id) {
+  const section = $getDataValue('widget/sections', { id })
+
+  // remove unused section
+  if (section.isEmpty) {
+    $deleteDataValue('section/items', section.id, {
+      cascade: true,
+      listeners: true
+    })
+  }
+}
+
+const widget = createPlugin({
+  name: 'widget',
+  data: {
     actions: {
-      schema: {
-        type: 'collection',
-        suffixId: 'default',
-        items: {
-          type: 'object'
-        }
+      type: 'collection',
+      suffixId: 'default',
+      items: {
+        type: 'object'
       }
     },
     uniqueId: {
-      description: 'Unique identifier used to allow instances to be shared but contain different related content',
-      schema: {
-        type: 'string'
-      }
+      type: 'string'
     },
     attached: {
-      description: 'Which section the widget is attached to',
-      schema: {
-        type: 'collection',
-        suffixId: 'default',
-        items: {
-          type: 'string',
-          relation: 'section/items'
-        }
+      type: 'collection',
+      suffixId: 'default',
+      items: {
+        type: 'string',
+        relation: 'section/items'
       }
     },
     items: {
-      description: 'Widget instance',
-      schema: {
-        type: 'collection',
-        prefixId () {
-          return $getDataValue('widget/uniqueId').item
-        },
-        items: {
-          type: 'string',
-          relation: 'widget/groups',
-          default () {
-            return dataGenerateId()
-          }
+      type: 'collection',
+      prefixId () {
+        return $getDataValue('widget/uniqueId').item
+      },
+      items: {
+        type: 'string',
+        relation: 'widget/groups',
+        default () {
+          return dataGenerateId()
         }
       }
     },
     content: {
-      description: 'Content references used by an instance',
-      schema: {
-        type: 'collection',
+      type: 'collection',
+      items: {
+        type: 'array',
         items: {
-          type: 'array',
-          items: {
-            type: 'string',
-            relation: 'content/items'
-          }
-        },
-        suffixId: 'default'
-      }
+          type: 'string',
+          relation: 'content/items'
+        }
+      },
+      suffixId: 'default'
     },
     events: {
-      schema: {
-        type: 'collection',
-        suffixId: 'default',
-        items: {
-          type: 'object',
-          patternProperties: {
-            '[0-9]': {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  name: {
-                    type: 'string'
-                  },
-                  value: {
-                    type: 'array',
-                    items: {
-                      type: 'string',
-                      relation: 'action/items'
-                    }
+      type: 'collection',
+      suffixId: 'default',
+      items: {
+        type: 'object',
+        patternProperties: {
+          '[0-9]': {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                name: {
+                  type: 'string'
+                },
+                value: {
+                  type: 'array',
+                  items: {
+                    type: 'string',
+                    relation: 'action/items'
                   }
                 }
               }
@@ -85,118 +132,95 @@ import { createPlugin } from '@dooksa/create'
       }
     },
     eventListeners: {
-      schema: {
-        type: 'collection',
+      type: 'collection',
+      items: {
+        type: 'array',
         items: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              types: {
-                type: 'array',
-                items: {
-                  type: 'string'
-                }
-              },
-              viewId: {
-                type: 'string',
-                relation: 'view/items'
+          type: 'object',
+          properties: {
+            types: {
+              type: 'array',
+              items: {
+                type: 'string'
               }
+            },
+            viewId: {
+              type: 'string',
+              relation: 'view/items'
             }
           }
         }
       }
     },
     groups: {
-      description: 'Group instances',
-      schema: {
-        type: 'collection',
+      type: 'collection',
+      items: {
+        type: 'array',
         items: {
-          type: 'array',
-          items: {
-            type: 'string',
-            relation: 'widget/items'
-          },
-          uniqueItems: true
-        }
+          type: 'string',
+          relation: 'widget/items'
+        },
+        uniqueItems: true
       }
     },
     mode: {
-      description: 'Current instance template mode',
-      schema: {
-        type: 'collection',
-        items: {
-          type: 'string'
-        }
+      type: 'collection',
+      items: {
+        type: 'string'
       }
     },
     layouts: {
-      description: 'layouts related to the instance',
-      schema: {
-        type: 'collection',
-        suffixId: 'default',
-        items: {
-          type: 'string',
-          relation: 'layout/items'
-        }
+      type: 'collection',
+      suffixId: 'default',
+      items: {
+        type: 'string',
+        relation: 'layout/items'
       }
     },
     sections: {
-      description: 'References to sections',
-      schema: {
-        type: 'collection',
-        suffixId: 'default',
+      type: 'collection',
+      suffixId: 'default',
+      items: {
+        type: 'array',
         items: {
-          type: 'array',
-          items: {
-            type: 'string',
-            relation: 'section/items'
-          }
+          type: 'string',
+          relation: 'section/items'
         }
       }
     },
     views: {
-      description: 'Widget element',
-      schema: {
-        type: 'collection',
-        items: {
-          type: 'array',
-          items: {
-            type: 'string',
-            relation: 'view/items'
-          }
-        },
-        suffixId: 'default'
-      }
-    },
-    parentViews: {
-      description: 'parent widget element',
-      schema: {
-        type: 'collection',
-        items: {
-          type: 'array',
-          items: {
-            type: 'string',
-            relation: 'view/items'
-          }
-        },
-        suffixId: 'default'
-      }
-    },
-    templates: {
-      schema: {
-        type: 'collection',
-        suffixId: 'default',
+      type: 'collection',
+      items: {
+        type: 'array',
         items: {
           type: 'string',
-          relation: 'template/items'
+          relation: 'view/items'
         }
+      },
+      suffixId: 'default'
+    },
+    parentViews: {
+      type: 'collection',
+      items: {
+        type: 'array',
+        items: {
+          type: 'string',
+          relation: 'view/items'
+        }
+      },
+      suffixId: 'default'
+    },
+    templates: {
+      type: 'collection',
+      suffixId: 'default',
+      items: {
+        type: 'string',
+        relation: 'template/items'
       }
     }
-  })
-
-  defineActions({
-    attachedToIndex ({ id }) {
+  },
+  actions: {
+    attachedToIndex (id) {
       const sectionId = $getDataValue('widget/attached', { id, expand: true })
 
       if (sectionId.isEmpty) {
@@ -239,63 +263,6 @@ import { createPlugin } from '@dooksa/create'
         removeEvent(id)
         removeSection(id)
       }
-    }
-  })
-
-  function removeContent (id) {
-    const content = $getDataValue('widget/content', { id })
-
-    // remove related content
-    if (!content.isEmpty) {
-      for (let i = 0; i < content.item.length; i++) {
-        const id = content.item[i]
-
-        $deleteDataValue('content/items', id, { listeners: true })
-      }
-    }
-  }
-
-  function removeEvent (id) {
-    const event = $getDataValue('widget/events', {
-      id,
-      options: {
-        expand: true
-      }
-    })
-
-    // remove related content
-    if (!event.isEmpty && !event.isExpandEmpty) {
-      for (let i = 0; i < event.item.length; i++) {
-        const item = event.expand[i]
-
-        $deleteDataValue(item.collection, item.id, {
-          cascade: true,
-          listeners: true
-        })
-      }
-    }
-  }
-
-  function removeLayout (id) {
-    const layout = $getDataValue('widget/layouts', { id })
-
-    // remove unused layout
-    if (!layout.isEmpty) {
-      $deleteDataValue('layout/items', layout.item, {
-        cascade: true
-      })
-    }
-  }
-
-  function removeSection (id) {
-    const section = $getDataValue('widget/sections', { id })
-
-    // remove unused section
-    if (section.isEmpty) {
-      $deleteDataValue('section/items', section.id, {
-        cascade: true,
-        listeners: true
-      })
     }
   }
 })
