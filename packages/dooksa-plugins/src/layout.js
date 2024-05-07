@@ -1,50 +1,231 @@
 import { createPlugin } from '@dooksa/create'
 import {
+  viewUpdateValue,
+  viewInsert,
+  viewCreateNode,
+  $getDataValue,
+  $addDataListener,
+  $setDataValue,
+  $emit,
+  routerCurrentId,
+  sectionAppend,
+  sectionUpdate
+} from './index.js'
 
-  defineData({
+const eventNames = {
+  'section-attach': 'section/attach',
+  'section-update': 'section/update',
+  'view-mount': 'view/mount',
+  'view-unmount': 'view/unmount',
+  'layout-mount': 'layout/mount'
+}
+
+function getItems (layoutId, widgetId, widgetMode) {
+  const layout = $getDataValue('layout/items', {
+    id: layoutId
+  })
+
+  const events = $getDataValue('widget/events', {
+    id: widgetId,
+    suffixId: widgetMode
+  }).item || {}
+
+  const listeners = $getDataValue('layout/eventListeners', {
+    id: layoutId
+  }).item || {}
+
+  const parentViewItems = $getDataValue('widget/parentViews', {
+    id: widgetId,
+    suffixId: widgetMode
+  })
+
+  const viewItems = $getDataValue('widget/views', {
+    id: widgetId,
+    suffixId: widgetMode
+  })
+
+  return {
+    items: layout.item,
+    events,
+    listeners,
+    viewItems: viewItems.item || [],
+    parentViewItems: parentViewItems.item || []
+  }
+}
+
+function contentItem (widgetId, widgetMode, sectionUniqueId, viewId, childViewId, contentIndex) {
+  const language = $getDataValue('metadata/language').item
+  // @TODO check if widgetContentId and contentId are the same
+  const widgetContentId = $getDataValue('widget/content', {
+    id: widgetId,
+    prefixId: sectionUniqueId,
+    suffixId: widgetMode,
+    options: {
+      position: contentIndex
+    }
+  }).item
+  const contentId = $getDataValue('content/items', {
+    id: widgetContentId,
+    suffixId: language
+  }).id
+
+  // Associate content with view item
+  $setDataValue('view/content', contentId, {
+    id: childViewId
+  })
+
+  viewUpdateValue({ viewId: childViewId })
+
+  // Update view item if content value changes
+  $addDataListener('content/items', {
+    on: 'update',
+    id: contentId,
+    handler: {
+      id: viewId,
+      value: () => {
+        viewUpdateValue({ viewId: childViewId })
+      }
+    }
+  })
+}
+
+function eventItem (event, id) {
+  // match core event names with namespaced core plugins
+  const eventName = eventNames[event.name] || event.name
+  const eventItem = $setDataValue('event/listeners', event.value, {
+    id,
+    suffixId: eventName
+  })
+
+  // Store used events on page used by "save page"
+  // ISSUE: not sure if this is needed since schema relation
+  $setDataValue('page/events', eventItem.id, {
+    id: routerCurrentId(),
+    update: {
+      method: 'push'
+    }
+  })
+}
+
+function sectionItem (widgetId, widgetMode, sectionUniqueId, viewId, sectionIndex) {
+  // get next widget section id
+  const widgetSectionItem = $getDataValue('widget/sections', {
+    id: widgetId,
+    prefixId: sectionUniqueId,
+    suffixId: widgetMode,
+    options: {
+      position: sectionIndex
+    }
+  })
+
+  // ISSUE: this can't be empty
+  if (!widgetSectionItem.isEmpty) {
+    sectionAppend({
+      id: widgetSectionItem.item,
+      viewId
+    })
+
+    const sectionItem = $getDataValue('section/items', { id: widgetSectionItem.item })
+    const sectionItemId = sectionItem.id
+
+    $setDataValue('widget/attached', sectionItemId, {
+      id: widgetId,
+      prefixId: sectionUniqueId,
+      suffixId: widgetMode
+    })
+
+    // update widget section attachment
+    $addDataListener('section/items', {
+      on: 'update',
+      id: sectionItemId,
+      force: true,
+      handler: {
+        id: viewId,
+        value: ({ item }) => {
+          for (let i = 0; i < item.length; i++) {
+            $setDataValue('widget/attached', sectionItemId, { id: item[i] })
+          }
+        }
+      }
+    })
+
+    const handlerValue = (e) => {
+      sectionUpdate({ id: sectionItemId, viewId })
+    }
+
+    // update section elements
+    $addDataListener('section/items', {
+      on: 'update',
+      id: sectionItemId,
+      handler: {
+        id: viewId,
+        value: handlerValue
+      }
+    })
+
+    $addDataListener('section/query', {
+      on: 'update',
+      id: sectionItemId,
+      handler: {
+        id: viewId,
+        value: handlerValue
+      }
+    })
+
+    $addDataListener('section/query', {
+      on: 'delete',
+      id: sectionItemId,
+      handler: {
+        id: viewId,
+        value: handlerValue
+      }
+    })
+
+    return sectionItemId
+  }
+}
+
+const layout = createPlugin({
+  name: 'layout',
+  data: {
     items: {
-      schema: {
-        type: 'collection',
+      type: 'collection',
+      items: {
+        type: 'array',
         items: {
-          type: 'array',
-          items: {
-            type: 'object',
-            required: ['componentId'],
-            properties: {
-              contentIndex: { type: 'number' },
-              parentIndex: { type: 'number' },
-              children: {
-                type: 'array',
-                items: { type: 'number' }
-              },
-              componentId: {
-                type: 'string',
-                relation: 'component/items'
-              }
+          type: 'object',
+          required: ['componentId'],
+          properties: {
+            contentIndex: { type: 'number' },
+            parentIndex: { type: 'number' },
+            children: {
+              type: 'array',
+              items: { type: 'number' }
+            },
+            componentId: {
+              type: 'string',
+              relation: 'component/items'
             }
           }
         }
       }
     },
     eventListeners: {
-      schema: {
-        type: 'collection',
-        items: {
-          type: 'object',
-          patternProperties: {
-            '^[0-9]+$': {
-              type: 'array',
-              items: {
-                type: 'string'
-              }
+      type: 'collection',
+      items: {
+        type: 'object',
+        patternProperties: {
+          '^[0-9]+$': {
+            type: 'array',
+            items: {
+              type: 'string'
             }
           }
         }
       }
     }
-  })
-
-  defineActions({
+  },
+  actions: {
     create ({
       layoutId,
       sectionId,
@@ -67,7 +248,7 @@ import {
         for (let i = 0; i < parentViewItems.length; i++) {
           const sourceId = parentViewItems[i]
 
-          view.insert({
+          viewInsert({
             sourceId,
             targetId: viewId,
             widgetId,
@@ -114,7 +295,7 @@ import {
           isChild = false
         }
 
-        const childViewId = view.createNode({
+        const childViewId = viewCreateNode({
           viewId: viewItems[i],
           sectionId: sectionItemId,
           widgetId,
@@ -205,7 +386,7 @@ import {
           })
         }
 
-        view.actions.insert({
+        viewInsert({
           sourceId: childViewId,
           targetId: parentViewId,
           widgetId,
@@ -237,170 +418,13 @@ import {
         })
       }
     }
-  })
-
-  function getItems (layoutId, widgetId, widgetMode) {
-    const layout = $getDataValue('layout/items', {
-      id: layoutId
-    })
-
-    const events = $getDataValue('widget/events', {
-      id: widgetId,
-      suffixId: widgetMode
-    }).item || {}
-
-    const listeners = $getDataValue('layout/eventListeners', {
-      id: layoutId
-    }).item || {}
-
-    const parentViewItems = $getDataValue('widget/parentViews', {
-      id: widgetId,
-      suffixId: widgetMode
-    })
-
-    const viewItems = $getDataValue('widget/views', {
-      id: widgetId,
-      suffixId: widgetMode
-    })
-
-    return {
-      items: layout.item,
-      events,
-      listeners,
-      viewItems: viewItems.item || [],
-      parentViewItems: parentViewItems.item || []
-    }
-  }
-
-  function contentItem (widgetId, widgetMode, sectionUniqueId, viewId, childViewId, contentIndex) {
-    const language = $getDataValue('metadata/language').item
-    // @TODO check if widgetContentId and contentId are the same
-    const widgetContentId = $getDataValue('widget/content', {
-      id: widgetId,
-      prefixId: sectionUniqueId,
-      suffixId: widgetMode,
-      options: {
-        position: contentIndex
-      }
-    }).item
-    const contentId = $getDataValue('content/items', {
-      id: widgetContentId,
-      suffixId: language
-    }).id
-
-    // Associate content with view item
-    $setDataValue('view/content', contentId, {
-      id: childViewId
-    })
-
-    view.updateValue({ viewId: childViewId })
-
-    // Update view item if content value changes
-    $addDataListener('content/items', {
-      on: 'update',
-      id: contentId,
-      handler: {
-        id: viewId,
-        value: () => {
-          view.updateValue({ viewId: childViewId })
-        }
-      }
-    })
-  }
-
-  function eventItem (event, id) {
-    // match core event names with namespaced core plugins
-    const eventName = eventNames[event.name] || event.name
-    const event = $setDataValue('event/listeners', event.value, {
-      id,
-      suffixId: eventName
-    })
-
-    // Store used events on page used by "save page"
-    // ISSUE: not sure if this is needed since schema relation
-    $setDataValue('page/events', event.id, {
-      id: router.currentId(),
-      update: {
-        method: 'push'
-      }
-    })
-  }
-
-  function sectionItem (widgetId, widgetMode, sectionUniqueId, viewId, sectionIndex) {
-    // get next widget section id
-    const widgetSectionItem = $getDataValue('widget/sections', {
-      id: widgetId,
-      prefixId: sectionUniqueId,
-      suffixId: widgetMode,
-      options: {
-        position: sectionIndex
-      }
-    })
-
-    // ISSUE: this can't be empty
-    if (!widgetSectionItem.isEmpty) {
-      section.append({
-        id: widgetSectionItem.item,
-        viewId
-      })
-
-      const sectionItem = $getDataValue('section/items', { id: widgetSectionItem.item })
-      const sectionItemId = sectionItem.id
-
-      $setDataValue('widget/attached', sectionItemId, {
-        id: widgetId,
-        prefixId: sectionUniqueId,
-        suffixId: widgetMode
-      })
-
-      // update widget section attachment
-      $addDataListener('section/items', {
-        on: 'update',
-        id: sectionItemId,
-        force: true,
-        handler: {
-          id: viewId,
-          value: ({ item }) => {
-            for (let i = 0; i < item.length; i++) {
-              $setDataValue('widget/attached', sectionItemId, { id: item[i] })
-            }
-          }
-        }
-      })
-
-      const handlerValue = (e) => {
-        section.update({ id: sectionItemId, viewId })
-      }
-
-      // update section elements
-      $addDataListener('section/items', {
-        on: 'update',
-        id: sectionItemId,
-        handler: {
-          id: viewId,
-          value: handlerValue
-        }
-      })
-
-      $addDataListener('section/query', {
-        on: 'update',
-        id: sectionItemId,
-        handler: {
-          id: viewId,
-          value: handlerValue
-        }
-      })
-
-      $addDataListener('section/query', {
-        on: 'delete',
-        id: sectionItemId,
-        handler: {
-          id: viewId,
-          value: handlerValue
-        }
-      })
-
-      return sectionItemId
-    }
   }
 })
+
+const layoutCreate = layout.actions.create
+
+export {
+  layoutCreate
+}
+
+export default layout
