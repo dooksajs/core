@@ -1,41 +1,33 @@
 import { createPlugin } from '@dooksa/create'
 import { $getDataValue, $setDataValue } from './data.js'
 
-export default createPlugin('component', ({ defineData, defineActions, defineComponents }, { $getDataValue, $component }) => {
-  defineData({
+let _$component = {}
+
+const component = createPlugin({
+  name: 'component',
+  data: {
     items: {
-      default: () => ({
-        '0f64a9b82c6f98f7': {
-          _item: { id: 'text' }
-        },
-        '43f4f4c34d66e648': {
-          _item: { id: 'div' }
-        }
-      }),
-      schema: {
-        type: 'collection',
-        items: {
-          type: 'object',
-          properties: {
-            id: {
-              type: 'string'
-            },
-            attributes: {
+      type: 'collection',
+      items: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string'
+          },
+          attributes: {
+            type: 'array',
+            items: {
               type: 'array',
               items: {
-                type: 'array',
-                items: {
-                  type: 'string'
-                }
+                type: 'string'
               }
             }
           }
         }
       }
     }
-  })
-
-  defineComponents([
+  },
+  components: [
     {
       name: 'text',
       type: 'text'
@@ -274,11 +266,33 @@ export default createPlugin('component', ({ defineData, defineActions, defineCom
         }]
       }
     }
-  ])
+  ],
+  actions: {
+    $component (name) {
+      const component = _$component.items[name]
 
-  defineActions({
+      if (!component) {
+        throw Error('No component found by the name of: ' + name)
+      }
+
+      // lazy load component
+      if (component.isLazy && !component.isLoaded) {
+        component.isLoaded = true
+
+        component.lazy()
+          .catch(e => console.error(e))
+      }
+
+      return component
+    },
+    $componentGetter (name) {
+      return _$component.getter[name]
+    },
+    $componentSetter (name) {
+      return _$component.setter[name]
+    },
     fetch (id) {
-      const component = $getDataValue('dsComponent/items', { id })
+      const component = $getDataValue('dsComponent/items', { id }).item
 
       if (component.id === 'text') {
         return {
@@ -295,6 +309,35 @@ export default createPlugin('component', ({ defineData, defineActions, defineCom
           attributes: component.attributes
         }
       }
+
+      return component
     }
-  })
+  },
+  setup (component) {
+    _$component = component
+
+    $setDataValue('component/items', {
+      '0f64a9b82c6f98f7': {
+        _item: { id: 'text' }
+      },
+      '43f4f4c34d66e648': {
+        _item: { id: 'div' }
+      }
+    }, {
+      merge: true
+    })
+  }
 })
+
+const $component = component.actions.$component
+const $componentGetter = component.actions.$componentGetter
+const $componentSetter = component.actions.$componentSetter
+
+export {
+  $component,
+  $componentGetter,
+  $componentSetter
+}
+
+export default component
+
