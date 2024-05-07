@@ -1,16 +1,94 @@
 import { createPlugin } from '@dooksa/create'
+import { $getDataValue, $setDataValue, $addDataListener } from './data.js'
 
-const fetchPlugin = createPlugin('fetch', ({ defineActions, defineSetup }, { $getDataValue, $setDataValue, $addDataListener }) => {
-  const fetchRequestQueue = {}
-  const fetchRequestCache = {}
-  let fetchRequestCacheExpire = 300000
-  let hostname = ''
+/** @typedef {import('../../global-typedef.js').DataWhere} DataWhere */
 
-  defineSetup(({ hostname = 'http://localhost:6362' }) => {
+const fetchRequestQueue = {}
+const fetchRequestCache = {}
+let fetchRequestCacheExpire = 300000
+let hostname = ''
+
+function getCache (id) {
+  const cache = fetchRequestCache[id]
+
+  if (!cache) {
+    return fetchRequestQueue[id]
+  }
+
+  if (cache.item.expireIn && cache.item.expireIn < Date.now()) {
+    return deleteCache(id)
+  }
+
+  const result = []
+
+  for (let i = 0; i < cache.item.data.length; i++) {
+    const item = cache.item.data[i]
+    const data = $getDataValue(item.collection, { id: item.id })
+
+    result.push(data)
+  }
+
+  return result
+}
+
+function setRequestData (data, id) {
+  const requestCache = []
+
+  for (let i = 0; i < data.length; i++) {
+    const dataItem = data[i]
+
+    $setDataValue(dataItem.collection, dataItem.item, {
+      id: dataItem.id,
+      metadata: dataItem.metadata
+    })
+
+    if (dataItem.expand) {
+      for (let i = 0; i < dataItem.expand.length; i++) {
+        const data = dataItem.expand[i]
+
+        $setDataValue(data.collection, data.item, {
+          id: data.id,
+          metadata: data.metadata
+        })
+
+        requestCache.push({
+          id: data.id,
+          collection: data.collection
+        })
+      }
+    }
+
+    requestCache.push({
+      id: dataItem.id,
+      collection: dataItem.collection
+    })
+
+    $addDataListener(dataItem.collection, {
+      on: 'delete',
+      id: dataItem.id,
+      handler: {
+        id,
+        value: deleteCache
+      }
+    })
+  }
+
+  fetchRequestCache[id] = {
+    expireIn: Date.now() + fetchRequestCacheExpire,
+    data: requestCache
+  }
+}
+
+function deleteCache (id) {
+  delete fetchRequestCache[id]
+}
+
+const $fetch = createPlugin({
+  name: 'fetch',
+  setup ({ hostname = 'http://localhost:6362' }) {
     hostname = hostname + '/_/'
-  })
-
-  defineActions({
+  },
+  actions: {
     /**
      * Get a list of documents
      * @param {Object} param
@@ -160,90 +238,15 @@ const fetchPlugin = createPlugin('fetch', ({ defineActions, defineSetup }, { $ge
 
       return request
     }
-  })
-
-  function getCache (id) {
-    const cache = fetchRequestCache[id]
-
-    if (!cache) {
-      return fetchRequestQueue[id]
-    }
-
-    if (cache.item.expireIn && cache.item.expireIn < Date.now()) {
-      return deleteCache(id)
-    }
-
-    const result = []
-
-    for (let i = 0; i < cache.item.data.length; i++) {
-      const item = cache.item.data[i]
-      const data = $getDataValue(item.collection, { id: item.id })
-
-      result.push(data)
-    }
-
-    return result
-  }
-
-  function setRequestData (data, id) {
-    const requestCache = []
-
-    for (let i = 0; i < data.length; i++) {
-      const dataItem = data[i]
-
-      $setDataValue(dataItem.collection, dataItem.item, {
-        id: dataItem.id,
-        metadata: dataItem.metadata
-      })
-
-      if (dataItem.expand) {
-        for (let i = 0; i < dataItem.expand.length; i++) {
-          const data = dataItem.expand[i]
-
-          $setDataValue(data.collection, data.item, {
-            id: data.id,
-            metadata: data.metadata
-          })
-
-          requestCache.push({
-            id: data.id,
-            collection: data.collection
-          })
-        }
-      }
-
-      requestCache.push({
-        id: dataItem.id,
-        collection: dataItem.collection
-      })
-
-      $addDataListener(dataItem.collection, {
-        on: 'delete',
-        id: dataItem.id,
-        handler: {
-          id,
-          value: deleteCache
-        }
-      })
-    }
-
-    fetchRequestCache[id] = {
-      expireIn: Date.now() + fetchRequestCacheExpire,
-      data: requestCache
-    }
-  }
-
-  function deleteCache (id) {
-    delete fetchRequestCache[id]
   }
 })
 
-const fetchGetAll = fetch.actions.getAll
-const fetchGetById = fetch.actions.getById
+const $fetchAll = $fetch.actions.getAll
+const $fetchById = $fetch.actions.getById
 
 export {
-  fetchGetAll,
-  fetchGetById
+  $fetchAll,
+  $fetchById
 }
 
-export default fetch
+export default $fetch
