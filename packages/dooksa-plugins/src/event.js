@@ -1,32 +1,28 @@
 import { createPlugin } from '@dooksa/create'
-import { action } from './index.js'
+import { actionDispatch, $getDataValue } from './index.js'
 
-export default createPlugin('event', ({ context, defineData, defineContextProperties }, { $getDataValue }) => {
-  defineData({
+const event = createPlugin({
+  name: 'event',
+  data: {
     listeners: {
-      schema: {
-        type: 'collection',
+      type: 'collection',
+      items: {
+        type: 'array',
         items: {
-          type: 'array',
-          items: {
-            type: 'string',
-            relation: 'dsAction/items'
-          }
+          type: 'string',
+          relation: 'dsAction/items'
         }
       }
     },
     handlers: {
-      schema: {
-        type: 'collection',
-        uniqueItems: true,
-        items: {
-          type: 'array'
-        }
+      type: 'collection',
+      uniqueItems: true,
+      items: {
+        type: 'array'
       }
     }
-  })
-
-  defineContextProperties({
+  },
+  actions: {
     /**
      * Emit event
      * @param {Object} param
@@ -42,7 +38,7 @@ export default createPlugin('event', ({ context, defineData, defineContextProper
 
       if (!listeners.isEmpty) {
         for (let i = 0; i < listeners.item.length; i++) {
-          action.dispatch({
+          actionDispatch({
             id: listeners.item[i],
             context,
             payload
@@ -50,5 +46,11 @@ export default createPlugin('event', ({ context, defineData, defineContextProper
         }
       }
     }
-  })
+  }
 })
+
+const $emit = event.actions.$emit
+
+export { $emit }
+
+export default event
