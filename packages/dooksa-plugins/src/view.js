@@ -1,96 +1,208 @@
 import { createPlugin } from '@dooksa/create'
 import { getNodeValue } from '@dooksa/utils'
-import { dataGenerateId, dataUnsafeSetData, tokenTextContent } from './index.js'
-
-const view = createPlugin('view', ({
-  defineData,
-  defineActions,
-  defineSetup
-}, {
+import {
+  dataGenerateId,
+  dataUnsafeSetData,
+  tokenTextContent,
   $getDataValue,
   $setDataValue,
   $deleteDataValue,
   $addDataListener,
   $component,
-  $componentGetters,
-  $componentSetters,
+  $componentGetter,
+  $componentSetter,
   $emit
-}) => {
-  const elementInsert = {
-    append (target, source) {
-      target.appendChild(source)
-    },
-    after (target, source) {
-      target.after(source)
-    },
-    before (target, source) {
-      target.before(source)
-    },
-    replace (target, source) {
-      target.replaceWith(source)
+} from './index.js'
+
+const elementInsert = {
+  append (target, source) {
+    target.appendChild(source)
+  },
+  after (target, source) {
+    target.after(source)
+  },
+  before (target, source) {
+    target.before(source)
+  },
+  replace (target, source) {
+    target.replaceWith(source)
+  }
+}
+
+const setValueBy = {
+  /**
+   * Set element value using a attribute
+   * @param {Object} node - Text or Element node
+   * @param {(string|Object)} content - content object
+   * @private
+   */
+  attribute (node, content, name, property) {
+    node.setAttribute(name, content[property])
+  },
+  /**
+   * Set element value using a attribute
+   * @param {Object} node - Text or Element node
+   * @param {(string|Object)} content - content object
+   * @private
+   */
+  setter (node, content, name, property) {
+    if (node.__lookupSetter__(name)) {
+      node[name] = content[property]
+    }
+  },
+  token (node, content, name, property, type, viewId) {
+    tokenTextContent({
+      viewId,
+      text: content[property],
+      updateText: (value) => {
+        content[property] = value
+        this[type](node, content[property], name, property)
+      }
+    })
+  }
+}
+
+
+/**
+   * Set attributes to element
+   * @param {viewId} viewId - view node id
+   * @param {Array.<string[]>} attributes
+   * @private
+   */
+function setAttributes (element, attributes) {
+  for (let i = 0; i < attributes.length; i++) {
+    const [name, value] = attributes[i]
+
+    element.setAttribute(name, value)
+  }
+}
+
+/**
+   * Unmount node
+   * @param {viewId} viewId - view node id
+   * @private
+   */
+function unmount (viewId) {
+  $emit('view/unmount', {
+    id: viewId,
+    context: { viewId }
+  })
+
+  $deleteDataValue('view/items', viewId)
+  $deleteDataValue('view/content', viewId)
+}
+
+function createNode ({
+  viewId,
+  componentId,
+  sectionId,
+  widgetId
+}) {
+  let componentItem = $getDataValue('component/items', {
+    id: componentId
+  }).item
+
+  if (!componentItem) {
+    return
+  }
+
+  viewId = viewId || dataGenerateId()
+  let element
+
+  if (componentItem.id === 'text') {
+    element = document.createTextNode('')
+  } else {
+    element = document.createElement(componentItem.id)
+
+    DEV: {
+      element.dataset.viewId = viewId
+      element.dataset.sectionId = sectionId
+      element.dataset.widgetId = widgetId
+      element.dataset.componentId = componentId
     }
   }
 
-  const setValueBy = {
-    /**
-     * Set element value using a attribute
-     * @param {Object} node - Text or Element node
-     * @param {(string|Object)} content - content object
-     * @private
-     */
-    attribute (node, content, name, property) {
-      node.setAttribute(name, content[property])
-    },
-    /**
-     * Set element value using a attribute
-     * @param {Object} node - Text or Element node
-     * @param {(string|Object)} content - content object
-     * @private
-     */
-    setter (node, content, name, property) {
-      if (node.__lookupSetter__(name)) {
-        node[name] = content[property]
+  element.viewId = viewId
+
+  /** @ISSUE unsafe is used because the schema doesn't support nodes */
+  dataUnsafeSetData({
+    name: 'view/items',
+    data: element,
+    options: {
+      id: viewId
+    }
+  })
+
+  if (componentItem.attributes) {
+    setAttributes(element, componentItem.attributes)
+  }
+
+  const component = $component(componentItem.id)
+
+  // ISSUE: [DS-889] Only add events if in edit mode
+  if (component && component.events) {
+    for (let i = 0; i < component.events.length; i++) {
+      const event = component.events[i]
+      const name = event.name || event
+
+      const handler = (e) => {
+        e.preventDefault()
+        const viewContent = $getDataValue('view/content', {
+          id: viewId
+        })
+
+        if (event.syncContent) {
+          const value = this.getValue({ id: viewId })
+
+          $setDataValue('content/items', value, { id: viewContent.item })
+        }
+
+        $emit(name, {
+          id: viewId,
+          context: {
+            viewId,
+            contentId: viewContent.item,
+            widgetId,
+            event
+          }
+        })
       }
-    },
-    token (node, content, name, property, type, viewId) {
-      tokenTextContent({
-        viewId,
-        text: content[property],
-        updateText: (value) => {
-          content[property] = value
-          this[type](node, content[property], name, property)
+
+      element.addEventListener(name, handler)
+
+      $setDataValue('event/handlers', handler, {
+        id: viewId,
+        update: {
+          method: 'push'
         }
       })
     }
   }
 
-  defineData({
+  return viewId
+}
+
+const view = createPlugin({
+  name: 'view',
+  data: {
     rootViewId: {
-      default: () => 'rootElement',
-      schema: {
-        type: 'string'
-      }
+      type: 'string'
     },
     content: {
-      schema: {
-        type: 'collection',
-        items: {
-          type: 'string',
-          relation: 'content/items'
-        }
+      type: 'collection',
+      items: {
+        type: 'string',
+        relation: 'content/items'
       }
     },
     items: {
-      schema: {
-        type: 'collection',
-        items: {
-          type: 'node'
-        }
+      type: 'collection',
+      items: {
+        type: 'node'
       }
     }
-  })
-
-  const actions = defineActions({
+  },
+  actions: {
     /**
      * Adds a node to the end of the list of children of a specified parent node
      * @param {Object} item
@@ -139,95 +251,7 @@ const view = createPlugin('view', ({
      * @param {string} item.sectionId - Section id from widget
      * @param {string} item.widgetId - Instance id from widget
      */
-    createNode ({
-      viewId,
-      componentId,
-      sectionId,
-      widgetId
-    }) {
-      let componentItem = $getDataValue('component/items', {
-        id: componentId
-      }).item
-
-      if (!componentItem) {
-        return
-      }
-
-      viewId = viewId || dataGenerateId()
-      let element
-
-      if (componentItem.id === 'text') {
-        element = document.createTextNode('')
-      } else {
-        element = document.createElement(componentItem.id)
-
-        DEV: {
-          element.dataset.viewId = viewId
-          element.dataset.sectionId = sectionId
-          element.dataset.widgetId = widgetId
-          element.dataset.componentId = componentId
-        }
-      }
-
-      element.viewId = viewId
-
-      /** @ISSUE unsafe is used because the schema doesn't support nodes */
-      dataUnsafeSetData({
-        name: 'view/items',
-        data: element,
-        options: {
-          id: viewId
-        }
-      })
-
-      if (componentItem.attributes) {
-        setAttributes(element, componentItem.attributes)
-      }
-
-      const component = $component(componentItem.id)
-
-      // ISSUE: [DS-889] Only add events if in edit mode
-      if (component && component.events) {
-        for (let i = 0; i < component.events.length; i++) {
-          const event = component.events[i]
-          const name = event.name || event
-
-          const handler = (e) => {
-            e.preventDefault()
-            const viewContent = $getDataValue('view/content', {
-              id: viewId
-            })
-
-            if (event.syncContent) {
-              const value = this.getValue({ id: viewId })
-
-              $setDataValue('content/items', value, { id: viewContent.item })
-            }
-
-            $emit(name, {
-              id: viewId,
-              context: {
-                viewId,
-                contentId: viewContent.item,
-                widgetId,
-                event
-              }
-            })
-          }
-
-          element.addEventListener(name, handler)
-
-          $setDataValue('event/handlers', handler, {
-            id: viewId,
-            update: {
-              method: 'push'
-            }
-          })
-        }
-      }
-
-      return viewId
-    },
+    createNode,
     detach ({ id }) {
       const view = $getDataValue('view/items', { id })
 
@@ -252,7 +276,7 @@ const view = createPlugin('view', ({
       }
 
       const nodeName = view.item.nodeName.toLowerCase()
-      const getters = $componentGetters[nodeName]
+      const getters = $componentGetter(nodeName)
 
       if (getters) {
         const node = view.item
@@ -300,7 +324,7 @@ const view = createPlugin('view', ({
     },
     /**
      * Remove all child nodes from select node
-     * @param {viewId} viewId - view node id
+     * @param {string} viewId - view node id
      */
     removeChildren (viewId) {
       const view = $getDataValue('view/items', {
@@ -395,7 +419,7 @@ const view = createPlugin('view', ({
       const node = view.item
       const nodeName = node.nodeName.toLowerCase()
       $component(nodeName)
-      const setters = $componentSetters[nodeName]
+      const setters = $componentSetter(nodeName)
 
       if (setters) {
         for (let i = 0; i < setters.length; i++) {
@@ -444,38 +468,8 @@ const view = createPlugin('view', ({
         view.item.setAttribute(name, value)
       }
     }
-  })
-
-  /**
-   * Set attributes to element
-   * @param {viewId} viewId - view node id
-   * @param {Array.<string[]>} attributes
-   * @private
-   */
-  function setAttributes (element, attributes) {
-    for (let i = 0; i < attributes.length; i++) {
-      const [name, value] = attributes[i]
-
-      element.setAttribute(name, value)
-    }
-  }
-
-  /**
-   * Unmount node
-   * @param {viewId} viewId - view node id
-   * @private
-   */
-  function unmount (viewId) {
-    $emit('view/unmount', {
-      id: viewId,
-      context: { viewId }
-    })
-
-    $deleteDataValue('view/items', viewId)
-    $deleteDataValue('view/content', viewId)
-  }
-
-  defineSetup(({ rootElementId = 'root' } = {}) => {
+  },
+  setup ({ rootElementId = 'root' } = {}) {
     // get root element from the DOM
     const rootElement = document.getElementById(rootElementId)
 
@@ -484,7 +478,7 @@ const view = createPlugin('view', ({
     }
 
     // Set root element
-    const viewId = actions.createNode({
+    const viewId = createNode({
       viewId: rootElementId,
       componentId: '43f4f4c34d66e648',
       sectionId: rootElementId,
@@ -500,7 +494,7 @@ const view = createPlugin('view', ({
 
     // replace root element with new app element
     rootElement.parentElement.replaceChild(view.item, rootElement)
-  })
+  }
 })
 
 const viewInsert = view.actions.insert
