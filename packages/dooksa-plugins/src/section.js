@@ -1,64 +1,111 @@
 import { createPlugin } from '@dooksa/create'
-    uniqueId: {
-      description: 'Unique identifier used to allow sections to be shared but contain different related content',
-      default: '',
-      schema: {
-        type: 'string'
+import { layoutCreate, widgetRemove, queryFetch, $getDataValue, $setDataValue, $emit } from './index.js'
+
+function updateByQuery (queryId, viewId, id, uniqueId, mode) {
+  const result = queryFetch({ id: queryId })
+
+  // Exit, nothing to do.
+  if (!result) {
+    return
+  }
+
+  const viewData = $getDataValue('view/items', { id: viewId })
+  const view = viewData.item
+  // remove old nodes
+
+  for (let i = 0; i < view.children.length; i++) {
+    view.children[i].remove()
+    --i
+  }
+
+  for (let i = 0; i < result.length; i++) {
+    const item = result[i]
+    const widgetId = item.widgetId
+    const widgetView = $getDataValue('widget/parentViews', {
+      id: widgetId,
+      options: {
+        expand: true
       }
+    })
+
+    if (!widgetView.isEmpty) {
+      // reattach existing nodes
+      for (let i = 0; i < widgetView.expand.length; i++) {
+        const node = widgetView.expand[i].item
+
+        view.appendChild(node)
+      }
+    } else {
+      let widgetMode = $getDataValue('widget/mode', {
+        id: widgetId,
+        prefixId: uniqueId
+      }).item
+      widgetMode = widgetMode !== 'default' ? widgetMode : mode
+      const layoutId = $getDataValue('widget/layouts', {
+        id: widgetId,
+        suffixId: widgetMode,
+        prefixId: uniqueId
+      }).item
+
+      // create new widget layout and attach to section
+      layoutCreate({
+        layoutId,
+        sectionId: id,
+        sectionUniqueId: uniqueId,
+        widgetId,
+        widgetMode,
+        viewId
+      })
+    }
+  }
+}
+
+const section = createPlugin({
+  name: 'section',
+  data: {
+    uniqueId: {
+      type: 'string'
     },
     items: {
-      description: 'Collection of widget instances',
-      schema: {
-        type: 'collection',
-        prefixId () {
-          return $getDataValue('widget/uniqueId').item
-        },
-        suffixId: 'default',
+      type: 'collection',
+      prefixId () {
+        return $getDataValue('widget/uniqueId').item
+      },
+      suffixId: 'default',
+      items: {
+        type: 'array',
         items: {
-          type: 'array',
-          items: {
-            type: 'string',
-            relation: 'widget/items'
-          }
+          type: 'string',
+          relation: 'widget/items'
         }
       }
     },
     mode: {
-      description: 'Current template mode for the section',
-      schema: {
-        type: 'collection',
-        items: {
-          type: 'string'
-        }
+      type: 'collection',
+      items: {
+        type: 'string'
       }
     },
     query: {
-      description: 'Active queries applied to section',
-      schema: {
-        type: 'collection',
-        prefixId () {
-          return $getDataValue('widget/uniqueId').item
-        },
-        suffixId: 'default',
-        items: {
-          type: 'string',
-          relation: 'query/items'
-        }
+      type: 'collection',
+      prefixId () {
+        return $getDataValue('widget/uniqueId').item
+      },
+      suffixId: 'default',
+      items: {
+        type: 'string',
+        relation: 'query/items'
       }
     },
     view: {
-      description: 'The node which the section is attached',
-      schema: {
-        type: 'collection',
-        items: {
-          type: 'string',
-          relation: 'view/items'
-        }
+      type: 'collection',
+      items: {
+        type: 'string',
+        relation: 'view/items'
       }
     }
-  })
-
-  defineActions({
+  },
+  actions: {
     append ({
       id,
       viewId = $getDataValue('view/rootViewId').item
@@ -90,11 +137,11 @@ import { createPlugin } from '@dooksa/create'
 
       for (let i = 0; i < section.item.length; i++) {
         const widgetId = section.item[i]
-        const widgetMode = $getDataValue('widget/mode', {
+        let widgetMode = $getDataValue('widget/mode', {
           id: widgetId,
           prefixId: sectionUniqueId
         }).item
-        const widgetMode = widgetMode !== 'default' ? widgetMode : mode
+        widgetMode = widgetMode !== 'default' ? widgetMode : mode
         const layoutId = $getDataValue('widget/layouts', {
           id: widgetId,
           suffixId: widgetMode,
@@ -206,11 +253,11 @@ import { createPlugin } from '@dooksa/create'
           }
         } else {
           const widgetId = nextItems[i]
-          const widgetMode = $getDataValue('widget/mode', {
+          let widgetMode = $getDataValue('widget/mode', {
             id: widgetId,
             prefixId: uniqueId
           }).item
-          const widgetMode = widgetMode !== 'default' ? widgetMode : mode
+          widgetMode = widgetMode !== 'default' ? widgetMode : mode
           const layoutId = $getDataValue('widget/layouts', {
             id: widgetId,
             suffixId: widgetMode,
@@ -277,65 +324,6 @@ import { createPlugin } from '@dooksa/create'
           widgets
         }
       })
-    }
-  })
-
-  function updateByQuery (queryId, viewId, id, uniqueId, mode) {
-    const result = queryFetch({ id: queryId })
-
-    // Exit, nothing to do.
-    if (!result) {
-      return
-    }
-
-    const viewData = $getDataValue('view/items', { id: viewId })
-    const view = viewData.item
-    // remove old nodes
-
-    for (let i = 0; i < view.children.length; i++) {
-      view.children[i].remove()
-      --i
-    }
-
-    for (let i = 0; i < result.length; i++) {
-      const item = result[i]
-      const widgetId = item.widgetId
-      const widgetView = $getDataValue('widget/parentViews', {
-        id: widgetId,
-        options: {
-          expand: true
-        }
-      })
-
-      if (!widgetView.isEmpty) {
-        // reattach existing nodes
-        for (let i = 0; i < widgetView.expand.length; i++) {
-          const node = widgetView.expand[i].item
-
-          view.appendChild(node)
-        }
-      } else {
-        const widgetMode = $getDataValue('widget/mode', {
-          id: widgetId,
-          prefixId: uniqueId
-        }).item
-        const widgetMode = widgetMode !== 'default' ? widgetMode : mode
-        const layoutId = $getDataValue('widget/layouts', {
-          id: widgetId,
-          suffixId: widgetMode,
-          prefixId: uniqueId
-        }).item
-
-        // create new widget layout and attach to section
-        layoutCreate({
-          layoutId,
-          sectionId: id,
-          sectionUniqueId: uniqueId,
-          widgetId,
-          widgetMode,
-          viewId
-        })
-      }
     }
   }
 })
