@@ -1,42 +1,220 @@
 import { createPlugin } from '@dooksa/create'
 import { objectHash } from '@dooksa/utils'
-import { fetchGetById, dataGenerateId } from './index.js'
+import { $fetchById, dataGenerateId, $getDataValue, $setDataValue, $addDataListener } from './index.js'
 
-const template = createPlugin('template', ({ defineData, defineActions }, { $setDataValue, $getDataValue, $addDataListener }) => {
-  defineData({
+
+/**
+ * Create action block overwrites
+ * @private
+ * @param {Object} actions - Collection of actions used by template
+ * @param {Object} refs - Reference action overwrites
+ * @returns {Object}
+ */
+function updateActions (actions, refs) {
+  const newActions = {
+    items: {},
+    dependencies: {}
+  }
+
+  for (let i = 0; i < actions.length; i++) {
+    const action = actions[i]
+    const newBlocks = {}
+    const blockValues = {}
+
+    for (let i = 0; i < action.blocks.length; i++) {
+      const id = action.blocks[i]
+      const block = $getDataValue('action/blocks', { id })
+      const result = replaceActionRef(block.item, refs)
+
+      if (result.blockValues.length) {
+        const blockValues = []
+
+        for (let i = 0; i < result.blockValues.length; i++) {
+          blockValues.push(result.blockValues[i])
+        }
+
+        newBlocks[id] = {
+          item: result.item,
+          values: blockValues
+        }
+      }
+    }
+
+    for (let i = 0; i < action.sequences.length; i++) {
+      const id = action.sequences[i]
+      const sequences = $getDataValue('action/sequences', { id })
+
+      for (let i = 0; i < sequences.item.length; i++) {
+        const sequence = sequences.item[i]
+        const block = newBlocks[sequence.id]
+
+        if (block) {
+          const blockId = objectHash(block.item)
+
+          if (!blockValues[id]) {
+            blockValues[id] = {}
+          }
+
+          blockValues[id][i] = { id: blockId }
+
+          if (block.values.length) {
+            blockValues[id][i].values = block.values
+          }
+        }
+      }
+    }
+
+    const id = action.items
+    const items = $getDataValue('action/items', { id })
+
+    // copy action items
+    const newItems = {}
+
+    for (let i = 0; i < items.item.length; i++) {
+      const sequenceId = items.item[i]
+      const blockOverwrites = blockValues[sequenceId]
+
+      if (blockOverwrites) {
+        newItems[sequenceId] = blockOverwrites
+      }
+    }
+
+    // join actions
+    if (action.dependencies) {
+      newActions.dependencies[id] = action.dependencies
+    }
+
+    newActions.items[id] = newItems
+  }
+
+  return newActions
+}
+
+/**
+ * Create a list of block value overwrites
+ * @private
+ * @param {Object} items
+ * @param {Object} refs
+ * @param {string[]} blockKeys - The keys used to lead to the block value
+ * @param {BlockValue[]} blockValues - Collection of block overwrites
+ * @param {number} index - Current depth
+ * @param {boolean} [isEntry=true] - The head of the recursive function
+ * @returns {BlockRefs}
+ */
+function replaceActionRef (items, refs, blockKeys = [], blockValues = [], index = 0, isEntry = true) {
+  for (const key in items) {
+    if (Object.hasOwnProperty.call(items, key)) {
+      const item = items[key]
+
+      if (refs[item] != null) {
+        // store key/values
+        blockKeys.push(key)
+        blockValues.push({ keys: blockKeys, value: refs[item] })
+
+        // Moving up the tree
+        blockKeys = blockKeys.slice(0, -1)
+      } else if (typeof item === 'object') {
+        blockKeys.push(key)
+
+        replaceActionRef(item, refs, blockKeys, blockValues, index + 1, false)
+
+        // Moving up the tree
+        blockKeys = blockKeys.slice(0, index)
+      }
+    }
+  }
+
+  // Moving back to the root
+  blockKeys = []
+
+  if (isEntry) {
+    return {
+      item: items,
+      blockValues
+    }
+  }
+}
+
+const template = createPlugin({
+  name: 'template',
+  data: {
     items: {
-      schema: {
-        type: 'collection',
-        items: {
-          type: 'object',
-          properties: {
-            actions: {
+      type: 'collection',
+      items: {
+        type: 'object',
+        properties: {
+          actions: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                id: {
+                  type: 'string'
+                },
+                blocks: {
+                  type: 'array',
+                  items: {
+                    type: 'string',
+                    relation: 'action/blocks'
+                  }
+                },
+                items: {
+                  type: 'string',
+                  relation: 'action/items'
+                },
+                sequences: {
+                  type: 'array',
+                  items: {
+                    type: 'string',
+                    relation: 'action/sequences'
+                  }
+                },
+                dependencies: {
+                  type: 'array',
+                  items: {
+                    type: 'string'
+                  }
+                }
+              }
+            }
+          },
+          content: {
+            type: 'array',
+            items: {
               type: 'array',
               items: {
                 type: 'object',
                 properties: {
-                  id: {
+                  item: {
+                    type: 'object'
+                  },
+                  type: {
                     type: 'string'
-                  },
-                  blocks: {
-                    type: 'array',
-                    items: {
-                      type: 'string',
-                      relation: 'action/blocks'
-                    }
-                  },
-                  items: {
-                    type: 'string',
-                    relation: 'action/items'
-                  },
-                  sequences: {
-                    type: 'array',
-                    items: {
-                      type: 'string',
-                      relation: 'action/sequences'
-                    }
-                  },
-                  dependencies: {
+                  }
+                }
+              }
+            }
+          },
+          contentRefs: {
+            type: 'object',
+            patternProperties: {
+              '^[0-9]+$': {
+                type: 'object',
+                patternProperties: {
+                  '^[0-9]+$': {
+                    type: 'string'
+                  }
+                }
+              }
+            }
+          },
+          eventListeners: {
+            type: 'object',
+            patternProperties: {
+              '^[0-9]+$': {
+                type: 'object',
+                patternProperties: {
+                  '^[0-9]+$': {
                     type: 'array',
                     items: {
                       type: 'string'
@@ -44,130 +222,84 @@ const template = createPlugin('template', ({ defineData, defineActions }, { $set
                   }
                 }
               }
-            },
-            content: {
-              type: 'array',
-              items: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    item: {
-                      type: 'object'
-                    },
-                    type: {
-                      type: 'string'
-                    }
-                  }
-                }
-              }
-            },
-            contentRefs: {
-              type: 'object',
-              patternProperties: {
-                '^[0-9]+$': {
-                  type: 'object',
-                  patternProperties: {
-                    '^[0-9]+$': {
-                      type: 'string'
-                    }
-                  }
-                }
-              }
-            },
-            eventListeners: {
-              type: 'object',
-              patternProperties: {
-                '^[0-9]+$': {
-                  type: 'object',
-                  patternProperties: {
-                    '^[0-9]+$': {
-                      type: 'array',
-                      items: {
-                        type: 'string'
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            layout: {
-              type: 'array',
-              items: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    componentId: {
-                      type: 'string',
-                      relation: 'component/items'
-                    },
-                    contentIndex: {
-                      type: 'number'
-                    },
-                    parentIndex: {
-                      type: 'number'
-                    }
-                  }
-                }
-              }
-            },
-            layoutId: {
-              type: 'array',
-              items: {
-                type: 'string',
-                relation: 'layout/items'
-              }
-            },
-            widgetEvent: {
+            }
+          },
+          layout: {
+            type: 'array',
+            items: {
               type: 'array',
               items: {
                 type: 'object',
-                patternProperties: {
-                  '[0-9]': {
-                    type: 'array',
-                    items: {
-                      type: 'object',
-                      properties: {
-                        name: {
+                properties: {
+                  componentId: {
+                    type: 'string',
+                    relation: 'component/items'
+                  },
+                  contentIndex: {
+                    type: 'number'
+                  },
+                  parentIndex: {
+                    type: 'number'
+                  }
+                }
+              }
+            }
+          },
+          layoutId: {
+            type: 'array',
+            items: {
+              type: 'string',
+              relation: 'layout/items'
+            }
+          },
+          widgetEvent: {
+            type: 'array',
+            items: {
+              type: 'object',
+              patternProperties: {
+                '[0-9]': {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      name: {
+                        type: 'string'
+                      },
+                      value: {
+                        type: 'array',
+                        items: {
                           type: 'string'
-                        },
-                        value: {
-                          type: 'array',
-                          items: {
-                            type: 'string'
-                          }
                         }
                       }
                     }
                   }
                 }
               }
-            },
-            widgetSection: {
+            }
+          },
+          widgetSection: {
+            type: 'array',
+            items: {
               type: 'array',
               items: {
-                type: 'array',
-                items: {
-                  type: 'number'
-                }
+                type: 'number'
               }
-            },
-            section: {
+            }
+          },
+          section: {
+            type: 'array',
+            items: {
               type: 'array',
               items: {
-                type: 'array',
-                items: {
-                  type: 'number'
-                }
+                type: 'number'
               }
-            },
-            sectionRefs: {
-              type: 'object',
-              patternProperties: {
-                '^[0-9]+$': {
-                  type: 'string'
-                }
+            }
+          },
+          sectionRefs: {
+            type: 'object',
+            patternProperties: {
+              '^[0-9]+$': {
+                type: 'string'
               }
             }
           }
@@ -175,34 +307,30 @@ const template = createPlugin('template', ({ defineData, defineActions }, { $set
       }
     },
     metadata: {
-      schema: {
-        type: 'collection',
-        items: {
-          type: 'object',
-          properties: {
-            name: {
-              type: 'string'
-            },
-            description: {
-              type: 'string'
-            },
-            icon: {
-              type: 'string'
-            }
+      type: 'collection',
+      items: {
+        type: 'object',
+        properties: {
+          name: {
+            type: 'string'
+          },
+          description: {
+            type: 'string'
+          },
+          icon: {
+            type: 'string'
           }
         }
       }
     }
-  })
-
-  defineActions({
+  },
+  actions: {
     /**
      * Create new widget/section/content instances from template
      * @param {Object} param
      * @param {string} param.id - Id of template
      * @param {string} [param.mode="default"] - Suffix used to categories the instances
      * @param {string} [param.language] - Language used to label the content
-     * @param {string} param.sectionId - Id related to a section/item
      * @param {Object} [param.contentOptions={}] - Collection of content overwrites by matching a ref id
      * @param {Object} [param.widgetOptions={}] - Collection of widget overwrites by matching a ref id
      * @param {Function} [_callback] - Private callback that is called to resolve a fetched template
@@ -220,7 +348,7 @@ const template = createPlugin('template', ({ defineData, defineActions }, { $set
       // fetch template
       if (template.isEmpty) {
         return new Promise((resolve, reject) => {
-          fetchGetById({
+          $fetchById({
             collection: 'template',
             id: [id],
             expand: true
@@ -305,7 +433,7 @@ const template = createPlugin('template', ({ defineData, defineActions }, { $set
 
           $setDataValue('widget/events', widgetEvent, {
             id: widget.id,
-            mode
+            suffixId: mode
           })
         }
 
@@ -520,138 +648,6 @@ const template = createPlugin('template', ({ defineData, defineActions }, { $set
       }
 
       return widgetId
-    }
-  })
-
-  /**
-   * Create action block overwrites
-   * @private
-   * @param {Object} actions - Collection of actions used by template
-   * @param {Object} refs - Reference action overwrites
-   * @returns {Object}
-   */
-  function updateActions (actions, refs) {
-    const newActions = {
-      items: {},
-      dependencies: {}
-    }
-
-    for (let i = 0; i < actions.length; i++) {
-      const action = actions[i]
-      const newBlocks = {}
-      const blockValues = {}
-
-      for (let i = 0; i < action.blocks.length; i++) {
-        const id = action.blocks[i]
-        const block = $getDataValue('action/blocks', { id })
-        const result = replaceActionRef(block.item, refs)
-
-        if (result.blockValues.length) {
-          const blockValues = []
-
-          for (let i = 0; i < result.blockValues.length; i++) {
-            blockValues.push(result.blockValues[i])
-          }
-
-          newBlocks[id] = {
-            item: result.item,
-            values: blockValues
-          }
-        }
-      }
-
-      for (let i = 0; i < action.sequences.length; i++) {
-        const id = action.sequences[i]
-        const sequences = $getDataValue('action/sequences', { id })
-
-        for (let i = 0; i < sequences.item.length; i++) {
-          const sequence = sequences.item[i]
-          const block = newBlocks[sequence.id]
-
-          if (block) {
-            const blockId = objectHash(block.item)
-
-            if (!blockValues[id]) {
-              blockValues[id] = {}
-            }
-
-            blockValues[id][i] = { id: blockId }
-
-            if (block.values.length) {
-              blockValues[id][i].values = block.values
-            }
-          }
-        }
-      }
-
-      const id = action.items
-      const items = $getDataValue('action/items', { id })
-
-      // copy action items
-      const newItems = {}
-
-      for (let i = 0; i < items.item.length; i++) {
-        const sequenceId = items.item[i]
-        const blockOverwrites = blockValues[sequenceId]
-
-        if (blockOverwrites) {
-          newItems[sequenceId] = blockOverwrites
-        }
-      }
-
-      // join actions
-      if (action.dependencies) {
-        newActions.dependencies[id] = action.dependencies
-      }
-
-      newActions.items[id] = newItems
-    }
-
-    return newActions
-  }
-
-  /**
-   * Create a list of block value overwrites
-   * @private
-   * @param {Object} items
-   * @param {Object} refs
-   * @param {string[]} blockKeys - The keys used to lead to the block value
-   * @param {BlockValue[]} blockValues - Collection of block overwrites
-   * @param {number} index - Current depth
-   * @param {boolean} [isEntry=true] - The head of the recursive function
-   * @returns {BlockRefs}
-   */
-  function replaceActionRef (items, refs, blockKeys = [], blockValues = [], index = 0, isEntry = true) {
-    for (const key in items) {
-      if (Object.hasOwnProperty.call(items, key)) {
-        const item = items[key]
-
-        if (refs[item] != null) {
-          // store key/values
-          blockKeys.push(key)
-          blockValues.push({ keys: blockKeys, value: refs[item] })
-
-          // Moving up the tree
-          blockKeys = blockKeys.slice(0, -1)
-        } else if (typeof item === 'object') {
-          blockKeys.push(key)
-
-          replaceActionRef(item, refs, blockKeys, blockValues, index + 1, false)
-
-          // Moving up the tree
-          blockKeys = blockKeys.slice(0, index)
-        }
-      }
-    }
-
-    // Moving back to the root
-    blockKeys = []
-
-    if (isEntry) {
-      return {
-        item: items,
-        blockValues
-      }
     }
   }
 })
