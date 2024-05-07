@@ -9,7 +9,7 @@ class DataSchemaException extends Error {
   constructor ({ message, schemaPath, keyword }) {
     super(message)
     // overwrites
-    this.name = 'DsDataSchemaError'
+    this.name = 'DataSchemaError'
     // custom properties
     this.schemaPath = schemaPath
     this.keyword = keyword
@@ -23,7 +23,7 @@ class DataValueException extends Error {
    */
   constructor (message) {
     super(message)
-    this.name = 'DsDataValueError'
+    this.name = 'DataValueError'
   }
 }
 
