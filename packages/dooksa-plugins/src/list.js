@@ -24,83 +24,43 @@ import { actionDispatch, operatorCompare, operatorEval } from './index.js'
  * @property {string} widgetId - widget/item id
  */
 
-const list = createPlugin('list', ({ defineActions, defineActionSchema }) => {
-  function sortAscending (a, b) {
-    // ignore upper and lowercase
-    const A = typeof a.value === 'string' ? a.value.toUpperCase() : a.value
-    const B = typeof b.value === 'string' ? b.value.toUpperCase() : b.value
+function sortAscending (a, b) {
+  // ignore upper and lowercase
+  const A = typeof a.value === 'string' ? a.value.toUpperCase() : a.value
+  const B = typeof b.value === 'string' ? b.value.toUpperCase() : b.value
 
-    if (A < B) {
-      return -1
-    }
-
-    if (A > B) {
-      return 1
-    }
-
-    // names must be equal
-    return 0
+  if (A < B) {
+    return -1
   }
 
-  function sortDescending (a, b) {
-    // ignore upper and lowercase
-    const A = typeof a.value === 'string' ? a.value.toUpperCase() : a.value
-    const B = typeof b.value === 'string' ? b.value.toUpperCase() : b.value
-
-    if (A > B) {
-      return -1
-    }
-
-    if (A < B) {
-      return 1
-    }
-
-    // names must be equal
-    return 0
+  if (A > B) {
+    return 1
   }
 
-  defineActionSchema({
-    filter: {
-      name: 'Filter',
-      description: 'Filter items based on conditions',
-      schema: [
-        {
-          type: 'object',
-          properties: {
-            items: {
-              type: 'array',
-              items: {
-                oneOf: [
-                  {
-                    type: 'string'
-                  },
-                  {
-                    type: 'number'
-                  }
-                ]
-              }
-            },
-            options: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  name: {
-                    type: 'string'
-                  },
-                  value: {
-                    type: 'any'
-                  }
-                }
-              }
-            }
-          }
-        }
-      ]
-    }
-  })
+  // names must be equal
+  return 0
+}
 
-  defineActions({
+function sortDescending (a, b) {
+  // ignore upper and lowercase
+  const A = typeof a.value === 'string' ? a.value.toUpperCase() : a.value
+  const B = typeof b.value === 'string' ? b.value.toUpperCase() : b.value
+
+  if (A > B) {
+    return -1
+  }
+
+  if (A < B) {
+    return 1
+  }
+
+  // names must be equal
+  return 0
+}
+
+const list = createPlugin({
+  name: 'list',
+  actions: {
     /**
      * Filter items based on conditions
      * @param {Object} param
@@ -265,7 +225,47 @@ const list = createPlugin('list', ({ defineActions, defineActionSchema }) => {
 
       return target.splice(start, deleteCount, source)
     }
-  })
+  },
+  actionSchema: {
+    filter: {
+      name: 'Filter',
+      description: 'Filter items based on conditions',
+      schema: [
+        {
+          type: 'object',
+          properties: {
+            items: {
+              type: 'array',
+              items: {
+                oneOf: [
+                  {
+                    type: 'string'
+                  },
+                  {
+                    type: 'number'
+                  }
+                ]
+              }
+            },
+            options: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  name: {
+                    type: 'string'
+                  },
+                  value: {
+                    type: 'any'
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
 })
 
 const listFilter = list.actions.filter
