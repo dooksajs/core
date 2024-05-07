@@ -13,7 +13,6 @@ function createApp ({ plugins, setupOptions = {}, imports = {} } = {}) {
   const context = new Context(plugins)
   const $component = getContextComponent(context.components)
   const $action = getContextActions(context.actions, imports)
-  const $data = getContextData(context.data)
 
   setupOptions.action = $action
   setupOptions.component = $component
@@ -22,7 +21,7 @@ function createApp ({ plugins, setupOptions = {}, imports = {} } = {}) {
   for (let i = 0; i < context.setup.length; i++) {
     const setup = context.setup[i]
     if (setup.name === 'data') {
-      setup.initialize($data)
+      setup.initialize(context.data)
 
       // remove from setup queue
       context.setup.splice(i)

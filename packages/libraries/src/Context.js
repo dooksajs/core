@@ -15,7 +15,7 @@ function Context (plugins = []) {
   }
   this.data = {
     values: {},
-    schema: {}
+    schema: []
   }
 
   for (let i = 0; i < plugins.length; i++) {
@@ -70,22 +70,22 @@ Context.prototype.add = function (plugin) {
 
         switch (schemaType) {
           case 'collection':
-            dataValue = {}
+            dataValue = () => ({})
             break
           case 'object':
-            dataValue = {}
+            dataValue = () => ({})
             break
           case 'array':
-            dataValue = []
+            dataValue = () => ([])
             break
           case 'string':
-            dataValue = ''
+            dataValue = () => ('')
             break
           case 'number':
-            dataValue = 0
+            dataValue = () => (0)
             break
           case 'boolean':
-            dataValue = true
+            dataValue = () => (true)
             break
         }
 
@@ -94,11 +94,11 @@ Context.prototype.add = function (plugin) {
         const isCollection = schemaType === 'collection'
 
         this.data.values[collectionName] = dataValue
-        this.data.schema[collectionName] = {
-          default: dataValue,
-          schema: parseSchema.process({}, collectionName, dataItem, [], true),
+        this.data.schema.push({
+          name: collectionName,
+          entries: parseSchema.process({}, collectionName, dataItem, [], true),
           isCollection
-        }
+        })
       }
     }
   }

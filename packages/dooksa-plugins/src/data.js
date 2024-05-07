@@ -9,6 +9,8 @@ import { deepClone, uuid } from '@dooksa/utils'
  * @typedef {import('../../global-typedef.js').DataWhere} DataWhere
  */
 
+let database = {}
+const databaseSchema = {}
 const dataListeners = {
   delete: {},
   deletePriority: {},
@@ -19,8 +21,6 @@ const dataHandlers = {
   delete: {},
   update: {}
 }
-const database = {}
-const databaseSchema = {}
 const databaseRelation = {}
 const databaseRelationInUse = {}
 
@@ -1858,6 +1858,31 @@ const data = createPlugin({
       // prepare handlers
       dataHandlers.delete[namespace] = {}
       dataHandlers.update[namespace] = {}
+    }
+  },
+  setup (contextData) {
+    database = contextData.values
+
+    for (let i = 0; i < contextData.schema.length; i++) {
+      const { entries, isCollection, name } = contextData.schema[i]
+
+      for (let i = 0; i < entries.length; i++) {
+        const { id, entry } = entries[i]
+
+        databaseSchema[id] = entry
+      }
+
+      // prepare listeners
+      let defaultType = 'array'
+
+      if (isCollection) {
+        defaultType = 'object'
+      }
+
+      dataListeners.delete[name] = newDataInstance(defaultType)
+      dataListeners.deletePriority[name] = newDataInstance(defaultType)
+      dataListeners.update[name] = newDataInstance(defaultType)
+      dataListeners.updatePriority[name] = newDataInstance(defaultType)
     }
   }
 })
