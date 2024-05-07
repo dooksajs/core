@@ -9,23 +9,1178 @@ import { deepClone, uuid } from '@dooksa/utils'
  * @typedef {import('../../global-typedef.js').DataWhere} DataWhere
  */
 
-const data = createPlugin('data', ({ context, defineActions, defineActionSchema, defineContextProperties }) => {
-  const dataListeners = {
-    delete: {},
-    deletePriority: {},
-    update: {},
-    updatePriority: {}
-  }
-  const dataHandlers = {
-    delete: {},
-    update: {}
-  }
-  const database = {}
-  const databaseSchema = {}
-  const databaseRelation = {}
-  const databaseRelationInUse = {}
+const dataListeners = {
+  delete: {},
+  deletePriority: {},
+  update: {},
+  updatePriority: {}
+}
+const dataHandlers = {
+  delete: {},
+  update: {}
+}
+const database = {}
+const databaseSchema = {}
+const databaseRelation = {}
+const databaseRelationInUse = {}
 
-  defineActionSchema({
+function arrayHasDuplicates (array) {
+  for (let i = 0; i < array.length; i++) {
+    const value = array[i]
+
+    if (array.indexOf(value) !== array.lastIndexOf(value)) {
+      return true
+    }
+  }
+
+  return false
+}
+
+/**
+ * Check if the source exists in the target array
+ * @private
+ * @param {string} name - Schema path
+ * @param {Array} source - Target array
+ */
+function arrayIsUnique (name, source) {
+  const hasDuplicates = arrayHasDuplicates(source)
+
+  if (hasDuplicates) {
+    throw new DataSchemaException({
+      schemaPath: name,
+      keyword: 'uniqueItems',
+      message: 'Type error: expected a unique item'
+    })
+  }
+}
+
+/**
+ * Create affix
+ * @param {Function|string} affix
+ * @returns {string}
+ */
+function createAffix (affix) {
+  if (typeof affix === 'function') {
+    return affix()
+  }
+
+  return affix || ''
+}
+
+/**
+ * Create collection id
+ * @param {string} name - Name of collection
+ * @param {*} option
+ * @returns {string}
+ */
+function createCollectionId (name, option) {
+  const schema = databaseSchema[name]
+  const id = option.id || ''
+  let prefix = option.prefixId ?? ''
+  let suffix = option.suffixId ?? ''
+
+  if (id) {
+    const affixId = id.split('_')
+
+    if (affixId.length === 3 && (affixId[0].length || affixId[2].length)) {
+      return id
+    }
+  }
+
+  if (schema.id) {
+    if (!prefix && schema.id.prefix) {
+      prefix = createAffix(schema.id.prefix)
+    }
+
+    if (!suffix && schema.id.suffix) {
+      suffix = createAffix(schema.id.suffix)
+    }
+
+    if (!id) {
+      if (schema.id.default) {
+        return prefix + createAffix(schema.id.default) + suffix
+      } else {
+        return prefix + generateId() + suffix
+      }
+    }
+  }
+
+  return prefix + id + suffix
+}
+
+/**
+ * Generate the default id for a collection
+ * @private
+ * @param {string} name - Collection schema path
+ * @param {Object} option - Collection id prefix or suffix options
+ * @param {string} [option.prefixId] - Prefix to add to the id
+ * @param {string} [option.suffixId] - Suffix to add to the id
+ * @returns {Object}
+ */
+function createDefaultCollectionId (name, option = {}) {
+  const schema = databaseSchema[name]
+  let prefix = option.prefixId ?? ''
+  let suffix = option.suffixId ?? ''
+
+  if (schema.id) {
+    if (!prefix && schema.id.prefix) {
+      prefix = createAffix(schema.id.prefix)
+    }
+
+    if (!suffix && schema.id.suffix) {
+      suffix = createAffix(schema.id.suffix)
+    }
+
+    if (schema.id.default) {
+      const id = createAffix(schema.id.default)
+
+      return {
+        id: prefix + id + suffix,
+        noAffixId: id
+      }
+    } else {
+      const id = generateId()
+
+      return {
+        id: prefix + id + suffix,
+        noAffixId: id
+      }
+    }
+  }
+
+  const id = generateId()
+
+  return {
+    id: prefix + id + suffix,
+    noAffixId: id
+  }
+}
+
+function createTarget (type, metadata, target) {
+  if (target == null) {
+    target = {
+      _item: newDataInstance(type),
+      _metadata: {}
+    }
+  }
+
+  target._metadata = setMetadata(target._metadata, metadata)
+
+  return target
+}
+
+/**
+ * Filter data result based on condition
+ * @private
+ * @param {DataResult} data
+ * @param {DataWhere} where
+ * @returns {boolean}
+ */
+function filterData (data, where) {
+  let isAndValid = false
+  let isOrValid = false
+  let isValid = false
+
+  if (where.and) {
+    for (let i = 0; i < where.and.length; i++) {
+      const condition = where.and[i]
+
+      if (condition.and || condition.or) {
+        isAndValid = filterData(data, condition)
+
+        if (!isAndValid) {
+          break
+        }
+      }
+
+      isAndValid = filterValidateValue(data, condition)
+
+      if (!isAndValid) {
+        break
+      }
+    }
+  }
+
+  if (where.or) {
+    for (let i = 0; i < where.or.length; i++) {
+      const condition = where.or[i]
+
+      if (condition.and || condition.or) {
+        isOrValid = filterData(data, condition)
+
+        if (!isOrValid) {
+          break
+        }
+      }
+
+      isOrValid = filterValidateValue(data, condition)
+
+      if (isOrValid) {
+        break
+      }
+    }
+  }
+
+  if (where.name) {
+    isValid = filterValidateValue(data, where)
+  }
+
+  return (isAndValid || isOrValid || isValid)
+}
+
+/**
+ * Process where condition
+ * @private
+ * @param {DataResult} data - Data result
+ * @param {DataWhere} condition - Where condition
+ * @returns {Boolean}
+ */
+function filterValidateValue (data, condition) {
+  let value
+
+  if (Object.hasOwnProperty.call(data.metadata, condition.name)) {
+    value = data.metadata[condition.name]
+  } else {
+    const properties = condition.name.split('.')
+
+    for (let i = 0; i < properties.length; i++) {
+      const property = properties[i]
+
+      if (Object.hasOwnProperty.call(data.item, property)) {
+        value = data.item[property]
+      } else {
+        break
+      }
+    }
+  }
+
+  return operatorEval({
+    name: condition.op,
+    values: [
+      value,
+      condition.value
+    ]
+  })
+}
+
+/**
+ * Get data listeners
+ * @private
+ * @param {string} name - Data collection name
+ * @param {string} on - Event name
+ * @param {string} id  - Data collection Id
+ */
+function getDataListeners (name, on, id) {
+  const listenerType = dataListeners[on]
+
+  if (!listenerType) {
+    throw new Error('Data Listener type does not exist: "' + on + '"')
+  }
+
+  const listenerCollection = listenerType[name]
+
+  if (!listenerCollection) {
+    throw new Error('Could not find data collection listeners: "' + name + '"')
+  }
+
+  const listenerPriorityCollection = dataListeners[on + 'Priority'][name]
+
+  if (id) {
+    return {
+      items: listenerCollection[id],
+      priority: listenerPriorityCollection[id]
+    }
+  }
+
+  return {
+    items: listenerCollection,
+    priority: listenerPriorityCollection
+  }
+}
+
+/**
+ * Process listeners on update event
+ * @private
+ * @param {string} name - Collection name
+ * @param {string} on - Event name
+ * @param {DataResult} item - Value that is being set
+ * @param {boolean} [stopPropagation] - Prevents further propagation of the update event
+ */
+function fireDataListeners (name, on, item, stopPropagation) {
+  const listeners = getDataListeners(name, on, item.id)
+
+  if (listeners.priority) {
+    for (let i = 0; i < listeners.priority.length; i++) {
+      const handler = listeners.priority[i]
+
+      if (!stopPropagation || handler.force) {
+        handler.value(item)
+      }
+    }
+  }
+
+  if (listeners.items) {
+    for (let i = 0; i < listeners.items.length; i++) {
+      const handler = listeners.items[i]
+
+      if (!stopPropagation || handler.force) {
+        handler.value(item)
+      }
+    }
+  }
+}
+
+/**
+   * Get new data instance
+  * @private
+  * @param {string} type - Data type name
+  * @returns {Array|Boolean|Function|number|Object|string}
+  */
+function newDataInstance (type) {
+  switch (type) {
+    case 'array':
+      return new Array()
+    case 'boolean':
+      return new Boolean().valueOf()
+    case 'function':
+      return () => {}
+    case 'node':
+      return new Object()
+    case 'number':
+      return new String().valueOf()
+    case 'object':
+      return new Object()
+    case 'string':
+      return new String().valueOf()
+  }
+}
+
+/**
+ * Validate and collection items
+ * @param {*} data
+ * @param {*} path
+ * @param {*} sources
+ * @param {*} metadata
+ * @returns
+ */
+function setCollectionItems (data, path, sources, metadata) {
+  const schema = databaseSchema[path]
+  const schemaType = schema.type
+
+  if (schemaType !== 'object' || schemaType !== 'array') {
+    for (const id in sources) {
+      if (Object.hasOwnProperty.call(sources, id)) {
+        const clone = newDataInstance(schema.type)
+        const source = deepClone(clone, sources[id], true)
+        const target = {
+          _item: source._item || source,
+          _metadata: source._metadata || metadata
+        }
+
+        validateDataType(path, target._item, schemaType)
+
+        if (schema.options && schema.options.relation) {
+          setRelation(data.collection, id, schema.options.relation, target._item)
+        }
+
+        // store old values
+        const previousData = data.target[id]
+
+        if (previousData) {
+          target._previous = {
+            _item: previousData._item,
+            _metadata: previousData._metadata
+          }
+        }
+
+        data.target[id] = target
+      }
+    }
+
+    return
+  }
+
+  for (const id in sources) {
+    if (Object.hasOwnProperty.call(sources, id)) {
+      let resultItem = newDataInstance(schemaType)
+      let source = deepClone(newDataInstance(schemaType), sources[id])
+      const resultMetadata = source._metadata || metadata
+      source = source._item || source
+
+      validateDataType(path, source, schemaType)
+
+      // set current merge root id
+      data.id = id
+
+      const target = data.target[id]
+
+      // merge target and source objects
+      if (target && target._item instanceof Object) {
+        deepClone(resultItem, target)
+        resultItem = resultItem._item
+
+        if (Array.isArray(resultItem)) {
+          resultItem = source
+        } else {
+          for (const key in source) {
+            if (Object.hasOwnProperty.call(source, key)) {
+              resultItem[key] = source[key]
+            }
+          }
+        }
+      } else {
+        resultItem = source
+      }
+
+      if (schemaType == 'object') {
+        validateSchemaObject(data, path, resultItem)
+      } else {
+        validateSchemaArray(data, path, resultItem)
+      }
+
+      // add new item value
+      const result = createTarget(schema.type, resultMetadata)
+
+      result._item = resultItem
+
+      // store old values
+      const previousData = data.target[id]
+
+      if (previousData) {
+        result._previous = {
+          _item: previousData._item,
+          _metadata: previousData._metadata
+        }
+      }
+
+      data.target[id] = result
+    }
+  }
+}
+
+/**
+ * Validate data
+ * @private
+ * @param {string} collection
+ * @param {*} target
+ * @param {*} source
+ * @param {DsSetDataOptions} [options]
+ * @returns {Object}
+ */
+function setData (collection, target, source, options) {
+  const data = { target, collection }
+  const schema = databaseSchema[collection]
+  let isValid = true
+
+  if (options) {
+    const dataOptions = setDataOptions(data, source, options)
+
+    isValid = dataOptions.isValid
+
+    if (dataOptions.complete) {
+      const result = {
+        isValid,
+        target: data.target
+      }
+
+      if (data.id) {
+        const value = data.target[data.id]
+
+        result.id = data.id
+        result.item = value._item
+        result.previous = value._previous
+        result.metadata = value._metadata
+        result.noAffixId = data.noAffixId
+      }
+
+      return result
+    }
+  }
+
+  const result = {
+    isValid,
+    target: data.target
+  }
+
+  if (data.id) {
+    result.id = data.id
+    result.noAffixId = data.noAffixId
+    result.item = data.target[data.id]._item
+    result.previous = data.target[data.id]._previous
+    result.metadata = data.target[data.id]._metadata
+  } else if (schema.type === 'collection') {
+    const schemaPath = collection + '/items'
+    // create document id
+    const collectionId = createDefaultCollectionId(collection)
+
+    // set doc id for relation data
+    data.id = collectionId.id
+
+    // validate source
+    validateSchema(data, schemaPath, source)
+
+    /** @todo validate *any* until schema supports multi type schema */
+    const type = databaseSchema[schemaPath] ? databaseSchema[schemaPath].type : 'object'
+    const target = createTarget(type, source._metadata)
+
+    target._item = source._item || source
+
+    // set item in data target
+    data.target[collectionId.id] = target
+
+    result.id = collectionId.id
+    result.noAffixId = collectionId.noAffixId
+    result.item = target._item
+    result.previous = target._previous
+    result.metadata = target._metadata
+  } else {
+    validateSchema(data, collection, source)
+
+    /** @todo validate *any* until schema supports multi type schema */
+    const type = databaseSchema[collection] ? databaseSchema[collection].type : 'object'
+    const target = createTarget(type, source._metadata)
+
+    target._item = source._item || source
+
+    data.target = target
+
+    result.target = target._item
+    result.item = target._item
+    result.previous = target._previous
+    result.metadata = target._metadata
+  }
+  return result
+}
+
+function setDataOptions (data, source, options) {
+  if (Object.hasOwnProperty.call(options, 'id') && options.id == null) {
+    throw new DataSchemaException({
+      schemaPath: data.collection,
+      keyword: 'collection',
+      message: 'Expected collection id to be a string but got undefined'
+    })
+  }
+
+  let schemaPath = data.collection + '/items'
+  const schema = databaseSchema[schemaPath]
+
+  // process document id
+  if (options.id) {
+    const id = createCollectionId(data.collection, options)
+
+    data.id = id
+
+    if (options.merge) {
+      setCollectionItems(data, schemaPath, { [id]: source }, options.metadata)
+
+      return {
+        complete: true,
+        isValid: true
+      }
+    }
+  } else {
+    if (options.merge) {
+      setCollectionItems(data, schemaPath, source, options.metadata)
+
+      return {
+        complete: true,
+        isValid: true
+      }
+    }
+
+    // create new id
+    const collection = createDefaultCollectionId(data.collection, options)
+
+    data.id = collection.id
+    data.noAffixId = collection.noAffixId
+  }
+
+  const previousTarget = data.target[data.id]
+
+  // store previous state
+  if (previousTarget) {
+    const result = createTarget(schema.type, options.metadata, previousTarget)
+
+    previousTarget._previous = {
+      _item: previousTarget._item,
+      _metadata: previousTarget._metadata
+    }
+
+    previousTarget._metadata = result._metadata
+  } else {
+    data.target[data.id] = createTarget(schema.type, options.metadata)
+  }
+
+  // insert new data
+  if (!options.update) {
+    validateSchema(data, schemaPath, source)
+
+    // add new data entry
+    data.target[data.id]._item = source
+
+    return {
+      complete: true,
+      isValid: true
+    }
+  }
+
+  const target = data.target[data.id]
+  let targetItem = target._item
+
+  // update target position
+  if (options.update.position) {
+    const length = options.update.position.length - 1
+    const lastKey = options.update.position[length]
+    let path = schemaPath
+
+    for (let i = 0; i < length; i++) {
+      const key = options.update.position[i]
+      path = path + '/' + key
+
+      if (!targetItem[key]) {
+        throw new DataValueException('Update position does not exist' + options.update.position)
+      }
+
+      targetItem = targetItem[key]
+    }
+
+    // insert data
+    if (!options.update.method) {
+      validateSchema(data, path, source)
+
+      targetItem[lastKey] = source
+
+      return {
+        complete: true,
+        isValid: true
+      }
+    } else {
+      // make a copy for update method
+      if (Array.isArray(targetItem[lastKey])) {
+        targetItem = targetItem[lastKey].slice()
+      } else {
+        throw new DataValueException('Update position and update method expected an array')
+      }
+    }
+
+    schemaPath = path
+  }
+
+  if (options.update.method) {
+    if (!Array.isArray(targetItem)) {
+      throw new DataSchemaException({
+        schemaPath,
+        keyword: 'updateMethod',
+        message: 'Expected target to be an array but found ' + typeof targetItem
+      })
+    }
+
+    // Clone array if position was not changed
+    if (options.update.position == null) {
+      data.target[data.id]._item = target._item.slice()
+      targetItem = data.target[data.id]._item
+    }
+
+    const schemaPathItem = schemaPath + '/items'
+    const schemaItem = databaseSchema[schemaPathItem]
+    const updateMethod = options.update.method
+
+    // validate source
+    if (schemaItem && (updateMethod === 'push' || updateMethod === 'unshift')) {
+      const schemaType = schemaItem.type
+
+      if (Array.isArray(source)) {
+        for (let i = 0; i < source.length; i++) {
+          const item = source[i]
+
+          if (schemaType === 'array' || schemaType === 'object') {
+            if (schemaType === 'array') {
+              validateSchemaArray(data, schemaPathItem, item)
+            } else {
+              validateSchemaObject(data, schemaPathItem, item)
+            }
+          } else {
+            validateDataType(schemaPathItem, item, schemaItem.type)
+          }
+        }
+      } else {
+        if (schemaType === 'array' || schemaType === 'object') {
+          if (schemaType === 'array') {
+            validateSchemaArray(data, schemaPathItem, source)
+          } else {
+            validateSchemaObject(data, schemaPathItem, source)
+          }
+        } else {
+          validateDataType(schemaPathItem, source, schemaItem.type)
+        }
+      }
+    }
+
+    // update target array
+    updateArray(targetItem, source, options.update)
+
+    // check schema options of array
+    const schema = databaseSchema[schemaPath]
+
+    // ISSUE: containsDuplicates expects an array
+    if (schema && schema.options) {
+      if (schema.options.uniqueItems) {
+        const hasDuplicates = arrayHasDuplicates(targetItem)
+
+        if (hasDuplicates) {
+          // restore target
+          target._item = target._previous._item
+
+          return {
+            complete: true,
+            isValid: false
+          }
+        }
+      }
+
+      if (schema.options.relation) {
+        setRelation(data.collection, data.id, schema.options.relation, source)
+      }
+
+      return {
+        complete: true,
+        isValid: true
+      }
+    }
+  }
+
+  return {
+    isValid: true
+  }
+}
+
+function setMetadata (item = {}, options) {
+  if (options) {
+    // append additional metadata
+    for (const key in options) {
+      if (Object.hasOwnProperty.call(options, key)) {
+        const value = options[key]
+
+        item[key] = value
+      }
+    }
+  }
+
+  if (context.isServer) {
+    const timestamp = Date.now()
+
+    if (!item.userId && options && options.userId) {
+      item.userId = options.userId
+    }
+
+    if (!item.createdAt) {
+      item.createdAt = timestamp
+    }
+
+    item.updatedAt = timestamp
+  }
+
+  return item
+}
+
+/**
+ * Set the association id
+ * @param {string} collection - Primary collection
+ * @param {string} docId - Primary id
+ * @param {string} refCollection - Foreign collection
+ * @param {string} refId - Foreign id
+ */
+function setRelation (collection, docId, refCollection, refId) {
+  const name = collection + '/' + docId
+  const usedName = refCollection + '/' + refId
+
+  // set what is related to data
+  if (!databaseRelation[name]) {
+    databaseRelation[name] = [usedName]
+  } else if (!databaseRelation[name].includes(usedName)) {
+    databaseRelation[name].push(usedName)
+  }
+
+  // set where ref data is used
+  if (!databaseRelationInUse[usedName]) {
+    databaseRelationInUse[usedName] = [name]
+  } else if (!databaseRelationInUse[usedName].includes(name)) {
+    databaseRelationInUse[usedName].push(name)
+  }
+}
+
+function updateArray (target, source, options) {
+  source = Array.isArray(source) ? source : [source]
+
+  switch (options.method) {
+    case 'push':
+      for (let i = 0; i < source.length; i++) {
+        target.push(source[i])
+      }
+
+      updateArrayItemFreeze(target, source.length)
+
+      break
+    case 'pull':
+      for (let i = 0; i < source.length; i++) {
+        const value = source[i]
+        const index = target.indexOf(value)
+
+        if (index !== -1) {
+          target.splice(index, 1)
+        }
+      }
+
+      break
+    case 'pop':
+      target.pop()
+
+      break
+    case 'shift':
+      target.shift()
+
+      break
+    case 'unshift':
+      for (let i = 0; i < source.length; i++) {
+        target.unshift(source[i])
+      }
+
+      updateArrayItemFreeze(target, source.length)
+
+      break
+    case 'splice':
+      listSplice({
+        target,
+        start: options.startIndex,
+        source,
+        deleteCount: options.deleteCount
+      })
+
+      updateArrayItemFreeze(target, source.length)
+  }
+}
+
+function updateArrayItemFreeze (items, length) {
+  for (let i = items.length - length; i < items.length; i++) {
+    const item = items[i]
+
+    if (typeof item === 'object') {
+      Object.freeze(item)
+    }
+  }
+}
+
+/**
+ * Check data type
+ * @private
+ * @param {string} path - Schema path
+ * @param {*} value - value to be checked
+ * @param {string} type - Expected data type
+ * @returns {boolean}
+ */
+function validateDataType (path, value, type) {
+  if (value == null) {
+    throw new DataSchemaException({
+      schemaPath: path,
+      keyword: 'type',
+      message: 'Unexpected type, expected "' + type + '" but got "undefined"'
+    })
+  }
+
+  if (type === 'node') {
+    if (value.nodeName && Object.isFrozen(value.nodeName)) {
+      return true
+    }
+
+    throw new DataSchemaException({
+      schemaPath: path,
+      keyword: 'type',
+      message: 'Unexpected type, expected a node'
+    })
+  }
+
+  // need a better method of determining the data type
+  const dataType = value.constructor.name.toLowerCase()
+
+  if (dataType === type) {
+    return true
+  }
+
+  throw new DataSchemaException({
+    schemaPath: path,
+    keyword: 'type',
+    message: 'Unexpected type, expected "' + type + '" but got "' + dataType + '"'
+  })
+}
+
+function validateSchemaArray (data, path, source) {
+  const schema = databaseSchema[path]
+
+  if (schema.options) {
+    validateSchemaArrayOption(path, source)
+  }
+
+  // check if source is an array
+  validateDataType(schema, source, schema.type)
+
+  const schemaName = path + '/items'
+  const schemaItems = databaseSchema[schemaName]
+
+  // no validation
+  if (!schemaItems) {
+    return
+  }
+
+  const schemaType = schemaItems.type
+
+  // freeze array
+  Object.freeze(source)
+
+  for (let i = 0; i < source.length; i++) {
+    const item = source[i]
+
+    if (schemaType === 'object') {
+      validateSchemaObject(data, schemaName, item)
+    } else if (schemaType === 'array') {
+      validateSchemaArray(data, schemaName, item)
+    } else {
+      // set relation for array of strings
+      if (schemaItems.options && schemaItems.options.relation) {
+        setRelation(data.collection, data.id, schemaItems.options.relation, item)
+      }
+
+      validateDataType(schemaName, item, schemaItems.type)
+
+      // freeze array item
+      if (typeof item === 'object') {
+        Object.freeze(item)
+      }
+    }
+  }
+}
+
+function validateSchemaArrayOption (path, source) {
+  const schema = databaseSchema[path]
+
+  if (schema.options.uniqueItems) {
+    arrayIsUnique(path, source)
+  }
+}
+
+function validateSchemaObject (data, path, source) {
+  const schema = databaseSchema[path]
+
+  // no validation
+  if (!schema.properties && !schema.patternProperties) {
+    return
+  }
+
+  if (schema.options) {
+    validateSchemaObjectOption(path, source)
+  }
+
+  // freeze object
+  Object.freeze(source)
+
+  const propertiesChecked = {}
+
+  if (schema.properties) {
+    validateSchemaObjectProperties(data, schema.properties, propertiesChecked, source, path)
+  }
+
+  if (schema.patternProperties) {
+    validateSchemaObjectPatternProperties(data, schema.patternProperties, propertiesChecked, source, path)
+  }
+}
+
+function validateSchemaObjectOption (path, data) {
+  const schema = databaseSchema[path]
+
+  if (schema.options.additionalProperties) {
+    const patternProperties = schema.patternProperties || []
+    const additionalKeys = []
+
+    for (const key in data) {
+      if (Object.hasOwnProperty.call(data, key)) {
+        // check if key can exist
+        if (!schema.options.additionalProperties.includes(key)) {
+          additionalKeys.push(key)
+        }
+      }
+    }
+
+    // check patterned keys
+    for (let i = 0; i < patternProperties.length; i++) {
+      const property = patternProperties[i]
+      const regex = new RegExp(property.name)
+
+      for (let i = 0; i < additionalKeys.length; i++) {
+        const key = additionalKeys[i]
+
+        // remove additional key
+        if (regex.test(key)) {
+          additionalKeys.splice(i, 1)
+        }
+      }
+    }
+
+    if (additionalKeys.length) {
+      throw new DataSchemaException({
+        schemaPath: path,
+        keyword: 'additionalProperties',
+        message: 'Additional properties are now allowed ' + JSON.stringify(additionalKeys)
+      })
+    }
+  }
+}
+
+function validateSchemaObjectPatternProperties (data, properties, propertiesChecked, source, path) {
+  for (let i = 0; i < properties.length; i++) {
+    const property = properties[i]
+
+    for (const key in source) {
+      if (Object.hasOwnProperty.call(source, key)) {
+        if (propertiesChecked[key]) {
+          continue
+        }
+
+        const regex = new RegExp(property.name)
+
+        if (!regex.test(key)) {
+          throw new DataSchemaException({
+            schemaPath: path,
+            keyword: 'patternProperty',
+            message: 'Invalid property: ' + key
+          })
+        }
+
+        const sourceItem = source[key]
+
+        if (sourceItem == null && property.default) {
+          // add default value
+          if (typeof property.default === 'function') {
+            source[key] = property.default()
+          } else {
+            source[key] = property.default
+          }
+        } else {
+          const schemaName = path + '/' + property.name
+          const schema = databaseSchema[schemaName]
+
+          if (schema) {
+            const schemaType = schema.type
+
+            validateDataType(schemaName, sourceItem, schemaType)
+
+            if (schemaType === 'object') {
+              validateSchemaObject(data, schemaName, sourceItem)
+            } else {
+              validateSchemaArray(data, schemaName, sourceItem)
+            }
+          } else {
+            const propertyOptions = property.options || {}
+
+            if (propertyOptions.relation) {
+              setRelation(data.collection, data.id, propertyOptions.relation, sourceItem)
+            }
+          }
+        }
+
+        validateDataType(path, sourceItem, property.type)
+      }
+    }
+  }
+}
+
+function validateSchemaObjectProperties (data, properties, propertiesChecked, source, path) {
+  for (let i = 0; i < properties.length; i++) {
+    const property = properties[i]
+    const propertyOptions = property.options || {}
+    const value = source[property.name]
+
+    // check if field is required
+    if (propertyOptions.required && value == null) {
+      throw new DataSchemaException({
+        schemaPath: path,
+        keyword: 'required',
+        message: 'Invalid data (' + path + '): required property missing: "' + property.name + '"'
+      })
+    }
+
+    if (value == null && !propertyOptions.default) {
+      propertiesChecked[property.name] = true
+    } else {
+      const sourceItem = source[property.name]
+
+      if (value == null && propertyOptions.default) {
+        // add default value
+        if (typeof propertyOptions.default === 'function') {
+          source[property.name] = propertyOptions.default()
+        } else {
+          source[property.name] = propertyOptions.default
+        }
+      } else {
+        const schemaName = path + '/' + property.name
+        const schema = databaseSchema[schemaName]
+
+        if (schema) {
+          const schemaType = schema.type
+
+          validateDataType(schemaName, sourceItem, schemaType)
+
+          if (schemaType === 'object') {
+            validateSchemaObject(data, schemaName, sourceItem)
+          } else {
+            validateSchemaArray(data, schemaName, sourceItem)
+          }
+        } else {
+          if (propertyOptions.relation) {
+            setRelation(data.collection, data.id, propertyOptions.relation, value)
+          }
+        }
+      }
+
+      validateDataType(path, sourceItem, property.type)
+
+      propertiesChecked[property.name] = true
+    }
+  }
+}
+
+function validateSchema (data, path, source) {
+  const schema = databaseSchema[path]
+
+  /** @todo validate *any* until schema supports multi type schema */
+  if (!schema) {
+    return
+  }
+  const schemaType = schema.type
+
+  if (schemaType === 'object') {
+    validateSchemaObject(data, path, source)
+  } else if (schemaType === 'array') {
+    validateSchemaArray(data, path, source)
+  } else {
+    // type check
+    validateDataType(path, source, schema.type)
+
+    if (schema.options && schema.options.relation) {
+      setRelation(data.collection, data.id, schema.options.relation, source)
+    }
+  }
+}
+
+/**
+ * Generate a unique id
+ * @returns {string}
+ */
+function generateId () {
+  return '_' + uuid() + '_'
+}
+
+const data = createPlugin({
+  name: 'data',
+  actionSchema: {
     generateId: {
       name: 'UUID',
       description: 'Generate a unique id'
@@ -118,17 +1273,9 @@ const data = createPlugin('data', ({ context, defineActions, defineActionSchema,
         }
       ]
     }
-  })
-
-  // add database actions
-  const actions = defineActions({
-    /**
-     * Generate a unique id
-     * @returns {string}
-     */
-    generateId () {
-      return '_' + uuid() + '_'
-    },
+  },
+  actions: {
+    generateId,
     /**
      * Retrieve all entities from collection
      * @param {Object} param
@@ -238,1182 +1385,7 @@ const data = createPlugin('data', ({ context, defineActions, defineActionSchema,
       }
 
       return result
-    }
-  })
-
-  // this._containsDuplicates
-  function arrayHasDuplicates (array) {
-    for (let i = 0; i < array.length; i++) {
-      const value = array[i]
-
-      if (array.indexOf(value) !== array.lastIndexOf(value)) {
-        return true
-      }
-    }
-
-    return false
-  }
-
-  /**
-   * Check if the source exists in the target array
-   * @private
-   * @param {string} name - Schema path
-   * @param {Array} source - Target array
-   */
-  // this._checkArrayUniqueItem
-  function arrayIsUnique (name, source) {
-    const hasDuplicates = arrayHasDuplicates(source)
-
-    if (hasDuplicates) {
-      throw new DataSchemaException({
-        schemaPath: name,
-        keyword: 'uniqueItems',
-        message: 'Type error: expected a unique item'
-      })
-    }
-  }
-
-  /**
-   * Create affix
-   * @param {Function|string} affix
-   * @returns {string}
-   */
-  // this._affixId
-  function createAffix (affix) {
-    if (typeof affix === 'function') {
-      return affix()
-    }
-
-    return affix || ''
-  }
-
-  /**
-   * Create collection id
-   * @param {string} name - Name of collection
-   * @param {*} option
-   * @returns {string}
-   */
-  // this._createCollectionId
-  function createCollectionId (name, option) {
-    const schema = databaseSchema[name]
-    const id = option.id || ''
-    let prefix = option.prefixId ?? ''
-    let suffix = option.suffixId ?? ''
-
-    if (id) {
-      const affixId = id.split('_')
-
-      if (affixId.length === 3 && (affixId[0].length || affixId[2].length)) {
-        return id
-      }
-    }
-
-    if (schema.id) {
-      if (!prefix && schema.id.prefix) {
-        prefix = createAffix(schema.id.prefix)
-      }
-
-      if (!suffix && schema.id.suffix) {
-        suffix = createAffix(schema.id.suffix)
-      }
-
-      if (!id) {
-        if (schema.id.default) {
-          return prefix + createAffix(schema.id.default) + suffix
-        } else {
-          return prefix + actions.generateId() + suffix
-        }
-      }
-    }
-
-    return prefix + id + suffix
-  }
-
-  /**
-   * Generate the default id for a collection
-   * @private
-   * @param {string} name - Collection schema path
-   * @param {Object} option - Collection id prefix or suffix options
-   * @param {string} [option.prefixId] - Prefix to add to the id
-   * @param {string} [option.suffixId] - Suffix to add to the id
-   * @returns {Object}
-   */
-  // this._defaultCollectionId
-  function createDefaultCollectionId (name, option = {}) {
-    const schema = databaseSchema[name]
-    let prefix = option.prefixId ?? ''
-    let suffix = option.suffixId ?? ''
-
-    if (schema.id) {
-      if (!prefix && schema.id.prefix) {
-        prefix = createAffix(schema.id.prefix)
-      }
-
-      if (!suffix && schema.id.suffix) {
-        suffix = createAffix(schema.id.suffix)
-      }
-
-      if (schema.id.default) {
-        const id = createAffix(schema.id.default)
-
-        return {
-          id: prefix + id + suffix,
-          noAffixId: id
-        }
-      } else {
-        const id = actions.generateId()
-
-        return {
-          id: prefix + id + suffix,
-          noAffixId: id
-        }
-      }
-    }
-
-    const id = actions.generateId()
-
-    return {
-      id: prefix + id + suffix,
-      noAffixId: id
-    }
-  }
-
-  // this._createTarget
-  function createTarget (type, metadata, target) {
-    if (target == null) {
-      target = {
-        _item: newDataInstance(type),
-        _metadata: {}
-      }
-    }
-
-    target._metadata = setMetadata(target._metadata, metadata)
-
-    return target
-  }
-
-  /**
-   * Filter data result based on condition
-   * @private
-   * @param {DataResult} data
-   * @param {DataWhere} where
-   * @returns {boolean}
-   */
-  // this._filter
-  function filterData (data, where) {
-    let isAndValid = false
-    let isOrValid = false
-    let isValid = false
-
-    if (where.and) {
-      for (let i = 0; i < where.and.length; i++) {
-        const condition = where.and[i]
-
-        if (condition.and || condition.or) {
-          isAndValid = filterData(data, condition)
-
-          if (!isAndValid) {
-            break
-          }
-        }
-
-        isAndValid = filterValidateValue(data, condition)
-
-        if (!isAndValid) {
-          break
-        }
-      }
-    }
-
-    if (where.or) {
-      for (let i = 0; i < where.or.length; i++) {
-        const condition = where.or[i]
-
-        if (condition.and || condition.or) {
-          isOrValid = filterData(data, condition)
-
-          if (!isOrValid) {
-            break
-          }
-        }
-
-        isOrValid = filterValidateValue(data, condition)
-
-        if (isOrValid) {
-          break
-        }
-      }
-    }
-
-    if (where.name) {
-      isValid = filterValidateValue(data, where)
-    }
-
-    return (isAndValid || isOrValid || isValid)
-  }
-
-  /**
-   * Process where condition
-   * @private
-   * @param {DataResult} data - Data result
-   * @param {DataWhere} condition - Where condition
-   * @returns {Boolean}
-   */
-  // this._filterValidateValue
-  function filterValidateValue (data, condition) {
-    let value
-
-    if (Object.hasOwnProperty.call(data.metadata, condition.name)) {
-      value = data.metadata[condition.name]
-    } else {
-      const properties = condition.name.split('.')
-
-      for (let i = 0; i < properties.length; i++) {
-        const property = properties[i]
-
-        if (Object.hasOwnProperty.call(data.item, property)) {
-          value = data.item[property]
-        } else {
-          break
-        }
-      }
-    }
-
-    return operator.actions.eval({
-      name: condition.op,
-      values: [
-        value,
-        condition.value
-      ]
-    })
-  }
-
-  /**
-   * Get data listeners
-   * @private
-   * @param {string} name - Data collection name
-   * @param {string} on - Event name
-   * @param {string} id  - Data collection Id
-   */
-  // this._getListeners
-  function getDataListeners (name, on, id) {
-    const listenerType = dataListeners[on]
-
-    if (!listenerType) {
-      throw new Error('Data Listener type does not exist: "' + on + '"')
-    }
-
-    const listenerCollection = listenerType[name]
-
-    if (!listenerCollection) {
-      throw new Error('Could not find data collection listeners: "' + name + '"')
-    }
-
-    const listenerPriorityCollection = dataListeners[on + 'Priority'][name]
-
-    if (id) {
-      return {
-        items: listenerCollection[id],
-        priority: listenerPriorityCollection[id]
-      }
-    }
-
-    return {
-      items: listenerCollection,
-      priority: listenerPriorityCollection
-    }
-  }
-
-  /**
-   * Process listeners on update event
-   * @private
-   * @param {string} name - Collection name
-   * @param {string} on - Event name
-   * @param {DataResult} item - Value that is being set
-   * @param {boolean} [stopPropagation] - Prevents further propagation of the update event
-   */
-  // this._fireDataListeners
-  function fireDataListeners (name, on, item, stopPropagation) {
-    const listeners = getDataListeners(name, on, item.id)
-
-    if (listeners.priority) {
-      for (let i = 0; i < listeners.priority.length; i++) {
-        const handler = listeners.priority[i]
-
-        if (!stopPropagation || handler.force) {
-          handler.value(item)
-        }
-      }
-    }
-
-    if (listeners.items) {
-      for (let i = 0; i < listeners.items.length; i++) {
-        const handler = listeners.items[i]
-
-        if (!stopPropagation || handler.force) {
-          handler.value(item)
-        }
-      }
-    }
-  }
-
-  /**
-   * Get new data instance
-   * @private
-   * @param {string} type - Data type name
-   * @returns {Array|Boolean|Function|number|Object|string}
-   */
-  // this._types
-  function newDataInstance (type) {
-    switch (type) {
-      case 'array':
-        return new Array()
-      case 'boolean':
-        return new Boolean().valueOf()
-      case 'function':
-        return () => {}
-      case 'node':
-        return new Object()
-      case 'number':
-        return new String().valueOf()
-      case 'object':
-        return new Object()
-      case 'string':
-        return new String().valueOf()
-    }
-  }
-
-  /**
-   * Validate and collection items
-   * @param {*} data
-   * @param {*} path
-   * @param {*} sources
-   * @param {*} metadata
-   * @returns
-   */
-  // this._checkCollectionItems
-  function setCollectionItems (data, path, sources, metadata) {
-    const schema = databaseSchema[path]
-    const schemaType = schema.type
-
-    if (schemaType !== 'object' || schemaType !== 'array') {
-      for (const id in sources) {
-        if (Object.hasOwnProperty.call(sources, id)) {
-          const clone = newDataInstance(schema.type)
-          const source = deepClone(clone, sources[id], true)
-          const target = {
-            _item: source._item || source,
-            _metadata: source._metadata || metadata
-          }
-
-          validateDataType(path, target._item, schemaType)
-
-          if (schema.options && schema.options.relation) {
-            setRelation(data.collection, id, schema.options.relation, target._item)
-          }
-
-          // store old values
-          const previousData = data.target[id]
-
-          if (previousData) {
-            target._previous = {
-              _item: previousData._item,
-              _metadata: previousData._metadata
-            }
-          }
-
-          data.target[id] = target
-        }
-      }
-
-      return
-    }
-
-    for (const id in sources) {
-      if (Object.hasOwnProperty.call(sources, id)) {
-        let resultItem = newDataInstance(schemaType)
-        let source = deepClone(newDataInstance(schemaType), sources[id])
-        const resultMetadata = source._metadata || metadata
-        source = source._item || source
-
-        validateDataType(path, source, schemaType)
-
-        // set current merge root id
-        data.id = id
-
-        const target = data.target[id]
-
-        // merge target and source objects
-        if (target && target._item instanceof Object) {
-          deepClone(resultItem, target)
-          resultItem = resultItem._item
-
-          if (Array.isArray(resultItem)) {
-            resultItem = source
-          } else {
-            for (const key in source) {
-              if (Object.hasOwnProperty.call(source, key)) {
-                resultItem[key] = source[key]
-              }
-            }
-          }
-        } else {
-          resultItem = source
-        }
-
-        if (schemaType == 'object') {
-          validateSchemaObject(data, path, resultItem)
-        } else {
-          validateSchemaArray(data, path, resultItem)
-        }
-
-        // add new item value
-        const result = createTarget(schema.type, resultMetadata)
-
-        result._item = resultItem
-
-        // store old values
-        const previousData = data.target[id]
-
-        if (previousData) {
-          result._previous = {
-            _item: previousData._item,
-            _metadata: previousData._metadata
-          }
-        }
-
-        data.target[id] = result
-      }
-    }
-  }
-
-  /**
-   * Validate data
-   * @private
-   * @param {string} collection
-   * @param {*} target
-   * @param {*} source
-   * @param {DsSetDataOptions} [options]
-   * @returns {Object}
-   */
-  // this._setData
-  function setData (collection, target, source, options) {
-    const data = { target, collection }
-    const schema = databaseSchema[collection]
-    let isValid = true
-
-    if (options) {
-      const dataOptions = setDataOptions(data, source, options)
-
-      isValid = dataOptions.isValid
-
-      if (dataOptions.complete) {
-        const result = {
-          isValid,
-          target: data.target
-        }
-
-        if (data.id) {
-          const value = data.target[data.id]
-
-          result.id = data.id
-          result.item = value._item
-          result.previous = value._previous
-          result.metadata = value._metadata
-          result.noAffixId = data.noAffixId
-        }
-
-        return result
-      }
-    }
-
-    const result = {
-      isValid,
-      target: data.target
-    }
-
-    if (data.id) {
-      result.id = data.id
-      result.noAffixId = data.noAffixId
-      result.item = data.target[data.id]._item
-      result.previous = data.target[data.id]._previous
-      result.metadata = data.target[data.id]._metadata
-    } else if (schema.type === 'collection') {
-      const schemaPath = collection + '/items'
-      // create document id
-      const collectionId = createDefaultCollectionId(collection)
-
-      // set doc id for relation data
-      data.id = collectionId.id
-
-      // validate source
-      validateSchema(data, schemaPath, source)
-
-      /** @todo validate *any* until schema supports multi type schema */
-      const type = databaseSchema[schemaPath] ? databaseSchema[schemaPath].type : 'object'
-      const target = createTarget(type, source._metadata)
-
-      target._item = source._item || source
-
-      // set item in data target
-      data.target[collectionId.id] = target
-
-      result.id = collectionId.id
-      result.noAffixId = collectionId.noAffixId
-      result.item = target._item
-      result.previous = target._previous
-      result.metadata = target._metadata
-    } else {
-      validateSchema(data, collection, source)
-
-      /** @todo validate *any* until schema supports multi type schema */
-      const type = databaseSchema[collection] ? databaseSchema[collection].type : 'object'
-      const target = createTarget(type, source._metadata)
-
-      target._item = source._item || source
-
-      data.target = target
-
-      result.target = target._item
-      result.item = target._item
-      result.previous = target._previous
-      result.metadata = target._metadata
-    }
-    return result
-  }
-
-  // this['_setData/options']
-  function setDataOptions (data, source, options) {
-    if (Object.hasOwnProperty.call(options, 'id') && options.id == null) {
-      throw new DataSchemaException({
-        schemaPath: data.collection,
-        keyword: 'collection',
-        message: 'Expected collection id to be a string but got undefined'
-      })
-    }
-
-    let schemaPath = data.collection + '/items'
-    const schema = databaseSchema[schemaPath]
-
-    // process document id
-    if (options.id) {
-      const id = createCollectionId(data.collection, options)
-
-      data.id = id
-
-      if (options.merge) {
-        setCollectionItems(data, schemaPath, { [id]: source }, options.metadata)
-
-        return {
-          complete: true,
-          isValid: true
-        }
-      }
-    } else {
-      if (options.merge) {
-        setCollectionItems(data, schemaPath, source, options.metadata)
-
-        return {
-          complete: true,
-          isValid: true
-        }
-      }
-
-      // create new id
-      const collection = createDefaultCollectionId(data.collection, options)
-
-      data.id = collection.id
-      data.noAffixId = collection.noAffixId
-    }
-
-    const previousTarget = data.target[data.id]
-
-    // store previous state
-    if (previousTarget) {
-      const result = createTarget(schema.type, options.metadata, previousTarget)
-
-      previousTarget._previous = {
-        _item: previousTarget._item,
-        _metadata: previousTarget._metadata
-      }
-
-      previousTarget._metadata = result._metadata
-    } else {
-      data.target[data.id] = createTarget(schema.type, options.metadata)
-    }
-
-    // insert new data
-    if (!options.update) {
-      validateSchema(data, schemaPath, source)
-
-      // add new data entry
-      data.target[data.id]._item = source
-
-      return {
-        complete: true,
-        isValid: true
-      }
-    }
-
-    const target = data.target[data.id]
-    let targetItem = target._item
-
-    // update target position
-    if (options.update.position) {
-      const length = options.update.position.length - 1
-      const lastKey = options.update.position[length]
-      let path = schemaPath
-
-      for (let i = 0; i < length; i++) {
-        const key = options.update.position[i]
-        path = path + '/' + key
-
-        if (!targetItem[key]) {
-          throw new DataValueException('Update position does not exist' + options.update.position)
-        }
-
-        targetItem = targetItem[key]
-      }
-
-      // insert data
-      if (!options.update.method) {
-        validateSchema(data, path, source)
-
-        targetItem[lastKey] = source
-
-        return {
-          complete: true,
-          isValid: true
-        }
-      } else {
-        // make a copy for update method
-        if (Array.isArray(targetItem[lastKey])) {
-          targetItem = targetItem[lastKey].slice()
-        } else {
-          throw new DataValueException('Update position and update method expected an array')
-        }
-      }
-
-      schemaPath = path
-    }
-
-    if (options.update.method) {
-      if (!Array.isArray(targetItem)) {
-        throw new DataSchemaException({
-          schemaPath,
-          keyword: 'updateMethod',
-          message: 'Expected target to be an array but found ' + typeof targetItem
-        })
-      }
-
-      // Clone array if position was not changed
-      if (options.update.position == null) {
-        data.target[data.id]._item = target._item.slice()
-        targetItem = data.target[data.id]._item
-      }
-
-      const schemaPathItem = schemaPath + '/items'
-      const schemaItem = databaseSchema[schemaPathItem]
-      const updateMethod = options.update.method
-
-      // validate source
-      if (schemaItem && (updateMethod === 'push' || updateMethod === 'unshift')) {
-        const schemaType = schemaItem.type
-
-        if (Array.isArray(source)) {
-          for (let i = 0; i < source.length; i++) {
-            const item = source[i]
-
-            if (schemaType === 'array' || schemaType === 'object') {
-              if (schemaType === 'array') {
-                validateSchemaArray(data, schemaPathItem, item)
-              } else {
-                validateSchemaObject(data, schemaPathItem, item)
-              }
-            } else {
-              validateDataType(schemaPathItem, item, schemaItem.type)
-            }
-          }
-        } else {
-          if (schemaType === 'array' || schemaType === 'object') {
-            if (schemaType === 'array') {
-              validateSchemaArray(data, schemaPathItem, source)
-            } else {
-              validateSchemaObject(data, schemaPathItem, source)
-            }
-          } else {
-            validateDataType(schemaPathItem, source, schemaItem.type)
-          }
-        }
-      }
-
-      // update target array
-      updateArray(targetItem, source, options.update)
-
-      // check schema options of array
-      const schema = databaseSchema[schemaPath]
-
-      // ISSUE: containsDuplicates expects an array
-      if (schema && schema.options) {
-        if (schema.options.uniqueItems) {
-          const hasDuplicates = arrayHasDuplicates(targetItem)
-
-          if (hasDuplicates) {
-            // restore target
-            target._item = target._previous._item
-
-            return {
-              complete: true,
-              isValid: false
-            }
-          }
-        }
-
-        if (schema.options.relation) {
-          setRelation(data.collection, data.id, schema.options.relation, source)
-        }
-
-        return {
-          complete: true,
-          isValid: true
-        }
-      }
-    }
-
-    return {
-      isValid: true
-    }
-  }
-
-  // this._setMetadata
-  function setMetadata (item = {}, options) {
-    if (options) {
-      // append additional metadata
-      for (const key in options) {
-        if (Object.hasOwnProperty.call(options, key)) {
-          const value = options[key]
-
-          item[key] = value
-        }
-      }
-    }
-
-    if (context.isServer) {
-      const timestamp = Date.now()
-
-      if (!item.userId && options && options.userId) {
-        item.userId = options.userId
-      }
-
-      if (!item.createdAt) {
-        item.createdAt = timestamp
-      }
-
-      item.updatedAt = timestamp
-    }
-
-    return item
-  }
-
-  /**
-   * Set the association id
-   * @param {string} collection - Primary collection
-   * @param {string} docId - Primary id
-   * @param {string} refCollection - Foreign collection
-   * @param {string} refId - Foreign id
-   */
-  // this._setRelation
-  function setRelation (collection, docId, refCollection, refId) {
-    const name = collection + '/' + docId
-    const usedName = refCollection + '/' + refId
-
-    // set what is related to data
-    if (!databaseRelation[name]) {
-      databaseRelation[name] = [usedName]
-    } else if (!databaseRelation[name].includes(usedName)) {
-      databaseRelation[name].push(usedName)
-    }
-
-    // set where ref data is used
-    if (!databaseRelationInUse[usedName]) {
-      databaseRelationInUse[usedName] = [name]
-    } else if (!databaseRelationInUse[usedName].includes(name)) {
-      databaseRelationInUse[usedName].push(name)
-    }
-  }
-
-  // this._updateArray
-  function updateArray (target, source, options) {
-    source = Array.isArray(source) ? source : [source]
-
-    switch (options.method) {
-      case 'push':
-        for (let i = 0; i < source.length; i++) {
-          target.push(source[i])
-        }
-
-        updateArrayItemFreeze(target, source.length)
-
-        break
-      case 'pull':
-        for (let i = 0; i < source.length; i++) {
-          const value = source[i]
-          const index = target.indexOf(value)
-
-          if (index !== -1) {
-            target.splice(index, 1)
-          }
-        }
-
-        break
-      case 'pop':
-        target.pop()
-
-        break
-      case 'shift':
-        target.shift()
-
-        break
-      case 'unshift':
-        for (let i = 0; i < source.length; i++) {
-          target.unshift(source[i])
-        }
-
-        updateArrayItemFreeze(target, source.length)
-
-        break
-      case 'splice':
-        list.actions.splice({
-          target,
-          start: options.startIndex,
-          source,
-          deleteCount: options.deleteCount
-        })
-
-        updateArrayItemFreeze(target, source.length)
-    }
-  }
-
-  // this._updateArrayItemFreeze
-  function updateArrayItemFreeze (items, length) {
-    for (let i = items.length - length; i < items.length; i++) {
-      const item = items[i]
-
-      if (typeof item === 'object') {
-        Object.freeze(item)
-      }
-    }
-  }
-
-  /**
-   * Check data type
-   * @private
-   * @param {string} path - Schema path
-   * @param {*} value - value to be checked
-   * @param {string} type - Expected data type
-   * @returns {boolean}
-   */
-  // this._checkType
-  function validateDataType (path, value, type) {
-    if (value == null) {
-      throw new DataSchemaException({
-        schemaPath: path,
-        keyword: 'type',
-        message: 'Unexpected type, expected "' + type + '" but got "undefined"'
-      })
-    }
-
-    if (type === 'node') {
-      if (value.nodeName && Object.isFrozen(value.nodeName)) {
-        return true
-      }
-
-      throw new DataSchemaException({
-        schemaPath: path,
-        keyword: 'type',
-        message: 'Unexpected type, expected a node'
-      })
-    }
-
-    // need a better method of determining the data type
-    const dataType = value.constructor.name.toLowerCase()
-
-    if (dataType === type) {
-      return true
-    }
-
-    throw new DataSchemaException({
-      schemaPath: path,
-      keyword: 'type',
-      message: 'Unexpected type, expected "' + type + '" but got "' + dataType + '"'
-    })
-  }
-
-  // this['_schema/array']
-  function validateSchemaArray (data, path, source) {
-    const schema = databaseSchema[path]
-
-    if (schema.options) {
-      validateSchemaArrayOption(path, source)
-    }
-
-    // check if source is an array
-    validateDataType(schema, source, schema.type)
-
-    const schemaName = path + '/items'
-    const schemaItems = databaseSchema[schemaName]
-
-    // no validation
-    if (!schemaItems) {
-      return
-    }
-
-    const schemaType = schemaItems.type
-
-    // freeze array
-    Object.freeze(source)
-
-    for (let i = 0; i < source.length; i++) {
-      const item = source[i]
-
-      if (schemaType === 'object') {
-        validateSchemaObject(data, schemaName, item)
-      } else if (schemaType === 'array') {
-        validateSchemaArray(data, schemaName, item)
-      } else {
-        // set relation for array of strings
-        if (schemaItems.options && schemaItems.options.relation) {
-          setRelation(data.collection, data.id, schemaItems.options.relation, item)
-        }
-
-        validateDataType(schemaName, item, schemaItems.type)
-
-        // freeze array item
-        if (typeof item === 'object') {
-          Object.freeze(item)
-        }
-      }
-    }
-  }
-
-  // this._schemaArrayOption
-  function validateSchemaArrayOption (path, source) {
-    const schema = databaseSchema[path]
-
-    if (schema.options.uniqueItems) {
-      arrayIsUnique(path, source)
-    }
-  }
-
-  // this['_schema/object']
-  function validateSchemaObject (data, path, source) {
-    const schema = databaseSchema[path]
-
-    // no validation
-    if (!schema.properties && !schema.patternProperties) {
-      return
-    }
-
-    if (schema.options) {
-      validateSchemaObjectOption(path, source)
-    }
-
-    // freeze object
-    Object.freeze(source)
-
-    const propertiesChecked = {}
-
-    if (schema.properties) {
-      validateSchemaObjectProperties(data, schema.properties, propertiesChecked, source, path)
-    }
-
-    if (schema.patternProperties) {
-      validateSchemaObjectPatternProperties(data, schema.patternProperties, propertiesChecked, source, path)
-    }
-  }
-
-  // this._schemaObjectOption
-  function validateSchemaObjectOption (path, data) {
-    const schema = databaseSchema[path]
-
-    if (schema.options.additionalProperties) {
-      const patternProperties = schema.patternProperties || []
-      const additionalKeys = []
-
-      for (const key in data) {
-        if (Object.hasOwnProperty.call(data, key)) {
-          // check if key can exist
-          if (!schema.options.additionalProperties.includes(key)) {
-            additionalKeys.push(key)
-          }
-        }
-      }
-
-      // check patterned keys
-      for (let i = 0; i < patternProperties.length; i++) {
-        const property = patternProperties[i]
-        const regex = new RegExp(property.name)
-
-        for (let i = 0; i < additionalKeys.length; i++) {
-          const key = additionalKeys[i]
-
-          // remove additional key
-          if (regex.test(key)) {
-            additionalKeys.splice(i, 1)
-          }
-        }
-      }
-
-      if (additionalKeys.length) {
-        throw new DataSchemaException({
-          schemaPath: path,
-          keyword: 'additionalProperties',
-          message: 'Additional properties are now allowed ' + JSON.stringify(additionalKeys)
-        })
-      }
-    }
-  }
-
-  // this._schemaObjectPatternProperties
-  function validateSchemaObjectPatternProperties (data, properties, propertiesChecked, source, path) {
-    for (let i = 0; i < properties.length; i++) {
-      const property = properties[i]
-
-      for (const key in source) {
-        if (Object.hasOwnProperty.call(source, key)) {
-          if (propertiesChecked[key]) {
-            continue
-          }
-
-          const regex = new RegExp(property.name)
-
-          if (!regex.test(key)) {
-            throw new DataSchemaException({
-              schemaPath: path,
-              keyword: 'patternProperty',
-              message: 'Invalid property: ' + key
-            })
-          }
-
-          const sourceItem = source[key]
-
-          if (sourceItem == null && property.default) {
-            // add default value
-            if (typeof property.default === 'function') {
-              source[key] = property.default()
-            } else {
-              source[key] = property.default
-            }
-          } else {
-            const schemaName = path + '/' + property.name
-            const schema = databaseSchema[schemaName]
-
-            if (schema) {
-              const schemaType = schema.type
-
-              validateDataType(schemaName, sourceItem, schemaType)
-
-              if (schemaType === 'object') {
-                validateSchemaObject(data, schemaName, sourceItem)
-              } else {
-                validateSchemaArray(data, schemaName, sourceItem)
-              }
-            } else {
-              const propertyOptions = property.options || {}
-
-              if (propertyOptions.relation) {
-                setRelation(data.collection, data.id, propertyOptions.relation, sourceItem)
-              }
-            }
-          }
-
-          validateDataType(path, sourceItem, property.type)
-        }
-      }
-    }
-  }
-
-  // this._schemaObjectProperties
-  function validateSchemaObjectProperties (data, properties, propertiesChecked, source, path) {
-    for (let i = 0; i < properties.length; i++) {
-      const property = properties[i]
-      const propertyOptions = property.options || {}
-      const value = source[property.name]
-
-      // check if field is required
-      if (propertyOptions.required && value == null) {
-        throw new DataSchemaException({
-          schemaPath: path,
-          keyword: 'required',
-          message: 'Invalid data (' + path + '): required property missing: "' + property.name + '"'
-        })
-      }
-
-      if (value == null && !propertyOptions.default) {
-        propertiesChecked[property.name] = true
-      } else {
-        const sourceItem = source[property.name]
-
-        if (value == null && propertyOptions.default) {
-          // add default value
-          if (typeof propertyOptions.default === 'function') {
-            source[property.name] = propertyOptions.default()
-          } else {
-            source[property.name] = propertyOptions.default
-          }
-        } else {
-          const schemaName = path + '/' + property.name
-          const schema = databaseSchema[schemaName]
-
-          if (schema) {
-            const schemaType = schema.type
-
-            validateDataType(schemaName, sourceItem, schemaType)
-
-            if (schemaType === 'object') {
-              validateSchemaObject(data, schemaName, sourceItem)
-            } else {
-              validateSchemaArray(data, schemaName, sourceItem)
-            }
-          } else {
-            if (propertyOptions.relation) {
-              setRelation(data.collection, data.id, propertyOptions.relation, value)
-            }
-          }
-        }
-
-        validateDataType(path, sourceItem, property.type)
-
-        propertiesChecked[property.name] = true
-      }
-    }
-  }
-
-  // this._schemaValidation
-  function validateSchema (data, path, source) {
-    const schema = databaseSchema[path]
-
-    /** @todo validate *any* until schema supports multi type schema */
-    if (!schema) {
-      return
-    }
-    const schemaType = schema.type
-
-    if (schemaType === 'object') {
-      validateSchemaObject(data, path, source)
-    } else if (schemaType === 'array') {
-      validateSchemaArray(data, path, source)
-    } else {
-      // type check
-      validateDataType(path, source, schema.type)
-
-      if (schema.options && schema.options.relation) {
-        setRelation(data.collection, data.id, schema.options.relation, source)
-      }
-    }
-  }
-
-  defineContextProperties({
+    },
     /**
      * Add data listener
      * @param {string} name - Collection name
@@ -1566,7 +1538,7 @@ const data = createPlugin('data', ({ context, defineActions, defineActionSchema,
               delete databaseRelationInUse[usedRelationName]
 
               if (cascade) {
-                this.deleteDataValue(splitName[0] + '/' + splitName[1], splitName[2], { cascade })
+                this.$deleteDataValue(splitName[0] + '/' + splitName[1], splitName[2], { cascade })
               }
 
               relations.splice(i, 1)
@@ -1729,7 +1701,7 @@ const data = createPlugin('data', ({ context, defineActions, defineActionSchema,
           const item = relation.split('/')
           const name = item[0] + '/' + item[1]
           const id = item.splice(2).join('/')
-          const value = this.getDataValue(name, {
+          const value = this.$getDataValue(name, {
             id,
             options: {
               expand: true,
@@ -1792,7 +1764,7 @@ const data = createPlugin('data', ({ context, defineActions, defineActionSchema,
      * Set data value
      * @param {string} name - Name of collection
      * @param {*} data - Data to be set
-     * @param {DsSetDataOptions} options - Set data options
+     * @param {DsSetDataOptions} [options] - Set data options
      * @returns {DataResult}
      */
     $setDataValue (name, data, options) {
@@ -1887,17 +1859,29 @@ const data = createPlugin('data', ({ context, defineActions, defineActionSchema,
       dataHandlers.delete[namespace] = {}
       dataHandlers.update[namespace] = {}
     }
-  })
+  }
 })
 
 const dataGenerateId = data.actions.generateId
 const dataFind = data.actions.find
 const dataUnsafeSetData = data.actions.unsafeSetData
+const $setDataValue = data.actions.$setDataValue
+const $deleteDataValue = data.actions.$deleteDataValue
+const $getDataValue = data.actions.$getDataValue
+const $addDataListener = data.actions.$addDataListener
+const $deleteDataListener = data.actions.$deleteDataListener
+const $setDataModal = data.actions.$setDataModal
 
 export {
   dataGenerateId,
   dataFind,
-  dataUnsafeSetData
+  dataUnsafeSetData,
+  $addDataListener,
+  $deleteDataListener,
+  $deleteDataValue,
+  $getDataValue,
+  $setDataValue,
+  $setDataModal
 }
 
 export default data
