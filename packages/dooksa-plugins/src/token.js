@@ -1,17 +1,78 @@
 import { createPlugin } from '@dooksa/create'
 
-const token = createPlugin('token', ({ defineTokens, defineActions }, { $getDataValue }) => {
-  const tokenProcess = {}
-  const tokenValues = {
-    heading: {
-      default: 'Add title'
-    },
-    img: {
-      default: 'data:image/gif;base64,R0lGODdhAQABAPAAAP8AAAAAACwAAAAAAQABAAACAkQBADs='
-    }
+const tokenProcess = {}
+const tokenValues = {
+  heading: {
+    default: 'Add title'
+  },
+  img: {
+    default: 'data:image/gif;base64,R0lGODdhAQABAPAAAP8AAAAAACwAAAAAAQABAAACAkQBADs='
+  }
+}
+
+/**
+ * Retrieve a token
+ * @param {string} type The expected value to be returned by the token
+ * @param {string} viewId An ID related to the content and the target, usually the element ID
+ * @param {Object} process Temporary information about the current token being processed
+ * @param {number} index The index of the current token within the process
+ * @param {string[]} token The token without the brackets, e.g. placeholder:empty
+ * @param {number} start The index of the start of the token
+ * @param {number} end The index of end of the token
+ * @param {Function} updateText This the function that updates the element, for example: element.textContent
+ * @returns {number} The length of the value retrieved
+ */
+function tokenGet (type, viewId, process, index, tokenId, token, start, end, updateText) {
+  const item = process.list[index]
+  let valueLength = 0
+
+  item.value = this.$token(tokenId, viewId, token)
+  // check if token exists
+  if (item.value === undefined) {
+    item.value = '[' + token.join(':') + ']'
   }
 
-  defineTokens({
+  if (item.value instanceof Promise) {
+    item.value.then(value => {
+      // append the length of all the processed tokens to the start point
+      for (let i = 0; i < index; i++) {
+        const token = process.list[i]
+
+        if (token.processed) {
+          start += token.valueLength
+        }
+      }
+
+      tokenUpdateText(process, item, value, start, start, updateText)
+
+      item.processed = true
+    })
+
+    tokenUpdateText(process, item, '', start, end, updateText)
+  } else {
+    tokenUpdateText(process, item, item.value, start, end, updateText)
+
+    item.processed = true
+    valueLength = item.value.toString().length
+  }
+
+  return valueLength
+}
+
+function tokenSplice (string, start, end, insert = '') {
+  return string.slice(0, start) + insert + string.slice(end)
+}
+
+function tokenUpdateText (process, item, insert, start, end, updateText) {
+  item.valueLength = insert.toString().length
+  process.text = tokenSplice(process.text, start, end, insert)
+
+  updateText(process.text)
+}
+
+const token = createPlugin({
+  name: 'token',
+  tokens: {
     empty () {
       return ''
     },
@@ -25,9 +86,8 @@ const token = createPlugin('token', ({ defineTokens, defineActions }, { $getData
 
       return placeholder.default
     }
-  })
-
-  defineActions({
+  },
+  actions: {
     /**
      * Convert tokens to related string and update the element that the content is attached to
      * @param {Object} param
@@ -137,66 +197,6 @@ const token = createPlugin('token', ({ defineTokens, defineActions }, { $getData
 
       item.tokenised = true
     }
-  })
-
-  /**
-   * Retrieve a token
-   * @param {string} type The expected value to be returned by the token
-   * @param {string} viewId An ID related to the content and the target, usually the element ID
-   * @param {Object} process Temporary information about the current token being processed
-   * @param {number} index The index of the current token within the process
-   * @param {string[]} token The token without the brackets, e.g. placeholder:empty
-   * @param {number} start The index of the start of the token
-   * @param {number} end The index of end of the token
-   * @param {Function} updateText This the function that updates the element, for example: element.textContent
-   * @returns {number} The length of the value retrieved
-   */
-  function tokenGet (type, viewId, process, index, tokenId, token, start, end, updateText) {
-    const item = process.list[index]
-    let valueLength = 0
-
-    item.value = this.$token(tokenId, viewId, token)
-    // check if token exists
-    if (item.value === undefined) {
-      item.value = '[' + token.join(':') + ']'
-    }
-
-    if (item.value instanceof Promise) {
-      item.value.then(value => {
-        // append the length of all the processed tokens to the start point
-        for (let i = 0; i < index; i++) {
-          const token = process.list[i]
-
-          if (token.processed) {
-            start += token.valueLength
-          }
-        }
-
-        tokenUpdateText(process, item, value, start, start, updateText)
-
-        item.processed = true
-      })
-
-      tokenUpdateText(process, item, '', start, end, updateText)
-    } else {
-      tokenUpdateText(process, item, item.value, start, end, updateText)
-
-      item.processed = true
-      valueLength = item.value.toString().length
-    }
-
-    return valueLength
-  }
-
-  function tokenSplice (string, start, end, insert = '') {
-    return string.slice(0, start) + insert + string.slice(end)
-  }
-
-  function tokenUpdateText (process, item, insert, start, end, updateText) {
-    item.valueLength = insert.toString().length
-    process.text = tokenSplice(process.text, start, end, insert)
-
-    updateText(process.text)
   }
 })
 
