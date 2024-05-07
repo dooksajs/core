@@ -1,11 +1,38 @@
 import { createPlugin } from '@dooksa/create'
+import { $getDataValue } from './data.js'
 import { viewDetach } from './view.js'
 import { hash } from '@dooksa/utils'
 
-const router = createPlugin('router', ({ defineData, defineActions, defineSetup }, { $getDataValue }) => {
-  const router = defineActions({
+const pathHash = {}
+
+function currentPath () {
+  return window.location.pathname || '/'
+}
+function currentId () {
+  const path = currentPath()
+
+  // check in path hash cache
+  if (pathHash[path]) {
+    return pathHash[path]
+  }
+
+  // create hash
+  hash.init()
+
+  const target = currentPath()
+  const id = '_' + hash.update(target).digest('hex') + '_'
+
+  // cache id
+  pathHash[path] = id
+
+  return id
+}
+
+const router = createPlugin({
+  name: 'router',
+  actions: {
     navigate ({ to }) {
-      const from = this.currentPath()
+      const from = currentPath()
 
       // exit if path is the same as current path
       if (to === from) {
@@ -45,51 +72,27 @@ const router = createPlugin('router', ({ defineData, defineActions, defineSetup 
       // update history
       window.history.pushState({ to, from }, '', to)
     },
-    currentPath () {
-      return window.location.pathname || '/'
-    },
-    currentId () {
-      const path = this.currentPath()
-
-      // check in path hash cache
-      if (this.hash[path]) {
-        return this.hash[path]
-      }
-
-      // create hash
-      hash.init()
-
-      const target = this.currentPath()
-      const id = '_' + hash.update(target).digest('hex') + '_'
-
-      // cache id
-      this.hash[path] = id
-
-      return id
-    }
-  })
-
-  defineData({
+    currentPath,
+    currentId
+  },
+  data: {
     sections: {
-      schema: {
-        type: 'collection',
-        defaultId () {
-          return router.actions.currentId()
-        },
-        items: {
-          type: 'object'
-        }
+      type: 'collection',
+      defaultId () {
+        return currentId()
+      },
+      items: {
+        type: 'object'
       }
     }
-  })
-
-  defineSetup(() => {
+  },
+  setup () {
     window.addEventListener('popstate', (event) => {
       console.log(
         `location: ${document.location}, state: ${JSON.stringify(event.state)}`
       )
     })
-  })
+  }
 })
 
 const routerCurrentId = router.actions.currentId
