@@ -1,18 +1,17 @@
 import { createPlugin } from '@dooksa/create'
 import { $getDataValue } from './data.js'
 
-export default createPlugin('content', ({ context, defineData }, { $getDataValue }) => {
-  defineData({
+export default createPlugin({
+  name: 'content',
+  data: {
     items: {
-      schema: {
-        type: 'collection',
-        suffixId () {
-          return $getDataValue('dsMetadata/language').item
-        },
-        items: {
-          type: 'object'
-        }
+      type: 'collection',
+      suffixId () {
+        return $getDataValue('dsMetadata/language').item
+      },
+      items: {
+        type: 'object'
       }
     }
-  })
+  }
 })
