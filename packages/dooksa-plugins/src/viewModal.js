@@ -1,10 +1,12 @@
 import { createPlugin } from '@dooksa/create'
+import { $getDataValue, $setDataValue, $addDataListener } from './index.js'
 import Modal from 'bootstrap/js/src/modal.js'
 
-const viewModal = createPlugin('viewModal', ({ defineActions }, { $getDataValue, $setDataValue, $addDataListener }) => {
-  const modalItems = {}
+const modalItems = {}
 
-  defineActions({
+const viewModal = createPlugin({
+  name: 'viewModal',
+  actions: {
     /**
      * Create Modal
      * @param {Object} param
@@ -92,7 +94,7 @@ const viewModal = createPlugin('viewModal', ({ defineActions }, { $getDataValue,
 
       modal.show()
     }
-  })
+  }
 })
 
 const viewModalShow = viewModal.actions.show
