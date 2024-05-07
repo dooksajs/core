@@ -1,26 +1,62 @@
 import { createPlugin } from '@dooksa/create'
 import { listFilter, listSort, $addDataListener, $setDataValue, $getDataValue } from './index.js'
+
+
+/**
+ * Fetch content values
+ * @private
+ * @param {QueryItem[]} items
+ * @returns {QueryValue[]}
+ */
+function fetchValues (items) {
+  const result = []
+
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i]
+    const content = $getDataValue('content/items', { id: item.contentId })
+    let contentValue = content.item.values
+
+    for (let i = 0; i < item.content.length; i++) {
+      const property = item.content[i]
+
+      if (content.item.tokens[property]) {
+        // process token value
+      }
+
+      contentValue = contentValue[property]
+    }
+
+    result.push({
+      value: contentValue,
+      widgetId: item.widgetId
+    })
+  }
+
+  return result
+}
+
+const query = createPlugin({
+  name: 'query',
+  data: {
     items: {
-      schema: {
-        type: 'collection',
+      type: 'collection',
+      items: {
+        type: 'array',
         items: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              contentId: {
-                type: 'string',
-                relation: 'content/items'
-              },
-              widgetId: {
-                type: 'string',
-                relation: 'widget/items'
-              },
-              content: {
-                type: 'array',
-                items: {
-                  type: 'string'
-                }
+          type: 'object',
+          properties: {
+            contentId: {
+              type: 'string',
+              relation: 'content/items'
+            },
+            widgetId: {
+              type: 'string',
+              relation: 'widget/items'
+            },
+            content: {
+              type: 'array',
+              items: {
+                type: 'string'
               }
             }
           }
@@ -28,42 +64,37 @@ import { listFilter, listSort, $addDataListener, $setDataValue, $getDataValue } 
       }
     },
     where: {
-      schema: {
-        type: 'collection',
-        items: {
-          type: 'object',
-          properties: {
-            options: {
-              type: 'array'
-            },
-            id: {
-              type: 'string',
-              relation: 'query/items'
-            }
+      type: 'collection',
+      items: {
+        type: 'object',
+        properties: {
+          options: {
+            type: 'array'
+          },
+          id: {
+            type: 'string',
+            relation: 'query/items'
           }
         }
       }
     },
     sort: {
-      schema: {
-        type: 'collection',
-        items: {
-          type: 'object',
-          properties: {
-            options: {
-              type: 'string'
-            },
-            id: {
-              type: 'string',
-              relation: 'query/items'
-            }
+      type: 'collection',
+      items: {
+        type: 'object',
+        properties: {
+          options: {
+            type: 'string'
+          },
+          id: {
+            type: 'string',
+            relation: 'query/items'
           }
         }
       }
     }
-  })
-
-  defineActions({
+  },
+  actions: {
     /**
      * Append query to section
      * @param {Object} param
@@ -76,7 +107,6 @@ import { listFilter, listSort, $addDataListener, $setDataValue, $getDataValue } 
       })
 
       const mode = $getDataValue('section/mode', { id: sectionId })
-      let sectionId = sectionId
 
       if (!mode.isEmpty) {
         sectionId = sectionId + mode.item
@@ -160,7 +190,7 @@ import { listFilter, listSort, $addDataListener, $setDataValue, $getDataValue } 
      * Fetch values by query
      * @param {Object} param
      * @param {string} param.id - Query Id
-     * @param {Object} param.options
+     * @param {Object} [param.options]
      * @param {QueryWhere} param.options.where - Where options
      * @param {QuerySort} param.options.sort - Sort type
      * @returns {QueryValue[]}
@@ -204,39 +234,6 @@ import { listFilter, listSort, $addDataListener, $setDataValue, $getDataValue } 
         return items
       }
     }
-  })
-
-  /**
-   * Fetch content values
-   * @private
-   * @param {QueryItem[]} items
-   * @returns {QueryValue[]}
-   */
-  function fetchValues (items) {
-    const result = []
-
-    for (let i = 0; i < items.length; i++) {
-      const item = items[i]
-      const content = $getDataValue('content/items', { id: item.contentId })
-      let contentValue = content.item.values
-
-      for (let i = 0; i < item.content.length; i++) {
-        const property = item.content[i]
-
-        if (content.item.tokens[property]) {
-          // process token value
-        }
-
-        contentValue = contentValue[property]
-      }
-
-      result.push({
-        value: contentValue,
-        widgetId: item.widgetId
-      })
-    }
-
-    return result
   }
 })
 
