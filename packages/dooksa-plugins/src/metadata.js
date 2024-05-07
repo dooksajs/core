@@ -1,31 +1,21 @@
 import { createPlugin } from '@dooksa/create'
+import { $setDataValue } from './data.js'
 
-export default createPlugin('metadata', ({ defineData, defineSetup }, { $setDataValue }) => {
-  defineData({
+export default createPlugin({
+  name: 'metadata',
+  data: {
     language: {
-      default: () => 'en',
-      schema: {
-        type: 'string'
-      }
+      type: 'string'
     },
     availableLanguages: {
-      default: () => ['en'],
-      schema: {
-        type: 'array',
-        items: {
-          type: 'string'
-        }
+      type: 'array',
+      items: {
+        type: 'string'
       }
     }
-  })
-
-  defineSetup(({ defaultLanguage = '', availableLanguages = [] }) => {
-    if (defaultLanguage) {
-      $setDataValue('metadata/language', defaultLanguage)
-    }
-
-    if (availableLanguages.length) {
-      $setDataValue('metadata/availableLanguages', availableLanguages)
-    }
-  })
+  },
+  setup ({ defaultLanguage = 'en', availableLanguages = ['en'] }) {
+    $setDataValue('metadata/language', defaultLanguage)
+    $setDataValue('metadata/availableLanguages', availableLanguages)
+  }
 })
