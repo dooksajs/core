@@ -26,6 +26,11 @@ import { objectHash } from '@dooksa/utils'
  */
 export default (source, availableMethods) => {
   const actions = convertToActions(source, availableMethods)
+
+  if (!actions.length) {
+    return
+  }
+
   const blocks = {}
   const sequences = []
   let children = []
@@ -107,7 +112,7 @@ export default (source, availableMethods) => {
  * Extract actions from action templates
  * @private
  * @param {Object} source - Action template
- * @param {Object} availableMethods - List of active methods
+ * @param {Function} availableMethods - List of active methods
  * @param {Object} [node={ path: [] }]
  * @param {string[]} [node.path] - List of keys to assign to parent object
  * @param {Object[]} actions - Dooksa actions
@@ -134,7 +139,7 @@ function convertToActions (
       lastNode = node.path.length
     }
 
-    if (availableMethods[key]) {
+    if (availableMethods(key)) {
       source._$a = key
 
       if (value != null && value !== '$noArgs') {

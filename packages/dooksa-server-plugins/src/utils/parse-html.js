@@ -1,15 +1,13 @@
 import { objectHash } from '@dooksa/utils'
+import { $component, $componentGetter } from '../component.js'
 
 /**
  * Convert html to dooksa display data
  * @param {Object} source - Template node
- * @param {Object} contentTypes - List of element keys that will be used as content
  * @returns {Object}
  */
 const parseHTML = (
   source,
-  contentTypes = {},
-  ignoreAttributes = {},
   data = {
     mode: '',
     lang: '',
@@ -114,7 +112,7 @@ const parseHTML = (
         layoutNodes.push(textNode)
 
         if (node.attributes.length) {
-          const result = parseAttributes(node.attributes, ignoreAttributes[component.id])
+          const result = parseAttributes(node.attributes)
 
           if (result.bind.length) {
             widgetEvent[layoutNodes.length - 1] = result.bind
@@ -165,14 +163,14 @@ const parseHTML = (
         // set component id
         component.id = componentId
 
-        if (contentTypes[component.id]) {
+        if ($component(component.id)) {
           item.contentIndex = content.length
           content.push(node)
         }
 
         // parse attributes
         if (node.attributes.length) {
-          const result = parseAttributes(node.attributes, ignoreAttributes[component.id])
+          const result = parseAttributes(node.attributes)
 
           if (result.bind.length) {
             widgetEvent[layoutNodes.length - 1] = result.bind
@@ -243,7 +241,7 @@ const parseHTML = (
                 sections.push(++data.layoutIndex)
 
                 // create new instance
-                parseHTML([childNode], contentTypes, ignoreAttributes, data, false)
+                parseHTML([childNode], data, false)
               }
             }
 
@@ -295,7 +293,7 @@ const parseHTML = (
   return data
 }
 
-const parseAttributes = (attributes, ignore = []) => {
+const parseAttributes = (attributes) => {
   const item = {
     attributes: [],
     bind: [],
@@ -306,8 +304,9 @@ const parseAttributes = (attributes, ignore = []) => {
     const attribute = attributes[i]
     const name = attribute.name
     const value = attribute.value
+    const getter = $componentGetter(name)
 
-    if (!ignore.includes(name)) {
+    if (!getter || getter.type !== 'attribute') {
       if (name.substring(0, 3) === 'ds-') {
         const bind = name.split('-')
 
