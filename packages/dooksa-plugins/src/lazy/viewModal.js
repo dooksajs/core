@@ -1,5 +1,5 @@
 import { createPlugin } from '@dooksa/create'
-import { $getDataValue, $setDataValue, $addDataListener } from './index.js'
+import { $getDataValue, $setDataValue, $addDataListener } from '../data.js'
 import Modal from 'bootstrap/js/src/modal.js'
 
 const modalItems = {}

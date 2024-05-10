@@ -11,6 +11,7 @@
     "@dooksa/create": "workspace:^",
     "@dooksa/libraries": "workspace:^",
     "@dooksa/utils": "workspace:^",
-    "bootstrap": "^5.3.3"
+    "bootstrap": "^5.3.3",
+    "iconify-icon": "^2.1.0"
   }
 }
