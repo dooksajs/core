@@ -494,7 +494,7 @@ const action = createPlugin({
         const actions = $getDataValue('action/items', { id, options: { expand: true } })
 
         if (actions.isEmpty) {
-          return $action('dsDatabase/getById', {
+          return $action('database/getById', {
             collection: 'action',
             id,
             expand: true
@@ -515,10 +515,10 @@ const action = createPlugin({
         let blocks = {}
 
         // fetch block modifiers
-        if (context.dsWidgetId) {
+        if (context.widgetId) {
           blocks = $getDataValue('widget/actions', {
-            id: context.dsWidgetId,
-            suffixId: context.dsWidgetMode
+            id: context.widgetId,
+            suffixId: context.widgetMode
           })
 
           if (!blocks.isEmpty && blocks.item[id]) {
@@ -581,6 +581,9 @@ const action = createPlugin({
         sequenceProcess.next()
       })
     }
+  },
+  setup ({ action }) {
+    $action = action
   }
 })
 
