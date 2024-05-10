@@ -14,7 +14,7 @@ export default createPlugin({
       }
     }
   },
-  setup ({ defaultLanguage = 'en', availableLanguages = ['en'] }) {
+  setup ({ defaultLanguage = 'en', availableLanguages = ['en'] } = {}) {
     $setDataValue('metadata/language', defaultLanguage)
     $setDataValue('metadata/availableLanguages', availableLanguages)
   }
