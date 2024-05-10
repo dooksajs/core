@@ -1,0 +1,53 @@
+<template ds-template-id="fragment-modal-header">
+  <div class="modal-header" ds-section="true">
+    <h1 class="modal-title fs-5">
+      <ds-text>Modal title</ds-text>
+    </h1>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+  </div>
+</template>
+
+<template ds-template-id="fragment-modal-body">
+  <div class="modal-body" ds-section="true">
+    <ds-text>...</ds-text>
+  </div>
+</template>
+
+<template ds-template-id="fragment-modal-footer">
+  <div class="modal-footer" ds-section="true">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    <button type="button" class="btn btn-primary">Save changes</button>
+  </div>
+</template>
+
+<template ds-template-id="fragment-modal-title">
+  <h1 class="modal-title fs-5">
+    <ds-text>Modal title</ds-text>
+  </h1>
+</template>
+
+<template ds-template-id="fragment-modal-close">
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</template>
+
+<template ds-template-id="modal">
+  <div class="modal fade" tabindex="-1" ds-on-layout-mount="modal-create-open" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header" ds-section="true">
+          <h1 class="modal-title fs-5">
+            <ds-text>Modal title</ds-text>
+          </h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" ds-section="true">
+          <ds-text>...</ds-text>
+        </div>
+        <div class="modal-footer" ds-section="true">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

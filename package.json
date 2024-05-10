@@ -1,20 +1,18 @@
 {
-  "name": "@dooksa/framework",
+  "name": "@dooksa/core",
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "ds-scripts build",
-    "dev": "ds-scripts dev",
-    "start": "ds-scripts start",
-    "test": "ds-scripts test"
+    "build-server": "node ./scripts/build-server.js",
+    "build-client": "node ./scripts/build-client.js"
   },
   "license": "MPL-2.0",
-  "packageManager": "pnpm@9.0.4",
+  "packageManager": "pnpm@9.0.6",
   "engines": {
     "node": ">=20"
   },
   "devDependencies": {
-    "@dooksa/ds-scripts": "workspace:^",
-    "@stylistic/eslint-plugin-js": "^1.7.0"
+    "@stylistic/eslint-plugin-js": "^1.8.0",
+    "esbuild": "^0.21.1"
   }
 }

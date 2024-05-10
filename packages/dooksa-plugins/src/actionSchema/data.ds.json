@@ -1,0 +1,94 @@
+actionSchema: {
+  generateId: {
+    name: 'UUID',
+    description: 'Generate a unique id'
+  },
+  find: {
+    name: 'Find data',
+    description: 'Search for multiple instances',
+    schema: [{
+      type: 'object',
+      properties: {
+        name: {
+          type: 'string'
+        },
+        where: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              name: {
+                type: 'string'
+              },
+              op: {
+                type: 'string'
+              },
+              value: {
+                type: 'string'
+              },
+              and: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    name: {
+                      type: 'string'
+                    },
+                    op: {
+                      type: 'string'
+                    },
+                    value: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              or: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    name: {
+                      type: 'string'
+                    },
+                    op: {
+                      type: 'string'
+                    },
+                    value: {
+                      type: 'string'
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }]
+  },
+  unsafeSetData: {
+    name: 'Unsafe set data',
+    description: 'Set data without schema validation',
+    schema: [
+      {
+        type: 'object',
+        properties: {
+          name: {
+            type: 'string'
+          },
+          data: {
+            type: 'any'
+          },
+          options: {
+            type: 'object',
+            properties: {
+              id: {
+                type: 'string'
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+},

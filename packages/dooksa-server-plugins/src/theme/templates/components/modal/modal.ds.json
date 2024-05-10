@@ -1,0 +1,49 @@
+{
+  "actions": [
+    {
+      "id": "modal-create-open",
+      "dependencies": ["modal-create", "modal-open"],
+      "sequence": [
+        {
+          "action/dispatch": {
+            "id": "modal-create",
+            "context": {
+              "get/contextValue": "all"
+            }
+          }
+        },
+        {
+          "action/dispatch": {
+            "id": "modal-open",
+            "context": {
+              "get/contextValue": "all"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "modal-create",
+      "sequence": [{
+        "viewModal/create": {
+          "viewId": {
+            "get/contextValue": "viewId"
+          },
+          "widgetId": {
+            "get/contextValue": "widgetId"
+          }
+        }
+      }]
+    },
+    {
+      "id": "modal-open",
+      "sequence": [{
+        "viewModal/show": {
+          "viewId": {
+            "get/contextValue": "viewId"
+          }
+        }
+      }]
+    }
+  ]
+}

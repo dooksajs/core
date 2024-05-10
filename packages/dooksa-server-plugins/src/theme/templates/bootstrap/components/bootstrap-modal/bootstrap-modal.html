@@ -1,0 +1,29 @@
+<template ds-template-id="bootstrap-modal">
+  <div class="modal fade" tabindex="-1" ds-on-layout-mount="bootstrap-modal-create-open" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-fullscreen-md-down">
+      <div class="modal-content">
+        <div class="modal-header bg-light justify-content-start" ds-section="true">
+          <div class="me-3 d-flex align-items-center">
+            <div class="rounded shadow-sm border fs-3 d-flex justify-content-center align-items-center bg-white">
+              <iconify-icon icon="solar:widget-add-bold-duotone"></iconify-icon>
+            </div>
+          </div>
+          <div>
+            <div class="fs-5">
+              <iconify-icon icon="fa6-solid:bars-staggered"></iconify-icon> Section
+            </div>
+            <h2><ds-text ds-on-view-mount="bootstrap-modal-set-title">Modal title</ds-text></h2>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" ds-section="true">
+          <ds-text>...</ds-text>
+        </div>
+        <div class="modal-footer" ds-section="true">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

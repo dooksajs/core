@@ -1,0 +1,63 @@
+{
+  "actions": [
+    {
+      "id": "bootstrap-modal-create-open",
+      "sequence": [
+        {
+          "async": true,
+          "viewModal/create":{
+            "viewId": {
+              "get/contextValue": "viewId"
+            },
+            "widgetId": {
+              "get/contextValue": "widgetId"
+            }
+          }
+        },
+        {
+          "viewModal/show": {
+            "viewId": {
+              "get/contextValue": "viewId"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "bootstrap-modal-set-title",
+      "sequence": [
+        {
+          "set/dataValue": {
+            "name": "content/items",
+            "value": {
+              "get/actionValue": {
+                "id": {
+                  "get/dataValue": {
+                    "name": "widget/items",
+                    "id": {
+                      "get/contextValue": "widgetId"
+                    }
+                  }
+                },
+                "$key": ["bootstrap-edit-section-template"]
+              }
+            },
+            "options": {
+              "id": {
+                "get/dataValue": {
+                  "name": "view/content",
+                  "id": {
+                    "get/contextValue": "viewId"
+                  }
+                }
+              },
+              "update": {
+                "position": ["values", "value"]
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
