@@ -267,7 +267,7 @@ function filterValidateValue (data, condition) {
  * Get data listeners
  * @private
  * @param {string} name - Data collection name
- * @param {string} on - Event name
+ * @param {'update'|'delete'} on - Event name
  * @param {string} id  - Data collection Id
  */
 function getDataListeners (name, on, id) {
@@ -1296,8 +1296,8 @@ const data = createPlugin({
      * Add data listener
      * @param {string} name - Collection name
      * @param {Object} param
-     * @param {string} param.on - Data event name
-     * @param {string} param.id - Data collection Id
+     * @param {'update'|'delete'} param.on - Data event name
+     * @param {string} [param.id] - Data collection Id
      * @param {number} [param.priority]
      * @param {boolean} [param.force=false] - Force the event to fire
      * @param {Object} param.handler
@@ -1363,7 +1363,7 @@ const data = createPlugin({
      * @param {string} name - Data collection name
      * @param {Object} item
      * @param {string} item.on - Data event name
-     * @param {string} item.id - Data collection Id
+     * @param {string} [item.id] - Data collection Id
      * @param {string} item.handlerId - The reference handler Id that will be removed
      */
     $deleteDataListener (name, { on, id, handlerId }) {
@@ -1444,7 +1444,7 @@ const data = createPlugin({
               delete databaseRelationInUse[usedRelationName]
 
               if (cascade) {
-                this.$deleteDataValue(splitName[0] + '/' + splitName[1], splitName[2], { cascade })
+                $deleteDataValue(splitName[0] + '/' + splitName[1], splitName[2], { cascade })
               }
 
               relations.splice(i, 1)
@@ -1607,7 +1607,7 @@ const data = createPlugin({
           const item = relation.split('/')
           const name = item[0] + '/' + item[1]
           const id = item.splice(2).join('/')
-          const value = this.$getDataValue(name, {
+          const value = $getDataValue(name, {
             id,
             options: {
               expand: true,
@@ -1766,11 +1766,16 @@ const data = createPlugin({
       dataHandlers.update[namespace] = {}
     }
   },
-  setup (contextData) {
-    database = contextData.values
+  /**
+   * Setup database
+   * @param {Object} modal
+   */
+  setup (modal) {
+    database = modal.values
 
-    for (let i = 0; i < contextData.schema.length; i++) {
-      const { entries, isCollection, name } = contextData.schema[i]
+    // setup plugin modals
+    for (let i = 0; i < modal.schema.length; i++) {
+      const { entries, isCollection, name } = modal.schema[i]
 
       for (let i = 0; i < entries.length; i++) {
         const { id, entry } = entries[i]
@@ -1789,6 +1794,8 @@ const data = createPlugin({
       dataListeners.deletePriority[name] = newDataInstance(defaultType)
       dataListeners.update[name] = newDataInstance(defaultType)
       dataListeners.updatePriority[name] = newDataInstance(defaultType)
+      dataHandlers.delete[name] = {}
+      dataHandlers.update[name] = {}
     }
   }
 })
