@@ -1,5 +1,3 @@
-import { getActiveContext } from './context.js'
-
 /** @typedef {import('../../global-typedef.js').DataSchema} DataSchema */
 
 /**
@@ -8,9 +6,9 @@ import { getActiveContext } from './context.js'
  * @param {Object} plugin
  * @param {string} plugin.name
  * @param {Object[]} [plugin.dependencies]
+ * @param {Object[]} [plugin.components]
  * @param {D} [plugin.data]
  * @param {A} [plugin.actions]
- * @param {Object} [plugin.actionSchema]
  * @param {Function} [plugin.setup]
  */
 function createPlugin (plugin) {
