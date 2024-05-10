@@ -1,7 +1,7 @@
 import { createPlugin } from '@dooksa/create'
 import { operatorEval, listSplice } from './index.js'
 import { DataResult, DataSchemaException, DataValueException } from '@dooksa/libraries'
-import { deepClone, uuid } from '@dooksa/utils'
+import { deepClone, isServer, uuid } from '@dooksa/utils'
 
 /**
  * @typedef {import('../../global-typedef.js').SetDataOptions} DsSetDataOptions
@@ -766,7 +766,7 @@ function setMetadata (item = {}, options) {
     }
   }
 
-  if (context.isServer) {
+  if (isServer()) {
     const timestamp = Date.now()
 
     if (!item.userId && options && options.userId) {
