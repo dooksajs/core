@@ -1,7 +1,12 @@
 import { createPlugin } from '@dooksa/create'
 import { $getDataValue, $setDataValue } from './data.js'
 
-let _$component = {}
+/** @type {Function} */
+let _$component = () => {}
+/** @type {Function} */
+let _$componentGetter = () => {}
+/** @type {Function} */
+let _$componentSetter = () => {}
 
 const component = createPlugin({
   name: 'component',
@@ -269,7 +274,7 @@ const component = createPlugin({
   ],
   actions: {
     $component (name) {
-      const component = _$component.items[name]
+      const component = _$component(name)
 
       if (!component) {
         throw Error('No component found by the name of: ' + name)
@@ -286,13 +291,13 @@ const component = createPlugin({
       return component
     },
     $componentGetter (name) {
-      return _$component.getter[name]
+      return _$componentGetter(name)
     },
     $componentSetter (name) {
-      return _$component.setter[name]
+      return _$componentSetter(name)
     },
     fetch (id) {
-      const component = $getDataValue('dsComponent/items', { id }).item
+      const component = $getDataValue('component/items', { id }).item
 
       if (component.id === 'text') {
         return {
@@ -313,8 +318,10 @@ const component = createPlugin({
       return component
     }
   },
-  setup (component) {
+  setup ({ component, componentGetter, componentSetter }) {
     _$component = component
+    _$componentGetter = componentGetter
+    _$componentSetter = componentSetter
 
     $setDataValue('component/items', {
       '0f64a9b82c6f98f7': {
