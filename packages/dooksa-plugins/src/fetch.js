@@ -85,7 +85,7 @@ function deleteCache (id) {
 
 const $fetch = createPlugin({
   name: 'fetch',
-  setup ({ hostname = 'http://localhost:6362' }) {
+  setup ({ hostname = 'http://localhost:6362' } = {}) {
     hostname = hostname + '/_/'
   },
   actions: {
