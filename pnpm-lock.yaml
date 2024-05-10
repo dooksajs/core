@@ -15,15 +15,6 @@ importers:
         specifier: ^0.21.1
         version: 0.21.1
 
-  packages/dooksa:
-    dependencies:
-      '@dooksa/create':
-        specifier: workspace:^
-        version: link:../dooksa-create
-      '@dooksa/plugins':
-        specifier: workspace:^
-        version: link:../dooksa-plugins
-
   packages/dooksa-client:
     dependencies:
       '@dooksa/create':
@@ -111,9 +102,6 @@ importers:
 
   packages/libraries:
     dependencies:
-      '@dooksa/create':
-        specifier: workspace:^
-        version: link:../dooksa-create
       '@dooksa/utils':
         specifier: workspace:^
         version: link:../utils
