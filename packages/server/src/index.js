@@ -14,7 +14,7 @@ import {
   theme,
   user,
   widget
-} from '@dooksa/server-plugins'
+} from '../../server-plugins/src/index.js'
 
 export default createApp([
   data,
