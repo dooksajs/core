@@ -1,7 +1,8 @@
 import { createPlugin } from '@dooksa/create'
 import { operatorEval, listSplice } from './index.js'
-import { DataResult, DataSchemaException, DataValueException } from '@dooksa/libraries'
+import { DataSchemaException, DataValueException } from './utils/Error.js'
 import { deepClone, isServer, uuid } from '@dooksa/utils'
+import DataResult from './utils/DataResult.js'
 
 /**
  * @typedef {import('../../global-typedef.js').SetDataOptions} DsSetDataOptions
@@ -302,7 +303,7 @@ function getDataListeners (name, on, id) {
  * Process listeners on update event
  * @private
  * @param {string} name - Collection name
- * @param {string} on - Event name
+ * @param {'update'|'delete'} on - Event name
  * @param {DataResult} item - Value that is being set
  * @param {boolean} [stopPropagation] - Prevents further propagation of the update event
  */

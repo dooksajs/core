@@ -53,4 +53,4 @@ DataResult.prototype.clone = function () {
   return this.item
 }
 
-export { DataResult }
+export default DataResult

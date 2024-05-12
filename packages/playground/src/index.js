@@ -1,5 +1,5 @@
-import app from '@dooksa/server'
-import { development, templateBuild } from '@dooksa/server-plugins'
+import app from '../../server/src/index.js'
+import { development, templateBuild } from '../../server-plugins/src/index.js'
 import { $setDataValue } from '@dooksa/plugins'
 import esbuild from 'esbuild'
 import chokidar from 'chokidar'
@@ -26,8 +26,6 @@ app.setup({
     })
   }
 })
-
-
 
 const devDirectory = resolve('./app')
 const appClientEntryPoint = resolve('./src/client-app.js')

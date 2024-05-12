@@ -336,7 +336,6 @@ function getDataByKey (data, keys) {
 /**
  * Get result value
  * @private
- * @param {*} data
  * @param {Object|string} value
  * @param {string} value.$key - Request to return a specific key/value, dot notations are permitted
  * @param {number} value.$index - Request to return specific indexes from an array
