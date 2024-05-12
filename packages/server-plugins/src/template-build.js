@@ -9,8 +9,17 @@ import { $setRoute } from './http.js'
 import { $component, $componentGetter } from './component.js'
 import { getNodeValue } from '@dooksa/utils'
 import parseHTML from './utils/parse-html.js'
+import { templatePath } from '@dooksa/templates'
+import actionSchema from '@dooksa/actions'
 
 const actions = {}
+const availableMethods = {}
+
+for (const key in actionSchema.properties) {
+  if (Object.hasOwnProperty.call(actionSchema.properties, key)) {
+    availableMethods[key]
+  }
+}
 
 const templateBuild = createPlugin({
   name: 'templateBuild',
@@ -30,15 +39,11 @@ const templateBuild = createPlugin({
 
       if (fileExtension === '.json') {
         const file = readFileSync(path, { encoding: 'utf-8' })
-        let item
-
-        if (file) {
-          item = JSON.parse(file)
-        }
+        const item = JSON.parse(file)
 
         // build actions
         if (item.actions) {
-          parseActionItem(item.actions, actions, () => {})
+          parseActionItem(item.actions, actions, availableMethods)
         }
 
         if (item.templates) {
@@ -65,12 +70,9 @@ const templateBuild = createPlugin({
   /**
    * @param {Object} param
    * @param {string[]} [param.buildPaths] - Location of template files
+   * @param {string} [param.themePath] - Location of template files
    */
   setup ({ buildPaths = [] } = {}) {
-    const templatePath = resolve(import.meta.dirname, 'theme', 'templates')
-
-    $setDataValue('templateBuild/path', templatePath)
-
     buildPaths.unshift(templatePath)
 
     for (let i = 0; i < buildPaths.length; i++) {

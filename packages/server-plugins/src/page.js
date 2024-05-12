@@ -58,10 +58,11 @@ const pageServer = createPlugin({
   actions: {
     create
   },
-  setup ({ app = '' } = {}) {
+  setup ({ app = '', css = '' } = {}) {
     $seedDatabase('page-items')
 
     $setDataValue('page/app', app)
+    $setDataValue('page/css', css)
 
     $setRoute('/*', {
       suffix: '',

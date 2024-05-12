@@ -9,18 +9,16 @@
   "main": "./src/index.js",
   "dependencies": {
     "@dooksa/create": "workspace:^",
-    "@dooksa/libraries": "workspace:^",
     "@dooksa/plugins": "workspace:^",
     "@dooksa/utils": "workspace:^",
-    "bootstrap": "^5.3.3",
+    "@dooksa/templates": "workspace:^",
+    "@dooksa/actions": "workspace:^",
+    "@dooksa/theme": "workspace:^",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.6",
     "express": "^4.19.2",
     "helmet": "^7.1.0",
     "jsdom": "^24.0.0",
     "jsonwebtoken": "^9.0.2"
-  },
-  "devDependencies": {
-    "sass-embedded": "^1.77.0"
   }
 }
