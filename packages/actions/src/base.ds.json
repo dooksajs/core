@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dooksa.org/schemas/action/1.0/base.ds.json",
+  "title": "Common definitions",
+  "type": "object",
+  "properties": {
+    "delete/dataValue": {
+      "$ref": "action.ds.json#delete/dataValue"
+    },
+    "data/generateId": {
+      "$ref": "data.ds.json#data/generateId"
+    },
+    "data/find": {
+      "$ref": "data.ds.json#data/find"
+    }
+  }
+}
