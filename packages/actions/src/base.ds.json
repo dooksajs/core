@@ -4,14 +4,41 @@
   "title": "Common definitions",
   "type": "object",
   "properties": {
-    "delete/dataValue": {
-      "$ref": "action.ds.json#delete/dataValue"
+    "delete_dataValue": {
+      "$ref": "action.ds.json#delete_dataValue"
     },
-    "data/generateId": {
-      "$ref": "data.ds.json#data/generateId"
+    "eval_condition": {
+      "$ref": "action.ds.json#eval_condition"
     },
-    "data/find": {
-      "$ref": "data.ds.json#data/find"
+    "get_actionValue": {
+      "$ref": "action.ds.json#get_actionValue"
+    },
+    "get_blockValue": {
+      "$ref": "action.ds.json#get_blockValue"
+    },
+    "get_dataValue": {
+      "$ref": "action.ds.json#get_dataValue"
+    },
+    "get_contextValue": {
+      "$ref": "action.ds.json#get_contextValue"
+    },
+    "get_payloadValue": {
+      "$ref": "action.ds.json#get_payloadValue"
+    },
+    "get_sequenceValue": {
+      "$ref": "action.ds.json#get_sequenceValue"
+    },
+    "set_actionValue": {
+      "$ref": "action.ds.json#set_actionValue"
+    },
+    "set_dataValue": {
+      "$ref": "action.ds.json#set_dataValue"
+    },
+    "data_generateId": {
+      "$ref": "data.ds.json#data_generateId"
+    },
+    "data_find": {
+      "$ref": "data.ds.json#data_find"
     }
   }
 }

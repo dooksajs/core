@@ -33,7 +33,7 @@ function appendPlugin (appPlugins, appSetup, appActions, appComponents, appData)
     if (actions) {
       for (const key in actions) {
         if (Object.hasOwnProperty.call(actions, key)) {
-          appActions[name + '/' + key] = actions[key]
+          appActions[name + '_' + key] = actions[key]
         }
       }
     }
@@ -123,7 +123,7 @@ function initialize (appSetup, appActions, appComponents, appData, use, appStart
         if (typeof appActions[name] === 'function') {
           return appActions[name](params)
         } else if (!isServer) {
-          const pluginName = name.split('/')[0]
+          const pluginName = name.split('_')[0]
           const fileName = lazy[pluginName]
 
           if (fileName) {

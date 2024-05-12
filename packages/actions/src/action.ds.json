@@ -3,7 +3,7 @@
   "$id": "https://dooksa.org/schema/action/1.0/action.ds.json",
   "title": "Action",
   "$defs": {
-    "delete/dataValue": {
+    "delete_dataValue": {
       "name": "Delete data value",
       "description": "Removes",
       "type": "object",

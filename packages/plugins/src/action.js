@@ -6,13 +6,13 @@ import { dataGenerateId, $getDataValue, $setDataValue, $deleteDataValue } from '
 let $action
 
 const processAction = {
-  'delete/dataValue' (props) {
+  delete_dataValue (props) {
     return $deleteDataValue(props.name, props.id, {
       cascade: props.cascade,
       listeners: props.listeners
     })
   },
-  'eval/condition' (props, context, payload, lastBlock, blockProcess, sequenceProcess) {
+  eval_condition (props, context, payload, lastBlock, blockProcess, sequenceProcess) {
     let isValid
 
     if (props.if.length > 1) {
@@ -66,7 +66,7 @@ const processAction = {
 
     return isValid
   },
-  'get/actionValue' (props) {
+  get_actionValue (props) {
     const value = $getDataValue('action/values', { id: props.id })
 
     if (!value.isEmpty) {
@@ -75,12 +75,12 @@ const processAction = {
 
     throw new Error('Action variables not found')
   },
-  'get/blockValue' (props) {
+  get_blockValue (props) {
     if (props.value) {
       return getValue(props.value, props.map)
     }
   },
-  'get/dataValue' (props) {
+  get_dataValue (props) {
     const options = {
       prefixId: props.prefixId,
       suffixId: props.suffixId,
@@ -101,16 +101,16 @@ const processAction = {
       return result.item
     }
   },
-  'get/contextValue' (props, context) {
+  get_contextValue (props, context) {
     return getValue(context, props)
   },
-  'get/payloadValue' (props, context, payload) {
+  get_payloadValue (props, context, payload) {
     return getValue(payload, props)
   },
-  'get/sequenceValue' (props, context, payload, lastBlock, blockProcess, sequenceProcess) {
+  get_sequenceValue (props, context, payload, lastBlock, blockProcess, sequenceProcess) {
     return getValue(sequenceProcess.results, props)
   },
-  'set/actionValue' (props) {
+  set_actionValue (props) {
     const values = {}
     const id = props.id
 
@@ -134,7 +134,7 @@ const processAction = {
       merge: true
     })
   },
-  'set/dataValue' (props) {
+  set_dataValue (props) {
     return $setDataValue(props.name, props.value, props.options)
   }
 }

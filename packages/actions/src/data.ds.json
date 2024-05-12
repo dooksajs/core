@@ -3,12 +3,12 @@
   "$id": "https://dooksa.org/schema/action/1.0/data.ds.json",
   "title": "Data",
   "$defs": {
-    "data/generateId": {
+    "data_generateId": {
       "name": "UUID",
       "description": "Generate a unique id",
       "type": "null"
     },
-    "data/find": {
+    "data_find": {
       "name": "Find data",
       "description": "Search for multiple instances",
       "type": "object",
