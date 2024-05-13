@@ -17,7 +17,7 @@ const availableMethods = {}
 
 for (const key in actionSchema.properties) {
   if (Object.hasOwnProperty.call(actionSchema.properties, key)) {
-    availableMethods[key]
+    availableMethods[key] = true
   }
 }
 
