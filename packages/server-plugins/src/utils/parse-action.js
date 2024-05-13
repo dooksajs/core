@@ -90,7 +90,7 @@ export default (source, availableMethods) => {
 
     if (keyLength > -1) {
       node[action.path[keyLength]] = {
-        _$dv: i
+        _$val: i
       }
     }
 
@@ -131,8 +131,9 @@ function convertToActions (
   const keys = Object.keys(source)
 
   for (let i = 0; i < keys.length; i++) {
-    const key = keys[i]
+    let key = keys[i]
     const value = source[key]
+    let isAction = false
 
     // store current node split ⅄
     if (keys.length > 1) {
@@ -140,6 +141,7 @@ function convertToActions (
     }
 
     if (availableMethods[key]) {
+      isAction = true
       source._$a = key
 
       if (value != null && value !== '$noArgs') {
@@ -161,6 +163,10 @@ function convertToActions (
     }
 
     if (typeof value === 'object') {
+      if (isAction) {
+        key = '_$arg'
+      }
+
       node.path.push(key)
 
       const result = convertToActions(
