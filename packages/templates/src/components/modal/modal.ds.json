@@ -5,18 +5,18 @@
       "dependencies": ["modal-create", "modal-open"],
       "sequence": [
         {
-          "action/dispatch": {
+          "action_dispatch": {
             "id": "modal-create",
             "context": {
-              "get/contextValue": "all"
+              "get_contextValue": "all"
             }
           }
         },
         {
-          "action/dispatch": {
+          "action_dispatch": {
             "id": "modal-open",
             "context": {
-              "get/contextValue": "all"
+              "get_contextValue": "all"
             }
           }
         }
@@ -25,12 +25,12 @@
     {
       "id": "modal-create",
       "sequence": [{
-        "viewModal/create": {
+        "viewModal_create": {
           "viewId": {
-            "get/contextValue": "viewId"
+            "get_contextValue": "viewId"
           },
           "widgetId": {
-            "get/contextValue": "widgetId"
+            "get_contextValue": "widgetId"
           }
         }
       }]
@@ -38,9 +38,9 @@
     {
       "id": "modal-open",
       "sequence": [{
-        "viewModal/show": {
+        "viewModal_show": {
           "viewId": {
-            "get/contextValue": "viewId"
+            "get_contextValue": "viewId"
           }
         }
       }]

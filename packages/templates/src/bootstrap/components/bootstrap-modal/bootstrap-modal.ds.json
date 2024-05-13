@@ -5,19 +5,19 @@
       "sequence": [
         {
           "async": true,
-          "viewModal/create":{
+          "viewModal_create":{
             "viewId": {
-              "get/contextValue": "viewId"
+              "get_contextValue": "viewId"
             },
             "widgetId": {
-              "get/contextValue": "widgetId"
+              "get_contextValue": "widgetId"
             }
           }
         },
         {
-          "viewModal/show": {
+          "viewModal_show": {
             "viewId": {
-              "get/contextValue": "viewId"
+              "get_contextValue": "viewId"
             }
           }
         }
@@ -27,15 +27,15 @@
       "id": "bootstrap-modal-set-title",
       "sequence": [
         {
-          "set/dataValue": {
-            "name": "content/items",
+          "set_dataValue": {
+            "name": "content_items",
             "value": {
-              "get/actionValue": {
+              "get_actionValue": {
                 "id": {
-                  "get/dataValue": {
-                    "name": "widget/items",
+                  "get_dataValue": {
+                    "name": "widget_items",
                     "id": {
-                      "get/contextValue": "widgetId"
+                      "get_contextValue": "widgetId"
                     }
                   }
                 },
@@ -44,10 +44,10 @@
             },
             "options": {
               "id": {
-                "get/dataValue": {
+                "get_dataValue": {
                   "name": "view/content",
                   "id": {
-                    "get/contextValue": "viewId"
+                    "get_contextValue": "viewId"
                   }
                 }
               },

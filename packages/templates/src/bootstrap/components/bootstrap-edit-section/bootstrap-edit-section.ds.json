@@ -11,33 +11,33 @@
       "sequence": [
         { 
           "description": "Get widget group id",
-          "get/dataValue": {
+          "get_dataValue": {
             "name": "widget/items",
             "id": {
-              "get/contextValue": "widgetId"
+              "get_contextValue": "widgetId"
             }
           }
         },
         {
           "description": "Create modal",
           "async": true,
-          "template/create": {
+          "template_create": {
             "id": "bootstrap-modal",
             "widgetOptions": {
               "groupId": {
-                "get/sequenceValue": "0"
+                "get_sequenceValue": "0"
               }
             }
           }
         },
         {
           "description": "Create action value key",
-          "operator/eval": {
+          "operator_eval": {
             "name": "+",
             "values": [
               {
-                "widget/attachedToIndex": {
-                  "get/contextValue": ["widgetId"]
+                "widget_attachedToIndex": {
+                  "get_contextValue": ["widgetId"]
                 }
               },
               "__bootstrap-edit-section-template-id"
@@ -47,15 +47,15 @@
         {
           "description": "Fetch template metadata",
           "async": true,
-          "database/getById": {
+          "fetch_getById": {
             "collection": "template/metadata",
             "id": {
-              "get/actionValue": {
+              "get_actionValue": {
                 "id": {
-                  "get/sequenceValue": "0"
+                  "get_sequenceValue": "0"
                 },
                 "keys": [{
-                  "get/sequenceValue": "2"
+                  "get_sequenceValue": "2"
                 }]
               }
             }
@@ -63,29 +63,29 @@
         },
         {
           "description": "Set template metadata",
-          "set/actionValue": {
+          "set_actionValue": {
             "id": {
-              "get/sequenceValue": "0"
+              "get_sequenceValue": "0"
             },
             "values": [
               {
                 "id": "bootstrap-edit-section-template",
                 "value": {
-                  "get/sequenceValue": "3"
+                  "get_sequenceValue": "3"
                 }
               }
             ]
           }
         },
         {
-          "set/dataValue": {
+          "set_dataValue": {
             "name": "section/items",
             "value": {
-              "get/sequenceValue": "1"
+              "get_sequenceValue": "1"
             },
             "options": {
               "id": {
-                "router/currentId": "$noArgs"
+                "router_currentId": "$noArgs"
               },
               "update": {
                 "method": "unshift"
@@ -100,21 +100,21 @@
       "dependencies": ["bootstrap-edit-section-iterate"],
       "sequence": [
         {
-          "get/dataValue": {
+          "get_dataValue": {
             "name": "section/items",
             "id": {
-              "get/contextValue": ["sectionId"]
+              "get_contextValue": ["sectionId"]
             }
           }
         },
         {
-          "eval/condition": {
+          "eval_condition": {
             "if": [{
               "op": ">",
               "from": {
-                "get/blockValue": {
+                "get_blockValue": {
                   "value": {
-                    "get/sequenceValue": "0"
+                    "get_sequenceValue": "0"
                   },
                   "map": ["length"]
                 }
@@ -127,37 +127,37 @@
         },
         { 
           "async": true,
-          "list/forEach": {
+          "list_forEach": {
             "async": true,
             "items": {
-              "get/sequenceValue": 0
+              "get_sequenceValue": 0
             },
             "context": {
-              "get/contextValue": "$noArgs"
+              "get_contextValue": "$noArgs"
             },
             "actionId": "bootstrap-edit-section-iterate"
           }
         },
         {
-          "section/set": {
+          "section_set": {
             "value": {
-              "get/sequenceValue": "2"
+              "get_sequenceValue": "2"
             },
             "options": {
               "stopPropagation": true,
               "id": {
-                "get/contextValue": ["sectionId"]
+                "get_contextValue": ["sectionId"]
               }
             }
           }
         },
         {
-          "section/render": {
+          "section_render": {
             "id": {
-              "get/contextValue": ["sectionId"]
+              "get_contextValue": ["sectionId"]
             },
             "viewId": {
-              "get/contextValue": ["viewId"]
+              "get_contextValue": ["viewId"]
             }
           }
         }     
@@ -168,21 +168,21 @@
       "sequence": [
         {
           "description": "Widget template id",
-          "get/dataValue": {
+          "get_dataValue": {
             "name": "widget/templates",
             "id": {
-              "get/payloadValue": "value"
+              "get_payloadValue": "value"
             }
           }
         },
         {
           "description": "Replace current widget with 'bootstrap-edit-section-link'",
-          "eval/condition": {
+          "eval_condition": {
             "if": [
               {
                 "op": "!=",
                 "from": {
-                  "get/sequenceValue": "0"
+                  "get_sequenceValue": "0"
                 },
                 "to": "bootstrap-edit-section-link"
               }
@@ -192,46 +192,46 @@
           }
         },
         {
-          "get/dataValue": {
+          "get_dataValue": {
             "name": "widget/items",
             "id": {
-              "get/payloadValue": "value"
+              "get_payloadValue": "value"
             }
           }
         },
         {
           "description": "Create edit link template",
           "async": true,
-          "template/create": {
+          "template_create": {
             "id": "bootstrap-edit-section-link",
             "widgetOptions": {
               "groupId": {
-                "get/sequenceValue": "2"
+                "get_sequenceValue": "2"
               }
             }
           }
         },
         {
           "description": "Set current template into action value",
-          "set/actionValue": {
+          "set_actionValue": {
             "id": {
-              "get/sequenceValue": "2"
+              "get_sequenceValue": "2"
             },
             "values": [
               {
                 "id": {
-                  "operator/eval": {
+                  "operator_eval": {
                     "name": "+",
                     "values": [
                       {
-                        "get/payloadValue": "key"
+                        "get_payloadValue": "key"
                       },
                       "__bootstrap-edit-section-template-id"
                     ]
                   }
                 },
                 "value": {
-                  "get/sequenceValue": "0"
+                  "get_sequenceValue": "0"
                 }
               }
             ]
@@ -239,16 +239,16 @@
         },
         {
           "description": "Add current widget to edit link section",
-          "section/set": {
+          "section_set": {
             "value": {
-              "get/payloadValue": "value"
+              "get_payloadValue": "value"
             },
             "options": {
               "id": {
-                "get/dataValue": {
+                "get_dataValue": {
                   "name": "widget/sections",
                   "id": {
-                    "get/sequenceValue": "3"
+                    "get_sequenceValue": "3"
                   },
                   "options": {
                     "position": 0
@@ -263,12 +263,12 @@
         },
         {
           "description": "Add edit section link to parent list",
-          "list/push": {
+          "list_push": {
             "target": {
-              "get/contextValue": "_list_"
+              "get_contextValue": "_list_"
             },
             "source": {
-              "get/sequenceValue": "3"
+              "get_sequenceValue": "3"
             }
           }
         }
