@@ -264,6 +264,8 @@ function initialize (appSetup, appActions, appComponents, appData, use, appStart
     }
 
     const currentPathId = routerCurrentId()
+
+    // This is referring a global var
     // @ts-ignore
     const data = __ds__
     // set data
