@@ -4,21 +4,6 @@ import { $addDataListener, $getDataValue, $setDataValue } from '../../plugins/sr
 import { sectionAppend, sectionUpdate } from '../../plugins/src/section.js'
 import { templateCreate } from '../../plugins/src/template.js'
 
-/**
- * @typedef {Object} pageData
- * @property {string} collection
- * @property {string} [id]
- * @property {*} item
- * @property {DataMetadata} metadata
- */
-
-/**
- * @typedef {Object} DataMetadata
- * @property {number} createdAt
- * @property {number} updatedAt
- * @property {string} [userId]
- */
-
 function appendPlugin (appPlugins, appSetup, appActions, appComponents, appData) {
   return function use (plugin) {
     // check if plugin exists
@@ -187,20 +172,11 @@ function initialize (appSetup, appActions, appComponents, appData, use, appStart
   /**
    * Initialize dooksa!
    * @param {Object} param
-   * @param {Object} [param.data={ item: [], isEmpty: true, templates: [] }]
-   * @param {pageData[]} param.data.item - Current page data
-   * @param {boolean} [param.data.isEmpty] - Is data empty
-   * @param {string[]} [param.data.templates] - List of template ids
    * @param {Object} [param.options={}]
    * @param {Object} [param.lazy={}]
    * @param {Function} param.loader
    */
   return ({
-    data = {
-      item: [],
-      isEmpty: true,
-      templates: []
-    },
     options = {},
     lazy = {},
     loader
@@ -288,7 +264,8 @@ function initialize (appSetup, appActions, appComponents, appData, use, appStart
     }
 
     const currentPathId = routerCurrentId()
-
+    // @ts-ignore
+    const data = __ds__
     // set data
     for (let i = 0; i < data.item.length; i++) {
       const item = data.item[i]
