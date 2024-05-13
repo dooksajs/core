@@ -2,15 +2,15 @@ import { createApp } from '@dooksa/create'
 import { data } from '@dooksa/plugins'
 import {
   $http,
-  component,
   action,
+  component,
   database,
   event,
+  layout,
   middleware,
   page,
   section,
   template,
-  layout,
   theme,
   user,
   widget
