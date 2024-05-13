@@ -9,11 +9,14 @@ import {
   list,
   metadata,
   operator,
+  page,
+  query,
   router,
   template,
   token,
-  query,
-  view
+  section,
+  view,
+  widget
 } from '@dooksa/plugins'
 import { createApp } from '@dooksa/create'
 
@@ -32,5 +35,8 @@ export default createApp([
   template,
   token,
   query,
-  view
+  view,
+  page,
+  section,
+  widget
 ])
