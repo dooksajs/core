@@ -31,7 +31,7 @@ const event = createPlugin({
      * @param {Object.<string, any>} param.payload - The action that runs on the event
      */
     $emit (name, { id, context, payload }) {
-      const listeners = $getDataValue('dsEvent/listeners', {
+      const listeners = $getDataValue('event/listeners', {
         id,
         suffixId: name
       })
