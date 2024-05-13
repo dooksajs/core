@@ -148,54 +148,6 @@ const operators = {
 
 const operator = createPlugin({
   name: 'operator',
-  actionSchema: {
-    compare: {
-      name: 'Compare',
-      description: 'Compare two or more values',
-      schema: [
-        {
-          type: 'array',
-          items: {
-            anyOf: [
-              {
-                type: 'string'
-              },
-              {
-                type: 'number'
-              }
-            ]
-          }
-        }
-      ]
-    },
-    eval: {
-      name: 'Evaluate',
-      description: 'Evaluate two values',
-      schema: [
-        {
-          type: 'object',
-          properties: {
-            name: {
-              type: 'string'
-            },
-            values: {
-              type: 'array',
-              items: {
-                oneOf: [
-                  {
-                    type: 'string'
-                  },
-                  {
-                    type: 'number'
-                  }
-                ]
-              }
-            }
-          }
-        }
-      ]
-    }
-  },
   actions: {
     /**
      * Compare two or more values
