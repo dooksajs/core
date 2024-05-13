@@ -159,6 +159,7 @@ function parseActionItem (actionItems, actions, availableMethod) {
     const sequences = {}
     let blocks = {}
 
+    actions[id] = {}
     items[id] = []
 
     for (let i = 0; i < action.sequence.length; i++) {
@@ -177,7 +178,9 @@ function parseActionItem (actionItems, actions, availableMethod) {
       blocks = Object.assign(blocks, result.blocks)
     }
 
-    actions[id] = { items, sequences, blocks }
+    actions[id].items = items
+    actions[id].sequences = sequences
+    actions[id].blocks = blocks
   }
 }
 
