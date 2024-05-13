@@ -12,6 +12,17 @@
  * @param {Function} [plugin.setup]
  */
 function createPlugin (plugin) {
+  // assign action scope
+  if (plugin.actions) {
+    for (const key in plugin.actions) {
+      if (Object.hasOwnProperty.call(plugin.actions, key)) {
+        const action = plugin.actions[key]
+
+        plugin.actions[key] = action.bind(plugin.actions)
+      }
+    }
+  }
+
   return plugin
 }
 
