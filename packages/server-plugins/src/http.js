@@ -147,11 +147,9 @@ const $http = createPlugin({
 
     let secure = true
 
-    DEV: {
+    if (process.env.NODE_ENV === 'development') {
       secure = false
-    }
-
-    PROD: {
+    } else {
       app.use(compression())
     }
 
