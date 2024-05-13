@@ -122,6 +122,67 @@ function appendPlugin (appPlugins, appSetup, appActions, appComponents, appData)
   }
 }
 
+/**
+ * Find and load plugin used by the @see action function
+ * @param {Object} app - App
+ * @param {Object} app.actions
+ * @param {Object} app.lazy
+ * @param {Function} app.loader
+ * @param {Object[]} app.setup
+ * @param {Object} app.options
+ * @param {Function} app.use
+ */
+function callbackWhenAvailable ({ actions, lazy, loader, setup, options, use }) {
+  /**
+   * @param {string} name - Name of method
+   * @param {function} callback - Callback used to run after loading the requested plugin
+   */
+  return (name, callback) => {
+    if (typeof actions[name] === 'function') {
+      return callback()
+    }
+
+    if (!isServer) {
+      const pluginName = name.split('_')[0]
+      const fileName = lazy[pluginName]
+
+      if (fileName) {
+        loader(fileName)
+          .then(plugin => {
+            use(plugin)
+
+            for (let i = 0; i < setup.length; i++) {
+              const instance = setup[i]
+
+              instance.initialize(options[instance.name])
+              setup.splice(i)
+            }
+
+            if (typeof actions[name] === 'function') {
+              return callback()
+            } else {
+              throw new Error('No action exists by the name of: ' + name)
+            }
+          })
+          .catch(error => {
+            console.log(error)
+          })
+      }
+    }
+    const pluginName = name.split('/')[0]
+
+    this.dsLoader.methods.get(pluginName, {
+      onImport: this._add.bind(this),
+      onSuccess: () => {
+        callback()
+      },
+      onError: err => {
+        console.error(err)
+      }
+    })
+  }
+}
+
 function initialize (appSetup, appActions, appComponents, appData, use, appStartServer) {
   /**
    * Initialize dooksa!
@@ -146,29 +207,40 @@ function initialize (appSetup, appActions, appComponents, appData, use, appStart
   } = {
     loader: () => {}
   }) => {
+    const actionWhenAvailable = callbackWhenAvailable({
+      actions: appActions,
+      lazy,
+      loader,
+      setup: appSetup,
+      options,
+      use
+    })
+
     options.action = {
-      action: (name, params) => {
-        if (typeof appActions[name] === 'function') {
-          return appActions[name](params)
-        } else if (!isServer) {
-          const pluginName = name.split('_')[0]
-          const fileName = lazy[pluginName]
+      action: (name, params, callback = {}) => {
+        actionWhenAvailable(name, () => {
+          const value = appActions[name](params)
+          const onSuccess = callback.onSuccess
+          const onError = callback.onError
 
-          if (fileName) {
-            loader(fileName)
-              .then(plugin => {
-                use(plugin)
-
-                for (let i = 0; i < appSetup.length; i++) {
-                  const setup = appSetup[i]
-
-                  setup.initialize(options[setup.name])
-
-                  appSetup.splice(i)
-                }
-              })
+          if (!onSuccess || !onError) {
+            return value
           }
-        }
+
+          if (value instanceof Error) {
+            onError(value)
+          } else if (value instanceof Promise) {
+            Promise.resolve(value)
+              .then(results => {
+                onSuccess(results)
+              })
+              .catch(error => {
+                onError(error)
+              })
+          } else {
+            onSuccess(value)
+          }
+        })
       },
       availableMethod: (name) => {
         return typeof appActions[name] === 'function'
@@ -205,6 +277,8 @@ function initialize (appSetup, appActions, appComponents, appData, use, appStart
       const setup = appSetup[i]
 
       setup.initialize(options[setup.name])
+      appSetup.splice(i, 1)
+      i--
     }
 
     appSetup = []
