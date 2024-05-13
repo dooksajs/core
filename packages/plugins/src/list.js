@@ -225,46 +225,6 @@ const list = createPlugin({
 
       return target.splice(start, deleteCount, source)
     }
-  },
-  actionSchema: {
-    filter: {
-      name: 'Filter',
-      description: 'Filter items based on conditions',
-      schema: [
-        {
-          type: 'object',
-          properties: {
-            items: {
-              type: 'array',
-              items: {
-                oneOf: [
-                  {
-                    type: 'string'
-                  },
-                  {
-                    type: 'number'
-                  }
-                ]
-              }
-            },
-            options: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  name: {
-                    type: 'string'
-                  },
-                  value: {
-                    type: 'any'
-                  }
-                }
-              }
-            }
-          }
-        }
-      ]
-    }
   }
 })
 
