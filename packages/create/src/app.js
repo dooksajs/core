@@ -1,4 +1,23 @@
 import { parseSchema, isServer } from '@dooksa/utils'
+import { routerCurrentId } from '../../plugins/src/router.js'
+import { $addDataListener, $getDataValue, $setDataValue } from '../../plugins/src/data.js'
+import { sectionAppend, sectionUpdate } from '../../plugins/src/section.js'
+import { templateCreate } from '../../plugins/src/template.js'
+
+/**
+ * @typedef {Object} pageData
+ * @property {string} collection
+ * @property {string} [id]
+ * @property {*} item
+ * @property {DataMetadata} metadata
+ */
+
+/**
+ * @typedef {Object} DataMetadata
+ * @property {number} createdAt
+ * @property {number} updatedAt
+ * @property {string} [userId]
+ */
 
 function appendPlugin (appPlugins, appSetup, appActions, appComponents, appData) {
   return function use (plugin) {
@@ -33,7 +52,7 @@ function appendPlugin (appPlugins, appSetup, appActions, appComponents, appData)
     if (actions) {
       for (const key in actions) {
         if (Object.hasOwnProperty.call(actions, key)) {
-          appActions[name + '_' + key] = actions[key]
+          appActions[name + '_' + key] = actions[key].bind(actions)
         }
       }
     }
@@ -107,11 +126,20 @@ function initialize (appSetup, appActions, appComponents, appData, use, appStart
   /**
    * Initialize dooksa!
    * @param {Object} param
+   * @param {Object} [param.data={ item: [], isEmpty: true, templates: [] }]
+   * @param {pageData[]} param.data.item - Current page data
+   * @param {boolean} [param.data.isEmpty] - Is data empty
+   * @param {string[]} [param.data.templates] - List of template ids
    * @param {Object} [param.options={}]
    * @param {Object} [param.lazy={}]
    * @param {Function} param.loader
    */
   return ({
+    data = {
+      item: [],
+      isEmpty: true,
+      templates: []
+    },
     options = {},
     lazy = {},
     loader
@@ -182,7 +210,117 @@ function initialize (appSetup, appActions, appComponents, appData, use, appStart
     appSetup = []
 
     if (isServer() && typeof appStartServer === 'function') {
-      appStartServer(options.server)
+      return appStartServer(options.server)
+    }
+
+    const currentPathId = routerCurrentId()
+
+    // set data
+    for (let i = 0; i < data.item.length; i++) {
+      const item = data.item[i]
+
+      // need to check if any data requires an async plugin
+      $setDataValue(item.collection, item.item, {
+        id: item.id,
+        metadata: item.metadata
+      })
+    }
+
+    const section = $getDataValue('section/items', {
+      id: currentPathId
+    })
+
+    // render page
+    if (!section.isEmpty) {
+      return sectionAppend({ id: section.id })
+    }
+
+    // render templates
+    for (let i = 0; i < data.templates.length; i++) {
+      const templateId = data.templates[i]
+      const templateResult = templateCreate({ id: templateId })
+
+      if (templateResult instanceof Promise) {
+        templateResult
+          .then(widgetId => {
+            $setDataValue('section/items', widgetId, {
+              id: currentPathId,
+              suffixId: 'default',
+              update: {
+                method: 'push'
+              }
+            })
+          })
+      } else {
+        $setDataValue('section/items', templateResult, {
+          id: currentPathId,
+          suffixId: 'default',
+          update: {
+            method: 'push'
+          }
+        })
+      }
+
+
+      const section = $getDataValue('section/items', {
+        id: currentPathId
+      })
+
+      if (!section.isEmpty) {
+        const id = section.id
+
+
+        sectionAppend({ id })
+
+        const viewId = $getDataValue('view/rootViewId').item
+        const handlerValue = () => {
+          sectionUpdate({ id, viewId })
+        }
+
+        // update section elements
+        $addDataListener('section/items', {
+          on: 'update',
+          id,
+          handler: {
+            id: viewId,
+            value: handlerValue
+          }
+        })
+
+        // update widget section attachment
+        $addDataListener('section/items', {
+          on: 'update',
+          id,
+          force: true,
+          priority: 0,
+          handler: {
+            id: viewId,
+            value: ({ item }) => {
+              for (let i = 0; i < item.length; i++) {
+                $setDataValue('widget/attached', id, { id: item[i] })
+              }
+            }
+          }
+        })
+
+        $addDataListener('section/query', {
+          on: 'update',
+          id,
+          handler: {
+            id: viewId,
+            value: handlerValue
+          }
+        })
+
+        $addDataListener('section/query', {
+          on: 'delete',
+          id,
+          handler: {
+            id: viewId,
+            value: handlerValue
+          }
+        })
+      }
     }
   }
 }
