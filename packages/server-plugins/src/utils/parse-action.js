@@ -144,7 +144,7 @@ function convertToActions (
       isAction = true
       source._$a = key
 
-      if (value != null && value !== '$noArgs') {
+      if (value != null && value !== '$null') {
         if (Array.isArray(value)) {
           source._$arg = value.slice()
         } else if (typeof value === 'object') {

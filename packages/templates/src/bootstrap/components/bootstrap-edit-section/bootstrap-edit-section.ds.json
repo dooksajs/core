@@ -85,7 +85,7 @@
             },
             "options": {
               "id": {
-                "router_currentId": "$noArgs"
+                "router_currentId": "$null"
               },
               "update": {
                 "method": "unshift"
@@ -133,7 +133,7 @@
               "get_sequenceValue": 0
             },
             "context": {
-              "get_contextValue": "$noArgs"
+              "get_contextValue": "$null"
             },
             "actionId": "bootstrap-edit-section-iterate"
           }
