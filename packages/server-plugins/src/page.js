@@ -16,17 +16,14 @@ function create ({ request, response }) {
   response.set('Content-Type', 'text/html')
 
   const data = request.pageData ? JSON.stringify(request.pageData) : ''
-  let devData = ''
+  const app = '(() => {const __ds__ =' + data + ';' + appString + '})()'
   let csp = ''
-  let app = '(() => {const __ds__ =' + data + ';' + appString + '})()'
 
   PROD: {
     csp = "script-src 'sha256-" + hash(app) + "';style-src 'unsafe-inline';"
   }
 
   DEV: {
-    devData = '<script>window.__ds__ = ' + data + '</script>'
-    app = appString
     csp = "script-src 'unsafe-inline'; style-src 'unsafe-inline';"
   }
 
@@ -37,7 +34,6 @@ function create ({ request, response }) {
   response.status(200).send(
     `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><link rel="icon" type="image/x-icon" href="/favicon.ico"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dooksa</title></head><body>
       <div id="root"></div>
-      ${devData}
       <script>${app}</script>
       <style>${css}</style>
     </body></html>`
@@ -60,7 +56,6 @@ const pageServer = createPlugin({
   },
   setup ({ app = '', css = '' } = {}) {
     $seedDatabase('page-items')
-
     $setDataValue('page/app', app)
     $setDataValue('page/css', css)
 
