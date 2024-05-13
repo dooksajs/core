@@ -336,9 +336,8 @@ function getDataByKey (data, keys) {
 /**
  * Get result value
  * @private
- * @param {Object|string} value
- * @param {string} value.$key - Request to return a specific key/value, dot notations are permitted
- * @param {number} value.$index - Request to return specific indexes from an array
+ * @param {*} value
+ * @param {string[]} [query] - Request to return a specific key value, dot notations are permitted
  * @returns {*}
  */
 function getValue (value, query) {
@@ -346,79 +345,32 @@ function getValue (value, query) {
     return value
   }
 
-  if (Object.hasOwnProperty.call(value, query)) {
-    return value[query]
-  }
+  const results = []
 
-  // get a nested value
-  if (Object.hasOwnProperty.call(query, '$key')) {
-    return getDataByKey(value, query.$key).result
-  }
-
-  // return an object of data
-  if (Object.hasOwnProperty.call(query, '$keys')) {
-    const keys = query.$keys
-    const result = {}
-
-    for (const key in keys) {
-      if (Object.hasOwnProperty.call(keys, key)) {
-        const item = keys[key]
-        const dataKey = getDataByKey(value, item)
-
-        result[dataKey.key] = dataKey.result
-      }
-    }
-
-    return result
-  }
-
-  if (Object.hasOwnProperty.call(query, '$index')) {
-    const [index, keys] = query.$index
-    const valueItem = value[index]
-
-    if (!keys) {
-      return valueItem
-    }
-
-    const result = {}
+  // fetch value
+  for (let i = 0; i < query.length; i++) {
+    const keys = query[i].split('.')
+    let result
 
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i]
-      const dataKey = getDataByKey(value, key)
 
-      result[dataKey.key] = dataKey.result
-    }
-
-    return result
-  }
-
-  if (Object.hasOwnProperty.call(query, '$indexes')) {
-    const result = []
-
-    for (let i = 0; i < query.$indexes.length; i++) {
-      const [index, key] = query[i]
-      const valueItem = value[index]
-
-      if (key) {
-        const dataKey = getDataByKey(valueItem, key)
-
-        result.push(dataKey.result)
+      if (Object.hasOwnProperty.call(value, key)) {
+        value = value[key]
+        result = value
+        results.push(value)
       } else {
-        result.push(valueItem)
+        /** @TODO Create ReferenceError */
+        throw new Error('Action get value was not defined: ' + key)
       }
     }
 
-    return result
+    if (query.length === 1) {
+      return result
+    }
   }
 
-  const result = {}
-
-  for (let i = 0; i < value.length; i++) {
-    const key = value[i]
-    result[key] = value[key]
-  }
-
-  return result
+  return results
 }
 
 const action = createPlugin({
