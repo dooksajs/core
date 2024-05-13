@@ -5,7 +5,6 @@ import esbuild from 'esbuild'
 import chokidar from 'chokidar'
 import logger from './logger.js'
 import { resolve, extname } from 'node:path'
-import { existsSync } from 'node:fs'
 
 app.use(development)
 app.use(templateBuild)
@@ -43,7 +42,7 @@ esbuild.context({
   dropLabels: ['PROD'],
   reserveProps: /__d__/,
   plugins: [{
-    name: 'dsRebuildClient',
+    name: 'rebuildClient',
     setup (build) {
       let timerStart
       let rebuildClientNum = 0
