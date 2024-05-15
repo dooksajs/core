@@ -78,29 +78,41 @@ const list = createPlugin({
         const item = items[i]
 
         if (options.length > 1) {
+          let compareValues = []
+          /**
+           * @type {Object}
+           * @property {*} value_1
+           * @property {*} value_2
+           * @property {'&&'|'||'} op
+           */
+          let compareItem = {}
+
           for (let i = 0; i < options.length; i++) {
             const option = options[i]
+            const value = operatorEval({
+              name: option.name,
+              values: [item.value, option.value]
+            })
 
-            // compare one or more results
-            const compareValues = []
-
-            let compareItem = option
-
-            if (typeof item !== 'string') {
-              compareItem = operatorEval({
-                name: option.name,
-                values: [item.value, option.value]
-              })
+            if (!compareItem.value_1) {
+              compareItem.value_1 = value
             }
 
-            compareValues.push(compareItem)
-
-            const isValid = operatorCompare(compareValues)
-
-            if (!isValid) {
-              continue filter
+            if (!compareItem.value_2) {
+              compareItem.op = '&&'
+              compareItem.value_2 = value
+              compareValues.push(compareItem)
+              compareItem = {}
             }
           }
+
+          const isValid = operatorCompare(compareValues)
+
+          if (!isValid) {
+            continue filter
+          }
+
+          compareValues = []
         } else {
           const option = options[0]
           const isValid = operatorEval({
@@ -191,7 +203,7 @@ const list = createPlugin({
     /**
      * Sort list
      * @param {Object} param
-     * @param {ArraySortValue[]} param.items
+     * @param {Array} param.items
      * @param {ArraySortBy} param.type - Sort by
      * @returns {ArraySortValue[]}
      */
