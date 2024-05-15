@@ -1,5 +1,5 @@
 {
-  "metadata": [
+  "templates": [
     {
       "id": "bootstrap-edit-section-card",
       "name": "Bootstrap card"
@@ -22,7 +22,6 @@
         },
         {
           "description": "Create modal",
-          "async": true,
           "template_create": {
             "id": "bootstrap-modal",
             "widgetOptions": {
@@ -39,7 +38,9 @@
             "values": [
               {
                 "widget_attachedToIndex": {
-                  "get_contextValue": "widgetId"
+                  "id": {
+                    "get_contextValue": "widgetId"
+                  }
                 }
               },
               "__bootstrap-edit-section-template-id"
@@ -207,7 +208,6 @@
         },
         {
           "description": "Create edit link template",
-          "async": true,
           "template_create": {
             "id": "bootstrap-edit-section-link",
             "widgetOptions": {

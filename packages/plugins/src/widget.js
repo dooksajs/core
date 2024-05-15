@@ -220,7 +220,7 @@ const widget = createPlugin({
     }
   },
   actions: {
-    attachedToIndex (id) {
+    attachedToIndex ({ id }) {
       const sectionId = $getDataValue('widget/attached', { id, expand: true })
 
       if (sectionId.isEmpty) {
