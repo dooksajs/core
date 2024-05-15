@@ -3,20 +3,61 @@ import { deepClone } from '@dooksa/utils'
 import { operatorCompare, operatorEval } from './operator.js'
 import { dataGenerateId, $getDataValue, $setDataValue, $deleteDataValue } from './data.js'
 
+/**
+ * @typedef {import('../../global-typedef.js').SetDataOptions} SetDataOptions
+ * @typedef {import('../../global-typedef.js').GetDataQuery} GetDataQuery
+ * @typedef {import('../../global-typedef.js').DataSchema} DataSchema
+ * @typedef {import('../../global-typedef.js').DataWhere} DataWhere
+ */
+
+
 let $action
 
 const processAction = {
+  /**
+   * Delete data value
+   * @param {Object} props
+   * @param {string} props.name - Collection name
+   * @param {string} props.id - document name
+   * @param {boolean} props.cascade - Delete related documents
+   * @param {boolean} props.listeners - Delete data listeners
+   * @returns
+   */
   delete_dataValue (props) {
     return $deleteDataValue(props.name, props.id, {
       cascade: props.cascade,
       listeners: props.listeners
     })
   },
+  /**
+   * Compare two or more values
+   * @param {Object} props
+   * @param {Object[]} props.if
+   * @param {'=='|'!='|'>'|'>='|'<'|'<='|'!'|'%'|'++'|'--'|'-'|'+'|'*'|'**'|'!!'|'~'} props.if[].op
+   * @param {string|number} props.if[].from
+   * @param {string|number} props.if[].to
+   * @param {'&&'|'||'} props.if[].andOr
+   * @param {number[]} props.then
+   * @param {number[]} props.else
+   * @param {*} context
+   * @param {*} payload
+   * @param {*} lastBlock
+   * @param {*} blockProcess
+   * @param {*} sequenceProcess
+   * @returns {boolean}
+   */
   eval_condition (props, context, payload, lastBlock, blockProcess, sequenceProcess) {
     let isValid
 
     if (props.if.length > 1) {
       const compareValues = []
+      /**
+       * @type {Object}
+       * @property {*} value_1
+       * @property {*} value_2
+       * @property {'&&'|'||'} op
+       */
+      let compareItem = {}
 
       for (let i = 0; i < props.if.length; i++) {
         const item = props.if[i]
@@ -66,20 +107,38 @@ const processAction = {
 
     return isValid
   },
+  /**
+   * Get action variable value
+   * @param {Object} props
+   * @param {string} props.id
+   * @param {GetValueQuery} props.query
+   */
   get_actionValue (props) {
     const value = $getDataValue('action/values', { id: props.id })
 
     if (!value.isEmpty) {
-      return getValue(value.item, props)
+      return getValue(value.item, props.query)
     }
 
     throw new Error('Action variables not found')
   },
+  /**
+   * Get block value
+   * @param {Object} props
+   * @param {*} props.value
+   * @param {GetValueQuery} props.query
+   */
   get_blockValue (props) {
     if (props.value) {
       return getValue(props.value, props.map)
     }
   },
+  /**
+   * Get data value
+   * @param {Object} props
+   * @param {string} props.name
+   * @param {GetDataQuery} [props.query]
+   */
   get_dataValue (props) {
     const options = {
       prefixId: props.prefixId,
@@ -101,15 +160,42 @@ const processAction = {
       return result.item
     }
   },
+  /**
+   * Get context value
+   * @param {GetValueQuery} props
+   * @param {Object} context
+   */
   get_contextValue (props, context) {
     return getValue(context, props)
   },
+  /**
+   * Get payload value
+   * @param {GetValueQuery} props
+   * @param {Object} context
+   * @param {*} payload
+   */
   get_payloadValue (props, context, payload) {
     return getValue(payload, props)
   },
+  /**
+   * Get sequence result value
+   * @param {GetValueQuery} props
+   * @param {Object} sequenceProcess
+   * @param {Array} sequenceProcess.results
+   */
   get_sequenceValue (props, context, payload, lastBlock, blockProcess, sequenceProcess) {
     return getValue(sequenceProcess.results, props)
   },
+  /**
+   * Set action variable value
+   * @param {Object} props
+   * @param {string} props.id
+   * @param {Object[]} props.values
+   * @param {string} [props.values[].id]
+   * @param {string} [props.values[].prefixId]
+   * @param {string} [props.values[].suffixId]
+   * @param {*} props.values[].value
+   */
   set_actionValue (props) {
     const values = {}
     const id = props.id
@@ -134,6 +220,13 @@ const processAction = {
       merge: true
     })
   },
+  /**
+   * Set data value
+   * @param {Object} props
+   * @param {string} props.name
+   * @param {*} props.value
+   * @param {SetDataOptions} props.options
+   */
   set_dataValue (props) {
     return $setDataValue(props.name, props.value, props.options)
   }
@@ -311,27 +404,9 @@ function createAction (item, block, data) {
   }
 }
 
-
-function getDataByKey (data, keys) {
-  let lastKey
-  let result
-
-  if (typeof keys === 'string') {
-    keys = keys.split('.')
-  }
-
-  for (let i = 0; i < keys.length; i++) {
-    const key = keys[i]
-
-    if (Object.hasOwnProperty.call(data, key)) {
-      data = data[key]
-      lastKey = key
-      result = data
-    }
-  }
-
-  return { result, key: lastKey }
-}
+/**
+ * @typedef {string[]|string} GetValueQuery
+ */
 
 /**
  * Get result value
