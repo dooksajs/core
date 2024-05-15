@@ -231,14 +231,18 @@ const widget = createPlugin({
 
       return section.item.indexOf(id)
     },
-    remove ({ id }) {
+    /**
+     * Remove widget
+     * @param {string} id
+     */
+    remove (id) {
       const view = $getDataValue('widget/views', { id })
 
       // remove all nodes from DOM
       if (!view.isEmpty) {
         // remove view relations
-        $deleteDataValue('widget/views', { id })
-        $deleteDataValue('widget/parentViews', { id })
+        $deleteDataValue('widget/views', id)
+        $deleteDataValue('widget/parentViews', id)
 
         for (let i = 0; i < view.item.length; i++) {
           const viewId = view.item[i]
