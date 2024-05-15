@@ -3,6 +3,14 @@
   "$id": "https://schema.dooksa.org/1.0/router.schema.json",
   "title": "Router",
   "$defs": {
+    "router_currentId": {
+      "title": "Hash current pathname",
+      "const": "$null"
+    },
+    "router_currentPath": {
+      "title": "Current pathname",
+      "const": "$null"
+    },
     "router_navigate": {
       "type": "object",
       "properties": {
