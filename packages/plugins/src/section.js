@@ -1,6 +1,18 @@
 import { createPlugin } from '@dooksa/create'
 import { layoutCreate, widgetRemove, queryFetch, $getDataValue, $setDataValue, $emit } from './index.js'
 
+/**
+ * @typedef {import('../../global-typedef.js').SetDataOptions} SetDataOptions
+ */
+
+/**
+ * @param {*} queryId
+ * @param {*} viewId
+ * @param {*} id
+ * @param {*} uniqueId
+ * @param {*} mode
+ * @returns
+ */
 function updateByQuery (queryId, viewId, id, uniqueId, mode) {
   const result = queryFetch({ id: queryId })
 
@@ -213,7 +225,7 @@ const section = createPlugin({
 
           // complete remove widget since it belongs to no section
           if (attachedSection.item === section.id) {
-            widgetRemove({ id: prevWidgetId })
+            widgetRemove(prevWidgetId)
           }
         } else {
           const previousView = $getDataValue('widget/parentViews', {
@@ -281,7 +293,7 @@ const section = createPlugin({
      * Set section data items
      * @param {Object} param
      * @param {string|string[]} param.value
-     * @param {DsSetDataOptions} param.options
+     * @param {SetDataOptions} param.options
      */
     set ({ value, options }) {
       if (options && options.id){
