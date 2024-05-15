@@ -154,17 +154,6 @@ function callbackWhenAvailable ({ actions, lazy, loader, setup, options, use }) 
           })
       }
     }
-    const pluginName = name.split('/')[0]
-
-    this.dsLoader.methods.get(pluginName, {
-      onImport: this._add.bind(this),
-      onSuccess: () => {
-        callback()
-      },
-      onError: err => {
-        console.error(err)
-      }
-    })
   }
 }
 
