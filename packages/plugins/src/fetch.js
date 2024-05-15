@@ -1,7 +1,7 @@
 import { createPlugin } from '@dooksa/create'
 import { $getDataValue, $setDataValue, $addDataListener } from './data.js'
 
-/** @typedef {import('../../global-typedef.js').DataWhere} DataWhere */
+/** @typedef {import('../../global-typedef.js').DataValue} DataValue */
 
 const fetchRequestQueue = {}
 const fetchRequestCache = {}
@@ -93,12 +93,13 @@ const $fetch = createPlugin({
      * Get a list of documents
      * @param {Object} param
      * @param {string} param.collection - Name of the records' collection.
-     * @param {number} [param.expand] - Fetch related documents.
+     * @param {boolean} [param.expand] - Fetch related documents.
      * @param {number} [param.page] - The page (aka. offset) of the paginated list (default to 1).
      * @param {number} [param.perPage] - The max returned records per page (default to 25).
      * @param {number} [param.limit] - The max returned records per page (default to 25).
-     * @param {DataWhere} [param.where] -
+     * @param {string} [param.where] -
      * @param {boolean} [param.sync] - Sync data with local database
+     * @returns {DataValue}
      */
     getAll ({ collection, page, perPage, limit, where, expand, sync = true }) {
       const and = '&'
@@ -183,6 +184,15 @@ const $fetch = createPlugin({
           })
       })
     },
+    /**
+     * Get value by id
+     * @param {Object} param
+     * @param {string} param.collection - Name of the records' collection.
+     * @param {string[]|string} param.id - Document id
+     * @param {boolean} [param.expand] - Fetch related documents.
+     * @param {boolean} [param.sync] - Sync data with local database
+     * @returns {DataValue}
+     */
     getById ({ collection, id, expand, sync = true }) {
       if (!Array.isArray(id)) {
         id = [id]
