@@ -10,15 +10,51 @@ import { $component, $componentGetter } from './component.js'
 import { getNodeValue } from '@dooksa/utils'
 import parseHTML from './utils/parse-html.js'
 import { templatePath } from '@dooksa/templates'
-import actionSchema from '@dooksa/actions'
 
 const actions = {}
-const availableMethods = {}
-
-for (const key in actionSchema.properties) {
-  if (Object.hasOwnProperty.call(actionSchema.properties, key)) {
-    availableMethods[key] = true
-  }
+const availableMethods = {
+  action_dispatch: true,
+  delete_dataValue: true,
+  eval_condition: true,
+  get_actionValue: true,
+  get_blockValue: true,
+  get_dataValue: true,
+  get_contextValue: true,
+  get_payloadValue: true,
+  get_sequenceValue: true,
+  set_actionValue: true,
+  set_dataValue: true,
+  data_generateId: true,
+  data_find: true,
+  fetch_getAll: true,
+  fetch_getById: true,
+  layout_create: true,
+  list_filter: true,
+  list_forEach: true,
+  list_push: true,
+  list_sort: true,
+  list_splice: true,
+  operator_compare: true,
+  operator_eval: true,
+  query_filter: true,
+  query_fetch: true,
+  router_navigate: true,
+  section_append: true,
+  section_render: true,
+  section_set: true,
+  section_update: true,
+  template_create: true,
+  token_textContent: true,
+  view_insert: true,
+  view_remove: true,
+  view_replace: true,
+  view_updateValue: true,
+  view_removeAttribute: true,
+  view_setAttribute: true,
+  viewModal_create: true,
+  viewModal_show: true,
+  widget_attachedToIndex: true,
+  widget_remove: true
 }
 
 const templateBuild = createPlugin({
