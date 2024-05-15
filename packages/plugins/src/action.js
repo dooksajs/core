@@ -526,11 +526,11 @@ const action = createPlugin({
             expand: true
           }, {
             onSuccess: (data) => {
-              if (!data.isEmpty) {
-                this.dispatch({ id, context, payload })
-              } else {
+              if (data.isEmpty) {
                 throw new Error('No action found: ' + id)
               }
+
+              this.dispatch({ id, context, payload })
             },
             onError: (error) => {
               reject(error)
@@ -556,7 +556,8 @@ const action = createPlugin({
           position: 0,
           items: [],
           results: {},
-          resolve: resolve
+          resolve: resolve,
+          reject: reject
         }
         sequenceProcess.next = () => {
           nextProcess(sequenceProcess)
