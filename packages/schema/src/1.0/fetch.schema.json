@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schema.dooksa.org/1.0/fetch.schema.json",
+  "title": "Fetch",
+  "$defs": {
+    "fetch_getAll": {
+      "type": "object",
+      "properties": {
+        "collection": {
+          "$ref": "./base.schema.json#/$defs/string"
+        },
+        "expand": {
+          "$ref": "./base.schema.json#/$defs/boolean"
+        },
+        "limit": {
+          "$ref": "./base.schema.json#/$defs/number"
+        },
+        "page": {
+          "$ref": "./base.schema.json#/$defs/number"
+        },
+        "perPage": {
+          "$ref": "./base.schema.json#/$defs/number"
+        },
+        "sync": {
+          "$ref": "./base.schema.json#/$defs/boolean"
+        },
+        "where": {
+          "$ref": "./base.schema.json#/$defs/string"
+        }
+      }
+    },
+    "fetch_getById": {
+      "type": "object",
+      "properties": {
+        "collection": {
+          "$ref": "./base.schema.json#/$defs/string"
+        },
+        "id": {
+          "$ref": "./base.schema.json#/$defs/listString"
+        },
+        "expand": {
+          "$ref": "./base.schema.json#/$defs/boolean"
+        },
+        "sync": {
+          "$ref": "./base.schema.json#/$defs/boolean"
+        }
+      }
+    }
+  }
+}

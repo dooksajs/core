@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schema.dooksa.org/1.0/query.schema.json",
+  "title": "Query",
+  "$defs": {
+    "query_filter": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "./base.schema.json#/$defs/string"
+        },
+        "sectionId": {
+          "$ref": "./base.schema.json#/$defs/string"
+        }
+      }
+    },
+    "query_fetch": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "./base.schema.json#/$defs/string"
+        }
+      }
+    }
+  }
+}

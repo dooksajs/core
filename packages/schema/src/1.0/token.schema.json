@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schema.dooksa.org/1.0/token.schema.json",
+  "title": "Token",
+  "$defs": {
+    "token_textContent": {
+      "type": "object",
+      "properties": {
+        "viewId": {
+          "$ref": "./base.schema.json#/$defs/string"
+        },
+        "text": {
+          "$ref": "./base.schema.json#/$defs/string"
+        }
+      }
+    }
+  }
+}

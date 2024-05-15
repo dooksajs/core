@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schema.dooksa.org/1.0/widget.schema.json",
+  "title": "Widget",
+  "$defs": {
+    "widget_attachedToIndex": {
+      "$ref": "./base.schema.json#/$defs/string"
+    },
+    "widget_remove": {
+      "$ref": "./base.schema.json#/$defs/string"
+    }
+  }
+}

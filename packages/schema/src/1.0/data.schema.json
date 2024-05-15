@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schema.dooksa.org/1.0/data.schema.json",
+  "title": "Data",
+  "$defs": {
+    "data_generateId": {
+      "title": "UUID",
+      "description": "Generate a unique id",
+      "const": "$null"
+    },
+    "data_find": {
+      "title": "Find data",
+      "description": "Search for multiple instances",
+      "type": "object",
+      "properties": {
+        "name": {
+          "$ref": "./base.schema.json#/$defs/string"
+        },
+        "where": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "$ref": "./base.schema.json#/$defs/string"
+              },
+              "op": {
+                "$ref": "#/$defs/op"
+              },
+              "value": {
+                "oneOf": [
+                  {
+                    "$ref": "./base.schema.json#/$defs/oneOfAction"
+                  },
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "and": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "$ref": "./base.schema.json#/$defs/string"
+                    },
+                    "op": {
+                      "$ref": "#/$defs/op"
+                    },
+                    "value": {
+                      "oneOf": [
+                        {
+                          "$ref": "./base.schema.json#/$defs/oneOfAction"
+                        },
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "number"
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              "or": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "$ref": "./base.schema.json#/$defs/string"
+                    },
+                    "op": {
+                      "$ref": "#/$defs/op"
+                    },
+                    "value": {
+                      "oneOf": [
+                        {
+                          "$ref": "./base.schema.json#/$defs/oneOfAction"
+                        },
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "number"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "op": {
+      "enum": ["==","!=",">",">=","<","<=","!","%","++","--","-","+","*","**","!!","~"]
+    },
+    "setDataValue": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "./base.schema.json#/$defs/string"
+        },
+        "stopPropagation": {
+          "$ref": "./base.schema.json#/$defs/boolean"
+        },
+        "merge": {
+          "$ref": "./base.schema.json#/$defs/boolean"
+        },
+        "update": {
+          "type": "object",
+          "properties": {
+            "position": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "$ref": "./base.schema.json#/$defs/oneOfAction"
+                  }
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  }
+                }
+              ]
+            },
+            "method": {
+              "enum": ["push","pull","pop","shift","unshift","splice"]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schema.dooksa.org/1.0/layout.schema.json",
+  "title": "Layout",
+  "$defs": {
+    "layout_create": {
+      "type": "object",
+      "properties": {
+        "layoutId": {
+          "$ref": "./base.schema.json#/$defs/string"
+        },
+        "sectionId": {
+          "$ref": "./base.schema.json#/$defs/string"
+        },
+        "sectionUniqueId": {
+          "$ref": "./base.schema.json#/$defs/string"
+        },
+        "widgetId": {
+          "$ref": "./base.schema.json#/$defs/string"
+        },
+        "widgetMode": {
+          "$ref": "./base.schema.json#/$defs/string"
+        },
+        "viewId": {
+          "$ref": "./base.schema.json#/$defs/string"
+        }
+      }
+    }
+  }
+}

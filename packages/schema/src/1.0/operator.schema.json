@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schema.dooksa.org/1.0/operator.schema.json",
+  "title": "Action",
+  "$defs": {
+    "operator_compare": {
+      "title": "Compare",
+      "description": "Compare two or more values",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "value_1":  {
+            "$ref": "./base.schema.json#/$defs/primitive"
+          },
+          "op": {
+            "enum": ["&&", "||"]
+          },
+          "value_2": {
+            "$ref": "./base.schema.json#/$defs/primitive"
+          }
+        },
+        "required": ["value_1", "op", "value_2"]
+      }
+    },
+    "operator_eval": {
+      "title": "Evaluate",
+      "description": "Evaluate two values",
+      "type": "object",
+      "properties": {
+        "name": {
+          "$ref": "./base.schema.json#/$defs/string"
+        },
+        "values": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "$ref": "./base.schema.json#/$defs/oneOfAction"
+              },
+              "maxItems": 2
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 2
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "maxItems": 2
+            }
+          ]
+        }
+      }
+    }
+  }
+}

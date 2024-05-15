@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schema.dooksa.org/1.0/list.schema.json",
+  "title": "Data",
+  "$defs": {
+    "list_filter": {
+      "title": "Filter",
+      "description": "Filter items based on conditions",
+      "type": "object",
+      "properties": {
+        "items": {
+          "oneOf": [
+            {
+              "$ref": "./base.schema.json#/$defs/listString"
+            },
+            {
+              "$ref": "./base.schema.json#/$defs/listNumber"
+            }
+          ]
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "$ref": "./base.schema.json#/$defs/string"
+              },
+              "value": {
+                "oneOf": [
+                  {
+                    "$ref": "./base.schema.json#/$defs/oneOfAction"
+                  },
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "boolean"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "required": ["items", "options"]
+    },
+    "list_forEach": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "$ref": "./base.schema.json#/$defs/oneOfAction"
+        },
+        "items": {
+          "$ref": "./base.schema.json#/$defs/oneOfAction"
+        },
+        "actionId": {
+          "$ref": "./base.schema.json#/$defs/string"
+        },
+        "async": {
+          "$ref": "./base.schema.json#/$defs/boolean"
+        }
+      }
+    },
+    "list_push": {
+      "type": "object",
+      "properties": {
+        "target": {
+          "oneOf": [
+            {
+              "$ref": "./base.schema.json#/$defs/listString"
+            },
+            {
+              "$ref": "./base.schema.json#/$defs/listNumber"
+            }
+          ]
+        },
+        "source": {
+          "oneOf": [
+            {
+              "$ref": "./base.schema.json#/$defs/listString"
+            },
+            {
+              "$ref": "./base.schema.json#/$defs/listNumber"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            }
+          ]
+        }
+      },
+      "required": ["target", "source"]
+    },
+    "list_sort": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "oneOf": [
+            {
+              "$ref": "./base.schema.json#/$defs/listString"
+            },
+            {
+              "$ref": "./base.schema.json#/$defs/listNumber"
+            }
+          ]
+        },
+        "type": {
+          "enum": ["ascending", "descending"]
+        }
+      },
+      "required": ["items", "type"]
+    },
+    "list_splice": {
+      "type": "object",
+      "properties": {
+        "target": {
+          "oneOf": [
+            {
+              "$ref": "./base.schema.json#/$defs/listString"
+            },
+            {
+              "$ref": "./base.schema.json#/$defs/listNumber"
+            }
+          ]
+        },
+        "source": {
+          "$ref": "./base.schema.json#/$defs/primitive"
+        },
+        "start": {
+          "type": "number"
+        },
+        "deleteCount": {
+          "type": "number"
+        }
+      },
+      "required": ["target", "source"]
+    }
+  }
+}

@@ -1,0 +1,333 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schema.dooksa.org/1.0/action.schema.json",
+  "title": "Action",
+  "$defs": {
+    "action_dispatch": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "./base.schema.json#/$defs/string"
+        },
+        "context": {
+          "$ref": "./base.schema.json#/$defs/oneOfAction"
+        },
+        "payload": {
+          "$ref": "./base.schema.json#/$defs/oneOfAction"
+        }
+      },
+      "additionalProperties": false
+    },
+    "delete_dataValue": {
+      "title": "Delete data value",
+      "description": "Removes document from a collection",
+      "type": "object",
+      "properties": {
+        "name":  {
+          "$ref": "./base.schema.json#/$defs/string"
+        },
+        "id": {
+          "$ref": "./base.schema.json#/$defs/string"
+        },
+        "cascade": {
+          "$ref": "./base.schema.json#/$defs/boolean"
+        },
+        "listeners": {
+          "$ref": "./base.schema.json#/$defs/boolean"
+        }
+      },
+      "required": ["name", "id"],
+      "additionalProperties": false
+    },
+    "eval_condition": {
+      "title": "Compare two or more values",
+      "type": "object",
+      "properties": {
+        "if": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "anyOf": [
+              {
+                "properties": {
+                  "op": {
+                    "$ref": "./data.schema.json#/$defs/op"
+                  },
+                  "from": {
+                    "oneOf": [
+                      {
+                        "$ref": "./base.schema.json#/$defs/oneOfAction"
+                      },
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "number"
+                      }
+                    ]
+                  },
+                  "to": {
+                    "oneOf": [
+                      {
+                        "$ref": "./base.schema.json#/$defs/oneOfAction"
+                      },
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "number"
+                      }
+                    ]
+                  }
+                },
+                "required": ["op", "from", "to"]
+              },
+              {
+                "properties": {
+                  "andOr": {
+                    "enum": ["&&","||"]
+                  }
+                },
+                "required": ["andOr"]
+              }
+            ]
+          }
+        },
+        "then": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "else": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        }
+      },
+      "required": ["if", "then", "else"],
+      "additionalProperties": false
+    },
+    "get_actionValue": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "./base.schema.json#/$defs/string"
+        },
+        "query": {
+          "oneOf": [
+            {
+              "$ref": "./base.schema.json#/$defs/oneOfAction"
+            },
+            {
+              "$ref": "./base.schema.json#/$defs/listString"
+            },
+            {
+              "$ref": "./base.schema.json#/$defs/string"
+            }
+          ]
+        }
+      },
+      "required": ["id"],
+      "additionalProperties": false
+    },
+    "get_blockValue": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "./base.schema.json#/$defs/string"
+        },
+        "query": {
+          "oneOf": [
+            {
+              "$ref": "./base.schema.json#/$defs/listString"
+            },
+            {
+              "$ref": "./base.schema.json#/$defs/string"
+            }
+          ]
+        }
+      },
+      "required": ["id"],
+      "additionalProperties": false
+    },
+    "get_dataValue": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "$ref": "./base.schema.json#/$defs/string"
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "./base.schema.json#/$defs/string"
+            },
+            "prefixId": {
+              "$ref": "./base.schema.json#/$defs/string"
+            },
+            "suffixId": {
+              "$ref": "./base.schema.json#/$defs/string"
+            },
+            "options": {
+              "type": "object",
+              "properties": {
+                "expand": {
+                  "type": "boolean"
+                },
+                "expandExclude": {
+                  "type": "object",
+                  "patternProperties": {
+                    "[a-zA-Z]+\/+[a-zA-Z]+": {
+                      "$ref": "./base.schema.json#/$defs/boolean"
+                    }
+                  }
+                },
+                "expandClone": {
+                  "$ref": "./base.schema.json#/$defs/boolean"
+                },
+                "position": {
+                  "oneOf": [
+                    {
+                      "$ref": "./base.schema.json#/$defs/string"
+                    },
+                    {
+                      "$ref": "./base.schema.json#/$defs/number"
+                    },
+                    {
+                      "$ref": "./base.schema.json#/$defs/listString"
+                    },
+                    {
+                      "$ref": "./base.schema.json#/$defs/listNumber"
+                    }
+                  ]
+                },
+                "clone": {
+                  "$ref": "./base.schema.json#/$defs/boolean"
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        }
+      },
+      "required": ["name"],
+      "additionalProperties": false
+    },
+    "get_contextValue": {
+      "oneOf": [
+        {
+          "$ref": "./base.schema.json#/$defs/listString"
+        },
+        {
+          "$ref": "./base.schema.json#/$defs/string"
+        }
+      ]
+    },
+    "get_payloadValue": {
+      "oneOf": [
+        {
+          "$ref": "./base.schema.json#/$defs/listString"
+        },
+        {
+          "$ref": "./base.schema.json#/$defs/string"
+        }
+      ]
+    },
+    "get_sequenceValue": {
+      "oneOf": [
+        {
+          "$ref": "./base.schema.json#/$defs/listString"
+        },
+        {
+          "$ref": "./base.schema.json#/$defs/string"
+        }
+      ]
+    },
+    "set_actionValue": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "./base.schema.json#/$defs/string"
+        },
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "$ref": "./base.schema.json#/$defs/string"
+              },
+              "prefixId": {
+                "$ref": "./base.schema.json#/$defs/string"
+              },
+              "suffixId": {
+                "$ref": "./base.schema.json#/$defs/string"
+              },
+              "value": {
+                "oneOf": [
+                  {
+                    "$ref": "./base.schema.json#/$defs/oneOfAction"
+                  },
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "array"
+                  },
+                  {
+                    "type": "object"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "required": ["id", "values"],
+      "additionalProperties": false
+    },
+    "set_dataValue": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "$ref": "./base.schema.json#/$defs/string"
+        },
+        "value": {
+          "oneOf": [
+            {
+              "$ref": "./base.schema.json#/$defs/oneOfAction"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "array"
+            },
+            {
+              "type": "object"
+            }
+          ]
+        },
+        "options": {
+          "$ref": "./data.schema.json#/$defs/setDataValue"
+        }
+      },
+      "required": ["name", "value"],
+      "additionalProperties": false
+    }
+  }
+}
