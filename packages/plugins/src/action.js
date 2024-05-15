@@ -322,6 +322,14 @@ function processSequence (sequence, context, payload, blocks, expand, expandInde
             blockProcess.next()
           },
           onError: (error) => {
+            /**
+             * @TODO Console error
+             * Until browser support cause @link https://caniuse.com/mdn-javascript_builtins_error_cause_displayed_in_console
+             */
+            if (navigator.userAgent.indexOf('Firefox') === -1) {
+              console.error(error)
+            }
+
             throw new Error('Broken action block', { cause: error })
           }
         })
