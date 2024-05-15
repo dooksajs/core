@@ -210,7 +210,7 @@ const view = createPlugin({
      * @param {viewId} item.sourceId - Child view node id
      * @param {string} item.widgetId - Widget id
      * @param {string} item.widgetMode - Widget mode
-     * @param {string} [item.type] - type of insert method
+     * @param {'append'|'after'|'before'|"replace"} [item.type] - type of insert method
      */
     insert ({ targetId, sourceId, widgetId, widgetMode, type = 'append' }) {
       const target = $getDataValue('view/items', {
@@ -348,9 +348,9 @@ const view = createPlugin({
     /**
      * Replaces a child node within the given (parent) node
      * @param {Object} node
-     * @param {viewId} node.viewParentId - Parent view id
-     * @param {viewId} node.viewId - Child view id
-     * @param {viewId} node.viewIdPrev - Replacement child view id
+     * @param {string} node.viewParentId - Parent view id
+     * @param {string} node.viewId - Child view id
+     * @param {string} node.viewIdPrev - Replacement child view id
      * @param {number} node.childIndex - Index of replacement child
      */
     replace ({ viewParentId, viewId, viewIdPrev, childIndex }) {
@@ -384,9 +384,8 @@ const view = createPlugin({
     /**
      * Update node value
      * @param {Object} node
-     * @param {viewId} node.viewId - view node id
-     * @param {contentValue} node.value - content value
-     * @param {contentLanguage} node.language - content language code
+     * @param {string} node.viewId - view node id
+     * @param {string} node.language - content language code
      */
     updateValue ({ viewId, language }) {
       const view = $getDataValue('view/items', {
