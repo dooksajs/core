@@ -13,8 +13,10 @@
           "description": "Get widget group id",
           "get_dataValue": {
             "name": "widget/items",
-            "id": {
-              "get_contextValue": "widgetId"
+            "query": {
+              "id": {
+                "get_contextValue": "widgetId"
+              }
             }
           }
         },
@@ -37,7 +39,7 @@
             "values": [
               {
                 "widget_attachedToIndex": {
-                  "get_contextValue": ["widgetId"]
+                  "get_contextValue": "widgetId"
                 }
               },
               "__bootstrap-edit-section-template-id"
@@ -46,7 +48,6 @@
         },
         {
           "description": "Fetch template metadata",
-          "async": true,
           "fetch_getById": {
             "collection": "template/metadata",
             "id": {
@@ -54,9 +55,9 @@
                 "id": {
                   "get_sequenceValue": "0"
                 },
-                "keys": [{
+                "query": {
                   "get_sequenceValue": "2"
-                }]
+                }
               }
             }
           }
@@ -102,8 +103,10 @@
         {
           "get_dataValue": {
             "name": "section/items",
-            "id": {
-              "get_contextValue": ["sectionId"]
+            "query": {
+              "id": {
+                "get_contextValue": "sectionId"
+              }
             }
           }
         },
@@ -116,7 +119,7 @@
                   "value": {
                     "get_sequenceValue": "0"
                   },
-                  "map": ["length"]
+                  "query": "length"
                 }
               },
               "to": 0
@@ -126,11 +129,10 @@
           }
         },
         { 
-          "async": true,
           "list_forEach": {
             "async": true,
             "items": {
-              "get_sequenceValue": 0
+              "get_sequenceValue": "0"
             },
             "context": {
               "get_contextValue": "$null"
@@ -146,7 +148,7 @@
             "options": {
               "stopPropagation": true,
               "id": {
-                "get_contextValue": ["sectionId"]
+                "get_contextValue": "sectionId"
               }
             }
           }
@@ -154,10 +156,10 @@
         {
           "section_render": {
             "id": {
-              "get_contextValue": ["sectionId"]
+              "get_contextValue": "sectionId"
             },
             "viewId": {
-              "get_contextValue": ["viewId"]
+              "get_contextValue": "viewId"
             }
           }
         }     
@@ -170,8 +172,10 @@
           "description": "Widget template id",
           "get_dataValue": {
             "name": "widget/templates",
-            "id": {
-              "get_payloadValue": "value"
+            "query": {
+              "id": {
+                "get_payloadValue": "value"
+              }
             }
           }
         },
@@ -194,8 +198,10 @@
         {
           "get_dataValue": {
             "name": "widget/items",
-            "id": {
-              "get_payloadValue": "value"
+            "query": {
+              "id": {
+                "get_payloadValue": "value"
+              }
             }
           }
         },
@@ -247,11 +253,13 @@
               "id": {
                 "get_dataValue": {
                   "name": "widget/sections",
-                  "id": {
-                    "get_sequenceValue": "3"
-                  },
-                  "options": {
-                    "position": 0
+                  "query": {
+                    "id": {
+                      "get_sequenceValue": "3"
+                    },
+                    "options": {
+                      "position": 0
+                    }
                   }
                 }
               },

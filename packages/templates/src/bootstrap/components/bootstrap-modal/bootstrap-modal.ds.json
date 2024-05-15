@@ -34,20 +34,24 @@
                 "id": {
                   "get_dataValue": {
                     "name": "widget_items",
-                    "id": {
-                      "get_contextValue": "widgetId"
+                    "query": {
+                      "id": {
+                        "get_contextValue": "widgetId"
+                      }
                     }
                   }
                 },
-                "$key": ["bootstrap-edit-section-template"]
+                "query": "bootstrap-edit-section-template"
               }
             },
             "options": {
               "id": {
                 "get_dataValue": {
                   "name": "view/content",
-                  "id": {
-                    "get_contextValue": "viewId"
+                  "query": {
+                    "id": {
+                      "get_contextValue": "viewId"
+                    }
                   }
                 }
               },
