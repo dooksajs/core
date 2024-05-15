@@ -5,9 +5,18 @@ import { hash } from '@dooksa/utils'
 
 const pathHash = {}
 
+/**
+ * Current pathname
+ * @returns {string}
+ */
 function currentPath () {
   return window.location.pathname || '/'
 }
+
+/**
+ * Hash current pathname
+ * @returns {string}
+ */
 function currentId () {
   const path = currentPath()
 
