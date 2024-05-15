@@ -149,10 +149,9 @@ const list = createPlugin({
                     key,
                     value: items[key]
                   }
-                }, {
-                  onSuccess: () => resolve(),
-                  onError: (error) => reject(error)
                 })
+                  .then(result => resolve(result))
+                  .catch(error => reject(error))
               })
 
               promises.push(promise)
