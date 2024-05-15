@@ -5,10 +5,12 @@ import { deepClone, isServer, uuid } from '@dooksa/utils'
 import DataResult from './utils/DataResult.js'
 
 /**
- * @typedef {import('../../global-typedef.js').SetDataOptions} DsSetDataOptions
+ * @typedef {import('../../global-typedef.js').SetDataOptions} SetDataOptions
+ * @typedef {import('../../global-typedef.js').GetDataOptions} GetDataOptions
  * @typedef {import('../../global-typedef.js').DataSchema} DataSchema
  * @typedef {import('../../global-typedef.js').DataWhere} DataWhere
  */
+
 
 let database = {}
 const databaseSchema = {}
@@ -465,7 +467,7 @@ function setCollectionItems (data, path, sources, metadata) {
  * @param {string} collection
  * @param {*} target
  * @param {*} source
- * @param {DsSetDataOptions} [options]
+ * @param {SetDataOptions} [options]
  * @returns {Object}
  */
 function setData (collection, target, source, options) {
@@ -1477,16 +1479,7 @@ const data = createPlugin({
     /**
      * Get data value
      * @param {string} name - Name of collection
-     * @param {Object} [param]
-     * @param {string} [param.id] - Data collection document id
-     * @param {string} [param.prefixId] - Data collection document prefix
-     * @param {string} [param.suffixId] - Data collection document suffix
-     * @param {Object} [param.options] - Options
-     * @param {boolean} [param.options.expand] - Expand all relational data
-     * @param {Object} [param.options.expandExclude] - Exclude items from expanding
-     * @param {boolean} [param.options.expandClone] - Expanded items returns a deep clone of the item value
-     * @param {string|number} [param.options.position] - Return the value by key of the data value
-     * @param {boolean} [param.options.clone] - Returns a deep clone of the item value
+     * @param {GetDataOptions} [param]
      * @returns {DataResult}
      */
     $getDataValue (name, { id, prefixId, suffixId, options } = {}) {
