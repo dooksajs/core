@@ -190,9 +190,6 @@ const query = createPlugin({
      * Fetch values by query
      * @param {Object} param
      * @param {string} param.id - Query Id
-     * @param {Object} [param.options]
-     * @param {QueryWhere} param.options.where - Where options
-     * @param {QuerySort} param.options.sort - Sort type
      * @returns {QueryValue[]}
      */
     fetch ({ id }) {
