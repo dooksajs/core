@@ -61,20 +61,28 @@ const processAction = {
 
       for (let i = 0; i < props.if.length; i++) {
         const item = props.if[i]
+        const value = operatorEval({
+          name: item.op,
+          values: [item.from, item.to]
+        })
 
-        // compare one or more results
-        let compareItem = item
-
-        if (item.andOr !== '&&' && item.andOr !== '||') {
-          compareItem = operatorEval({
-            name: item.op,
-            values: [item.from, item.to]
-          })
-        } else {
-          compareItem = item.andOr
+        if (!compareItem.value_1) {
+          compareItem.value_1 = value
         }
 
-        compareValues.push(compareItem)
+        if (!compareItem.op) {
+          compareItem.op = item.andOr
+        }
+
+        if (!compareItem.value_2) {
+          if (!compareItem.op) {
+            throw new Error('Condition expects an operator')
+          }
+
+          compareItem.value_2 = value
+          compareValues.push(compareItem)
+          compareItem = {}
+        }
       }
 
       isValid = operatorCompare(compareValues)
@@ -130,7 +138,7 @@ const processAction = {
    */
   get_blockValue (props) {
     if (props.value) {
-      return getValue(props.value, props.map)
+      return getValue(props.value, props.query)
     }
   },
   /**
@@ -140,21 +148,7 @@ const processAction = {
    * @param {GetDataQuery} [props.query]
    */
   get_dataValue (props) {
-    const options = {
-      prefixId: props.prefixId,
-      suffixId: props.suffixId,
-      options: props.options
-    }
-
-    if (Object.hasOwnProperty.call(props, 'id')) {
-      if (props.id) {
-        options.id = props.id
-      } else {
-        return
-      }
-    }
-
-    const result = $getDataValue(props.name, options)
+    const result = $getDataValue(props.name, props.query)
 
     if (!result.isEmpty) {
       return result.item
@@ -243,7 +237,7 @@ function nextProcess (process) {
   }
 
   if (process.resolve) {
-    process.resolve()
+    process.resolve(process.results)
   }
 
   return false
@@ -262,7 +256,7 @@ function nextBranchProcess (process) {
   }
 
   if (process.resolve) {
-    process.resolve()
+    process.resolve(process.results)
   }
 
   return false
@@ -398,7 +392,6 @@ function createAction (item, block, data) {
   }
 
   return {
-    async: block.item.async,
     name: block.item._$a,
     params
   }
@@ -412,37 +405,62 @@ function createAction (item, block, data) {
  * Get result value
  * @private
  * @param {*} value
- * @param {string[]} [query] - Request to return a specific key value, dot notations are permitted
- * @returns {*}
+ * @param {GetValueQuery} [query] - Request to return a specific key value, dot notations are permitted
+ * @returns {*[]|*}
  */
 function getValue (value, query) {
   if (query == null) {
     return value
   }
 
-  const results = []
+  // get single value
+  if (typeof query === 'string') {
+    const keys = query.split('.')
 
-  // fetch value
-  for (let i = 0; i < query.length; i++) {
-    const keys = query[i].split('.')
-    let result
+    if (keys.length === 1) {
+      return value[keys[0]]
+    }
+
+    let result = value
 
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i]
 
-      if (Object.hasOwnProperty.call(value, key)) {
-        value = value[key]
-        result = value
-        results.push(value)
+      if (Object.hasOwnProperty.call(result, key)) {
+        result[key]
       } else {
-        /** @TODO Create ReferenceError */
+        /** @TODO Create custom ReferenceError */
         throw new Error('Action get value was not defined: ' + key)
       }
     }
 
-    if (query.length === 1) {
-      return result
+    return result
+  }
+
+  const results = []
+
+  // get multiple values
+  for (let i = 0; i < query.length; i++) {
+    const keys = query[i].split('.')
+
+    if (query.length === 1 && keys.length === 1) {
+      return value[keys[0]]
     }
+
+    let result = value
+
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i]
+
+      if (Object.hasOwnProperty.call(result, key)) {
+        result[key]
+      } else {
+        /** @TODO Create custom ReferenceError */
+        throw new Error('Action get value was not defined: ' + key)
+      }
+    }
+
+    results.push(result)
   }
 
   return results
