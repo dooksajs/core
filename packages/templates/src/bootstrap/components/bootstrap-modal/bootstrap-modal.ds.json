@@ -4,7 +4,6 @@
       "id": "bootstrap-modal-create-open",
       "sequence": [
         {
-          "async": true,
           "viewModal_create":{
             "viewId": {
               "get_contextValue": "viewId"
@@ -28,12 +27,12 @@
       "sequence": [
         {
           "set_dataValue": {
-            "name": "content_items",
+            "name": "content/items",
             "value": {
               "get_actionValue": {
                 "id": {
                   "get_dataValue": {
-                    "name": "widget_items",
+                    "name": "widget/items",
                     "query": {
                       "id": {
                         "get_contextValue": "widgetId"
