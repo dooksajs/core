@@ -1,5 +1,5 @@
 import { createPlugin } from '@dooksa/create'
-import { $setDataValue, template } from '@dooksa/plugins'
+import { template } from '@dooksa/plugins'
 import { $deleteDatabaseValue, $getDatabaseValue, $seedDatabase } from './database.js'
 import { $setRoute } from './http.js'
 
@@ -31,6 +31,7 @@ export default createPlugin({
     // route: get a list or one template metadata
     $setRoute('/template/metadata', {
       method: 'get',
+      middleware: ['request/queryIsArray'],
       handlers: [
         $getDatabaseValue(['template/metadata'])
       ]
