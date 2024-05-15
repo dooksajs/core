@@ -1,4 +1,4 @@
-import { createPlugin } from '../@dooksa/create'
+import { createPlugin } from '@dooksa/create'
 import { $getDataValue, $setDataValue, $addDataListener } from '../data.js'
 import Modal from 'bootstrap/js/src/modal.js'
 
@@ -85,7 +85,7 @@ const viewModal = createPlugin({
      * @param {Object} param
      * @param {string} param.viewId - View id that the modal belongs to
      */
-    show ({ viewId }) {
+    show (viewId) {
       const modal = modalItems[viewId]
 
       if (!(modal instanceof Modal)) {
