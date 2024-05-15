@@ -9,6 +9,7 @@ import { resolve, extname } from 'node:path'
 app.use(development)
 app.use(templateBuild)
 
+// setup server
 app.setup({
   options: {
     database: {
@@ -25,6 +26,10 @@ app.setup({
     })
   }
 })
+
+/**
+ * @TODO Watch templates/css and server dir for changes
+ */
 
 const devDirectory = resolve('./app')
 const appClientEntryPoint = resolve('./src/client-app.js')
