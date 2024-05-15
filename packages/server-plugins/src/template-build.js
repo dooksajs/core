@@ -38,6 +38,8 @@ const availableMethods = {
   operator_eval: true,
   query_filter: true,
   query_fetch: true,
+  router_currentId: true,
+  router_currentPath: true,
   router_navigate: true,
   section_append: true,
   section_render: true,
