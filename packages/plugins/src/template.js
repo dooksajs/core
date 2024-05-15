@@ -392,7 +392,7 @@ const template = createPlugin({
 
       template = template.item
       // set default values here to avoid exec unnecessary functions if there is no template found
-      language = language || $getDataValue('metadata/language').item
+      language = language || $getDataValue('metadata/currentLanguage').item
 
       const widgetGroupId = widgetOptions.groupId || dataGenerateId()
       const widgetItems = []

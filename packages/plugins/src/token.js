@@ -77,7 +77,7 @@ const token = createPlugin({
       return ''
     },
     placeholder (args) {
-      const language = $getDataValue('metadata/language')
+      const language = $getDataValue('metadata/currentLanguage')
       const placeholder = tokenValues[args[2]]
 
       if (placeholder[language.item]) {

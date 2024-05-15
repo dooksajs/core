@@ -54,7 +54,7 @@ function getItems (layoutId, widgetId, widgetMode) {
 }
 
 function contentItem (widgetId, widgetMode, sectionUniqueId, viewId, childViewId, contentIndex) {
-  const language = $getDataValue('metadata/language').item
+  const language = $getDataValue('metadata/currentLanguage').item
   // @TODO check if widgetContentId and contentId are the same
   const widgetContentId = $getDataValue('widget/content', {
     id: widgetId,

@@ -7,7 +7,7 @@ export default createPlugin({
     items: {
       type: 'collection',
       suffixId () {
-        return $getDataValue('dsMetadata/language').item
+        return $getDataValue('metadata/currentLanguage').item
       },
       items: {
         type: 'object'

@@ -11,7 +11,7 @@ const page = createPlugin({
         return routerCurrentId
       },
       suffixId () {
-        return $getDataValue('metadata/language').item
+        return $getDataValue('metadata/currentLanguage').item
       },
       items: {
         type: 'string'
