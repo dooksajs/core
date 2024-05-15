@@ -151,7 +151,10 @@ const operator = createPlugin({
   actions: {
     /**
      * Compare two or more values
-     * @param {*[]} values - Contains two values or more values which are compared
+     * @param {Object[]} values - Contains two values or more values which are compared
+     * @param {*} values[].value_1 - Contains two values or more values which are compared
+     * @param {*} values[].value_2 - Contains two values or more values which are compared
+     * @param {'&&'|'||'} values[].op - Contains two values or more values which are compared
      * @example
      * const andValues = ['1', '&&', 1]
      */
@@ -159,18 +162,18 @@ const operator = createPlugin({
       let result = false
 
       for (let i = 0; i < values.length; i++) {
-        const value = values[i]
+        const item = values[i]
 
-        if (value === '&&') {
-          if ((values[i - 1] && values[i + 1])) {
+        if (item.op === '&&') {
+          if ((item.value_1 && item.value_2)) {
             result = true
           } else {
             break
           }
         }
 
-        if (value === '||') {
-          if ((values[i - 1] || values[i + 1])) {
+        if (item.op === '||') {
+          if ((item.value_1 || item.value_2)) {
             result = true
           } else {
             break
