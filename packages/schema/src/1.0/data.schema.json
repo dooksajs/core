@@ -14,7 +14,14 @@
       "type": "object",
       "properties": {
         "name": {
-          "$ref": "./base.schema.json#/$defs/string"
+          "oneOf": [
+            {
+              "$ref": "./base.schema.json#/$defs/dataCollectionName"
+            },
+            {
+              "$ref": "./base.schema.json#/$defs/oneOfAction"
+            }
+          ]
         },
         "where": {
           "type": "array",

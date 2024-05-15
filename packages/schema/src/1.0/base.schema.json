@@ -4,6 +4,53 @@
   "title": "Common definitions",
   "type": "object",
   "$defs": {
+    "dataCollectionName": {
+      "enum": [
+        "action/block",
+        "action/items",
+        "action/sequences",
+        "action/values",
+        "component/items",
+        "content/items",
+        "event/listeners",
+        "event/handlers",
+        "layout/items",
+        "layout/eventListeners",
+        "metadata/currentLanguage",
+        "metadata/currentLanguages",
+        "page/id",
+        "page/events",
+        "page/items",
+        "query/items",
+        "query/where",
+        "query/sort",
+        "router/sections",
+        "section/uniqueId",
+        "section/items",
+        "section/mode",
+        "section/query",
+        "section/view",
+        "template/items",
+        "template/metadata",
+        "view/rootViewId",
+        "view/content",
+        "view/items",
+        "widget/actions",
+        "widget/uniqueId",
+        "widget/attached",
+        "widget/items",
+        "widget/content",
+        "widget/events",
+        "widget/eventListeners",
+        "widget/groups",
+        "widget/mode",
+        "widget/layouts",
+        "widgets/sections",
+        "widget/views",
+        "widget/parentViews",
+        "widget/templates"
+      ]
+    },
     "anyAction": {
       "type": "object",
       "anyOf": [
@@ -179,6 +226,20 @@
           "properties": {
             "query_fetch": {
               "$ref": "./query.schema.json#/$defs/query_fetch"
+            }
+          }
+        },
+        {
+          "properties": {
+            "router_currentId": {
+              "$ref": "./router.schema.json#/$defs/router_currentId"
+            }
+          }
+        },
+        {
+          "properties": {
+            "router_currentPath": {
+              "$ref": "./router.schema.json#/$defs/router_currentPath"
             }
           }
         },
@@ -478,6 +539,20 @@
           "properties": {
             "query_fetch": {
               "$ref": "./query.schema.json#/$defs/query_fetch"
+            }
+          }
+        },
+        {
+          "properties": {
+            "router_currentId": {
+              "$ref": "./router.schema.json#/$defs/router_currentId"
+            }
+          }
+        },
+        {
+          "properties": {
+            "router_currentPath": {
+              "$ref": "./router.schema.json#/$defs/router_currentPath"
             }
           }
         },
