@@ -12,7 +12,6 @@
     "@dooksa/plugins": "workspace:^",
     "@dooksa/utils": "workspace:^",
     "@dooksa/templates": "workspace:^",
-    "@dooksa/actions": "workspace:^",
     "@dooksa/theme": "workspace:^",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.6",
