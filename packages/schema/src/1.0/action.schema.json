@@ -136,10 +136,13 @@
               "$ref": "./base.schema.json#/$defs/action"
             },
             {
-              "$ref": "./base.schema.json#/$defs/listString"
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             },
             {
-              "$ref": "./base.schema.json#/$defs/string"
+              "type": "string"
             }
           ]
         }
@@ -150,21 +153,27 @@
     "get_blockValue": {
       "type": "object",
       "properties": {
-        "id": {
+        "value": {
           "$ref": "./base.schema.json#/$defs/string"
         },
         "query": {
           "oneOf": [
             {
-              "$ref": "./base.schema.json#/$defs/listString"
+              "$ref": "./base.schema.json#/$defs/action"
             },
             {
-              "$ref": "./base.schema.json#/$defs/string"
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "type": "string"
             }
           ]
         }
       },
-      "required": ["id"],
+      "required": ["value", "query"],
       "additionalProperties": false
     },
     "get_dataValue": {
@@ -212,16 +221,25 @@
                 "position": {
                   "oneOf": [
                     {
-                      "$ref": "./base.schema.json#/$defs/string"
+                      "$ref": "./base.schema.json#/$defs/action"
                     },
                     {
-                      "$ref": "./base.schema.json#/$defs/number"
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
                     },
                     {
-                      "$ref": "./base.schema.json#/$defs/listString"
+                      "type": "string"
                     },
                     {
-                      "$ref": "./base.schema.json#/$defs/listNumber"
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      }
+                    },
+                    {
+                      "type": "number"
                     }
                   ]
                 },
@@ -240,30 +258,48 @@
     "get_contextValue": {
       "oneOf": [
         {
-          "$ref": "./base.schema.json#/$defs/listString"
+          "$ref": "./base.schema.json#/$defs/action"
         },
         {
-          "$ref": "./base.schema.json#/$defs/string"
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        {
+          "type": "string"
         }
       ]
     },
     "get_payloadValue": {
       "oneOf": [
         {
-          "$ref": "./base.schema.json#/$defs/listString"
+          "$ref": "./base.schema.json#/$defs/action"
         },
         {
-          "$ref": "./base.schema.json#/$defs/string"
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        {
+          "type": "string"
         }
       ]
     },
     "get_sequenceValue": {
       "oneOf": [
         {
-          "$ref": "./base.schema.json#/$defs/listString"
+          "$ref": "./base.schema.json#/$defs/action"
         },
         {
-          "$ref": "./base.schema.json#/$defs/string"
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        {
+          "type": "string"
         }
       ]
     },
@@ -300,16 +336,11 @@
                   },
                   {
                     "type": "boolean"
-                  },
-                  {
-                    "type": "array"
-                  },
-                  {
-                    "type": "object"
                   }
                 ]
               }
-            }
+            },
+            "required": ["value"]
           }
         }
       },
@@ -342,12 +373,6 @@
             },
             {
               "type": "boolean"
-            },
-            {
-              "type": "array"
-            },
-            {
-              "type": "object"
             }
           ]
         },
