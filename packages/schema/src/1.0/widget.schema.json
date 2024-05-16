@@ -4,10 +4,20 @@
   "title": "Widget",
   "$defs": {
     "widget_attachedToIndex": {
-      "$ref": "./base.schema.json#/$defs/string"
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "./base.schema.json#/$defs/string"
+        }
+      }
     },
     "widget_remove": {
-      "$ref": "./base.schema.json#/$defs/string"
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "./base.schema.json#/$defs/string"
+        }
+      }
     }
   }
 }
