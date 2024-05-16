@@ -37,7 +37,13 @@
         "value": {
           "oneOf": [
             {
-              "$ref": "./base.schema.json#/$defs/listString"
+              "$ref": "./base.schema.json#/$defs/action"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             },
             {
               "type": "string"
