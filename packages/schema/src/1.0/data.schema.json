@@ -19,7 +19,7 @@
               "$ref": "./base.schema.json#/$defs/dataCollectionName"
             },
             {
-              "$ref": "./base.schema.json#/$defs/oneOfAction"
+              "$ref": "./base.schema.json#/$defs/action"
             }
           ]
         },
@@ -37,7 +37,7 @@
               "value": {
                 "oneOf": [
                   {
-                    "$ref": "./base.schema.json#/$defs/oneOfAction"
+                    "$ref": "./base.schema.json#/$defs/action"
                   },
                   {
                     "type": "string"
@@ -61,7 +61,7 @@
                     "value": {
                       "oneOf": [
                         {
-                          "$ref": "./base.schema.json#/$defs/oneOfAction"
+                          "$ref": "./base.schema.json#/$defs/action"
                         },
                         {
                           "type": "string"
@@ -88,7 +88,7 @@
                     "value": {
                       "oneOf": [
                         {
-                          "$ref": "./base.schema.json#/$defs/oneOfAction"
+                          "$ref": "./base.schema.json#/$defs/action"
                         },
                         {
                           "type": "string"
@@ -129,7 +129,7 @@
                 {
                   "type": "array",
                   "items": {
-                    "$ref": "./base.schema.json#/$defs/oneOfAction"
+                    "$ref": "./base.schema.json#/$defs/action"
                   }
                 },
                 {

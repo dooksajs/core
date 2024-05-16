@@ -51,7 +51,6 @@
     },
     "actions": {
       "type": "array",
-      "minItems": 1,
       "items": {
         "type": "object",
         "properties": {
@@ -64,7 +63,7 @@
           "sequence": {
             "type": "array",
             "items": {
-              "$ref": "./base.schema.json#/$defs/anyAction"
+              "$ref": "./base.schema.json#/$defs/action"
             }
           }
         }

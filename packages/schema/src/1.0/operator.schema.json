@@ -36,7 +36,7 @@
             {
               "type": "array",
               "items": {
-                "$ref": "./base.schema.json#/$defs/oneOfAction"
+                "$ref": "./base.schema.json#/$defs/action"
               },
               "maxItems": 2
             },

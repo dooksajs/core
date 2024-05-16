@@ -51,320 +51,55 @@
         "widget/templates"
       ]
     },
-    "anyAction": {
-      "type": "object",
-      "anyOf": [
-        {
-          "properties": {
-            "action_dispatch": {
-              "$ref": "./action.schema.json#/$defs/action_dispatch"
-            }
-          }
-        },
-        {
-          "properties": {
-            "delete_dataValue": {
-              "$ref": "./action.schema.json#/$defs/delete_dataValue"
-            }
-          }
-        },
-        {
-          "properties": {
-            "eval_condition": {
-              "$ref": "./action.schema.json#/$defs/eval_condition"
-            }
-          }
-        },
-        {
-          "properties": {
-            "get_actionValue": {
-              "$ref": "./action.schema.json#/$defs/get_actionValue"
-            }
-          }
-        },
-        {
-          "properties": {
-            "get_blockValue": {
-              "$ref": "./action.schema.json#/$defs/get_blockValue"
-            }
-          }
-        },
-        {
-          "properties": {
-            "get_dataValue": {
-              "$ref": "./action.schema.json#/$defs/get_dataValue"
-            }
-          }
-        },
-        {
-          "properties": {
-            "get_contextValue": {
-              "$ref": "./action.schema.json#/$defs/get_contextValue"
-            }
-          }
-        },
-        {
-          "properties": {
-            "get_payloadValue": {
-              "$ref": "./action.schema.json#/$defs/get_payloadValue"
-            }
-          }
-        },
-        {
-          "properties": {
-            "get_sequenceValue": {
-              "$ref": "./action.schema.json#/$defs/get_sequenceValue"
-            }
-          }
-        },
-        {
-          "properties": {
-            "set_actionValue": {
-              "$ref": "./action.schema.json#/$defs/set_actionValue"
-            }
-          }
-        },
-        {
-          "properties": {
-            "set_dataValue": {
-              "$ref": "./action.schema.json#/$defs/set_dataValue"
-            }
-          }
-        },
-        {
-          "properties": {
-            "data_generateId": {
-              "$ref": "./data.schema.json#/$defs/data_generateId"
-            }
-          }
-        },
-        {
-          "properties": {
-            "data_find": {
-              "$ref": "./data.schema.json#/$defs/data_find"
-            }
-          }
-        },
-        {
-          "properties": {
-            "fetch_getAll": {
-              "$ref": "./fetch.schema.json#/$defs/fetch_getAll"
-            }
-          }
-        },
-        {
-          "properties": {
-            "fetch_getById": {
-              "$ref": "./fetch.schema.json#/$defs/fetch_getById"
-            }
-          }
-        },
-        {
-          "properties": {
-            "layout_create": {
-              "$ref": "./layout.schema.json#/$defs/layout_create"
-            }
-          }
-        },
-        {
-          "properties": {
-            "list_filter": {
-              "$ref": "./list.schema.json#/$defs/list_filter"
-            }
-          }
-        },
-        {
-          "properties": {
-            "list_forEach": {
-              "$ref": "./list.schema.json#/$defs/list_forEach"
-            }
-          }
-        },
-        {
-          "properties": {
-            "list_push": {
-              "$ref": "./list.schema.json#/$defs/list_push"
-            }
-          }
-        },
-        {
-          "properties": {
-            "list_sort": {
-              "$ref": "./list.schema.json#/$defs/list_sort"
-            }
-          }
-        },
-        {
-          "properties": {
-            "list_splice": {
-              "$ref": "./list.schema.json#/$defs/list_splice"
-            }
-          }
-        },
-        {
-          "properties": {
-            "operator_compare": {
-              "$ref": "./operator.schema.json#/$defs/operator_compare"
-            }
-          }
-        },
-        {
-          "properties": {
-            "operator_eval": {
-              "$ref": "./operator.schema.json#/$defs/operator_eval"
-            }
-          }
-        },
-        {
-          "properties": {
-            "query_filter": {
-              "$ref": "./query.schema.json#/$defs/query_filter"
-            }
-          }
-        },
-        {
-          "properties": {
-            "query_fetch": {
-              "$ref": "./query.schema.json#/$defs/query_fetch"
-            }
-          }
-        },
-        {
-          "properties": {
-            "router_currentId": {
-              "$ref": "./router.schema.json#/$defs/router_currentId"
-            }
-          }
-        },
-        {
-          "properties": {
-            "router_currentPath": {
-              "$ref": "./router.schema.json#/$defs/router_currentPath"
-            }
-          }
-        },
-        {
-          "properties": {
-            "router_navigate": {
-              "$ref": "./router.schema.json#/$defs/router_navigate"
-            }
-          }
-        },
-        {
-          "properties": {
-            "section_append": {
-              "$ref": "./section.schema.json#/$defs/section_append"
-            }
-          }
-        },
-        {
-          "properties": {
-            "section_render": {
-              "$ref": "./section.schema.json#/$defs/section_render"
-            }
-          }
-        },
-        {
-          "properties": {
-            "section_set": {
-              "$ref": "./section.schema.json#/$defs/section_set"
-            }
-          }
-        },
-        {
-          "properties": {
-            "section_update": {
-              "$ref": "./section.schema.json#/$defs/section_update"
-            }
-          }
-        },
-        {
-          "properties": {
-            "template_create": {
-              "$ref": "./template.schema.json#/$defs/template_create"
-            }
-          }
-        },
-        {
-          "properties": {
-            "token_textContent": {
-              "$ref": "./token.schema.json#/$defs/token_textContent"
-            }
-          }
-        },
-        {
-          "properties": {
-            "view_insert": {
-              "$ref": "./view.schema.json#/$defs/view_insert"
-            }
-          }
-        },
-        {
-          "properties": {
-            "view_remove": {
-              "$ref": "./view.schema.json#/$defs/view_remove"
-            }
-          }
-        },
-        {
-          "properties": {
-            "view_replace": {
-              "$ref": "./view.schema.json#/$defs/view_replace"
-            }
-          }
-        },
-        {
-          "properties": {
-            "view_updateValue": {
-              "$ref": "./view.schema.json#/$defs/view_updateValue"
-            }
-          }
-        },
-        {
-          "properties": {
-            "view_removeAttribute": {
-              "$ref": "./view.schema.json#/$defs/view_removeAttribute"
-            }
-          }
-        },
-        {
-          "properties": {
-            "view_setAttribute": {
-              "$ref": "./view.schema.json#/$defs/view_setAttribute"
-            }
-          }
-        },
-        {
-          "properties": {
-            "viewModal_create": {
-              "$ref": "./viewModal.schema.json#/$defs/viewModal_create"
-            }
-          }
-        },
-        {
-          "properties": {
-            "viewModal_show": {
-              "$ref": "./viewModal.schema.json#/$defs/viewModal_show"
-            }
-          }
-        },
-        {
-          "properties": {
-            "widget_attachedToIndex": {
-              "$ref": "./widget.schema.json#/$defs/widget_attachedToIndex"
-            }
-          }
-        },
-        {
-          "properties": {
-            "widget_remove": {
-              "$ref": "./widget.schema.json#/$defs/widget_remove"
-            }
-          }
-        }
+    "actionName": {
+      "enum": [
+        "action_dispatch",
+        "delete_dataValue",
+        "eval_condition",
+        "get_actionValue",
+        "get_blockValue",
+        "get_dataValue",
+        "get_contextValue",
+        "get_payloadValue",
+        "get_sequenceValue",
+        "set_actionValue",
+        "set_dataValue",
+        "data_generateId",
+        "data_find",
+        "fetch_getAll",
+        "layout_create",
+        "list_filter",
+        "list_forEach",
+        "list_push",
+        "list_sort",
+        "list_splice",
+        "list_splice",
+        "operator_compare",
+        "operator_eval",
+        "query_filter",
+        "query_fetch",
+        "router_currentId",
+        "router_currentPath",
+        "router_navigate",
+        "section_append",
+        "section_render",
+        "section_set",
+        "section_update",
+        "template_create",
+        "token_textContent",
+        "view_insert",
+        "view_remove",
+        "view_replace",
+        "view_updateValue",
+        "view_removeAttribute",
+        "view_setAttribute",
+        "viewModal_create",
+        "viewModal_show",
+        "widget_attachedToIndex",
+        "widget_remove"
       ]
     },
-    "oneOfAction": {
+    "action": {
       "type": "object",
       "oneOf": [
         {
@@ -372,308 +107,352 @@
             "action_dispatch": {
               "$ref": "./action.schema.json#/$defs/action_dispatch"
             }
-          }
+          },
+          "required": ["action_dispatch"]
         },
         {
           "properties": {
             "delete_dataValue": {
               "$ref": "./action.schema.json#/$defs/delete_dataValue"
             }
-          }
+          },
+          "required": ["delete_dataValue"]
         },
         {
           "properties": {
             "eval_condition": {
               "$ref": "./action.schema.json#/$defs/eval_condition"
             }
-          }
+          },
+          "required": ["eval_condition"]
         },
         {
           "properties": {
             "get_actionValue": {
               "$ref": "./action.schema.json#/$defs/get_actionValue"
             }
-          }
+          },
+          "required": ["get_actionValue"]
         },
         {
           "properties": {
             "get_blockValue": {
               "$ref": "./action.schema.json#/$defs/get_blockValue"
             }
-          }
+          },
+          "required": ["get_blockValue"]
         },
         {
           "properties": {
             "get_dataValue": {
               "$ref": "./action.schema.json#/$defs/get_dataValue"
             }
-          }
+          },
+          "required": ["get_dataValue"]
         },
         {
           "properties": {
             "get_contextValue": {
               "$ref": "./action.schema.json#/$defs/get_contextValue"
             }
-          }
+          },
+          "required": ["get_contextValue"]
         },
         {
           "properties": {
             "get_payloadValue": {
               "$ref": "./action.schema.json#/$defs/get_payloadValue"
             }
-          }
+          },
+          "required": ["get_payloadValue"]
         },
         {
           "properties": {
             "get_sequenceValue": {
               "$ref": "./action.schema.json#/$defs/get_sequenceValue"
             }
-          }
+          },
+          "required": ["get_sequenceValue"]
         },
         {
           "properties": {
             "set_actionValue": {
               "$ref": "./action.schema.json#/$defs/set_actionValue"
             }
-          }
+          },
+          "required": ["set_actionValue"]
         },
         {
           "properties": {
             "set_dataValue": {
               "$ref": "./action.schema.json#/$defs/set_dataValue"
             }
-          }
+          },
+          "required": ["set_dataValue"]
         },
         {
           "properties": {
             "data_generateId": {
               "$ref": "./data.schema.json#/$defs/data_generateId"
             }
-          }
+          },
+          "required": ["data_generateId"]
         },
         {
           "properties": {
             "data_find": {
               "$ref": "./data.schema.json#/$defs/data_find"
             }
-          }
+          },
+          "required": ["data_find"]
         },
         {
           "properties": {
             "fetch_getAll": {
               "$ref": "./fetch.schema.json#/$defs/fetch_getAll"
             }
-          }
+          },
+          "required": ["fetch_getAll"]
         },
         {
           "properties": {
             "fetch_getById": {
               "$ref": "./fetch.schema.json#/$defs/fetch_getById"
             }
-          }
+          },
+          "required": ["fetch_getById"]
         },
         {
           "properties": {
             "layout_create": {
               "$ref": "./layout.schema.json#/$defs/layout_create"
             }
-          }
+          },
+          "required": ["layout_create"]
         },
         {
           "properties": {
             "list_filter": {
               "$ref": "./list.schema.json#/$defs/list_filter"
             }
-          }
+          },
+          "required": ["list_filter"]
         },
         {
           "properties": {
             "list_forEach": {
               "$ref": "./list.schema.json#/$defs/list_forEach"
             }
-          }
+          },
+          "required": ["list_forEach"]
         },
         {
           "properties": {
             "list_push": {
               "$ref": "./list.schema.json#/$defs/list_push"
             }
-          }
+          },
+          "required": ["list_push"]
         },
         {
           "properties": {
             "list_sort": {
               "$ref": "./list.schema.json#/$defs/list_sort"
             }
-          }
+          },
+          "required": ["list_sort"]
         },
         {
           "properties": {
             "list_splice": {
               "$ref": "./list.schema.json#/$defs/list_splice"
             }
-          }
+          },
+          "required": ["list_splice"]
         },
         {
           "properties": {
             "operator_compare": {
               "$ref": "./operator.schema.json#/$defs/operator_compare"
             }
-          }
+          },
+          "required": ["operator_compare"]
         },
         {
           "properties": {
             "operator_eval": {
               "$ref": "./operator.schema.json#/$defs/operator_eval"
             }
-          }
+          },
+          "required": ["operator_eval"]
         },
         {
           "properties": {
             "query_filter": {
               "$ref": "./query.schema.json#/$defs/query_filter"
             }
-          }
+          },
+          "required": ["query_filter"]
         },
         {
           "properties": {
             "query_fetch": {
               "$ref": "./query.schema.json#/$defs/query_fetch"
             }
-          }
+          },
+          "required": ["query_fetch"]
         },
         {
           "properties": {
             "router_currentId": {
               "$ref": "./router.schema.json#/$defs/router_currentId"
             }
-          }
+          },
+          "required": ["router_currentId"]
         },
         {
           "properties": {
             "router_currentPath": {
               "$ref": "./router.schema.json#/$defs/router_currentPath"
             }
-          }
+          },
+          "required": ["router_currentPath"]
         },
         {
           "properties": {
             "router_navigate": {
               "$ref": "./router.schema.json#/$defs/router_navigate"
             }
-          }
+          },
+          "required": ["router_navigate"]
         },
         {
           "properties": {
             "section_append": {
               "$ref": "./section.schema.json#/$defs/section_append"
             }
-          }
+          },
+          "required": ["section_append"]
         },
         {
           "properties": {
             "section_render": {
               "$ref": "./section.schema.json#/$defs/section_render"
             }
-          }
+          },
+          "required": ["section_render"]
         },
         {
           "properties": {
             "section_set": {
               "$ref": "./section.schema.json#/$defs/section_set"
             }
-          }
+          },
+          "required": ["section_set"]
         },
         {
           "properties": {
             "section_update": {
               "$ref": "./section.schema.json#/$defs/section_update"
             }
-          }
+          },
+          "required": ["section_update"]
         },
         {
           "properties": {
             "template_create": {
               "$ref": "./template.schema.json#/$defs/template_create"
             }
-          }
+          },
+          "required": ["template_create"]
         },
         {
           "properties": {
             "token_textContent": {
               "$ref": "./token.schema.json#/$defs/token_textContent"
             }
-          }
+          },
+          "required": ["token_textContent"]
         },
         {
           "properties": {
             "view_insert": {
               "$ref": "./view.schema.json#/$defs/view_insert"
             }
-          }
+          },
+          "required": ["view_insert"]
         },
         {
           "properties": {
             "view_remove": {
               "$ref": "./view.schema.json#/$defs/view_remove"
             }
-          }
+          },
+          "required": ["view_remove"]
         },
         {
           "properties": {
             "view_replace": {
               "$ref": "./view.schema.json#/$defs/view_replace"
             }
-          }
+          },
+          "required": ["view_replace"]
         },
         {
           "properties": {
             "view_updateValue": {
               "$ref": "./view.schema.json#/$defs/view_updateValue"
             }
-          }
+          },
+          "required": ["view_updateValue"]
         },
         {
           "properties": {
             "view_removeAttribute": {
               "$ref": "./view.schema.json#/$defs/view_removeAttribute"
             }
-          }
+          },
+          "required": ["view_removeAttribute"]
         },
         {
           "properties": {
             "view_setAttribute": {
               "$ref": "./view.schema.json#/$defs/view_setAttribute"
             }
-          }
+          },
+          "required": ["view_setAttribute"]
         },
         {
           "properties": {
             "viewModal_create": {
               "$ref": "./viewModal.schema.json#/$defs/viewModal_create"
             }
-          }
+          },
+          "required": ["viewModal_create"]
         },
         {
           "properties": {
             "viewModal_show": {
               "$ref": "./viewModal.schema.json#/$defs/viewModal_show"
             }
-          }
+          },
+          "required": ["viewModal_show"]
         },
         {
           "properties": {
             "widget_attachedToIndex": {
               "$ref": "./widget.schema.json#/$defs/widget_attachedToIndex"
             }
-          }
+          },
+          "required": ["widget_attachedToIndex"]
         },
         {
           "properties": {
             "widget_remove": {
               "$ref": "./widget.schema.json#/$defs/widget_remove"
             }
-          }
+          },
+          "required": ["widget_remove"]
         }
       ]
     },
@@ -683,7 +462,7 @@
           "type": "string"
         },
         {
-          "$ref": "#/$defs/oneOfAction"
+          "$ref": "#/$defs/action"
         }
       ]
     },
@@ -693,7 +472,7 @@
           "type": "number"
         },
         {
-          "$ref": "#/$defs/oneOfAction"
+          "$ref": "#/$defs/action"
         }
       ]
     },
@@ -703,7 +482,7 @@
           "type": "boolean"
         },
         {
-          "$ref": "#/$defs/oneOfAction"
+          "$ref": "#/$defs/action"
         }
       ]
     },
@@ -719,7 +498,7 @@
           "type": "boolean"
         },
         {
-          "$ref": "#/$defs/oneOfAction"
+          "$ref": "#/$defs/action"
         }
       ]
     },
@@ -746,7 +525,7 @@
         {
           "type": "array",
           "items": {
-            "$ref": "#/$defs/oneOfAction"
+            "$ref": "#/$defs/action"
           }
         }
       ]
@@ -762,7 +541,7 @@
         {
           "type": "array",
           "items": {
-            "$ref": "#/$defs/oneOfAction"
+            "$ref": "#/$defs/action"
           }
         }
       ]
@@ -778,7 +557,7 @@
         {
           "type": "array",
           "items": {
-            "$ref": "#/$defs/oneOfAction"
+            "$ref": "#/$defs/action"
           }
         }
       ]
@@ -794,7 +573,7 @@
         {
           "type": "array",
           "items": {
-            "$ref": "#/$defs/oneOfAction"
+            "$ref": "#/$defs/action"
           }
         }
       ]

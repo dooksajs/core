@@ -29,7 +29,7 @@
               "value": {
                 "oneOf": [
                   {
-                    "$ref": "./base.schema.json#/$defs/oneOfAction"
+                    "$ref": "./base.schema.json#/$defs/action"
                   },
                   {
                     "type": "string"
@@ -52,10 +52,10 @@
       "type": "object",
       "properties": {
         "context": {
-          "$ref": "./base.schema.json#/$defs/oneOfAction"
+          "$ref": "./base.schema.json#/$defs/action"
         },
         "items": {
-          "$ref": "./base.schema.json#/$defs/oneOfAction"
+          "$ref": "./base.schema.json#/$defs/action"
         },
         "actionId": {
           "$ref": "./base.schema.json#/$defs/string"

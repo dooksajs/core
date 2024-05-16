@@ -7,15 +7,23 @@
       "type": "object",
       "properties": {
         "id": {
-          "$ref": "./base.schema.json#/$defs/string"
+          "anyOf": [
+            {
+              "$ref": "./base.schema.json#/$defs/actionName"
+            },
+            {
+              "$ref": "./base.schema.json#/$defs/action"
+            }
+          ]
         },
         "context": {
-          "$ref": "./base.schema.json#/$defs/oneOfAction"
+          "$ref": "./base.schema.json#/$defs/action"
         },
         "payload": {
-          "$ref": "./base.schema.json#/$defs/oneOfAction"
+          "$ref": "./base.schema.json#/$defs/action"
         }
       },
+      "required": ["id"],
       "additionalProperties": false
     },
     "delete_dataValue": {
@@ -24,12 +32,12 @@
       "type": "object",
       "properties": {
         "name":  {
-          "oneOf": [
+          "anyOf": [
             {
               "$ref": "./base.schema.json#/$defs/dataCollectionName"
             },
             {
-              "$ref": "./base.schema.json#/$defs/oneOfAction"
+              "$ref": "./base.schema.json#/$defs/action"
             }
           ]
         },
@@ -63,7 +71,7 @@
                   "from": {
                     "oneOf": [
                       {
-                        "$ref": "./base.schema.json#/$defs/oneOfAction"
+                        "$ref": "./base.schema.json#/$defs/action"
                       },
                       {
                         "type": "string"
@@ -76,7 +84,7 @@
                   "to": {
                     "oneOf": [
                       {
-                        "$ref": "./base.schema.json#/$defs/oneOfAction"
+                        "$ref": "./base.schema.json#/$defs/action"
                       },
                       {
                         "type": "string"
@@ -125,7 +133,7 @@
         "query": {
           "oneOf": [
             {
-              "$ref": "./base.schema.json#/$defs/oneOfAction"
+              "$ref": "./base.schema.json#/$defs/action"
             },
             {
               "$ref": "./base.schema.json#/$defs/listString"
@@ -168,7 +176,7 @@
               "$ref": "./base.schema.json#/$defs/dataCollectionName"
             },
             {
-              "$ref": "./base.schema.json#/$defs/oneOfAction"
+              "$ref": "./base.schema.json#/$defs/action"
             }
           ]
         },
@@ -282,7 +290,7 @@
               "value": {
                 "oneOf": [
                   {
-                    "$ref": "./base.schema.json#/$defs/oneOfAction"
+                    "$ref": "./base.schema.json#/$defs/action"
                   },
                   {
                     "type": "string"
@@ -317,14 +325,14 @@
               "$ref": "./base.schema.json#/$defs/dataCollectionName"
             },
             {
-              "$ref": "./base.schema.json#/$defs/oneOfAction"
+              "$ref": "./base.schema.json#/$defs/action"
             }
           ]
         },
         "value": {
           "oneOf": [
             {
-              "$ref": "./base.schema.json#/$defs/oneOfAction"
+              "$ref": "./base.schema.json#/$defs/action"
             },
             {
               "type": "string"
