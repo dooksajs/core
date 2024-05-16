@@ -51,7 +51,7 @@
           "description": "Fetch template metadata",
           "fetch_getById": {
             "collection": "template/metadata",
-            "id": {
+            "id": [{
               "get_actionValue": {
                 "id": {
                   "get_sequenceValue": "0"
@@ -60,7 +60,7 @@
                   "get_sequenceValue": "2"
                 }
               }
-            }
+            }]
           }
         },
         {
