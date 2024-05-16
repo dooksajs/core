@@ -6,7 +6,7 @@
       "sequence": [
         {
           "action_dispatch": {
-            "id": "modal-create",
+            "id": "viewModal_create",
             "context": {
               "get_contextValue": "all"
             }
@@ -14,7 +14,7 @@
         },
         {
           "action_dispatch": {
-            "id": "modal-open",
+            "id": "viewModal_show",
             "context": {
               "get_contextValue": "all"
             }
