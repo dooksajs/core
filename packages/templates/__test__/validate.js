@@ -20,7 +20,8 @@ for (let i = 0; i < files.length; i++) {
       const valid = validate(JSON.parse(data))
 
       if (!valid) {
-        console.log(file.name, validate.errors)
+        console.error(validate.errors)
+        throw new Error('Template schema validation failed: ' + file.name)
       } else {
         console.log(file.name, 'is valid')
       }
