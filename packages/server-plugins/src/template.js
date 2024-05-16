@@ -5,7 +5,7 @@ import { $setRoute } from './http.js'
 
 export default createPlugin({
   name: 'template',
-  data: template.data,
+  models: template.models,
   setup () {
     $seedDatabase('template-items')
     $seedDatabase('template-metadata')

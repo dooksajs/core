@@ -5,7 +5,7 @@ import { $setRoute } from './http.js'
 
 export default createPlugin({
   name: 'layout',
-  data: { ...layout.data },
+  models: { ...layout.models },
   setup () {
     $seedDatabase('layout-items')
 

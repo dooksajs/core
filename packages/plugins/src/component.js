@@ -10,7 +10,7 @@ let _$componentSetter = () => {}
 
 const component = createPlugin({
   name: 'component',
-  data: {
+  models: {
     items: {
       type: 'collection',
       items: {

@@ -42,8 +42,8 @@ function create ({ request, response }) {
 
 const pageServer = createPlugin({
   name: 'page',
-  data: {
-    ...page.data,
+  models: {
+    ...page.models,
     app: {
       type: 'string'
     },

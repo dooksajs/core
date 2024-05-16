@@ -4,7 +4,7 @@ import { $getDataValue } from './data.js'
 
 const page = createPlugin({
   name: 'page',
-  data: {
+  models: {
     id: {
       type: 'collection',
       defaultId () {

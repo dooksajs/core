@@ -37,7 +37,7 @@ function fetchValues (items) {
 
 const query = createPlugin({
   name: 'query',
-  data: {
+  models: {
     items: {
       type: 'collection',
       items: {

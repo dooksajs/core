@@ -187,7 +187,7 @@ function sectionItem (widgetId, widgetMode, sectionUniqueId, viewId, sectionInde
 
 const layout = createPlugin({
   name: 'layout',
-  data: {
+  models: {
     items: {
       type: 'collection',
       items: {

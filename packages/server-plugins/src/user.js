@@ -12,7 +12,7 @@ let JWTSecret = ''
 
 const user = createPlugin({
   name: 'user',
-  data: {
+  models: {
     emails: {
       type: 'collection',
       items: {

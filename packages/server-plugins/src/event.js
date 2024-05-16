@@ -4,7 +4,7 @@ import { $seedDatabase } from './database.js'
 
 export default createPlugin({
   name: 'event',
-  data: { ...event.data },
+  models: { ...event.models },
   setup () {
     $seedDatabase('event-listeners')
     $seedDatabase('event-handlers')

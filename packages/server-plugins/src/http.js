@@ -42,7 +42,7 @@ let server
 
 const $http = createPlugin({
   name: 'http',
-  data: {
+  models: {
     status: {
       type: 'string'
     }

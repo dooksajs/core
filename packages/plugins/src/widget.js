@@ -61,7 +61,7 @@ function removeSection (id) {
 
 const widget = createPlugin({
   name: 'widget',
-  data: {
+  models: {
     actions: {
       type: 'collection',
       suffixId: 'default',

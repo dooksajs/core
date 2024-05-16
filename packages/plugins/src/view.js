@@ -184,7 +184,7 @@ function createNode ({
 
 const view = createPlugin({
   name: 'view',
-  data: {
+  models: {
     rootViewId: {
       type: 'string'
     },

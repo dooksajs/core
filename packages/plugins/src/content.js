@@ -3,7 +3,7 @@ import { $getDataValue } from './data.js'
 
 export default createPlugin({
   name: 'content',
-  data: {
+  models: {
     items: {
       type: 'collection',
       suffixId () {

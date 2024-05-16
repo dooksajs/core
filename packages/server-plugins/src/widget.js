@@ -5,7 +5,7 @@ import { $setRoute } from './http.js'
 
 export default createPlugin({
   name: 'widget',
-  data: { ...widget.data },
+  models: { ...widget.models },
   setup () {
     $seedDatabase('widget-items')
     $seedDatabase('widget-content')

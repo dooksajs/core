@@ -4,7 +4,7 @@ import { $addDataListener, $deleteDataListener, dataGenerateId } from '@dooksa/p
 
 export default createPlugin({
   name: 'development',
-  data: {
+  models: {
     rebuildClient: {
       type: 'number'
     },

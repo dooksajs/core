@@ -5,7 +5,7 @@ import { $deleteDatabaseValue, $getDatabaseValue, $seedDatabase } from './databa
 
 export default createPlugin({
   name: 'section',
-  data: { ...section.data },
+  models: { ...section.models },
   setup () {
     $seedDatabase('section-items')
 

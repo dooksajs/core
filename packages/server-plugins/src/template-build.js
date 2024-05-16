@@ -61,7 +61,7 @@ const availableMethods = {
 
 const templateBuild = createPlugin({
   name: 'templateBuild',
-  data: {
+  models: {
     path: {
       type: 'string'
     }

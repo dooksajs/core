@@ -476,7 +476,7 @@ function getValue (value, query) {
 
 const action = createPlugin({
   name: 'action',
-  data: {
+  models: {
     blocks: {
       type: 'collection',
       items: {

@@ -4,7 +4,7 @@ import { $addDataListener, $getDataValue, $setDataValue } from '../../plugins/sr
 import { sectionAppend, sectionUpdate } from '../../plugins/src/section.js'
 import { templateCreate } from '../../plugins/src/template.js'
 
-function appendPlugin (appPlugins, appSetup, appActions, appComponents, appData) {
+function appendPlugin (appPlugins, appSetup, appActions, appComponents, appDataModels) {
   return function use (plugin) {
     // check if plugin exists
     if (appPlugins.indexOf(plugin) !== -1) {
@@ -18,7 +18,7 @@ function appendPlugin (appPlugins, appSetup, appActions, appComponents, appData)
 
     // store plugin
     appPlugins.push(plugin)
-    const { name, actions, data, dependencies, setup, components } = plugin
+    const { name, actions, models, dependencies, setup, components } = plugin
 
     if (setup) {
       appSetup.push({
@@ -43,11 +43,11 @@ function appendPlugin (appPlugins, appSetup, appActions, appComponents, appData)
     }
 
     // extract data (need to parse and set default value)
-    if (data) {
-      for (const key in data) {
-        if (Object.hasOwnProperty.call(data, key)) {
-          const dataItem = data[key]
-          const schemaType = dataItem.type
+    if (models) {
+      for (const key in models) {
+        if (Object.hasOwnProperty.call(models, key)) {
+          const modelItem = models[key]
+          const schemaType = modelItem.type
           let dataValue
 
           switch (schemaType) {
@@ -75,10 +75,10 @@ function appendPlugin (appPlugins, appSetup, appActions, appComponents, appData)
           const collectionName = plugin.name + '/' + key
           const isCollection = schemaType === 'collection'
 
-          appData.values[collectionName] = dataValue()
-          appData.schema.push({
+          appDataModels.values[collectionName] = dataValue()
+          appDataModels.schema.push({
             name: collectionName,
-            entries: parseSchema.process({}, collectionName, dataItem, [], true),
+            entries: parseSchema.process({}, collectionName, modelItem, [], true),
             isCollection
           })
         }
@@ -157,7 +157,7 @@ function callbackWhenAvailable ({ actions, lazy, loader, setup, options, use }) 
   }
 }
 
-function initialize (appSetup, appActions, appComponents, appData, use, appStartServer) {
+function initialize (appSetup, appActions, appComponents, appDataModels, use, appStartServer) {
   /**
    * Initialize dooksa!
    * @param {Object} param
@@ -229,7 +229,7 @@ function initialize (appSetup, appActions, appComponents, appData, use, appStart
       const setup = appSetup[i]
 
       if (setup.name === 'data') {
-        setup.initialize(appData)
+        setup.initialize(appDataModels)
 
         // remove from setup queue
         appSetup.splice(i, 1)
@@ -380,12 +380,12 @@ function createApp (plugins) {
     getters: {},
     setters: {}
   }
-  const appData = {
+  const appDataModels = {
     values: {},
     schema: []
   }
   let appStartServer
-  const use = appendPlugin(appPlugins, appSetup, appActions, appComponents, appData)
+  const use = appendPlugin(appPlugins, appSetup, appActions, appComponents, appDataModels)
 
   for (let i = 0; i < plugins.length; i++) {
     const plugin = plugins[i]
@@ -399,7 +399,7 @@ function createApp (plugins) {
 
   return {
     use,
-    setup: initialize(appSetup, appActions, appComponents, appData, use, appStartServer)
+    setup: initialize(appSetup, appActions, appComponents, appDataModels, use, appStartServer)
   }
 }
 

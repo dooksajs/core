@@ -3,7 +3,7 @@ import { actionDispatch, $getDataValue } from './index.js'
 
 const event = createPlugin({
   name: 'event',
-  data: {
+  models: {
     listeners: {
       type: 'collection',
       items: {

@@ -5,7 +5,7 @@ import { $setRoute } from './http.js'
 
 const serverAction = createPlugin({
   name: 'action',
-  data: { ...action.data },
+  models: { ...action.models },
   setup () {
     $seedDatabase('action-items')
     $seedDatabase('action-blocks')

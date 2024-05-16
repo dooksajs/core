@@ -137,7 +137,7 @@ function replaceActionRef (items, refs, blockKeys = [], blockValues = [], index 
 
 const template = createPlugin({
   name: 'template',
-  data: {
+  models: {
     items: {
       type: 'collection',
       items: {

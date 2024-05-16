@@ -5,7 +5,7 @@ import compileSass from '@dooksa/theme'
 
 const theme = createPlugin({
   name: 'theme',
-  data: {
+  models: {
     styles: {
       type: 'string'
     }

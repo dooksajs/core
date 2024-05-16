@@ -74,7 +74,7 @@ function updateByQuery (queryId, viewId, id, uniqueId, mode) {
 
 const section = createPlugin({
   name: 'section',
-  data: {
+  models: {
     uniqueId: {
       type: 'string'
     },

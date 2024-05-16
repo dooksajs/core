@@ -12,7 +12,7 @@ let _$componentSetter = () => {}
 
 const componentServer = createPlugin({
   name: 'component',
-  data: component.data,
+  models: component.models,
   components: component.components,
   actions: {
     $component (name) {

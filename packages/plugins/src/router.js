@@ -84,7 +84,7 @@ const router = createPlugin({
     currentPath,
     currentId
   },
-  data: {
+  models: {
     sections: {
       type: 'collection',
       defaultId () {

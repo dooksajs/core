@@ -3,7 +3,7 @@ import { $setDataValue } from './data.js'
 
 export default createPlugin({
   name: 'metadata',
-  data: {
+  models: {
     currentLanguage: {
       type: 'string'
     },
