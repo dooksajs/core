@@ -11,10 +11,25 @@
         "items": {
           "oneOf": [
             {
-              "$ref": "./base.schema.json#/$defs/listString"
+              "$ref": "./base.schema.json#/$defs/action"
             },
             {
-              "$ref": "./base.schema.json#/$defs/listNumber"
+              "type": "array",
+              "items": {
+                "$ref": "./base.schema.json#/$defs/action"
+              }
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
             }
           ]
         },
@@ -71,20 +86,38 @@
         "target": {
           "oneOf": [
             {
-              "$ref": "./base.schema.json#/$defs/listString"
+              "$ref": "./base.schema.json#/$defs/action"
             },
             {
-              "$ref": "./base.schema.json#/$defs/listNumber"
+              "type": "array",
+              "items": {
+                "$ref": "./base.schema.json#/$defs/action"
+              }
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
             }
           ]
         },
         "source": {
           "oneOf": [
             {
-              "$ref": "./base.schema.json#/$defs/listString"
+              "type": "array",
+              "items": {
+                "$ref": "./base.schema.json#/$defs/action"
+              }
             },
             {
-              "$ref": "./base.schema.json#/$defs/listNumber"
+              "$ref": "./base.schema.json#/$defs/action"
             },
             {
               "type": "string"
@@ -106,10 +139,25 @@
         "items": {
           "oneOf": [
             {
-              "$ref": "./base.schema.json#/$defs/listString"
+              "$ref": "./base.schema.json#/$defs/action"
             },
             {
-              "$ref": "./base.schema.json#/$defs/listNumber"
+              "type": "array",
+              "items": {
+                "$ref": "./base.schema.json#/$defs/action"
+              }
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
             }
           ]
         },
@@ -125,10 +173,25 @@
         "target": {
           "oneOf": [
             {
-              "$ref": "./base.schema.json#/$defs/listString"
+              "$ref": "./base.schema.json#/$defs/action"
             },
             {
-              "$ref": "./base.schema.json#/$defs/listNumber"
+              "type": "array",
+              "items": {
+                "$ref": "./base.schema.json#/$defs/action"
+              }
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
             }
           ]
         },
