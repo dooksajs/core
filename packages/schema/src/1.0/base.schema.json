@@ -45,7 +45,7 @@
         "widget/groups",
         "widget/mode",
         "widget/layouts",
-        "widgets/sections",
+        "widget/sections",
         "widget/views",
         "widget/parentViews",
         "widget/templates"
@@ -503,80 +503,71 @@
       ]
     },
     "listPrimitive": {
-      "oneOf": [
-        {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        {
-          "type": "array",
-          "items": {
-            "type": "boolean"
-          }
-        },
-        {
-          "type": "array",
-          "items": {
-            "type": "number"
-          }
-        },
-        {
-          "type": "array",
-          "items": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "boolean"
+            }
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          {
             "$ref": "#/$defs/action"
           }
-        }
-      ]
+        ]
+      }
     },
     "listString": {
-      "oneOf": [
-        {
-          "type": "array",
-          "items": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
             "type": "string"
-          }
-        },
-        {
-          "type": "array",
-          "items": {
+          },
+          {
             "$ref": "#/$defs/action"
           }
-        }
-      ]
+        ]
+      }
     },
     "listNumber": {
-      "oneOf": [
-        {
-          "type": "array",
-          "items": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
             "type": "number"
-          }
-        },
-        {
-          "type": "array",
-          "items": {
+          },
+          {
             "$ref": "#/$defs/action"
           }
-        }
-      ]
+        ]
+      }
     },
     "listBoolean": {
-      "oneOf": [
-        {
-          "type": "array",
-          "items": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
             "type": "boolean"
-          }
-        },
-        {
-          "type": "array",
-          "items": {
+          },
+          {
             "$ref": "#/$defs/action"
           }
-        }
-      ]
+        ]
+      }
     }
   }
 }
