@@ -1,4 +1,4 @@
-import { createPlugin } from '@dooksa/create'
+import createPlugin from '@dooksa/create-plugin'
 import { event } from '@dooksa/plugins'
 import { $seedDatabase } from './database.js'
 

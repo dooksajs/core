@@ -1,4 +1,4 @@
-import { createPlugin } from '@dooksa/create'
+import createPlugin from '@dooksa/create-plugin'
 import { existsSync } from 'node:fs'
 import { $setDataValue } from '@dooksa/plugins'
 import compileSass from '@dooksa/theme'

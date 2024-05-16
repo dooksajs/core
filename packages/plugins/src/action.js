@@ -1,4 +1,4 @@
-import { createPlugin } from '@dooksa/create'
+import createPlugin from '@dooksa/create-plugin'
 import { deepClone } from '@dooksa/utils'
 import { operatorCompare, operatorEval } from './operator.js'
 import { dataGenerateId, $getDataValue, $setDataValue, $deleteDataValue } from './data.js'

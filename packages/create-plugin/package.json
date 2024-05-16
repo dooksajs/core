@@ -1,13 +1,10 @@
 {
-  "name": "@dooksa/create",
+  "name": "@dooksa/create-plugin",
   "version": "0.0.0",
   "description": "Create Dooksa libraries",
   "author": "Thomas David <tom@mightysmile.com>",
   "repository": "git@github.com:dooksajs/dooksa.git",
   "license": "MPL-2.0",
   "type": "module",
-  "main": "src/index.js",
-  "dependencies": {
-    "@dooksa/utils": "workspace:^"
-  }
+  "main": "src/index.js"
 }

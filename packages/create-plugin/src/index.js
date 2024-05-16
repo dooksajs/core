@@ -55,4 +55,4 @@ function createPlugin (plugin) {
   return plugin
 }
 
-export { createPlugin }
+export default createPlugin

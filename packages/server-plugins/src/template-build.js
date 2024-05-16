@@ -1,4 +1,4 @@
-import { createPlugin } from '@dooksa/create'
+import createPlugin from '@dooksa/create-plugin'
 import { $getDataValue, $setDataValue } from '@dooksa/plugins'
 import { readFileSync, readdirSync, existsSync } from 'node:fs'
 import { extname, resolve } from 'node:path'

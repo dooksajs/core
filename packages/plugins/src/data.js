@@ -1,4 +1,4 @@
-import { createPlugin } from '@dooksa/create'
+import createPlugin from '@dooksa/create-plugin'
 import { operatorEval, listSplice } from './index.js'
 import { DataSchemaException, DataValueException } from './utils/Error.js'
 import { deepClone, isServer, uuid } from '@dooksa/utils'

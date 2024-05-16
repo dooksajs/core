@@ -1,4 +1,4 @@
-import { createPlugin } from '@dooksa/create'
+import createPlugin from '@dooksa/create-plugin'
 import { existsSync, rename, readFile } from 'node:fs'
 import { writeFile } from 'fs/promises'
 import { resolve, join } from 'path'

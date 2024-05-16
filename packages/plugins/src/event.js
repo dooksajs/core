@@ -1,4 +1,4 @@
-import { createPlugin } from '@dooksa/create'
+import createPlugin from '@dooksa/create-plugin'
 import { actionDispatch, $getDataValue } from './index.js'
 
 const event = createPlugin({

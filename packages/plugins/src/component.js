@@ -1,4 +1,4 @@
-import { createPlugin } from '@dooksa/create'
+import createPlugin from '@dooksa/create-plugin'
 import { $getDataValue, $setDataValue } from './data.js'
 
 /** @type {Function} */

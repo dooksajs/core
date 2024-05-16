@@ -18,7 +18,7 @@ import {
   view,
   widget
 } from '@dooksa/plugins'
-import { createApp } from '@dooksa/create'
+import createApp from '@dooksa/create-app'
 
 export default createApp([
   data,

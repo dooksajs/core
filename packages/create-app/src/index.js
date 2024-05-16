@@ -1,8 +1,13 @@
 import { parseSchema, isServer } from '@dooksa/utils'
-import { routerCurrentId } from '../../plugins/src/router.js'
-import { $addDataListener, $getDataValue, $setDataValue } from '../../plugins/src/data.js'
-import { sectionAppend, sectionUpdate } from '../../plugins/src/section.js'
-import { templateCreate } from '../../plugins/src/template.js'
+import {
+  templateCreate,
+  sectionAppend,
+  sectionUpdate,
+  $addDataListener,
+  $getDataValue,
+  $setDataValue,
+  routerCurrentId
+} from '@dooksa/plugins'
 
 function appendPlugin (appPlugins, appSetup, appActions, appComponents, appDataModels) {
   return function use (plugin) {
@@ -118,6 +123,23 @@ function appendPlugin (appPlugins, appSetup, appActions, appComponents, appDataM
  * @param {Function} app.use
  */
 function callbackWhenAvailable ({ actions, lazy, loader, setup, options, use }) {
+  const setupPlugin = (plugin, methodName, callback) => {
+    use(plugin)
+
+    for (let i = 0; i < setup.length; i++) {
+      const instance = setup[i]
+
+      instance.initialize(options[instance.name])
+      setup.splice(i)
+    }
+
+    if (typeof actions[methodName] === 'function') {
+      return callback()
+    } else {
+      throw new Error('No action exists by the name of: ' + name)
+    }
+  }
+
   /**
    * @param {string} name - Name of method
    * @param {function} callback - Callback used to run after loading the requested plugin
@@ -127,31 +149,14 @@ function callbackWhenAvailable ({ actions, lazy, loader, setup, options, use }) 
       return callback()
     }
 
-    if (!isServer) {
+    if (!isServer()) {
       const pluginName = name.split('_')[0]
       const fileName = lazy[pluginName]
 
       if (fileName) {
         loader(fileName)
-          .then(plugin => {
-            use(plugin)
-
-            for (let i = 0; i < setup.length; i++) {
-              const instance = setup[i]
-
-              instance.initialize(options[instance.name])
-              setup.splice(i)
-            }
-
-            if (typeof actions[name] === 'function') {
-              return callback()
-            } else {
-              throw new Error('No action exists by the name of: ' + name)
-            }
-          })
-          .catch(error => {
-            console.log(error)
-          })
+          .then(plugin => setupPlugin(plugin, name, callback))
+          .catch(error => new Error(error))
       }
     }
   }
@@ -403,4 +408,4 @@ function createApp (plugins) {
   }
 }
 
-export { createApp }
+export default createApp

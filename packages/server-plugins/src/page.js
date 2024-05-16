@@ -1,4 +1,4 @@
-import { createPlugin } from '@dooksa/create'
+import createPlugin from '@dooksa/create-plugin'
 import { createHash } from 'node:crypto'
 import { page, pageGetById, $getDataValue, $setDataValue } from '@dooksa/plugins'
 import { $seedDatabase, $setDatabaseValue } from './database.js'

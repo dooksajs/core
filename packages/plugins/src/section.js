@@ -1,4 +1,4 @@
-import { createPlugin } from '@dooksa/create'
+import createPlugin from '@dooksa/create-plugin'
 import { layoutCreate, widgetRemove, queryFetch, $getDataValue, $setDataValue, $emit } from './index.js'
 
 /**

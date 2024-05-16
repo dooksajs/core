@@ -1,4 +1,4 @@
-import { createPlugin } from '@dooksa/create'
+import createPlugin from '@dooksa/create-plugin'
 import { $setDataValue, dataGenerateId } from '@dooksa/plugins'
 import { middlewareGet, middlewareSet } from './middleware.js'
 import express from 'express'

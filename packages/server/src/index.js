@@ -1,4 +1,4 @@
-import { createApp } from '@dooksa/create'
+import createApp from '@dooksa/create-app'
 import { data } from '@dooksa/plugins'
 import {
   $http,

@@ -17,18 +17,23 @@ importers:
 
   packages/client:
     dependencies:
-      '@dooksa/create':
+      '@dooksa/create-app':
         specifier: workspace:^
-        version: link:../create
+        version: link:../create-app
       '@dooksa/plugins':
         specifier: workspace:^
         version: link:../plugins
 
-  packages/create:
+  packages/create-app:
     dependencies:
+      '@dooksa/plugins':
+        specifier: workspace:^
+        version: link:../plugins
       '@dooksa/utils':
         specifier: workspace:^
         version: link:../utils
+
+  packages/create-plugin: {}
 
   packages/playground:
     dependencies:
@@ -57,9 +62,9 @@ importers:
 
   packages/plugins:
     dependencies:
-      '@dooksa/create':
+      '@dooksa/create-plugin':
         specifier: workspace:^
-        version: link:../create
+        version: link:../create-plugin
       '@dooksa/utils':
         specifier: workspace:^
         version: link:../utils
@@ -78,9 +83,9 @@ importers:
 
   packages/server:
     dependencies:
-      '@dooksa/create':
+      '@dooksa/create-app':
         specifier: workspace:^
-        version: link:../create
+        version: link:../create-app
       '@dooksa/plugins':
         specifier: workspace:^
         version: link:../plugins
@@ -90,9 +95,9 @@ importers:
 
   packages/server-plugins:
     dependencies:
-      '@dooksa/create':
+      '@dooksa/create-plugin':
         specifier: workspace:^
-        version: link:../create
+        version: link:../create-plugin
       '@dooksa/plugins':
         specifier: workspace:^
         version: link:../plugins

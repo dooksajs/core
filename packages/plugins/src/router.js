@@ -1,4 +1,4 @@
-import { createPlugin } from '@dooksa/create'
+import createPlugin from '@dooksa/create-plugin'
 import { $getDataValue } from './data.js'
 import { viewDetach } from './view.js'
 import { hash } from '@dooksa/utils'

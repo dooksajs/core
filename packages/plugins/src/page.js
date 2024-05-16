@@ -1,4 +1,4 @@
-import { createPlugin } from '@dooksa/create'
+import createPlugin from '@dooksa/create-plugin'
 import { routerCurrentId } from './router.js'
 import { $getDataValue } from './data.js'
 

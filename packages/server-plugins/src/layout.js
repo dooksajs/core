@@ -1,4 +1,4 @@
-import { createPlugin } from '@dooksa/create'
+import createPlugin from '@dooksa/create-plugin'
 import { layout } from '@dooksa/plugins'
 import { $seedDatabase, $getDatabaseValue, $deleteDatabaseValue } from './database.js'
 import { $setRoute } from './http.js'
