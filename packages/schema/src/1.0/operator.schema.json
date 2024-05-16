@@ -32,29 +32,21 @@
           "$ref": "./base.schema.json#/$defs/string"
         },
         "values": {
-          "anyOf": [
-            {
-              "type": "array",
-              "items": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "oneOf": [
+              {
                 "$ref": "./base.schema.json#/$defs/action"
               },
-              "maxItems": 2
-            },
-            {
-              "type": "array",
-              "items": {
+              {
                 "type": "string"
               },
-              "maxItems": 2
-            },
-            {
-              "type": "array",
-              "items": {
+              {
                 "type": "number"
-              },
-              "maxItems": 2
-            }
-          ]
+              }
+            ]
+          }
         }
       }
     }
