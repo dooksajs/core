@@ -36,7 +36,12 @@
       }
     },
     "viewModal_show": {
-      "$ref": "./base.schema.json#/$defs/string"
+      "type": "object",
+      "properties": {
+        "viewId": {
+          "$ref": "./base.schema.json#/$defs/string"
+        }
+      }
     }
   }
 }
