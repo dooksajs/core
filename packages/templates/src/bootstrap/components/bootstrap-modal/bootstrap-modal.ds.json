@@ -40,7 +40,7 @@
                     }
                   }
                 },
-                "query": "bootstrap-edit-section-template"
+                "query": "bootstrap-edit-section-template.0.item.name"
               }
             },
             "options": {
