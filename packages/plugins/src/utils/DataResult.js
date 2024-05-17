@@ -21,20 +21,6 @@ function DataResult (collection = '', id = '') {
   this.metadata = undefined
   /** @type {(Object|undefined)} */
   this.previous = undefined
-
-  Object.defineProperty(this, 'noAffixId', {
-    get () {
-      let noAffixId = this.id.split('_')
-
-      if (noAffixId.length === 3) {
-        noAffixId = '_' + noAffixId[1] + '_'
-      } else {
-        noAffixId = this.id
-      }
-
-      return noAffixId
-    }
-  })
 }
 
 /**
@@ -51,7 +37,8 @@ DataResult.prototype.noAffixId = Object.defineProperty(Object.prototype, 'noAffi
     }
 
     return noAffixId
-  }
+  },
+  set (value) {}
 })
 
 /**
