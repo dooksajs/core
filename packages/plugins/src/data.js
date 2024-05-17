@@ -370,7 +370,7 @@ function setCollectionItems (data, path, sources, metadata) {
   const schema = databaseSchema[path]
   const schemaType = schema.type
 
-  if (schemaType !== 'object' || schemaType !== 'array') {
+  if (schemaType !== 'object' && schemaType !== 'array') {
     for (const id in sources) {
       if (Object.hasOwnProperty.call(sources, id)) {
         const clone = newDataInstance(schema.type)
@@ -1664,7 +1664,7 @@ const data = createPlugin({
      * Set data value
      * @param {string} name - Name of collection
      * @param {*} data - Data to be set
-     * @param {DsSetDataOptions} [options] - Set data options
+     * @param {SetDataOptions} [options] - Set data options
      * @returns {DataResult}
      */
     $setDataValue (name, data, options) {
