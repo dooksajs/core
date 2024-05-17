@@ -38,7 +38,15 @@ DataResult.prototype.noAffixId = Object.defineProperty(Object.prototype, 'noAffi
 
     return noAffixId
   },
-  set (value) {}
+  set (value) {
+    let noAffixId = value.split('_')
+
+    if (noAffixId.length === 3) {
+      this.id = '_' + noAffixId[1] + '_'
+    } else {
+      this.id = noAffixId
+    }
+  }
 })
 
 /**
