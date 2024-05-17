@@ -15,14 +15,14 @@ function getCache (id) {
     return fetchRequestQueue[id]
   }
 
-  if (cache.item.expireIn && cache.item.expireIn < Date.now()) {
+  if (cache.expireIn && cache.expireIn < Date.now()) {
     return deleteCache(id)
   }
 
   const result = []
 
-  for (let i = 0; i < cache.item.data.length; i++) {
-    const item = cache.item.data[i]
+  for (let i = 0; i < cache.data.length; i++) {
+    const item = cache.data[i]
     const data = $getDataValue(item.collection, { id: item.id })
 
     result.push(data)
