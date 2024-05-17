@@ -359,20 +359,14 @@ const template = createPlugin({
               }
 
               const dataItem = data[0]
-              const templateData = $setDataValue(dataItem.collection, dataItem.item, { id: dataItem.id })
 
-              if (!templateData.isValid) {
-                reject(templateData.error.details)
-              }
+              $setDataValue(dataItem.collection, dataItem.item, { id: dataItem.id })
 
               if (dataItem.expand) {
                 for (let i = 0; i < dataItem.expand.length; i++) {
                   const expand = dataItem.expand[i]
-                  const expandData = $setDataValue(expand.collection, expand.item, { id: expand.id })
 
-                  if (!expandData.isValid) {
-                    reject(templateData.error.details)
-                  }
+                  $setDataValue(expand.collection, expand.item, { id: expand.id })
                 }
               }
 

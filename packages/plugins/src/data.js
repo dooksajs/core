@@ -6,11 +6,10 @@ import DataResult from './utils/DataResult.js'
 
 /**
  * @typedef {import('../../global-typedef.js').SetDataOptions} SetDataOptions
- * @typedef {import('../../global-typedef.js').GetDataOptions} GetDataOptions
+ * @typedef {import('../../global-typedef.js').GetDataQuery} GetDataQuery
  * @typedef {import('../../global-typedef.js').DataSchema} DataSchema
  * @typedef {import('../../global-typedef.js').DataWhere} DataWhere
  */
-
 
 let database = {}
 const databaseSchema = {}
@@ -1479,7 +1478,7 @@ const data = createPlugin({
     /**
      * Get data value
      * @param {string} name - Name of collection
-     * @param {GetDataOptions} [param]
+     * @param {GetDataQuery} [param]
      * @returns {DataResult}
      */
     $getDataValue (name, { id, prefixId, suffixId, options } = {}) {
@@ -1709,18 +1708,17 @@ const data = createPlugin({
       // set new value
       database[name] = result.target
 
-      // notify listeners
-      fireDataListeners(name, 'update', result, (options && options.stopPropagation) ?? false)
+      const dataResult = new DataResult(name, result.id)
 
-      return {
-        collection: name,
-        id: result.id,
-        noAffixId: result.noAffixId,
-        item: result.item,
-        previous: result.previous,
-        isValid: true,
-        metadata: result.metadata
-      }
+      dataResult.item = result.item
+      dataResult.isEmpty = false
+      dataResult.previous = result.previous
+      dataResult.metadata = result.metadata
+
+      // notify listeners
+      fireDataListeners(name, 'update', dataResult, (options && options.stopPropagation) ?? false)
+
+      return dataResult
     },
     /**
      * Add data modal
