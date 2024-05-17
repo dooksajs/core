@@ -38,6 +38,23 @@ function DataResult (collection = '', id = '') {
 }
 
 /**
+ * @property {string} noAffixId - The id without affixes
+ */
+DataResult.prototype.noAffixId = Object.defineProperty(Object.prototype, 'noAffixId', {
+  get () {
+    let noAffixId = this.id.split('_')
+
+    if (noAffixId.length === 3) {
+      noAffixId = '_' + noAffixId[1] + '_'
+    } else {
+      noAffixId = this.id
+    }
+
+    return noAffixId
+  }
+})
+
+/**
  * Deep copy result data
  * @returns {*}
  */
