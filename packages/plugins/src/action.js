@@ -434,8 +434,8 @@ function getValue (value, query) {
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i]
 
-      if (Object.hasOwnProperty.call(result, key)) {
-        result[key]
+      if (result[key] != null) {
+        result = result[key]
       } else {
         /** @TODO Create custom ReferenceError */
         throw new Error('Action get value was not defined: ' + key)
