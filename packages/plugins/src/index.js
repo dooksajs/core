@@ -16,6 +16,7 @@ import router from './router.js'
 import page from './page.js'
 import section from './section.js'
 import widget from './widget.js'
+import lazyLoader from './lazy/index.js'
 
 export * from './action.js'
 export * from './data.js'
@@ -35,6 +36,7 @@ export * from './section.js'
 export * from './widget.js'
 
 export {
+  lazyLoader,
   action,
   component,
   content,

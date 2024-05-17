@@ -18,7 +18,7 @@ app.setup({
   },
   loader: (filename) => {
     return new Promise((resolve, reject) => {
-      import(`./plugins/${filename}.js`)
+      import(`./app/plugins/${filename}.js`)
         .then(({ default: plugin }) => {
           resolve(plugin)
         })

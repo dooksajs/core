@@ -6,7 +6,8 @@ import {
   $addDataListener,
   $getDataValue,
   $setDataValue,
-  routerCurrentId
+  routerCurrentId,
+  lazyLoader
 } from '@dooksa/plugins'
 
 function appendPlugin (appPlugins, appSetup, appActions, appComponents, appDataModels) {
@@ -153,11 +154,21 @@ function callbackWhenAvailable ({ actions, lazy, loader, setup, options, use }) 
       const pluginName = name.split('_')[0]
       const fileName = lazy[pluginName]
 
+      // load custom plugins
       if (fileName) {
-        loader(fileName)
+        return loader(fileName)
           .then(plugin => setupPlugin(plugin, name, callback))
           .catch(error => new Error(error))
       }
+
+      // load core lazy plugins
+      lazyLoader(pluginName)
+        .then(plugin => {
+          if (plugin) {
+            setupPlugin(plugin, name, callback)
+          }
+        })
+        .catch(error => new Error(error))
     }
   }
 }
