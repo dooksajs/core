@@ -492,7 +492,6 @@ function setData (collection, target, source, options) {
         result.item = value._item
         result.previous = value._previous
         result.metadata = value._metadata
-        result.noAffixId = data.noAffixId
       }
 
       return result
@@ -506,7 +505,6 @@ function setData (collection, target, source, options) {
 
   if (data.id) {
     result.id = data.id
-    result.noAffixId = data.noAffixId
     result.item = data.target[data.id]._item
     result.previous = data.target[data.id]._previous
     result.metadata = data.target[data.id]._metadata
@@ -531,7 +529,6 @@ function setData (collection, target, source, options) {
     data.target[collectionId.id] = target
 
     result.id = collectionId.id
-    result.noAffixId = collectionId.noAffixId
     result.item = target._item
     result.previous = target._previous
     result.metadata = target._metadata
@@ -594,7 +591,6 @@ function setDataOptions (data, source, options) {
     const collection = createDefaultCollectionId(data.collection, options)
 
     data.id = collection.id
-    data.noAffixId = collection.noAffixId
   }
 
   const previousTarget = data.target[data.id]
