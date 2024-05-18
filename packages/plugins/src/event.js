@@ -25,10 +25,11 @@ const event = createPlugin({
   actions: {
     /**
      * Emit event
+     * @param {string} name - Name of event
      * @param {Object} param
-     * @param {dsEventId} param.id - Event id is the listener reference item
-     * @param {dsEventOn} param.on - Event fired "on" an event name
-     * @param {Object.<string, any>} param.payload - The action that runs on the event
+     * @param {string} param.id - Event id is the listener reference item
+     * @param {Object} [param.context] - The action that runs on the event
+     * @param {Object} [param.payload] - The action that runs on the event
      */
     $emit (name, { id, context, payload }) {
       const listeners = $getDataValue('event/listeners', {
