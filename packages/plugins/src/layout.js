@@ -80,11 +80,8 @@ function contentItem (widgetId, widgetMode, sectionUniqueId, viewId, childViewId
   $addDataListener('content/items', {
     on: 'update',
     id: contentId,
-    handler: {
-      id: viewId,
-      value: () => {
-        viewUpdateValue({ viewId: childViewId })
-      }
+    handler: () => {
+      viewUpdateValue({ viewId: childViewId })
     }
   })
 }
@@ -139,12 +136,9 @@ function sectionItem (widgetId, widgetMode, sectionUniqueId, viewId, sectionInde
       on: 'update',
       id: sectionItemId,
       force: true,
-      handler: {
-        id: viewId,
-        value: ({ item }) => {
-          for (let i = 0; i < item.length; i++) {
-            $setDataValue('widget/attached', sectionItemId, { id: item[i] })
-          }
+      handler: ({ item }) => {
+        for (let i = 0; i < item.length; i++) {
+          $setDataValue('widget/attached', sectionItemId, { id: item[i] })
         }
       }
     })
@@ -157,28 +151,19 @@ function sectionItem (widgetId, widgetMode, sectionUniqueId, viewId, sectionInde
     $addDataListener('section/items', {
       on: 'update',
       id: sectionItemId,
-      handler: {
-        id: viewId,
-        value: handlerValue
-      }
+      handler: handlerValue
     })
 
     $addDataListener('section/query', {
       on: 'update',
       id: sectionItemId,
-      handler: {
-        id: viewId,
-        value: handlerValue
-      }
+      handler: handlerValue
     })
 
     $addDataListener('section/query', {
       on: 'delete',
       id: sectionItemId,
-      handler: {
-        id: viewId,
-        value: handlerValue
-      }
+      handler: handlerValue
     })
 
     return sectionItemId

@@ -116,72 +116,69 @@ const query = createPlugin({
         on: 'update',
         id: sectionId,
         priority: 1,
-        handler: {
-          id,
-          value: (result) => {
-            const where = $getDataValue('query/where', { id })
-            const sort = $getDataValue('query/sort', { id })
+        handler: (result) => {
+          const where = $getDataValue('query/where', { id })
+          const sort = $getDataValue('query/sort', { id })
 
-            const currentSection = {}
+          const currentSection = {}
 
-            // collect current widgets
-            for (let i = 0; i < result.item.length; i++) {
-              currentSection[result.item[i]] = true
+          // collect current widgets
+          for (let i = 0; i < result.item.length; i++) {
+            currentSection[result.item[i]] = true
+          }
+
+          if (!where.isEmpty) {
+            const queryData = $getDataValue('query/items', { id: where.item.id })
+
+            if (queryData.isEmpty) {
+              console.error('where query should not be empty')
+
+              return $setDataValue('query/items', [], { id: where.item.id })
             }
 
-            if (!where.isEmpty) {
-              const queryData = $getDataValue('query/items', { id: where.item.id })
+            const query = []
 
-              if (queryData.isEmpty) {
-                console.error('where query should not be empty')
+            // update query widget list
+            for (let i = 0; i < queryData.item.length; i++) {
+              const item = queryData.item[i]
 
-                return $setDataValue('query/items', [], { id: where.item.id })
+              if (currentSection[item.widgetId]) {
+                query.push(item)
+
+                currentSection[item.widgetId] = false
               }
-
-              const query = []
-
-              // update query widget list
-              for (let i = 0; i < queryData.item.length; i++) {
-                const item = queryData.item[i]
-
-                if (currentSection[item.widgetId]) {
-                  query.push(item)
-
-                  currentSection[item.widgetId] = false
-                }
-              }
-
-              $setDataValue('query/items', query, {
-                id: where.item.id
-              })
             }
 
-            if (!sort.isEmpty) {
-              const queryData = $getDataValue('query/items', { id: sort.item.id })
+            $setDataValue('query/items', query, {
+              id: where.item.id
+            })
+          }
 
-              if (queryData.isEmpty) {
-                console.error('sort query should not be empty')
+          if (!sort.isEmpty) {
+            const queryData = $getDataValue('query/items', { id: sort.item.id })
 
-                return $setDataValue('query/items', [], { id: sort.item.id })
-              }
+            if (queryData.isEmpty) {
+              console.error('sort query should not be empty')
 
-              const query = []
-
-              // update query widget list
-              for (let i = 0; i < queryData.item.length; i++) {
-                const item = queryData.item[i]
-
-                if (currentSection[item.widgetId]) {
-                  query.push(item)
-
-                  currentSection[item.widgetId] = false
-                }
-              }
-
-              $setDataValue('query/items', query, {
-                id: sort.item.id
-              })
+              return $setDataValue('query/items', [], { id: sort.item.id })
             }
+
+            const query = []
+
+            // update query widget list
+            for (let i = 0; i < queryData.item.length; i++) {
+              const item = queryData.item[i]
+
+              if (currentSection[item.widgetId]) {
+                query.push(item)
+
+                currentSection[item.widgetId] = false
+              }
+            }
+
+            $setDataValue('query/items', query, {
+              id: sort.item.id
+            })
           }
         }
       })

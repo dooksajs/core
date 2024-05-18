@@ -235,11 +235,8 @@ const view = createPlugin({
       $addDataListener('view/items', {
         on: 'delete',
         id: sourceId,
-        handler: {
-          id: sourceId,
-          value: () => {
-            $deleteDataValue('view/items', sourceId)
-          }
+        handler: () => {
+          $deleteDataValue('view/items', sourceId)
         }
       })
     },

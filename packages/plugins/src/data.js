@@ -1302,11 +1302,10 @@ const data = createPlugin({
      * @param {string} [param.id] - Data collection Id
      * @param {number} [param.priority]
      * @param {boolean} [param.force=false] - Force the event to fire
-     * @param {Object} param.handler
-     * @param {string} param.handler.id - Id of handler
-     * @param {Function|string} param.handler.value - Function or action that will be called
+     * @param {string} [param.handlerId] - Id of handler
+     * @param {Function} param.handler
      */
-    $addDataListener (name, { on, id, priority, force = false, handler }) {
+    $addDataListener (name, { on, id, priority, force = false, handler, handlerId = dataGenerateId() }) {
       const listeners = getDataListeners(name, on, id)
 
       // set default listener value
@@ -1330,41 +1329,37 @@ const data = createPlugin({
 
       const handlers = dataHandlers[on][name]
 
-      let handlerId = handler.id
-
       if (id) {
-        handlerId = id + handler.id
+        handlerId = id + handlerId
       }
 
       // add listener
-      if (!handlers[handlerId]) {
-        if (!isNaN(priority)) {
-          listeners.items.push({
-            force,
-            value: handler.value
-          })
-          handlers[handlerId] = handler.value
-
-          return
-        }
-
-        listeners.priority.push({
+      if (!isNaN(priority)) {
+        listeners.items.push({
           force,
-          priority,
-          value: handler.value
+          value: handler
         })
+        handlers[handlerId] = handler
 
-        // sort by acceding order
-        listeners.priority.sort((a, b) => a.priority - b.priority)
-
-        handlers[handlerId] = handler.value
+        return
       }
+
+      listeners.priority.push({
+        force,
+        priority,
+        value: handler
+      })
+
+      // sort by acceding order
+      listeners.priority.sort((a, b) => a.priority - b.priority)
+
+      handlers[handlerId] = handler
     },
     /**
      * Delete data listeners
      * @param {string} name - Data collection name
      * @param {Object} item
-     * @param {string} item.on - Data event name
+     * @param {'update'|'delete'} item.on - Data event name
      * @param {string} [item.id] - Data collection Id
      * @param {string} item.handlerId - The reference handler Id that will be removed
      */

@@ -339,10 +339,7 @@ function initialize (appSetup, appActions, appComponents, appDataModels, use, ap
         $addDataListener('section/items', {
           on: 'update',
           id,
-          handler: {
-            id: viewId,
-            value: handlerValue
-          }
+          handler: handlerValue
         })
 
         // update widget section attachment
@@ -351,12 +348,9 @@ function initialize (appSetup, appActions, appComponents, appDataModels, use, ap
           id,
           force: true,
           priority: 0,
-          handler: {
-            id: viewId,
-            value: ({ item }) => {
-              for (let i = 0; i < item.length; i++) {
-                $setDataValue('widget/attached', id, { id: item[i] })
-              }
+          handler: ({ item }) => {
+            for (let i = 0; i < item.length; i++) {
+              $setDataValue('widget/attached', id, { id: item[i] })
             }
           }
         })
@@ -364,19 +358,13 @@ function initialize (appSetup, appActions, appComponents, appDataModels, use, ap
         $addDataListener('section/query', {
           on: 'update',
           id,
-          handler: {
-            id: viewId,
-            value: handlerValue
-          }
+          handler: handlerValue
         })
 
         $addDataListener('section/query', {
           on: 'delete',
           id,
-          handler: {
-            id: viewId,
-            value: handlerValue
-          }
+          handler: handlerValue
         })
       }
     }

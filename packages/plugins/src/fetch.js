@@ -66,10 +66,7 @@ function setRequestData (data, id) {
     $addDataListener(dataItem.collection, {
       on: 'delete',
       id: dataItem.id,
-      handler: {
-        id,
-        value: deleteCache
-      }
+      handler: deleteCache
     })
   }
 

@@ -29,23 +29,19 @@ export default createPlugin({
         const id = dataGenerateId()
         $addDataListener('development/rebuildClient', {
           on: 'update',
-          handler: {
-            id,
-            value: (data) => {
-              response.write('event: rebuild-client\n')
-              response.write('data: ' + JSON.stringify(data) + '\n\n')
-            }
+          handlerId: id,
+          handler: (data) => {
+            response.write('event: rebuild-client\n')
+            response.write('data: ' + JSON.stringify(data) + '\n\n')
           }
         })
 
         $addDataListener('development/rebuildServer', {
           on: 'update',
-          handler: {
-            id,
-            value: (data) => {
-              response.write('event: rebuild-client\n')
-              response.write('data: ' + JSON.stringify(data) + '\n\n')
-            }
+          handlerId: id,
+          handler: (data) => {
+            response.write('event: rebuild-client\n')
+            response.write('data: ' + JSON.stringify(data) + '\n\n')
           }
         })
 

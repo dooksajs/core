@@ -482,30 +482,27 @@ const template = createPlugin({
             $addDataListener('content/items', {
               on: 'delete',
               id: content.id,
-              handler: {
-                id: queryIndex.id,
-                value: () => {
-                  const queryData = $getDataValue('query/items', {
-                    id: queryIndex.id,
-                    clone: true
-                  })
+              handler: () => {
+                const queryData = $getDataValue('query/items', {
+                  id: queryIndex.id,
+                  clone: true
+                })
 
-                  if (queryData.isEmpty) {
-                    return
+                if (queryData.isEmpty) {
+                  return
+                }
+
+                const query = queryData.item.filter(item => {
+                  if (item.contentId !== contentId) {
+                    return true
                   }
 
-                  const query = queryData.item.filter(item => {
-                    if (item.contentId !== contentId) {
-                      return true
-                    }
+                  return false
+                })
 
-                    return false
-                  })
-
-                  $setDataValue('query/items', query, {
-                    id: queryData.id
-                  })
-                }
+                $setDataValue('query/items', query, {
+                  id: queryData.id
+                })
               }
             })
           }
