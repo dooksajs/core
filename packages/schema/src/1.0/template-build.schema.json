@@ -4,7 +4,7 @@
   "title": "Build template",
   "type": "object",
   "properties": {
-    "metadata": {
+    "templates": {
       "type": "array",
       "items": {
         "type": "object",
@@ -21,8 +21,29 @@
           "icon": {
             "type": "string",
             "description": "Any icon name from https://icon-sets.iconify.design/, e.g. mdi:fire"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "children": {
+            "description": "Allowed child templates",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "styles": {
+            "description": "CSS variable overwrites",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
-        }
+        },
+        "required": ["id"]
       }
     },
     "translations": {
