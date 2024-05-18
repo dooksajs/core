@@ -1,5 +1,5 @@
 import createPlugin from '@dooksa/create-plugin'
-import { objectHash } from '@dooksa/utils'
+import { objectHash, deepClone } from '@dooksa/utils'
 import { $fetchById, dataGenerateId, $getDataValue, $setDataValue, $addDataListener } from './index.js'
 
 
