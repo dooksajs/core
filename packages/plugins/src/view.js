@@ -65,7 +65,7 @@ const setValueBy = {
 
 /**
    * Set attributes to element
-   * @param {viewId} viewId - view node id
+   * @param {HTMLElement} element - view node id
    * @param {Array.<string[]>} attributes
    * @private
    */
@@ -79,7 +79,7 @@ function setAttributes (element, attributes) {
 
 /**
    * Unmount node
-   * @param {viewId} viewId - view node id
+   * @param {string} viewId - view node id
    * @private
    */
 function unmount (viewId) {
@@ -206,8 +206,8 @@ const view = createPlugin({
     /**
      * Adds a node to the end of the list of children of a specified parent node
      * @param {Object} item
-     * @param {viewId} item.targetId - parentViewId view node id
-     * @param {viewId} item.sourceId - Child view node id
+     * @param {string} item.targetId - parentViewId view node id
+     * @param {string} item.sourceId - Child view node id
      * @param {string} item.widgetId - Widget id
      * @param {string} item.widgetMode - Widget mode
      * @param {'append'|'after'|'before'|"replace"} [item.type] - type of insert method
@@ -260,7 +260,8 @@ const view = createPlugin({
     },
     /**
      * Get value from node item
-     * @param {viewId} viewId - view node id
+     * @param {Object} param
+     * @param {string} param.id - view node id
      * @returns {string|Object} - Either a string or Object based on the components getter
      */
     getValue ({ id }) {
