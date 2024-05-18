@@ -7,14 +7,7 @@
       "type": "object",
       "properties": {
         "id": {
-          "anyOf": [
-            {
-              "$ref": "./base.schema.json#/$defs/actionName"
-            },
-            {
-              "$ref": "./base.schema.json#/$defs/action"
-            }
-          ]
+          "$ref": "./base.schema.json#/$defs/string"
         },
         "context": {
           "$ref": "./base.schema.json#/$defs/action"
@@ -373,6 +366,12 @@
             },
             {
               "type": "boolean"
+            },
+            {
+              "type": "array",
+              "items": {
+                "$ref": "./base.schema.json#/$defs/action"
+              }
             }
           ]
         },
