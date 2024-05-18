@@ -126,7 +126,7 @@
               "to": 0
             }],
             "then": [2, 3 ,4],
-            "else": []
+            "else": [5, 6]
           }
         },
         { 
@@ -163,7 +163,33 @@
               "get_contextValue": "viewId"
             }
           }
-        }     
+        },
+        {
+          "set_dataValue": {
+            "name": "section/items",
+            "value": {
+              "template_create": {
+                "id": "h1"
+              }
+            },
+            "options": {
+              "id": {
+                "get_contextValue": "sectionId"
+              },
+              "update": {
+                "method": "push"
+              }
+            }
+          }
+        },
+        {
+          "action_dispatch": {
+            "id": "bootstrap-edit-section",
+            "context": {
+              "get_contextValue": "$null"
+            }
+          }
+        }
       ]
     },
     {
