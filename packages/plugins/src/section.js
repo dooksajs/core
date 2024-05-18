@@ -235,7 +235,7 @@ const section = createPlugin({
             }
           })
 
-          if (!previousView.expandIsEmpty) {
+          if (!previousView.isExpandEmpty) {
             previousWidgets[nextIndex] = []
 
             for (let i = 0; i < previousView.expand.length; i++) {
