@@ -1,0 +1,70 @@
+{
+  "templates": [
+    {
+      "id": "h1",
+      "name": "Heading level 1",
+      "description": "Section level heading",
+      "children": [
+        "ds-text"
+      ],
+      "styles": [
+        "heading-color"
+      ]
+    },
+    {
+      "id": "h2",
+      "name": "Heading level 2",
+      "description": "Section level heading",
+      "children": [
+        "ds-text"
+      ],
+      "styles": [
+        "heading-color"
+      ]
+    },
+    {
+      "id": "h3",
+      "name": "Heading level 3",
+      "description": "Section level heading",
+      "children": [
+        "ds-text"
+      ],
+      "styles": [
+        "heading-color"
+      ]
+    },
+    {
+      "id": "h4",
+      "name": "Heading level 4",
+      "description": "Section level heading",
+      "children": [
+        "ds-text"
+      ],
+      "styles": [
+        "heading-color"
+      ]
+    },
+    {
+      "id": "h5",
+      "name": "Heading level 5",
+      "description": "Section level heading",
+      "children": [
+        "ds-text"
+      ],
+      "styles": [
+        "heading-color"
+      ]
+    },
+    {
+      "id": "h6",
+      "name": "Heading level 6",
+      "description": "Section level heading",
+      "children": [
+        "ds-text"
+      ],
+      "styles": [
+        "heading-color"
+      ]
+    }
+  ]
+}
