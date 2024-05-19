@@ -174,5 +174,105 @@
       "name": "card-group-margin",
       "type": "lengthUnit"
     }
+  ],
+  "actions": [
+    {
+      "id": "card-add-to-section",
+      "name": "Add card to section",
+      "sequence": [
+        {
+          "template_create": {
+            "id": "card"
+          }
+        },
+        {
+          "template_create": {
+            "id": "card-body"
+          }
+        },
+        {
+          "set_dataValue": {
+            "name": "section/items",
+            "value": {
+              "get_sequenceValue": "0"
+            },
+            "options": {
+              "id": {
+                "get_contextValue": "sectionId"
+              },
+              "update": {
+                "method": "push"
+              }
+            }
+          }
+        },
+        {
+          "set_dataValue": {
+            "name": "section/items",
+            "value": [
+              {
+                "template_create": {
+                  "id": "card-img-top"
+                }
+              },
+              {
+                "get_sequenceValue": "1"
+              }
+            ],
+            "options": {
+              "id": {
+                "get_dataValue": {
+                  "name": "widget/sections",
+                  "query": {
+                    "id": {
+                      "get_sequenceValue": "0"
+                    },
+                    "options": {
+                      "position": 0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "set_dataValue": {
+            "name": "section/items",
+            "value": [
+              {
+                "template_create": {
+                  "id": "card-title"
+                }
+              },
+              {
+                "template_create": {
+                  "id": "card-subtitle"
+                }
+              },{
+                "template_create": {
+                  "id": "card-title"
+                }
+              }
+            ],
+            "options": {
+              "id": {
+                "get_dataValue": {
+                  "name": "widget/sections",
+                  "query": {
+                    "id": {
+                      "get_sequenceValue": "1"
+                    },
+                    "options": {
+                      "position": 0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   ]
 }
