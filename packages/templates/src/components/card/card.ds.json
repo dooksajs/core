@@ -1,18 +1,18 @@
 {
   "templates": [
     {
-      "id": "fragment-card",
+      "id": "card",
       "name": "Card",
       "description": "A card is a flexible and extensible content container.",
       "icon": "mdi:card-plus",
-      "tags": ["fragment", "card"],
+      "tags": ["component", "card"],
       "children": [
-        "fragment-card-body",
-        "fragment-card-img-top",
-        "fragment-card-img-bottom",
-        "fragment-list-group-flush",
-        "fragment-card-header",
-        "fragment-card-footer"
+        "card-body",
+        "card-img-top",
+        "card-img-bottom",
+        "list-group-flush",
+        "card-header",
+        "card-footer"
       ],
       "styles": [
         "card-spacer-y",
@@ -37,63 +37,63 @@
       ]
     },
     {
-      "id": "fragment-card-body",
+      "id": "card-body",
       "name": "Card body",
       "description": "The content area of a card",
       "icon": "mdi:page-layout-body",
-      "tags": ["fragment", "card"],
+      "tags": ["component", "card"],
       "children": [
-        "fragment-card-title",
-        "fragment-card-subtitle",
-        "fragment-card-text"
+        "card-title",
+        "card-subtitle",
+        "card-text"
       ]
     },
     {
-      "id": "fragment-card-header-text",
+      "id": "card-header-text",
       "name": "Card header",
       "description": "Add header with text to card.",
       "icon": "mdi:page-layout-header",
-      "tags": ["fragment", "card"],
+      "tags": ["component", "card"],
       "children": ["ds-text"]
     },
     {
-      "id": "fragment-card-header-heading",
+      "id": "card-header-heading",
       "name": "Card header",
       "description": "Add header with heading within a card.",
       "icon": "mdi:page-layout-header",
-      "tags": ["fragment", "card"],
+      "tags": ["component", "card"],
       "children": ["ds-text"]
     },
     {
-      "id": "fragment-card-footer",
+      "id": "card-footer",
       "name": "Card footer",
       "description": "Add footer within a card.",
       "icon": "mdi:page-layout-footer",
-      "tags": ["fragment", "card"],
+      "tags": ["component", "card"],
       "children": ["ds-text"]
     },
     {
-      "id": "fragment-card-title",
+      "id": "card-title",
       "name": "Card title",
       "description": "Card title",
       "icon": "mdi:format-title",
-      "tags": ["fragment", "card"],
+      "tags": ["component", "card"],
       "children": ["ds-text"]
     },
     {
-      "id": "fragment-card-subtitle",
+      "id": "card-subtitle",
       "name": "Card subtitle",
       "description": "Card subtitle",
       "icon": "mdi:format-title",
-      "tags": ["fragment", "card"],
+      "tags": ["component", "card"],
       "children": ["ds-text"]
     },
     {
-      "id": "fragment-card-text",
+      "id": "card-text",
       "name": "Card text",
       "description": "Card text",
       "icon": "mdi:format-paragraph",
-      "tags": ["fragment", "card"],
+      "tags": ["component", "card"],
       "children": ["ds-text"]
     }
   ],
