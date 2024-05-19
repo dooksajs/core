@@ -34,7 +34,7 @@ function getItems (layoutId, widgetId, widgetMode) {
     id: layoutId
   }).item || {}
 
-  const parentViewItems = $getDataValue('widget/parentViews', {
+  const rootViewItems = $getDataValue('widget/rootViews', {
     id: widgetId,
     suffixId: widgetMode
   })
@@ -49,7 +49,7 @@ function getItems (layoutId, widgetId, widgetMode) {
     events,
     listeners,
     viewItems: viewItems.item || [],
-    parentViewItems: parentViewItems.item || []
+    rootViewItems: rootViewItems.item || []
   }
 }
 
@@ -224,14 +224,14 @@ const layout = createPlugin({
         events,
         listeners,
         viewItems,
-        parentViewItems
+        rootViewItems
       } = getItems(layoutId, widgetId, widgetMode)
       const layoutItems = []
 
-      // attach existing nodes
-      if (parentViewItems.length) {
-        for (let i = 0; i < parentViewItems.length; i++) {
-          const sourceId = parentViewItems[i]
+      // attach existing root nodes
+      if (rootViewItems.length) {
+        for (let i = 0; i < rootViewItems.length; i++) {
+          const sourceId = rootViewItems[i]
 
           viewInsert({
             sourceId,
@@ -250,7 +250,7 @@ const layout = createPlugin({
         const item = {}
         const isSection = !!Number.isInteger(element.sectionIndex)
         let event = events[i] || []
-        let parentViewId = viewId
+        let rootViewId = viewId
         let sectionItemId = sectionId
         let isChild = true
 
@@ -259,7 +259,7 @@ const layout = createPlugin({
         if (Number.isInteger(element.parentIndex)) {
           const layoutItem = layoutItems[element.parentIndex]
 
-          parentViewId = layoutItem.viewId
+          rootViewId = layoutItem.viewId
 
           if (layoutItem.sectionId) {
             sectionItemId = layoutItem.sectionId
@@ -288,7 +288,7 @@ const layout = createPlugin({
         })
 
         if (!isChild) {
-          parentViewItems.push(childViewId)
+          rootViewItems.push(childViewId)
         }
 
         // Collect elements
@@ -373,7 +373,7 @@ const layout = createPlugin({
 
         viewInsert({
           sourceId: childViewId,
-          targetId: parentViewId,
+          targetId: rootViewId,
           widgetId,
           widgetMode
         })
@@ -384,7 +384,7 @@ const layout = createPlugin({
         suffixId: widgetMode
       })
 
-      $setDataValue('widget/parentViews', parentViewItems, {
+      $setDataValue('widget/rootViews', rootViewItems, {
         id: widgetId,
         suffixId: widgetMode
       })

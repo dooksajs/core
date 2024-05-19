@@ -47,7 +47,7 @@
         "widget/layouts",
         "widget/sections",
         "widget/views",
-        "widget/parentViews",
+        "widget/rootViews",
         "widget/templates"
       ]
     },

@@ -33,7 +33,7 @@ function updateByQuery (queryId, viewId, id, uniqueId, mode) {
   for (let i = 0; i < result.length; i++) {
     const item = result[i]
     const widgetId = item.widgetId
-    const widgetView = $getDataValue('widget/parentViews', {
+    const widgetView = $getDataValue('widget/rootViews', {
       id: widgetId,
       options: {
         expand: true
@@ -228,7 +228,7 @@ const section = createPlugin({
             widgetRemove(prevWidgetId)
           }
         } else {
-          const previousView = $getDataValue('widget/parentViews', {
+          const previousView = $getDataValue('widget/rootViews', {
             id: prevWidgetId,
             options: {
               expand: true

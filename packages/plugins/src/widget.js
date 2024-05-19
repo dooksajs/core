@@ -199,7 +199,7 @@ const widget = createPlugin({
       },
       suffixId: 'default'
     },
-    parentViews: {
+    rootViews: {
       type: 'collection',
       items: {
         type: 'array',
@@ -242,7 +242,7 @@ const widget = createPlugin({
       if (!view.isEmpty) {
         // remove view relations
         $deleteDataValue('widget/views', id)
-        $deleteDataValue('widget/parentViews', id)
+        $deleteDataValue('widget/rootViews', id)
 
         for (let i = 0; i < view.item.length; i++) {
           const viewId = view.item[i]

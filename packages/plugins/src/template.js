@@ -409,6 +409,7 @@ const template = createPlugin({
 
         widgetItems.push(widget)
 
+        // Set root widget id
         if (!widgetId) {
           widgetId = widget.id
           actionRefs['widget:id'] = widgetId
