@@ -163,7 +163,9 @@ const parseHTML = (
         // set component id
         component.id = componentId
 
-        if ($component(component.id)) {
+        const componentContent = $component(component.id)
+
+        if (componentContent && componentContent.hasOwnProperty('content')) {
           item.contentIndex = content.length
           content.push(node)
         }
