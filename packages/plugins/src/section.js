@@ -210,6 +210,9 @@ const section = createPlugin({
       const previousWidgets = {}
       const nextItems = section.item
       const prevItems = section.previous ? section.previous._item : []
+      const sectionNode = $getDataValue('view/items', {
+        id: viewId
+      })
 
       for (let i = 0; i < prevItems.length; i++) {
         const prevWidgetId = prevItems[i]
@@ -226,6 +229,20 @@ const section = createPlugin({
           // complete remove widget since it belongs to no section
           if (attachedSection.item === section.id) {
             widgetRemove(prevWidgetId)
+          } else {
+            const rootViews = $getDataValue('widget/rootViews', { id: prevWidgetId })
+
+            if (!rootViews.isEmpty) {
+              for (let index = 0; index < rootViews.item.length; index++) {
+                const id = rootViews.item[index]
+                const viewNode = $getDataValue('view/items', { id })
+
+                // detach from current section
+                if (viewNode.item.parentElement === sectionNode.item) {
+                  viewNode.item.remove()
+                }
+              }
+            }
           }
         } else {
           const previousView = $getDataValue('widget/rootViews', {
@@ -248,10 +265,6 @@ const section = createPlugin({
           }
         }
       }
-
-      const sectionNode = $getDataValue('view/items', {
-        id: viewId
-      })
 
       for (let i = 0; i < nextItems.length; i++) {
         const previousWidget = previousWidgets[i]
