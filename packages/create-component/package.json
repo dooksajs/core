@@ -1,0 +1,10 @@
+{
+  "name": "@dooksa/create-component",
+  "version": "0.0.0",
+  "description": "Create Dooksa components",
+  "author": "Thomas David <tom@mightysmile.com>",
+  "repository": "git@github.com:dooksajs/dooksa.git",
+  "license": "MPL-2.0",
+  "type": "module",
+  "main": "src/index.js"
+}
