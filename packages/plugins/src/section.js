@@ -111,6 +111,10 @@ const section = createPlugin({
     },
     view: {
       type: 'collection',
+      prefixId () {
+        return $getDataValue('widget/uniqueId').item
+      },
+      suffixId: 'default',
       items: {
         type: 'string',
         relation: 'view/items'
