@@ -5,18 +5,20 @@
  * @template {Object.<string, function>} A
  * @template {Object.<string, DataSchema>} M
  * @template {Object.<string, *>} D
+ * @template {Object.<string, function>} F
+ * @template {function} S
  * @param {Object} plugin
  * @param {string} plugin.name - Plugin name
  * @param {Object[]} [plugin.dependencies] - Dependent plugin
- * @param {Component[]} [plugin.components] - Components
  * @param {M} [plugin.models] - Data model for the plugin
  * @param {D} [plugin.data] - Private data shared between actions and setup functions
+ * @param {F} [plugin.methods] - Private methods shared between actions and setup functions
  * @param {A} [plugin.actions] - Global actions
- * @param {Function} [plugin.setup] - Setup m
+ * @param {S} [plugin.setup] - Setup m
  */
 function createPlugin (plugin) {
   /**
-   * @type {Object.<string,(D[keyof D]|A[keyof A])>}
+   * @type {Object.<string,(D[keyof D]|A[keyof A]|F[keyof F])>}
    */
   const context = {}
 
@@ -28,6 +30,20 @@ function createPlugin (plugin) {
         context[key] = data
 
         plugin.data[key] = data
+      }
+    }
+  }
+
+  // assign action scope
+  if (plugin.methods) {
+    for (const key in plugin.methods) {
+      if (Object.hasOwnProperty.call(plugin.methods, key)) {
+        const method = plugin.methods[key]
+
+        context[key] = method
+
+        /** @this {context} */
+        plugin.methods[key] = method.bind(context)
       }
     }
   }
@@ -52,7 +68,12 @@ function createPlugin (plugin) {
     plugin.setup = plugin.setup.bind(context)
   }
 
-  return plugin
+  return {
+    name: plugin.name,
+    models: plugin.models,
+    setup: plugin.setup,
+    actions: plugin.actions
+  }
 }
 
 export default createPlugin
