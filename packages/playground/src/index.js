@@ -1,13 +1,12 @@
-import app from '../../server/src/index.js'
-import { development, templateBuild } from '../../server-plugins/src/index.js'
+import app from '@dooksa/server'
+import { development } from '@dooksa/server-plugins'
 import { $setDataValue } from '@dooksa/plugins'
 import esbuild from 'esbuild'
 import chokidar from 'chokidar'
 import logger from './logger.js'
 import { resolve, extname } from 'node:path'
 
-app.use(development)
-app.use(templateBuild)
+app.usePlugin(development)
 
 // setup server
 app.setup({
