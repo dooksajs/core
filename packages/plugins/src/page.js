@@ -97,7 +97,13 @@ const page = createPlugin({
 
         if (item.collection === 'section/items') {
           this.appendExpand({
-            collection: 'section/templates',
+            collection: 'section/query',
+            id: item.id,
+            data,
+            expandExclude
+          })
+          this.appendExpand({
+            collection: 'section/mode',
             id: item.id,
             data,
             expandExclude
