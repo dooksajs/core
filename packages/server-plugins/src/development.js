@@ -15,7 +15,6 @@ export default createPlugin({
   setup () {
     // sse rebuild notification
     $setRoute('/esbuild', {
-      method: 'get',
       handlers: [(request, response) => {
         response.writeHead(200, {
           'Content-Type': 'text/event-stream',
