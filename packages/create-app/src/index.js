@@ -1,17 +1,14 @@
 import { parseSchema, isServer } from '@dooksa/utils'
 import {
-  templateCreate,
   sectionAppend,
-  sectionUpdate,
-  $addDataListener,
   $getDataValue,
   $setDataValue,
   routerCurrentId,
   lazyLoader
 } from '@dooksa/plugins'
 
-function appendPlugin (appPlugins, appSetup, appActions, appComponents, appDataModels) {
-  return function use (plugin) {
+function appendPlugin (appPlugins, appSetup, appActions, appDataModels) {
+  return (plugin) => {
     // check if plugin exists
     if (appPlugins.indexOf(plugin) !== -1) {
       const { name, setup } = plugin
@@ -24,7 +21,7 @@ function appendPlugin (appPlugins, appSetup, appActions, appComponents, appDataM
 
     // store plugin
     appPlugins.push(plugin)
-    const { name, actions, models, dependencies, setup, components } = plugin
+    const { name, actions, models, dependencies, setup } = plugin
 
     if (setup) {
       appSetup.push({
@@ -90,26 +87,12 @@ function appendPlugin (appPlugins, appSetup, appActions, appComponents, appDataM
         }
       }
     }
+  }
+}
 
-    if (components) {
-      for (let i = 0; i < plugin.components.length; i++) {
-        const component = plugin.components[i]
-        const id = component.name
-
-        appComponents.items[id] = component
-        appComponents.items[id].plugin = name
-
-        if (component.content) {
-          if (component.content.get) {
-            appComponents.getters[id] = component.content.get
-          }
-
-          if (component.content.set) {
-            appComponents.setters[id] = component.content.set
-          }
-        }
-      }
-    }
+function appendComponent (appComponents) {
+  return (component) => {
+    appComponents[component.id] = component
   }
 }
 
@@ -228,15 +211,10 @@ function initialize (appSetup, appActions, appComponents, appDataModels, use, ap
       }
     }
 
-    options.component = {
-      component: (name) => {
-        return appComponents.items[name]
-      },
-      componentGetter: (name) => {
-        return appComponents.getters[name]
-      },
-      componentSetter: (name) => {
-        return appComponents.setters[name]
+    // setup view components
+    options.view = {
+      components: (id) => {
+        return appComponents[id]
       }
     }
 
@@ -273,6 +251,7 @@ function initialize (appSetup, appActions, appComponents, appDataModels, use, ap
     // This is referring a global var
     // @ts-ignore
     const data = __ds__
+
     // set data
     for (let i = 0; i < data.item.length; i++) {
       const item = data.item[i]
@@ -284,88 +263,17 @@ function initialize (appSetup, appActions, appComponents, appDataModels, use, ap
       })
     }
 
-    const section = $getDataValue('section/items', {
+    const pageSections = $getDataValue('page/items', {
       id: currentPathId
     })
 
     // render page
-    if (!section.isEmpty) {
-      return sectionAppend({ id: section.id })
-    }
+    if (!pageSections.isEmpty) {
+      const rootViewId = $getDataValue('view/rootViewId')
+      const sections = pageSections.item
 
-    // render templates
-    for (let i = 0; i < data.templates.length; i++) {
-      const templateId = data.templates[i]
-      const templateResult = templateCreate({ id: templateId })
-
-      if (templateResult instanceof Promise) {
-        templateResult
-          .then(widgetId => {
-            $setDataValue('section/items', widgetId, {
-              id: currentPathId,
-              suffixId: 'default',
-              update: {
-                method: 'push'
-              }
-            })
-          })
-      } else {
-        $setDataValue('section/items', templateResult, {
-          id: currentPathId,
-          suffixId: 'default',
-          update: {
-            method: 'push'
-          }
-        })
-      }
-
-
-      const section = $getDataValue('section/items', {
-        id: currentPathId
-      })
-
-      if (!section.isEmpty) {
-        const id = section.id
-
-
-        sectionAppend({ id })
-
-        const viewId = $getDataValue('view/rootViewId').item
-        const handlerValue = () => {
-          sectionUpdate({ id, viewId })
-        }
-
-        // update section elements
-        $addDataListener('section/items', {
-          on: 'update',
-          id,
-          handler: handlerValue
-        })
-
-        // update widget section attachment
-        $addDataListener('section/items', {
-          on: 'update',
-          id,
-          force: true,
-          priority: 0,
-          handler: ({ item }) => {
-            for (let i = 0; i < item.length; i++) {
-              $setDataValue('widget/attached', id, { id: item[i] })
-            }
-          }
-        })
-
-        $addDataListener('section/query', {
-          on: 'update',
-          id,
-          handler: handlerValue
-        })
-
-        $addDataListener('section/query', {
-          on: 'delete',
-          id,
-          handler: handlerValue
-        })
+      for (let i = 0; i < sections.length; i++) {
+        sectionAppend({ viewId: rootViewId.item, id: sections[i] })
       }
     }
   }
@@ -373,23 +281,20 @@ function initialize (appSetup, appActions, appComponents, appDataModels, use, ap
 
 /**
  * Create Dooksa app
- * @param {Array} plugins
+ * @param {Object} plugins
  */
-function createApp (plugins) {
+function createApp ({ plugins = [], components = [] } = {}) {
   const appPlugins = []
   const appSetup = []
   const appActions = {}
-  const appComponents = {
-    items: {},
-    getters: {},
-    setters: {}
-  }
+  const appComponents = {}
   const appDataModels = {
     values: {},
     schema: []
   }
   let appStartServer
-  const use = appendPlugin(appPlugins, appSetup, appActions, appComponents, appDataModels)
+  const usePlugin = appendPlugin(appPlugins, appSetup, appActions, appDataModels)
+  const useComponent = appendComponent(appComponents)
 
   for (let i = 0; i < plugins.length; i++) {
     const plugin = plugins[i]
@@ -398,12 +303,19 @@ function createApp (plugins) {
       appStartServer = plugin.actions.start
     }
 
-    use(plugin)
+    usePlugin(plugin)
+  }
+
+  for (let i = 0; i < components.length; i++) {
+    const component = components[i]
+
+    useComponent(component)
   }
 
   return {
-    use,
-    setup: initialize(appSetup, appActions, appComponents, appDataModels, use, appStartServer)
+    usePlugin,
+    useComponent,
+    setup: initialize(appSetup, appActions, appComponents, appDataModels, usePlugin, appStartServer)
   }
 }
 
