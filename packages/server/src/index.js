@@ -3,7 +3,6 @@ import { data } from '@dooksa/plugins'
 import {
   $http,
   action,
-  component,
   database,
   event,
   layout,
@@ -16,19 +15,20 @@ import {
   widget
 } from '../../server-plugins/src/index.js'
 
-export default createApp([
-  data,
-  middleware,
-  $http,
-  user,
-  component,
-  action,
-  database,
-  event,
-  layout,
-  page,
-  section,
-  template,
-  theme,
-  widget
-])
+export default createApp({
+  plugins: [
+    data,
+    middleware,
+    $http,
+    user,
+    action,
+    database,
+    event,
+    layout,
+    page,
+    section,
+    template,
+    theme,
+    widget
+  ]
+})
