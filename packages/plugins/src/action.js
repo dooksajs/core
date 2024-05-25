@@ -2,6 +2,7 @@ import createPlugin from '@dooksa/create-plugin'
 import { deepClone } from '@dooksa/utils'
 import { operatorCompare, operatorEval } from './operator.js'
 import { dataGenerateId, $getDataValue, $setDataValue, $deleteDataValue } from './data.js'
+import { $fetchById } from './fetch.js'
 
 /**
  * @typedef {import('../../global-typedef.js').SetDataOptions} SetDataOptions
@@ -546,22 +547,20 @@ const action = createPlugin({
         const actions = $getDataValue('action/items', { id, options: { expand: true } })
 
         if (actions.isEmpty) {
-          return $action('database/getById', {
+          return $fetchById({
             collection: 'action',
-            id,
+            id: [id],
             expand: true
-          }, {
-            onSuccess: (data) => {
+          })
+            .then(data => {
               if (data.isEmpty) {
                 throw new Error('No action found: ' + id)
               }
-
               this.dispatch({ id, context, payload })
-            },
-            onError: (error) => {
-              reject(error)
-            }
-          })
+                .then(result => resolve(result))
+                .then(error => reject(error))
+            })
+            .catch(error => reject(error))
         }
 
         let blocks = {}
