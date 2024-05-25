@@ -6,22 +6,30 @@
  * @returns {Object|Array}
  */
 function deepClone (target, source, freeze) {
-  for (const prop in source) {
-    if (Object.hasOwnProperty.call(source, prop)) {
-      const nextSource = source[prop]
+  if (typeof source === 'object') {
+    for (const prop in source) {
+      if (Object.hasOwnProperty.call(source, prop)) {
+        const nextSource = source[prop]
 
-      if (Array.isArray(nextSource)) {
-        target[prop] = deepClone([], nextSource)
-      } else if (typeof nextSource === 'object' && nextSource !== null) {
-        target[prop] = deepClone({}, nextSource)
-      } else if (typeof nextSource === 'number') {
-        target[prop] = new Number(nextSource).valueOf()
-      } else if (typeof nextSource === 'string') {
-        target[prop] = new String(nextSource).valueOf()
-      } else {
-        target[prop] = nextSource
+        if (Array.isArray(nextSource)) {
+          target[prop] = deepClone([], nextSource)
+        } else if (typeof nextSource === 'object' && nextSource !== null) {
+          target[prop] = deepClone({}, nextSource)
+        } else if (typeof nextSource === 'number') {
+          target[prop] = new Number(nextSource).valueOf()
+        } else if (typeof nextSource === 'string') {
+          target[prop] = new String(nextSource).valueOf()
+        } else {
+          target[prop] = nextSource
+        }
       }
     }
+  } else if (typeof source === 'number') {
+    target = new Number(source).valueOf()
+  } else if (typeof source === 'string') {
+    target = new String(source).valueOf()
+  } else {
+    target = source
   }
 
   if (freeze && typeof target === 'object') {
