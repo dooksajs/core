@@ -3,8 +3,9 @@ import { createHash } from 'node:crypto'
 import { page, pageGetById, $getDataValue, $setDataValue } from '@dooksa/plugins'
 import { $seedDatabase, $setDatabaseValue } from './database.js'
 import { $setRoute } from './http.js'
+import { hash } from '@dooksa/utils'
 
-function hash (item) {
+function hashSHA (item) {
   const hash = createHash('sha256')
 
   return hash.update(item, 'utf-8').digest('base64')
@@ -20,7 +21,7 @@ function create ({ request, response }) {
   let csp = ''
 
   PROD: {
-    csp = "script-src 'sha256-" + hash(app) + "';style-src 'unsafe-inline';"
+    csp = "script-src 'sha256-" + hashSHA(app) + "';style-src 'unsafe-inline';"
   }
 
   DEV: {
@@ -63,7 +64,11 @@ const pageServer = createPlugin({
       suffix: '',
       handlers: [
         (request, response, next) => {
-          const pageData = pageGetById(request.path)
+          // create hash
+          hash.init()
+          const id = '_' + hash.update(request.path).digest('hex') + '_'
+
+          const pageData = pageGetById(id)
 
           if (pageData.isEmpty) {
             return response.sendStatus(404)
