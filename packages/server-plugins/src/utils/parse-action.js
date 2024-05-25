@@ -45,7 +45,7 @@ export default (source, availableMethods) => {
     }
     let node = source
 
-    if (depth !== action.path.length) {
+    if (depth > action.path.length) {
       let split = false
 
       // check if child values belong to current action
