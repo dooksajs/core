@@ -44,7 +44,10 @@ function createPlugin (plugin) {
 
   /** @type {PluginResult} */
   const results = {
-    name: plugin.name
+    name: plugin.name,
+    actions: plugin.actions,
+    models: plugin.models,
+    setup: plugin.setup
   }
 
   if (plugin.data) {
