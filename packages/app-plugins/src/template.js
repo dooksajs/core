@@ -334,7 +334,7 @@ const template = createPlugin({
      * @param {Object} [param.contentOptions={}] - Collection of content overwrites by matching a ref id
      * @param {Object} [param.widgetOptions={}] - Collection of widget overwrites by matching a ref id
      * @param {Function} [_callback] - Private callback that is called to resolve a fetched template
-     * @returns {(string|Promise)}
+     * @returns {(Object|Promise)}
      */
     create ({
       id,
@@ -460,6 +460,9 @@ const template = createPlugin({
 
             actionRefs[contentRef] = contentId
             actionRefs[contentRef + ':index'] = j
+            content[contentRef] = contentId
+          } else {
+            content[j] = contentId
           }
 
           if (queryIndex) {

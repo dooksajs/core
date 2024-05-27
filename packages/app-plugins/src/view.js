@@ -8,12 +8,10 @@ import {
   $setDataValue,
   $deleteDataValue,
   $addDataListener,
-  $component,
-  $componentGetter,
-  $componentSetter,
   $emit
 } from './index.js'
 
+let $components = () => {}
 const elementInsert = {
   append (target, source) {
     target.appendChild(source)
@@ -64,24 +62,10 @@ const setValueBy = {
 
 
 /**
-   * Set attributes to element
-   * @param {HTMLElement} element - view node id
-   * @param {Array.<string[]>} attributes
-   * @private
-   */
-function setAttributes (element, attributes) {
-  for (let i = 0; i < attributes.length; i++) {
-    const [name, value] = attributes[i]
-
-    element.setAttribute(name, value)
-  }
-}
-
-/**
-   * Unmount node
-   * @param {string} viewId - view node id
-   * @private
-   */
+ * Unmount node
+ * @param {string} viewId - view node id
+ * @private
+ */
 function unmount (viewId) {
   $emit('view/unmount', {
     id: viewId,
@@ -93,54 +77,54 @@ function unmount (viewId) {
 }
 
 function createNode ({
-  viewId,
-  componentId,
+  viewId = dataGenerateId(),
+  component,
   sectionId,
   widgetId
 }) {
-  let componentItem = $getDataValue('component/items', {
-    id: componentId
-  }).item
+  const _component = $components(component.id)
+  const node = _component.create(component.options, component.children)
 
-  if (!componentItem) {
-    return
+  if (node instanceof Promise) {
+    node
+      .then(node => {
+        setNode(node, viewId, sectionId, widgetId, component)
+      })
+      .catch(error => console.error(error))
+
+    return viewId
   }
 
-  viewId = viewId || dataGenerateId()
-  let element
+  setNode(node, viewId, sectionId, widgetId, component)
 
-  if (componentItem.id === 'text') {
-    element = document.createTextNode('')
-  } else {
-    element = document.createElement(componentItem.id)
+  return viewId
+}
 
-    DEV: {
-      element.dataset.viewId = viewId
-      element.dataset.sectionId = sectionId
-      element.dataset.widgetId = widgetId
-      element.dataset.componentId = componentId
+function setNode (node, viewId, sectionId, widgetId, component) {
+  DEV: {
+    if (node.dataset) {
+      node.dataset.viewId = viewId
+      node.dataset.sectionId = sectionId
+      node.dataset.widgetId = widgetId
+      node.dataset.componentId = component.id
     }
   }
 
-  element.viewId = viewId
-
-  /** @ISSUE unsafe is used because the schema doesn't support nodes */
+  /** @ISSUE unsafe is used because the schema doesn't support nodes (yet) */
   dataUnsafeSetData({
     name: 'view/items',
-    data: element,
+    data: node,
     options: {
       id: viewId
     }
   })
 
-  if (componentItem.attributes) {
-    setAttributes(element, componentItem.attributes)
-  }
-
-  const component = $component(componentItem.id)
+  $setDataValue('view/component', component.id, {
+    id: viewId
+  })
 
   // ISSUE: [DS-889] Only add events if in edit mode
-  if (component && component.events) {
+  if (component.events) {
     for (let i = 0; i < component.events.length; i++) {
       const event = component.events[i]
       const name = event.name || event
@@ -168,7 +152,7 @@ function createNode ({
         })
       }
 
-      element.addEventListener(name, handler)
+      node.addEventListener(name, handler)
 
       $setDataValue('event/handlers', handler, {
         id: viewId,
@@ -178,8 +162,6 @@ function createNode ({
       })
     }
   }
-
-  return viewId
 }
 
 const view = createPlugin({
@@ -195,6 +177,12 @@ const view = createPlugin({
         relation: 'content/items'
       }
     },
+    component: {
+      type: 'collection',
+      items: {
+        type: 'string'
+      }
+    },
     items: {
       type: 'collection',
       items: {
@@ -202,11 +190,14 @@ const view = createPlugin({
       }
     }
   },
+  data: {
+    components: () => {}
+  },
   actions: {
     /**
      * Adds a node to the end of the list of children of a specified parent node
      * @param {Object} item
-     * @param {string} item.targetId - parentViewId view node id
+     * @param {string} item.targetId - Parent view node id
      * @param {string} item.sourceId - Child view node id
      * @param {string} item.widgetId - Widget id
      * @param {string} item.widgetMode - Widget mode
@@ -219,6 +210,7 @@ const view = createPlugin({
       const source = $getDataValue('view/items', {
         id: sourceId
       })
+
       // attach node to target node
       elementInsert[type](target.item, source.item)
 
@@ -265,42 +257,15 @@ const view = createPlugin({
      * @returns {string|Object} - Either a string or Object based on the components getter
      */
     getValue ({ id }) {
-      const view = $getDataValue('view/items', {
-        id
-      })
+      const view = $getDataValue('view/items', { id })
 
       if (view.isEmpty) {
         throw Error('No view item found')
       }
 
-      const nodeName = view.item.nodeName.toLowerCase()
-      const getters = $componentGetter(nodeName)
+      const component = $getDataValue('view/component', { id })
 
-      if (getters) {
-        const node = view.item
-        const item = {
-          values: {}
-        }
-
-        // get node value
-        for (let i = 0; i < getters.length; i++) {
-          const getter = getters[i]
-          const result = getNodeValue(node, getter.type, getter.name, getter.token)
-          const property = getter.property
-
-          item.values[property] = result.value
-
-          if (getter.token) {
-            if (!item.tokens) {
-              item.tokens = {}
-            }
-
-            item.tokens[property] = result.token
-          }
-        }
-
-        return item
-      }
+      return component.getContent(view.item)
     },
     /**
      * Remove node from DOM
@@ -394,7 +359,7 @@ const view = createPlugin({
         throw Error('No view item found')
       }
 
-      let contentId = $getDataValue('view/content', {
+      const contentId = $getDataValue('view/content', {
         id: viewId
       })
 
@@ -402,10 +367,8 @@ const view = createPlugin({
         throw Error('No content attached to view item')
       }
 
-      contentId = contentId.item
-
       const content = $getDataValue('content/items', {
-        id: contentId
+        id: contentId.item
       })
 
       // exit if content is empty
@@ -413,60 +376,12 @@ const view = createPlugin({
         return
       }
 
-      const node = view.item
-      const nodeName = node.nodeName.toLowerCase()
-      $component(nodeName)
-      const setters = $componentSetter(nodeName)
+      const component = $getDataValue('view/component', { id: viewId })
 
-      if (setters) {
-        for (let i = 0; i < setters.length; i++) {
-          const setter = setters[i]
-          const values = content.item.values
-
-          if (setter.token && content.item.tokens[setter.property]) {
-            setValueBy.token(node, values, setter.name, setter.property, setter.type, viewId)
-
-            continue
-          }
-
-          setValueBy[setter.type](node, values, setter.name, setter.property)
-        }
-      }
-    },
-    /**
-     * Remove attribute to element
-     * @param {Object} param
-     * @param {string} param.viewId - Element id
-     * @param {string} param.name - Attribute name
-     * @param {string} param.value - Attribute value
-     */
-    removeAttribute ({ viewId, name, value }) {
-      const view = $getDataValue('view/items', {
-        id: viewId
-      })
-
-      if (!view.isEmpty) {
-        view.item.removeAttribute(name, value)
-      }
-    },
-    /**
-     * Set attribute to element
-     * @param {Object} param
-     * @param {string} param.viewId - Element id
-     * @param {string} param.name - Attribute name
-     * @param {string} param.value - Attribute value
-     */
-    setAttribute ({ viewId, name, value }) {
-      const view = $getDataValue('view/items', {
-        id: viewId
-      })
-
-      if (!view.isEmpty) {
-        view.item.setAttribute(name, value)
-      }
+      component.item.setContent(view.item, content.item)
     }
   },
-  setup ({ rootElementId = 'root' } = {}) {
+  setup ({ rootElementId = 'root', components } = {}) {
     // get root element from the DOM
     const rootElement = document.getElementById(rootElementId)
 
@@ -474,19 +389,23 @@ const view = createPlugin({
       throw new Error('Could not find root element: ' + rootElement)
     }
 
+    $components = components
+
     // Set root element
-    const viewId = createNode({
+    createNode({
       viewId: rootElementId,
-      componentId: '43f4f4c34d66e648',
+      component: {
+        id: 'container'
+      },
       sectionId: rootElementId,
       widgetId: rootElementId
     })
 
-    $setDataValue('view/rootViewId', viewId)
+    $setDataValue('view/rootViewId', rootElementId)
 
     // get root element
     const view = $getDataValue('view/items', {
-      id: viewId
+      id: rootElementId
     })
 
     // replace root element with new app element

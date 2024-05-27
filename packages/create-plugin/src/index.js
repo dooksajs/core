@@ -1,26 +1,51 @@
 /** @typedef {import('../../global-typedef.js').DataSchema} DataSchema */
-/** @typedef {import('../../global-typedef.js').Component} Component */
 
 /**
+ * @template T
+ * @template {Object} P
+ * @callback PluginSetup
+ * @this {T}
+ * @param {P} [param]
+ */
+
+/**
+ * @template {function} T
+ * @typedef {Object.<string, T>} PluginData
+ */
+
+/**
+ * @template P
+ * @template {Object.<string, (number|string|boolean|number[]|string[]|Object[]|Array[]|Object.<string,D>)>} D
  * @template {Object.<string, function>} A
- * @template {Object.<string, DataSchema>} M
- * @template {Object.<string, *>} D
- * @template {Object.<string, function>} F
- * @template {function} S
  * @param {Object} plugin
- * @param {string} plugin.name - Plugin name
- * @param {Object[]} [plugin.dependencies] - Dependent plugin
- * @param {M} [plugin.models] - Data model for the plugin
- * @param {D} [plugin.data] - Private data shared between actions and setup functions
- * @param {F} [plugin.methods] - Private methods shared between actions and setup functions
- * @param {A} [plugin.actions] - Global actions
- * @param {S} [plugin.setup] - Setup m
+ * @param {string} plugin.name
+ * @param {D} [plugin.data]
+ * @param {Object.<string, DataSchema>} [plugin.models]
+ * @param {A} [plugin.methods]
+ * @param {A} [plugin.actions]
+ * @param {PluginSetup<D & A,P>} [plugin.setup] - Setup m
+ * @returns {PluginResult}
  */
 function createPlugin (plugin) {
   /**
-   * @type {Object.<string,(D[keyof D]|A[keyof A]|F[keyof F])>}
+   * @typedef {Object.<string,(D[keyof D]|A[keyof A])>} PluginContext
    */
+
+  /** @type {PluginContext} */
   const context = {}
+
+  /**
+   * @typedef {Object} PluginResult
+   * @property {A} [actions]
+   * @property {Object.<string, DataSchema>} [models]
+   * @property {PluginSetup<D & A,P>} [setup]
+   * @property {string} name
+   */
+
+  /** @type {PluginResult} */
+  const results = {
+    name: plugin.name
+  }
 
   if (plugin.data) {
     for (const key in plugin.data) {
@@ -42,7 +67,6 @@ function createPlugin (plugin) {
 
         context[key] = method
 
-        /** @this {context} */
         plugin.methods[key] = method.bind(context)
       }
     }
@@ -57,23 +81,18 @@ function createPlugin (plugin) {
 
         context[key] = action
 
-        /** @this {context} */
         plugin.actions[key] = action.bind(context)
+        results.actions[key] = plugin.actions[key]
       }
     }
   }
 
   if (plugin.setup) {
-    /** @this {context} */
     plugin.setup = plugin.setup.bind(context)
+    results.setup = plugin.setup
   }
 
-  return {
-    name: plugin.name,
-    models: plugin.models,
-    setup: plugin.setup,
-    actions: plugin.actions
-  }
+  return results
 }
 
 export default createPlugin

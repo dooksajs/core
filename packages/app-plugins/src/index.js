@@ -18,7 +18,7 @@ import section from './section.js'
 import widget from './widget.js'
 import lazyLoader from './lazy/index.js'
 
-export * from './action.js'
+export { actionDispatch } from './action.js'
 export * from './data.js'
 export * from './component.js'
 export * from './fetch.js'
@@ -32,7 +32,7 @@ export * from './query.js'
 export * from './template.js'
 export * from './router.js'
 export * from './view.js'
-export * from './section.js'
+export { sectionAppend, sectionRender, sectionUpdate } from './section.js'
 export * from './widget.js'
 
 export {

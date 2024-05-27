@@ -188,8 +188,7 @@ const layout = createPlugin({
               items: { type: 'number' }
             },
             componentId: {
-              type: 'string',
-              relation: 'component/items'
+              type: 'string'
             }
           }
         }
@@ -284,7 +283,7 @@ const layout = createPlugin({
           viewId: viewItems[i],
           sectionId: sectionItemId,
           widgetId,
-          componentId: element.componentId
+          component: element.component
         })
 
         if (!isChild) {
