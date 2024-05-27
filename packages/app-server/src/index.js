@@ -13,7 +13,7 @@ import {
   theme,
   user,
   widget
-} from '../../server-plugins/src/index.js'
+} from '@dooksa/server-plugins'
 
 export default createApp({
   plugins: [

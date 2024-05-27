@@ -25,9 +25,9 @@ importers:
         version: link:../create-app
       '@dooksa/plugins':
         specifier: workspace:^
-        version: link:../app-client-plugins
+        version: link:../app-plugins
 
-  packages/app-client-plugins:
+  packages/app-plugins:
     dependencies:
       '@dooksa/create-plugin':
         specifier: workspace:^
@@ -49,7 +49,7 @@ importers:
         version: link:../create-app
       '@dooksa/plugins':
         specifier: workspace:^
-        version: link:../app-client-plugins
+        version: link:../app-plugins
       '@dooksa/server-plugins':
         specifier: workspace:^
         version: link:../app-server-plugins
@@ -61,7 +61,7 @@ importers:
         version: link:../create-plugin
       '@dooksa/plugins':
         specifier: workspace:^
-        version: link:../app-client-plugins
+        version: link:../app-plugins
       '@dooksa/templates':
         specifier: workspace:^
         version: link:../templates
@@ -103,7 +103,7 @@ importers:
     dependencies:
       '@dooksa/plugins':
         specifier: workspace:^
-        version: link:../app-client-plugins
+        version: link:../app-plugins
       '@dooksa/utils':
         specifier: workspace:^
         version: link:../utils
@@ -112,8 +112,6 @@ importers:
 
   packages/create-plugin: {}
 
-  packages/dooksa: {}
-
   packages/playground:
     dependencies:
       '@dooksa/client':
@@ -121,7 +119,7 @@ importers:
         version: link:../app-client
       '@dooksa/plugins':
         specifier: workspace:^
-        version: link:../app-client-plugins
+        version: link:../app-plugins
       '@dooksa/server':
         specifier: workspace:^
         version: link:../app-server
