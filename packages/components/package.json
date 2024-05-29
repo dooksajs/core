@@ -4,7 +4,7 @@
   "description": "Dooksa components",
   "author": "Thomas David <tom@mightysmile.com>",
   "repository": "git@github.com:dooksajs/dooksa.git",
-  "license": "MPL-2.0",
+  "license": "AGPL-3.0-or-later",
   "type": "module",
   "main": "src/index.js",
   "dependencies": {

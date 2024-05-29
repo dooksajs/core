@@ -6,7 +6,8 @@
     "build-server": "node ./scripts/build-server.js",
     "build-client": "node ./scripts/build-client.js"
   },
-  "license": "MPL-2.0",
+  "types": "./packages/types.js",
+  "license": "AGPL-3.0-or-later",
   "engines": {
     "node": ">=20",
     "pnpm": ">=9"
