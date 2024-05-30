@@ -435,7 +435,7 @@ function setCollectionItems (data, path, sources, metadata) {
         resultItem = source
       }
 
-      if (schemaType == 'object') {
+      if (schemaType === 'object') {
         validateSchemaObject(data, path, resultItem)
       } else {
         validateSchemaArray(data, path, resultItem)
