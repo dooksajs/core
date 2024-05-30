@@ -1,6 +1,5 @@
 import createPlugin from '@dooksa/create-plugin'
-import { routerCurrentId } from './router.js'
-import { $getDataValue } from './data.js'
+import { $getDataValue, routeCurrentId, componentAppendChildren } from './index.js'
 
 const page = createPlugin({
   name: 'page',
@@ -8,7 +7,7 @@ const page = createPlugin({
     id: {
       type: 'collection',
       defaultId () {
-        return routerCurrentId
+        return routeCurrentId
       },
       suffixId () {
         return $getDataValue('metadata/currentLanguage').item

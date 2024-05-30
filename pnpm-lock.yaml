@@ -29,6 +29,9 @@ importers:
 
   packages/app-plugins:
     dependencies:
+      '@dooksa/create-component':
+        specifier: workspace:^
+        version: link:../create-component
       '@dooksa/create-plugin':
         specifier: workspace:^
         version: link:../create-plugin
@@ -108,7 +111,11 @@ importers:
         specifier: workspace:^
         version: link:../utils
 
-  packages/create-component: {}
+  packages/create-component:
+    dependencies:
+      '@dooksa/utils':
+        specifier: workspace:^
+        version: link:../utils
 
   packages/create-plugin: {}
 

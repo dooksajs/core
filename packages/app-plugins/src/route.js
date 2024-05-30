@@ -1,6 +1,5 @@
 import createPlugin from '@dooksa/create-plugin'
 import { $getDataValue } from './data.js'
-import { viewDetach } from './view.js'
 import { hash } from '@dooksa/utils'
 
 const pathHash = {}
@@ -37,8 +36,8 @@ function currentId () {
   return id
 }
 
-const router = createPlugin({
-  name: 'router',
+const route = createPlugin({
+  name: 'route',
   actions: {
     navigate ({ to }) {
       const from = currentPath()
@@ -62,7 +61,7 @@ const router = createPlugin({
           if (!fromViewId) {
             //
           } else if (fromViewId !== toViewId) {
-            viewDetach(fromViewId)
+            // viewDetach(fromViewId)
           }
         }
       }
@@ -73,7 +72,7 @@ const router = createPlugin({
           const fromViewId = fromSections.item[sectionId]
 
           if (!toViewId) {
-            viewDetach(fromViewId)
+            // viewDetach(fromViewId)
           }
         }
       }
@@ -104,14 +103,14 @@ const router = createPlugin({
   }
 })
 
-const routerCurrentId = router.actions.currentId
-const routerNavigate = router.actions.navigate
-const routerCurrentPath = router.actions.currentPath
+const routeCurrentId = route.actions.currentId
+const routeNavigate = route.actions.navigate
+const routeCurrentPath = route.actions.currentPath
 
 export {
-  routerCurrentId,
-  routerCurrentPath,
-  routerNavigate
+  routeCurrentId,
+  routeCurrentPath,
+  routeNavigate
 }
 
-export default router
+export default route
