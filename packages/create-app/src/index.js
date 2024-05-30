@@ -10,13 +10,14 @@ import {
 function appendPlugin (appPlugins, appSetup, appActions, appDataModels) {
   return (plugin) => {
     // check if plugin exists
-    if (appPlugins.indexOf(plugin) !== -1) {
-      const { name, setup } = plugin
+    if (appPlugins.includes(plugin)) {
+      const setup = plugin.setup
       // unshift setup
       if (setup) {
         appSetup = appSetup.filter(item => item.initialize !== setup)
-        appSetup.unshift({ name, initialize: setup })
       }
+
+      return
     }
 
     // store plugin
