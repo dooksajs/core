@@ -9,6 +9,7 @@
   "main": "./src/index.js",
   "dependencies": {
     "@dooksa/create-plugin": "workspace:^",
+    "@dooksa/create-component": "workspace:^",
     "@dooksa/utils": "workspace:^",
     "bootstrap": "^5.3.3",
     "iconify-icon": "^2.1.0"

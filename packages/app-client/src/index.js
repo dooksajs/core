@@ -1,21 +1,17 @@
 import {
   action,
   content,
+  component,
   data,
   event,
   $fetch,
-  layout,
   list,
   metadata,
   operator,
   page,
   query,
-  router,
-  template,
-  token,
-  section,
-  view,
-  widget
+  route,
+  token
 } from '@dooksa/plugins'
 import {
   button,
@@ -23,7 +19,12 @@ import {
   icon,
   text,
   container,
-  card
+  card,
+  link,
+  root,
+  cardBody,
+  cardImg,
+  cardTitle
 } from '@dooksa/components'
 import createApp from '@dooksa/create-app'
 
@@ -32,27 +33,28 @@ export default createApp({
     data,
     action,
     content,
+    component,
     event,
     $fetch,
-    layout,
     list,
     metadata,
     operator,
-    router,
-    template,
+    route,
     token,
     query,
-    view,
-    page,
-    section,
-    widget
+    page
   ],
   components: [
+    root,
     button,
     icon,
     modal,
     text,
     container,
-    card
+    card,
+    cardBody,
+    cardImg,
+    cardTitle,
+    link
   ]
 })
