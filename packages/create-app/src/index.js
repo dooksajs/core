@@ -1,9 +1,6 @@
 import { parseSchema, isServer } from '@dooksa/utils'
 import {
-  sectionAppend,
-  $getDataValue,
   $setDataValue,
-  routerCurrentId,
   lazyLoader
 } from '@dooksa/plugins'
 
