@@ -404,8 +404,9 @@ function setCollectionItems (data, path, sources, metadata) {
 
   for (const id in sources) {
     if (Object.hasOwnProperty.call(sources, id)) {
+      let source = sources[id]
       let resultItem = newDataInstance(schemaType)
-      let source = deepClone(newDataInstance(schemaType), sources[id])
+      source = deepClone(newDataInstance(schemaType), source)
       const resultMetadata = source._metadata || metadata
       source = source._item || source
 
