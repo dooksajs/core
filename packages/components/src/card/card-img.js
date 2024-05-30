@@ -1,6 +1,5 @@
 import createComponent from '@dooksa/create-component'
 
-
 export default createComponent({
   id: 'card-img',
   tag: 'img',
@@ -18,7 +17,22 @@ export default createComponent({
       value: ''
     }
   ],
+  content: [
+    {
+      name: 'src',
+      get: 'src',
+      set: 'src'
+    },
+    {
+      name: 'alt',
+      get: 'alt',
+      set: 'alt'
+    }
+  ],
   options: {
+    src: {
+      name: 'src'
+    },
     position: {
       top: {
         name: 'className',
