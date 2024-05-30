@@ -1287,6 +1287,8 @@ const data = createPlugin({
         result.item = data
       }
 
+      fireDataListeners(name, 'update', result)
+
       return result
     },
     /**
