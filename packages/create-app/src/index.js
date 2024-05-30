@@ -8,7 +8,7 @@ import {
 } from '@dooksa/plugins'
 
 function appendPlugin (appPlugins, appSetup, appActions, appDataModels) {
-  return (plugin) => {
+  const use = (plugin) => {
     // check if plugin exists
     if (appPlugins.includes(plugin)) {
       const setup = plugin.setup
@@ -89,6 +89,8 @@ function appendPlugin (appPlugins, appSetup, appActions, appDataModels) {
       }
     }
   }
+
+  return use
 }
 
 function appendComponent (appComponents) {
