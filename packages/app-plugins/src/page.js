@@ -31,7 +31,7 @@ const page = createPlugin({
         type: 'array',
         items: {
           type: 'string',
-          relation: 'section/items'
+          relation: 'component/items'
         }
       }
     }
@@ -94,51 +94,35 @@ const page = createPlugin({
 
         data.push(item)
 
-        if (item.collection === 'section/items') {
+        if (item.collection === 'component/items') {
           this.appendExpand({
-            collection: 'section/query',
+            collection: 'component/children',
             id: item.id,
             data,
             expandExclude
           })
-          this.appendExpand({
-            collection: 'section/mode',
-            id: item.id,
-            data,
-            expandExclude
-          })
-        } else if (item.collection === 'widget/items') {
-          this.appendExpand({
-            collection: 'widget/content',
-            id: item.id,
-            data,
-            expandExclude
-          })
-          this.appendExpand({
-            collection: 'widget/events',
-            id: item.id,
-            data,
-            expandExclude
-          })
-          this.appendExpand({
-            collection: 'widget/layouts',
-            id: item.id,
-            data,
-            expandExclude
-          })
-          this.appendExpand({
-            collection: 'widget/sections',
-            id: item.id,
-            data,
-            expandExclude
-          })
-          this.appendExpand({
-            collection: 'widget/templates',
-            id: item.id,
-            data,
-            expandExclude,
-            expand: false
-          })
+
+          for (let i = 0; i < data.length; i++) {
+            const child = data[i]
+
+            if (child.collection === 'component/items') {
+              if (child.id !== item.id) {
+                this.appendExpand({
+                  collection: 'component/children',
+                  id: child.id,
+                  data,
+                  expandExclude
+                })
+              }
+
+              this.appendExpand({
+                collection: 'component/content',
+                id: child.id,
+                data,
+                expandExclude
+              })
+            }
+          }
         }
       }
 
@@ -177,6 +161,18 @@ const page = createPlugin({
       for (let i = 0; i < getData.expand.length; i++) {
         data.push(getData.expand[i])
       }
+    }
+  },
+  setup () {
+    const component = $getDataValue('page/items', { id: routeCurrentId() })
+
+    if (component.isEmpty) {
+      return
+    }
+
+    // attach current page components
+    for (let i = 0; i < component.item.length; i++) {
+      componentAppendChildren({ nodeId: 'root', id: component.item[i] })
     }
   }
 })
