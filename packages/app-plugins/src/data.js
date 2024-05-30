@@ -1255,14 +1255,13 @@ const data = createPlugin({
     },
     /**
      * Set data without schema validation
-     * @param {Object} param
-     * @param {string} param.name
-     * @param {*} param.data
-     * @param {Object} param.options
-     * @param {string} param.options.id
+     * @param {string} name
+     * @param {*} data
+     * @param {Object} options
+     * @param {string} options.id
      * @returns {DataResult}
      */
-    unsafeSetData ({ name, data, options }) {
+    unsafeSetData (name, data, options) {
       const result = new DataResult(name, options.id)
 
       if (options) {
