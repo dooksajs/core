@@ -212,8 +212,8 @@ function initialize (appSetup, appActions, appComponents, appDataModels, use, ap
     }
 
     // setup view components
-    options.view = {
-      components: (id) => {
+    options.component = {
+      $component: (id) => {
         return appComponents[id]
       }
     }
