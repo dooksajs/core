@@ -1,7 +1,7 @@
 import createPlugin from '@dooksa/create-plugin'
 import { $getDataValue, $setDataValue, $addDataListener } from './data.js'
 
-/** @typedef {import('../../global-typedef.js').DataValue} DataValue */
+/** @typedef {import('../../types.js').DataValue} DataValue */
 
 const fetchRequestQueue = {}
 const fetchRequestCache = {}

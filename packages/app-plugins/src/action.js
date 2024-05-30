@@ -5,10 +5,10 @@ import { dataGenerateId, $getDataValue, $setDataValue, $deleteDataValue } from '
 import { $fetchById } from './fetch.js'
 
 /**
- * @typedef {import('../../global-typedef.js').SetDataOptions} SetDataOptions
- * @typedef {import('../../global-typedef.js').GetDataQuery} GetDataQuery
- * @typedef {import('../../global-typedef.js').DataSchema} DataSchema
- * @typedef {import('../../global-typedef.js').DataWhere} DataWhere
+ * @typedef {import('../../types.js').SetDataOptions} SetDataOptions
+ * @typedef {import('../../types.js').GetDataQuery} GetDataQuery
+ * @typedef {import('../../types.js').DataSchema} DataSchema
+ * @typedef {import('../../types.js').DataWhere} DataWhere
  */
 
 

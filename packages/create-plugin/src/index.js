@@ -1,4 +1,4 @@
-/** @typedef {import('../../global-typedef.js').DataSchema} DataSchema */
+/** @typedef {import('../../types.js').DataSchema} DataSchema */
 
 /**
  * @template T

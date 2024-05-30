@@ -5,7 +5,7 @@ import { resolve, join } from 'path'
 import { $getDataValue, $setDataValue, $deleteDataValue, dataGenerateId, dataFind } from '@dooksa/plugins'
 
 /**
- * @typedef {import('../../global-typedef.js').DataWhere} DataWhere
+ * @typedef {import('../../types.js').DataWhere} DataWhere
  */
 
 const snapshotLock = {}
