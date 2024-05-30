@@ -89,6 +89,21 @@ const token = createPlugin({
     }
   },
   actions: {
+    parseText (value) {
+      // return empty
+      if (value === '[empty]') {
+        return {
+          value: '',
+          token: false
+        }
+      }
+
+      const pattern = /\[(.+)\]/
+      const findToken = new RegExp(pattern, 'g')
+      const token = findToken.test(value)
+
+      return { value, token }
+    },
     /**
      * Convert tokens to related string and update the element that the content is attached to
      * @param {Object} param
