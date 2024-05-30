@@ -231,6 +231,23 @@ function initialize (appSetup, appActions, appComponents, appDataModels, use, ap
       }
     }
 
+    if (!isServer()) {
+      // This is referring a global var
+      // @ts-ignore
+      const data = __ds__
+
+      // set data
+      for (let i = 0; i < data.item.length; i++) {
+        const item = data.item[i]
+
+        // need to check if any data requires an async plugin
+        $setDataValue(item.collection, item.item, {
+          id: item.id,
+          metadata: item.metadata
+        })
+      }
+    }
+
     // setup plugins
     for (let i = 0; i < appSetup.length; i++) {
       const setup = appSetup[i]
@@ -244,37 +261,6 @@ function initialize (appSetup, appActions, appComponents, appDataModels, use, ap
 
     if (isServer() && typeof appStartServer === 'function') {
       return appStartServer(options.server)
-    }
-
-    const currentPathId = routerCurrentId()
-
-    // This is referring a global var
-    // @ts-ignore
-    const data = __ds__
-
-    // set data
-    for (let i = 0; i < data.item.length; i++) {
-      const item = data.item[i]
-
-      // need to check if any data requires an async plugin
-      $setDataValue(item.collection, item.item, {
-        id: item.id,
-        metadata: item.metadata
-      })
-    }
-
-    const pageSections = $getDataValue('page/items', {
-      id: currentPathId
-    })
-
-    // render page
-    if (!pageSections.isEmpty) {
-      const rootViewId = $getDataValue('view/rootViewId')
-      const sections = pageSections.item
-
-      for (let i = 0; i < sections.length; i++) {
-        sectionAppend({ viewId: rootViewId.item, id: sections[i] })
-      }
     }
   }
 }
