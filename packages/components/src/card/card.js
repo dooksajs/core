@@ -8,7 +8,8 @@ export default createComponent({
   children: [cardImg, cardBody],
   allowedChildren: [cardBody, cardImg],
   properties: [
-    { name: 'className',
+    {
+      name: 'className',
       value: 'card'
     }
   ]
