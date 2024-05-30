@@ -1,7 +1,7 @@
-import createComponent from '@dooksa/create-component'
+import { createComponent, modifyComponent } from '@dooksa/create-component'
 import { text } from '../index.js'
 
-const cardText = text.modify({ text: 'Card title...' })
+const cardText = modifyComponent(text, { text: 'Card title...' })
 
 export default createComponent({
   id: 'card-title',

@@ -1,14 +1,15 @@
-import createComponent from '@dooksa/create-component'
+import { createComponent, modifyComponent } from '@dooksa/create-component'
 import text from '../text/text.js'
 import icon from '../icon/icon.js'
 
-const textChild = text.modify({ text: 'Button' })
+const btnText = modifyComponent(text, { text: 'Button' })
+const btnIcon = modifyComponent(icon, { icon: 'material-symbols:info-outline' })
 
 export default createComponent({
   id: 'button',
   tag: 'button',
-  children: [textChild, icon.modify({ icon: 'material-symbols:info-outline' })],
-  allowedChildren: [textChild, icon],
+  children: [btnText, btnIcon],
+  allowedChildren: [btnText, btnIcon],
   properties: [
     {
       name: 'type',

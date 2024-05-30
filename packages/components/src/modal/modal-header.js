@@ -1,13 +1,15 @@
-import createComponent from '@dooksa/create-component'
+import { createComponent, modifyComponent } from '@dooksa/create-component'
 import modalTitle from './modal-title.js'
 import { button } from '../index.js'
 import { background } from '../options/index.js'
 
+const closeBtn = modifyComponent(button, { close: 'close' })
+
 export default createComponent({
   id: 'modal-content',
   tag: 'div',
-  children: [modalTitle, button.modify({ close: 'close' })],
-  allowedChildren: [modalTitle, button],
+  children: [modalTitle, closeBtn],
+  allowedChildren: [modalTitle, closeBtn],
   extendedOptions: [background],
   properties: [
     {
