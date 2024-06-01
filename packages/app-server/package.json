@@ -12,6 +12,7 @@
   "main": "./src/index.js",
   "dependencies": {
     "@dooksa/create-app": "workspace:^",
+    "@dooksa/actions": "workspace:^",
     "@dooksa/plugins": "workspace:^",
     "@dooksa/server-plugins": "workspace:^"
   }

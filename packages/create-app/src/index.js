@@ -90,6 +90,12 @@ function appendPlugin (appPlugins, appSetup, appActions, appDataModels) {
   return use
 }
 
+function appendAction (appActionData) {
+  return (action) => {
+    appActionData.push(action)
+  }
+}
+
 function appendComponent (appComponents) {
   return (component) => {
     appComponents[component.id] = component
@@ -156,7 +162,7 @@ function callbackWhenAvailable ({ actions, lazy, loader, setup, options, use }) 
   }
 }
 
-function initialize (appSetup, appActions, appComponents, appDataModels, use, appStartServer) {
+function initialize (appSetup, appActions, appActionData, appComponents, appDataModels, use, appStartServer) {
   /**
    * Initialize dooksa!
    * @param {Object} param
@@ -218,6 +224,10 @@ function initialize (appSetup, appActions, appComponents, appDataModels, use, ap
       }
     }
 
+    options.action = {
+      actions: appActionData
+    }
+
     // setup database
     for (let i = 0; i < appSetup.length; i++) {
       const setup = appSetup[i]
@@ -269,10 +279,11 @@ function initialize (appSetup, appActions, appComponents, appDataModels, use, ap
  * Create Dooksa app
  * @param {Object} plugins
  */
-function createApp ({ plugins = [], components = [] } = {}) {
+function createApp ({ plugins = [], components = [], actions = [] } = {}) {
   const appPlugins = []
   const appSetup = []
   const appActions = {}
+  const appActionData = []
   const appComponents = {}
   const appDataModels = {
     values: {},
@@ -281,6 +292,7 @@ function createApp ({ plugins = [], components = [] } = {}) {
   let appStartServer
   const usePlugin = appendPlugin(appPlugins, appSetup, appActions, appDataModels)
   const useComponent = appendComponent(appComponents)
+  const useAction = appendAction(appActionData)
 
   for (let i = 0; i < plugins.length; i++) {
     const plugin = plugins[i]
@@ -292,16 +304,19 @@ function createApp ({ plugins = [], components = [] } = {}) {
     usePlugin(plugin)
   }
 
-  for (let i = 0; i < components.length; i++) {
-    const component = components[i]
+  for (let i = 0; i < actions.length; i++) {
+    useAction(actions[i])
+  }
 
-    useComponent(component)
+  for (let i = 0; i < components.length; i++) {
+    useComponent(components[i])
   }
 
   return {
     usePlugin,
     useComponent,
-    setup: initialize(appSetup, appActions, appComponents, appDataModels, usePlugin, appStartServer)
+    useAction,
+    setup: initialize(appSetup, appActions, appActionData, appComponents, appDataModels, usePlugin, appStartServer)
   }
 }
 

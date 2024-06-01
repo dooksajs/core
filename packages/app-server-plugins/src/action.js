@@ -1,15 +1,36 @@
 import createPlugin from '@dooksa/create-plugin'
-import { action } from '@dooksa/plugins'
+import { action, $setDataValue } from '@dooksa/plugins'
 import { $seedDatabase, $getDatabaseValue, $deleteDatabaseValue } from './database.js'
 import { $setRoute } from './http.js'
 
 const serverAction = createPlugin({
   name: 'action',
   models: { ...action.models },
-  setup () {
+  setup ({ actions }) {
     $seedDatabase('action-items')
     $seedDatabase('action-blocks')
     $seedDatabase('action-sequences')
+
+    if (actions) {
+      for (let i = 0; i < actions.length; i++) {
+        const action = actions[i]
+
+        $setDataValue('action/sequences', action.sequence.value, {
+          id: action.sequenceId
+        })
+
+        $setDataValue('action/blocks', action.blocks, {
+          merge: true
+        })
+
+        $setDataValue('action/items', action.sequenceId, {
+          id: action.id,
+          update: {
+            method: 'push'
+          }
+        })
+      }
+    }
 
     // route: get a list of action sequence entries
     $setRoute('/action', {

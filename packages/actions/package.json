@@ -1,0 +1,13 @@
+{
+  "name": "@dooksa/actions",
+  "version": "0.0.0",
+  "description": "Dooksa bootstrap actions",
+  "author": "Thomas David <tom@mightysmile.com>",
+  "repository": "git@github.com:dooksajs/dooksa.git",
+  "license": "AGPL-3.0-or-later",
+  "type": "module",
+  "main": "src/index.js",
+  "dependencies": {
+    "@dooksa/create-action": "workspace:^"
+  }
+}
