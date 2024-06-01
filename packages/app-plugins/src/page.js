@@ -1,5 +1,5 @@
 import createPlugin from '@dooksa/create-plugin'
-import { $getDataValue, routeCurrentId, componentAppendChildren } from './index.js'
+import { $getDataValue, routeCurrentId, componentAppend } from './index.js'
 
 const page = createPlugin({
   name: 'page',
@@ -172,7 +172,7 @@ const page = createPlugin({
 
     // attach current page components
     for (let i = 0; i < component.item.length; i++) {
-      componentAppendChildren({ nodeId: 'root', id: component.item[i] })
+      componentAppend({ nodeId: 'root', id: component.item[i] })
     }
   }
 })

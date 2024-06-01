@@ -106,19 +106,20 @@ function setContent (node, content, values) {
 
 /**
  *
+ * @param {string} id - Component instance Id
  * @param {Component} template
  * @param {ComponentInstance} component
  * @param {Object} [content]
  * @param {ComponentItem[]} [children]
  * @returns {Promise<Node>}
  */
-function lazyLoad (template, component, content, children) {
+function lazyLoad (id, template, component, content, children) {
   return new Promise((resolve, reject) => {
     template.component()
       .then(() => {
         template.isLoaded = true
 
-        const element = createNode(template, component, content, children)
+        const element = createNode(id, template, component, content, children)
 
         resolve(element)
       })
@@ -128,15 +129,16 @@ function lazyLoad (template, component, content, children) {
 
 /**
  *
+ * @param {string} id - Component instance Id
  * @param {Component} template
  * @param {ComponentInstance} component
  * @param {Object} [content]
  * @param {ComponentItem[]} [children]
  * @returns {Node|Promise<Node>}
  */
-function createNode (template, component, content, children) {
+function createNode (id, template, component, content, children) {
   if (!template.isLoaded) {
-    return lazyLoad(template, component, children)
+    return lazyLoad(id, template, component, children)
   }
 
   let node
@@ -273,7 +275,7 @@ function appendChildren (element, children = []) {
       item.children = childrenInstances(item.id)
     }
 
-    const childNode = createNode(item.template, item.component, item.content, item.children)
+    const childNode = createNode(item.id, item.template, item.component, item.content, item.children)
 
     if (childNode instanceof Promise) {
       hasPromise = true
@@ -372,7 +374,23 @@ const component = createPlugin({
      * @param {string} param.nodeId - Node id
      * @param {string} param.id - Component Id
      */
-    appendChildren ({ nodeId, id }) {
+    append ({ nodeId, id }) {
+      const node = $getDataValue('component/nodes', { id: nodeId })
+
+      if (node.isEmpty) {
+        throw new Error('No node found by the id: ' + id)
+      }
+
+      const children = getValues(id)
+
+      appendChildren(node.item, children)
+    },
+    /**
+     * @param {Object} param
+     * @param {string} param.nodeId - Node id
+     * @param {string} param.id - Component Id
+     */
+    appendTemplate ({ nodeId, id }) {
       const node = $getDataValue('component/nodes', { id: nodeId })
 
       if (node.isEmpty) {
@@ -403,9 +421,10 @@ const component = createPlugin({
       throw Error('No root element found: #' + rootId)
     }
 
+    const id = 'root'
     const template = $component('root')
-    const component = $getDataValue('component/items', { id: 'root' }).item || template
-    const element = createNode(template, component)
+    const component = $getDataValue('component/items', { id }).item || template
+    const element = createNode(id, template, component)
 
     /**
      * This is an element
@@ -423,10 +442,10 @@ const component = createPlugin({
   }
 })
 
-const componentAppendChildren = component.actions.appendChildren
+const componentAppend = component.actions.append
 
 export {
-  componentAppendChildren
+  componentAppend
 }
 
 export default component
