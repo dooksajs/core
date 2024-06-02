@@ -1,25 +1,15 @@
 import { objectHash } from '@dooksa/utils'
 
 /**
- * @typedef {Object} Component
- * @property {string} id - Component id
+ * @typedef {ComponentDataValues & ComponentData & ComponentMetadata} Component
+ */
+
+/**
+ * @typedef {Object} ComponentMetadata
  * @property {string} [hash] - Component hash
  * @property {Function} [component] - Lazy load component
  * @property {boolean} [isLoaded] - Marks if web component is loaded
- * @property {Array<Component|ComponentInstance|string>} [children] - Child components
- * @property {Array<Component|ComponentInstance|string>} [allowedChildren] - Permitted nested components
- * @property {Function} [initialize] - Constructor function to create a component instance
- * @property {string} [tag] - Element tag name
- * @property {Object[]} [content] - Define content structure
- * @property {string} content[].name - Name of content property
- * @property {string} content[].get - Getter name
- * @property {string} content[].set - Setter name
- * @property {ComponentProperty[]} [properties]
- * @property {ComponentOption} [options]
- * @property {ComponentOption[]} [extendedOptions]
- * @property {Object[]} [styles]
- * @property {string} styles[].name - Style property name
- * @property {'unit'|'box-shadow'|'font-family'|'rgba'|'units'|'number'} styles[].type - Style property name
+ * @property {ComponentMixinMetadata[]} [mixins]
  */
 
 /**
@@ -32,6 +22,7 @@ import { objectHash } from '@dooksa/utils'
  * @property {boolean} [join] - Join option value with existing component value
  * @property {Object.<string, string>} [values] - Attribute values
  * @property {string} [value] - Attribute value
+ * @property {Object.<string,Function>} [computedValues]
  */
 
 /**
@@ -45,118 +36,254 @@ import { objectHash } from '@dooksa/utils'
  * @typedef {Object} ComponentInstance
  * @property {string} id
  * @property {string} hash
- * @property {ComponentProperty[]} [properties]
  * @property {Array<Component|ComponentInstance|string>} [children]
+ * @property {ComponentEvent[]} [events]
+ * @property {ComponentProperty[]} [properties]
  */
 
 /**
- * @param {Object} data
- * @param {string} data.id - Component id
- * @param {Function} [data.component] - Lazy load component
- * @param {Array<Component|ComponentInstance|string>} [data.children] - Child components
- * @param {Array<Component|ComponentInstance|string>} [data.allowedChildren] - Permitted nested components
- * @param {Function} [data.initialize] - Constructor function to create a component instance
- * @param {string} [data.tag] - Element tag name
- * @param {Object[]} [data.content] - Define content structure
- * @param {string} data.content[].name - Name of content property
- * @param {string} data.content[].get - Getter name
- * @param {string} data.content[].set - Setter name
- * @param {ComponentProperty[]} [data.properties]
- * @param {ComponentOption} [data.options]
- * @param {ComponentOption[]} [data.extendedOptions]
- * @param {Object[]} [data.styles]
- * @param {string} data.styles[].name - Style property name
- * @param {'unit'|'box-shadow'|'font-family'|'rgba'|'units'|'number'} data.styles[].type - Style property name
+ * @typedef {Object} ComponentMixinMetadata
+ * @property {string} id
+ * @property {string} [hash]
+ */
+
+/**
+ * @typedef {Object} ComponentEvent
+ * @property {string} on
+ * @property {string} actionId
+ */
+
+/**
+ * @typedef {Object} ComponentDataValues
+ * @property {Array<Component|ComponentInstance|string>} [children] - Child components
+ * @property {Array<Component|ComponentInstance|string>} [allowedChildren] - Permitted nested components
+ * @property {Object[]} [content] - Define content structure
+ * @property {string} content[].name - Name of content property
+ * @property {string} content[].get - Getter name
+ * @property {string} content[].set - Setter name
+ * @property {ComponentEvent[]} [events]
+ * @property {ComponentProperty[]} [properties]
+ * @property {ComponentOption} [options]
+ * @property {Object[]} [styles]
+ * @property {string} styles[].name - Style property name
+ * @property {'unit'|'box-shadow'|'font-family'|'rgba'|'units'|'number'} styles[].type - Style property name
+ */
+
+/**
+ * @typedef {Object} ComponentData
+ * @property {string} id - Component id
+ * @property {Function} [component] - Lazy load component
+ * @property {Function} [initialize] - Constructor function to create a component instance
+ * @property {string} [tag] - Element tag name
+ */
+
+/**
+ * @param {ComponentData & ComponentDataValues} data
+ * @param {Object[]} [mixins]
+ * @param {ComponentMixinMetadata} mixins[].metadata
+ * @param {ComponentDataValues} mixins[].data
  * @returns {Component}
  */
-function createComponent (data) {
+function createComponent (data, mixins = []) {
   /**
    * @type {Component}
    */
-  const result = data
+  const result = {}
+
+  if (mixins.length) {
+    result.mixins = []
+
+    for (let i = 0; i < mixins.length; i++) {
+      const { metadata, data } = mixins[i]
+
+      result.mixins.push(metadata)
+
+      // merge mixin
+      if (data.options) {
+        const options = result.options || {}
+
+        mergeProperties(options, data.options)
+
+        result.options = options
+      }
+
+      if (data.styles) {
+        const events = result.styles || []
+
+        result.styles = events.concat(data.styles)
+      }
+    }
+  }
+
+
+  // merge component
+  mergeProperties(result, data)
 
   result.isLoaded = !(typeof data.component === 'function')
-  result.hash = objectHash(result)
+
+  const hash = objectHash(result)
+
+  result.hash = hash
 
   return result
 }
 
+function mergeProperties (target, source) {
+  for (const key in source) {
+    if (Object.hasOwnProperty.call(source, key)) {
+      const t = target[key]
+      const s = source[key]
+
+      if (t) {
+        if (Array.isArray(t)) {
+          target[key] = target.concat(s)
+        } else {
+          target[key] = Object.assign(t, s)
+        }
+      } else {
+        target[key] = s
+      }
+    }
+  }
+
+  return target
+}
+
+/**
+ * @param {Object} mixin
+ * @param {ComponentMixinMetadata} mixin.metadata
+ * @param {ComponentDataValues} mixin.data
+ */
+function createMixin (mixin) {
+  const result = mixin
+
+  const hash = objectHash(result)
+
+  result.metadata.hash = hash
+
+  return result
+}
+
+
 /**
  * Create a modified component
  * @param {Component} component
- * @param {Object.<string, string>} options
+ * @param {Object} data
+ * @param {Object} [data.options]
+ * @param {ComponentEvent[]} [data.events]
+ * @param {Array<Component|ComponentInstance|string>} [data.children] - Child components
  * @returns {ComponentInstance}
  */
-function modifyComponent (component, options) {
+function modifyComponent (component, { options, children, events }) {
   const properties = component.properties ? component.properties.slice() : []
 
-  for (const key in options) {
-    if (Object.hasOwnProperty.call(options, key)) {
-      const componentOption = component.options[key]
-      const value = options[key]
-      let newPropertyValue = value
+  if (options) {
+    for (const key in options) {
+      if (Object.hasOwnProperty.call(options, key)) {
+        const componentOption = component.options[key]
+        const item = options[key]
+        let newPropertyValue = item
 
-      if (!componentOption) {
-        throw new Error('Component option does not exist "' + value +'"')
-      }
-
-      if (componentOption.values) {
-        if (componentOption.values[value] == null) {
-          throw new Error('Component modifier value has an unexpected value "' + value + '"')
+        if (!componentOption) {
+          throw new Error('Component option does not exist "' + item +'"')
         }
 
-        newPropertyValue = componentOption.values[value]
-      }
+        if (componentOption.values) {
+          const newValue = componentOption.values[item]
 
-      /**
-       * @type {ComponentProperty}
-       */
-      const newProperty = {
-        name: componentOption.name,
-        value: newPropertyValue
-      }
-
-      let hasProperty = false
-
-      for (let i = 0; i < properties.length; i++) {
-        const property = properties[i]
-
-        if (property.name === componentOption.name) {
-          hasProperty = true
-
-          if (property && componentOption.join) {
-            newProperty.value = property.value + newProperty.value
+          if (newValue == null) {
+            throw new Error('Component modifier value has an unexpected value "' + item + '"')
           }
 
-          properties[i] = newProperty
+          newPropertyValue = newValue
+        }
+
+        // process computed values
+        if (componentOption.computedValues) {
+          if (Array.isArray(item)) {
+            let separator = ''
+            newPropertyValue = ''
+
+            for (let i = 0; i < item.length; i++) {
+              const element = item[i]
+              const computeValue = componentOption.computedValues[element.name]
+
+              if (element.values) {
+                newPropertyValue += separator + computeValue(...element.values)
+              } else {
+                newPropertyValue += separator + computeValue(element.value)
+              }
+
+              separator = ' '
+            }
+          } else {
+            const computeValue = componentOption.computedValues[item.name]
+
+            if (item.values) {
+              newPropertyValue = computeValue(...item.values)
+            } else {
+              newPropertyValue = computeValue(item.value)
+            }
+          }
+        }
+
+        const propertyName = componentOption.name
+
+        /**
+         * @type {ComponentProperty}
+         */
+        const newProperty = {
+          name: propertyName,
+          value: newPropertyValue
+        }
+
+        let hasProperty = false
+
+        for (let i = 0; i < properties.length; i++) {
+          const property = properties[i]
+
+          if (property.name === propertyName) {
+            hasProperty = true
+
+            if (property && componentOption.join) {
+              newProperty.value = property.value + newProperty.value
+            }
+
+            properties[i] = newProperty
+          }
+        }
+
+        if (!hasProperty) {
+          properties.push(newProperty)
         }
       }
-
-      if (!hasProperty) {
-        properties.push(newProperty)
-      }
     }
   }
 
-  if (component.children) {
-    return {
-      id: component.id,
-      hash: component.hash,
-      properties,
-      children: component.children
-    }
-  }
-
-  return {
+  // prepare result
+  const result = {
     id: component.id,
     hash: component.hash,
     properties
   }
+
+  if (events) {
+    result.events = events
+  }
+
+  const componentChildren = children || component.children
+
+  if (componentChildren) {
+    result.children = componentChildren
+  }
+
+  return result
 }
 
 export {
   modifyComponent,
-  createComponent
+  createComponent,
+  createMixin
 }
 
 export default createComponent
