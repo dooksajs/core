@@ -15,7 +15,7 @@ const serverAction = createPlugin({
       for (let i = 0; i < actions.length; i++) {
         const action = actions[i]
 
-        $setDataValue('action/sequences', action.sequence.value, {
+        $setDataValue('action/sequences', action.sequences, {
           id: action.sequenceId
         })
 
