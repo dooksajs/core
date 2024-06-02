@@ -300,7 +300,7 @@ function createAction (id, data, availableActions = availableMethods) {
   return {
     id,
     blocks: action.blocks,
-    sequences: action.sequence,
+    sequences: action.sequences,
     sequenceId: action.sequenceId
   }
 }
