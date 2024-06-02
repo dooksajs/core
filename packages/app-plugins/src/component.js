@@ -39,7 +39,7 @@ function getValues (id, result = [], parentItem, parentNode) {
     }
 
     // detach from previous node
-    node.remove()
+    node.item.remove()
   }
 
   const component = $getDataValue('component/items', { id }).item
