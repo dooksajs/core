@@ -1,7 +1,7 @@
 import createPlugin from '@dooksa/create-plugin'
 import { operatorEval, listSplice } from './index.js'
 import { DataSchemaException, DataValueException } from './utils/Error.js'
-import { deepClone, isServer, uuid } from '@dooksa/utils'
+import { deepClone, isEnvServer, uuid } from '@dooksa/utils'
 import DataResult from './utils/DataResult.js'
 
 /**
@@ -747,7 +747,7 @@ function setMetadata (item = {}, options) {
     }
   }
 
-  if (isServer()) {
+  if (isEnvServer()) {
     const timestamp = Date.now()
 
     if (!item.userId && options && options.userId) {

@@ -1,4 +1,4 @@
-import { parseSchema, isServer } from '@dooksa/utils'
+import { parseSchema, isEnvServer } from '@dooksa/utils'
 import {
   $setDataValue,
   lazyLoader
@@ -139,7 +139,7 @@ function callbackWhenAvailable ({ actions, lazy, loader, setup, options, use }) 
       return callback()
     }
 
-    if (!isServer()) {
+    if (!isEnvServer()) {
       const pluginName = name.split('_')[0]
       const fileName = lazy[pluginName]
 
@@ -241,7 +241,9 @@ function initialize (appSetup, appActions, appActionData, appComponents, appData
       }
     }
 
-    if (!isServer()) {
+    const isServer = isEnvServer()
+
+    if (!isServer) {
       // This is referring a global var
       // @ts-ignore
       const data = __ds__
@@ -269,7 +271,7 @@ function initialize (appSetup, appActions, appActionData, appComponents, appData
 
     appSetup = []
 
-    if (isServer() && typeof appStartServer === 'function') {
+    if (isServer && typeof appStartServer === 'function') {
       return appStartServer(options.server)
     }
   }
@@ -297,7 +299,7 @@ function createApp ({ plugins = [], components = [], actions = [] } = {}) {
   for (let i = 0; i < plugins.length; i++) {
     const plugin = plugins[i]
 
-    if (isServer() && plugin.name === 'http') {
+    if (isEnvServer() && plugin.name === 'http') {
       appStartServer = plugin.actions.start
     }
 
