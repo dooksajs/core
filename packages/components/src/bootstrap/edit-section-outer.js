@@ -6,6 +6,13 @@ const editText = extendComponent(text, {
 })
 
 const btnIcon = extendComponent(icon, {
+  options: {
+    icon: 'bi:pencil-square',
+    spacing: {
+      name: 'margin',
+      values: [1, 'e']
+    }
+  }
 })
 
 const btn = extendComponent(divider, {

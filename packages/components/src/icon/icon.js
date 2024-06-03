@@ -1,4 +1,5 @@
 import createComponent from '@dooksa/create-component'
+import spacing from '../mixins/spacing.js'
 
 export default createComponent({
   id: 'icon',
@@ -40,4 +41,4 @@ export default createComponent({
       type: 'unit'
     }
   ]
-})
+}, [spacing])
