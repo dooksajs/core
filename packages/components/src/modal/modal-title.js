@@ -1,7 +1,7 @@
-import { createComponent, modifyComponent } from '@dooksa/create-component'
+import { createComponent, extendComponent } from '@dooksa/create-component'
 import { text, icon } from '../index.js'
 
-const modalText = modifyComponent(text, {
+const modalText = extendComponent(text, {
   options: { text: 'Modal title...' }
 })
 

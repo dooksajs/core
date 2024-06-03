@@ -1,8 +1,8 @@
-import { createComponent, modifyComponent } from '@dooksa/create-component'
+import { createComponent, extendComponent } from '@dooksa/create-component'
 import text from '../text/text.js'
 import card from '../card/card.js'
 
-const linkText = modifyComponent(text, {
+const linkText = extendComponent(text, {
   options: { text: 'Link text...' }
 })
 

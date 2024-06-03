@@ -187,7 +187,7 @@ function createMixin (mixin) {
  * @param {Array<Component|ComponentInstance|string>} [data.children] - Child components
  * @returns {ComponentInstance}
  */
-function modifyComponent (component, { options, children, events }) {
+function extendComponent (component, { options, children, events }) {
   const properties = component.properties ? component.properties.slice() : []
 
   if (options) {
@@ -305,7 +305,7 @@ function modifyComponent (component, { options, children, events }) {
 }
 
 export {
-  modifyComponent,
+  extendComponent,
   createComponent,
   createMixin
 }

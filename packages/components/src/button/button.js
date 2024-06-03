@@ -1,12 +1,12 @@
-import { createComponent, modifyComponent } from '@dooksa/create-component'
+import { createComponent, extendComponent } from '@dooksa/create-component'
 import button from '../mixins/button.js'
 import text from '../text/text.js'
 import icon from '../icon/icon.js'
 
-const btnText = modifyComponent(text, {
+const btnText = extendComponent(text, {
   options: { text: 'Button' }
 })
-const btnIcon = modifyComponent(icon, {
+const btnIcon = extendComponent(icon, {
   options: { icon: 'material-symbols:info-outline' }
 })
 

@@ -1,17 +1,16 @@
-import { createComponent, modifyComponent } from '@dooksa/create-component'
+import { createComponent, extendComponent } from '@dooksa/create-component'
 import text from '../text/text.js'
 import icon from '../icon/icon.js'
 import divider from '../base/divider.js'
 
-const editText = modifyComponent(text, {
+const editText = extendComponent(text, {
   options: { text: 'Edit' }
 })
 
-const btnIcon = modifyComponent(icon, {
-  options: { icon: 'bi:pencil-square' }
+const btnIcon = extendComponent(icon, {
 })
 
-const btn = modifyComponent(divider, {
+const btn = extendComponent(divider, {
   children: [btnIcon, editText],
   options: {
     btnVariant: 'primary',
@@ -19,7 +18,7 @@ const btn = modifyComponent(divider, {
   }
 })
 
-const div = modifyComponent(divider, {
+const div = extendComponent(divider, {
   children: [btn],
   options: {
     position: 'absolute',
