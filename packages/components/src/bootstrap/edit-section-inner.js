@@ -2,6 +2,7 @@ import { createComponent, extendComponent } from '@dooksa/create-component'
 import text from '../text/text.js'
 import icon from '../icon/icon.js'
 import divider from '../base/divider.js'
+import eventTypeMouse from '../mixins/eventTypeMouse.js'
 
 const editText = extendComponent(text, {
   options: { text: 'Edit' }
@@ -20,6 +21,7 @@ const btnIcon = extendComponent(icon, {
 const btn = extendComponent(divider, {
   children: [btnIcon, editText],
   options: {
+    btn: 'btn',
     btnVariant: 'primary',
     btnSize: 'small'
   }
@@ -62,4 +64,4 @@ export default createComponent({
       actionId: 'open-section-editor'
     }
   ]
-})
+}, [eventTypeMouse])
