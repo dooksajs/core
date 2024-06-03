@@ -11,7 +11,6 @@ import eventTypeComposition from './eventTypeComposition.js'
 import eventTypeElement from './eventTypeElement.js'
 import eventTypeElementCancel from './eventTypeElementCancel.js'
 import eventTypeElementChange from './eventTypeElementChange.js'
-import eventTypeElementCopy from './eventTypeElement copy.js'
 import eventTypeElementDragDrop from './eventTypeElementDragDrop.js'
 import eventTypeFocus from './eventTypeFocus.js'
 import eventTypeFullscreen from './eventTypeFullscreen.js'
@@ -36,7 +35,6 @@ export {
   eventTypeElement,
   eventTypeElementCancel,
   eventTypeElementChange,
-  eventTypeElementCopy,
   eventTypeElementDragDrop,
   eventTypeFocus,
   eventTypeFullscreen,
