@@ -211,9 +211,6 @@ function initialize (appSetup, appActions, appActionData, appComponents, appData
             onSuccess(value)
           }
         })
-      },
-      availableMethod: (name) => {
-        return typeof appActions[name] === 'function'
       }
     }
 
@@ -222,10 +219,6 @@ function initialize (appSetup, appActions, appActionData, appComponents, appData
       $component: (id) => {
         return appComponents[id]
       }
-    }
-
-    options.action = {
-      actions: appActionData
     }
 
     // setup database
@@ -257,6 +250,10 @@ function initialize (appSetup, appActions, appActionData, appComponents, appData
           id: item.id,
           metadata: item.metadata
         })
+      }
+    } else {
+      options.action = {
+        actions: appActionData
       }
     }
 
