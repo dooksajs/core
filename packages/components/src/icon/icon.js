@@ -23,7 +23,8 @@ export default createComponent({
   ],
   options: {
     icon: {
-      name: 'icon'
+      name: 'icon',
+      replace: true
     },
     inline: {
       name: 'inline',

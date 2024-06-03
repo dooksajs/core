@@ -19,7 +19,7 @@ import { objectHash } from '@dooksa/utils'
 /**
  * @typedef {Object} ComponentOptionItem
  * @property {string} name - Name of attribute/setter
- * @property {boolean} [join] - Join option value with existing component value
+ * @property {boolean} [replace] - Replace property value
  * @property {Object.<string, string>} [values] - Attribute values
  * @property {string} [value] - Attribute value
  * @property {Object.<string,Function>} [computedValues]
@@ -178,9 +178,17 @@ function modifyComponent (component, { options, children, events }) {
   const properties = component.properties ? component.properties.slice() : []
 
   if (options) {
+    let replacedPropertyValue = ''
+
     for (const key in options) {
       if (Object.hasOwnProperty.call(options, key)) {
         const componentOption = component.options[key]
+        const propertyName = componentOption.name
+
+        if (replacedPropertyValue === propertyName) {
+          continue
+        }
+
         const item = options[key]
         let newPropertyValue = item
 
@@ -227,8 +235,6 @@ function modifyComponent (component, { options, children, events }) {
           }
         }
 
-        const propertyName = componentOption.name
-
         /**
          * @type {ComponentProperty}
          */
@@ -245,9 +251,14 @@ function modifyComponent (component, { options, children, events }) {
           if (property.name === propertyName) {
             hasProperty = true
 
-            if (property && componentOption.join) {
-              newProperty.value = property.value + newProperty.value
+            if (property && componentOption.replace) {
+              replacedPropertyValue = propertyName
+              newProperty.value = newPropertyValue
+              properties[i] = newProperty
+              break
             }
+
+            newProperty.value = property.value + ' ' + newProperty.value
 
             properties[i] = newProperty
           }

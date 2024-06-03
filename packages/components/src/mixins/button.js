@@ -6,9 +6,14 @@ export default createMixin({
   },
   data: {
     options: {
+      btn: {
+        name: 'className',
+        values: {
+          btn: 'btn'
+        }
+      },
       btnVariant: {
         name: 'className',
-        join: true,
         values: {
           primary: 'btn-primary',
           secondary: 'btn-secondary',
