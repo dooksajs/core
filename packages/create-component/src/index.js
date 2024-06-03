@@ -149,7 +149,7 @@ function mergeProperties (target, source) {
 
       if (t) {
         if (Array.isArray(t)) {
-          target[key] = target.concat(s)
+          target[key] = t.concat(s)
         } else {
           target[key] = Object.assign(t, s)
         }
