@@ -58,14 +58,14 @@ import availableMethods from './available-methods.js'
  * 'action/sequences'|
  * 'action/values'|
  * 'content/items'|
+ * 'component/nodes'|
  * 'component/items'|
  * 'component/children'|
  * 'component/content'|
+ * 'component/parent'|
  * 'content/items'|
  * 'event/listeners'|
  * 'event/handlers'|
- * 'layout/items'|
- * 'layout/eventListeners'|
  * 'metadata/currentLanguage'|
  * 'metadata/currentLanguages'|
  * 'page/id'|
