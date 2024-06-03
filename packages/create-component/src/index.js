@@ -62,6 +62,7 @@ import { objectHash } from '@dooksa/utils'
  * @property {string} content[].get - Getter name
  * @property {string} content[].set - Setter name
  * @property {ComponentEvent[]} [events]
+ * @property {Object.<string, boolean>} [eventTypes]
  * @property {ComponentProperty[]} [properties]
  * @property {ComponentOption} [options]
  * @property {Object[]} [styles]
@@ -108,9 +109,21 @@ function createComponent (data, mixins = []) {
       }
 
       if (data.styles) {
-        const events = result.styles || []
+        const styles = result.styles || []
 
-        result.styles = events.concat(data.styles)
+        result.styles = styles.concat(data.styles)
+      }
+
+      if (data.events) {
+        const events = result.events || []
+
+        result.events = events.concat(data.events)
+      }
+
+      if (data.eventTypes) {
+        const eventTypes = result.eventTypes || {}
+
+        result.eventTypes = Object.assign(eventTypes, data.eventTypes)
       }
     }
   }
