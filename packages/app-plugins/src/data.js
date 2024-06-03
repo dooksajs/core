@@ -686,32 +686,14 @@ function setDataOptions (data, source, options) {
 
     // validate source
     if (schemaItem && (updateMethod === 'push' || updateMethod === 'unshift')) {
-      const schemaType = schemaItem.type
-
       if (Array.isArray(source)) {
         for (let i = 0; i < source.length; i++) {
           const item = source[i]
 
-          if (schemaType === 'array' || schemaType === 'object') {
-            if (schemaType === 'array') {
-              validateSchemaArray(data, schemaPathItem, item)
-            } else {
-              validateSchemaObject(data, schemaPathItem, item)
-            }
-          } else {
-            validateDataType(schemaPathItem, item, schemaItem.type)
-          }
+          validateSchema(data, schemaPathItem, item)
         }
       } else {
-        if (schemaType === 'array' || schemaType === 'object') {
-          if (schemaType === 'array') {
-            validateSchemaArray(data, schemaPathItem, source)
-          } else {
-            validateSchemaObject(data, schemaPathItem, source)
-          }
-        } else {
-          validateDataType(schemaPathItem, source, schemaItem.type)
-        }
+        validateSchema(data, schemaPathItem, source)
       }
     }
 
