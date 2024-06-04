@@ -2,6 +2,7 @@ import { createComponent, extendComponent } from '@dooksa/create-component'
 import button from '../mixins/button.js'
 import text from '../text/text.js'
 import icon from '../icon/icon.js'
+import eventTypeMouse from '../mixins/eventTypeMouse.js'
 
 const btnText = extendComponent(text, {
   options: { text: 'Button' }
@@ -24,4 +25,4 @@ export default createComponent({
       value: 'btn'
     }
   ]
-}, [button])
+}, [button, eventTypeMouse])
