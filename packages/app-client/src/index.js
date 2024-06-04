@@ -21,10 +21,15 @@ import {
   container,
   card,
   link,
+  divider,
   root,
   cardBody,
   cardImg,
-  cardTitle
+  cardTitle,
+  horizontalRule,
+  addComponentButton,
+  editSectionInner,
+  editSectionOuter
 } from '@dooksa/components'
 import createApp from '@dooksa/create-app'
 
@@ -46,6 +51,7 @@ export default createApp({
   ],
   components: [
     root,
+    horizontalRule,
     button,
     icon,
     modal,
@@ -55,6 +61,10 @@ export default createApp({
     cardBody,
     cardImg,
     cardTitle,
-    link
+    link,
+    addComponentButton,
+    editSectionInner,
+    editSectionOuter,
+    divider
   ]
 })
