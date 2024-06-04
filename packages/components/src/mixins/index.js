@@ -20,11 +20,13 @@ import eventTypeScroll from './eventTypeScroll.js'
 import eventTypeSelect from './eventTypeSelect.js'
 import eventTypeTouch from './eventTypeTouch.js'
 import eventTypeTransition from './eventTypeTransition.js'
+import displayFlex from './display-flex.js'
 
 export {
   level,
   button,
   background,
+  displayFlex,
   inset,
   spacing,
   position,
