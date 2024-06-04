@@ -48,10 +48,7 @@ function getValues (id, result = [], parentItem, parentNode) {
   let component = $getDataValue('component/items', { id })
   let templateId
   let isTemplate
-  const instance = {
-    id,
-    component: component.item
-  }
+
 
   if (!component.isEmpty) {
     templateId = component.item.id
@@ -67,8 +64,11 @@ function getValues (id, result = [], parentItem, parentNode) {
     throw new Error('Component not found: ' + templateId)
   }
 
-  // assign instance template
-  instance.template = template
+  const instance = {
+    id,
+    component: component.item,
+    template: template
+  }
 
   if (isTemplate) {
     // create template
@@ -76,7 +76,6 @@ function getValues (id, result = [], parentItem, parentNode) {
 
     // update instance component
     instance.component = item.component
-    instance.id = id
   }
 
 
