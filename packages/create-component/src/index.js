@@ -34,8 +34,9 @@ import { objectHash } from '@dooksa/utils'
 
 /**
  * @typedef {Object} ComponentInstance
- * @property {string} id
- * @property {string} hash
+ * @property {string} id - Component instance Id
+ * @property {string} [parentId] - The parent component Id if instance was extended
+ * @property {string} hash - Hash of parent component
  * @property {Array<Component|ComponentInstance|string>} [children]
  * @property {ComponentEvent[]} [events]
  * @property {ComponentProperty[]} [properties]
@@ -181,14 +182,20 @@ function createMixin (mixin) {
 /**
  * Create a modified component
  * @param {Component} component
- * @param {Object} data
- * @param {Object} [data.options]
- * @param {ComponentEvent[]} [data.events]
- * @param {Array<Component|ComponentInstance|string>} [data.children] - Child components
- * @returns {ComponentInstance}
+ * @param {ComponentExtend} extend
  */
-function extendComponent (component, { options, children, events }) {
+function extendComponent (component, { metadata, options, children, events }) {
   const properties = component.properties ? component.properties.slice() : []
+  const result = {
+    id: component.id,
+    hash: component.hash,
+    properties
+  }
+
+  if (metadata) {
+    result.id = metadata.id
+    result.parentId = component.id
+  }
 
   if (options) {
     let replacedPropertyValue = ''
