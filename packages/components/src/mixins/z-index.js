@@ -2,21 +2,19 @@ import { createMixin } from '@dooksa/create-component'
 
 export default createMixin({
   metadata: {
-    id: 'level'
+    id: 'zIndex'
   },
   data: {
     options: {
-      level: {
+      zIndex: {
         name: 'className',
-        computedValues: {
-          /**
-           * Z-index
-           * @param {number|'n1'} strength
-           * @returns {string}
-           */
-          layer (strength) {
-            return 'z-' + strength
-          }
+        /**
+         * Z-index
+         * @param {number|'n1'} strength
+         * @returns {string}
+         */
+        computedValue (strength) {
+          return 'z-' + strength
         }
       }
     },
