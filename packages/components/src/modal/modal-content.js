@@ -23,20 +23,20 @@ const modalContent = createComponent({
  */
 
 /**
- * @typedef {Object} ComponentExtendModalContent
+ * @typedef {Object} ExtendModalContent
  * @property {ShadowMixin} options
  */
 
 /**
- * @param {ComponentExtend|ComponentExtendModalContent} options
+ * @param {ComponentExtend|ExtendModalContent} options
  */
-function extendModalComponent (options) {
+function extendModalContent (options) {
   return extendComponent(modalContent, options)
 }
 
 export {
   modalContent,
-  extendModalComponent
+  extendModalContent
 }
 
 export default modalContent

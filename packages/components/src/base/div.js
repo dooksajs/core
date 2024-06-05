@@ -20,20 +20,20 @@ const div = createComponent({
  */
 
 /**
- * @typedef {Object} ComponentExtendDiv
+ * @typedef {Object} ExtendDivOptions
  * @property {BackgroundMixin|FlexMixin|PositionMixin|SpacingMixin|ZIndexMixin|InsetMixin|TranslateMixin|ButtonMixin|DisplayMixin} options
  */
 
 /**
- * @param {ComponentExtend|ComponentExtendDiv} options
+ * @param {ComponentExtend|ExtendDivOptions} options
  */
-function extendDivComponent (options) {
+function extendDiv (options) {
   return extendComponent(div, options)
 }
 
 export {
   div,
-  extendDivComponent
+  extendDiv
 }
 
 export default div

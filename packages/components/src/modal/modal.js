@@ -93,25 +93,25 @@ const modal = createComponent({
  */
 
 /**
- * @typedef {Object} ModalOptions
+ * @typedef {Object} ExtendModalAria
  * @property {string} [ariaLabel]
  */
 
 /**
- * @typedef {Object} ComponentExtendModal
- * @property {ModalOptions} options
+ * @typedef {Object} ExtendModalOptions
+ * @property {ExtendModalAria} options
  */
 
 /**
- * @param {ComponentExtend|ComponentExtendModal} options
+ * @param {ComponentExtend|ExtendModalOptions} options
  */
-function extendModalComponent (options) {
+function extendModal (options) {
   return extendComponent(modal, options)
 }
 
 export {
   modal,
-  extendModalComponent
+  extendModal
 }
 
 export default modal

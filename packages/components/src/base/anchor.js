@@ -33,13 +33,13 @@ const anchor = createComponent({
 /**
  * @param {ComponentExtend} options
  */
-function extendAnchorComponent (options) {
+function extendAnchor (options) {
   return extendComponent(anchor, options)
 }
 
 export {
   anchor,
-  extendAnchorComponent
+  extendAnchor
 }
 
 export default anchor

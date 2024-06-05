@@ -1,3 +1,3 @@
-export { anchor, extendAnchorComponent } from './anchor.js'
-export { div, extendDivComponent } from './div.js'
-export { hr, extendHrComponent } from './hr.js'
+export { anchor, extendAnchor } from './anchor.js'
+export { div, extendDiv } from './div.js'
+export { hr, extendHr } from './hr.js'

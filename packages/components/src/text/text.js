@@ -30,13 +30,13 @@ const text = createComponent({
 /**
  * @param {ComponentExtend|ComponentExtendText} options
  */
-function extendTextComponent (options) {
+function extendText (options) {
   return extendComponent(text, options)
 }
 
 export {
   text,
-  extendTextComponent
+  extendText
 }
 
 export default text

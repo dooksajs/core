@@ -28,20 +28,20 @@ const modalHeader = createComponent({
  */
 
 /**
- * @typedef {Object} ComponentExtendModalHeader
+ * @typedef {Object} ExtendModalHeader
  * @property {BackgroundMixin|DisplayMixin|FlexMixin} options
  */
 
 /**
- * @param {ComponentExtend|ComponentExtendModalHeader} options
+ * @param {ComponentExtend|ExtendModalHeader} options
  */
-function extendModalHeaderComponent (options) {
+function extendModalHeader (options) {
   return extendComponent(modalHeader, options)
 }
 
 export {
   modalHeader,
-  extendModalHeaderComponent
+  extendModalHeader
 }
 
 export default modalHeader

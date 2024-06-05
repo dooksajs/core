@@ -61,13 +61,13 @@ const icon = createComponent({
 /**
  * @param {ComponentExtend|MergeOptions} options
  */
-function extendIconComponent (options) {
+function extendIcon (options) {
   extendComponent(icon, options)
 }
 
 export {
   icon,
-  extendIconComponent
+  extendIcon
 }
 
 export default icon

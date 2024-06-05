@@ -21,13 +21,13 @@ const hr = createComponent({
 /**
  * @param {ComponentExtend|ComponentExtendHr} options
  */
-function extendHrComponent (options) {
+function extendHr (options) {
   return extendComponent(hr, options)
 }
 
 export {
   hr,
-  extendHrComponent
+  extendHr
 }
 
 export default hr

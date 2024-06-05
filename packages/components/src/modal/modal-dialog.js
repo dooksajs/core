@@ -45,20 +45,20 @@ const modalDialog = createComponent({
  */
 
 /**
- * @typedef {Object} ComponentExtendModalDialog
+ * @typedef {Object} ExtendModalDialogOptions
  * @property {ModalOptions} options
  */
 
 /**
- * @param {ComponentExtend|ComponentExtendModalDialog} options
+ * @param {ComponentExtend|ExtendModalDialogOptions} options
  */
-function extendModalDialogComponent (options) {
+function extendModalDialog (options) {
   return extendComponent(modalDialog, options)
 }
 
 export {
   modalDialog,
-  extendModalDialogComponent
+  extendModalDialog
 }
 
 export default modalDialog
