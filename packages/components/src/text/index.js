@@ -1,5 +1,1 @@
-import text from './text.js'
-
-export {
-  text
-}
+export * from './text.js'
