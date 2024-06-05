@@ -1,62 +1,77 @@
 import { createMixin } from '@dooksa/create-component'
 
+/**
+ * @typedef {import('@dooksa/create-component').BreakpointAlwaysXXL} BreakpointAlwaysXXL
+ */
+
+/**
+ * @typedef {Object} TextMixin
+ * @property {BreakpointAlwaysXXL} [textAlignStart]
+ * @property {BreakpointAlwaysXXL} [textAlignCenter]
+ * @property {BreakpointAlwaysXXL} [textAlignEnd]
+ * @property {'wrap'|'nowrap'|'break'} [textWrap]
+ * @property {'lowercase'|'uppercase'|'capitalize'} [textTransform]
+ * @property {'underline'|'lineThrough'|'none'} [textDecoration]
+ */
+
 export default createMixin({
   metadata: {
     id: 'text'
   },
   data: {
     options: {
-      textAlign: {
+      textAlignStart: {
         name: 'className',
-        computedValues: {
-          /**
-           * Text start
-           * @param {'sm'|'md'|'lg'|'xl'|'xxl'} [breakpoint]
-           * @returns {string}
-           */
-          start (breakpoint) {
-            if (breakpoint) {
-              return 'text-' + breakpoint + '-start'
-            }
-
-            return 'text-start'
-          },
-          /**
-           * Text center
-           * @param {'sm'|'md'|'lg'|'xl'|'xxl'} [breakpoint]
-           * @returns {string}
-           */
-          center (breakpoint) {
-            if (breakpoint) {
-              return 'text-' + breakpoint + '-center'
-            }
-
-            return 'text-center'
-          },
-          /**
-           * Text end
-           * @param {'sm'|'md'|'lg'|'xl'|'xxl'} [breakpoint]
-           * @returns {string}
-           */
-          end (breakpoint) {
-            if (breakpoint) {
-              return 'text-' + breakpoint + '-end'
-            }
-
-            return 'text-end'
+        /**
+         * Text start
+         * @param {BreakpointAlwaysXXL} [breakpoint]
+         * @returns {string}
+         */
+        computedValue (breakpoint) {
+          if (breakpoint !== 'always') {
+            return 'text-' + breakpoint + '-start'
           }
+
+          return 'text-start'
+        }
+      },
+      textAlignCenter: {
+        name: 'className',
+        /**
+         * Text center
+         * @param {BreakpointAlwaysXXL} [breakpoint]
+         * @returns {string}
+         */
+        computedValue (breakpoint) {
+          if (breakpoint !== 'always') {
+            return 'text-' + breakpoint + '-center'
+          }
+
+          return 'text-center'
+        }
+      },
+      textAlignEnd: {
+        name: 'className',
+        /**
+         * Text end
+         * @param {BreakpointAlwaysXXL} [breakpoint]
+         * @returns {string}
+         */
+        computedValue (breakpoint) {
+          if (breakpoint !== 'always') {
+            return 'text-' + breakpoint + '-end'
+          }
+
+          return 'text-end'
         }
       },
       textWrap: {
         name: 'className',
         values: {
           wrap: 'text-wrap',
-          nowrap: 'text-nowrap'
+          nowrap: 'text-nowrap',
+          break: 'text-break'
         }
-      },
-      textBreak: {
-        name: 'className',
-        value: 'text-break'
       },
       textTransform: {
         name: 'className',
