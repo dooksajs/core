@@ -1,6 +1,6 @@
 import createComponent from '@dooksa/create-component'
 import card from '../card/card.js'
-import { background, spacing, position } from '../mixins/index.js'
+import { backgroundMixin, spacingMixin, positionMixin } from '../mixins/index.js'
 import text from '../text/text.js'
 import button from '../button/button.js'
 
@@ -14,4 +14,4 @@ export default createComponent({
       value: 'container'
     }
   ]
-}, [background, spacing, position])
+}, [backgroundMixin, spacingMixin, positionMixin])

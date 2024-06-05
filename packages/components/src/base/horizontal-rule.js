@@ -1,7 +1,7 @@
 import { createComponent } from '@dooksa/create-component'
-import { spacing, displayFlex } from '../mixins/index.js'
+import { spacingMixin, displayMixin, flexMixin } from '../mixins/index.js'
 
 export default createComponent({
   id: 'horizontal-rule',
   tag: 'hr'
-}, [spacing, displayFlex])
+}, [spacingMixin, flexMixin, displayMixin])
