@@ -2,7 +2,7 @@ import { createMixin } from '@dooksa/create-component'
 
 export default createMixin({
   metadata: {
-    id: 'display-flex'
+    id: 'flex'
   },
   data: {
     options: {
@@ -88,7 +88,7 @@ export default createMixin({
           }
         }
       },
-      justifyContent: {
+      flexAlign: {
         name: 'className',
         computedValues: {
           /**
@@ -97,61 +97,46 @@ export default createMixin({
            * @param {'sm'|'md'|'lg'|'xl'|'xxl'} [breakpoint]
            * @returns {string}
            */
-          value (position, breakpoint) {
+          justifyContent (position, breakpoint) {
             if (breakpoint) {
               return 'justify-content-' + breakpoint + '-' + position
             }
 
             return 'justify-content-' + position
-          }
-        }
-      },
-      alignContent: {
-        name: 'className',
-        computedValues: {
+          },
           /**
            * Align items
            * @param {'start'|'end'|'center'|'between'|'around'|'stretch'} position
            * @param {'sm'|'md'|'lg'|'xl'|'xxl'} [breakpoint]
            * @returns {string}
            */
-          value (position, breakpoint) {
+          alignContent (position, breakpoint) {
             if (breakpoint) {
               return 'align-content-' + breakpoint + '-' + position
             }
 
             return 'align-content-' + position
-          }
-        }
-      },
-      alignItems: {
-        name: 'className',
-        computedValues: {
+          },
           /**
            * Align items
            * @param {'start'|'end'|'center'|'baseline'|'stretch'} position
            * @param {'sm'|'md'|'lg'|'xl'|'xxl'} [breakpoint]
            * @returns {string}
            */
-          value (position, breakpoint) {
+          alignItems (position, breakpoint) {
             if (breakpoint) {
               return 'align-items-' + breakpoint + '-' + position
             }
 
             return 'align-items-' + position
-          }
-        }
-      },
-      alignSelf: {
-        name: 'className',
-        computedValues: {
+          },
           /**
-           * Align items
+           * Align self
            * @param {'start'|'end'|'center'|'baseline'|'stretch'} position
            * @param {'sm'|'md'|'lg'|'xl'|'xxl'} [breakpoint]
            * @returns {string}
            */
-          value (position, breakpoint) {
+          alignSelf (position, breakpoint) {
             if (breakpoint) {
               return 'align-self-' + breakpoint + '-' + position
             }
