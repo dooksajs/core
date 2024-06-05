@@ -1,13 +1,13 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
 import modalTitle from './modal-title.js'
 import { button } from '../index.js'
-import { background } from '../mixins/index.js'
+import { backgroundMixin, displayMixin, flexMixin } from '../mixins/index.js'
 
 const closeBtn = extendComponent(button, {
-  options: { btnClose: 'close' }
+  options: { btnClose: true }
 })
 
-export default createComponent({
+const modalHeader = createComponent({
   id: 'modal-content',
   tag: 'div',
   children: [modalTitle, closeBtn],
@@ -18,4 +18,30 @@ export default createComponent({
       value: 'modal-header'
     }
   ]
-}, [background])
+}, [backgroundMixin, displayMixin, flexMixin])
+
+/**
+ * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
+ * @typedef {import('../mixins/background.js').BackgroundMixin} BackgroundMixin
+ * @typedef {import('../mixins/display.js').DisplayMixin} DisplayMixin
+ * @typedef {import('../mixins/flex.js').FlexMixin} FlexMixin
+ */
+
+/**
+ * @typedef {Object} ComponentExtendModalHeader
+ * @property {BackgroundMixin|DisplayMixin|FlexMixin} options
+ */
+
+/**
+ * @param {ComponentExtend|ComponentExtendModalHeader} options
+ */
+function extendModalHeaderComponent (options) {
+  return extendComponent(modalHeader, options)
+}
+
+export {
+  modalHeader,
+  extendModalHeaderComponent
+}
+
+export default modalHeader
