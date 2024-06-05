@@ -1,7 +1,7 @@
 import modalContent from './modal-content.js'
-import createComponent from '@dooksa/create-component'
+import { createComponent, extendComponent } from '@dooksa/create-component'
 
-export default createComponent({
+const modalDialog = createComponent({
   id: 'modal-dialog',
   tag: 'div',
   children: [modalContent],
@@ -33,3 +33,32 @@ export default createComponent({
     }
   }
 })
+
+/**
+ * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
+ */
+
+/**
+ * @typedef {Object} ModalOptions
+ * @property {'sm'|'lg'|'xl'|'xxl'} [size]
+ * @property {'always'|'sm'|'md'|'lg'|'xl'} [fullscreen]
+ */
+
+/**
+ * @typedef {Object} ComponentExtendModalDialog
+ * @property {ModalOptions} options
+ */
+
+/**
+ * @param {ComponentExtend|ComponentExtendModalDialog} options
+ */
+function extendModalDialogComponent (options) {
+  return extendComponent(modalDialog, options)
+}
+
+export {
+  modalDialog,
+  extendModalDialogComponent
+}
+
+export default modalDialog
