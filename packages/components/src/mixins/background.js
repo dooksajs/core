@@ -58,9 +58,12 @@ export default createMixin({
           body: 'bg-body',
           black: 'bg-black',
           white: 'bg-white',
-          transparent: 'bg-transparent',
-          gradient: 'bg-gradient'
+          transparent: 'bg-transparent'
         }
+      },
+      backgroundGradient: {
+        name: 'className',
+        value: 'bg-gradient'
       },
       backgroundOpacity: {
         name: 'className',
