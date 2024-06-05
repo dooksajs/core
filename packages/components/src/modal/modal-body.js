@@ -4,14 +4,14 @@ import modalFooter from './modal-footer.js'
 import createComponent from '@dooksa/create-component'
 
 export default createComponent({
-  id: 'modal-content',
+  id: 'modal-body',
   tag: 'div',
   children: [modalHeader, modalBody, modalFooter],
   allowedChildren: [modalHeader, modalBody, modalFooter],
   properties: [
     {
       name: 'className',
-      value: 'modal-content'
+      value: 'modal-body'
     }
   ]
 })
