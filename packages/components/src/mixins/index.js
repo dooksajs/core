@@ -12,10 +12,10 @@ import eventTypeFocusMixin from './event-type-focus.js'
 import eventTypeFullscreenMixin from './event-type-fullscreen.js'
 import eventTypeKeyboardMixin from './event-type-keyboard.js'
 import eventTypeMouseMixin from './event-type-mouse.js'
-import eventTypeScrollMixin from './eventTypeScroll.js'
-import eventTypeSelectMixin from './eventTypeSelect.js'
-import eventTypeTouchMixin from './eventTypeTouch.js'
-import eventTypeTransitionMixin from './eventTypeTransition.js'
+import eventTypeScrollMixin from './event-type-scroll.js'
+import eventTypeSelectMixin from './event-type-select.js'
+import eventTypeTouchMixin from './event-type-touch.js'
+import eventTypeTransitionMixin from './event-type-transition.js'
 import flexMixin from './flex.js'
 import insetMixin from './inset.js'
 import levelMixin from './z-index.js'
@@ -24,8 +24,10 @@ import spacingMixin from './spacing.js'
 import translateMixin from './translate.js'
 import fontMixin from './font.js'
 import textMixin from './text.js'
+import roundedMixin from './rounded.js'
 
 export {
+  roundedMixin,
   fontMixin,
   textMixin,
   backgroundMixin, buttonMixin, displayMixin, eventTypeAnimationMixin,
