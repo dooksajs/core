@@ -1,5 +1,33 @@
 import { createMixin } from '@dooksa/create-component'
 
+/**
+ * @typedef {Object} BackgroundMixin
+ * @property {'primary'|
+ * 'primarySubtle'|
+ * 'secondary'|
+ * 'secondarySubtle'|
+ * 'success'|
+ * 'successSubtle'|
+ * 'danger'|
+ * 'dangerSubtle'|
+ * 'warning'|
+ * 'warningSubtle'|
+ * 'info'|
+ * 'infoSubtle'|
+ * 'light'|
+ * 'lightSubtle'|
+ * 'dark'|
+ * 'darkSubtle'|
+ * 'body'|
+ * 'bodySecondary'|
+ * 'bodyTertiary'|
+ * 'black'|
+ * 'white'|
+ * 'transparent'} [backgroundColor]
+ * @property {boolean} [backgroundGradient]
+ * @property {'10'|'25'|'50'|'75'} [backgroundOpacity]
+ */
+
 export default createMixin({
   metadata: {
     id: 'background'
