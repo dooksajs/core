@@ -1,5 +1,30 @@
 import { createMixin } from '@dooksa/create-component'
 
+/**
+ * @typedef {Object} ButtonMixin
+ * @property {boolean} [btn]
+ * @property {boolean} [btnClose]
+ * @property {'sm'|'lg'} [btnSize]
+ * @property {'primary'|
+ * 'secondary'|
+ * 'success'|
+ * 'warning'|
+ * 'danger'|
+ * 'info'|
+ * 'light'|
+ * 'dark'|
+ * 'link'|
+ * 'outlineDanger'|
+ * 'outlineDark'|
+ * 'outlineInfo'|
+ * 'outlineLight'|
+ * 'outlinePrimary'|
+ * 'outlineSecondary'|
+ * 'outlineSuccess'|
+ * 'outlineWarning'} [btnVariant]
+ * @property {boolean} [btnClose]
+ */
+
 export default createMixin({
   metadata: {
     id: 'button'
@@ -8,9 +33,7 @@ export default createMixin({
     options: {
       btn: {
         name: 'className',
-        values: {
-          btn: 'btn'
-        }
+        value: 'btn'
       },
       btnVariant: {
         name: 'className',
@@ -37,15 +60,13 @@ export default createMixin({
       btnSize: {
         name: 'className',
         values: {
-          small: 'btn-sm',
-          large: 'btn-lg'
+          sm: 'btn-sm',
+          lg: 'btn-lg'
         }
       },
       btnClose: {
         name: 'className',
-        values: {
-          close: 'btn-close'
-        }
+        value: 'btn-close'
       }
     },
     styles: [
