@@ -1,6 +1,18 @@
 import { createMixin } from '@dooksa/create-component'
 
 /**
+ * @typedef {'0'|'50'|'100'} InsetValue
+ */
+
+/**
+ * @typedef {Object} InsetMixin
+ * @property {InsetValue} [top]
+ * @property {InsetValue} [bottom]
+ * @property {InsetValue} [start]
+ * @property {InsetValue} [end]
+ */
+
+/**
  * @TODO Need to expose these values
  */
 const positionValues = {
@@ -15,57 +27,64 @@ export default createMixin({
   },
   data: {
     options: {
-      inset: {
+      top: {
         name: 'className',
-        computedValues: {
-          /**
-           * Top
-           * @param {number} strength
-           * @returns {string}
-           */
-          top (strength) {
-            if (!positionValues[strength]) {
-              throw Error('Top position value out of range:' + strength)
-            }
-
-            return 'top-' + strength
-          },
-          /**
-           * Top
-           * @param {number} strength
-           * @returns {string}
-           */
-          bottom (strength) {
-            if (!positionValues[strength]) {
-              throw Error('Top position value out of range:' + strength)
-            }
-
-            return 'bottom-' + strength
-          },
-          /**
-           * Top
-           * @param {number} strength
-           * @returns {string}
-           */
-          end (strength) {
-            if (!positionValues[strength]) {
-              throw Error('Top position value out of range:' + strength)
-            }
-
-            return 'end-' + strength
-          },
-          /**
-           * Top
-           * @param {number} strength
-           * @returns {string}
-           */
-          start (strength) {
-            if (!positionValues[strength]) {
-              throw Error('Top position value out of range:' + strength)
-            }
-
-            return 'start-' + strength
+        /**
+         * Top
+         * @param {InsetValue} strength
+         * @returns {string}
+         */
+        computedValue (strength) {
+          if (!positionValues[strength]) {
+            throw Error('Top position value out of range:' + strength)
           }
+
+          return 'top-' + strength
+        }
+      },
+      bottom: {
+        name: 'className',
+        /**
+         * Bottom
+         * @param {InsetValue} strength
+         * @returns {string}
+         */
+        computedValue (strength) {
+          if (!positionValues[strength]) {
+            throw Error('Top position value out of range:' + strength)
+          }
+
+          return 'bottom-' + strength
+        }
+      },
+      end: {
+        name: 'className',
+        /**
+         * End
+         * @param {InsetValue} strength
+         * @returns {string}
+         */
+        computedValue (strength) {
+          if (!positionValues[strength]) {
+            throw Error('Top position value out of range:' + strength)
+          }
+
+          return 'end-' + strength
+        }
+      },
+      start: {
+        name: 'className',
+        /**
+         * Start
+         * @param {InsetValue} strength
+         * @returns {string}
+         */
+        computedValue (strength) {
+          if (!positionValues[strength]) {
+            throw Error('Top position value out of range:' + strength)
+          }
+
+          return 'start-' + strength
         }
       }
     },
