@@ -1,7 +1,7 @@
-import createComponent from '@dooksa/create-component'
+import { createComponent, extendComponent } from '@dooksa/create-component'
 import spacing from '../mixins/spacing.js'
 
-export default createComponent({
+const icon = createComponent({
   id: 'icon',
   tag: 'iconify-icon',
   component: () => import('iconify-icon'),
@@ -42,3 +42,32 @@ export default createComponent({
     }
   ]
 }, [spacing])
+
+/**
+ * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
+ * @typedef {import('../mixins/spacing.js').SpacingMixin} SpacingMixin
+ */
+
+/**
+ * @typedef {Object} ComponentExtendText
+ * @property {string} [icon] - Icon value from iconify
+ */
+
+/**
+ * @typedef {Object} MergeOptions
+ * @property {SpacingMixin|ComponentExtendText} options
+ */
+
+/**
+ * @param {ComponentExtend|MergeOptions} options
+ */
+function extendIconComponent (options) {
+  extendComponent(icon, options)
+}
+
+export {
+  icon,
+  extendIconComponent
+}
+
+export default icon
