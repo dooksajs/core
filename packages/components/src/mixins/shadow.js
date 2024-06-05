@@ -1,5 +1,11 @@
 import { createMixin } from '@dooksa/create-component'
 
+/**
+ * @typedef {Object} ShadowMixin
+ * @property {'none'|'sm'|'md'|'lg'} [shadow]
+ */
+
+
 export default createMixin({
   metadata: {
     id: 'shadow'
