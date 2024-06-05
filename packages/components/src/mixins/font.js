@@ -1,5 +1,14 @@
 import { createMixin } from '@dooksa/create-component'
 
+/**
+ * @typedef {Object} FontMixin
+ * @property {'1'|'2'|'3'|'4'|'5'|'6'} [fontSize]
+ * @property {'bold'|'bolder'|'semibold'|'medium'|'normal'|'light'|'lighter'} [fontWeight]
+ * @property {'italic'|'normal'} [fontItalic]
+ * @property {boolean} [fontReset]
+ * @property {boolean} [fontMonospace]
+ */
+
 export default createMixin({
   metadata: {
     id: 'font'
