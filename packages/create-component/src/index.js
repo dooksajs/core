@@ -22,7 +22,7 @@ import { objectHash } from '@dooksa/utils'
  * @property {boolean} [replace] - Replace property value
  * @property {Object.<string, string>} [values] - Attribute values
  * @property {string} [value] - Attribute value
- * @property {Object.<string,Function>} [computedValues]
+ * @property {Function} [computedValue]
  */
 
 /**
@@ -178,6 +178,18 @@ function createMixin (mixin) {
   return result
 }
 
+/** @typedef {'sm'|'md'|'lg'|'always'} BreakpointAlwaysLg */
+/** @typedef {'sm'|'md'|'lg'|'xl'|'xxl'} BreakpointSmXXL */
+/** @typedef {'sm'|'md'|'lg'|'xl'|'xxl'|'always'} BreakpointAlwaysXXL */
+
+/**
+ * Create a modified component
+ * @typedef {Object} ComponentExtend
+ * @property {ComponentMixinMetadata} [metadata]
+ * @property {ComponentEvent[]} [events]
+ * @property {Object} [options]
+ * @property {Array<Component|ComponentInstance>} [children]
+ */
 
 /**
  * Create a modified component
@@ -216,6 +228,16 @@ function extendComponent (component, { metadata, options, children, events }) {
           throw new Error('Component option does not exist "' + item +'"')
         }
 
+        if (componentOption.value) {
+          const newValue = componentOption.value
+
+          if (newValue == null) {
+            throw new Error('Component modifier value has an unexpected value "' + item + '"')
+          }
+
+          newPropertyValue = newValue
+        }
+
         if (componentOption.values) {
           const newValue = componentOption.values[item]
 
@@ -226,38 +248,19 @@ function extendComponent (component, { metadata, options, children, events }) {
           newPropertyValue = newValue
         }
 
-        // process computed values
-        if (componentOption.computedValues) {
-          if (Array.isArray(item)) {
-            let separator = ''
-            newPropertyValue = ''
+        if (componentOption.computedValue) {
+          const computeValue = componentOption.computedValue
 
-            for (let i = 0; i < item.length; i++) {
-              const element = item[i]
-              const computeValue = componentOption.computedValues[element.name]
-
-              if (element.values) {
-                newPropertyValue += separator + computeValue(...element.values)
-              } else {
-                newPropertyValue += separator + computeValue(element.value)
-              }
-
-              separator = ' '
-            }
-          } else {
-            const computeValue = componentOption.computedValues[item.name]
-
-            if (item.values) {
-              newPropertyValue = computeValue(...item.values)
-            } else {
-              newPropertyValue = computeValue(item.value)
-            }
+          if (typeof computeValue !== 'function') {
+            throw new Error('Component modifier value has an unexpected value "' + item + '"')
           }
+
+          newPropertyValue = computeValue(item)
         }
 
         /**
-         * @type {ComponentProperty}
-         */
+           * @type {ComponentProperty}
+           */
         const newProperty = {
           name: propertyName,
           value: newPropertyValue
@@ -291,12 +294,6 @@ function extendComponent (component, { metadata, options, children, events }) {
     }
   }
 
-  // prepare result
-  const result = {
-    id: component.id,
-    hash: component.hash,
-    properties
-  }
 
   if (events) {
     result.events = events
