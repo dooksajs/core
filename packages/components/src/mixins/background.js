@@ -6,19 +6,41 @@ export default createMixin({
   },
   data: {
     options: {
-      background: {
+      backgroundColor: {
         name: 'className',
         values: {
           primary: 'bg-primary',
           primarySubtle: 'bg-primary-subtle',
           secondary: 'bg-secondary',
-          secondarySubtle: 'bg-secondary-subtle'
+          secondarySubtle: 'bg-secondary-subtle',
+          success: 'bg-success',
+          successSubtle: 'bg-success-subtle',
+          danger: 'bg-danger',
+          dangerSubtle: 'bg-danger-subtle',
+          warning: 'bg-warning',
+          warningSubtle: 'bg-warning-subtle',
+          info: 'bg-info',
+          infoSubtle: 'bg-info-subtle',
+          light: 'bg-light',
+          lightSubtle: 'bg-light-subtle',
+          dark: 'bg-dark',
+          darkSubtle: 'bg-dark-subtle',
+          bodySecondary: 'bg-body-secondary',
+          bodyTertiary: 'bg-body-tertiary',
+          body: 'bg-body',
+          black: 'bg-black',
+          white: 'bg-white',
+          transparent: 'bg-transparent',
+          gradient: 'bg-gradient'
         }
       },
-      gradient: {
+      backgroundOpacity: {
         name: 'className',
         values: {
-          primary: 'bg-primary bg-gradient'
+          '10': 'bg-opacity-10',
+          '25': 'bg-opacity-25',
+          '50': 'bg-opacity-50',
+          '75': 'bg-opacity-75'
         }
       }
     }
