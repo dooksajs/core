@@ -1,5 +1,10 @@
 import { createMixin } from '@dooksa/create-component'
 
+/**
+ * @typedef {Object} TranslateMixin
+ * @property {'middle'|'bottom'|'top'} [translate]
+ */
+
 export default createMixin({
   metadata: {
     id: 'translate'
