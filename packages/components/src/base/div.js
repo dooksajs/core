@@ -25,7 +25,7 @@ const div = createComponent({
  */
 
 /**
- * @param {ComponentExtendDiv} options
+ * @param {ComponentExtend|ComponentExtendDiv} options
  */
 function extendDivComponent (options) {
   return extendComponent(div, options)
