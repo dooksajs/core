@@ -2,15 +2,15 @@ import { createComponent, extendComponent } from '@dooksa/create-component'
 import text from '../text/text.js'
 import card from '../card/card.js'
 
-const linkText = extendComponent(text, {
+const anchorText = extendComponent(text, {
   options: { text: 'Link text...' }
 })
 
-const a = createComponent({
-  id: 'a',
+const anchor = createComponent({
+  id: 'anchor',
   tag: 'a',
-  children: [linkText],
-  allowedChildren: [card, linkText],
+  children: [anchorText],
+  allowedChildren: [card, anchorText],
   properties: [
     {
       name: 'href',
@@ -26,7 +26,6 @@ const a = createComponent({
   ]
 })
 
-
 /**
  * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
  */
@@ -34,13 +33,13 @@ const a = createComponent({
 /**
  * @param {ComponentExtend} options
  */
-function extendAComponent (options) {
-  return extendComponent(a, options)
+function extendAnchorComponent (options) {
+  return extendComponent(anchor, options)
 }
 
 export {
-  a,
-  extendAComponent
+  anchor,
+  extendAnchorComponent
 }
 
-export default a
+export default anchor
