@@ -18,15 +18,17 @@ import eventTypeTouchMixin from './event-type-touch.js'
 import eventTypeTransitionMixin from './event-type-transition.js'
 import flexMixin from './flex.js'
 import insetMixin from './inset.js'
-import levelMixin from './z-index.js'
+import zIndexMixin from './z-index.js'
 import positionMixin from './position.js'
 import spacingMixin from './spacing.js'
 import translateMixin from './translate.js'
 import fontMixin from './font.js'
 import textMixin from './text.js'
 import roundedMixin from './rounded.js'
+import shadowMixin from './shadow.js'
 
 export {
+  shadowMixin,
   roundedMixin,
   fontMixin,
   textMixin,
@@ -45,6 +47,6 @@ export {
   eventTypeSelectMixin,
   eventTypeTouchMixin,
   eventTypeTransitionMixin, flexMixin,
-  insetMixin, levelMixin, positionMixin, spacingMixin, translateMixin
+  insetMixin, zIndexMixin, positionMixin, spacingMixin, translateMixin
 }
 

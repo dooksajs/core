@@ -1,5 +1,1 @@
-import icon from './icon.js'
-
-export {
-  icon
-}
+export * from './icon.js'

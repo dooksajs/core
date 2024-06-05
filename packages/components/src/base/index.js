@@ -1,9 +1,3 @@
-import link from './link.js'
-import divider from './divider.js'
-import horizontalRule from './horizontal-rule.js'
-
-export {
-  horizontalRule,
-  link,
-  divider
-}
+export { anchor, extendAnchorComponent } from './anchor.js'
+export { div, extendDivComponent } from './div.js'
+export { hr, extendHrComponent } from './hr.js'
