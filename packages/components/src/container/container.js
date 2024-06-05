@@ -1,10 +1,10 @@
-import createComponent from '@dooksa/create-component'
+import { createComponent, extendComponent } from '@dooksa/create-component'
 import card from '../card/card.js'
 import { backgroundMixin, spacingMixin, positionMixin } from '../mixins/index.js'
 import text from '../text/text.js'
 import button from '../button/button.js'
 
-export default createComponent({
+const container = createComponent({
   id: 'container',
   tag: 'div',
   allowedChildren: [card, text, button],
@@ -15,3 +15,29 @@ export default createComponent({
     }
   ]
 }, [backgroundMixin, spacingMixin, positionMixin])
+
+/**
+ * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
+ * @typedef {import('../mixins/background.js').BackgroundMixin} BackgroundMixin
+ * @typedef {import('../mixins/spacing.js').SpacingMixin} SpacingMixin
+ * @typedef {import('../mixins/position.js').PositionMixin} PositionMixin
+ */
+
+/**
+ * @typedef {Object} ComponentExtendContainer
+ * @property {BackgroundMixin|SpacingMixin|PositionMixin} options
+ */
+
+/**
+ * @param {ComponentExtend|ComponentExtendContainer} options
+ */
+function extendContainerComponent (options) {
+  extendComponent(text, options)
+}
+
+export {
+  container,
+  extendContainerComponent
+}
+
+export default container
