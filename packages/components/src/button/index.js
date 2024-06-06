@@ -1,5 +1,2 @@
-import button from './button.js'
+export { button, extendButton } from './button.js'
 
-export {
-  button
-}

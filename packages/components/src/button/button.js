@@ -1,16 +1,16 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
 import { buttonMixin, eventTypeMouseMixin } from '../mixins/index.js'
-import text from '../text/text.js'
-import icon from '../icon/icon.js'
+import { extendText } from '../text/text.js'
+import { extendIcon } from '../icon/icon.js'
 
-const btnText = extendComponent(text, {
+const btnText = extendText({
   options: { text: 'Button' }
 })
-const btnIcon = extendComponent(icon, {
+const btnIcon = extendIcon({
   options: { icon: 'material-symbols:info-outline' }
 })
 
-export default createComponent({
+const button = createComponent({
   id: 'button',
   tag: 'button',
   children: [btnText, btnIcon],
@@ -20,8 +20,34 @@ export default createComponent({
       name: 'type',
       value: 'button'
     },
-    { name: 'className',
+    {
+      name: 'className',
       value: 'btn'
     }
   ]
 }, [buttonMixin, eventTypeMouseMixin])
+
+
+/**
+ * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
+ * @typedef {import('../mixins/button.js').ButtonMixin} ButtonMixin
+ */
+
+/**
+ * @typedef {Object} ButtonExtendOptions
+ * @property {ButtonMixin} options
+ */
+
+/**
+ * @param {ComponentExtend|ButtonExtendOptions} options
+ */
+function extendButton (options) {
+  return extendComponent(button, options)
+}
+
+export {
+  button,
+  extendButton
+}
+
+export default button
