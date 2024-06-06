@@ -1,3 +1,5 @@
 export { anchor, extendAnchor } from './anchor.js'
 export { div, extendDiv } from './div.js'
 export { hr, extendHr } from './hr.js'
+export { h1, extendH1 } from './h1.js'
+export { h2, extendH2 } from './h2.js'
