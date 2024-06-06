@@ -47,10 +47,10 @@ export default createMixin({
       backgroundOpacity: {
         name: 'className',
         values: {
-          '10': 'bg-opacity-10',
-          '25': 'bg-opacity-25',
-          '50': 'bg-opacity-50',
-          '75': 'bg-opacity-75'
+          10: 'bg-opacity-10',
+          25: 'bg-opacity-25',
+          50: 'bg-opacity-50',
+          75: 'bg-opacity-75'
         }
       }
     }
