@@ -1,9 +1,8 @@
 import { extendText } from '../text/text.js'
 import { extendIcon } from '../icon/icon.js'
 import { extendDiv } from '../base/div.js'
-import { extendButton } from '../button/button.js'
 import { extendModal } from '../modal/modal.js'
-import { modalBody } from '../modal/modal-body.js'
+import { extendModalBody } from '../modal/modal-body.js'
 import { extendModalDialog } from '../modal/modal-dialog.js'
 import { extendModalContent } from '../modal/modal-content.js'
 import { extendModalHeader } from '../modal/modal-header.js'
@@ -74,8 +73,16 @@ const sectionModalHeader = extendModalHeader({
   }
 })
 
+const sectionModalBody = extendModalBody({
+  options: {
+    displayFlex: 'always',
+    flexDirectionColumn: 'always',
+    gapColumn: '2'
+  }
+})
+
 const sectionModalContent = extendModalContent({
-  children: [sectionModalHeader, modalBody],
+  children: [sectionModalHeader, sectionModalBody],
   options: {
     shadow: 'lg'
   }
