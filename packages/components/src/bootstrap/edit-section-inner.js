@@ -1,46 +1,38 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
-import text from '../text/text.js'
-import icon from '../icon/icon.js'
-import divider from '../base/divider.js'
-import eventTypeMouse from '../mixins/eventTypeMouse.js'
+import { extendText } from '../text/text.js'
+import { extendIcon } from '../icon/icon.js'
+import { extendDiv } from '../base/div.js'
+import eventTypeMouse from '../mixins/event-type-mouse.js'
 
-const editText = extendComponent(text, {
+const editText = extendText({
   options: { text: 'Edit' }
 })
 
-const btnIcon = extendComponent(icon, {
+const btnIcon = extendIcon({
   options: {
     icon: 'bi:pencil-square',
-    spacing: {
-      name: 'margin',
-      values: [1, 'e']
+    margin: {
+      strength: '1',
+      direction: 'end'
     }
   }
 })
 
-const btn = extendComponent(divider, {
+const btn = extendDiv({
   children: [btnIcon, editText],
   options: {
-    btn: 'btn',
+    btn: true,
     btnVariant: 'primary',
-    btnSize: 'small'
+    btnSize: 'sm'
   }
 })
 
-const div = extendComponent(divider, {
+const div = extendDiv({
   children: [btn],
   options: {
     position: 'absolute',
-    inset: [
-      {
-        name: 'top',
-        value: 0
-      },
-      {
-        name: 'end',
-        value: 0
-      }
-    ]
+    top: '0',
+    end: '0'
   }
 })
 
@@ -61,7 +53,7 @@ export default createComponent({
   events: [
     {
       on: 'click',
-      actionId: 'open-section-editor'
+      actionId: 'component-add'
     }
   ]
 }, [eventTypeMouse])

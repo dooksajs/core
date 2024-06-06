@@ -1,47 +1,51 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
-import text from '../text/text.js'
-import icon from '../icon/icon.js'
-import divider from '../base/divider.js'
-import eventTypeMouse from '../mixins/eventTypeMouse.js'
-import button from '../button/button.js'
-import horizontalRule from '../base/horizontal-rule.js'
+import { extendText } from '../text/text.js'
+import { extendIcon } from '../icon/icon.js'
+import { extendDiv } from '../base/div.js'
+import { extendButton } from '../button/button.js'
+import { extendHr } from '../base/hr.js'
 
-const editText = extendComponent(text, {
-  options: { text: 'Add widget' }
+const editText = extendText({
+  options: { text: 'Add component' },
+  events: [
+    {
+      on: 'click',
+      actionId: 'add-component'
+    }
+  ]
 })
 
-const btnIcon = extendComponent(icon, {
+const btnIcon = extendIcon({
   options: {
     icon: 'mdi:plus-circle-outline',
-    spacing: {
-      name: 'margin',
-      values: [1, 'e']
+    margin: {
+      strength: '1',
+      direction: 'end'
     }
   }
 })
 
-const btn = extendComponent(button, {
+const btn = extendButton({
   children: [btnIcon, editText],
   options: {
     btnVariant: 'outlineSecondary'
   }
 })
 
-const middleDiv = extendComponent(divider, {
+const middleDiv = extendDiv({
   children: [btn],
   options: {
-    spacing: {
-      name: 'padding',
-      values: ['2', 'x']
+    padding: {
+      strength: '2',
+      direction: 'xAxis'
     }
   }
 })
 
-const hr = extendComponent(horizontalRule, {
+const hr = extendHr({
   options: {
-    flexFill: {
-      name: 'grow',
-      value: '1'
+    flexGrow: {
+      size: '1'
     }
   }
 })
@@ -54,10 +58,6 @@ export default createComponent({
     {
       name: 'className',
       value: 'd-flex my-2 align-items-center'
-    },
-    {
-      name: 'href',
-      value: '#add-component'
     }
   ]
 })
