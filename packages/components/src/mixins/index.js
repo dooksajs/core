@@ -26,8 +26,10 @@ import fontMixin from './font.js'
 import textMixin from './text.js'
 import roundedMixin from './rounded.js'
 import shadowMixin from './shadow.js'
+import borderMixin from './border.js'
 
 export {
+  borderMixin,
   shadowMixin,
   roundedMixin,
   fontMixin,
