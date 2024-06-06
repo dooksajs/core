@@ -12,7 +12,8 @@ import {
   spacingMixin,
   translateMixin,
   fontMixin,
-  borderMixin
+  borderMixin,
+  gapMixin
 } from '../mixins/index.js'
 
 const div = createComponent({
@@ -31,7 +32,8 @@ const div = createComponent({
   displayMixin,
   flexMixin,
   fontMixin,
-  borderMixin
+  borderMixin,
+  gapMixin
 ])
 
 /**
@@ -49,6 +51,7 @@ const div = createComponent({
  * @typedef {import('../mixins/rounded.js').RoundedMixin} RoundedMixin
  * @typedef {import('../mixins/font.js').FontMixin} FontMixin
  * @typedef {import('../mixins/border.js').BorderMixin} BorderMixin
+ * @typedef {import('../mixins/gap.js').GapMixin} GapMixin
  */
 
 /**
@@ -65,7 +68,8 @@ const div = createComponent({
  * TranslateMixin|
  * ButtonMixin|
  * DisplayMixin|
- * BorderMixin} options
+ * BorderMixin|
+ * GapMixin} options
  */
 
 /**
