@@ -1,4 +1,5 @@
 export * from './button/index.js'
+export * from './button-group/index.js'
 export { icon, extendIcon } from './icon/index.js'
 export * from './modal/index.js'
 export { text, extendText } from './text/index.js'
