@@ -9,9 +9,11 @@ import { createMixin } from '@dooksa/create-component'
  * @property {BreakpointAlwaysXXL} [displayBlock]
  * @property {BreakpointAlwaysXXL} [displayFlex]
  * @property {BreakpointAlwaysXXL} [displayGrid]
+ * @property {BreakpointAlwaysXXL} [displayInline]
  * @property {BreakpointAlwaysXXL} [displayInlineBlock]
  * @property {BreakpointAlwaysXXL} [displayInlineFlex]
  * @property {BreakpointAlwaysXXL} [displayInlineGrid]
+ * @property {BreakpointAlwaysXXL} [displayNone]
  * @property {BreakpointAlwaysXXL} [displayTable]
  * @property {BreakpointAlwaysXXL} [displayTableCell]
  * @property {BreakpointAlwaysXXL} [displayTableRow]
@@ -23,6 +25,21 @@ export default createMixin({
   },
   data: {
     options: {
+      displayNone: {
+        name: 'className',
+        /**
+         * Flex
+         * @param {BreakpointAlwaysXXL} [breakpoint]
+         * @returns {string}
+         */
+        computedValue (breakpoint) {
+          if (breakpoint !== 'always') {
+            return 'd-' + breakpoint + '-none'
+          }
+
+          return 'd-none'
+        }
+      },
       displayFlex: {
         name: 'className',
         /**
@@ -68,10 +85,10 @@ export default createMixin({
           return 'd-block'
         }
       },
-      displayInlineBlock: {
+      displayInline: {
         name: 'className',
         /**
-         * Inline block
+         * Inline
          * @param {BreakpointAlwaysXXL} [breakpoint]
          * @returns {string}
          */
@@ -81,6 +98,21 @@ export default createMixin({
           }
 
           return 'd-inline'
+        }
+      },
+      displayInlineBlock: {
+        name: 'className',
+        /**
+         * Inline block
+         * @param {BreakpointAlwaysXXL} [breakpoint]
+         * @returns {string}
+         */
+        computedValue (breakpoint) {
+          if (breakpoint !== 'always') {
+            return 'd-' + breakpoint + '-inline-block'
+          }
+
+          return 'd-inline-block'
         }
       },
       displayGrid: {
