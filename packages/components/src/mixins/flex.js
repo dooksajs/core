@@ -161,10 +161,10 @@ export default createMixin({
          */
         computedValue ({ position, breakpoint }) {
           if (breakpoint) {
-            return 'align-content-' + breakpoint + '-' + position
+            return 'align-items-' + breakpoint + '-' + position
           }
 
-          return 'align-content-' + position
+          return 'align-items-' + position
         }
       },
       alignSelf: {
