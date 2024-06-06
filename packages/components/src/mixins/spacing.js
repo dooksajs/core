@@ -1,25 +1,26 @@
 import { createMixin } from '@dooksa/create-component'
 
 /**
+ * @typedef {import('@dooksa/create-component').Spacer} Spacer
  * @typedef {'end'|'start'|'top'|'bottom'|'xAxis'|'yAxis'|'none'} SpacingDirection
  */
 
 /**
- * @typedef {Object} MarginMixin
- * @property {'0'|'1'|'2'|'3'|'4'|'5'|'auto'} strength
+ * @typedef {Object} SpacingMargin
+ * @property {'n5'|'n4'|'n3'|'n2'|'n1'|'0'|'1'|'2'|'3'|'4'|'5'|'auto'} strength
  * @property {SpacingDirection} [direction]
  */
 
 /**
- * @typedef {Object} PaddingMixin
- * @property {'0'|'1'|'2'|'3'|'4'|'5'} strength
+ * @typedef {Object} SpacingPadding
+ * @property {Spacer} strength
  * @property {SpacingDirection} [direction]
  */
 
 /**
  * @typedef {Object} SpacingMixin
- * @property {MarginMixin} [margin]
- * @property {PaddingMixin} [padding]
+ * @property {SpacingMargin} [margin]
+ * @property {SpacingPadding} [padding]
  */
 
 const directions = {
@@ -42,7 +43,7 @@ export default createMixin({
         name: 'className',
         /**
          * Margin
-         * @param {MarginMixin} param
+         * @param {SpacingMargin} param
          * @returns {string}
          */
         computedValue ({ strength, direction = 'none' }) {
@@ -53,7 +54,7 @@ export default createMixin({
         name: 'className',
         /**
          * Padding
-         * @param {PaddingMixin} param
+         * @param {SpacingPadding} param
          * @returns {string}
          */
         computedValue ({ strength, direction = 'none' }) {
