@@ -27,8 +27,10 @@ import textMixin from './text.js'
 import roundedMixin from './rounded.js'
 import shadowMixin from './shadow.js'
 import borderMixin from './border.js'
+import gapMixin from './gap.js'
 
 export {
+  gapMixin,
   borderMixin,
   shadowMixin,
   roundedMixin,
