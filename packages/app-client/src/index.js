@@ -1,10 +1,38 @@
 import {
+  addComponentButton,
+  anchor,
+  button,
+  card,
+  cardBody,
+  cardImg,
+  cardTitle,
+  container,
+  div,
+  editSectionInner,
+  editSectionOuter,
+  h1,
+  h2,
+  hr,
+  icon,
+  modal,
+  modalBody,
+  modalContent,
+  modalDialog,
+  modalFooter,
+  modalHeader,
+  modalSectionEdit,
+  modalTitle,
+  root,
+  text
+} from '@dooksa/components'
+import createApp from '@dooksa/create-app'
+import {
+  $fetch,
   action,
-  content,
   component,
+  content,
   data,
   event,
-  $fetch,
   list,
   metadata,
   operator,
@@ -13,25 +41,6 @@ import {
   route,
   token
 } from '@dooksa/plugins'
-import {
-  button,
-  modal,
-  icon,
-  text,
-  container,
-  card,
-  link,
-  divider,
-  root,
-  cardBody,
-  cardImg,
-  cardTitle,
-  horizontalRule,
-  addComponentButton,
-  editSectionInner,
-  editSectionOuter
-} from '@dooksa/components'
-import createApp from '@dooksa/create-app'
 
 export default createApp({
   plugins: [
@@ -50,21 +59,30 @@ export default createApp({
     page
   ],
   components: [
-    root,
-    horizontalRule,
+    addComponentButton,
+    anchor,
     button,
-    icon,
-    modal,
-    text,
-    container,
     card,
     cardBody,
     cardImg,
     cardTitle,
-    link,
-    addComponentButton,
+    container,
+    div,
     editSectionInner,
     editSectionOuter,
-    divider
+    h1,
+    h2,
+    hr,
+    icon,
+    modal,
+    modalBody,
+    modalContent,
+    modalDialog,
+    modalFooter,
+    modalHeader,
+    modalSectionEdit,
+    modalTitle,
+    root,
+    text
   ]
 })

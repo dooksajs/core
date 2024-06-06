@@ -1,10 +1,38 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
-import { backgroundMixin, buttonMixin, displayMixin, flexMixin, insetMixin, zIndexMixin, positionMixin, spacingMixin, translateMixin } from '../mixins/index.js'
+import {
+  backgroundMixin,
+  roundedMixin,
+  buttonMixin,
+  shadowMixin,
+  displayMixin,
+  flexMixin,
+  insetMixin,
+  zIndexMixin,
+  positionMixin,
+  spacingMixin,
+  translateMixin,
+  fontMixin,
+  borderMixin
+} from '../mixins/index.js'
 
 const div = createComponent({
   id: 'div',
   tag: 'div'
-}, [backgroundMixin, positionMixin, spacingMixin, zIndexMixin, insetMixin, translateMixin, buttonMixin, displayMixin, flexMixin])
+}, [
+  backgroundMixin,
+  roundedMixin,
+  positionMixin,
+  shadowMixin,
+  spacingMixin,
+  zIndexMixin,
+  insetMixin,
+  translateMixin,
+  buttonMixin,
+  displayMixin,
+  flexMixin,
+  fontMixin,
+  borderMixin
+])
 
 /**
  * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
@@ -17,11 +45,27 @@ const div = createComponent({
  * @typedef {import('../mixins/translate.js').TranslateMixin} TranslateMixin
  * @typedef {import('../mixins/button.js').ButtonMixin} ButtonMixin
  * @typedef {import('../mixins/display.js').DisplayMixin} DisplayMixin
+ * @typedef {import('../mixins/shadow.js').ShadowMixin} ShadowMixin
+ * @typedef {import('../mixins/rounded.js').RoundedMixin} RoundedMixin
+ * @typedef {import('../mixins/font.js').FontMixin} FontMixin
+ * @typedef {import('../mixins/border.js').BorderMixin} BorderMixin
  */
 
 /**
  * @typedef {Object} ExtendDivOptions
- * @property {BackgroundMixin|FlexMixin|PositionMixin|SpacingMixin|ZIndexMixin|InsetMixin|TranslateMixin|ButtonMixin|DisplayMixin} options
+ * @property {FontMixin|
+ * RoundedMixin|
+ * ShadowMixin|
+ * BackgroundMixin|
+ * FlexMixin|
+ * PositionMixin|
+ * SpacingMixin|
+ * ZIndexMixin|
+ * InsetMixin|
+ * TranslateMixin|
+ * ButtonMixin|
+ * DisplayMixin|
+ * BorderMixin} options
  */
 
 /**
