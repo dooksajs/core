@@ -1,5 +1,14 @@
 import { createMixin } from '@dooksa/create-component'
 
+/**
+ * @typedef {'0'|'1'|'2'|'3'|'n1'} ZIndex
+ */
+
+/**
+ * @typedef {Object} ZIndexMixin
+ * @property {ZIndex} [zIndex]
+ */
+
 export default createMixin({
   metadata: {
     id: 'zIndex'
@@ -10,7 +19,7 @@ export default createMixin({
         name: 'className',
         /**
          * Z-index
-         * @param {number|'n1'} strength
+         * @param {ZIndex} strength
          * @returns {string}
          */
         computedValue (strength) {
