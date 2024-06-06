@@ -62,7 +62,7 @@ const icon = createComponent({
  * @param {ComponentExtend|MergeOptions} options
  */
 function extendIcon (options) {
-  extendComponent(icon, options)
+  return extendComponent(icon, options)
 }
 
 export {
