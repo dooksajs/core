@@ -9,6 +9,7 @@ import { objectHash } from '@dooksa/utils'
  * @property {string} [hash] - Component hash
  * @property {Function} [component] - Lazy load component
  * @property {boolean} [isLoaded] - Marks if web component is loaded
+ * @property {string} [parentId] - Parent template Id if component was extended
  * @property {ComponentMixinMetadata[]} [mixins]
  */
 
@@ -181,6 +182,30 @@ function createMixin (mixin) {
 /** @typedef {'sm'|'md'|'lg'|'always'} BreakpointAlwaysLg */
 /** @typedef {'sm'|'md'|'lg'|'xl'|'xxl'} BreakpointSmXXL */
 /** @typedef {'sm'|'md'|'lg'|'xl'|'xxl'|'always'} BreakpointAlwaysXXL */
+/** @typedef {'10'|'25'|'50'|'75'} Opacity */
+/**
+ * @typedef {'primary'|
+ * 'primarySubtle'|
+ * 'secondary'|
+ * 'secondarySubtle'|
+ * 'success'|
+ * 'successSubtle'|
+ * 'danger'|
+ * 'dangerSubtle'|
+ * 'warning'|
+ * 'warningSubtle'|
+ * 'info'|
+ * 'infoSubtle'|
+ * 'light'|
+ * 'lightSubtle'|
+ * 'dark'|
+ * 'darkSubtle'|
+ * 'body'|
+ * 'bodySecondary'|
+ * 'bodyTertiary'|
+ * 'black'|
+ * 'white'} Color
+ */
 
 /**
  * Create a modified component
