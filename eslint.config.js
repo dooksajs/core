@@ -22,6 +22,7 @@ export default [
           ignoreComments: false
         }
       ],
+      '@stylistic/js/quote-props': ['error', 'as-needed'],
       '@stylistic/js/space-before-function-paren': ['error', 'always'],
       '@stylistic/js/function-call-spacing': ['error', 'never'],
       '@stylistic/js/implicit-arrow-linebreak': ['error', 'beside'],
@@ -44,8 +45,8 @@ export default [
         }
       ],
       '@stylistic/js/object-curly-spacing': ['error', 'always'],
-      '@stylistic/js/object-curly-newline': ['error', { 'consistent': true }],
-      '@stylistic/js/object-property-newline': ['error', { 'allowAllPropertiesOnSameLine': false }],
+      '@stylistic/js/object-curly-newline': ['error', { consistent: true }],
+      '@stylistic/js/object-property-newline': ['error', { allowAllPropertiesOnSameLine: false }],
       '@stylistic/js/array-bracket-spacing': ['error', 'never'],
       '@stylistic/js/array-bracket-newline': ['error', 'consistent'],
       '@stylistic/js/array-element-newline': ['error', 'consistent'],
@@ -53,7 +54,7 @@ export default [
       '@stylistic/js/no-mixed-operators': [
         'error',
         {
-          'groups': [
+          groups: [
             [
               '+', '-', '*', '/', '%', '**'
             ],
@@ -66,7 +67,7 @@ export default [
             ['&&', '||'],
             ['in', 'instanceof']
           ],
-          'allowSamePrecedence': false
+          allowSamePrecedence: false
         }
       ],
       '@stylistic/js/key-spacing': [
