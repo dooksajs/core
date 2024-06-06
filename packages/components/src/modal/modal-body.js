@@ -1,13 +1,9 @@
-import modalHeader from './modal-header.js'
-import modalBody from './modal-body.js'
-import modalFooter from './modal-footer.js'
-import createComponent from '@dooksa/create-component'
+import { createComponent, extendComponent } from '@dooksa/create-component'
 
-export default createComponent({
+const modalBody = createComponent({
   id: 'modal-body',
   tag: 'div',
-  children: [modalHeader, modalBody, modalFooter],
-  allowedChildren: [modalHeader, modalBody, modalFooter],
+  allowedChildren: [],
   properties: [
     {
       name: 'className',
@@ -15,3 +11,26 @@ export default createComponent({
     }
   ]
 })
+
+
+/**
+ * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
+ */
+
+/**
+ * @param {ComponentExtend} options
+ */
+
+function extendModalBody (options) {
+  return extendComponent(modalBody, options)
+}
+
+export {
+  modalBody,
+  extendModalBody
+}
+
+export default modalBody
+
+
+
