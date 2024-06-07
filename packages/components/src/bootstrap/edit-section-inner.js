@@ -1,4 +1,4 @@
-import { createComponent, extendComponent } from '@dooksa/create-component'
+import { createComponent } from '@dooksa/create-component'
 import { extendText } from '../text/text.js'
 import { extendIcon } from '../icon/icon.js'
 import { extendDiv } from '../base/div.js'
