@@ -22,7 +22,6 @@ import { objectHash } from '@dooksa/utils'
  * Convert template action to dsAction data
  * @param {Object} source
  * @param {Object} availableMethods - List of active methods
- * @returns {Action} - Data that can be used to set dsAction/items and dsAction/sequence
  */
 export default (source, availableMethods) => {
   const actions = convertToActions(source, availableMethods)
@@ -105,7 +104,11 @@ export default (source, availableMethods) => {
 
   const sequenceId = objectHash(sequences)
 
-  return { blocks, sequences, sequenceId }
+  return {
+    blocks,
+    sequences,
+    sequenceId
+  }
 }
 
 /**
@@ -187,14 +190,16 @@ function convertToActions (
     return actions
   }
 
-  return { actions, node }
+  return {
+    actions,
+    node
+  }
 }
 
 /**
  * Get the last sequence children "data"
- * @param {ActionSequence} sequences - List of sequences
+ * @param {ActionSequence[]} sequences - List of sequences
  * @param {number} length - Last index of sequence
- * @returns {Array}
  */
 function getLastSequenceChildren (sequences, length) {
   const children = []
