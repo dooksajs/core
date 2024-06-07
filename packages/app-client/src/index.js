@@ -26,7 +26,6 @@ import {
   modalSectionEdit,
   modalSectionEditItem,
   modalTitle,
-  root,
   text
 } from '@dooksa/components'
 import createApp from '@dooksa/create-app'
@@ -90,7 +89,6 @@ export default createApp({
     modalSectionEdit,
     modalSectionEditItem,
     modalTitle,
-    root,
     text
   ]
 })
