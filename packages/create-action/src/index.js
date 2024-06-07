@@ -6,7 +6,7 @@ import availableMethods from './available-methods.js'
  * @property {ActionDispatch} [action_dispatch]
  * @property {DeleteDataValue} [delete_dataValue]
  * @property {ComponentAppend} [component_append]
- * @property {ComponentAppend} [component_appendTemplate]
+ * @property {ComponentRender} [component_render]
  * @property {EvalCondition} [eval_condition]
  * @property {GetActionValue} [get_actionValue]
  * @property {GetBlockValue} [get_blockValue]
@@ -39,6 +39,11 @@ import availableMethods from './available-methods.js'
 /**
  * @typedef {Object} ComponentAppend
  * @property {Action|string} nodeId
+ * @property {Action|string} id
+ */
+
+/**
+ * @typedef {Object} ComponentRender
  * @property {Action|string} id
  */
 
@@ -160,11 +165,11 @@ import availableMethods from './available-methods.js'
 /**
  * @typedef {Object} SetDataValueOptions
  * @property {Action|string} id
- * @property {Action|boolean} stopPropagation
- * @property {Action|boolean} merge
- * @property {Object} update
- * @property {Action[]|string[]|number[]} update.position
- * @property {'push'|'pull'|'pop'|'shift'|'unshift'|'splice'} update.method
+ * @property {Action|boolean} [stopPropagation]
+ * @property {Action|boolean} [merge]
+ * @property {Object} [update]
+ * @property {Action[]|string[]|number[]} [update.position]
+ * @property {'push'|'pull'|'pop'|'shift'|'unshift'|'splice'} [update.method]
  */
 
 /**
@@ -291,17 +296,31 @@ import availableMethods from './available-methods.js'
 
 /**
  * @param {string} id
- * @param {Action} data
+ * @param {Action[]} data
+ * @param {string[]} [dependencies]
  * @param {Object.<string, boolean>} [availableActions=availableMethods] - Allowed actions
  */
-function createAction (id, data, availableActions = availableMethods) {
-  const action = parseAction(data, availableActions)
+function createAction (id, data, dependencies = [], availableActions = availableMethods) {
+  const items = []
+  let blocks = {}
+  let sequences = {}
+
+
+  for (let i = 0; i < data.length; i++) {
+    const item = data[i]
+    const action = parseAction(item, availableActions)
+
+    items.push(action.sequenceId)
+    blocks = Object.assign(blocks, action.blocks)
+    sequences[action.sequenceId] = action.sequences
+  }
 
   return {
     id,
-    blocks: action.blocks,
-    sequences: action.sequences,
-    sequenceId: action.sequenceId
+    blocks,
+    sequences,
+    items,
+    dependencies
   }
 }
 

@@ -1,5 +1,11 @@
 import createPlugin from '@dooksa/create-plugin'
-import { dataUnsafeSetData, dataGenerateId, $getDataValue, $addDataListener, $setDataValue } from './data.js'
+import {
+  dataUnsafeSetData,
+  dataGenerateId,
+  $getDataValue,
+  $addDataListener,
+  $setDataValue
+} from './data.js'
 import { $emit } from './event.js'
 
 /**
@@ -11,6 +17,7 @@ import { $emit } from './event.js'
 /**
  * @typedef {Object} ComponentItem
  * @property {string} id - Component item id
+ * @property {string} parentId - Parent component item id
  * @property {ComponentInstance} component
  * @property {Component} template
  * @property {Object} [content]
@@ -22,7 +29,9 @@ import { $emit } from './event.js'
  * @param {string} name
  * @returns {Component}
  */
-let _$component = (name) => ({ id: '' })
+let _$component = (name) => ({
+  id: ''
+})
 
 /**
  * Get component data
@@ -32,8 +41,10 @@ let _$component = (name) => ({ id: '' })
  * @param {Node} [parentNode]
  * @returns {ComponentItem[]}
  */
-function getValues (id, result = [], parentItem, parentNode) {
-  const node = $getDataValue('component/nodes', { id })
+function getValues (id, parentId, result = [], parentItem, parentNode) {
+  const node = $getDataValue('component/nodes', {
+    id
+  })
 
   if (!node.isEmpty) {
     // children already attached
@@ -45,7 +56,9 @@ function getValues (id, result = [], parentItem, parentNode) {
     node.item.remove()
   }
 
-  let component = $getDataValue('component/items', { id })
+  let component = $getDataValue('component/items', {
+    id
+  })
   let templateId
   let isTemplate
 
@@ -66,22 +79,29 @@ function getValues (id, result = [], parentItem, parentNode) {
 
   const instance = {
     id,
+    parentId,
     component: component.item,
     template: template
   }
 
   if (isTemplate) {
     // create template
-    const item = templateInstance(id, template)
+    const item = templateInstance(id, parentId, template)
 
     // update instance component
     instance.component = item.component
   }
 
 
-  const content = $getDataValue('component/content', { id })
-  const children = $getDataValue('component/children', { id })
-  const events = $getDataValue('component/events', { id })
+  const content = $getDataValue('component/content', {
+    id
+  })
+  const children = $getDataValue('component/children', {
+    id
+  })
+  const events = $getDataValue('component/events', {
+    id
+  })
 
   // check if current component is out of date
   // if (component.hash !== template.hash) {
@@ -89,9 +109,7 @@ function getValues (id, result = [], parentItem, parentNode) {
   // }
 
   // add child component to parent
-  if (parentItem) {
-    parentItem.children.push(instance)
-  }
+
 
   // add content
   if (!content.isEmpty) {
@@ -105,14 +123,18 @@ function getValues (id, result = [], parentItem, parentNode) {
   if (!children.isEmpty) {
     instance.children = []
 
-    for (let i = 0; i < children.length; i++) {
-      const id = children[i]
+    for (let i = 0; i < children.item.length; i++) {
+      const id = children.item[i]
 
-      getValues(id, result, instance, node.item)
+      getValues(id, parentId, result, instance, node.item)
     }
   }
 
-  result.push(instance)
+  if (parentItem) {
+    parentItem.children.push(instance)
+  } else {
+    result.push(instance)
+  }
 
   return result
 }
@@ -144,22 +166,25 @@ function setContent (node, content, values) {
 }
 
 /**
- *
- * @param {string} id - Component instance Id
- * @param {Component} template
- * @param {ComponentInstance} component
- * @param {Object} [content]
- * @param {ComponentEvent[]} [events]
- * @param {ComponentItem[]} [children]
+ * @param {Object} item
+ * @param {string} item.parentId - Parent component instance Id
+ * @param {string} item.id - Component instance Id
+ * @param {Component} item.template
+ * @param {ComponentInstance} item.component
+ * @param {Object} [item.content]
+ * @param {ComponentEvent[]} [item.events]
+ * @param {ComponentItem[]} [item.children]
  * @returns {Promise<Node>}
  */
-function lazyLoad (id, template, component, content, events, children) {
+function lazyLoad (item) {
+  const template = item.template
+
   return new Promise((resolve, reject) => {
     template.component()
       .then(() => {
         template.isLoaded = true
 
-        const element = createNode(id, template, component, content, events, children)
+        const element = createNode(item)
 
         resolve(element)
       })
@@ -168,18 +193,29 @@ function lazyLoad (id, template, component, content, events, children) {
 }
 
 /**
- *
- * @param {string} id - Component instance Id
- * @param {Component} template
- * @param {ComponentInstance} component
- * @param {Object} [content]
- * @param {ComponentEvent[]} [events]
- * @param {ComponentItem[]} [children]
+ * @param {Object} item
+ * @param {string} item.parentId - Parent component instance Id
+ * @param {string} item.id - Component instance Id
+ * @param {Component} item.template
+ * @param {ComponentInstance} item.component
+ * @param {Object} [item.content]
+ * @param {ComponentEvent[]} [item.events]
+ * @param {ComponentItem[]} [item.children]
  * @returns {Node|Promise<Node>}
  */
-function createNode (id, template, component, content, events, children) {
+function createNode (item) {
+  const id = item.id
+  const parentId = item.parentId
+  const component = item.component
+  let template = item.template
+  let currentTemplate = template
+
+  if (template.parentId) {
+    template = _$component(template.parentId)
+  }
+
   if (!template.isLoaded) {
-    return lazyLoad(id, template, component, children)
+    return lazyLoad(item)
   }
 
   let node
@@ -192,22 +228,22 @@ function createNode (id, template, component, content, events, children) {
     node = document.createElement(template.tag)
   }
 
-  const properties = component.properties || template.properties
+  const properties = component.properties || currentTemplate.properties
 
   if (properties) {
     setProperties(node, properties)
   }
 
-  if (content) {
-    setContent(node, template.content, content)
+  if (item.content) {
+    setContent(node, template.content, item.content)
   }
 
-  if (events) {
+  if (item.events) {
     const eventType = template.eventTypes
     const hasEvent = {}
 
-    for (let i = 0; i < events.length; i++) {
-      const on = events[i].on
+    for (let i = 0; i < item.events.length; i++) {
+      const on = item.events[i].on
 
       if (eventType[on] && !hasEvent[on]) {
         hasEvent[on] = true
@@ -216,7 +252,8 @@ function createNode (id, template, component, content, events, children) {
           $emit('component/' + on, {
             id,
             context: {
-              componentId: id
+              id,
+              parentId
             }
           })
         })
@@ -224,41 +261,56 @@ function createNode (id, template, component, content, events, children) {
     }
   }
 
-  if (children) {
-    appendChildren(node, children)
+  if (item.children) {
+    appendChildren(node, item.children)
   }
 
   if (template.allowedChildren) {
     $emit('component/attach', {
       id,
       context: {
-        componentId: id,
-        children
+        id,
+        children: item.children,
+        parentId
       }
     })
 
     $addDataListener('component/children', {
       on: 'update',
-      id: id,
+      id,
       handler: ({ item }) => {
-        appendChildren(node, item)
+        const children = getValues(id, parentId)
+
+        appendChildren(node, children)
       }
     })
   }
 
+  dataUnsafeSetData('component/nodes', node, {
+    id
+  })
+
   return node
 }
 
-function templateInstance (id, template) {
-  const component = { id: template.id, hash: template.hash }
-  const instance = { id, component, template }
+function templateInstance (id, parentId, template) {
+  const component = {
+    id: template.id,
+    hash: template.hash
+  }
+  const instance = {
+    id,
+    parentId,
+    component,
+    template
+  }
 
   if (template.properties) {
     component.properties = template.properties
   }
 
   if (template.children) {
-    templateChildrenInstances(id, template)
+    templateChildrenInstances(id, parentId, template)
   }
 
   if (template.events) {
@@ -285,7 +337,26 @@ function templateInstance (id, template) {
     }
   }
 
-  $setDataValue('component/items', component, { id })
+  $setDataValue('component/items', component, {
+    id
+  })
+  $setDataValue('component/parent', parentId, {
+    id
+  })
+
+  // render component on data change
+  $addDataListener('component/items', {
+    on: 'update',
+    id: id,
+    handler: () => {
+      const nodeData = $getDataValue('component/node', {
+        id
+      })
+      const children = getValues(id, parentId)
+
+      appendChildren(nodeData.item, children)
+    }
+  })
 
   return instance
 }
@@ -296,7 +367,7 @@ function templateInstance (id, template) {
  * @param {Component} template
  * @returns {ComponentItem[]}
  */
-function templateChildrenInstances (id, template) {
+function templateChildrenInstances (id, parentId, template) {
   const result = []
   const children = []
   const templateChildren = template.children
@@ -309,13 +380,15 @@ function templateChildrenInstances (id, template) {
     }
 
     const id = dataGenerateId()
-    const instance = templateInstance(id, template)
+    const instance = templateInstance(id, parentId, template)
 
     children.push(id)
     result.push(instance)
   }
 
-  $setDataValue('component/children', children, { id })
+  $setDataValue('component/children', children, {
+    id
+  })
 
   return result
 }
@@ -329,18 +402,22 @@ function childrenInstances (children) {
   const result = []
 
   for (let i = 0; i < children.expand.length; i++) {
-    const data = children.expand[i]
-    const template = _$component(data.item.id)
+    const { id, item } = children.expand[i]
+    const template = _$component(item.id)
+    const parentId = $getDataValue('component/parent', {
+      id
+    }).item
     const instance = {
-      id: data.id,
+      id,
       template,
-      component: data.item
+      parentId,
+      component: item
     }
 
     // collect content
     if (template.content) {
       const componentContent = $getDataValue('component/content', {
-        id: data.id
+        id
       })
 
       if (!componentContent.isEmpty) {
@@ -348,6 +425,15 @@ function childrenInstances (children) {
           id: componentContent.item
         }).item
       }
+    }
+
+    const eventData = $getDataValue('component/events', {
+      id
+    })
+
+    // collect events
+    if (!eventData.isEmpty) {
+      instance.events = eventData.item
     }
 
     result.push(instance)
@@ -379,7 +465,7 @@ function appendChildren (element, children = []) {
       item.children = childrenInstances(itemChildren)
     }
 
-    const childNode = createNode(item.id, item.template, item.component, item.content, item.events, item.children)
+    const childNode = createNode(item)
 
     if (childNode instanceof Promise) {
       hasPromise = true
@@ -445,10 +531,12 @@ const component = createPlugin({
               type: 'string',
               relation: 'event/listeners'
             },
-            on: { type: 'string' },
+            on: {
+              type: 'string'
+            },
             actionId: {
               type: 'string',
-              relation: 'action/item'
+              relation: 'action/items'
             }
           }
 
@@ -460,16 +548,26 @@ const component = createPlugin({
       items: {
         type: 'object',
         properties: {
-          id: { type: 'string' },
-          isTemplate: { type: 'boolean' },
+          id: {
+            type: 'string'
+          },
+          isTemplate: {
+            type: 'boolean'
+          },
           properties: {
             type: 'array',
             items: {
               type: 'object',
               properties: {
-                name: { type: 'string' },
-                join: { type: 'boolean' },
-                value: { type: 'string' }
+                name: {
+                  type: 'string'
+                },
+                join: {
+                  type: 'boolean'
+                },
+                value: {
+                  type: 'string'
+                }
               }
             }
           }
@@ -508,29 +606,38 @@ const component = createPlugin({
      * @param {string} param.id - Component Id
      */
     append ({ nodeId, id }) {
-      const node = $getDataValue('component/nodes', { id: nodeId })
+      const node = $getDataValue('component/nodes', {
+        id: nodeId
+      })
 
       if (node.isEmpty) {
         throw new Error('No node found by the id: ' + id)
       }
 
-      const children = getValues(id)
+      const children = getValues(id, id)
 
       appendChildren(node.item, children)
 
-      $setDataValue('component/parent', nodeId, { id })
+      $setDataValue('component/parent', nodeId, {
+        id
+      })
     },
-    /**
-     * Set component
-     * @param {Object} param
-     * @param {Component} param.item
-     * @param {string} [param.id]
-     * @returns {string}
-     */
-    set ({ item, id = dataGenerateId() }) {
-      const result = dataUnsafeSetData('component/items', item, { id })
+    render ({ id }) {
+      const node = $getDataValue('component/nodes', {
+        id
+      })
+      const childrenData = $getDataValue('component/children', {
+        id
+      })
+      const children = []
 
-      return result.id
+      if (!childrenData.isEmpty) {
+        for (let i = 0; i < childrenData.item.length; i++) {
+          getValues(childrenData.item[i], id, children, null, node.item)
+        }
+      }
+
+      appendChildren(node.item, children)
     }
   },
   setup ({ rootId = 'root', $component }) {
@@ -540,10 +647,21 @@ const component = createPlugin({
       throw Error('No root element found: #' + rootId)
     }
 
+    dataUnsafeSetData('component/nodes', document.body, {
+      id: 'body'
+    })
+
     const id = 'root'
-    const template = $component('root')
-    const component = $getDataValue('component/items', { id }).item || template
-    const element = createNode(id, template, component)
+    const template = $component('div')
+    const component = $getDataValue('component/items', {
+      id
+    }).item || template
+    const element = createNode({
+      id,
+      parentId: 'body',
+      template,
+      component
+    })
 
     /**
      * This is an element
@@ -557,7 +675,9 @@ const component = createPlugin({
     /**
      * @TODO unsafe is needed because nodes are not yet supported
      */
-    dataUnsafeSetData('component/nodes', element, { id: 'root' })
+    dataUnsafeSetData('component/nodes', element, {
+      id: 'root'
+    })
   }
 })
 
