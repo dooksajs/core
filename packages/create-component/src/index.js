@@ -130,7 +130,6 @@ function createComponent (data, mixins = []) {
     }
   }
 
-
   // merge component
   mergeProperties(result, data)
 
@@ -183,6 +182,7 @@ function createMixin (mixin) {
 /** @typedef {'sm'|'md'|'lg'|'xl'|'xxl'} BreakpointSmXXL */
 /** @typedef {'sm'|'md'|'lg'|'xl'|'xxl'|'always'} BreakpointAlwaysXXL */
 /** @typedef {'10'|'25'|'50'|'75'} Opacity */
+/** @typedef {'0'|'1'|'2'|'3'|'4'|'5'} Spacer */
 /**
  * @typedef {'primary'|
  * 'primarySubtle'|
@@ -283,9 +283,7 @@ function extendComponent (component, { metadata, options, children, events }) {
           newPropertyValue = computeValue(item)
         }
 
-        /**
-           * @type {ComponentProperty}
-           */
+        /** @type {ComponentProperty} */
         const newProperty = {
           name: propertyName,
           value: newPropertyValue
