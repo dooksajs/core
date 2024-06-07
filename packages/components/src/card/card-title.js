@@ -1,7 +1,7 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
-import text from '../text/text.js'
+import { extendText } from '../text/text.js'
 
-const cardText = extendComponent(text, {
+const cardText = extendText({
   options: { text: 'Card title...' }
 })
 
