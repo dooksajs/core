@@ -20,8 +20,7 @@ const anchor = createComponent({
   content: [
     {
       name: 'href',
-      get: 'href',
-      set: 'href'
+      propertyName: 'href'
     }
   ]
 })

@@ -61,8 +61,7 @@ import { objectHash } from '@dooksa/utils'
  * @property {Array<Component|ComponentInstance|string>} [allowedChildren] - Permitted nested components
  * @property {Object[]} [content] - Define content structure
  * @property {string} content[].name - Name of content property
- * @property {string} content[].get - Getter name
- * @property {string} content[].set - Setter name
+ * @property {string} content[].propertyName - Property name
  * @property {ComponentEvent[]} [events]
  * @property {Object.<string, boolean>} [eventTypes]
  * @property {ComponentProperty[]} [properties]

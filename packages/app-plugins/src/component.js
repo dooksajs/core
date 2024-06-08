@@ -147,8 +147,8 @@ function getContent (node, content) {
   for (let i = 0; i < content.length; i++) {
     const item = content[i]
 
-    if (item.get) {
-      result[item.name] = node[item.get]
+    if (item.propertyName) {
+      result[item.propertyName] = node[item.get]
     }
   }
 
@@ -159,8 +159,8 @@ function setContent (node, content, values) {
   for (let i = 0; i < content.length; i++) {
     const item = content[i]
 
-    if (item.set) {
-      node[item.set] = values[item.name]
+    if (item.propertyName) {
+      node[item.propertyName] = values[item.name]
     }
   }
 }

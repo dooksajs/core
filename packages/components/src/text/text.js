@@ -6,14 +6,16 @@ const text = createComponent({
   content: [
     {
       name: 'value',
-      get: 'nodeValue',
-      set: 'nodeValue'
+      propertyName: 'nodeValue'
     }
   ],
   options: {
     text: {
       name: 'nodeValue'
     }
+  },
+  eventTypes: {
+    mount: true
   }
 })
 

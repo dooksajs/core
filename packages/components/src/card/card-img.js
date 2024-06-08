@@ -6,7 +6,7 @@ export default createComponent({
   properties: [
     {
       name: 'src',
-      value: 'https://picsum.photos/500/300'
+      value: ''
     },
     {
       name: 'className',
@@ -20,13 +20,11 @@ export default createComponent({
   content: [
     {
       name: 'src',
-      get: 'src',
-      set: 'src'
+      propertyName: 'src'
     },
     {
       name: 'alt',
-      get: 'alt',
-      set: 'alt'
+      propertyName: 'alt'
     }
   ],
   options: {

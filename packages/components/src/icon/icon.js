@@ -8,8 +8,7 @@ const icon = createComponent({
   content: [
     {
       name: 'value',
-      get: 'icon',
-      set: 'icon'
+      propertyName: 'icon'
     }
   ],
   properties: [
