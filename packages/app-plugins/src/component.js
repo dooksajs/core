@@ -42,9 +42,7 @@ let _$component = (name) => ({
  * @returns {ComponentItem[]}
  */
 function getValues (id, parentId, result = [], parentItem, parentNode) {
-  const node = $getDataValue('component/nodes', {
-    id
-  })
+  const node = $getDataValue('component/nodes', { id })
 
   if (!node.isEmpty) {
     // children already attached
@@ -56,9 +54,7 @@ function getValues (id, parentId, result = [], parentItem, parentNode) {
     node.item.remove()
   }
 
-  let component = $getDataValue('component/items', {
-    id
-  })
+  let component = $getDataValue('component/items', { id })
   let templateId
   let isTemplate
 
@@ -93,15 +89,9 @@ function getValues (id, parentId, result = [], parentItem, parentNode) {
   }
 
 
-  const content = $getDataValue('component/content', {
-    id
-  })
-  const children = $getDataValue('component/children', {
-    id
-  })
-  const events = $getDataValue('component/events', {
-    id
-  })
+  const content = $getDataValue('component/content', { id })
+  const children = $getDataValue('component/children', { id })
+  const events = $getDataValue('component/events', { id })
 
   // check if current component is out of date
   // if (component.hash !== template.hash) {
@@ -113,11 +103,11 @@ function getValues (id, parentId, result = [], parentItem, parentNode) {
 
   // add content
   if (!content.isEmpty) {
-    instance.content = content.item
+    instance.content = $getDataValue('content/items', { id: content.item })
   }
 
   if (!events.isEmpty) {
-    instance.events = events.item
+    instance.events = events
   }
 
   if (!children.isEmpty) {
@@ -209,6 +199,7 @@ function createNode (item) {
   const component = item.component
   let template = item.template
   let currentTemplate = template
+  let contentId
 
   if (template.parentId) {
     template = _$component(template.parentId)
@@ -235,20 +226,31 @@ function createNode (item) {
   }
 
   if (item.content) {
-    setContent(node, template.content, item.content)
+    contentId = item.content.id
+
+    // render children on update
+    $addDataListener('content/items', {
+      on: 'update',
+      id: contentId,
+      handler: (data) => {
+        setContent(node, template.content, data.item)
+      }
+    })
   }
 
   if (item.events) {
-    const eventType = template.eventTypes
+    const events = item.events.item
+    const eventType = template.eventTypes | {}
     const hasEvent = {}
 
-    for (let i = 0; i < item.events.length; i++) {
-      const on = item.events[i].on
+    for (let i = 0; i < events.length; i++) {
+      const on = events[i].on
 
       if (eventType[on] && !hasEvent[on]) {
         hasEvent[on] = true
 
         node.addEventListener(on, () => {
+          // fire node events
           $emit('component/' + on, {
             id,
             context: {
@@ -257,28 +259,29 @@ function createNode (item) {
             }
           })
         })
+      } else if (on === 'mount') {
+        // fire mount event
+        $emit('component/mount', {
+          id,
+          context: {
+            actionValueId: parentId + template.id,
+            id,
+            contentId,
+            parentId
+          }
+        })
       }
     }
   }
 
   if (item.children) {
     appendChildren(node, item.children)
-  }
 
-  if (template.allowedChildren) {
-    $emit('component/attach', {
-      id,
-      context: {
-        id,
-        children: item.children,
-        parentId
-      }
-    })
-
+    // render children on update
     $addDataListener('component/children', {
       on: 'update',
       id,
-      handler: ({ item }) => {
+      handler: () => {
         const children = getValues(id, parentId)
 
         appendChildren(node, children)
@@ -286,14 +289,13 @@ function createNode (item) {
     })
   }
 
-  dataUnsafeSetData('component/nodes', node, {
-    id
-  })
+  dataUnsafeSetData('component/nodes', node, { id })
 
   return node
 }
 
 function templateInstance (id, parentId, template) {
+  const properties = {}
   const component = {
     id: template.id,
     hash: template.hash
@@ -307,10 +309,37 @@ function templateInstance (id, parentId, template) {
 
   if (template.properties) {
     component.properties = template.properties
+
+
+    for (let i = 0; i < template.properties.length; i++) {
+      const { name, value } = template.properties[i]
+
+      properties[name] = value
+    }
   }
 
   if (template.children) {
     templateChildrenInstances(id, parentId, template)
+  }
+
+  let parentTemplate = template
+
+  if (template.parentId) {
+    parentTemplate = _$component(template.parentId)
+  }
+
+  if (parentTemplate.content) {
+    const content = {}
+
+    for (let i = 0; i < parentTemplate.content.length; i++) {
+      const data = parentTemplate.content[i]
+
+      content[data.name] = properties[data.propertyName] || ''
+    }
+
+    const contentData = $setDataValue('content/items', content)
+
+    $setDataValue('component/content', contentData.id, { id })
   }
 
   if (template.events) {
@@ -337,21 +366,15 @@ function templateInstance (id, parentId, template) {
     }
   }
 
-  $setDataValue('component/items', component, {
-    id
-  })
-  $setDataValue('component/parent', parentId, {
-    id
-  })
+  $setDataValue('component/items', component, { id })
+  $setDataValue('component/parent', parentId, { id })
 
   // render component on data change
   $addDataListener('component/items', {
     on: 'update',
     id: id,
     handler: () => {
-      const nodeData = $getDataValue('component/node', {
-        id
-      })
+      const nodeData = $getDataValue('component/node', { id })
       const children = getValues(id, parentId)
 
       appendChildren(nodeData.item, children)
@@ -386,9 +409,7 @@ function templateChildrenInstances (id, parentId, template) {
     result.push(instance)
   }
 
-  $setDataValue('component/children', children, {
-    id
-  })
+  $setDataValue('component/children', children, { id })
 
   return result
 }
@@ -414,8 +435,14 @@ function childrenInstances (children) {
       component: item
     }
 
+    let parentTemplate = template
+
+    if (template.parentId) {
+      parentTemplate = _$component(template.parentId)
+    }
+
     // collect content
-    if (template.content) {
+    if (parentTemplate.content) {
       const componentContent = $getDataValue('component/content', {
         id
       })
@@ -423,7 +450,7 @@ function childrenInstances (children) {
       if (!componentContent.isEmpty) {
         instance.content = $getDataValue('content/items', {
           id: componentContent.item
-        }).item
+        })
       }
     }
 
@@ -433,7 +460,7 @@ function childrenInstances (children) {
 
     // collect events
     if (!eventData.isEmpty) {
-      instance.events = eventData.item
+      instance.events = eventData
     }
 
     result.push(instance)
@@ -623,12 +650,8 @@ const component = createPlugin({
       })
     },
     render ({ id }) {
-      const node = $getDataValue('component/nodes', {
-        id
-      })
-      const childrenData = $getDataValue('component/children', {
-        id
-      })
+      const node = $getDataValue('component/nodes', { id })
+      const childrenData = $getDataValue('component/children', { id })
       const children = []
 
       if (!childrenData.isEmpty) {
@@ -653,9 +676,7 @@ const component = createPlugin({
 
     const id = 'root'
     const template = $component('div')
-    const component = $getDataValue('component/items', {
-      id
-    }).item || template
+    const component = $getDataValue('component/items', { id }).item || template
     const element = createNode({
       id,
       parentId: 'body',
@@ -675,9 +696,7 @@ const component = createPlugin({
     /**
      * @TODO unsafe is needed because nodes are not yet supported
      */
-    dataUnsafeSetData('component/nodes', element, {
-      id: 'root'
-    })
+    dataUnsafeSetData('component/nodes', element, { id: 'root' })
   }
 })
 
