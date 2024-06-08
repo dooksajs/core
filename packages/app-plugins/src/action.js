@@ -532,6 +532,17 @@ const action = createPlugin({
           }
         }
       }
+    },
+    dependencies: {
+      type: 'collection',
+      items: {
+        type: 'array',
+        items: {
+          type: 'string',
+          relation: 'action/items'
+        },
+        uniqueItems: true
+      }
     }
   },
   actions: {
@@ -544,7 +555,12 @@ const action = createPlugin({
      */
     dispatch ({ id, context, payload }) {
       return new Promise((resolve, reject) => {
-        const actions = $getDataValue('action/items', { id, options: { expand: true } })
+        const actions = $getDataValue('action/items', {
+          id,
+          options: {
+            expand: true
+          }
+        })
 
         if (actions.isEmpty) {
           return $fetchById({
@@ -556,7 +572,11 @@ const action = createPlugin({
               if (data.isEmpty) {
                 throw new Error('No action found: ' + id)
               }
-              this.dispatch({ id, context, payload })
+              this.dispatch({
+                id,
+                context,
+                payload
+              })
                 .then(result => resolve(result))
                 .then(error => reject(error))
             })

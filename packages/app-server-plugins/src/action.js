@@ -16,19 +16,25 @@ const serverAction = createPlugin({
         const action = actions[i]
 
         $setDataValue('action/sequences', action.sequences, {
-          id: action.sequenceId
+          merge: true
         })
 
         $setDataValue('action/blocks', action.blocks, {
           merge: true
         })
 
-        $setDataValue('action/items', action.sequenceId, {
-          id: action.id,
-          update: {
-            method: 'push'
-          }
+        $setDataValue('action/items', action.items, {
+          id: action.id
         })
+
+        for (let i = 0; i < action.dependencies.length; i++) {
+          $setDataValue('action/dependencies', action.dependencies[i], {
+            id: action.id,
+            update: {
+              method: 'push'
+            }
+          })
+        }
       }
     }
 
