@@ -134,17 +134,17 @@ const list = createPlugin({
     /**
      * Executes a provided action once for each array element.
      * @param {Object} param
-     * @param {Object} param.context - Context for action, A new property named "_list_" is created with the data type of the "item"
+     * @param {Object} param.context - Context for action, A new property named "$list" is created with the data type of the "item"
      * @param {Array|Object} param.items - Array used for iteration
      * @param {string} param.actionId - Action ID used to execute
      * @param {boolean} param.async - Indicates the iteration will return a promise
      * @returns {Array|Promise}
      */
     forEach ({ context, items, actionId, async }) {
-      context._list_ = {}
-
       if (Array.isArray(items)) {
-        context._list_ = []
+        context.$list = []
+      } else {
+        context.$list = {}
       }
 
       if (async) {
@@ -171,7 +171,7 @@ const list = createPlugin({
           }
 
           Promise.all(promises)
-            .then(() => resolve(context._list_))
+            .then(() => resolve(context.$list))
             .catch(error => reject(error))
         })
       }
@@ -189,7 +189,7 @@ const list = createPlugin({
         }
       }
 
-      return context._list_
+      return context.$list
     },
     /**
      * Adds the specified elements to the end of an array
