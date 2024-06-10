@@ -36,14 +36,14 @@ const div = extendDiv({
   }
 })
 
-export default createComponent({
-  id: 'edit-section-inner',
+const editSectionInnerLink = createComponent({
+  id: 'edit-section-inner-link',
   tag: 'a',
   children: [div],
   properties: [
     {
       name: 'className',
-      value: 'select-area select-area-lg'
+      value: 'select-area'
     },
     {
       name: 'href',
@@ -55,5 +55,31 @@ export default createComponent({
       on: 'click',
       actionId: 'component-add'
     }
+  ],
+  eventTypes: {
+    click: true
+  }
+})
+
+
+const editSectionInner = extendDiv({
+  metadata: {
+    id: 'edit-section-inner'
+  },
+  children: [editSectionInnerLink],
+  options: {
+    position: 'relative'
+  },
+  events: [
+    {
+      on: 'created',
+      actionId: 'edit-section-add-component'
+    }
   ]
-}, [eventTypeMouse])
+})
+
+export {
+  editSectionInner,
+  editSectionInnerLink
+}
+

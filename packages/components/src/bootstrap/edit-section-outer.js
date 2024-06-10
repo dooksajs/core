@@ -1,8 +1,8 @@
-import { createComponent, extendComponent } from '@dooksa/create-component'
+import { createComponent } from '@dooksa/create-component'
 import { extendText } from '../text/text.js'
 import { extendIcon } from '../icon/icon.js'
 import { extendDiv } from '../base/div.js'
-import eventTypeMouse from '../mixins/event-type-mouse.js'
+import { extendAnchor } from '../base/anchor.js'
 
 const editText = extendText({
   options: { text: 'Edit' }
@@ -38,8 +38,8 @@ const div = extendDiv({
   }
 })
 
-export default createComponent({
-  id: 'edit-section-outer',
+const editSectionOuterLink = createComponent({
+  id: 'edit-section-outer-link',
   tag: 'a',
   children: [div],
   properties: [
@@ -57,5 +57,31 @@ export default createComponent({
       on: 'click',
       actionId: 'component-add'
     }
+  ],
+  eventTypes: {
+    click: true
+  }
+})
+
+const editSectionOuter = extendDiv({
+  metadata: {
+    id: 'edit-section-outer'
+  },
+  children: [editSectionOuterLink],
+  options: {
+    position: 'relative'
+  },
+  events: [
+    {
+      on: 'created',
+      actionId: 'edit-section-add-component'
+    }
   ]
-}, [eventTypeMouse])
+})
+
+export {
+  editSectionOuter,
+  editSectionOuterLink
+}
+
+export default editSectionOuter
