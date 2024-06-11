@@ -10,7 +10,7 @@ const event = createPlugin({
         type: 'array',
         items: {
           type: 'string',
-          relation: 'dsAction/items'
+          relation: 'action/items'
         }
       }
     },
