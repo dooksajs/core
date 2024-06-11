@@ -1,5 +1,5 @@
 import createPlugin from '@dooksa/create-plugin'
-import { operatorEval, listSplice } from './index.js'
+import { operatorEval, listSplice, list } from './index.js'
 import { DataSchemaException, DataValueException } from './utils/Error.js'
 import { deepClone, isEnvServer, uuid } from '@dooksa/utils'
 import DataResult from './utils/DataResult.js'
@@ -15,8 +15,10 @@ let database = {}
 const databaseSchema = {}
 const dataListeners = {
   delete: {},
+  deleteAll: {},
   deletePriority: {},
   update: {},
+  updateAll: {},
   updatePriority: {}
 }
 const dataHandlers = {
@@ -286,15 +288,19 @@ function getDataListeners (name, on, id) {
   }
 
   const listenerPriorityCollection = dataListeners[on + 'Priority'][name]
+  const listenerAllCollection = dataListeners[on + 'All'][name]
+
 
   if (id) {
     return {
+      all: listenerAllCollection,
       items: listenerCollection[id],
       priority: listenerPriorityCollection[id]
     }
   }
 
   return {
+    all: listenerAllCollection,
     items: listenerCollection,
     priority: listenerPriorityCollection
   }
@@ -324,6 +330,16 @@ function fireDataListeners (name, on, item, stopPropagation) {
   if (listeners.items) {
     for (let i = 0; i < listeners.items.length; i++) {
       const handler = listeners.items[i]
+
+      if (!stopPropagation || handler.force) {
+        handler.value(item)
+      }
+    }
+  }
+
+  if (listeners.all) {
+    for (let i = 0; i < listeners.all.length; i++) {
+      const handler = listeners.all[i]
 
       if (!stopPropagation || handler.force) {
         handler.value(item)
@@ -471,7 +487,8 @@ function setCollectionItems (data, path, sources, metadata) {
  * @returns {Object}
  */
 function setData (collection, target, source, options) {
-  const data = { target, collection }
+  const data = { target,
+    collection }
   const schema = databaseSchema[collection]
   let isValid = true
 
@@ -1281,11 +1298,20 @@ const data = createPlugin({
      * @param {'update'|'delete'} param.on - Data event name
      * @param {string} [param.id] - Data collection Id
      * @param {number} [param.priority]
-     * @param {boolean} [param.force=false] - Force the event to fire
+     * @param {boolean} [param.force] - Force the event to fire
+     * @param {string} [param.capture] - Force the event to fire
      * @param {string} [param.handlerId] - Id of handler
      * @param {Function} param.handler
      */
-    $addDataListener (name, { on, id, priority, force = false, handler, handlerId = dataGenerateId() }) {
+    $addDataListener (name, {
+      on,
+      id,
+      priority,
+      force,
+      capture,
+      handler,
+      handlerId = dataGenerateId()
+    }) {
       const listeners = getDataListeners(name, on, id)
 
       // set default listener value
@@ -1309,6 +1335,17 @@ const data = createPlugin({
 
       const handlers = dataHandlers[on][name]
 
+      if (capture === 'all') {
+        listeners.all.push({
+          force,
+          value: handler
+        })
+
+        handlers[handlerId] = handler
+
+        return handlerId
+      }
+
       if (id) {
         handlerId = id + handlerId
       }
@@ -1321,7 +1358,8 @@ const data = createPlugin({
         })
         handlers[handlerId] = handler
 
-        return
+
+        return handlerId
       }
 
       listeners.priority.push({
@@ -1334,6 +1372,8 @@ const data = createPlugin({
       listeners.priority.sort((a, b) => a.priority - b.priority)
 
       handlers[handlerId] = handler
+
+      return handlerId
     },
     /**
      * Delete data listeners
@@ -1758,8 +1798,10 @@ const data = createPlugin({
       }
 
       dataListeners.delete[name] = newDataInstance(defaultType)
+      dataListeners.deleteAll[name] = []
       dataListeners.deletePriority[name] = newDataInstance(defaultType)
       dataListeners.update[name] = newDataInstance(defaultType)
+      dataListeners.updateAll[name] = []
       dataListeners.updatePriority[name] = newDataInstance(defaultType)
       dataHandlers.delete[name] = {}
       dataHandlers.update[name] = {}
