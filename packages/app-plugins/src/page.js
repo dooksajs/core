@@ -170,10 +170,9 @@ const page = createPlugin({
       return
     }
 
-    // attach current page components
-    for (let i = 0; i < component.item.length; i++) {
-      componentAppend({ nodeId: 'root', id: component.item[i] })
-    }
+    $setDataValue('component/children', component.item, {
+      id: 'root'
+    })
   }
 })
 
