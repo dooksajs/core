@@ -5,12 +5,12 @@ import editSectionOuterIterate from './edit-section-outer-iterate.js'
 import editSectionOuter from './edit-section-outer.js'
 import editSectionInner from './edit-section-inner.js'
 import editSectionInnerIterate from './edit-section-inner-iterate.js'
-import mountChangText from './mount-chang-text.js'
-import mountChangeImage from './mount-change-image.js'
+import onCreateChangeText from './on-create-change-text.js'
+import onCreateChangeImage from './on-create-change-image.js'
 
 export {
-  mountChangText,
-  mountChangeImage,
+  onCreateChangeText,
+  onCreateChangeImage,
   editSectionModal,
   editSectionOuter,
   editSectionOuterIterate,
