@@ -32,13 +32,14 @@ import availableMethods from './available-methods.js'
  * @property {'$null'} [route_currentId]
  * @property {'$null'} [route_currentPath]
  * @property {RouteNavigate} [route_navigate]
- * @property {BootstrapModalCreate} [bootstrap_modalCreate]
- * @property {BootstrapModalShow} [bootstrap_modalShow]
+ * @property {BootstrapModalCreate} [bootstrapModal_create]
+ * @property {BootstrapModalShow} [bootstrapModal_show]
  */
 
 /**
  * @typedef {Object} ComponentAppend
- * @property {Action|string} nodeId
+ * @property {Action|string} parentId
+ * @property {Action|string} groupId
  * @property {Action|string} id
  */
 
@@ -67,7 +68,7 @@ import availableMethods from './available-methods.js'
  * 'component/items'|
  * 'component/children'|
  * 'component/content'|
- * 'component/parent'|
+ * 'component/parents'|
  * 'content/items'|
  * 'event/listeners'|
  * 'event/handlers'|
@@ -282,16 +283,16 @@ import availableMethods from './available-methods.js'
 
 /**
  * @typedef {Object} BootstrapModalCreate
- * @property {Action|string} componentId
- * @property {Object} options
- * @property {Action|boolean|'static'} options.backdrop
- * @property {Action|boolean} focus
- * @property {Action|boolean} keyboard
+ * @property {Action|string} id
+ * @property {Object} [options]
+ * @property {Action|boolean|'static'} [options.backdrop]
+ * @property {Action|boolean} [focus]
+ * @property {Action|boolean} [keyboard]
  */
 
 /**
  * @typedef {Object} BootstrapModalShow
- * @property {Action|string} componentId
+ * @property {Action|string} id
  */
 
 /**

@@ -1,5 +1,5 @@
 const pluginFilenames = {
-  viewModal: 'view-modal'
+  bootstrapModal: 'bootstrap-modal'
 }
 
 function lazyLoader (pluginName) {

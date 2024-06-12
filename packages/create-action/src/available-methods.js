@@ -28,7 +28,9 @@ const availableMethods = {
   route_currentId: true,
   route_currentPath: true,
   route_navigate: true,
-  token_textContent: true
+  token_textContent: true,
+  bootstrapModal_create: true,
+  bootstrapModal_show: true
 }
 
 export default availableMethods
