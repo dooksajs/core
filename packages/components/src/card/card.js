@@ -12,5 +12,11 @@ export default createComponent({
       name: 'className',
       value: 'card'
     }
+  ],
+  events: [
+    {
+      on: 'created',
+      actionId: 'edit-section-inner'
+    }
   ]
 })

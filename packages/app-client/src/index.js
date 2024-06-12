@@ -7,6 +7,7 @@ import {
   cardBody,
   cardImg,
   cardTitle,
+  cardText,
   container,
   div,
   editSectionInner,
@@ -64,6 +65,7 @@ export default createApp({
     page
   ],
   components: [
+    root,
     addComponentButton,
     anchor,
     button,
@@ -73,6 +75,7 @@ export default createApp({
     cardBody,
     cardImg,
     cardTitle,
+    cardText,
     container,
     div,
     editSectionInner,

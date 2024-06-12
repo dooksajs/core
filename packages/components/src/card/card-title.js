@@ -1,11 +1,20 @@
-import { createComponent, extendComponent } from '@dooksa/create-component'
+import createComponent from '@dooksa/create-component'
 import { extendText } from '../text/text.js'
 
 const cardText = extendText({
-  options: { text: 'Card title...' }
+  metadata: {
+    id: 'card-text'
+  },
+  options: { text: 'Card title...' },
+  events: [
+    {
+      on: 'created',
+      actionId: 'on-create-change-text'
+    }
+  ]
 })
 
-export default createComponent({
+const cardTitle = createComponent({
   id: 'card-title',
   tag: 'div',
   children: [cardText],
@@ -17,3 +26,7 @@ export default createComponent({
     }
   ]
 })
+
+export { cardText, cardTitle }
+
+export default cardTitle

@@ -13,9 +13,6 @@ const text = createComponent({
     text: {
       name: 'nodeValue'
     }
-  },
-  eventTypes: {
-    mount: true
   }
 })
 

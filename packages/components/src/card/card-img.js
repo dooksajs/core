@@ -41,5 +41,11 @@ export default createComponent({
         value: 'card-img-bottom'
       }
     }
-  }
+  },
+  events: [
+    {
+      on: 'created',
+      actionId: 'on-create-change-image'
+    }
+  ]
 })
