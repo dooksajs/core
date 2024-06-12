@@ -5,8 +5,7 @@ import availableMethods from './available-methods.js'
  * @typedef {Object} Action
  * @property {ActionDispatch} [action_dispatch]
  * @property {DeleteDataValue} [delete_dataValue]
- * @property {ComponentAppend} [component_append]
- * @property {ComponentRender} [component_render]
+ * @property {ComponentRemove} [component_remove]
  * @property {EvalCondition} [eval_condition]
  * @property {GetActionValue} [get_actionValue]
  * @property {GetBlockValue} [get_blockValue]
@@ -37,14 +36,7 @@ import availableMethods from './available-methods.js'
  */
 
 /**
- * @typedef {Object} ComponentAppend
- * @property {Action|string} parentId
- * @property {Action|string} groupId
- * @property {Action|string} id
- */
-
-/**
- * @typedef {Object} ComponentRender
+ * @typedef {Object} ComponentRemove
  * @property {Action|string} id
  */
 
@@ -69,6 +61,8 @@ import availableMethods from './available-methods.js'
  * 'component/children'|
  * 'component/content'|
  * 'component/parents'|
+ * 'component/groups'|
+ * 'component/roots'|
  * 'content/items'|
  * 'event/listeners'|
  * 'event/handlers'|
