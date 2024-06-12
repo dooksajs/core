@@ -222,11 +222,9 @@ function createMixin (mixin) {
  */
 function extendComponent (component, { metadata, options, children, events }) {
   const properties = component.properties ? component.properties.slice() : []
-  const result = {
-    id: component.id,
-    hash: component.hash,
-    properties
-  }
+  const result = Object.assign({}, component)
+
+  result.properties = properties
 
   if (metadata) {
     result.id = metadata.id
