@@ -1478,7 +1478,8 @@ const data = createPlugin({
       if (collection[id]) {
         const result = new DataResult(name, id)
 
-        result.item = collection[id]
+        result.item = collection[id]._item
+        result.metadata = collection[id]._metadata
 
         fireDataListeners(name, 'delete', result)
 
