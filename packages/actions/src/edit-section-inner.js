@@ -25,7 +25,7 @@ export default createAction('edit-section-inner', [
         },
         to: 0
       }],
-      then: [2, 3, 4],
+      then: [2, 3],
       else: []
     }
   },
@@ -50,15 +50,7 @@ export default createAction('edit-section-inner', [
       options: {
         id: {
           get_contextValue: 'id'
-        },
-        stopPropagation: true
-      }
-    }
-  },
-  {
-    component_render: {
-      id: {
-        get_contextValue: 'id'
+        }
       }
     }
   }
