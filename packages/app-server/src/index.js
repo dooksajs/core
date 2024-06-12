@@ -1,5 +1,6 @@
 import createApp from '@dooksa/create-app'
 import { data } from '@dooksa/plugins'
+import { editSectionAddComponent, editSectionInner, editSectionInnerIterate, editSectionModal, editSectionOuter, editSectionOuterIterate, onCreateChangeImage, onCreateChangeText } from '@dooksa/actions'
 import {
   $http,
   action,
@@ -28,5 +29,15 @@ export default createApp({
     event,
     page,
     theme
+  ],
+  actions: [
+    onCreateChangeImage,
+    onCreateChangeText,
+    editSectionAddComponent,
+    editSectionOuter,
+    editSectionOuterIterate,
+    editSectionInner,
+    editSectionInnerIterate,
+    editSectionModal
   ]
 })
