@@ -55,7 +55,7 @@ const editSectionOuterLink = createComponent({
   events: [
     {
       on: 'click',
-      actionId: 'component-add'
+      actionId: 'edit-section-modal'
     }
   ],
   eventTypes: {
