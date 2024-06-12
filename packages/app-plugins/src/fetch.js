@@ -6,7 +6,7 @@ import { $getDataValue, $setDataValue, $addDataListener } from './data.js'
 const fetchRequestQueue = {}
 const fetchRequestCache = {}
 let fetchRequestCacheExpire = 300000
-let _hostname = ''
+let _hostname = '/_/'
 
 function getCache (id) {
   const cache = fetchRequestCache[id]
@@ -83,7 +83,7 @@ function deleteCache (id) {
 const $fetch = createPlugin({
   name: 'fetch',
   setup ({ hostname = '' } = {}) {
-    _hostname = hostname + '/_/'
+    _hostname = hostname + _hostname
   },
   actions: {
     /**
