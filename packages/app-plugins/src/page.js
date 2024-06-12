@@ -1,5 +1,5 @@
 import createPlugin from '@dooksa/create-plugin'
-import { $getDataValue, routeCurrentId, componentAppend } from './index.js'
+import { $getDataValue, routeCurrentId, $setDataValue } from './index.js'
 
 const page = createPlugin({
   name: 'page',
