@@ -6,6 +6,7 @@ import { objectHash } from '@dooksa/utils'
 
 /**
  * @typedef {Object} ComponentMetadata
+ * @property {'link'|'section'|'img'|'input'|'element'} [type]
  * @property {string} [hash] - Component hash
  * @property {Function} [component] - Lazy load component
  * @property {boolean} [isLoaded] - Marks if web component is loaded
@@ -36,6 +37,7 @@ import { objectHash } from '@dooksa/utils'
 /**
  * @typedef {Object} ComponentInstance
  * @property {string} id - Component instance Id
+ * @property {'link'|'section'|'img'|'input'|'element'} [type]
  * @property {string} [parentId] - The parent component Id if instance was extended
  * @property {string} hash - Hash of parent component
  * @property {Array<Component|ComponentInstance|string>} [children]
@@ -57,6 +59,7 @@ import { objectHash } from '@dooksa/utils'
 
 /**
  * @typedef {Object} ComponentDataValues
+ * @property {'link'|'section'|'img'|'input'|'element'} [type]
  * @property {Array<Component|ComponentInstance|string>} [children] - Child components
  * @property {Array<Component|ComponentInstance|string>} [allowedChildren] - Permitted nested components
  * @property {Object[]} [content] - Define content structure
@@ -133,10 +136,8 @@ function createComponent (data, mixins = []) {
   mergeProperties(result, data)
 
   result.isLoaded = !(typeof data.component === 'function')
-
-  const hash = objectHash(result)
-
-  result.hash = hash
+  result.hash = objectHash(result)
+  result.type = result.type || 'element'
 
   return result
 }

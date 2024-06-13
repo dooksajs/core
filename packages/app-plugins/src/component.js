@@ -338,7 +338,8 @@ function createTemplate ({
 }) {
   const component = {
     id: template.id,
-    hash: template.hash
+    hash: template.hash,
+    type: template.type
   }
   const properties = {}
   let node
