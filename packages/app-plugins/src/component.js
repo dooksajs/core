@@ -106,16 +106,17 @@ function lazyLoad (item, template, cb) {
 
 /**
  * Update content attached to component
- * @param {string} id - content id
- * @param {string} noAffixId - content id without language suffix
+ * @param {string} id - component id
+ * @param {string} contentId - content id
+ * @param {string} contentNoAffixId - content id without language suffix
  * @param {Node} node - Node attached to component
  * @param {Object[]} templateContent - Component content template
  */
-function contentListeners (id, noAffixId, node, templateContent) {
+function contentListeners (id, contentId, contentNoAffixId, node, templateContent) {
   // update element content if content data changes
   let handlerId = $addDataListener('content/items', {
     on: 'update',
-    id,
+    id: contentId,
     handler: (data) => {
       setContent(node, templateContent, data.item)
     }
@@ -126,12 +127,12 @@ function contentListeners (id, noAffixId, node, templateContent) {
     handler: (data) => {
       $deleteDataListener('content/items', {
         on: 'update',
-        id,
+        id: contentId,
         handlerId
       })
 
       // change content lang
-      id = noAffixId + data.item
+      contentId = contentNoAffixId + data.item
       const content = $getDataValue('content/items', { id })
 
       if (!content.isEmpty) {
@@ -140,7 +141,7 @@ function contentListeners (id, noAffixId, node, templateContent) {
 
       handlerId = $addDataListener('content/items', {
         on: 'update',
-        id,
+        id: contentId,
         handler: (data) => {
           setContent(node, templateContent, data.item)
         }
@@ -151,7 +152,7 @@ function contentListeners (id, noAffixId, node, templateContent) {
   // update element content if component content is changed
   $addDataListener('component/content', {
     on: 'update',
-    id: noAffixId,
+    id,
     handler: (data) => {
       const content = $getDataValue('content/items', { id: data.item })
 
@@ -201,7 +202,7 @@ function createNode (id, item) {
 
     contentId = contentData.noAffixId
     setContent(node, template.content, contentData.item)
-    contentListeners(contentData.id, contentId, node, template.content)
+    contentListeners(id, contentData.id, contentId, node, template.content)
   }
 
   const children = $getDataValue('component/children', { id, options: { expand: true } })
@@ -400,7 +401,7 @@ function createTemplate ({
 
     setContent(node, template.content, content)
     $setDataValue('component/content', contentId, { id })
-    contentListeners(contentData.id, contentData.noAffixId, node, template.content)
+    contentListeners(id, contentData.id, contentData.noAffixId, node, template.content)
   }
 
   const childNodes = []
@@ -623,6 +624,9 @@ const component = createPlugin({
           id: {
             type: 'string'
           },
+          hash: {
+            type: 'string'
+          },
           isTemplate: {
             type: 'boolean'
           },
@@ -641,6 +645,26 @@ const component = createPlugin({
                   type: 'string'
                 }
               }
+            }
+          }
+        }
+      }
+    },
+    properties: {
+      type: 'collection',
+      items: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string'
+            },
+            join: {
+              type: 'boolean'
+            },
+            value: {
+              type: 'string'
             }
           }
         }
