@@ -53,7 +53,6 @@ export default createApp({
     data,
     action,
     content,
-    component,
     event,
     $fetch,
     list,
@@ -62,6 +61,7 @@ export default createApp({
     route,
     token,
     query,
+    component,
     page
   ],
   components: [
