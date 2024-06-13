@@ -5,7 +5,8 @@ import {
   $getDataValue,
   $addDataListener,
   $setDataValue,
-  $deleteDataValue
+  $deleteDataValue,
+  $deleteDataListener
 } from './data.js'
 import { $emit } from './event.js'
 
@@ -97,6 +98,62 @@ function lazyLoad (item, cb) {
   })
 }
 
+/**
+ * Update content attached to component
+ * @param {string} id - content id
+ * @param {string} noAffixId - content id without language suffix
+ * @param {Node} node - Node attached to component
+ * @param {Object[]} templateContent - Component content template
+ */
+function contentListeners (id, noAffixId, node, templateContent) {
+  // update element content if content data changes
+  let handlerId = $addDataListener('content/items', {
+    on: 'update',
+    id,
+    handler: (data) => {
+      setContent(node, templateContent, data.item)
+    }
+  })
+
+  $addDataListener('metadata/currentLanguage', {
+    on: 'update',
+    handler: (data) => {
+      $deleteDataListener('content/items', {
+        on: 'update',
+        id,
+        handlerId
+      })
+
+      // change content lang
+      id = noAffixId + data.item
+      const content = $getDataValue('content/items', { id })
+
+      if (!content.isEmpty) {
+        setContent(node, templateContent, content.item)
+      }
+
+      handlerId = $addDataListener('content/items', {
+        on: 'update',
+        id,
+        handler: (data) => {
+          setContent(node, templateContent, data.item)
+        }
+      })
+    }
+  })
+
+  // update element content if component content is changed
+  $addDataListener('component/content', {
+    on: 'update',
+    id: noAffixId,
+    handler: (data) => {
+      const content = $getDataValue('content/items', { id: data.item })
+
+      setContent(node, templateContent, content.item)
+    }
+  })
+}
+
 function createNode (id, item) {
   const options = { id }
   const template = _$component(item.id)
@@ -135,16 +192,10 @@ function createNode (id, item) {
   if (!content.isEmpty) {
     const contentData = content.extend[0]
     const template = _$component(item.id)
-    contentId = contentData.id
+
+    contentId = contentData.noAffixId
     setContent(node, template.content, contentData.item)
-    // render children on update
-    $addDataListener('content/items', {
-      on: 'update',
-      id: contentId,
-      handler: (data) => {
-        setContent(node, template.content, data.item)
-      }
-    })
+    contentListeners(contentData.id, contentId, node, template.content)
   }
 
   const children = $getDataValue('component/children', { id, options: { expand: true } })
@@ -338,18 +389,11 @@ function createTemplate ({
     }
 
     const contentData = $setDataValue('content/items', content)
-    contentId = contentData.id
+    contentId = contentData.noAffixId
 
     setContent(node, template.content, content)
-    // render children on update
-    $addDataListener('content/items', {
-      on: 'update',
-      id: contentId,
-      handler: (data) => {
-        setContent(node, template.content, data.item)
-      }
-    })
     $setDataValue('component/content', contentId, { id })
+    contentListeners(contentData.id, contentData.noAffixId, node, template.content)
   }
 
   const childNodes = []
