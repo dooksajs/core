@@ -3,6 +3,7 @@ import createComponent from '@dooksa/create-component'
 export default createComponent({
   id: 'card-img',
   tag: 'img',
+  type: 'img',
   properties: [
     {
       name: 'src',
