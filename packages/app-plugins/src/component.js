@@ -81,12 +81,18 @@ function setProperties (element, properties = []) {
 }
 
 /**
- * @param {ComponentItem} item
- * @returns {Promise<Node>}
+ * @typedef {Object} LazyLoad
+ * @property {}
  */
-function lazyLoad (item, cb) {
-  const template = item.template
 
+/**
+ * @template T
+ * @param {T} item
+ * @param {Object} template
+ * @param {function} cb
+ * @returns {Promise<T>}
+ */
+function lazyLoad (item, template, cb) {
   return new Promise((resolve, reject) => {
     template.component()
       .then(() => {
@@ -164,7 +170,7 @@ function createNode (id, item) {
     return lazyLoad({
       id,
       item
-    }, createNode)
+    }, template, createNode)
   }
 
   // Custom element constructor
@@ -351,7 +357,7 @@ function createTemplate ({
       template,
       parentId,
       groupId
-    }, createTemplate)
+    }, template, createTemplate)
   }
 
   // Custom element constructor
