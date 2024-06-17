@@ -9,6 +9,7 @@ import {
   $deleteDataListener
 } from './data.js'
 import { $emit } from './event.js'
+import { componentOptions } from '@dooksa/create-component'
 
 /**
  * @typedef {import('@dooksa/create-component').Component} Component
@@ -164,7 +165,6 @@ function contentListeners (id, contentId, contentNoAffixId, node, templateConten
 function createNode (id, item) {
   const options = { id }
   const template = _$component(item.id)
-  const properties = {}
   let node
 
   if (!template.isLoaded) {
@@ -184,14 +184,30 @@ function createNode (id, item) {
 
   dataUnsafeSetData('component/nodes', node, { id })
 
-  if (item.properties) {
-    for (let i = 0; i < item.properties.length; i++) {
-      const { name, value } = item.properties[i]
+  const properties = $getDataValue('component/properties', options).item || template.properties
 
-      properties[name] = value
-    }
+  if (!properties) {
+    setProperties(node, properties)
 
-    setProperties(node, item.properties)
+    $addDataListener('component/properties', {
+      on: 'update',
+      id,
+      handler: (options) => {
+        setProperties(node, options.item)
+      }
+    })
+  }
+
+  if (template.options) {
+    $addDataListener('component/options', {
+      on: 'update',
+      id,
+      handler: (options) => {
+        const properties = componentOptions(options.item, template.options, template.properties)
+
+        $setDataValue('component/properties', properties, { id })
+      }
+    })
   }
 
   const content = $getDataValue('component/content', { id, options: { expand: true } })
@@ -368,31 +384,40 @@ function createTemplate ({
     // create element
     node = document.createElement(template.tag)
   }
-
+  // set core component values
   dataUnsafeSetData('component/nodes', node, { id })
   $setDataValue('component/groups', groupId, { id })
   $setDataValue('component/parents', parentId, { id })
+  $setDataValue('component/items', component, { id })
 
+  // set properties to node
   if (template.properties) {
-    component.properties = template.properties
-
     for (let i = 0; i < template.properties.length; i++) {
       const { name, value } = template.properties[i]
 
+      // prepare default content values
       properties[name] = value
     }
 
     setProperties(node, template.properties)
+
+    $addDataListener('component/properties', {
+      on: 'update',
+      id,
+      handler: (options) => {
+        setProperties(node, options.item)
+      }
+    })
   }
 
-  $setDataValue('component/items', component, { id })
-
+  // set content
   if (template.content) {
     const content = {}
 
     for (let i = 0; i < template.content.length; i++) {
       const data = template.content[i]
 
+      // add default value from props
       content[data.name] = properties[data.propertyName] || ''
     }
 
@@ -402,6 +427,18 @@ function createTemplate ({
     setContent(node, template.content, content)
     $setDataValue('component/content', contentId, { id })
     contentListeners(id, contentData.id, contentData.noAffixId, node, template.content)
+  }
+
+  if (template.options) {
+    $addDataListener('component/options', {
+      on: 'update',
+      id,
+      handler: (options) => {
+        const properties = componentOptions(options.item, template.options, template.properties)
+
+        $setDataValue('component/properties', properties, { id })
+      }
+    })
   }
 
   const childNodes = []
@@ -629,25 +666,14 @@ const component = createPlugin({
           },
           isTemplate: {
             type: 'boolean'
-          },
-          properties: {
-            type: 'array',
-            items: {
-              type: 'object',
-              properties: {
-                name: {
-                  type: 'string'
-                },
-                join: {
-                  type: 'boolean'
-                },
-                value: {
-                  type: 'string'
-                }
-              }
-            }
           }
         }
+      }
+    },
+    options: {
+      type: 'collection',
+      items: {
+        type: 'object'
       }
     },
     properties: {
@@ -867,5 +893,3 @@ export {
 }
 
 export default component
-
-
