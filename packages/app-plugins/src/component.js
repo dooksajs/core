@@ -225,9 +225,24 @@ function createNode (id, item) {
   const rootId = $getDataValue('component/roots', options).item
   const groupId = $getDataValue('component/groups', options).item
   const parentId = $getDataValue('component/parents', options).item
+  const events = $getDataValue('component/events', options)
   const childNodes = []
   let childIsLazy = false
-  let hasCreatedEvent = false
+  let hasLifeCycleEvent = false
+
+  if (!events.isEmpty) {
+    // fire mount event
+    $emit('component/mount', {
+      id,
+      context: {
+        id,
+        rootId,
+        contentId,
+        parentId,
+        groupId
+      }
+    })
+  }
 
   if (!children.isEmpty) {
     for (let i = 0; i < children.expand.length; i++) {
@@ -250,14 +265,14 @@ function createNode (id, item) {
     }
 
     if (childIsLazy) {
-      Promise.all(children)
+      Promise.all(childNodes)
         .then(result => {
           for (let i = 0; i < result.length; i++) {
             node.appendChild(result[i].item)
           }
 
-          if (hasCreatedEvent) {
-            // fire mount event
+          if (hasLifeCycleEvent) {
+            // fire created event
             $emit('component/created', {
               id,
               context: {
@@ -278,8 +293,7 @@ function createNode (id, item) {
     }
   }
 
-  const events = $getDataValue('component/events', options)
-
+  // events after mount
   if (!events.isEmpty) {
     const events = events.item
     const eventTypes = template.eventTypes || {}
@@ -323,10 +337,10 @@ function createNode (id, item) {
           }
         })
       } else if (on === 'created') {
-        hasCreatedEvent = true
+        hasLifeCycleEvent = true
 
         if (!childIsLazy) {
-          // fire mount event
+          // fire created event
           $emit('component/created', {
             id,
             context: {
@@ -352,6 +366,15 @@ function createNode (id, item) {
  * isTemporary is for components that are not intended to be saved in page state (usually used for dynamic content)
  */
 
+/**
+ * Create node from template
+ * @param {Object} param
+ * @param {string} param.id,
+ * @param {Component} param.template
+ * @param {string} param.parentId
+ * @param {string} param.rootId
+ * @param {string} param.groupId
+ */
 function createTemplate ({
   id = dataGenerateId(),
   template,
@@ -445,6 +468,20 @@ function createTemplate ({
   let childIsLazy = false
   let hasCreatedEvent = false
 
+  if (template.events) {
+    // fire mount event
+    $emit('component/mount', {
+      id,
+      context: {
+        id,
+        rootId,
+        contentId,
+        parentId,
+        groupId
+      }
+    })
+  }
+
   if (template.children) {
     for (let i = 0; i < template.children.length; i++) {
       const result = createTemplate({
@@ -508,6 +545,7 @@ function createTemplate ({
     }
   }
 
+  // events after mount
   if (template.events) {
     const events = template.events
     const eventTypes = template.eventTypes || {}
@@ -685,9 +723,6 @@ const component = createPlugin({
           properties: {
             name: {
               type: 'string'
-            },
-            join: {
-              type: 'boolean'
             },
             value: {
               type: 'string'
