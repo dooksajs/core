@@ -28,8 +28,26 @@ import roundedMixin from './rounded.js'
 import shadowMixin from './shadow.js'
 import borderMixin from './border.js'
 import gapMixin from './gap.js'
+import formControl from './form-control.js'
+import ariaCurrent from './aria/aria-current.js'
+import ariaSelected from './aria/aria-selected.js'
+import inputAll from './input/input-all.js'
+import inputCheckbox from './input/input-checkbox.js'
+import inputDir from './input/input-dir.js'
+import inputFile from './input/input-file.js'
+import inputNumber from './input/input-number.js'
+import inputText from './input/input-text.js'
 
 export {
+  inputAll,
+  inputCheckbox,
+  inputDir,
+  inputFile,
+  inputNumber,
+  inputText,
+  ariaCurrent,
+  ariaSelected,
+  formControl,
   gapMixin,
   borderMixin,
   shadowMixin,
