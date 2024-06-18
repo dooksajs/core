@@ -77,8 +77,14 @@ const sectionModalBody = extendModalBody({
   options: {
     displayFlex: 'always',
     flexDirectionColumn: 'always',
-    gapColumn: '2'
-  }
+    gapRow: '2'
+  },
+  events: [
+    {
+      on: 'create',
+      actionId: 'edit-section-modal-items'
+    }
+  ]
 })
 
 const sectionModalContent = extendModalContent({

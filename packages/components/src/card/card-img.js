@@ -45,7 +45,7 @@ export default createComponent({
   },
   events: [
     {
-      on: 'created',
+      on: 'create',
       actionId: 'on-create-change-image'
     }
   ]

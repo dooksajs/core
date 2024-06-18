@@ -73,7 +73,7 @@ const editSectionOuter = extendDiv({
   },
   events: [
     {
-      on: 'created',
+      on: 'create',
       actionId: 'edit-section-add-component'
     }
   ]

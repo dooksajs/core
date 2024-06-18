@@ -8,7 +8,7 @@ const cardText = extendText({
   options: { text: 'Card title...' },
   events: [
     {
-      on: 'created',
+      on: 'create',
       actionId: 'on-create-change-text'
     }
   ]

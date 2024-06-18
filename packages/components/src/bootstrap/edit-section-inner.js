@@ -2,7 +2,6 @@ import { createComponent } from '@dooksa/create-component'
 import { extendText } from '../text/text.js'
 import { extendIcon } from '../icon/icon.js'
 import { extendDiv } from '../base/div.js'
-import eventTypeMouse from '../mixins/event-type-mouse.js'
 
 const editText = extendText({
   options: { text: 'Edit' }
@@ -72,7 +71,7 @@ const editSectionInner = extendDiv({
   },
   events: [
     {
-      on: 'created',
+      on: 'create',
       actionId: 'edit-section-add-component'
     }
   ]
