@@ -8,15 +8,24 @@ const collapseItems = {}
 const bootstrapCollapse = createPlugin({
   name: 'bootstrapCollapse',
   actions: {
-    create ({ id, parentId, toggle = true }) {
-      if (collapseItems[id]) {
-        return collapseItems[id]
+    /**
+     * @param {Object} param
+     * @param {string} param.id - Collapsable node
+     * @param {string} param.parentId - If parent is provided, then all collapsible elements under the specified parent will be closed when this collapsible item is shown. (similar to traditional accordion behavior - this is dependent on the card class). The attribute has to be set on the target collapsible area. {@link https://getbootstrap.com/docs/5.3/components/collapse/#options}
+     * @param {string} param.collapseId - If present this id will be used as the reference rather than the component item id
+     * @param {boolean} param.toggle - Toggles the collapsible element on invocation.  {@link https://getbootstrap.com/docs/5.3/components/collapse/#options}
+     */
+    create ({ id, parentId, collapseId, toggle = false }) {
+      collapseId = collapseId || id
+
+      if (collapseItems[collapseId]) {
+        return collapseItems[collapseId]
       }
 
       let parent = null
 
       if (parentId) {
-        parent = $getDataValue('component/items', { id: parentId }).item
+        parent = $getDataValue('component/nodes', { id: parentId }).item
       }
 
       const element = $getDataValue('component/nodes', { id })
@@ -32,16 +41,16 @@ const bootstrapCollapse = createPlugin({
       })
 
       // set collapse cache
-      collapseItems[id] = collapseInstance
+      collapseItems[collapseId] = collapseInstance
 
       // clean up
-      $addDataListener('component/node', {
+      $addDataListener('component/nodes', {
         on: 'delete',
         id,
         handler () {
-          collapseItems[id].dispose()
+          collapseItems[collapseId].dispose()
 
-          delete collapseItems[id]
+          delete collapseItems[collapseId]
         }
       })
 
