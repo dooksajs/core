@@ -2,10 +2,9 @@ import { createMixin } from '@dooksa/create-component'
 
 /**
  * @typedef {Object} InputFileMixin
- * @property {string} [value] - Input value
- * @property {'true'|'false'} [required] - Input is required
- * @property {'true'|'false'} [disabled] - Input is disabled
- * @property {'true'|'false'} [readonly] - Input is read only
+ * @property {string} [accept] - Input value
+ * @property {'true'|'false'} [multiple] - Input is required
+ * @property {'user'|'environment'} [capture] - Input is disabled
  */
 
 export default createMixin({
