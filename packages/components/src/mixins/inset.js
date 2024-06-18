@@ -16,9 +16,9 @@ import { createMixin } from '@dooksa/create-component'
  * @TODO Need to expose these values
  */
 const positionValues = {
-  '0': true,
-  '50': true,
-  '100': true
+  0: true,
+  50: true,
+  100: true
 }
 
 export default createMixin({
