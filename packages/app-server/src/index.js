@@ -1,6 +1,6 @@
 import createApp from '@dooksa/create-app'
 import { data } from '@dooksa/plugins'
-import { editSectionAddComponent, editSectionInner, editSectionInnerIterate, editSectionModal, editSectionOuter, editSectionOuterIterate, onCreateChangeImage, onCreateChangeText } from '@dooksa/actions'
+import { editImg, editSectionAddComponent, editSectionInner, editSectionInnerIterate, editSectionModal, editSectionModalItems, editSectionOuter, editSectionOuterIterate, onClickAccordionButton, onCollapseHideAccordionButton, onCollapseShowAccordionButton, onCreateAccordion, onCreateAccordionButton, onCreateAccordionCollapse, onCreateChangeImage, onCreateChangeText, onCreateLabel, onCreateLabelText, onCreateSetOptionId } from '@dooksa/actions'
 import {
   $http,
   action,
@@ -31,6 +31,7 @@ export default createApp({
     theme
   ],
   actions: [
+    editImg,
     onCreateChangeImage,
     onCreateChangeText,
     editSectionAddComponent,
@@ -38,6 +39,16 @@ export default createApp({
     editSectionOuterIterate,
     editSectionInner,
     editSectionInnerIterate,
-    editSectionModal
+    editSectionModal,
+    editSectionModalItems,
+    onCreateLabel,
+    onCreateLabelText,
+    onCreateAccordionButton,
+    onCreateAccordionCollapse,
+    onCreateSetOptionId,
+    onClickAccordionButton,
+    onCreateAccordion,
+    onCollapseHideAccordionButton,
+    onCollapseShowAccordionButton
   ]
 })
