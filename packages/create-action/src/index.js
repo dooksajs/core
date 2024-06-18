@@ -33,6 +33,10 @@ import availableMethods from './available-methods.js'
  * @property {RouteNavigate} [route_navigate]
  * @property {BootstrapModalCreate} [bootstrapModal_create]
  * @property {BootstrapModalShow} [bootstrapModal_show]
+ * @property {BootstrapCollapseCreate} [bootstrapCollapse_create]
+ * @property {BootstrapCollapse} [bootstrapCollapse_show]
+ * @property {BootstrapCollapse} [bootstrapCollapse_hide]
+ * @property {BootstrapCollapse} [bootstrapCollapse_toggle]
  */
 
 /**
@@ -61,6 +65,8 @@ import availableMethods from './available-methods.js'
  * 'component/children'|
  * 'component/content'|
  * 'component/parents'|
+ * 'component/properties'|
+ * 'component/options'|
  * 'component/groups'|
  * 'component/roots'|
  * 'content/items'|
@@ -286,6 +292,19 @@ import availableMethods from './available-methods.js'
 
 /**
  * @typedef {Object} BootstrapModalShow
+ * @property {Action|string} id
+ */
+
+/**
+ * @typedef {Object} BootstrapCollapseCreate
+ * @property {Action|string} id
+ * @property {Action|string} [parentId]
+ * @property {Action|string} [collapseId]
+ * @property {Action|boolean} [toggle]
+ */
+
+/**
+ * @typedef {Object} BootstrapCollapse
  * @property {Action|string} id
  */
 

@@ -29,7 +29,11 @@ const availableMethods = {
   route_navigate: true,
   token_textContent: true,
   bootstrapModal_create: true,
-  bootstrapModal_show: true
+  bootstrapModal_show: true,
+  bootstrapCollapse_create: true,
+  bootstrapCollapse_show: true,
+  bootstrapCollapse_hide: true,
+  bootstrapCollapse_toggle: true
 }
 
 export default availableMethods
