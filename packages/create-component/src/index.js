@@ -1,5 +1,44 @@
 import { objectHash } from '@dooksa/utils'
 
+
+/** @typedef {'sm'|'md'|'lg'|'always'} BreakpointAlwaysLg */
+/** @typedef {'sm'|'md'|'lg'|'xl'|'xxl'} BreakpointSmXXL */
+/** @typedef {'sm'|'md'|'lg'|'xl'|'xxl'|'always'} BreakpointAlwaysXXL */
+/** @typedef {'10'|'25'|'50'|'75'} Opacity */
+/** @typedef {'0'|'1'|'2'|'3'|'4'|'5'} Spacer */
+/**
+ * @typedef {'primary'|
+* 'primarySubtle'|
+* 'secondary'|
+* 'secondarySubtle'|
+* 'success'|
+* 'successSubtle'|
+* 'danger'|
+* 'dangerSubtle'|
+* 'warning'|
+* 'warningSubtle'|
+* 'info'|
+* 'infoSubtle'|
+* 'light'|
+* 'lightSubtle'|
+* 'dark'|
+* 'darkSubtle'|
+* 'body'|
+* 'bodySecondary'|
+* 'bodyTertiary'|
+* 'black'|
+* 'white'} Color
+*/
+
+/**
+* Create a modified component
+* @typedef {Object} ComponentExtend
+* @property {ComponentMixinMetadata} [metadata]
+* @property {ComponentEvent[]} [events]
+* @property {Object} [options]
+* @property {Array<Component|ComponentInstance>} [children]
+*/
+
 /**
  * @typedef {ComponentDataValues & ComponentData & ComponentMetadata} Component
  */
@@ -22,16 +61,18 @@ import { objectHash } from '@dooksa/utils'
  * @typedef {Object} ComponentOptionItem
  * @property {string} name - Name of attribute/setter
  * @property {boolean} [replace] - Replace property value
+ * @property {boolean} [toggle] - toggle property value
  * @property {Object.<string, string>} [values] - Attribute values
- * @property {string} [value] - Attribute value
+ * @property {string|boolean} [value] - Attribute value
  * @property {Function} [computedValue]
  */
 
 /**
  * @typedef {Object} ComponentProperty
  * @property {string} name - Name of node property
- * @property {boolean} [join] - Join value
- * @property {string} value - Node value
+ * @property {boolean} [replace] - Join value
+ * @property {boolean} [toggle] - toggle property value
+ * @property {string|boolean} value - Node value
  */
 
 /**
@@ -178,43 +219,103 @@ function createMixin (mixin) {
   return result
 }
 
-/** @typedef {'sm'|'md'|'lg'|'always'} BreakpointAlwaysLg */
-/** @typedef {'sm'|'md'|'lg'|'xl'|'xxl'} BreakpointSmXXL */
-/** @typedef {'sm'|'md'|'lg'|'xl'|'xxl'|'always'} BreakpointAlwaysXXL */
-/** @typedef {'10'|'25'|'50'|'75'} Opacity */
-/** @typedef {'0'|'1'|'2'|'3'|'4'|'5'} Spacer */
 /**
- * @typedef {'primary'|
- * 'primarySubtle'|
- * 'secondary'|
- * 'secondarySubtle'|
- * 'success'|
- * 'successSubtle'|
- * 'danger'|
- * 'dangerSubtle'|
- * 'warning'|
- * 'warningSubtle'|
- * 'info'|
- * 'infoSubtle'|
- * 'light'|
- * 'lightSubtle'|
- * 'dark'|
- * 'darkSubtle'|
- * 'body'|
- * 'bodySecondary'|
- * 'bodyTertiary'|
- * 'black'|
- * 'white'} Color
+ * Convert component options to properties
+ * @param {ComponentOption} options
+ * @param {ComponentOption} templateOptions
+ * @param {ComponentProperty[]} properties
+ * @returns {ComponentProperty[]}
  */
+function componentOptions (options, templateOptions, properties = []) {
+  properties = properties.slice()
+  let replacedPropertyValue = ''
 
-/**
- * Create a modified component
- * @typedef {Object} ComponentExtend
- * @property {ComponentMixinMetadata} [metadata]
- * @property {ComponentEvent[]} [events]
- * @property {Object} [options]
- * @property {Array<Component|ComponentInstance>} [children]
- */
+  for (const key in options) {
+    if (Object.hasOwnProperty.call(options, key)) {
+      const templateOption = templateOptions[key]
+      const propertyName = templateOption.name
+
+      if (replacedPropertyValue === propertyName) {
+        continue
+      }
+
+      const item = options[key]
+      let newPropertyValue = item
+
+      if (!templateOption) {
+        throw new Error('Component option does not exist "' + item +'"')
+      }
+
+      if (templateOption.value) {
+        const newValue = templateOption.value
+
+        if (newValue == null) {
+          throw new Error('Component modifier value has an unexpected value "' + item + '"')
+        }
+
+        newPropertyValue = newValue
+      } else if (templateOption.values) {
+        const newValue = templateOption.values[item]
+
+        if (newValue == null) {
+          throw new Error('Component modifier value has an unexpected value "' + item + '"')
+        }
+
+        newPropertyValue = newValue
+      } else if (templateOption.computedValue) {
+        const computeValue = templateOption.computedValue
+
+        if (typeof computeValue !== 'function') {
+          throw new Error('Component modifier value has an unexpected value "' + item + '"')
+        }
+
+        newPropertyValue = computeValue(item)
+      }
+
+      /** @type {ComponentProperty} */
+      const newProperty = {
+        name: propertyName,
+        value: newPropertyValue
+      }
+
+      let hasProperty = false
+
+      for (let i = 0; i < properties.length; i++) {
+        const property = properties[i]
+
+        if (property.name === propertyName) {
+          hasProperty = true
+
+          if (property) {
+            if (templateOption.replace) {
+              replacedPropertyValue = propertyName
+              newProperty.value = newPropertyValue
+              properties[i] = newProperty
+              break
+            } else if (templateOption.toggle) {
+              // remove value
+              if (!item) {
+                newProperty.value = property.value.replace(newProperty.value, '')
+                properties[i] = newProperty
+                break
+              }
+            }
+          }
+
+          newProperty.value = property.value + ' ' + newProperty.value
+
+          properties[i] = newProperty
+        }
+      }
+
+      if (!hasProperty) {
+        properties.push(newProperty)
+      }
+    }
+  }
+
+  return properties
+}
 
 /**
  * Create a modified component
@@ -222,10 +323,8 @@ function createMixin (mixin) {
  * @param {ComponentExtend} extend
  */
 function extendComponent (component, { metadata, options, children, events }) {
-  const properties = component.properties ? component.properties.slice() : []
   const result = Object.assign({}, component)
-
-  result.properties = properties
+  let properties = component.properties
 
   if (metadata) {
     result.id = metadata.id
@@ -233,88 +332,12 @@ function extendComponent (component, { metadata, options, children, events }) {
   }
 
   if (options) {
-    let replacedPropertyValue = ''
-
-    for (const key in options) {
-      if (Object.hasOwnProperty.call(options, key)) {
-        const componentOption = component.options[key]
-        const propertyName = componentOption.name
-
-        if (replacedPropertyValue === propertyName) {
-          continue
-        }
-
-        const item = options[key]
-        let newPropertyValue = item
-
-        if (!componentOption) {
-          throw new Error('Component option does not exist "' + item +'"')
-        }
-
-        if (componentOption.value) {
-          const newValue = componentOption.value
-
-          if (newValue == null) {
-            throw new Error('Component modifier value has an unexpected value "' + item + '"')
-          }
-
-          newPropertyValue = newValue
-        }
-
-        if (componentOption.values) {
-          const newValue = componentOption.values[item]
-
-          if (newValue == null) {
-            throw new Error('Component modifier value has an unexpected value "' + item + '"')
-          }
-
-          newPropertyValue = newValue
-        }
-
-        if (componentOption.computedValue) {
-          const computeValue = componentOption.computedValue
-
-          if (typeof computeValue !== 'function') {
-            throw new Error('Component modifier value has an unexpected value "' + item + '"')
-          }
-
-          newPropertyValue = computeValue(item)
-        }
-
-        /** @type {ComponentProperty} */
-        const newProperty = {
-          name: propertyName,
-          value: newPropertyValue
-        }
-
-        let hasProperty = false
-
-        for (let i = 0; i < properties.length; i++) {
-          const property = properties[i]
-
-          if (property.name === propertyName) {
-            hasProperty = true
-
-            if (property && componentOption.replace) {
-              replacedPropertyValue = propertyName
-              newProperty.value = newPropertyValue
-              properties[i] = newProperty
-              break
-            }
-
-            newProperty.value = property.value + ' ' + newProperty.value
-
-            properties[i] = newProperty
-          }
-        }
-
-        if (!hasProperty) {
-          properties.push(newProperty)
-        }
-      }
-    }
+    properties = componentOptions(options, component.options, component.properties)
   }
 
+  if (properties) {
+    result.properties = properties
+  }
 
   if (events) {
     result.events = events
@@ -330,6 +353,7 @@ function extendComponent (component, { metadata, options, children, events }) {
 }
 
 export {
+  componentOptions,
   extendComponent,
   createComponent,
   createMixin
