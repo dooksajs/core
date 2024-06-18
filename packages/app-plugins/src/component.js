@@ -228,9 +228,68 @@ function createNode (id, item) {
   const events = $getDataValue('component/events', options)
   const childNodes = []
   let childIsLazy = false
-  let hasLifeCycleEvent = false
+  let hasCreateEvent = false
 
   if (!events.isEmpty) {
+    const events = events.item
+    const eventTypes = template.eventTypes || {}
+    const hasEvent = {}
+
+    for (let i = 0; i < events.length; i++) {
+      const { on, actionId } = events[i]
+      const eventData = $setDataValue('event/listeners', actionId, {
+        id,
+        suffixId: 'component/' + on,
+        update: {
+          method: 'push'
+        }
+      })
+
+      if (on === 'create') {
+        hasCreateEvent = true
+      }
+
+      $setDataValue('component/events', {
+        id: eventData.id,
+        on,
+        actionId
+      }, {
+        id,
+        update: {
+          method: 'push'
+        }
+      })
+
+      if (eventTypes[on] && !hasEvent[on]) {
+        hasEvent[on] = true
+        const handler = () => {
+          // fire node events
+          $emit('component/' + on, {
+            id,
+            context: {
+              id,
+              rootId,
+              parentId,
+              groupId
+            }
+          })
+        }
+
+        node.addEventListener(on, handler)
+
+        // store handler
+        dataUnsafeSetData('event/handlers', handler, { id })
+        // handle removal
+        $addDataListener('event/handlers', {
+          on: 'delete',
+          id,
+          handler () {
+            node.removeEventListener(on, handler)
+          }
+        })
+      }
+    }
+
     // fire mount event
     $emit('component/mount', {
       id,
@@ -271,9 +330,9 @@ function createNode (id, item) {
             node.appendChild(result[i].item)
           }
 
-          if (hasLifeCycleEvent) {
+          if (hasCreateEvent) {
             // fire created event
-            $emit('component/created', {
+            $emit('component/create', {
               id,
               context: {
                 id,
@@ -293,67 +352,18 @@ function createNode (id, item) {
     }
   }
 
-  // events after mount
-  if (!events.isEmpty) {
-    const events = events.item
-    const eventTypes = template.eventTypes || {}
-    const hasEvent = {}
-
-    for (let i = 0; i < events.length; i++) {
-      const { on, actionId } = events[i]
-      const eventData = $setDataValue('event/listeners', actionId, {
+  if (hasCreateEvent && !childIsLazy) {
+    // fire created event
+    $emit('component/create', {
+      id,
+      context: {
         id,
-        suffixId: 'component/' + on,
-        update: {
-          method: 'push'
-        }
-      })
-
-      if (eventTypes[on] && !hasEvent[on]) {
-        hasEvent[on] = true
-        const handler = () => {
-          // fire node events
-          $emit('component/' + on, {
-            id,
-            context: {
-              id,
-              rootId,
-              parentId,
-              groupId
-            }
-          })
-        }
-
-        node.addEventListener(on, handler)
-
-        // store handler
-        dataUnsafeSetData('event/handlers', handler, { id })
-        // handle removal
-        $addDataListener('event/handlers', {
-          on: 'delete',
-          id,
-          handler () {
-            node.removeEventListener(on, handler)
-          }
-        })
-      } else if (on === 'created') {
-        hasLifeCycleEvent = true
-
-        if (!childIsLazy) {
-          // fire created event
-          $emit('component/created', {
-            id,
-            context: {
-              id,
-              rootId,
-              contentId,
-              parentId,
-              groupId
-            }
-          })
-        }
+        rootId,
+        contentId,
+        parentId,
+        groupId
       }
-    }
+    })
   }
 
   return {
@@ -466,9 +476,69 @@ function createTemplate ({
 
   const childNodes = []
   let childIsLazy = false
-  let hasCreatedEvent = false
+  let hasCreateEvent = false
 
+  // set events
   if (template.events) {
+    const events = template.events
+    const eventTypes = template.eventTypes || {}
+    const hasEvent = {}
+
+    for (let i = 0; i < events.length; i++) {
+      const { on, actionId } = events[i]
+      const eventData = $setDataValue('event/listeners', actionId, {
+        id,
+        suffixId: 'component/' + on,
+        update: {
+          method: 'push'
+        }
+      })
+
+      if (on === 'create') {
+        hasCreateEvent = true
+      }
+
+      $setDataValue('component/events', {
+        id: eventData.id,
+        on,
+        actionId
+      }, {
+        id,
+        update: {
+          method: 'push'
+        }
+      })
+
+      if (eventTypes[on] && !hasEvent[on]) {
+        hasEvent[on] = true
+        const handler = () => {
+          // fire node events
+          $emit('component/' + on, {
+            id,
+            context: {
+              id,
+              rootId,
+              parentId,
+              groupId
+            }
+          })
+        }
+
+        node.addEventListener(on, handler)
+
+        // store handler
+        dataUnsafeSetData('event/handlers', handler, { id })
+        // handle removal
+        $addDataListener('event/handlers', {
+          on: 'delete',
+          id,
+          handler () {
+            node.removeEventListener(on, handler)
+          }
+        })
+      }
+    }
+
     // fire mount event
     $emit('component/mount', {
       id,
@@ -514,7 +584,7 @@ function createTemplate ({
             stopPropagation: true
           })
 
-          if (hasCreatedEvent) {
+          if (hasCreateEvent) {
             // fire mount event
             $emit('component/created', {
               id,
@@ -545,78 +615,18 @@ function createTemplate ({
     }
   }
 
-  // events after mount
-  if (template.events) {
-    const events = template.events
-    const eventTypes = template.eventTypes || {}
-    const hasEvent = {}
-
-    for (let i = 0; i < events.length; i++) {
-      const { on, actionId } = events[i]
-      const eventData = $setDataValue('event/listeners', actionId, {
+  // fire created event
+  if (hasCreateEvent && !childIsLazy) {
+    $emit('component/create', {
+      id,
+      context: {
         id,
-        suffixId: 'component/' + on,
-        update: {
-          method: 'push'
-        }
-      })
-
-      $setDataValue('component/events', {
-        id: eventData.id,
-        on,
-        actionId
-      }, {
-        id,
-        update: {
-          method: 'push'
-        }
-      })
-
-      if (eventTypes[on] && !hasEvent[on]) {
-        hasEvent[on] = true
-        const handler = () => {
-          // fire node events
-          $emit('component/' + on, {
-            id,
-            context: {
-              id,
-              rootId,
-              parentId,
-              groupId
-            }
-          })
-        }
-
-        node.addEventListener(on, handler)
-
-        // store handler
-        dataUnsafeSetData('event/handlers', handler, { id })
-        // handle removal
-        $addDataListener('event/handlers', {
-          on: 'delete',
-          id,
-          handler () {
-            node.removeEventListener(on, handler)
-          }
-        })
-      } else if (on === 'created') {
-        hasCreatedEvent = true
-
-        if (!childIsLazy) {
-          // fire mount event
-          $emit('component/created', {
-            id,
-            context: {
-              id,
-              rootId,
-              contentId,
-              parentId,
-              groupId
-            }
-          })
-        }
+        rootId,
+        contentId,
+        parentId,
+        groupId
       }
-    }
+    })
   }
 
   return {
@@ -722,9 +732,6 @@ const component = createPlugin({
           type: 'object',
           properties: {
             name: {
-              type: 'string'
-            },
-            value: {
               type: 'string'
             }
           }
