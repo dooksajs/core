@@ -1,5 +1,5 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
-import { flexMixin } from '../mixins/index.js'
+import { flexMixin, roleTablistMixin } from '../mixins/index.js'
 
 const nav = createComponent({
   id: 'ul',
@@ -18,32 +18,27 @@ const nav = createComponent({
         pill: 'nav-pills'
       }
     },
-    tabRole: {
-      name: 'role',
-      value: 'tablist'
-    },
     underline: {
       name: 'className',
       value: 'nav-underline'
     }
   }
-}, [flexMixin])
+}, [flexMixin, roleTablistMixin])
 
 /**
  * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
  * @typedef {import('../mixins/styles/flex.js').FlexMixin} FlexMixin
+ * @typedef {import('../mixins/aria-role/tablist.js').RoleTablistMixin} RoleTablistMixin
  */
 
 /**
  * @typedef {Object} ComponentExtendNav
- * @property {Object} options
- * @property {'tab'|'pill'} [options.tabs] - The component which this button controls
- * @property {boolean} [options.tabRole] - Indicates if component is expanded
+ * @property {'tab'|'pill'} [tabs] - The component which this button controls
  */
 
 /**
  * @typedef {Object} ComponentExtendNavOption
- * @property {ComponentExtendNav|FlexMixin} options
+ * @property {ComponentExtendNav|FlexMixin|RoleTablistMixin} options
  */
 
 /**
