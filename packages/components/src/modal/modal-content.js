@@ -19,7 +19,7 @@ const modalContent = createComponent({
 
 /**
  * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('../mixins/shadow.js').ShadowMixin} ShadowMixin
+ * @typedef {import('../mixins/styles/shadow.js').ShadowMixin} ShadowMixin
  */
 
 /**

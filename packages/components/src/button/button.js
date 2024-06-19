@@ -30,7 +30,7 @@ const button = createComponent({
 
 /**
  * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('../mixins/button.js').ButtonMixin} ButtonMixin
+ * @typedef {import('../mixins/styles/button.js').ButtonMixin} ButtonMixin
  */
 
 /**

@@ -22,9 +22,9 @@ const modalHeader = createComponent({
 
 /**
  * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('../mixins/background.js').BackgroundMixin} BackgroundMixin
- * @typedef {import('../mixins/display.js').DisplayMixin} DisplayMixin
- * @typedef {import('../mixins/flex.js').FlexMixin} FlexMixin
+ * @typedef {import('../mixins/styles/background.js').BackgroundMixin} BackgroundMixin
+ * @typedef {import('../mixins/styles/display.js').DisplayMixin} DisplayMixin
+ * @typedef {import('../mixins/styles/flex.js').FlexMixin} FlexMixin
  */
 
 /**

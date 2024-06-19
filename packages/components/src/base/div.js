@@ -38,20 +38,20 @@ const div = createComponent({
 
 /**
  * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('../mixins/flex.js').FlexMixin} FlexMixin
- * @typedef {import('../mixins/background.js').BackgroundMixin} BackgroundMixin
- * @typedef {import('../mixins/position.js').PositionMixin} PositionMixin
- * @typedef {import('../mixins/spacing.js').SpacingMixin} SpacingMixin
- * @typedef {import('../mixins/z-index.js').ZIndexMixin} ZIndexMixin
- * @typedef {import('../mixins/inset.js').InsetMixin} InsetMixin
- * @typedef {import('../mixins/translate.js').TranslateMixin} TranslateMixin
- * @typedef {import('../mixins/button.js').ButtonMixin} ButtonMixin
- * @typedef {import('../mixins/display.js').DisplayMixin} DisplayMixin
- * @typedef {import('../mixins/shadow.js').ShadowMixin} ShadowMixin
- * @typedef {import('../mixins/rounded.js').RoundedMixin} RoundedMixin
- * @typedef {import('../mixins/font.js').FontMixin} FontMixin
- * @typedef {import('../mixins/border.js').BorderMixin} BorderMixin
- * @typedef {import('../mixins/gap.js').GapMixin} GapMixin
+ * @typedef {import('../mixins/styles/flex.js').FlexMixin} FlexMixin
+ * @typedef {import('../mixins/styles/background.js').BackgroundMixin} BackgroundMixin
+ * @typedef {import('../mixins/styles/position.js').PositionMixin} PositionMixin
+ * @typedef {import('../mixins/styles/spacing.js').SpacingMixin} SpacingMixin
+ * @typedef {import('../mixins/styles/z-index.js').ZIndexMixin} ZIndexMixin
+ * @typedef {import('../mixins/styles/inset.js').InsetMixin} InsetMixin
+ * @typedef {import('../mixins/styles/transform-translate.js').TransformTranslateMixin} TransformTranslateMixin
+ * @typedef {import('../mixins/styles/button.js').ButtonMixin} ButtonMixin
+ * @typedef {import('../mixins/styles/display.js').DisplayMixin} DisplayMixin
+ * @typedef {import('../mixins/styles/shadow.js').ShadowMixin} ShadowMixin
+ * @typedef {import('../mixins/styles/rounded.js').RoundedMixin} RoundedMixin
+ * @typedef {import('../mixins/styles/font.js').FontMixin} FontMixin
+ * @typedef {import('../mixins/styles/border.js').BorderMixin} BorderMixin
+ * @typedef {import('../mixins/styles/gap.js').GapMixin} GapMixin
  */
 
 /**
@@ -65,7 +65,7 @@ const div = createComponent({
  * SpacingMixin|
  * ZIndexMixin|
  * InsetMixin|
- * TranslateMixin|
+ * TransformTranslateMixin|
  * ButtonMixin|
  * DisplayMixin|
  * BorderMixin|

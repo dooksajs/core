@@ -1,5 +1,5 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
-import { formControl, inputAll, inputFile as inputFileMixin } from '../mixins/index.js'
+import { formControlMixin, inputAllMixin, inputFileMixin } from '../mixins/index.js'
 
 const inputFile = createComponent({
   id: 'input-file',
@@ -19,11 +19,11 @@ const inputFile = createComponent({
       name: 'id'
     }
   }
-}, [formControl, inputAll, inputFileMixin])
+}, [formControlMixin, inputAllMixin, inputFileMixin])
 
 /**
  * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('../mixins/form-control.js').FormControlMixin} FormControlMixin
+ * @typedef {import('../mixins/styles/form-control.js').FormControlMixin} FormControlMixin
  * @typedef {import('../mixins/input/input-all.js').InputAllMixin} InputAllMixin
  * @typedef {import('../mixins/input/input-file.js').InputFileMixin} InputFileMixin
  */

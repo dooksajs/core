@@ -8,9 +8,9 @@ const span = createComponent({
 
 /**
  * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('../mixins/flex.js').FlexMixin} FlexMixin
- * @typedef {import('../mixins/spacing.js').SpacingMixin} SpacingMixin
- * @typedef {import('../mixins/display.js').DisplayMixin} DisplayMixin
+ * @typedef {import('../mixins/styles/flex.js').FlexMixin} FlexMixin
+ * @typedef {import('../mixins/styles/spacing.js').SpacingMixin} SpacingMixin
+ * @typedef {import('../mixins/styles/display.js').DisplayMixin} DisplayMixin
  */
 
 /**

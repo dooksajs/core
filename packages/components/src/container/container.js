@@ -18,9 +18,9 @@ const container = createComponent({
 
 /**
  * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('../mixins/background.js').BackgroundMixin} BackgroundMixin
- * @typedef {import('../mixins/spacing.js').SpacingMixin} SpacingMixin
- * @typedef {import('../mixins/position.js').PositionMixin} PositionMixin
+ * @typedef {import('../mixins/styles/background.js').BackgroundMixin} BackgroundMixin
+ * @typedef {import('../mixins/styles/spacing.js').SpacingMixin} SpacingMixin
+ * @typedef {import('../mixins/styles/position.js').PositionMixin} PositionMixin
  */
 
 /**

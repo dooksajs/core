@@ -1,5 +1,5 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
-import { formControl, inputAll } from '../mixins/index.js'
+import { formControlMixin, inputAllMixin } from '../mixins/index.js'
 
 const inputColor = createComponent({
   id: 'input-color',
@@ -40,11 +40,11 @@ const inputColor = createComponent({
       name: 'id'
     }
   }
-}, [formControl, inputAll])
+}, [formControlMixin, inputAllMixin])
 
 /**
  * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('../mixins/form-control.js').FormControlMixin} FormControlMixin
+ * @typedef {import('../mixins/styles/form-control.js').FormControlMixin} FormControlMixin
  * @typedef {import('../mixins/input/input-all.js').InputAllMixin} InputAllMixin
  */
 

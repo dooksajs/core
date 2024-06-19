@@ -1,17 +1,17 @@
 import { createMixin } from '@dooksa/create-component'
 
 /**
- * @typedef {Object} TranslateMixin
- * @property {'middle'|'bottom'|'top'} [translate]
+ * @typedef {Object} TransformTranslateMixin
+ * @property {'middle'|'bottom'|'top'} [transformTranslate]
  */
 
 export default createMixin({
   metadata: {
-    id: 'translate'
+    id: 'transform-translate'
   },
   data: {
     options: {
-      translate: {
+      transformTranslate: {
         name: 'className',
         values: {
           middle: 'translate-middle',

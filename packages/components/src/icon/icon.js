@@ -1,5 +1,5 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
-import spacing from '../mixins/spacing.js'
+import spacing from '../mixins/styles/spacing.js'
 
 const icon = createComponent({
   id: 'icon',
@@ -44,7 +44,7 @@ const icon = createComponent({
 
 /**
  * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('../mixins/spacing.js').SpacingMixin} SpacingMixin
+ * @typedef {import('../mixins/styles/spacing.js').SpacingMixin} SpacingMixin
  */
 
 /**

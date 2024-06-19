@@ -38,7 +38,7 @@ const tabPane = createComponent({
 
 /**
  * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('../mixins/flex.js').FlexMixin} FlexMixin
+ * @typedef {import('../mixins/styles/flex.js').FlexMixin} FlexMixin
  */
 
 /**

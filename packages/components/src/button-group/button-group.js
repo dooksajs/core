@@ -1,7 +1,7 @@
 import { button, extendButton } from '../button/button.js'
 import { extendComponent, createComponent } from '@dooksa/create-component'
 import { extendText } from '../text/text.js'
-import { ariaLabel } from '../mixins/index.js'
+import { ariaLabelMixin } from '../mixins/index.js'
 
 const leftText = extendText({
   options: {
@@ -60,7 +60,7 @@ const buttonGroup = createComponent({
       value: 'Button group'
     }
   ]
-}, [ariaLabel])
+}, [ariaLabelMixin])
 
 /**
  * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend

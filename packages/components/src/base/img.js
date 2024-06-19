@@ -32,7 +32,7 @@ const img = createComponent({
 
 /**
  * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('../mixins/spacing.js').SpacingMixin} SpacingMixin
+ * @typedef {import('../mixins/styles/spacing.js').SpacingMixin} SpacingMixin
  */
 
 /**

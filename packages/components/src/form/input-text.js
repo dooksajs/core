@@ -1,5 +1,5 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
-import { ariaLabel, formControl, inputAll, inputText as inputTextMixin } from '../mixins/index.js'
+import { ariaLabelMixin, formControlMixin, inputAllMixin, inputTextMixin as inputTextMixin } from '../mixins/index.js'
 
 const inputText = createComponent({
   id: 'input-text',
@@ -25,11 +25,11 @@ const inputText = createComponent({
       name: 'id'
     }
   }
-}, [formControl, inputAll, inputTextMixin, ariaLabel])
+}, [formControlMixin, inputAllMixin, inputTextMixin, ariaLabelMixin])
 
 /**
  * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('../mixins/form-control.js').FormControlMixin} FormControlMixin
+ * @typedef {import('../mixins/styles/form-control.js').FormControlMixin} FormControlMixin
  * @typedef {import('../mixins/input/input-all.js').InputAllMixin} InputAllMixin
  * @typedef {import('../mixins/input/input-text.js').InputTextMixin} InputTextMixin
  * @typedef {import('../mixins/aria/aria-label.js').AriaLabelMixin} AriaLabelMixin

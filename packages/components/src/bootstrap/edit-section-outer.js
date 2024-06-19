@@ -33,7 +33,7 @@ const div = extendDiv({
     position: 'absolute',
     top: '0',
     start: '50',
-    translate: 'middle',
+    transformTranslate: 'middle',
     zIndex: '3'
   }
 })

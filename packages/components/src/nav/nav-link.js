@@ -1,7 +1,7 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
 import { extendText, text } from '../text/text.js'
 import icon from '../icon/icon.js'
-import { ariaCurrent, ariaSelected } from '../mixins/index.js'
+import { ariaCurrentMixin, ariaSelectedMixin } from '../mixins/index.js'
 
 const navLinkText = extendText({
   options: {
@@ -43,11 +43,11 @@ const navLink = createComponent({
       name: 'href'
     }
   }
-}, [ariaCurrent, ariaSelected])
+}, [ariaCurrentMixin, ariaSelectedMixin])
 
 /**
  * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('../mixins/flex.js').FlexMixin} FlexMixin
+ * @typedef {import('../mixins/styles/flex.js').FlexMixin} FlexMixin
  * @typedef {import('../mixins/aria/aria-current.js').AriaCurrentMixin} AriaCurrentMixin
  * @typedef {import('../mixins/aria/aria-selected.js').AriaSelectedMixin} AriaSelectedMixin
  */
