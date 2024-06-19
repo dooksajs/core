@@ -1,12 +1,18 @@
-import cardBody from './card-body.js'
-import card from './card.js'
-import cardImg from './card-img.js'
-import { cardTitle, cardText } from './card-title.js'
+import { cardBody, extendCardBody } from './card-body.js'
+import { cardImg, extendCardImg } from './card-img.js'
+import { cardText, extendCardText } from './card-text.js'
+import { cardTitle, extendCardTitle } from './card-title.js'
+import { card, extendCard } from './card.js'
 
 export {
   card,
   cardBody,
   cardImg,
+  cardText,
   cardTitle,
-  cardText
+  extendCard,
+  extendCardBody,
+  extendCardImg,
+  extendCardText,
+  extendCardTitle
 }

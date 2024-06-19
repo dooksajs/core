@@ -1,12 +1,8 @@
-import createComponent from '@dooksa/create-component'
-import cardTitle from './card-title.js'
+import { createComponent, extendComponent } from '@dooksa/create-component'
 
-export default createComponent({
+const cardBody = createComponent({
   id: 'card-body',
   tag: 'div',
-  type: 'section',
-  children: [cardTitle],
-  allowedChildren: [cardTitle],
   properties: [
     {
       name: 'className',
@@ -14,3 +10,19 @@ export default createComponent({
     }
   ]
 })
+
+/**
+ * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
+ */
+
+/**
+ * @param {ComponentExtend} options
+ */
+function extendCardBody (options) {
+  return extendComponent(cardBody, options)
+}
+
+export {
+  cardBody,
+  extendCardBody
+}

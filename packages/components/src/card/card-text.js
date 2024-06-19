@@ -1,21 +1,21 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
 import { text, extendText } from '../text/text.js'
 
-const cardTitleText = extendText({
+const cardTextText = extendText({
   options: {
-    text: 'Card title'
+    text: 'Some quick example text to build on the card title and make up the bulk of the card\'s content.'
   }
 })
 
-const cardTitle = createComponent({
+const cardText = createComponent({
   id: 'cardText',
-  tag: 'h5',
-  children: [cardTitleText],
+  tag: 'p',
+  children: [cardTextText],
   allowedChildren: [text],
   properties: [
     {
       name: 'className',
-      value: 'card-title'
+      value: 'card-text'
     }
   ]
 })
@@ -27,11 +27,11 @@ const cardTitle = createComponent({
 /**
  * @param {ComponentExtend} options
  */
-function extendCardTitle (options) {
-  return extendComponent(cardTitle, options)
+function extendCardText (options) {
+  return extendComponent(cardText, options)
 }
 
 export {
-  cardTitle,
-  extendCardTitle
+  cardText,
+  extendCardText
 }

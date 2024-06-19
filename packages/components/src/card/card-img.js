@@ -1,6 +1,6 @@
-import createComponent from '@dooksa/create-component'
+import { createComponent, extendComponent } from '@dooksa/create-component'
 
-export default createComponent({
+const cardImg = createComponent({
   id: 'card-img',
   tag: 'img',
   type: 'img',
@@ -42,11 +42,32 @@ export default createComponent({
         value: 'card-img-bottom'
       }
     }
-  },
-  events: [
-    {
-      on: 'create',
-      actionId: 'on-create-change-image'
-    }
-  ]
+  }
 })
+
+/**
+ * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
+ */
+
+/**
+ * @typedef {Object} ComponentExtendCardImgOptions
+ * @property {string} [src]
+ * @property {'top'|'bottom'} [position]
+ */
+
+/**
+ * @typedef {Object} ComponentExtendCardImg
+ * @property {ComponentExtendCardImgOptions} options
+ */
+
+/**
+ * @param {ComponentExtend|ComponentExtendCardImg} options
+ */
+function extendCardImg (options) {
+  return extendComponent(cardImg, options)
+}
+
+export {
+  cardImg,
+  extendCardImg
+}
