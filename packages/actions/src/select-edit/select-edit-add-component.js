@@ -1,6 +1,6 @@
 import createAction from '@dooksa/create-action'
 
-export default createAction('edit-section-add-component', [
+export default createAction('select-edit-add-component', [
   {
     set_dataValue: {
       name: 'component/children',

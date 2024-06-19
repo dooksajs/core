@@ -1,6 +1,6 @@
 import createAction from '@dooksa/create-action'
 
-export default createAction('edit-section-inner', [
+export default createAction('select-edit-outer', [
   {
     get_dataValue: {
       name: 'component/children',
@@ -38,7 +38,7 @@ export default createAction('edit-section-inner', [
       context: {
         get_contextValue: '$null'
       },
-      actionId: 'edit-section-inner-iterate'
+      actionId: 'select-edit-outer-iterate'
     }
   },
   {
@@ -54,4 +54,4 @@ export default createAction('edit-section-inner', [
       }
     }
   }
-], ['edit-section-inner-iterate'])
+], ['select-edit-outer-iterate'])

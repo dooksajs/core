@@ -82,7 +82,7 @@ const sectionModalBody = extendModalBody({
   events: [
     {
       on: 'create',
-      actionId: 'edit-section-modal-items'
+      actionId: 'select-edit-modal-items'
     }
   ]
 })

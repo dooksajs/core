@@ -1,21 +1,17 @@
-import componentAdd from './component-add.js'
-import editSectionModal from './edit-section-modal.js'
-import editSectionAddComponent from './edit-section-add-component.js'
-import editSectionOuterIterate from './edit-section-outer-iterate.js'
-import editSectionOuter from './edit-section-outer.js'
-import editSectionInner from './edit-section-inner.js'
-import editSectionInnerIterate from './edit-section-inner-iterate.js'
 import onCreateChangeText from './on-create-change-text.js'
 import onCreateChangeImage from './on-create-change-image.js'
+import editImg from './edit-img.js'
+import onCreateLabel from './on-create-label.js'
+import onCreateLabelText from './on-create-label-text.js'
+import onCreateSetOptionId from './on-create-set-option-id.js'
+export * from './select-edit/index.js'
+export * from './accordion/index.js'
 
 export {
+  editImg,
   onCreateChangeText,
   onCreateChangeImage,
-  editSectionModal,
-  editSectionOuter,
-  editSectionOuterIterate,
-  editSectionInner,
-  editSectionInnerIterate,
-  editSectionAddComponent,
-  componentAdd
+  onCreateLabel,
+  onCreateLabelText,
+  onCreateSetOptionId
 }

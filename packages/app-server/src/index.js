@@ -1,6 +1,6 @@
 import createApp from '@dooksa/create-app'
 import { data } from '@dooksa/plugins'
-import { editImg, editSectionAddComponent, editSectionInner, editSectionInnerIterate, editSectionModal, editSectionModalItems, editSectionOuter, editSectionOuterIterate, onClickAccordionButton, onCollapseHideAccordionButton, onCollapseShowAccordionButton, onCreateAccordion, onCreateAccordionButton, onCreateAccordionCollapse, onCreateChangeImage, onCreateChangeText, onCreateLabel, onCreateLabelText, onCreateSetOptionId } from '@dooksa/actions'
+import { editImg, selectEditInner, selectEditInnerIterate, selectEditOuter, selectEditOuterIterate, onClickAccordionButton, onCollapseHideAccordionButton, onCollapseShowAccordionButton, onCreateAccordion, onCreateAccordionButton, onCreateAccordionCollapse, onCreateChangeImage, onCreateChangeText, onCreateLabel, onCreateLabelText, onCreateSetOptionId, selectEditAddComponent, selectEditModal, selectEditModalItems } from '@dooksa/actions'
 import {
   $http,
   action,
@@ -34,13 +34,13 @@ export default createApp({
     editImg,
     onCreateChangeImage,
     onCreateChangeText,
-    editSectionAddComponent,
-    editSectionOuter,
-    editSectionOuterIterate,
-    editSectionInner,
-    editSectionInnerIterate,
-    editSectionModal,
-    editSectionModalItems,
+    selectEditAddComponent,
+    selectEditOuter,
+    selectEditOuterIterate,
+    selectEditInner,
+    selectEditInnerIterate,
+    selectEditModal,
+    selectEditModalItems,
     onCreateLabel,
     onCreateLabelText,
     onCreateAccordionButton,

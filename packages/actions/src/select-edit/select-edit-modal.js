@@ -1,6 +1,6 @@
 import createAction from '@dooksa/create-action'
 
-export default createAction('edit-section-modal', [
+export default createAction('select-edit-modal', [
   {
     set_dataValue: {
       name: 'component/items',
@@ -16,6 +16,26 @@ export default createAction('edit-section-modal', [
         get_sequenceValue: '0'
       },
       query: 'id'
+    }
+  },
+  {
+    set_actionValue: {
+      id: {
+        get_sequenceValue: '1'
+      },
+      values: [
+        {
+          id: 'componentId',
+          value: {
+            get_actionValue: {
+              id: {
+                get_contextValue: 'rootId'
+              },
+              query: 'componentId'
+            }
+          }
+        }
+      ]
     }
   },
   {

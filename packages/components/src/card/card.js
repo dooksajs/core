@@ -16,7 +16,7 @@ export default createComponent({
   events: [
     {
       on: 'create',
-      actionId: 'edit-section-inner'
+      actionId: 'select-edit-inner'
     }
   ]
 })

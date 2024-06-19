@@ -1,6 +1,6 @@
 import createAction from '@dooksa/create-action'
 
-export default createAction('edit-section-inner-iterate', [
+export default createAction('select-edit-outer-iterate', [
   { // get component template id
     get_dataValue: {
       name: 'component/items',
@@ -11,7 +11,7 @@ export default createAction('edit-section-inner-iterate', [
       }
     }
   },
-  { // Replace current component with 'bootstrap-edit-section-link'
+  { // Replace current component with 'bootstrap-select-edit-link'
     eval_condition: {
       if: [
         {
@@ -24,7 +24,7 @@ export default createAction('edit-section-inner-iterate', [
               query: 'id'
             }
           },
-          to: 'edit-section-inner'
+          to: 'select-edit-outer'
         }
       ],
       then: [2, 3, 4, 5],
@@ -35,7 +35,7 @@ export default createAction('edit-section-inner-iterate', [
     set_dataValue: {
       name: 'component/items',
       value: {
-        id: 'edit-section-inner',
+        id: 'select-edit-outer',
         isTemplate: true
       }
     }
