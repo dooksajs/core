@@ -9,17 +9,11 @@ const navLinkText = extendText({
   }
 })
 
-const navLink = createComponent({
-  id: 'nav-link',
-  tag: 'a',
+const navLinkButton = createComponent({
+  id: 'nav-link-button',
+  tag: 'button',
   children: [navLinkText],
   allowedChildren: [text, icon],
-  content: [
-    {
-      name: 'href',
-      propertyName: 'value'
-    }
-  ],
   properties: [
     {
       name: 'className',
@@ -38,9 +32,6 @@ const navLink = createComponent({
       name: 'className',
       value: 'active',
       toggle: true
-    },
-    href: {
-      name: 'href'
     }
   }
 }, [ariaCurrentMixin, ariaSelectedMixin])
@@ -68,14 +59,14 @@ const navLink = createComponent({
 /**
  * @param {ComponentExtend|ComponentExtendNavLinkOption} options
  */
-function extendNavLink (options) {
-  return extendComponent(navLink, options)
+function extendNavLinkButton (options) {
+  return extendComponent(navLinkButton, options)
 }
 
 export {
-  extendNavLink,
-  navLink
+  extendNavLinkButton,
+  navLinkButton
 }
 
-export default navLink
+export default navLinkButton
 
