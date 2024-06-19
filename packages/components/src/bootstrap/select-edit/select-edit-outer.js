@@ -1,7 +1,7 @@
 import { createComponent } from '@dooksa/create-component'
-import { extendText } from '../text/text.js'
-import { extendIcon } from '../icon/icon.js'
-import { extendDiv } from '../base/div.js'
+import { extendText } from '../../text/text.js'
+import { extendIcon } from '../../icon/icon.js'
+import { extendDiv } from '../../base/div.js'
 
 const editText = extendText({
   options: { text: 'Edit' }
@@ -31,18 +31,20 @@ const div = extendDiv({
   options: {
     position: 'absolute',
     top: '0',
-    end: '0'
+    start: '50',
+    transformTranslate: 'middle',
+    zIndex: '3'
   }
 })
 
-const editSectionInnerLink = createComponent({
-  id: 'edit-section-inner-link',
+const selectEditOuterLink = createComponent({
+  id: 'select-edit-outer-link',
   tag: 'a',
   children: [div],
   properties: [
     {
       name: 'className',
-      value: 'select-area'
+      value: 'select-area select-area-lg'
     },
     {
       name: 'href',
@@ -52,7 +54,7 @@ const editSectionInnerLink = createComponent({
   events: [
     {
       on: 'click',
-      actionId: 'edit-section-modal'
+      actionId: 'select-edit-modal'
     }
   ],
   eventTypes: {
@@ -60,25 +62,23 @@ const editSectionInnerLink = createComponent({
   }
 })
 
-
-const editSectionInner = extendDiv({
+const selectEditOuter = extendDiv({
   metadata: {
-    id: 'edit-section-inner'
+    id: 'select-edit-outer'
   },
-  children: [editSectionInnerLink],
+  children: [selectEditOuterLink],
   options: {
     position: 'relative'
   },
   events: [
     {
       on: 'create',
-      actionId: 'edit-section-add-component'
+      actionId: 'select-edit-add-component'
     }
   ]
 })
 
 export {
-  editSectionInner,
-  editSectionInnerLink
+  selectEditOuter,
+  selectEditOuterLink
 }
-
