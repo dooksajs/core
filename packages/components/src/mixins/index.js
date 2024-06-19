@@ -37,6 +37,8 @@ import inputDir from './input/input-dir.js'
 import inputFile from './input/input-file.js'
 import inputNumber from './input/input-number.js'
 import inputText from './input/input-text.js'
+import ariaDisabled from './aria/aria-disabled.js'
+import ariaLabel from './aria/aria-label.js'
 
 export {
   inputAll,
@@ -69,6 +71,8 @@ export {
   eventTypeSelectMixin,
   eventTypeTouchMixin,
   eventTypeTransitionMixin, flexMixin,
-  insetMixin, zIndexMixin, positionMixin, spacingMixin, translateMixin
+  insetMixin, zIndexMixin, positionMixin, spacingMixin, translateMixin,
+  ariaDisabled,
+  ariaLabel
 }
 

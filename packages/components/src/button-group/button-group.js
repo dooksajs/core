@@ -1,6 +1,7 @@
 import { button, extendButton } from '../button/button.js'
 import { extendComponent, createComponent } from '@dooksa/create-component'
 import { extendText } from '../text/text.js'
+import { ariaLabel } from '../mixins/index.js'
 
 const leftText = extendText({
   options: {
@@ -58,26 +59,17 @@ const buttonGroup = createComponent({
       name: 'aria-label',
       value: 'Button group'
     }
-  ],
-  options: {
-    ariaLabel: {
-      name: 'aria-label'
-    }
-  }
-})
+  ]
+}, [ariaLabel])
 
 /**
  * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- */
-
-/**
- * @typedef {Object} ButtonGroupExtendOption
- * @property {string} [ariaLabel]
+ * @typedef {import('../mixins/aria/aria-label.js').AriaLabelMixin} AriaLabelMixin
  */
 
 /**
  * @typedef {Object} ButtonGroupExtend
- * @property {ButtonGroupExtendOption} options
+ * @property {AriaLabelMixin} options
  */
 
 /**

@@ -11,7 +11,7 @@ export default createMixin({
   },
   data: {
     options: {
-      ariaCurrent: {
+      ariaSelected: {
         name: 'aria-selected',
         values: {
           true: 'true',

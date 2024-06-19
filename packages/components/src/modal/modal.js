@@ -1,5 +1,6 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
 import modalDialog from './modal-dialog.js'
+import { ariaLabel } from '../mixins/index.js'
 
 const modal = createComponent({
   id: 'modal',
@@ -86,20 +87,16 @@ const modal = createComponent({
       type: 'box-shadow'
     }
   ]
-})
+}, [ariaLabel])
 
 /**
  * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- */
-
-/**
- * @typedef {Object} ExtendModalAria
- * @property {string} [ariaLabel]
+ * @typedef {import('../mixins/aria/aria-label.js').AriaLabelMixin} AriaLabelMixin
  */
 
 /**
  * @typedef {Object} ExtendModalOptions
- * @property {ExtendModalAria} options
+ * @property {AriaLabelMixin} options
  */
 
 /**
