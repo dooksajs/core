@@ -62,7 +62,7 @@ import { objectHash } from '@dooksa/utils'
  * @property {string} name - Name of attribute/setter
  * @property {boolean} [replace] - Replace property value
  * @property {boolean} [toggle] - toggle property value
- * @property {Object.<string, string>} [values] - Attribute values
+ * @property {Object.<string, (string|boolean)>} [values] - Attribute values
  * @property {string|boolean} [value] - Attribute value
  * @property {Function} [computedValue]
  */
