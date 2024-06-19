@@ -1,4 +1,4 @@
-import createComponent from '@dooksa/create-component'
+import { createComponent, extendComponent } from '@dooksa/create-component'
 import { extendAccordionButton } from './accordion-button.js'
 
 const accordionButton = extendAccordionButton({
@@ -7,7 +7,7 @@ const accordionButton = extendAccordionButton({
   }
 })
 
-export default createComponent({
+const accordionHeader = createComponent({
   id: 'accordion-header',
   tag: 'h2',
   children: [accordionButton],
@@ -18,3 +18,19 @@ export default createComponent({
     }
   ]
 })
+
+/**
+ * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
+ */
+
+/**
+ * @param {ComponentExtend} options
+ */
+function extendAccordionHeader (options) {
+  return extendComponent(accordionHeader, options)
+}
+
+export {
+  extendAccordionHeader,
+  accordionHeader
+}

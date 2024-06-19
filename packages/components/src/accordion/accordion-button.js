@@ -1,6 +1,6 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
 import { extendText } from '../text/text.js'
-import { eventTypeMouseMixin } from '../mixins/index.js'
+import { ariaControlsMixin, ariaExpandedMixin, eventTypeMouseMixin } from '../mixins/index.js'
 
 const text = extendText({
   options: {
@@ -12,7 +12,6 @@ const accordionButton = createComponent({
   id: 'accordion-button',
   tag: 'button',
   children: [text],
-  allowedChildren: [],
   properties: [
     {
       name: 'className',
@@ -20,16 +19,6 @@ const accordionButton = createComponent({
     }
   ],
   options: {
-    ariaControls: {
-      name: 'aria-controls'
-    },
-    ariaExpanded: {
-      name: 'aria-expanded',
-      values: {
-        true: 'true',
-        false: 'false'
-      }
-    },
     collapsed: {
       name: 'className',
       value: 'collapsed',
@@ -46,19 +35,22 @@ const accordionButton = createComponent({
       actionId: 'on-click-accordion-button'
     }
   ]
-}, [eventTypeMouseMixin])
-
+}, [eventTypeMouseMixin, ariaControlsMixin, ariaExpandedMixin])
 
 /**
  * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
+ * @typedef {import('../mixins/aria/aria-expanded.js').AriaExpandedMixin} AriaExpandedMixin
+ * @typedef {import('../mixins/aria/aria-controls.js').AriaControlsMixin} AriaControlsMixin
+ */
+
+/**
+ * @typedef {Object} ComponentExtendAccordionButtonOptions
+ * @property {boolean} [collapsed] - Makes the button appear closed
  */
 
 /**
  * @typedef {Object} ComponentExtendAccordionButton
- * @property {Object} options
- * @property {string} [options.ariaControls] - The component which this button controls
- * @property {'true'|'false'} [options.ariaExpanded] - Indicates if component is expanded
- * @property {boolean} [options.collapsed] - Makes the button appear closed
+ * @property {ComponentExtendAccordionButtonOptions|AriaControlsMixin|AriaExpandedMixin} options
  */
 
 /**

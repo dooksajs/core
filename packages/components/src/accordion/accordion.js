@@ -1,7 +1,7 @@
-import createComponent from '@dooksa/create-component'
+import { createComponent, extendComponent } from '@dooksa/create-component'
 import accordionItem from './accordion-item.js'
 
-export default createComponent({
+const accordion = createComponent({
   id: 'accordion',
   tag: 'div',
   allowedChildren: [accordionItem],
@@ -24,3 +24,25 @@ export default createComponent({
     }
   ]
 })
+
+/**
+ * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
+ */
+
+/**
+ * @typedef {Object} ComponentExtendAccordion
+ * @property {Object} options
+ * @property {boolean} [options.flush]
+ */
+
+/**
+ * @param {ComponentExtend|ComponentExtendAccordion} options
+ */
+function extendAccordion (options) {
+  return extendComponent(accordion, options)
+}
+
+export {
+  extendAccordion,
+  accordion
+}

@@ -1,7 +1,8 @@
-import createComponent from '@dooksa/create-component'
+import { createComponent, extendComponent } from '@dooksa/create-component'
 import accordionBody from './accordion-body.js'
+import { ariaControlsMixin, ariaExpandedMixin } from '../mixins/index.js'
 
-export default createComponent({
+const accordionCollapse = createComponent({
   id: 'accordion-collapse',
   tag: 'div',
   children: [accordionBody],
@@ -34,4 +35,28 @@ export default createComponent({
       actionId: 'on-create-accordion-collapse'
     }
   ]
-})
+}, [ariaControlsMixin, ariaExpandedMixin])
+
+/**
+ * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
+ */
+
+/**
+ * @typedef {Object} ComponentExtendAccordionCollapse
+ * @property {Object} options
+ * @property {string} [options.id]
+ * @property {boolean} [options.show]
+ * @property {boolean} [options.hide]
+ */
+
+/**
+ * @param {ComponentExtend|ComponentExtendAccordionCollapse} options
+ */
+function extendAccordionCollapse (options) {
+  return extendComponent(accordionCollapse, options)
+}
+
+export {
+  extendAccordionCollapse,
+  accordionCollapse
+}

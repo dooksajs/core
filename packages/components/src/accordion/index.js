@@ -1,9 +1,9 @@
-import accordionBody from './accordion-body.js'
-import accordionButton from './accordion-button.js'
-import accordionCollapse from './accordion-collapse.js'
-import accordionHeader from './accordion-header.js'
-import accordionItem from './accordion-item.js'
-import accordion from './accordion.js'
+import { accordionBody, extendAccordionBody } from './accordion-body.js'
+import { accordionButton, extendAccordionButton } from './accordion-button.js'
+import { accordionCollapse, extendAccordionCollapse } from './accordion-collapse.js'
+import { accordionHeader, extendAccordionHeader } from './accordion-header.js'
+import { accordionItem, extendAccordionItem } from './accordion-item.js'
+import { accordion, extendAccordion } from './accordion.js'
 
 export {
   accordion,
@@ -11,5 +11,11 @@ export {
   accordionButton,
   accordionCollapse,
   accordionHeader,
-  accordionItem
+  accordionItem,
+  extendAccordion,
+  extendAccordionBody,
+  extendAccordionButton,
+  extendAccordionCollapse,
+  extendAccordionHeader,
+  extendAccordionItem
 }

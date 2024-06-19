@@ -1,12 +1,13 @@
-import createComponent from '@dooksa/create-component'
+import { extendComponent, createComponent } from '@dooksa/create-component'
 import { extendText } from '../text/text.js'
+
 const text = extendText({
   options: {
     text: 'This is the first item\'s accordion body.'
   }
 })
 
-export default createComponent({
+const accordionBody = createComponent({
   id: 'accordion-body',
   tag: 'div',
   children: [text],
@@ -17,3 +18,19 @@ export default createComponent({
     }
   ]
 })
+
+/**
+ * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
+ */
+
+/**
+ * @param {ComponentExtend} options
+ */
+function extendAccordionBody (options) {
+  return extendComponent(accordionBody, options)
+}
+
+export {
+  extendAccordionBody,
+  accordionBody
+}
