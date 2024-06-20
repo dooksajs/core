@@ -1,5 +1,5 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
-import accordionItem from './accordion-item.js'
+import { accordionItem } from './accordion-item.js'
 
 const accordion = createComponent({
   id: 'accordion',

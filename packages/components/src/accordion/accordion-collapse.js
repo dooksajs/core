@@ -1,5 +1,5 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
-import accordionBody from './accordion-body.js'
+import { accordionBody } from './accordion-body.js'
 import { ariaControlsMixin, ariaExpandedMixin } from '../mixins/index.js'
 
 const accordionCollapse = createComponent({
