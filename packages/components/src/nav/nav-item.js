@@ -11,7 +11,7 @@ const navItem = createComponent({
     }
   ],
   options: {
-    presentation: {
+    rolePresentation: {
       name: 'role',
       value: 'presentation'
     }
@@ -25,8 +25,7 @@ const navItem = createComponent({
 
 /**
  * @typedef {Object} ComponentExtendNavItem
- * @property {Object} options
- * @property {boolean} [options.presentation] - Indicates if component is expanded
+ * @property {boolean} [rolePresentation] - Indicates if component is expanded
  */
 
 /**
