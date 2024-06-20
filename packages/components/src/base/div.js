@@ -1,19 +1,20 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
 import {
   backgroundMixin,
-  roundedMixin,
+  borderMixin,
   buttonMixin,
-  shadowMixin,
+  containerMixin,
   displayMixin,
   flexMixin,
+  fontMixin,
+  gapMixin,
   insetMixin,
-  zIndexMixin,
   positionMixin,
+  roundedMixin,
+  shadowMixin,
   spacingMixin,
   translateMixin,
-  fontMixin,
-  borderMixin,
-  gapMixin
+  zIndexMixin
 } from '../mixins/index.js'
 
 const div = createComponent({
@@ -21,19 +22,20 @@ const div = createComponent({
   tag: 'div'
 }, [
   backgroundMixin,
-  roundedMixin,
-  positionMixin,
-  shadowMixin,
-  spacingMixin,
-  zIndexMixin,
-  insetMixin,
-  translateMixin,
+  borderMixin,
   buttonMixin,
+  containerMixin,
   displayMixin,
   flexMixin,
   fontMixin,
-  borderMixin,
-  gapMixin
+  gapMixin,
+  insetMixin,
+  positionMixin,
+  roundedMixin,
+  shadowMixin,
+  spacingMixin,
+  translateMixin,
+  zIndexMixin
 ])
 
 /**
@@ -52,6 +54,7 @@ const div = createComponent({
  * @typedef {import('../mixins/styles/font.js').FontMixin} FontMixin
  * @typedef {import('../mixins/styles/border.js').BorderMixin} BorderMixin
  * @typedef {import('../mixins/styles/gap.js').GapMixin} GapMixin
+ * @typedef {import('../mixins/styles/container.js').ContainerMixin} ContainerMixin
  */
 
 /**
@@ -69,7 +72,8 @@ const div = createComponent({
  * ButtonMixin|
  * DisplayMixin|
  * BorderMixin|
- * GapMixin} options
+ * GapMixin|
+ * ContainerMixin} options
  */
 
 /**
