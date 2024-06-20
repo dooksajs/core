@@ -6,6 +6,7 @@ import availableMethods from './available-methods.js'
  * @property {ActionDispatch} [action_dispatch]
  * @property {DeleteDataValue} [delete_dataValue]
  * @property {ComponentRemove} [component_remove]
+ * @property {ComponentRenderChildren} [component_renderChildren]
  * @property {EvalCondition} [eval_condition]
  * @property {GetActionValue} [get_actionValue]
  * @property {GetBlockValue} [get_blockValue]
@@ -46,12 +47,22 @@ import availableMethods from './available-methods.js'
  */
 
 /**
+ * @typedef {Object} ComponentRenderChildren
+ * @property {Action|string} id
+ * @property {Action|Action[]|string[]} [items]
+ */
+
+/**
+ * @typedef {Object} ActionDispatchContext
+ * @property {Action|string} [contentId]
+ * @property {Action|string} [id]
+ * @property {Action|Array<Action|string>} [components]
+ */
+
+/**
  * @typedef {Object} ActionDispatch
  * @property {Action|string} id
- * @property {Object} [context]
- * @property {Action|string} [context.contentId]
- * @property {Action|string} [context.componentId]
- * @property {Array<Action|string>} [context.components]
+ * @property {ActionDispatchContext|Action} [context]
  * @property {Action} [payload]
  */
 

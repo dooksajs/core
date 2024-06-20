@@ -832,6 +832,54 @@ const component = createPlugin({
       $deleteDataValue('component/nodes', id)
       $deleteDataValue('component/parents', id)
       $deleteDataValue('component/items', id)
+    },
+    renderChildren ({
+      id,
+      items = $getDataValue('component/children', { id }).item
+    }) {
+      const node = $getDataValue('component/nodes', { id }).item
+      const children = []
+      let childIsLazy = false
+
+      for (let i = 0; i < items.length; i++) {
+        const childId = items[i]
+        const options = { id: childId }
+        const node = $getDataValue('component/nodes', options)
+
+        if (!node.isEmpty) {
+          children.push({
+            item: node.item
+          })
+
+          continue
+        }
+
+        const item = $getDataValue('component/items', options).item
+
+        if (item.isTemplate) {
+          const groupId = item.groupId || $getDataValue('component/groups', options).item
+          const result = createTemplate({
+            id: childId,
+            template: _$component(item.id),
+            parentId: id,
+            rootId: id,
+            groupId
+          })
+
+          childIsLazy = (result instanceof Promise)
+          children.push(result)
+        }
+      }
+
+      if (childIsLazy) {
+        return Promise.all(children)
+          .then(results => {
+            updateChildren(node, results)
+          })
+          .catch(error => console.error(error))
+      } else {
+        updateChildren(node, children)
+      }
     }
   },
   setup ({ rootId = 'root', $component }) {
@@ -856,7 +904,7 @@ const component = createPlugin({
       element = createTemplate({
         id: 'root',
         template: _$component('div'),
-        parentId: 'body'
+        parentId: 'root'
       })
     }
 
@@ -878,50 +926,24 @@ const component = createPlugin({
     $addDataListener('component/children', {
       on: 'update',
       capture: 'all',
-      handler (data) {
-        const node = $getDataValue('component/nodes', { id: data.id }).item
-        const children = []
-        let childIsLazy = false
-
-        for (let i = 0; i < data.item.length; i++) {
-          const id = data.item[i]
-          const options = { id }
-          const node = $getDataValue('component/nodes', options)
-
-          if (!node.isEmpty) {
-            children.push({
-              item: node.item
-            })
-
-            continue
-          }
-
-          const item = $getDataValue('component/items', { id }).item
-
-
-          if (item.isTemplate) {
-            const groupId = item.groupId || $getDataValue('component/groups', { id: data.id }).item
-            const result = createTemplate({
-              id,
-              template: _$component(item.id),
-              parentId: data.id,
-              rootId: id,
-              groupId
-            })
-
-            childIsLazy = (result instanceof Promise)
-            children.push(result)
-          }
+      handler: (data) => {
+        const id = data.id
+        const options = {
+          id,
+          context: { id },
+          payload: data.item
         }
 
-        if (childIsLazy) {
-          Promise.all(children)
-            .then(results => {
-              updateChildren(node, results)
-            })
-            .catch(error => console.error(error))
+        $emit('component/childrenBeforeUpdate', options)
+
+        const render = this.renderChildren({ id, items: data.item })
+
+        if (render instanceof Promise) {
+          render.then(() => [
+            $emit('component/childrenAfterUpdate', options)
+          ])
         } else {
-          updateChildren(node, children)
+          $emit('component/childrenAfterUpdate', options)
         }
       }
     })
@@ -929,9 +951,11 @@ const component = createPlugin({
 })
 
 const componentRemove = component.actions.remove
+const componentRenderChildren = component.actions.renderChildren
 
 export {
-  componentRemove
+  componentRemove,
+  componentRenderChildren
 }
 
 export default component

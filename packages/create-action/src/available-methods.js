@@ -13,6 +13,7 @@ const availableMethods = {
   data_generateId: true,
   data_find: true,
   component_remove: true,
+  component_renderChildren: true,
   fetch_getAll: true,
   fetch_getById: true,
   list_filter: true,
