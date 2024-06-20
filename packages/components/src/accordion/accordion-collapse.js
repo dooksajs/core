@@ -27,11 +27,11 @@ const accordionCollapse = createComponent({
   },
   events: [
     {
-      on: 'create',
+      on: 'component/create',
       actionId: 'on-create-set-option-id'
     },
     {
-      on: 'create',
+      on: 'component/create',
       actionId: 'on-create-accordion-collapse'
     }
   ]

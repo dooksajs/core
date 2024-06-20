@@ -71,7 +71,7 @@ const selectEditInner = extendDiv({
   },
   events: [
     {
-      on: 'create',
+      on: 'component/create',
       actionId: 'select-edit-add-component'
     }
   ]

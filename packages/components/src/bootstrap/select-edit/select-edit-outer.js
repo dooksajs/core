@@ -72,7 +72,7 @@ const selectEditOuter = extendDiv({
   },
   events: [
     {
-      on: 'create',
+      on: 'component/create',
       actionId: 'select-edit-add-component'
     }
   ]

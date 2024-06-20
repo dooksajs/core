@@ -8,7 +8,7 @@ const labelText = extendText({
   },
   events: [
     {
-      on: 'create',
+      on: 'component/create',
       actionId: 'on-create-label-text'
     }
   ]
@@ -36,7 +36,7 @@ const label = createComponent({
   },
   events: [
     {
-      on: 'create',
+      on: 'component/create',
       actionId: 'on-create-label'
     }
   ]
@@ -44,7 +44,6 @@ const label = createComponent({
 
 /**
  * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('../mixins/styles/form-control.js').FormControlMixin} FormControlMixin
  */
 
 /**
@@ -59,7 +58,7 @@ const label = createComponent({
 
 /**
  * @typedef {Object} ComponentExtendLabel
- * @property {ComponentExtendLabelOptions|FormControlMixin} options
+ * @property {ComponentExtendLabelOptions} options
  */
 
 /**

@@ -27,7 +27,7 @@ const accordionButton = createComponent({
   },
   events: [
     {
-      on: 'create',
+      on: 'component/create',
       actionId: 'on-create-accordion-button'
     },
     {
