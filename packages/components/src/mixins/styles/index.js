@@ -7,6 +7,7 @@ import fontMixin from './font.js'
 import formControlMixin from './form-control.js'
 import gapMixin from './gap.js'
 import insetMixin from './inset.js'
+import overflowMixin from './overflow.js'
 import positionMixin from './position.js'
 import roundedMixin from './rounded.js'
 import shadowMixin from './shadow.js'
@@ -25,6 +26,7 @@ export {
   formControlMixin,
   gapMixin,
   insetMixin,
+  overflowMixin,
   positionMixin,
   roundedMixin,
   shadowMixin,
