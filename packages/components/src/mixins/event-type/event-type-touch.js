@@ -2,14 +2,14 @@ import { createMixin } from '@dooksa/create-component'
 
 export default createMixin({
   metadata: {
-    id: 'eventTypeTouch'
+    id: 'event-type-touch'
   },
   data: {
     eventTypes: {
-      touchcancel: true,
-      touchend: true,
-      touchmove: true,
-      touchstart: true
+      'node/touchcancel': true,
+      'node/touchend': true,
+      'node/touchmove': true,
+      'node/touchstart': true
     }
   }
 })

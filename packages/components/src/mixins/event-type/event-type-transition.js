@@ -2,14 +2,14 @@ import { createMixin } from '@dooksa/create-component'
 
 export default createMixin({
   metadata: {
-    id: 'eventTypeTransition'
+    id: 'event-type-transition'
   },
   data: {
     eventTypes: {
-      transitioncancel: true,
-      transitionend: true,
-      transitionrun: true,
-      transitionstart: true
+      'node/transitioncancel': true,
+      'node/transitionend': true,
+      'node/transitionrun': true,
+      'node/transitionstart': true
     }
   }
 })

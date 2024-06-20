@@ -2,17 +2,17 @@ import { createMixin } from '@dooksa/create-component'
 
 export default createMixin({
   metadata: {
-    id: 'eventTypeElementCancel'
+    id: 'event-type-element-drag-drop'
   },
   data: {
     eventTypes: {
-      drag: true,
-      dragend: true,
-      dragenter: true,
-      dragleave: true,
-      dragover: true,
-      dragstart: true,
-      drop: true
+      'node/drag': true,
+      'node/dragend': true,
+      'node/dragenter': true,
+      'node/dragleave': true,
+      'node/dragover': true,
+      'node/dragstart': true,
+      'node/drop': true
     }
   }
 })

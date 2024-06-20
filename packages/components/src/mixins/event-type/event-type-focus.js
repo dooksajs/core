@@ -2,14 +2,14 @@ import { createMixin } from '@dooksa/create-component'
 
 export default createMixin({
   metadata: {
-    id: 'eventTypeFocus'
+    id: 'event-type-focus'
   },
   data: {
     eventTypes: {
-      blur: true,
-      focus: true,
-      focusin: true,
-      focusout: true
+      'node/blur': true,
+      'node/focus': true,
+      'node/focusin': true,
+      'node/focusout': true
     }
   }
 })

@@ -2,11 +2,11 @@ import { createMixin } from '@dooksa/create-component'
 
 export default createMixin({
   metadata: {
-    id: 'eventTypeSelect'
+    id: 'event-type-select'
   },
   data: {
     eventTypes: {
-      selectstart: true
+      'node/selectstart': true
     }
   }
 })

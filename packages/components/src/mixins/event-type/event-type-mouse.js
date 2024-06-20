@@ -2,20 +2,20 @@ import { createMixin } from '@dooksa/create-component'
 
 export default createMixin({
   metadata: {
-    id: 'eventTypeMouse'
+    id: 'event-type-mouse'
   },
   data: {
     eventTypes: {
-      auxclick: true,
-      click: true,
-      contextmenu: true,
-      dblclick: true,
-      mousedown: true,
-      mouseenter: true,
-      mouseleave: true,
-      mousemove: true,
-      mouseover: true,
-      mouseup: true
+      'node/auxclick': true,
+      'node/click': true,
+      'node/contextmenu': true,
+      'node/dblclick': true,
+      'node/mousedown': true,
+      'node/mouseenter': true,
+      'node/mouseleave': true,
+      'node/mousemove': true,
+      'node/mouseover': true,
+      'node/mouseup': true
     }
   }
 })

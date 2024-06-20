@@ -2,13 +2,13 @@ import { createMixin } from '@dooksa/create-component'
 
 export default createMixin({
   metadata: {
-    id: 'eventTypeScroll'
+    id: 'event-type-scroll'
   },
   data: {
     eventTypes: {
-      scroll: true,
-      scrollend: true,
-      wheel: true
+      'node/scroll': true,
+      'node/scrollend': true,
+      'node/wheel': true
     }
   }
 })

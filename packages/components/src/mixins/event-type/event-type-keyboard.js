@@ -2,12 +2,12 @@ import { createMixin } from '@dooksa/create-component'
 
 export default createMixin({
   metadata: {
-    id: 'eventTypeKeyboard'
+    id: 'event-type-keyboard'
   },
   data: {
     eventTypes: {
-      keydown: true,
-      keyup: true
+      'node/keydown': true,
+      'node/keyup': true
     }
   }
 })

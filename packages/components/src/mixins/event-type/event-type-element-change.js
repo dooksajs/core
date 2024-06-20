@@ -2,11 +2,11 @@ import { createMixin } from '@dooksa/create-component'
 
 export default createMixin({
   metadata: {
-    id: 'eventTypeElementCancel'
+    id: 'event-type-element-change'
   },
   data: {
     eventTypes: {
-      change: true
+      'node/change': true
     }
   }
 })

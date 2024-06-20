@@ -2,12 +2,12 @@ import { createMixin } from '@dooksa/create-component'
 
 export default createMixin({
   metadata: {
-    id: 'eventTypeElement'
+    id: 'event-type-element'
   },
   data: {
     eventTypes: {
-      load: true,
-      error: true
+      'node/load': true,
+      'node/error': true
     }
   }
 })

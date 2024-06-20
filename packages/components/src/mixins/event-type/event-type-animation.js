@@ -2,14 +2,14 @@ import { createMixin } from '@dooksa/create-component'
 
 export default createMixin({
   metadata: {
-    id: 'eventTypeAnimation'
+    id: 'even-type-animation'
   },
   data: {
     eventTypes: {
-      animationcancel: true,
-      animationend: true,
-      animationiteration: true,
-      animationstart: true
+      'node/animationcancel': true,
+      'node/animationend': true,
+      'node/animationiteration': true,
+      'node/animationstart': true
     }
   }
 })

@@ -2,12 +2,12 @@ import { createMixin } from '@dooksa/create-component'
 
 export default createMixin({
   metadata: {
-    id: 'eventTypeFullscreen'
+    id: 'event-type-fullscreen'
   },
   data: {
     eventTypes: {
-      fullscreenchange: true,
-      fullscreenerror: true
+      'node/fullscreenchange': true,
+      'node/fullscreenerror': true
     }
   }
 })

@@ -2,13 +2,13 @@ import { createMixin } from '@dooksa/create-component'
 
 export default createMixin({
   metadata: {
-    id: 'eventTypeComposition'
+    id: 'event-type-composition'
   },
   data: {
     eventTypes: {
-      compositionend: true,
-      compositionstart: true,
-      compositionupdate: true
+      'node/compositionend': true,
+      'node/compositionstart': true,
+      'node/compositionupdate': true
     }
   }
 })
