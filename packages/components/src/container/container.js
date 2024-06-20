@@ -1,5 +1,5 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
-import card from '../card/card.js'
+import { card } from '../card/card.js'
 import { backgroundMixin, spacingMixin, positionMixin } from '../mixins/index.js'
 import text from '../text/text.js'
 import button from '../button/button.js'
