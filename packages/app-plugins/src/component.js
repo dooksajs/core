@@ -245,7 +245,7 @@ function createNode (id, item) {
         }
       })
 
-      if (on === 'create') {
+      if (on === 'component/create') {
         hasCreateEvent = true
       }
 
@@ -379,11 +379,11 @@ function createNode (id, item) {
 /**
  * Create node from template
  * @param {Object} param
- * @param {string} param.id,
+ * @param {string} [param.id],
  * @param {Component} param.template
  * @param {string} param.parentId
- * @param {string} param.rootId
- * @param {string} param.groupId
+ * @param {string} [param.rootId]
+ * @param {string} [param.groupId]
  */
 function createTemplate ({
   id = dataGenerateId(),
@@ -488,13 +488,13 @@ function createTemplate ({
       const { on, actionId } = events[i]
       const eventData = $setDataValue('event/listeners', actionId, {
         id,
-        suffixId: 'component/' + on,
+        suffixId: on,
         update: {
           method: 'push'
         }
       })
 
-      if (on === 'create') {
+      if (on === 'component/create') {
         hasCreateEvent = true
       }
 
@@ -510,32 +510,36 @@ function createTemplate ({
       })
 
       if (eventTypes[on] && !hasEvent[on]) {
-        hasEvent[on] = true
-        const handler = () => {
-          // fire node events
-          $emit('component/' + on, {
-            id,
-            context: {
+        const isNodeEvent = (on.split('/')[0] === 'node')
+
+        if (isNodeEvent) {
+          hasEvent[on] = true
+          const handler = () => {
+            // fire node events
+            $emit(on, {
               id,
-              rootId,
-              parentId,
-              groupId
+              context: {
+                id,
+                rootId,
+                parentId,
+                groupId
+              }
+            })
+          }
+
+          node.addEventListener(on, handler)
+
+          // store handler
+          dataUnsafeSetData('event/handlers', handler, { id })
+          // handle removal
+          $addDataListener('event/handlers', {
+            on: 'delete',
+            id,
+            handler () {
+              node.removeEventListener(on, handler)
             }
           })
         }
-
-        node.addEventListener(on, handler)
-
-        // store handler
-        dataUnsafeSetData('event/handlers', handler, { id })
-        // handle removal
-        $addDataListener('event/handlers', {
-          on: 'delete',
-          id,
-          handler () {
-            node.removeEventListener(on, handler)
-          }
-        })
       }
     }
 
@@ -586,7 +590,7 @@ function createTemplate ({
 
           if (hasCreateEvent) {
             // fire mount event
-            $emit('component/created', {
+            $emit('component/create', {
               id,
               context: {
                 id,
