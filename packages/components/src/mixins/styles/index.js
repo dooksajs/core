@@ -1,6 +1,7 @@
 import backgroundMixin from './background.js'
 import borderMixin from './border.js'
 import buttonMixin from './button.js'
+import containerMixin from './container.js'
 import displayMixin from './display.js'
 import flexMixin from './flex.js'
 import fontMixin from './font.js'
@@ -20,6 +21,7 @@ export {
   backgroundMixin,
   borderMixin,
   buttonMixin,
+  containerMixin,
   displayMixin,
   flexMixin,
   fontMixin,
