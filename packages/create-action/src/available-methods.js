@@ -18,6 +18,7 @@ const availableMethods = {
   list_filter: true,
   list_forEach: true,
   list_push: true,
+  list_indexOf: true,
   list_sort: true,
   list_splice: true,
   operator_compare: true,

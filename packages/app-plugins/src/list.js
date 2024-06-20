@@ -192,6 +192,24 @@ const list = createPlugin({
       return context.$list
     },
     /**
+     * s returns the first index at which a given element can be found in the array, or -1 if it is not present.
+     * @param {Object} param
+     * @param {Array} param.items
+     * @param {number|string} param.value
+     * @returns {number}
+     */
+    indexOf ({ items, value }) {
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i]
+
+        if (item === value) {
+          return i
+        }
+      }
+
+      return -1
+    },
+    /**
      * Adds the specified elements to the end of an array
      * @param {Object} param
      * @param {Array} param.target - Array which the new element will be appended
@@ -212,9 +230,9 @@ const list = createPlugin({
         return items.sort(sortAscending)
       } else if (type === 'descending') {
         return items.sort(sortDescending)
-      } else {
-        throw new Error('Sort method does not exist: ' + type )
       }
+
+      throw new Error('Sort method does not exist: ' + type )
     },
     /**
      * Changes the contents of an array by removing or replacing existing elements and/or adding new elements in place

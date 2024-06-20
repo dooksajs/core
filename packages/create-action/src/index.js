@@ -22,6 +22,7 @@ import availableMethods from './available-methods.js'
  * @property {ListFilter} [list_filter]
  * @property {ListForEach} [list_forEach]
  * @property {ListPush} [list_push]
+ * @property {ListIndexOf} [list_indexOf]
  * @property {ListSort} [list_sort]
  * @property {ListSplice} [list_splice]
  * @property {OperatorCompare[]} [operator_compare]
@@ -236,6 +237,12 @@ import availableMethods from './available-methods.js'
  * @typedef {Object} ListPush
  * @property {Action|Action[]|string[]|number[]} target
  * @property {Action|string|number} source
+ */
+
+/**
+ * @typedef {Object} ListIndexOf
+ * @property {Action|Action[]|string[]|number[]} items
+ * @property {Action|string|number} value
  */
 
 /**
