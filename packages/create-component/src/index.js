@@ -1,6 +1,3 @@
-import { objectHash } from '@dooksa/utils'
-
-
 /** @typedef {'sm'|'md'|'lg'|'always'} BreakpointAlwaysLg */
 /** @typedef {'sm'|'md'|'lg'|'xl'|'xxl'} BreakpointSmXXL */
 /** @typedef {'sm'|'md'|'lg'|'xl'|'xxl'|'always'} BreakpointAlwaysXXL */
@@ -177,7 +174,6 @@ function createComponent (data, mixins = []) {
   mergeProperties(result, data)
 
   result.isLoaded = !(typeof data.component === 'function')
-  result.hash = objectHash(result)
   result.type = result.type || 'element'
 
   return result
@@ -210,13 +206,7 @@ function mergeProperties (target, source) {
  * @param {ComponentDataValues} mixin.data
  */
 function createMixin (mixin) {
-  const result = mixin
-
-  const hash = objectHash(result)
-
-  result.metadata.hash = hash
-
-  return result
+  return mixin
 }
 
 /**
@@ -358,5 +348,3 @@ export {
   createComponent,
   createMixin
 }
-
-export default createComponent
