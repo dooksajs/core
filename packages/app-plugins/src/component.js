@@ -182,6 +182,7 @@ function createNode (id, item) {
     node = document.createElement(template.tag)
   }
 
+  node.dooksaComponentId = id
   dataUnsafeSetData('component/nodes', node, { id })
 
   const properties = $getDataValue('component/properties', options).item || template.properties
@@ -417,8 +418,12 @@ function createTemplate ({
     // create element
     node = document.createElement(template.tag)
   }
-  // set core component values
+
+  // store node
+  node.dooksaComponentId = id
   dataUnsafeSetData('component/nodes', node, { id })
+
+  // set core component values
   $setDataValue('component/groups', groupId, { id })
   $setDataValue('component/parents', parentId, { id })
   $setDataValue('component/items', component, { id })
@@ -655,6 +660,7 @@ function updateChildren (parent, childNodes) {
       }
 
       // remove unused node
+      componentRemove({ id: prevNode.dooksaComponentId })
       prevNode.remove()
     }
   } else {
