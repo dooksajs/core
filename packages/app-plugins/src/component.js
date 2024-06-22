@@ -262,32 +262,37 @@ function createNode (id, item) {
       })
 
       if (eventTypes[on] && !hasEvent[on]) {
-        hasEvent[on] = true
-        const handler = () => {
-          // fire node events
-          $emit('component/' + on, {
-            id,
-            context: {
+        const nodeEvent = on.split('/')
+
+        if (nodeEvent[0] === 'node') {
+          hasEvent[on] = true
+          const handler = (payload) => {
+            // fire node events
+            $emit(on, {
               id,
-              rootId,
-              parentId,
-              groupId
+              context: {
+                id,
+                rootId,
+                parentId,
+                groupId
+              },
+              payload
+            })
+          }
+
+          node.addEventListener(nodeEvent[1], handler)
+
+          // store handler
+          dataUnsafeSetData('event/handlers', handler, { id })
+          // handle removal
+          $addDataListener('event/handlers', {
+            on: 'delete',
+            id,
+            handler () {
+              node.removeEventListener(on, handler)
             }
           })
         }
-
-        node.addEventListener(on, handler)
-
-        // store handler
-        dataUnsafeSetData('event/handlers', handler, { id })
-        // handle removal
-        $addDataListener('event/handlers', {
-          on: 'delete',
-          id,
-          handler () {
-            node.removeEventListener(on, handler)
-          }
-        })
       }
     }
 
@@ -516,11 +521,11 @@ function createTemplate ({
       })
 
       if (eventTypes[on] && !hasEvent[on]) {
-        const isNodeEvent = (on.split('/')[0] === 'node')
+        const nodeEvent = on.split('/')
 
-        if (isNodeEvent) {
+        if (nodeEvent[0] === 'node') {
           hasEvent[on] = true
-          const handler = () => {
+          const handler = (payload) => {
             // fire node events
             $emit(on, {
               id,
@@ -529,11 +534,12 @@ function createTemplate ({
                 rootId,
                 parentId,
                 groupId
-              }
+              },
+              payload
             })
           }
 
-          node.addEventListener(on, handler)
+          node.addEventListener(nodeEvent[1], handler)
 
           // store handler
           dataUnsafeSetData('event/handlers', handler, { id })
