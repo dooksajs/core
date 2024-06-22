@@ -425,6 +425,7 @@ function createTemplate ({
 
   // set core component values
   $setDataValue('component/groups', groupId, { id })
+  $setDataValue('component/roots', rootId, { id })
   $setDataValue('component/parents', parentId, { id })
   $setDataValue('component/items', component, { id })
 
@@ -842,6 +843,7 @@ const component = createPlugin({
       $deleteDataValue('component/nodes', id)
       $deleteDataValue('component/parents', id)
       $deleteDataValue('component/items', id)
+      $deleteDataValue('component/roots', id)
     },
     renderChildren ({
       id,
