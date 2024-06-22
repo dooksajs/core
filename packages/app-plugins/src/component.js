@@ -849,7 +849,9 @@ const component = createPlugin({
       id,
       items = $getDataValue('component/children', { id }).item
     }) {
-      const node = $getDataValue('component/nodes', { id }).item
+      const options = { id }
+      const node = $getDataValue('component/nodes', options).item
+      const parentGroupId = $getDataValue('component/groups', options).item
       const children = []
       let childIsLazy = false
 
@@ -869,12 +871,13 @@ const component = createPlugin({
         const item = $getDataValue('component/items', options).item
 
         if (item.isTemplate) {
-          const groupId = item.groupId || $getDataValue('component/groups', options).item
+          const groupId = item.groupId || parentGroupId
+
           const result = createTemplate({
             id: childId,
             template: _$component(item.id),
             parentId: id,
-            rootId: id,
+            rootId: childId,
             groupId
           })
 
