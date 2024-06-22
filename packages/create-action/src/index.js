@@ -125,7 +125,7 @@ import availableMethods from './available-methods.js'
  * @typedef {Object} EvalConditionFrom
  * @property {Operator} op
  * @property {Action|string|number} from
- * @property {Action|string|number} to
+ * @property {Action|string|number|boolean} to
  */
 
 /**
