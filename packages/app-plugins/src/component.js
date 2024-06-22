@@ -46,7 +46,7 @@ function getContent (node, content) {
     const item = content[i]
 
     if (item.propertyName) {
-      result[item.propertyName] = node[item.get]
+      result[item.propertyName] = node[item.name]
     }
   }
 
