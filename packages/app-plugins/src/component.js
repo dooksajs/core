@@ -457,12 +457,18 @@ function createTemplate ({
   // set content
   if (template.content) {
     const content = {}
+    const nodeValues = getContent(node, template.content)
 
     for (let i = 0; i < template.content.length; i++) {
       const data = template.content[i]
+      let contentValue = properties[data.propertyName]
+
+      if (contentValue == null) {
+        contentValue = nodeValues[data.propertyName]
+      }
 
       // add default value from props
-      content[data.name] = properties[data.propertyName] || ''
+      content[data.name] = contentValue
     }
 
     const contentData = $setDataValue('content/items', content)
@@ -835,7 +841,7 @@ const component = createPlugin({
         for (let i = 0; i < content.item.length; i++) {
           const contentId = content.item[i]
 
-          $deleteDataValue('content/items', { id: contentId })
+          $deleteDataValue('content/items', contentId)
         }
       }
 
