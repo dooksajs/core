@@ -715,7 +715,11 @@ function setDataOptions (data, source, options) {
     }
 
     // update target array
-    updateArray(targetItem, source, options.update)
+    const result = updateArray(targetItem, source, options.update)
+
+    if (!result.isValid) {
+      return result
+    }
 
     // check schema options of array
     const schema = databaseSchema[schemaPath]
@@ -808,6 +812,7 @@ function setRelation (collection, docId, refCollection, refId) {
 }
 
 function updateArray (target, source, options) {
+  const result = { isValid: true, isComplete: false }
   source = Array.isArray(source) ? source : [source]
 
   switch (options.method) {
@@ -826,6 +831,11 @@ function updateArray (target, source, options) {
 
         if (index !== -1) {
           target.splice(index, 1)
+        } else {
+          // Did nothing, don't fire update event
+          // @TODO Ideally a new property should be used for non events like this
+          result.isValid = false
+          result.isComplete = true
         }
       }
 
@@ -856,6 +866,8 @@ function updateArray (target, source, options) {
 
       updateArrayItemFreeze(target, source.length)
   }
+
+  return result
 }
 
 function updateArrayItemFreeze (items, length) {
@@ -1715,6 +1727,10 @@ const data = createPlugin({
         data._item || data,
         options
       )
+
+      if (!result.isValid) {
+        return result
+      }
 
       // freeze new item
       if (typeof result.item === 'object') {
