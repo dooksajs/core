@@ -400,9 +400,9 @@ function createTemplate ({
 }) {
   const component = {
     id: template.id,
-    hash: template.hash,
     type: template.type
   }
+  const options = { id }
   const properties = {}
   let node
   let contentId
@@ -426,13 +426,13 @@ function createTemplate ({
 
   // store node
   node.dooksaComponentId = id
-  dataUnsafeSetData('component/nodes', node, { id })
+  dataUnsafeSetData('component/nodes', node, options)
 
   // set core component values
-  $setDataValue('component/groups', groupId, { id })
-  $setDataValue('component/roots', rootId, { id })
-  $setDataValue('component/parents', parentId, { id })
-  $setDataValue('component/items', component, { id })
+  $setDataValue('component/groups', groupId, options)
+  $setDataValue('component/roots', rootId, options)
+  $setDataValue('component/parents', parentId, options)
+  $setDataValue('component/items', component, options)
 
   // set properties to node
   if (template.properties) {
@@ -486,7 +486,7 @@ function createTemplate ({
       handler: (options) => {
         const properties = componentOptions(options.item, template.options, template.properties)
 
-        $setDataValue('component/properties', properties, { id })
+        $setDataValue('component/properties', properties, options)
       }
     })
   }
@@ -548,7 +548,7 @@ function createTemplate ({
           node.addEventListener(nodeEvent[1], handler)
 
           // store handler
-          dataUnsafeSetData('event/handlers', handler, { id })
+          dataUnsafeSetData('event/handlers', handler, options)
           // handle removal
           $addDataListener('event/handlers', {
             on: 'delete',
