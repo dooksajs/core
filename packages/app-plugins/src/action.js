@@ -128,8 +128,6 @@ const processAction = {
     if (!value.isEmpty) {
       return getValue(value.item, props.query)
     }
-
-    throw new Error('Action variables not found')
   },
   /**
    * Get block value
