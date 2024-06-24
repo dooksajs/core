@@ -1431,9 +1431,14 @@ const data = createPlugin({
      * @param {Object} [options]
      * @param {boolean} [options.cascade] - Delete related data
      * @param {boolean} [options.listeners] - Delete related listeners
+     * @param {boolean} [options.stopPropagation] - Prevent further event phases
      * @returns {Object}
      */
-    $deleteDataValue (name, id, { cascade, listeners } = {}) {
+    $deleteDataValue (name, id, {
+      cascade,
+      listeners,
+      stopPropagation
+    } = {}) {
       const collection = database[name]
 
       if (collection == null) {
@@ -1493,7 +1498,9 @@ const data = createPlugin({
         result.item = collection[id]._item
         result.metadata = collection[id]._metadata
 
-        fireDataListeners(name, 'delete', result)
+        if (!stopPropagation) {
+          fireDataListeners(name, 'delete', result)
+        }
 
         delete collection[id]
       }
