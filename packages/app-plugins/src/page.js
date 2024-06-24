@@ -72,7 +72,12 @@ const page = createPlugin({
         .catch(e => console.log(e))
     },
     getById (id) {
-      const pageData = $getDataValue('page/items', { id, options: { expand: true } })
+      const pageData = $getDataValue('page/items', {
+        id,
+        options: {
+          expand: true
+        }
+      })
 
       if (pageData.isEmpty) {
         return {
@@ -141,7 +146,13 @@ const page = createPlugin({
      * @param {boolean} [param.expand=true]
      */
     appendExpand ({ collection, id, data, expandExclude, expand = true }) {
-      const getData = $getDataValue(collection, { id, options: { expand, expandExclude } })
+      const getData = $getDataValue(collection, {
+        id,
+        options: {
+          expand,
+          expandExclude
+        }
+      })
 
       if (getData.isEmpty) {
         return
