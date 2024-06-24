@@ -474,8 +474,21 @@ function createTemplate ({
     const contentData = $setDataValue('content/items', content)
     contentId = contentData.noAffixId
 
+    $setDataValue('content/languages', contentData.id, {
+      id: contentId,
+      update: {
+        method: 'push'
+      }
+    })
+    $setDataValue('content/components', id, {
+      id: contentId,
+      update: {
+        method: 'push'
+      }
+    })
+    $setDataValue('component/content', contentId, options)
+
     setContent(node, template.content, content)
-    $setDataValue('component/content', contentId, { id })
     contentListeners(id, contentData.id, contentData.noAffixId, node, template.content)
   }
 
@@ -539,7 +552,8 @@ function createTemplate ({
                 id,
                 rootId,
                 parentId,
-                groupId
+                groupId,
+                contentId
               },
               payload
             })
