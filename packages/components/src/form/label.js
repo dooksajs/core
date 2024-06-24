@@ -1,6 +1,7 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
 import { extendText } from '../text/text.js'
-import { textMixin } from '../mixins/index.js'
+import { buttonMixin, eventTypeMouseMixin, textMixin } from '../mixins/index.js'
+import ariaLabel from '../mixins/aria/aria-label.js'
 
 const labelText = extendText({
   options: {
@@ -30,35 +31,47 @@ const label = createComponent({
     }
   ],
   options: {
+    formLabel: {
+      name: 'className',
+      value: 'form-label',
+      toggle: true
+    },
     for: {
       name: 'htmlFor'
+    },
+    id: {
+      name: 'id'
     }
   },
   events: [
     {
-      on: 'component/create',
-      actionId: 'on-create-label'
+      on: 'component/mount',
+      actionId: 'label-html-for'
     }
   ]
-}, [textMixin])
+}, [textMixin, buttonMixin, ariaLabel, eventTypeMouseMixin])
 
 /**
  * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
+ * @typedef {import('../mixins/styles/text.js').TextMixin} TextMixin
+ * @typedef {import('../mixins/styles/button.js').ButtonMixin} ButtonMixin
+ * @typedef {import('../mixins/aria/aria-label.js').AriaLabelMixin} AriaLabelMixin
  */
 
 /**
  * @typedef {Object} ComponentExtendLabelOptions
  * @property {string} [placeholder]
- * @property {string} [ariaLabel]
  * @property {boolean} [disabled]
  * @property {boolean} [readonly]
  * @property {boolean} [required]
  * @property {string} [id]
+ * @property {string} [for]
+ * @property {string} [formLabel]
  */
 
 /**
  * @typedef {Object} ComponentExtendLabel
- * @property {ComponentExtendLabelOptions} options
+ * @property {ComponentExtendLabelOptions|TextMixin|ButtonMixin|AriaLabelMixin} options
  */
 
 /**
