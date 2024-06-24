@@ -4,7 +4,7 @@ import { createMixin } from '@dooksa/create-component'
  * @typedef {'all'|'top'|'bottom'|'end'|'stop'} BorderDirection
  * @typedef {'1'|'2'|'3'|'4'|'5'} BorderWidth
  * @typedef {import('@dooksa/create-component').Opacity} Opacity
- * @typedef {import('@dooksa/create-component').Color} Color
+ * @typedef {import('@dooksa/create-component').ColorExtra} ColorExtra
  */
 
 /**
@@ -13,7 +13,7 @@ import { createMixin } from '@dooksa/create-component'
  * @property {BorderWidth} [borderWidth]
  * @property {BorderDirection} [borderRemove]
  * @property {Opacity} [borderOpacity]
- * @property {Color} [borderColor]
+ * @property {ColorExtra} [borderColor]
  */
 
 export default createMixin({
@@ -69,7 +69,7 @@ export default createMixin({
       borderColor: {
         name: 'className',
         /**
-         * @param {Color} color
+         * @param {ColorExtra} color
          */
         computedValue (color) {
           return 'border-' + color

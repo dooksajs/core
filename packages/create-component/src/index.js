@@ -5,36 +5,47 @@
 /** @typedef {'0'|'1'|'2'|'3'|'4'|'5'} Spacer */
 /**
  * @typedef {'primary'|
-* 'primarySubtle'|
-* 'secondary'|
-* 'secondarySubtle'|
-* 'success'|
-* 'successSubtle'|
-* 'danger'|
-* 'dangerSubtle'|
-* 'warning'|
-* 'warningSubtle'|
-* 'info'|
-* 'infoSubtle'|
-* 'light'|
-* 'lightSubtle'|
-* 'dark'|
-* 'darkSubtle'|
-* 'body'|
-* 'bodySecondary'|
-* 'bodyTertiary'|
-* 'black'|
-* 'white'} Color
-*/
+ * 'primarySubtle'|
+ * 'secondary'|
+ * 'secondarySubtle'|
+ * 'success'|
+ * 'successSubtle'|
+ * 'danger'|
+ * 'dangerSubtle'|
+ * 'warning'|
+ * 'warningSubtle'|
+ * 'info'|
+ * 'infoSubtle'|
+ * 'light'|
+ * 'lightSubtle'|
+ * 'dark'|
+ * 'darkSubtle'|
+ * 'body'|
+ * 'bodySecondary'|
+ * 'bodyTertiary'|
+ * 'black'|
+ * 'white'} ColorExtra
+ */
 
 /**
-* Create a modified component
-* @typedef {Object} ComponentExtend
-* @property {ComponentMixinMetadata} [metadata]
-* @property {ComponentEvent[]} [events]
-* @property {Object} [options]
-* @property {Array<Component|ComponentInstance>} [children]
-*/
+ * @typedef {'primary'|
+ * 'secondary'|
+ * 'success'|
+ * 'danger'|
+ * 'warning'|
+ * 'info'|
+ * 'light'|
+ * 'dark'} Color
+ */
+
+/**
+ * Create a modified component
+ * @typedef {Object} ComponentExtend
+ * @property {ComponentMixinMetadata} [metadata]
+ * @property {ComponentEvent[]} [events]
+ * @property {Object} [options]
+ * @property {Array<Component|ComponentInstance>} [children]
+ */
 
 /**
  * @typedef {ComponentDataValues & ComponentData & ComponentMetadata} Component
