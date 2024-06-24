@@ -12,6 +12,28 @@ export default createPlugin({
       items: {
         type: 'object'
       }
+    },
+    components: {
+      type: 'collection',
+      items: {
+        type: 'array',
+        items: {
+          type: 'string',
+          relation: 'component/items',
+          uniqueItems: true
+        }
+      }
+    },
+    languages: {
+      type: 'collection',
+      items: {
+        type: 'array',
+        items: {
+          type: 'string',
+          relation: 'content/items',
+          uniqueItems: true
+        }
+      }
     }
   }
 })
