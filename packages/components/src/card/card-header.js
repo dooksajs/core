@@ -1,5 +1,5 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
-import { displayMixin, flexMixin, positionMixin } from '../mixins/index.js'
+import { colorMixin, displayMixin, flexMixin, positionMixin } from '../mixins/index.js'
 import { extendText } from '../text/text.js'
 
 const cardHeaderText = extendText({
@@ -18,18 +18,19 @@ const cardHeader = createComponent({
       value: 'card-header'
     }
   ]
-}, [flexMixin, displayMixin, positionMixin])
+}, [flexMixin, displayMixin, positionMixin, colorMixin])
 
 /**
  * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
  * @typedef {import('../mixins/styles/flex.js').FlexMixin} FlexMixin
  * @typedef {import('../mixins/styles/display.js').DisplayMixin} DisplayMixin
  * @typedef {import('../mixins/styles/position.js').PositionMixin} PositionMixin
+ * @typedef {import('../mixins/styles/color.js').ColorMixin} ColorMixin
  */
 
 /**
  * @typedef {Object} ComponentExtendCardHeader
- * @property {FlexMixin|DisplayMixin|PositionMixin} options
+ * @property {FlexMixin|DisplayMixin|PositionMixin|ColorMixin} options
  */
 
 /**

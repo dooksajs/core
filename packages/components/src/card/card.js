@@ -1,7 +1,7 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
 import { cardImg } from './card-img.js'
 import { cardBody } from './card-body.js'
-import { displayMixin, flexMixin, overflowMixin, positionMixin, shadowMixin, spacingMixin } from '../mixins/index.js'
+import { colorMixin, displayMixin, flexMixin, overflowMixin, positionMixin, shadowMixin, spacingMixin } from '../mixins/index.js'
 
 const card = createComponent({
   id: 'card',
@@ -14,7 +14,7 @@ const card = createComponent({
       value: 'card'
     }
   ]
-}, [shadowMixin, spacingMixin, flexMixin, displayMixin, positionMixin, overflowMixin])
+}, [shadowMixin, spacingMixin, flexMixin, displayMixin, positionMixin, overflowMixin, colorMixin])
 
 /**
  * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
@@ -24,11 +24,12 @@ const card = createComponent({
  * @typedef {import('../mixins/styles/display.js').DisplayMixin} DisplayMixin
  * @typedef {import('../mixins/styles/position.js').PositionMixin} PositionMixin
  * @typedef {import('../mixins/styles/overflow.js').OverflowMixin} OverflowMixin
+ * @typedef {import('../mixins/styles/color.js').ColorMixin} ColorMixin
  */
 
 /**
  * @typedef {Object} ComponentExtendCard
- * @property {ShadowMixin|SpacingMixin|DisplayMixin|PositionMixin|FlexMixin|overflowMixin|OverflowMixin} options
+ * @property {ShadowMixin|SpacingMixin|DisplayMixin|PositionMixin|FlexMixin|ColorMixin|OverflowMixin} options
  */
 
 /**
