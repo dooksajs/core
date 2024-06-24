@@ -13,7 +13,7 @@ export default createMixin({
     content: [
       {
         name: 'checked',
-        propertyName: 'checked'
+        nodePropertyName: 'checked'
       }
     ],
     options: {

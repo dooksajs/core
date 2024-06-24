@@ -102,7 +102,7 @@
  * @property {Array<Component|ComponentInstance|string>} [allowedChildren] - Permitted nested components
  * @property {Object[]} [content] - Define content structure
  * @property {string} content[].name - Name of content property
- * @property {string} content[].propertyName - Property name
+ * @property {string} content[].nodePropertyName - Property name
  * @property {ComponentEvent[]} [events]
  * @property {Object.<string, boolean>} [eventTypes]
  * @property {ComponentProperty[]} [properties]

@@ -17,7 +17,7 @@ const navLinkAnchor = createComponent({
   content: [
     {
       name: 'href',
-      propertyName: 'value'
+      nodePropertyName: 'value'
     }
   ],
   properties: [

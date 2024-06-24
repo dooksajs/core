@@ -21,11 +21,11 @@ const cardImg = createComponent({
   content: [
     {
       name: 'src',
-      propertyName: 'src'
+      nodePropertyName: 'src'
     },
     {
       name: 'alt',
-      propertyName: 'alt'
+      nodePropertyName: 'alt'
     }
   ],
   options: {

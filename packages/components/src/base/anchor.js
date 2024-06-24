@@ -1,6 +1,6 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
 import text from '../text/text.js'
-import card from '../card/card.js'
+import { card } from '../card/card.js'
 
 const anchorText = extendComponent(text, {
   options: { text: 'Link text...' }
@@ -20,7 +20,7 @@ const anchor = createComponent({
   content: [
     {
       name: 'href',
-      propertyName: 'href'
+      nodePropertyName: 'href'
     }
   ]
 })

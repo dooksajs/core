@@ -17,7 +17,7 @@ const inputText = createComponent({
   content: [
     {
       name: 'value',
-      propertyName: 'value'
+      nodePropertyName: 'value'
     }
   ],
   options: {

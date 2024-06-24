@@ -45,8 +45,8 @@ function getContent (node, content) {
   for (let i = 0; i < content.length; i++) {
     const item = content[i]
 
-    if (item.propertyName) {
-      result[item.propertyName] = node[item.name]
+    if (item.nodePropertyName) {
+      result[item.name] = node[item.nodePropertyName]
     }
   }
 
@@ -57,8 +57,8 @@ function setContent (node, content, values) {
   for (let i = 0; i < content.length; i++) {
     const item = content[i]
 
-    if (item.propertyName) {
-      node[item.propertyName] = values[item.name]
+    if (item.nodePropertyName) {
+      node[item.nodePropertyName] = values[item.name]
     }
   }
 }
@@ -461,10 +461,10 @@ function createTemplate ({
 
     for (let i = 0; i < template.content.length; i++) {
       const data = template.content[i]
-      let contentValue = properties[data.propertyName]
+      let contentValue = properties[data.nodePropertyName]
 
       if (contentValue == null) {
-        contentValue = nodeValues[data.propertyName]
+        contentValue = nodeValues[data.nodePropertyName]
       }
 
       // add default value from props

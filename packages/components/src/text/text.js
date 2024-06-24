@@ -6,7 +6,7 @@ const text = createComponent({
   content: [
     {
       name: 'value',
-      propertyName: 'nodeValue'
+      nodePropertyName: 'nodeValue'
     }
   ],
   options: {

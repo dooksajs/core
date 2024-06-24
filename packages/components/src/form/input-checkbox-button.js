@@ -21,7 +21,7 @@ const inputCheckboxButton = createComponent({
   content: [
     {
       name: 'checked',
-      propertyName: 'checked'
+      nodePropertyName: 'checked'
     }
   ],
   options: {

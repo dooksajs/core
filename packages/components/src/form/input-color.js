@@ -25,11 +25,11 @@ const inputColor = createComponent({
   content: [
     {
       name: 'value',
-      propertyName: 'value'
+      nodePropertyName: 'value'
     },
     {
       name: 'title',
-      propertyName: 'value'
+      nodePropertyName: 'value'
     }
   ],
   options: {
