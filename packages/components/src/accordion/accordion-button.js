@@ -31,7 +31,7 @@ const accordionButton = createComponent({
       actionId: 'on-create-accordion-button'
     },
     {
-      on: 'click',
+      on: 'node/click',
       actionId: 'on-click-accordion-button'
     }
   ]

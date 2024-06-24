@@ -51,7 +51,7 @@ const selectEditInnerLink = createComponent({
   ],
   events: [
     {
-      on: 'click',
+      on: 'node/click',
       actionId: 'select-edit-modal'
     }
   ],
