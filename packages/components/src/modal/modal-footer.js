@@ -1,5 +1,5 @@
 import { button } from '../index.js'
-import createComponent from '@dooksa/create-component'
+import { createComponent } from '@dooksa/create-component'
 
 
 export default createComponent({
