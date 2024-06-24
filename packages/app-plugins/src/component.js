@@ -814,12 +814,13 @@ const component = createPlugin({
     }
   },
   actions: {
-    remove ({ id }) {
-      const parentId = $getDataValue('component/parents', { id }).item
+    remove ({ id, stopPropagation = false }, isHead = true) {
+      const options = { id }
+      const parentId = $getDataValue('component/parents', options).item
       const parentChildren = $getDataValue('component/children', { id: parentId })
 
       // remove component from parent
-      if (!parentChildren.isEmpty) {
+      if (isHead && !parentChildren.isEmpty) {
         const children = []
 
         // filter out current node
@@ -831,14 +832,17 @@ const component = createPlugin({
           }
         }
 
-        if (children.length !== parentChildren.item.length) {
+        if (!children.length) {
+          $deleteDataValue('component/children', parentId)
+        } else if (children.length !== parentChildren.item.length) {
           $setDataValue('component/children', children, {
-            id: parentId
+            id: parentId,
+            stopPropagation
           })
         }
       }
 
-      const events = $getDataValue('component/events', { id })
+      const events = $getDataValue('component/events', options)
 
       // remove event handlers
       if (!events.isEmpty) {
@@ -849,27 +853,52 @@ const component = createPlugin({
         }
       }
 
-      const content = $getDataValue('component/content')
+      const content = $getDataValue('component/content', options)
 
-      if(!content.isEmpty) {
-        for (let i = 0; i < content.item.length; i++) {
-          const contentId = content.item[i]
+      if (!content.isEmpty) {
+        const contentId = content.item
+        const contentComponents = $getDataValue('content/components', { id: contentId })
 
-          $deleteDataValue('content/items', contentId)
+        if (!contentComponents.isEmpty) {
+          if (contentComponents.item.length === 1) {
+            const content = $getDataValue('content/languages', { id: contentId })
+
+            $deleteDataValue('content/languages', contentId)
+            $deleteDataValue('content/components', contentId)
+
+            // remove all content languages
+            for (let i = 0; i < content.item.length; i++) {
+              $deleteDataValue('content/items', content.item[i])
+            }
+          } else {
+            // remove current component from content used by list
+            $setDataValue('content/components', id, {
+              id: contentId,
+              update: {
+                method: 'pull'
+              }
+            })
+          }
         }
+
+        $deleteDataValue('component/content', id)
       }
 
-      const children = $getDataValue('component/children', { id })
+      const children = $getDataValue('component/children', options)
 
       if (!children.isEmpty) {
-        $deleteDataValue('component/children', id)
+        $deleteDataValue('component/children', id, { stopPropagation: true })
+
+        for (let i = 0; i < children.item.length; i++) {
+          this.remove({ id: children.item[i] }, false)
+        }
       }
 
       $deleteDataValue('component/groups', id)
       $deleteDataValue('component/nodes', id)
       $deleteDataValue('component/parents', id)
-      $deleteDataValue('component/items', id)
       $deleteDataValue('component/roots', id)
+      $deleteDataValue('component/items', id)
     },
     renderChildren ({
       id,
