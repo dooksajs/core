@@ -56,5 +56,3 @@ export {
   listGroupItemActionLink,
   extendListGroupItemActionLink
 }
-
-export default listGroupItemActionLink

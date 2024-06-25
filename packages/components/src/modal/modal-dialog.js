@@ -1,4 +1,4 @@
-import modalContent from './modal-content.js'
+import { modalContent } from './modal-content.js'
 import { createComponent, extendComponent } from '@dooksa/create-component'
 
 const modalDialog = createComponent({
@@ -60,5 +60,3 @@ export {
   modalDialog,
   extendModalDialog
 }
-
-export default modalDialog

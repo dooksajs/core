@@ -1,8 +1,7 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
-import text from '../text/text.js'
-import { card } from '../card/card.js'
+import { extendText } from '../text/text.js'
 
-const anchorText = extendComponent(text, {
+const anchorText = extendText({
   options: { text: 'Link text...' }
 })
 
@@ -10,7 +9,7 @@ const anchor = createComponent({
   id: 'anchor',
   tag: 'a',
   children: [anchorText],
-  allowedChildren: [card, anchorText],
+  allowedChildren: [anchorText],
   properties: [
     {
       name: 'href',
@@ -40,5 +39,3 @@ export {
   anchor,
   extendAnchor
 }
-
-export default anchor

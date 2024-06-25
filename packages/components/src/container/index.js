@@ -1,5 +1,1 @@
-import container from './container.js'
-
-export {
-  container
-}
+export { container, extendContainerComponent } from './container.js'

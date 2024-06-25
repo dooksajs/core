@@ -87,5 +87,3 @@ export {
   div,
   extendDiv
 }
-
-export default div

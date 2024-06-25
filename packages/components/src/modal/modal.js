@@ -1,5 +1,5 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
-import modalDialog from './modal-dialog.js'
+import { modalDialog } from './modal-dialog.js'
 import { ariaLabelMixin } from '../mixins/index.js'
 
 const modal = createComponent({
@@ -110,5 +110,3 @@ export {
   modal,
   extendModal
 }
-
-export default modal

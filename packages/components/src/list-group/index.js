@@ -1,13 +1,5 @@
-import listGroupAction from './list-group-action.js'
-import listGroupItemActionLink from './list-group-item-action-link.js'
-import listGroupItemAction from './list-group-item-action.js'
-import listGroupItem from './list-group-item.js'
-import listGroup from './list-group.js'
-
-export {
-  listGroup,
-  listGroupAction,
-  listGroupItem,
-  listGroupItemAction,
-  listGroupItemActionLink
-}
+export { listGroupAction, extendListGroupAction } from './list-group-action.js'
+export { listGroupItemActionLink, extendListGroupItemActionLink } from './list-group-item-action-link.js'
+export { listGroupItemAction, extendListGroupItemAction } from './list-group-item-action.js'
+export { listGroupItem, extendListGroupItem } from './list-group-item.js'
+export { listGroup, extendListGroup } from './list-group.js'

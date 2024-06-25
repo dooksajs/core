@@ -1,6 +1,6 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
 import { extendText, text } from '../text/text.js'
-import icon from '../icon/icon.js'
+import { icon } from '../icon/icon.js'
 import { ariaCurrentMixin, ariaSelectedMixin } from '../mixins/index.js'
 
 const navLinkText = extendText({
@@ -76,6 +76,3 @@ export {
   extendNavLinkAnchor,
   navLinkAnchor
 }
-
-export default navLinkAnchor
-

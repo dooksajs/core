@@ -29,5 +29,3 @@ export {
   hr,
   extendHr
 }
-
-export default hr

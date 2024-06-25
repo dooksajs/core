@@ -68,5 +68,3 @@ export {
   icon,
   extendIcon
 }
-
-export default icon

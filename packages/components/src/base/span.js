@@ -29,5 +29,3 @@ export {
   span,
   extendSpan
 }
-
-export default span

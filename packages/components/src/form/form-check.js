@@ -79,5 +79,3 @@ export {
   formCheck,
   extendFormCheck
 }
-
-export default formCheck

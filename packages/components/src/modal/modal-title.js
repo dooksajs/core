@@ -1,11 +1,11 @@
-import { createComponent } from '@dooksa/create-component'
+import { createComponent, extendComponent } from '@dooksa/create-component'
 import { icon, extendText } from '../index.js'
 
 const modalText = extendText({
   options: { text: 'Modal title...' }
 })
 
-export default createComponent({
+const modalTitle = createComponent({
   id: 'modal-title',
   tag: 'div',
   children: [modalText],
@@ -17,3 +17,19 @@ export default createComponent({
     }
   ]
 })
+
+/**
+ * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
+ */
+
+/**
+ * @param {ComponentExtend} options
+ */
+function extendModalTitle (options) {
+  return extendComponent(modalTitle, options)
+}
+
+export {
+  modalTitle,
+  extendModalTitle
+}

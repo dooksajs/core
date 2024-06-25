@@ -1,17 +1,7 @@
-import modal from './modal.js'
-import modalBody from './modal-body.js'
-import modalContent from './modal-content.js'
-import modalDialog from './modal-dialog.js'
-import modalFooter from './modal-footer.js'
-import modalHeader from './modal-header.js'
-import modalTitle from './modal-title.js'
-
-export {
-  modal,
-  modalBody,
-  modalContent,
-  modalDialog,
-  modalFooter,
-  modalHeader,
-  modalTitle
-}
+export { modal, extendModal } from './modal.js'
+export { modalBody, extendModalBody } from './modal-body.js'
+export { modalContent, extendModalContent } from './modal-content.js'
+export { modalDialog, extendModalDialog } from './modal-dialog.js'
+export { modalFooter, extendModalFooter } from './modal-footer.js'
+export { modalHeader, extendModalHeader } from './modal-header.js'
+export { modalTitle, extendModalTitle } from './modal-title.js'

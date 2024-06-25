@@ -66,5 +66,3 @@ export {
   inputCheckboxButton,
   extendInputCheckboxButton
 }
-
-export default inputCheckboxButton

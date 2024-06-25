@@ -50,5 +50,3 @@ export {
   inputFile,
   extendInputFile
 }
-
-export default inputFile

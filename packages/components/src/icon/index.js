@@ -1,1 +1,1 @@
-export * from './icon.js'
+export { icon, extendIcon } from './icon.js'

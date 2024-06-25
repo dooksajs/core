@@ -39,5 +39,3 @@ export {
   listGroupItem,
   extendListGroupItem
 }
-
-export default listGroupItem

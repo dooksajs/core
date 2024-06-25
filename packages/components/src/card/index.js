@@ -1,21 +1,6 @@
-import { cardBody, extendCardBody } from './card-body.js'
-import { cardHeader, extendCardHeader } from './card-header.js'
-import { cardImg, extendCardImg } from './card-img.js'
-import { cardText, extendCardText } from './card-text.js'
-import { cardTitle, extendCardTitle } from './card-title.js'
-import { card, extendCard } from './card.js'
-
-export {
-  card,
-  cardBody,
-  cardHeader,
-  cardImg,
-  cardText,
-  cardTitle,
-  extendCard,
-  extendCardBody,
-  extendCardHeader,
-  extendCardImg,
-  extendCardText,
-  extendCardTitle
-}
+export { cardBody, extendCardBody } from './card-body.js'
+export { cardHeader, extendCardHeader } from './card-header.js'
+export { cardImg, extendCardImg } from './card-img.js'
+export { cardText, extendCardText } from './card-text.js'
+export { cardTitle, extendCardTitle } from './card-title.js'
+export { card, extendCard } from './card.js'

@@ -29,5 +29,3 @@ export {
   h5,
   extendH5
 }
-
-export default h5

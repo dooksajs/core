@@ -56,5 +56,3 @@ export {
   inputText,
   extendInputText
 }
-
-export default inputText

@@ -37,8 +37,3 @@ export {
   modalBody,
   extendModalBody
 }
-
-export default modalBody
-
-
-

@@ -1,6 +1,6 @@
-import modalHeader from './modal-header.js'
-import modalBody from './modal-body.js'
-import modalFooter from './modal-footer.js'
+import { modalHeader } from './modal-header.js'
+import { modalBody } from './modal-body.js'
+import { modalFooter } from './modal-footer.js'
 import { createComponent, extendComponent } from '@dooksa/create-component'
 import { shadowMixin } from '../mixins/index.js'
 
@@ -38,5 +38,3 @@ export {
   modalContent,
   extendModalContent
 }
-
-export default modalContent

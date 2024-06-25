@@ -64,5 +64,3 @@ export {
   extendTabPane,
   tabPane
 }
-
-export default tabPane

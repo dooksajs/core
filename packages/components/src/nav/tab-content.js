@@ -35,5 +35,3 @@ export {
   extendTabContent,
   tabContent
 }
-
-export default tabContent

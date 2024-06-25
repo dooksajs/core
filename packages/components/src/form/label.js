@@ -85,5 +85,3 @@ export {
   label,
   extendLabel
 }
-
-export default label

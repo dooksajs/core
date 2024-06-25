@@ -52,5 +52,3 @@ export {
   extendNav,
   nav
 }
-
-export default nav

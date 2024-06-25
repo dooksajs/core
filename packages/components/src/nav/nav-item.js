@@ -44,5 +44,3 @@ export {
   extendNavItem,
   navItem
 }
-
-export default navItem

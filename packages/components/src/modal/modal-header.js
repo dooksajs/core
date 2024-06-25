@@ -1,5 +1,5 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
-import modalTitle from './modal-title.js'
+import { modalTitle } from './modal-title.js'
 import { button } from '../index.js'
 import { backgroundMixin, displayMixin, flexMixin } from '../mixins/index.js'
 
@@ -43,5 +43,3 @@ export {
   modalHeader,
   extendModalHeader
 }
-
-export default modalHeader

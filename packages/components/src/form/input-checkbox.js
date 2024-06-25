@@ -62,5 +62,3 @@ export {
   inputCheckbox,
   extendInputCheckbox
 }
-
-export default inputCheckbox

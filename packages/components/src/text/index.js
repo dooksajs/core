@@ -1,1 +1,1 @@
-export * from './text.js'
+export { text, extendText } from './text.js'

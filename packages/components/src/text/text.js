@@ -37,5 +37,3 @@ export {
   text,
   extendText
 }
-
-export default text

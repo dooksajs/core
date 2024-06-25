@@ -49,5 +49,3 @@ export {
   button,
   extendButton
 }
-
-export default button

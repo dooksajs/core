@@ -29,5 +29,3 @@ export {
   h2,
   extendH2
 }
-
-export default h2

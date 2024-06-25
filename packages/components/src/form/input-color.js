@@ -70,5 +70,3 @@ export {
   inputColor,
   extendInputColor
 }
-
-export default inputColor

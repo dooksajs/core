@@ -38,7 +38,5 @@ export {
   extendListGroup
 }
 
-export default listGroup
-
 
 

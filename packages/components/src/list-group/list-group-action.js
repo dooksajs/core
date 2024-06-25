@@ -38,7 +38,5 @@ export {
   extendListGroupAction
 }
 
-export default listGroupAction
-
 
 

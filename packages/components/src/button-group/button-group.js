@@ -83,5 +83,3 @@ export {
   buttonGroup,
   extendButtonGroup
 }
-
-export default buttonGroup

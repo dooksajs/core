@@ -51,5 +51,3 @@ export {
   img,
   extendImg
 }
-
-export default img
