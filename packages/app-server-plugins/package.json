@@ -10,7 +10,7 @@
   "dependencies": {
     "@dooksa/create-plugin": "workspace:^",
     "@dooksa/plugins": "workspace:^",
-    "@dooksa/templates": "workspace:^",
+    "@dooksa/components": "workspace:^",
     "@dooksa/theme": "workspace:^",
     "@dooksa/utils": "workspace:^",
     "compression": "^1.7.4",

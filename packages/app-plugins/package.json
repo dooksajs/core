@@ -10,6 +10,7 @@
   "dependencies": {
     "@dooksa/create-plugin": "workspace:^",
     "@dooksa/create-action": "workspace:^",
+    "@dooksa/components": "workspace:^",
     "@dooksa/create-component": "workspace:^",
     "@dooksa/utils": "workspace:^",
     "bootstrap": "^5.3.3",
