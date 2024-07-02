@@ -1,6 +1,6 @@
-import createApp from '@dooksa/create-app'
-import { data } from '@dooksa/plugins'
-import { editImg, selectEditInner, selectEditInnerIterate, selectEditOuter, selectEditOuterIterate, onClickAccordionButton, onCollapseHideAccordionButton, onCollapseShowAccordionButton, onCreateAccordion, onCreateAccordionButton, onCreateAccordionCollapse, onCreateChangeImage, onCreateChangeText, onCreateLabel, onCreateLabelText, onCreateSetOptionId, selectEditAddComponent, selectEditModal, selectEditModalItems } from '@dooksa/actions'
+import { createAppServer } from '@dooksa/create-app'
+import clientPlugins, { data } from '@dooksa/plugins'
+import { editImg, selectEditInner, selectEditInnerIterate, selectEditOuter, selectEditOuterIterate, onClickAccordionButton, onCollapseHideAccordionButton, onCollapseShowAccordionButton, onCreateAccordion, onCreateAccordionButton, onCreateAccordionCollapse, onCreateChangeImage, onCreateChangeText, labelHtmlFor, onCreateLabelText, onCreateSetOptionId, selectEditAddComponent, selectEditModal, selectEditModalItems, actionEditorAddButton, actionEditorAddButtonCondition, actionEditorAddButtonIterate, inputId, setActionInputId, actionEditorBlockSelectorToggle, actionEditorBlockSelectorAdd, actionEditorBlockSelectorRemove, inputCheckboxContentId, actionEditorAddButtonOff } from '@dooksa/actions'
 import {
   $http,
   action,
@@ -13,9 +13,9 @@ import {
   theme,
   user,
   content
-} from '@dooksa/server-plugins'
+} from '@dooksa/plugins-server'
 
-export default createApp({
+export default createAppServer({
   plugins: [
     data,
     middleware,
@@ -30,7 +30,12 @@ export default createApp({
     page,
     theme
   ],
+  clientPlugins,
   actions: [
+    actionEditorAddButton,
+    actionEditorAddButtonCondition,
+    actionEditorAddButtonIterate,
+    actionEditorAddButtonOff,
     editImg,
     onCreateChangeImage,
     onCreateChangeText,
@@ -41,7 +46,9 @@ export default createApp({
     selectEditInnerIterate,
     selectEditModal,
     selectEditModalItems,
-    onCreateLabel,
+    labelHtmlFor,
+    inputId,
+    setActionInputId,
     onCreateLabelText,
     onCreateAccordionButton,
     onCreateAccordionCollapse,
@@ -49,6 +56,10 @@ export default createApp({
     onClickAccordionButton,
     onCreateAccordion,
     onCollapseHideAccordionButton,
-    onCollapseShowAccordionButton
+    onCollapseShowAccordionButton,
+    actionEditorBlockSelectorToggle,
+    actionEditorBlockSelectorAdd,
+    actionEditorBlockSelectorRemove,
+    inputCheckboxContentId
   ]
 })
