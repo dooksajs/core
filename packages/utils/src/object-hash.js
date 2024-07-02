@@ -11,7 +11,7 @@ function objectHash (source) {
 
   const target = sortObject(source)
 
-  return hash.update(target).digest('hex')
+  return hash.update(target)
 }
 
 export default objectHash
