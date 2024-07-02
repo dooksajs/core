@@ -1,5 +1,5 @@
 import app from '@dooksa/server'
-import { development } from '@dooksa/server-plugins'
+import { development } from '@dooksa/plugins-server'
 import { $setDataValue } from '@dooksa/plugins'
 import esbuild from 'esbuild'
 import chokidar from 'chokidar'
