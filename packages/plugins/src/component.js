@@ -10,6 +10,7 @@ import {
 } from './data.js'
 import { $emit } from './event.js'
 import { componentOptions } from '@dooksa/create-component'
+import { removeAffix } from './utils/createDataValue.js'
 
 /**
  * @typedef {import('@dooksa/create-component').Component} Component
@@ -217,7 +218,7 @@ function createNode (id, item) {
     const contentData = content.extend[0]
     const template = $component(item.id)
 
-    contentId = contentData.noAffixId
+    contentId = removeAffix(contentData.id)
     setContent(node, template.content, contentData.item)
     contentListeners(id, contentData.id, contentId, node, template.content)
   }
@@ -472,7 +473,7 @@ function createTemplate ({
     }
 
     const contentData = $setDataValue('content/items', content)
-    contentId = contentData.noAffixId
+    contentId = removeAffix(contentData.id)
 
     $setDataValue('content/languages', contentData.id, {
       id: contentId,
@@ -489,7 +490,7 @@ function createTemplate ({
     $setDataValue('component/content', contentId, options)
 
     setContent(node, template.content, content)
-    contentListeners(id, contentData.id, contentData.noAffixId, node, template.content)
+    contentListeners(id, contentData.id, removeAffix(contentData.id), node, template.content)
   }
 
   if (template.options) {

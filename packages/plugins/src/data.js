@@ -2,13 +2,14 @@ import createPlugin from '@dooksa/create-plugin'
 import { operatorEval, listSplice } from './index.js'
 import { DataSchemaException, DataValueException } from './utils/Error.js'
 import { deepClone, isEnvServer, uuid } from '@dooksa/utils'
-import DataResult from './utils/DataResult.js'
+import { cloneDataValue, createDataValue } from './utils/createDataValue.js'
 
 /**
  * @typedef {import('../../types.js').SetDataOptions} SetDataOptions
  * @typedef {import('../../types.js').GetDataQuery} GetDataQuery
  * @typedef {import('../../types.js').DataSchema} DataSchema
  * @typedef {import('../../types.js').DataWhere} DataWhere
+ * @typedef {import('./utils/createDataValue.js').DataValue} DataValue
  */
 
 let database = {}
@@ -176,7 +177,7 @@ function createTarget (type, metadata, target) {
 /**
  * Filter data result based on condition
  * @private
- * @param {DataResult} data
+ * @param {DataValue} data
  * @param {DataWhere} where
  * @returns {boolean}
  */
@@ -235,7 +236,7 @@ function filterData (data, where) {
 /**
  * Process where condition
  * @private
- * @param {DataResult} data - Data result
+ * @param {DataValue} data - Data result
  * @param {DataWhere} condition - Where condition
  * @returns {Boolean}
  */
@@ -311,7 +312,7 @@ function getDataListeners (name, on, id) {
  * @private
  * @param {string} name - Collection name
  * @param {'update'|'delete'} on - Event name
- * @param {DataResult} item - Value that is being set
+ * @param {DataValue} item - Value that is being set
  * @param {boolean} [stopPropagation] - Prevents further propagation of the update event
  */
 function fireDataListeners (name, on, item, stopPropagation) {
@@ -1246,7 +1247,7 @@ const data = createPlugin('data', {
         valueLoop: for (const id in values) {
           if (Object.hasOwnProperty.call(values, id)) {
             const value = values[id]
-            const dataResult = new DataResult(name, id)
+            const dataResult = createDataValue(name, id)
             let isValid = true
 
             if (where) {
@@ -1270,7 +1271,7 @@ const data = createPlugin('data', {
         return valueItems
       }
 
-      const result = new DataResult(name)
+      const result = createDataValue(name)
       let isValid = true
 
       result.isEmpty = false
@@ -1304,10 +1305,10 @@ const data = createPlugin('data', {
      * @param {*} data
      * @param {Object} options
      * @param {string} options.id
-     * @returns {DataResult}
+     * @returns {DataValue}
      */
     unsafeSetData (name, data, options) {
-      const result = new DataResult(name, options.id)
+      const result = createDataValue(name, options.id)
 
       if (options) {
         if (options.id == null) {
@@ -1530,7 +1531,7 @@ const data = createPlugin('data', {
       }
 
       if (collection[id]) {
-        const result = new DataResult(name, id)
+        const result = createDataValue(name, id)
 
         result.item = collection[id]._item
         result.metadata = collection[id]._metadata
@@ -1551,14 +1552,14 @@ const data = createPlugin('data', {
      * Get data value
      * @param {string} name - Name of collection
      * @param {GetDataQuery} [param]
-     * @returns {DataResult}
+     * @returns {DataValue}
      */
     $getDataValue (name, { id, prefixId, suffixId, options } = {}) {
       if (database[name] == null) {
         throw new DataValueException('No such collection "' + name +"'")
       }
 
-      const result = new DataResult(name, id)
+      const result = createDataValue(name, id)
       const schema = databaseSchema[name]
 
       if (schema.type === 'collection' && id == null) {
@@ -1692,7 +1693,7 @@ const data = createPlugin('data', {
               const name = item.collection + '/' + item.id
 
               if (options.expandClone) {
-                item.item = item.clone()
+                item.item = cloneDataValue(item)
               }
 
               result.expandIncluded[name] = result.expand.length
@@ -1702,18 +1703,18 @@ const data = createPlugin('data', {
 
           result.expandIncluded[relation] = result.expand.length
 
-          result.expand.push({
-            collection: name,
-            id: value.id,
-            item: !options.expandClone ? value.item : value.clone(),
-            metadata: value.metadata
-          })
+          const expandedResult = createDataValue(name, value.id)
+
+          expandedResult.item = !options.expandClone ? value.item : cloneDataValue(value)
+          expandedResult.metadata = value.metadata
+
+          result.expand.push(expandedResult)
         }
       }
 
       // return a mutable item
       if (options.clone) {
-        result.item = result.clone()
+        result.item = cloneDataValue(result)
       }
 
       // return a value from position
@@ -1736,7 +1737,7 @@ const data = createPlugin('data', {
      * @param {string} name - Name of collection
      * @param {*} data - Data to be set
      * @param {SetDataOptions} [options] - Set data options
-     * @returns {DataResult}
+     * @returns {DataValue}
      */
     $setDataValue (name, data, options) {
       const schema = databaseSchema[name]
@@ -1757,7 +1758,7 @@ const data = createPlugin('data', {
         })
       }
 
-      let result = { collection: name }
+      let result = createDataValue(name)
       let target = database[name]
 
       if (target == null) {
@@ -1784,7 +1785,7 @@ const data = createPlugin('data', {
       // set new value
       database[name] = result.target
 
-      const dataResult = new DataResult(name, result.id)
+      const dataResult = createDataValue(name, result.id)
 
       dataResult.item = result.item
       dataResult.isEmpty = false
