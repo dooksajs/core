@@ -1,5 +1,5 @@
 import createPlugin from '@dooksa/create-plugin'
-import { actionDispatch, $getDataValue } from './index.js'
+import { actionDispatch, dataGetValue } from './index.js'
 
 const event = createPlugin('event', {
   metadata: {
@@ -31,14 +31,15 @@ const event = createPlugin('event', {
   actions: {
     /**
      * Emit event
-     * @param {string} name - Name of event
      * @param {Object} param
+     * @param {string} param.name - Name of event
      * @param {string} param.id - Event id is the listener reference item
      * @param {Object} [param.context] - The action that runs on the event
      * @param {Object} [param.payload] - The action that runs on the event
      */
-    $emit (name, { id, context, payload }) {
-      const listeners = $getDataValue('event/listeners', {
+    emit ({ name, id, context, payload }) {
+      const listeners = dataGetValue({
+        name: 'event/listeners',
         id,
         suffixId: name
       })
@@ -56,8 +57,8 @@ const event = createPlugin('event', {
   }
 })
 
-const $emit = event.actions.$emit
+const eventEmit = event.actions.emit
 
-export { event, $emit }
+export { event, eventEmit }
 
 export default event

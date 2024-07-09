@@ -2,7 +2,7 @@ import createPlugin from '@dooksa/create-plugin'
 import { existsSync, rename, readFile } from 'node:fs'
 import { writeFile } from 'fs/promises'
 import { resolve, join } from 'path'
-import { $getDataValue, $setDataValue, $deleteDataValue, dataGenerateId, dataFind } from '@dooksa/plugins'
+import { dataGetValue, dataSetValue, dataDeleteValue, dataGenerateId, dataFind } from '@dooksa/plugins'
 
 /**
  * @typedef {import('../../types.js').DataWhere} DataWhere
@@ -48,7 +48,7 @@ function setSnapshot (collection) {
   snapshotQueue[collection] = false
 
   const set = new Promise((resolve, reject) => {
-    const data = $getDataValue(collection)
+    const data = dataGetValue(collection)
 
     if (data.isEmpty) {
       snapshotError[collection] = new Error('Snapshot failed, no collection found: ' + collection)
@@ -379,7 +379,7 @@ function stringToCondition (string) {
 
 const database = createPlugin('database', {
   actions: {
-    $getDatabaseValue (collections) {
+    getValue (collections) {
       return (request, response) => {
         let result = []
         let where
@@ -402,7 +402,7 @@ const database = createPlugin('database', {
 
           for (let i = 0; i < request.query.id.length; i++) {
             const id = request.query.id[i]
-            const args = { id }
+            const args = { name: collection, id }
             const value = { id }
 
             if (request.query.expand) {
@@ -413,7 +413,7 @@ const database = createPlugin('database', {
               value.expand = []
             }
 
-            const data = $getDataValue(collection, args)
+            const data = dataGetValue(args)
 
             if (data.isEmpty) {
               return response.status(404).send('Document not found:', collection, id)
@@ -452,7 +452,7 @@ const database = createPlugin('database', {
         response.status(200).send(result)
       }
     },
-    $deleteDatabaseValue (collections) {
+    deleteValue (collections) {
       return (request, response) => {
         let result = 0
 
@@ -461,7 +461,7 @@ const database = createPlugin('database', {
 
           for (let i = 0; i < request.query.id.length; i++) {
             const id = request.query.id[i]
-            const data = $deleteDataValue(collection, id, { cascade: request.query.cascade })
+            const data = dataDeleteValue({ name: collection, id, cascade: request.query.cascade })
 
             if (!data.deleted) {
               return response.status(400).send('Could not delete document:', collection, id)
@@ -484,7 +484,7 @@ const database = createPlugin('database', {
      *
      * @param {string} name -
      */
-    $seedDatabase (name) {
+    seed (name) {
       const path = resolve(snapshotPath, name + '.json')
 
       if (!existsSync(path)) {
@@ -500,8 +500,12 @@ const database = createPlugin('database', {
         const data = JSON.parse(json)
 
         // set cache
-        $setDataValue(data.collection, data.item, {
-          merge: true
+        dataSetValue({
+          name: data.collection,
+          value: data.item,
+          options: {
+            merge: true
+          }
         })
 
         // setup snapshot collection states
@@ -518,7 +522,7 @@ const database = createPlugin('database', {
      * @param {Array} param.items
      * @param {string} [param.userId]
      */
-    $setDatabaseValue ({ items, userId }) {
+    setValue ({ items, userId }) {
       const results = []
       const usedCollections = {}
       const collections = []
@@ -540,9 +544,13 @@ const database = createPlugin('database', {
           }
         }
 
-        const setData = $setDataValue(data.collection, data.item, {
-          id: data.id,
-          metadata
+        const setData = dataSetValue({
+          name: data.collection,
+          value: data.item,
+          options: {
+            id: data.id,
+            metadata
+          }
         })
 
         if (!usedCollections[data.collection]) {
@@ -582,16 +590,17 @@ const database = createPlugin('database', {
   }
 })
 
-const $deleteDatabaseValue = database.actions.$deleteDatabaseValue
-const $getDatabaseValue = database.actions.$getDatabaseValue
-const $seedDatabase = database.actions.$seedDatabase
-const $setDatabaseValue = database.actions.$setDatabaseValue
+const databaseDeleteValue = database.actions.deleteValue
+const databaseGetValue = database.actions.getValue
+const databaseSeed = database.actions.seed
+const databaseSetValue = database.actions.setValue
 
 export {
-  $deleteDatabaseValue,
-  $getDatabaseValue,
-  $seedDatabase,
-  $setDatabaseValue
+  database,
+  databaseSeed,
+  databaseDeleteValue,
+  databaseGetValue,
+  databaseSetValue
 }
 
 export default database

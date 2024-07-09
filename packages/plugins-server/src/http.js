@@ -1,5 +1,5 @@
 import createPlugin from '@dooksa/create-plugin'
-import { $setDataValue, dataGenerateId } from '@dooksa/plugins'
+import { dataSetValue } from '@dooksa/plugins'
 import { middlewareGet, middlewareSet } from './middleware.js'
 import express from 'express'
 import helmet from 'helmet'
@@ -49,14 +49,15 @@ const $http = createPlugin('http', {
   actions: {
     /**
      * Add a route to the server
-     * @param {string} path - path
      * @param {Object} route
+     * @param {string} route.path - path
      * @param {string[]} [route.middleware] - List of middleware reference Ids
      * @param {'get'|'post'|'put'|'delete'} [route.method='get'] - HTTP method
      * @param {string} [route.suffix] - Path suffix
      * @param {Middleware[]} route.handlers - List of callbacks
      */
-    $setRoute (path = '/', {
+    setRoute ({
+      path = '/',
       method = 'get',
       middleware = [],
       handlers = [],
@@ -111,13 +112,13 @@ const $http = createPlugin('http', {
         port = port || this.address().port
         console.log('✨ Dooksa! ' + path + ':' + port)
 
-        $setDataValue('http/status', 'start')
+        dataSetValue({ name: 'http/status', value: 'start' })
       })
     },
     stop () {
       server.close()
 
-      $setDataValue('http/status', 'stop')
+      dataSetValue({ name: 'http/status', value: 'stop' })
     }
   },
   setup ({
@@ -183,12 +184,12 @@ const $http = createPlugin('http', {
 
 const httpStart = $http.actions.start
 const httpStop = $http.actions.stop
-const $setRoute = $http.actions.$setRoute
+const httpSetRoute = $http.actions.setRoute
 
 export {
   httpStart,
   httpStop,
-  $setRoute
+  httpSetRoute
 }
 
 export default $http

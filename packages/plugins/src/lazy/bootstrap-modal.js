@@ -1,13 +1,12 @@
 import createPlugin from '@dooksa/create-plugin'
-import { $getDataValue, $setDataValue, $addDataListener } from '../data.js'
+import { dataGetValue, dataAddListener } from '../data.js'
 import Modal from 'bootstrap/js/src/modal.js'
 import { componentRemove } from '../component.js'
 
 /** @type {Object.<string, Modal>} */
 const modalItems = {}
 
-const bootstrapModal = createPlugin({
-  name: 'bootstrapModal',
+const bootstrapModal = createPlugin('bootstrapModal', {
   actions: {
     /**
      * Create Modal
@@ -33,9 +32,7 @@ const bootstrapModal = createPlugin({
         return
       }
 
-      const node = $getDataValue('component/nodes', {
-        id
-      })
+      const node = dataGetValue({ name: 'component/nodes', id })
 
       // create new modal
       modal = new Modal(node.item, options)
@@ -47,7 +44,8 @@ const bootstrapModal = createPlugin({
       })
 
       // clean up modal
-      $addDataListener('component/nodes', {
+      dataAddListener({
+        name: 'component/nodes',
         on: 'delete',
         id,
         handler: () => {

@@ -1,6 +1,6 @@
 import app from '@dooksa/server'
 import { development } from '@dooksa/plugins-server'
-import { $setDataValue } from '@dooksa/plugins'
+import { dataSetValue } from '@dooksa/plugins'
 import esbuild from 'esbuild'
 import chokidar from 'chokidar'
 import logger from './logger.js'
@@ -60,12 +60,12 @@ esbuild.context({
             const fileExtension = extname(file.path)
 
             if (fileExtension === '.js') {
-              $setDataValue('page/app', result.outputFiles[i].text)
+              dataSetValue({ name: 'page/app', value: result.outputFiles[i].text })
             }
           }
 
           // notify sse to reload
-          $setDataValue('development/rebuildClient', ++rebuildClientNum)
+          dataSetValue({ name: 'development/rebuildClient', value: ++rebuildClientNum })
         }
       })
     }

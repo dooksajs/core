@@ -1,5 +1,5 @@
 import createPlugin from '@dooksa/create-plugin'
-import { $getDataValue, $setDataValue, $addDataListener } from './data.js'
+import { dataGetValue, dataSetValue, dataAddListener } from './data.js'
 
 const fetchRequestQueue = {}
 const fetchRequestCache = {}
@@ -21,7 +21,7 @@ function getCache (id) {
 
   for (let i = 0; i < cache.data.length; i++) {
     const item = cache.data[i]
-    const data = $getDataValue(item.collection, { id: item.id })
+    const data = dataGetValue({ name: item.collection, id: item.id })
 
     result.push(data)
   }
@@ -35,18 +35,26 @@ function setRequestData (data, id) {
   for (let i = 0; i < data.length; i++) {
     const dataItem = data[i]
 
-    $setDataValue(dataItem.collection, dataItem.item, {
-      id: dataItem.id,
-      metadata: dataItem.metadata
+    dataSetValue({
+      name: dataItem.collection,
+      value: dataItem.item,
+      options: {
+        id: dataItem.id,
+        metadata: dataItem.metadata
+      }
     })
 
     if (dataItem.expand) {
       for (let i = 0; i < dataItem.expand.length; i++) {
         const data = dataItem.expand[i]
 
-        $setDataValue(data.collection, data.item, {
-          id: data.id,
-          metadata: data.metadata
+        dataSetValue({
+          name: data.collection,
+          value: data.item,
+          options: {
+            id: data.id,
+            metadata: data.metadata
+          }
         })
 
         requestCache.push({
@@ -61,7 +69,8 @@ function setRequestData (data, id) {
       collection: dataItem.collection
     })
 
-    $addDataListener(dataItem.collection, {
+    dataAddListener({
+      name: dataItem.collection,
       on: 'delete',
       id: dataItem.id,
       handler: deleteCache
@@ -97,13 +106,6 @@ const $fetch = createPlugin('fetch', {
         icon: 'mdi:file'
       }
     }
-  },
-  /**
-   * @param {Object} param
-   * @param {string} [param.hostname='']
-   */
-  setup ({ hostname = '' } = {}) {
-    _hostname = hostname + _hostname
   },
   actions: {
     /**
@@ -263,16 +265,23 @@ const $fetch = createPlugin('fetch', {
 
       return request
     }
+  },
+  /**
+   * @param {Object} param
+   * @param {string} [param.hostname='']
+   */
+  setup ({ hostname }) {
+    _hostname = hostname + _hostname
   }
 })
 
-const $fetchAll = $fetch.actions.getAll
-const $fetchById = $fetch.actions.getById
+const fetchAll = $fetch.actions.getAll
+const fetchById = $fetch.actions.getById
 
 export {
   $fetch,
-  $fetchAll,
-  $fetchById
+  fetchAll,
+  fetchById
 }
 
 export default $fetch

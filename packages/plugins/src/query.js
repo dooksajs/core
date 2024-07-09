@@ -1,5 +1,5 @@
 import createPlugin from '@dooksa/create-plugin'
-import { listFilter, listSort, $addDataListener, $setDataValue, $getDataValue } from './index.js'
+import { listFilter, listSort, dataAddListener, dataSetValue, dataGetValue } from './index.js'
 
 
 /**
@@ -13,7 +13,7 @@ function fetchValues (items) {
 
   for (let i = 0; i < items.length; i++) {
     const item = items[i]
-    const content = $getDataValue('content/items', { id: item.contentId })
+    const content = dataGetValue({ name: 'content/items', id: item.contentId })
     let contentValue = content.item.values
 
     for (let i = 0; i < item.content.length; i++) {
@@ -108,23 +108,28 @@ const query = createPlugin('query', {
      * @param {string} param.sectionId - Section to overwrite with query
      */
     filter ({ id, sectionId }) {
-      $setDataValue('section/query', id, {
-        id: sectionId
+      dataSetValue({
+        name: 'section/query',
+        value: id,
+        options: {
+          id: sectionId
+        }
       })
 
-      const mode = $getDataValue('section/mode', { id: sectionId })
+      const mode = dataGetValue({ name: 'section/mode', id: sectionId })
 
       if (!mode.isEmpty) {
         sectionId = sectionId + mode.item
       }
 
-      $addDataListener('section/items', {
+      dataAddListener({
+        name: 'section/items',
         on: 'update',
         id: sectionId,
         priority: 1,
         handler: (result) => {
-          const where = $getDataValue('query/where', { id })
-          const sort = $getDataValue('query/sort', { id })
+          const where = dataGetValue({ name: 'query/where', id })
+          const sort = dataGetValue({ name: 'query/sort', id })
 
           const currentSection = {}
 
@@ -134,12 +139,12 @@ const query = createPlugin('query', {
           }
 
           if (!where.isEmpty) {
-            const queryData = $getDataValue('query/items', { id: where.item.id })
+            const queryData = dataGetValue({ name: 'query/items', id: where.item.id })
 
             if (queryData.isEmpty) {
               console.error('where query should not be empty')
 
-              return $setDataValue('query/items', [], { id: where.item.id })
+              return dataSetValue({ name: 'query/items', value: [], options: { id: where.item.id } })
             }
 
             const query = []
@@ -155,18 +160,28 @@ const query = createPlugin('query', {
               }
             }
 
-            $setDataValue('query/items', query, {
-              id: where.item.id
+            dataSetValue({
+              name: 'query/items',
+              value: query,
+              options: {
+                id: where.item.id
+              }
             })
           }
 
           if (!sort.isEmpty) {
-            const queryData = $getDataValue('query/items', { id: sort.item.id })
+            const queryData = dataGetValue({ name: 'query/items', id: sort.item.id })
 
             if (queryData.isEmpty) {
               console.error('sort query should not be empty')
 
-              return $setDataValue('query/items', [], { id: sort.item.id })
+              return dataSetValue({
+                name: 'query/items',
+                value: [],
+                options: {
+                  id: sort.item.id
+                }
+              })
             }
 
             const query = []
@@ -182,8 +197,12 @@ const query = createPlugin('query', {
               }
             }
 
-            $setDataValue('query/items', query, {
-              id: sort.item.id
+            dataSetValue({
+              name: 'query/items',
+              value: query,
+              options: {
+                id: sort.item.id
+              }
             })
           }
         }
@@ -196,18 +215,18 @@ const query = createPlugin('query', {
      * @returns {QueryValue[]}
      */
     fetch ({ id }) {
-      const where = $getDataValue('query/where', { id })
-      const sort = $getDataValue('query/sort', { id })
+      const where = dataGetValue({ name: 'query/where', id })
+      const sort = dataGetValue({ name: 'query/sort', id })
 
       if (!where.isEmpty) {
-        const queryData = $getDataValue('query/items', { id: where.item.id })
+        const queryData = dataGetValue({ name: 'query/items', id: where.item.id })
         let items = fetchValues(queryData.item)
         const whereResults = listFilter({ items, options: where.item.options })
 
         items = whereResults.items
 
         if (!sort.isEmpty) {
-          const queryData = $getDataValue('query/items', { id: sort.item.id })
+          const queryData = dataGetValue({ name: 'query/items', id: sort.item.id })
           items = []
 
           // filter where results

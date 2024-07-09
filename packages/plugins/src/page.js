@@ -1,5 +1,5 @@
 import createPlugin from '@dooksa/create-plugin'
-import { $getDataValue, routeCurrentId, $setDataValue } from './index.js'
+import { dataGetValue, routeCurrentId, dataSetValue } from './index.js'
 
 const page = createPlugin('page', {
   metadata: {
@@ -16,7 +16,7 @@ const page = createPlugin('page', {
         return routeCurrentId
       },
       suffixId () {
-        return $getDataValue('metadata/currentLanguage').item
+        return dataGetValue({ name: 'metadata/currentLanguage' }).item
       },
       items: {
         type: 'string'
@@ -78,7 +78,8 @@ const page = createPlugin('page', {
         .catch(e => console.log(e))
     },
     getById (id) {
-      const pageData = $getDataValue('page/items', {
+      const pageData = dataGetValue({
+        name: 'page/items',
         id,
         options: {
           expand: true
@@ -152,7 +153,8 @@ const page = createPlugin('page', {
      * @param {boolean} [param.expand=true]
      */
     appendExpand ({ collection, id, data, expandExclude, expand = true }) {
-      const getData = $getDataValue(collection, {
+      const getData = dataGetValue({
+        name: collection,
         id,
         options: {
           expand,
@@ -181,14 +183,18 @@ const page = createPlugin('page', {
     }
   },
   setup () {
-    const component = $getDataValue('page/items', { id: routeCurrentId() })
+    const component = dataGetValue({ name: 'page/items', id: routeCurrentId() })
 
     if (component.isEmpty) {
       return
     }
 
-    $setDataValue('component/children', component.item, {
-      id: 'root'
+    dataSetValue({
+      name: 'component/children',
+      value: component.item,
+      options: {
+        id: 'root'
+      }
     })
   }
 })

@@ -1,12 +1,11 @@
 import createPlugin from '@dooksa/create-plugin'
-import { $getDataValue, $addDataListener } from '../data.js'
+import { dataGetValue, dataAddListener } from '../data.js'
 import Collapse from 'bootstrap/js/src/collapse.js'
 
 /** @type {Object.<string, Collapse>} */
 const collapseItems = {}
 
-const bootstrapCollapse = createPlugin({
-  name: 'bootstrapCollapse',
+const bootstrapCollapse = createPlugin('bootstrapCollapse', {
   actions: {
     /**
      * @param {Object} param
@@ -25,10 +24,10 @@ const bootstrapCollapse = createPlugin({
       let parent = null
 
       if (parentId) {
-        parent = $getDataValue('component/nodes', { id: parentId }).item
+        parent = dataGetValue({ name: 'component/nodes', id: parentId }).item
       }
 
-      const element = $getDataValue('component/nodes', { id })
+      const element = dataGetValue({ name: 'component/nodes', id })
 
       if (element.isEmpty) {
         throw new Error('Component not found: ' + id)
@@ -44,7 +43,8 @@ const bootstrapCollapse = createPlugin({
       collapseItems[collapseId] = collapseInstance
 
       // clean up
-      $addDataListener('component/nodes', {
+      dataAddListener({
+        name: 'component/nodes',
         on: 'delete',
         id,
         handler () {

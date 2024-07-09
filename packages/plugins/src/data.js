@@ -1307,7 +1307,7 @@ const data = createPlugin('data', {
      * @param {string} options.id
      * @returns {DataValue}
      */
-    unsafeSetData (name, data, options) {
+    unsafeSetValue (name, data, options) {
       const result = createDataValue(name, options.id)
 
       if (options) {
@@ -1339,8 +1339,8 @@ const data = createPlugin('data', {
     },
     /**
      * Add data listener
-     * @param {string} name - Collection name
      * @param {Object} param
+     * @param {string} param.name - Collection name
      * @param {'update'|'delete'} [param.on='update'] - Data event name
      * @param {string} [param.id] - Data collection Id
      * @param {number} [param.priority]
@@ -1349,14 +1349,15 @@ const data = createPlugin('data', {
      * @param {string} [param.handlerId=''] - Id of handler
      * @param {Function} param.handler
      */
-    $addDataListener (name, {
+    addListener ({
+      name,
       id,
       on = 'update',
       priority,
       force,
       capture,
       handler,
-      handlerId = dataGenerateId()
+      handlerId = generateId()
     }) {
       const listeners = getDataListeners(name, on, id)
 
@@ -1423,13 +1424,14 @@ const data = createPlugin('data', {
     },
     /**
      * Delete data listeners
-     * @param {string} name - Data collection name
      * @param {Object} item
+     * @param {string} item.name - Data collection name
      * @param {'update'|'delete'} [item.on='update'] - Data event name
      * @param {string} [item.id] - Data collection Id
      * @param {string} item.handlerId - The reference handler Id that will be removed
      */
-    $deleteDataListener (name, {
+    deleteListener ({
+      name,
       id,
       on = 'update',
       handlerId
@@ -1464,19 +1466,21 @@ const data = createPlugin('data', {
     },
     /**
      * Delete data value
-     * @param {string} name - Collection name
-     * @param {string} id - Document id
-     * @param {Object} [options]
-     * @param {boolean} [options.cascade] - Delete related data
-     * @param {boolean} [options.listeners] - Delete related listeners
-     * @param {boolean} [options.stopPropagation] - Prevent further event phases
+     * @param {Object} param
+     * @param {string} param.name - Collection name
+     * @param {string} param.id - Document id
+     * @param {boolean} [param.cascade] - Delete related data
+     * @param {boolean} [param.listeners] - Delete related listeners
+     * @param {boolean} [param.stopPropagation] - Prevent further event phases
      * @returns {Object}
      */
-    $deleteDataValue (name, id, {
+    deleteValue ({
+      name,
+      id,
       cascade,
       listeners,
       stopPropagation
-    } = {}) {
+    }) {
       const collection = database[name]
 
       if (collection == null) {
@@ -1516,7 +1520,7 @@ const data = createPlugin('data', {
               delete databaseRelationInUse[usedRelationName]
 
               if (cascade) {
-                $deleteDataValue(splitName[0] + '/' + splitName[1], splitName[2], { cascade })
+                this.deleteValue({ name: splitName[0] + '/' + splitName[1], id: splitName[2], cascade })
               }
 
               relations.splice(i, 1)
@@ -1550,11 +1554,10 @@ const data = createPlugin('data', {
     },
     /**
      * Get data value
-     * @param {string} name - Name of collection
-     * @param {GetDataQuery} [param]
+     * @param {GetDataQuery} param
      * @returns {DataValue}
      */
-    $getDataValue (name, { id, prefixId, suffixId, options } = {}) {
+    getValue ({ name, id, prefixId, suffixId, options }) {
       if (database[name] == null) {
         throw new DataValueException('No such collection "' + name +"'")
       }
@@ -1673,7 +1676,8 @@ const data = createPlugin('data', {
           const item = relation.split('/')
           const name = item[0] + '/' + item[1]
           const id = item.splice(2).join('/')
-          const value = $getDataValue(name, {
+          const value = this.getValue({
+            name,
             id,
             options: {
               expand: true,
@@ -1734,12 +1738,13 @@ const data = createPlugin('data', {
     },
     /**
      * Set data value
-     * @param {string} name - Name of collection
-     * @param {*} data - Data to be set
-     * @param {SetDataOptions} [options] - Set data options
+     * @param {Object} param
+     * @param {string} param.name - Name of collection
+     * @param {*} param.value - Data to be set
+     * @param {SetDataOptions} [param.options] - Set data options
      * @returns {DataValue}
      */
-    $setDataValue (name, data, options) {
+    setValue ({ name, value, options }) {
       const schema = databaseSchema[name]
 
       if (!schema) {
@@ -1750,7 +1755,7 @@ const data = createPlugin('data', {
         })
       }
 
-      if (data == null) {
+      if (value == null) {
         throw new DataSchemaException({
           schemaPath: name,
           keyword: 'source',
@@ -1769,7 +1774,7 @@ const data = createPlugin('data', {
       result = setData(
         name,
         target,
-        data._item || data,
+        value._item || value,
         options
       )
 
@@ -1799,10 +1804,11 @@ const data = createPlugin('data', {
     },
     /**
      * Add data modal
-     * @param {string} namespace
-     * @param {*} schema - Result of schema.process
+     * @param {Object} param
+     * @param {string} param.namespace
+     * @param {*} param.schema - Result of schema.process
      */
-    $setDataModal (namespace, schema) {
+    setModal ({ namespace, schema }) {
       if (!schema) {
         throw new DataSchemaException({
           message: 'Data modal expects schema',
@@ -1874,25 +1880,25 @@ const data = createPlugin('data', {
 
 const dataGenerateId = data.actions.generateId
 const dataFind = data.actions.find
-const dataUnsafeSetData = data.actions.unsafeSetData
-const $setDataValue = data.actions.$setDataValue
-const $deleteDataValue = data.actions.$deleteDataValue
-const $getDataValue = data.actions.$getDataValue
-const $addDataListener = data.actions.$addDataListener
-const $deleteDataListener = data.actions.$deleteDataListener
-const $setDataModal = data.actions.$setDataModal
+const dataUnsafeSetValue = data.actions.unsafeSetValue
+const dataSetValue = data.actions.setValue
+const dataDeleteValue = data.actions.deleteValue
+const dataGetValue = data.actions.getValue
+const dataAddListener = data.actions.addListener
+const dataDeleteListener = data.actions.deleteListener
+const dataSetModal = data.actions.setModal
 
 export {
   data,
-  dataGenerateId,
+  dataAddListener,
+  dataDeleteListener,
+  dataDeleteValue,
   dataFind,
-  dataUnsafeSetData,
-  $addDataListener,
-  $deleteDataListener,
-  $deleteDataValue,
-  $getDataValue,
-  $setDataValue,
-  $setDataModal
+  dataGenerateId,
+  dataGetValue,
+  dataSetModal,
+  dataSetValue,
+  dataUnsafeSetValue
 }
 
 export default data

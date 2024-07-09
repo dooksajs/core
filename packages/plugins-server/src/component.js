@@ -1,30 +1,32 @@
 import createPlugin from '@dooksa/create-plugin'
 import { component } from '@dooksa/plugins'
-import { $deleteDatabaseValue, $getDatabaseValue, $seedDatabase } from './database.js'
-import { $setRoute } from './http.js'
+import { databaseDeleteValue, databaseGetValue, databaseSeed } from './database.js'
+import { httpSetRoute } from './http.js'
 
 const componentServer = createPlugin('component', {
   models: component.models,
   setup () {
-    $seedDatabase('component-items')
-    $seedDatabase('component-children')
-    $seedDatabase('component-content')
+    databaseSeed('component-items')
+    databaseSeed('component-children')
+    databaseSeed('component-content')
 
     // route: get a list of component
-    $setRoute('/component', {
+    httpSetRoute({
+      path: '/component',
       method: 'get',
       middleware: ['request/queryIsArray'],
       handlers: [
-        $getDatabaseValue(['component/items'])
+        databaseGetValue(['component/items'])
       ]
     })
 
     // route: delete component
-    $setRoute('/component', {
+    httpSetRoute({
+      path: '/component',
       method: 'delete',
       middleware: ['user/auth', 'request/queryIsArray'],
       handlers: [
-        $deleteDatabaseValue(['component/items'])
+        databaseDeleteValue(['component/items'])
       ]
     })
   }

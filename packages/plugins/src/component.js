@@ -1,14 +1,14 @@
 import createPlugin from '@dooksa/create-plugin'
 import {
-  dataUnsafeSetData,
+  dataUnsafeSetValue,
   dataGenerateId,
-  $getDataValue,
-  $addDataListener,
-  $setDataValue,
-  $deleteDataValue,
-  $deleteDataListener
+  dataGetValue,
+  dataAddListener,
+  dataSetValue,
+  dataDeleteListener,
+  dataDeleteValue
 } from './data.js'
-import { $emit } from './event.js'
+import { eventEmit } from './event.js'
 import { componentOptions } from '@dooksa/create-component'
 import { removeAffix } from './utils/createDataValue.js'
 
@@ -116,7 +116,8 @@ function lazyLoad (item, template, cb) {
  */
 function contentListeners (id, contentId, contentNoAffixId, node, templateContent) {
   // update element content if content data changes
-  let handlerId = $addDataListener('content/items', {
+  let handlerId = dataAddListener({
+    name: 'content/items',
     on: 'update',
     id: contentId,
     handler: (data) => {
@@ -124,10 +125,12 @@ function contentListeners (id, contentId, contentNoAffixId, node, templateConten
     }
   })
 
-  $addDataListener('metadata/currentLanguage', {
+  dataAddListener({
+    name: 'metadata/currentLanguage',
     on: 'update',
     handler: (data) => {
-      $deleteDataListener('content/items', {
+      dataDeleteListener({
+        name: 'content/items',
         on: 'update',
         id: contentId,
         handlerId
@@ -135,13 +138,14 @@ function contentListeners (id, contentId, contentNoAffixId, node, templateConten
 
       // change content lang
       contentId = contentNoAffixId + data.item
-      const content = $getDataValue('content/items', { id })
+      const content = dataGetValue({ name: 'content/items', id })
 
       if (!content.isEmpty) {
         setContent(node, templateContent, content.item)
       }
 
-      handlerId = $addDataListener('content/items', {
+      handlerId = dataAddListener({
+        name: 'content/items',
         on: 'update',
         id: contentId,
         handler: (data) => {
@@ -152,11 +156,12 @@ function contentListeners (id, contentId, contentNoAffixId, node, templateConten
   })
 
   // update element content if component content is changed
-  $addDataListener('component/content', {
+  dataAddListener({
+    name: 'component/content',
     on: 'update',
     id,
     handler: (data) => {
-      const content = $getDataValue('content/items', { id: data.item })
+      const content = dataGetValue({ name: 'content/items', id: data.item })
 
       setContent(node, templateContent, content.item)
     }
@@ -164,7 +169,6 @@ function contentListeners (id, contentId, contentNoAffixId, node, templateConten
 }
 
 function createNode (id, item) {
-  const options = { id }
   const template = $component(item.id)
   let node
 
@@ -184,14 +188,15 @@ function createNode (id, item) {
   }
 
   node.dooksaComponentId = id
-  dataUnsafeSetData('component/nodes', node, { id })
+  dataUnsafeSetValue('component/nodes', node, { id })
 
-  const properties = $getDataValue('component/properties', options).item || template.properties
+  const properties = dataGetValue({ name: 'component/properties', id }).item || template.properties
 
   if (!properties) {
     setProperties(node, properties)
 
-    $addDataListener('component/properties', {
+    dataAddListener({
+      name: 'component/properties',
       on: 'update',
       id,
       handler: (options) => {
@@ -201,18 +206,23 @@ function createNode (id, item) {
   }
 
   if (template.options) {
-    $addDataListener('component/options', {
+    dataAddListener({
+      name: 'component/options',
       on: 'update',
       id,
       handler: (options) => {
         const properties = componentOptions(options.item, template.options, template.properties)
 
-        $setDataValue('component/properties', properties, { id })
+        dataSetValue({ name: 'component/properties', value: properties, options: { id } })
       }
     })
   }
 
-  const content = $getDataValue('component/content', { id, options: { expand: true } })
+  const content = dataGetValue({
+    name: 'component/content',
+    id,
+    options: { expand: true }
+  })
   let contentId
   if (!content.isEmpty) {
     const contentData = content.extend[0]
@@ -223,27 +233,30 @@ function createNode (id, item) {
     contentListeners(id, contentData.id, contentId, node, template.content)
   }
 
-  const children = $getDataValue('component/children', { id, options: { expand: true } })
-  const rootId = $getDataValue('component/roots', options).item
-  const groupId = $getDataValue('component/groups', options).item
-  const parentId = $getDataValue('component/parents', options).item
-  const events = $getDataValue('component/events', options)
+  const children = dataGetValue({ name: 'component/children', id, options: { expand: true } })
+  const rootId = dataGetValue({ name: 'component/roots', id }).item
+  const groupId = dataGetValue({ name: 'component/groups', id }).item
+  const parentId = dataGetValue({ name: 'component/parents', id }).item
+  const event = dataGetValue({ name: 'component/events', id })
   const childNodes = []
   let childIsLazy = false
   let hasCreateEvent = false
 
-  if (!events.isEmpty) {
-    const events = events.item
+  if (!event.isEmpty) {
+    const events = event.item
     const eventTypes = template.eventTypes || {}
     const hasEvent = {}
 
     for (let i = 0; i < events.length; i++) {
       const { on, actionId } = events[i]
-      const eventData = $setDataValue('event/listeners', actionId, {
-        id,
-        suffixId: 'component/' + on,
-        update: {
-          method: 'push'
+      const eventData = dataSetValue({
+        name: 'event/listeners',
+        value: actionId,
+        options: {
+          id: 'component/' + on + id,
+          update: {
+            method: 'push'
+          }
         }
       })
 
@@ -251,14 +264,14 @@ function createNode (id, item) {
         hasCreateEvent = true
       }
 
-      $setDataValue('component/events', {
-        id: eventData.id,
-        on,
-        actionId
-      }, {
-        id,
-        update: {
-          method: 'push'
+      dataSetValue({
+        name: 'component/events',
+        value: eventData.id,
+        options: {
+          id,
+          update: {
+            method: 'pull'
+          }
         }
       })
 
@@ -269,7 +282,8 @@ function createNode (id, item) {
           hasEvent[on] = true
           const handler = (payload) => {
             // fire node events
-            $emit(on, {
+            eventEmit({
+              name: on,
               id,
               context: {
                 id,
@@ -284,9 +298,10 @@ function createNode (id, item) {
           node.addEventListener(nodeEvent[1], handler)
 
           // store handler
-          dataUnsafeSetData('event/handlers', handler, { id })
+          dataUnsafeSetValue('event/handlers', handler, { id })
           // handle removal
-          $addDataListener('event/handlers', {
+          dataAddListener({
+            name: 'event/handlers',
             on: 'delete',
             id,
             handler () {
@@ -298,7 +313,8 @@ function createNode (id, item) {
     }
 
     // fire mount event
-    $emit('component/mount', {
+    eventEmit({
+      name: 'component/mount',
       id,
       context: {
         id,
@@ -313,7 +329,7 @@ function createNode (id, item) {
   if (!children.isEmpty) {
     for (let i = 0; i < children.expand.length; i++) {
       const component = children.expand[i]
-      let childNode = $getDataValue('component/nodes', { id: component.id })
+      let childNode = dataGetValue({ name: 'component/nodes', id: component.id })
 
       if (component.item.isTemplate) {
         childNode = createTemplate({
@@ -339,7 +355,8 @@ function createNode (id, item) {
 
           if (hasCreateEvent) {
             // fire created event
-            $emit('component/create', {
+            eventEmit({
+              name: 'component/create',
               id,
               context: {
                 id,
@@ -361,7 +378,8 @@ function createNode (id, item) {
 
   if (hasCreateEvent && !childIsLazy) {
     // fire created event
-    $emit('component/create', {
+    eventEmit({
+      name: 'component/create',
       id,
       context: {
         id,
@@ -427,13 +445,13 @@ function createTemplate ({
 
   // store node
   node.dooksaComponentId = id
-  dataUnsafeSetData('component/nodes', node, options)
+  dataUnsafeSetValue('component/nodes', node, options)
 
   // set core component values
-  $setDataValue('component/groups', groupId, options)
-  $setDataValue('component/roots', rootId, options)
-  $setDataValue('component/parents', parentId, options)
-  $setDataValue('component/items', component, options)
+  dataSetValue({ name: 'component/groups', value: groupId, options })
+  dataSetValue({ name: 'component/roots', value: rootId, options })
+  dataSetValue({ name: 'component/parents', value: parentId, options })
+  dataSetValue({ name: 'component/items', value: component, options })
 
   // set properties to node
   if (template.properties) {
@@ -446,7 +464,8 @@ function createTemplate ({
 
     setProperties(node, template.properties)
 
-    $addDataListener('component/properties', {
+    dataAddListener({
+      name: 'component/properties',
       on: 'update',
       id,
       handler: (options) => {
@@ -472,35 +491,52 @@ function createTemplate ({
       content[data.name] = contentValue
     }
 
-    const contentData = $setDataValue('content/items', content)
+    const contentData = dataSetValue({ name: 'content/items', value: content })
     contentId = removeAffix(contentData.id)
 
-    $setDataValue('content/languages', contentData.id, {
-      id: contentId,
-      update: {
-        method: 'push'
+    dataSetValue({
+      name: 'content/languages',
+      value: contentData.id,
+      options: {
+        id: contentId,
+        update: {
+          method: 'push'
+        }
       }
     })
-    $setDataValue('content/components', id, {
-      id: contentId,
-      update: {
-        method: 'push'
+    dataSetValue({
+      name: 'content/components',
+      value: id,
+      options: {
+        id: contentId,
+        update: {
+          method: 'push'
+        }
       }
     })
-    $setDataValue('component/content', contentId, options)
+    dataSetValue({
+      name: 'component/content',
+      value: contentId,
+      options
+    })
 
     setContent(node, template.content, content)
     contentListeners(id, contentData.id, removeAffix(contentData.id), node, template.content)
   }
 
   if (template.options) {
-    $addDataListener('component/options', {
+    dataAddListener({
+      name: 'component/options',
       on: 'update',
       id,
       handler: (options) => {
         const properties = componentOptions(options.item, template.options, template.properties)
 
-        $setDataValue('component/properties', properties, options)
+        dataSetValue({
+          name: 'component/properties',
+          value: properties,
+          options
+        })
       }
     })
   }
@@ -517,11 +553,14 @@ function createTemplate ({
 
     for (let i = 0; i < events.length; i++) {
       const { on, actionId } = events[i]
-      const eventData = $setDataValue('event/listeners', actionId, {
-        id,
-        suffixId: on,
-        update: {
-          method: 'push'
+      const eventData = dataSetValue({
+        name: 'event/listeners',
+        value: actionId,
+        options: {
+          id: on + id,
+          update: {
+            method: 'push'
+          }
         }
       })
 
@@ -529,14 +568,14 @@ function createTemplate ({
         hasCreateEvent = true
       }
 
-      $setDataValue('component/events', {
-        id: eventData.id,
-        on,
-        actionId
-      }, {
-        id,
-        update: {
-          method: 'push'
+      dataSetValue({
+        name: 'component/events',
+        value: eventData.id,
+        options: {
+          id,
+          update: {
+            method: 'push'
+          }
         }
       })
 
@@ -547,7 +586,8 @@ function createTemplate ({
           hasEvent[on] = true
           const handler = (payload) => {
             // fire node events
-            $emit(on, {
+            eventEmit({
+              name: on,
               id,
               context: {
                 id,
@@ -563,9 +603,10 @@ function createTemplate ({
           node.addEventListener(nodeEvent[1], handler)
 
           // store handler
-          dataUnsafeSetData('event/handlers', handler, options)
+          dataUnsafeSetValue('event/handlers', handler, options)
           // handle removal
-          $addDataListener('event/handlers', {
+          dataAddListener({
+            name: 'event/handlers',
             on: 'delete',
             id,
             handler () {
@@ -577,7 +618,8 @@ function createTemplate ({
     }
 
     // fire mount event
-    $emit('component/mount', {
+    eventEmit({
+      name: 'component/mount',
       id,
       context: {
         id,
@@ -616,14 +658,19 @@ function createTemplate ({
             children.push(result.id)
           }
 
-          $setDataValue('component/children', children, {
-            id,
-            stopPropagation: true
+          dataSetValue({
+            name: 'component/children',
+            value: children,
+            options: {
+              id,
+              stopPropagation: true
+            }
           })
 
           if (hasCreateEvent) {
             // fire mount event
-            $emit('component/create', {
+            eventEmit({
+              name: 'component/create',
               id,
               context: {
                 id,
@@ -645,16 +692,21 @@ function createTemplate ({
         children.push(childNode.id)
       }
 
-      $setDataValue('component/children', children, {
-        id,
-        stopPropagation: true
+      dataSetValue({
+        name: 'component/children',
+        value: children,
+        options: {
+          id,
+          stopPropagation: true
+        }
       })
     }
   }
 
   // fire created event
   if (hasCreateEvent && !childIsLazy) {
-    $emit('component/create', {
+    eventEmit({
+      name: 'component/create',
       id,
       context: {
         id,
@@ -841,9 +893,8 @@ const component = createPlugin('component', {
      * @param {boolean} [isHead=true]
      */
     remove ({ id, stopPropagation = false }, isHead = true) {
-      const options = { id }
-      const parentId = $getDataValue('component/parents', options).item
-      const parentChildren = $getDataValue('component/children', { id: parentId })
+      const parentId = dataGetValue({ name: 'component/parents', id }).item
+      const parentChildren = dataGetValue({ name: 'component/children', id: parentId })
 
       // remove component from parent
       if (isHead && !parentChildren.isEmpty) {
@@ -859,72 +910,80 @@ const component = createPlugin('component', {
         }
 
         if (!children.length) {
-          $deleteDataValue('component/children', parentId)
+          dataDeleteValue({ name: 'component/children', id: parentId })
         } else if (children.length !== parentChildren.item.length) {
-          $setDataValue('component/children', children, {
-            id: parentId,
-            stopPropagation
+          dataSetValue({
+            name: 'component/children',
+            value: children,
+            options: {
+              id: parentId,
+              stopPropagation
+            }
           })
         }
       }
 
-      const events = $getDataValue('component/events', options)
+      const events = dataGetValue({ name: 'component/events', id })
 
       // remove event handlers
       if (!events.isEmpty) {
         for (let i = 0; i < events.item.length; i++) {
           const event = events.item[i]
 
-          $deleteDataValue('event/handlers', { id: event.id })
+          dataDeleteValue({ name: 'event/handlers', id: event.id })
         }
       }
 
-      const content = $getDataValue('component/content', options)
+      const content = dataGetValue({ name: 'component/content', id })
 
       if (!content.isEmpty) {
         const contentId = content.item
-        const contentComponents = $getDataValue('content/components', { id: contentId })
+        const contentComponents = dataGetValue({ name: 'content/components', id: contentId })
 
         if (!contentComponents.isEmpty) {
           if (contentComponents.item.length === 1) {
-            const content = $getDataValue('content/languages', { id: contentId })
+            const content = dataGetValue({ name: 'content/languages', id: contentId })
 
-            $deleteDataValue('content/languages', contentId)
-            $deleteDataValue('content/components', contentId)
+            dataDeleteValue({ name: 'content/languages', id: contentId })
+            dataDeleteValue({ name: 'content/components', id: contentId })
 
             // remove all content languages
             for (let i = 0; i < content.item.length; i++) {
-              $deleteDataValue('content/items', content.item[i])
+              dataDeleteValue({ name: 'content/items', id: content.item[i] })
             }
           } else {
             // remove current component from content used by list
-            $setDataValue('content/components', id, {
-              id: contentId,
-              update: {
-                method: 'pull'
+            dataSetValue({
+              name: 'content/components',
+              value: id,
+              options: {
+                id: contentId,
+                update: {
+                  method: 'pull'
+                }
               }
             })
           }
         }
 
-        $deleteDataValue('component/content', id)
+        dataDeleteValue({ name: 'component/content', id })
       }
 
-      const children = $getDataValue('component/children', options)
+      const children = dataGetValue({ name: 'component/children', id })
 
       if (!children.isEmpty) {
-        $deleteDataValue('component/children', id, { stopPropagation: true })
+        dataDeleteValue({ name: 'component/children', id, stopPropagation: true })
 
         for (let i = 0; i < children.item.length; i++) {
           this.remove({ id: children.item[i] }, false)
         }
       }
 
-      $deleteDataValue('component/groups', id)
-      $deleteDataValue('component/nodes', id)
-      $deleteDataValue('component/parents', id)
-      $deleteDataValue('component/roots', id)
-      $deleteDataValue('component/items', id)
+      dataDeleteValue({ name: 'component/groups', id })
+      dataDeleteValue({ name: 'component/nodes', id })
+      dataDeleteValue({ name: 'component/parents', id })
+      dataDeleteValue({ name: 'component/roots', id })
+      dataDeleteValue({ name: 'component/items', id })
     },
     /**
      * Render children components
@@ -936,21 +995,19 @@ const component = createPlugin('component', {
       id,
       items
     }) {
-      const options = { id }
-
       if (!items) {
-        items = $getDataValue('component/children', options).item
+        items = dataGetValue({ name: 'component/children', id }).item
       }
 
-      const node = $getDataValue('component/nodes', options).item
-      const parentGroupId = $getDataValue('component/groups', options).item
+      const node = dataGetValue({ name: 'component/nodes', id }).item
+      const parentGroupId = dataGetValue({ name: 'component/groups', id }).item
       const children = []
       let childIsLazy = false
 
       for (let i = 0; i < items.length; i++) {
         const childId = items[i]
         const options = { id: childId }
-        const node = $getDataValue('component/nodes', options)
+        const node = dataGetValue({ name: 'component/nodes', id })
 
         if (!node.isEmpty) {
           children.push({
@@ -960,7 +1017,7 @@ const component = createPlugin('component', {
           continue
         }
 
-        const item = $getDataValue('component/items', options).item
+        const item = dataGetValue({ name: 'component/items', id }).item
 
         if (item.isTemplate) {
           const groupId = item.groupId || parentGroupId
@@ -996,13 +1053,13 @@ const component = createPlugin('component', {
       throw Error('No root element found: #' + rootId)
     }
 
-    dataUnsafeSetData('component/nodes', document.body, {
+    dataUnsafeSetValue('component/nodes', document.body, {
       id: 'body'
     })
 
     $component = component
 
-    const rootItem = $getDataValue('component/items', { id: 'root' })
+    const rootItem = dataGetValue({ name: 'component/items', id: 'root' })
     let element
 
     if (!rootItem.isEmpty) {
@@ -1018,7 +1075,8 @@ const component = createPlugin('component', {
     // @ts-ignore
     rootEl.replaceWith(element.item)
 
-    $addDataListener('component/children', {
+    dataAddListener({
+      name: 'component/children',
       on: 'delete',
       capture: 'all',
       handler: (data) => {
@@ -1030,27 +1088,33 @@ const component = createPlugin('component', {
       }
     })
 
-    $addDataListener('component/children', {
+    dataAddListener({
+      name: 'component/children',
       on: 'update',
       capture: 'all',
       handler: (data) => {
         const id = data.id
         const options = {
+          name: 'component/childrenBeforeUpdate',
           id,
           context: { id },
           payload: data.item
         }
 
-        $emit('component/childrenBeforeUpdate', options)
+        eventEmit(options)
 
         const render = this.renderChildren({ id, items: data.item })
 
         if (render instanceof Promise) {
-          render.then(() => [
-            $emit('component/childrenAfterUpdate', options)
-          ])
+          render.then(() => {
+            options.name = 'component/childrenAfterUpdate'
+
+            eventEmit(options)
+          })
         } else {
-          $emit('component/childrenAfterUpdate', options)
+          options.name = 'component/childrenAfterUpdate'
+
+          eventEmit(options)
         }
       }
     })

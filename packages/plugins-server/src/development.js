@@ -1,6 +1,6 @@
 import createPlugin from '@dooksa/create-plugin'
-import { $setRoute } from './http.js'
-import { $addDataListener, $deleteDataListener, dataGenerateId } from '@dooksa/plugins'
+import { httpSetRoute } from './http.js'
+import { dataAddListener, dataDeleteListener, dataGenerateId } from '@dooksa/plugins'
 
 export default createPlugin('development', {
   models: {
@@ -13,7 +13,8 @@ export default createPlugin('development', {
   },
   setup () {
     // sse rebuild notification
-    $setRoute('/esbuild', {
+    httpSetRoute({
+      path: '/esbuild',
       handlers: [(request, response) => {
         response.writeHead(200, {
           'Content-Type': 'text/event-stream',
@@ -25,7 +26,8 @@ export default createPlugin('development', {
         response.write('retry: 10000\n\n')
 
         const id = dataGenerateId()
-        $addDataListener('development/rebuildClient', {
+        dataAddListener({
+          name: 'development/rebuildClient',
           on: 'update',
           handlerId: id,
           handler: (data) => {
@@ -34,7 +36,8 @@ export default createPlugin('development', {
           }
         })
 
-        $addDataListener('development/rebuildServer', {
+        dataAddListener({
+          name: 'development/rebuildServer',
           on: 'update',
           handlerId: id,
           handler: (data) => {
@@ -45,7 +48,8 @@ export default createPlugin('development', {
 
         // Close the connection when the client disconnects
         request.on('close', () => {
-          $deleteDataListener('development/rebuildClient', {
+          dataDeleteListener({
+            name: 'development/rebuildClient',
             on: 'update',
             handlerId: id
           })

@@ -1,8 +1,8 @@
 import createPlugin from '@dooksa/create-plugin'
 import { createHash } from 'node:crypto'
-import { page, pageGetById, $getDataValue, $setDataValue } from '@dooksa/plugins'
-import { $seedDatabase, $setDatabaseValue } from './database.js'
-import { $setRoute } from './http.js'
+import { page, pageGetById, dataGetValue, dataSetValue } from '@dooksa/plugins'
+import { databaseSeed, databaseSetValue } from './database.js'
+import { httpSetRoute } from './http.js'
 import { hash } from '@dooksa/utils'
 
 function hashSHA (item) {
@@ -12,7 +12,7 @@ function hashSHA (item) {
 }
 
 function create ({ request, response }) {
-  const appString = $getDataValue('page/app').item
+  const appString = dataGetValue({ name: 'page/app' }).item
 
   response.set('Content-Type', 'text/html')
 
@@ -28,7 +28,7 @@ function create ({ request, response }) {
     csp = "script-src 'unsafe-inline'; style-src 'unsafe-inline';"
   }
 
-  const css = $getDataValue('page/css').item || ''
+  const css = dataGetValue({ name: 'page/css' }).item || ''
 
   response.set('Content-Security-Policy', csp)
 
@@ -55,13 +55,14 @@ const pageServer = createPlugin('page', {
     create
   },
   setup ({ app = '', css = '' } = {}) {
-    $seedDatabase('page-items')
-    $setDataValue('page/app', app)
-    $setDataValue('page/css', css)
+    databaseSeed('page-items')
+    dataSetValue({ name: 'page/app', value: app })
+    dataSetValue({ name: 'page/css', value: css })
 
     hash.init()
 
-    $setRoute('/*', {
+    httpSetRoute({
+      path: '/*',
       suffix: '',
       handlers: [
         (request, response, next) => {
@@ -83,12 +84,13 @@ const pageServer = createPlugin('page', {
       ]
     })
 
-    $setRoute('/', {
+    httpSetRoute({
+      path: '/',
       method: 'post',
       suffix: '',
       middleware: ['request/json', 'user/auth'],
       handlers: [(request, response) => {
-        const setData = $setDatabaseValue({
+        const setData = databaseSetValue({
           items: request.body,
           userId: request.userId
         })

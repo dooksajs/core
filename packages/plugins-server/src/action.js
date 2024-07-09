@@ -1,36 +1,52 @@
 import createPlugin from '@dooksa/create-plugin'
-import { action, $setDataValue } from '@dooksa/plugins'
-import { $seedDatabase, $getDatabaseValue, $deleteDatabaseValue } from './database.js'
-import { $setRoute } from './http.js'
+import { action, dataSetValue } from '@dooksa/plugins'
+import { databaseSeed, databaseGetValue, databaseDeleteValue } from './database.js'
+import { httpSetRoute } from './http.js'
 
 const serverAction = createPlugin('action', {
   models: { ...action.models },
   setup ({ actions }) {
-    $seedDatabase('action-items')
-    $seedDatabase('action-blocks')
-    $seedDatabase('action-sequences')
+    databaseSeed('action-items')
+    databaseSeed('action-blocks')
+    databaseSeed('action-sequences')
 
     if (actions) {
       for (let i = 0; i < actions.length; i++) {
         const action = actions[i]
 
-        $setDataValue('action/sequences', action.sequences, {
-          merge: true
+        dataSetValue({
+          name: 'action/sequences',
+          value: action.sequences,
+          options: {
+            merge: true
+          }
         })
 
-        $setDataValue('action/blocks', action.blocks, {
-          merge: true
+        dataSetValue({
+          name: 'action/blocks',
+          value: action.blocks,
+          options: {
+            merge: true
+          }
         })
 
-        $setDataValue('action/items', action.items, {
-          id: action.id
+        dataSetValue({
+          name: 'action/items',
+          value: action.items,
+          options: {
+            id: action.id
+          }
         })
 
         for (let i = 0; i < action.dependencies.length; i++) {
-          $setDataValue('action/dependencies', action.dependencies[i], {
-            id: action.id,
-            update: {
-              method: 'push'
+          dataSetValue({
+            name: 'action/dependencies',
+            value: action.dependencies[i],
+            options: {
+              id: action.id,
+              update: {
+                method: 'push'
+              }
             }
           })
         }
@@ -38,54 +54,60 @@ const serverAction = createPlugin('action', {
     }
 
     // route: get a list of action sequence entries
-    $setRoute('/action', {
+    httpSetRoute({
+      path: '/action',
       method: 'get',
       middleware: ['request/queryIsArray'],
-      handlers: [$getDatabaseValue(['action/items'])]
+      handlers: [databaseGetValue(['action/items'])]
     })
 
     // route: delete action sequence entries
-    $setRoute('/action', {
+    httpSetRoute({
+      path: '/action',
       method: 'delete',
       middleware: ['user/auth', 'request/queryIsArray'],
       handlers: [
-        $deleteDatabaseValue(['action/items'])
+        databaseDeleteValue(['action/items'])
       ]
     })
 
     // route: get a list of action
-    $setRoute('/action/sequence', {
+    httpSetRoute({
+      path: '/action/sequence',
       method: 'get',
       middleware: ['request/queryIsArray'],
       handlers: [
-        $getDatabaseValue(['action/sequences'])
+        databaseGetValue(['action/sequences'])
       ]
     })
 
     // route: delete action sequence
-    $setRoute('/action/sequence', {
+    httpSetRoute({
+      path: '/action/sequence',
       method: 'delete',
       middleware: ['user/auth', 'request/queryIsArray'],
       handlers: [
-        $deleteDatabaseValue(['action/sequences'])
+        databaseDeleteValue(['action/sequences'])
       ]
     })
 
     // route: get a list of action
-    $setRoute('/action/block', {
+    httpSetRoute({
+      path: '/action/block',
       method: 'get',
       middleware: ['request/queryIsArray'],
       handlers: [
-        $getDatabaseValue(['action/blocks'])
+        databaseGetValue(['action/blocks'])
       ]
     })
 
     // route: delete action
-    $setRoute('/action/block', {
+    httpSetRoute({
+      path: '/action/block',
       method: 'delete',
       middleware: ['user/auth', 'request/queryIsArray'],
       handlers: [
-        $deleteDatabaseValue(['action/blocks'])
+        databaseDeleteValue(['action/blocks'])
       ]
     })
   }

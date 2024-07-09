@@ -1,5 +1,5 @@
 import createPlugin from '@dooksa/create-plugin'
-import { $getDataValue } from './data.js'
+import { dataGetValue } from './data.js'
 
 const tokenProcess = {}
 const tokenValues = {
@@ -84,7 +84,7 @@ const token = createPlugin('token', {
       return ''
     },
     placeholder (args) {
-      const language = $getDataValue('metadata/currentLanguage')
+      const language = dataGetValue({ name: 'metadata/currentLanguage' })
       const placeholder = tokenValues[args[2]]
 
       if (placeholder[language.item]) {

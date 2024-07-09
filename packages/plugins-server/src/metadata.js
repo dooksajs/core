@@ -1,7 +1,7 @@
 import createPlugin from '@dooksa/create-plugin'
-import { $setDataValue, metadata } from '@dooksa/plugins'
-import { $seedDatabase, $getDatabaseValue } from './database.js'
-import { $setRoute } from './http.js'
+import { dataSetValue, metadata } from '@dooksa/plugins'
+import { databaseSeed, databaseGetValue } from './database.js'
+import { httpSetRoute } from './http.js'
 import { hash } from '@dooksa/utils'
 
 hash.init()
@@ -15,46 +15,67 @@ export default createPlugin('metadata', {
     ...metadata.models
   },
   setup ({ metadata }) {
-    $seedDatabase('metadata-currentLanguage')
-    $seedDatabase('metadata-languages')
+    databaseSeed('metadata-currentLanguage')
+    databaseSeed('metadata-languages')
 
     // set plugin metadata
     for (let i = 0; i < metadata.length; i++) {
       const data = metadata[i]
       const pluginContentId = createContentId(data.name)
 
-      $setDataValue('content/item', data.plugin, { id: pluginContentId })
-      $setDataValue('metadata/plugins', pluginContentId, { id: data.name })
+      dataSetValue({
+        name: 'content/item',
+        value: data.plugin,
+        options: {
+          id: pluginContentId
+        }
+      })
+      dataSetValue({
+        name: 'metadata/plugins',
+        value: pluginContentId,
+        options: {
+          id: data.name
+        }
+      })
 
       for (const key in data.actions) {
         if (Object.hasOwnProperty.call(data.actions, key)) {
           const contentId = createContentId(key)
 
-          $setDataValue('content/item', data.actions[key], { id: contentId })
-          $setDataValue('metadata/actions', {
-            values: contentId,
-            plugin: pluginContentId
-          }, { id: key })
+          dataSetValue({ name: 'content/item', value: data.actions[key], options: { id: contentId } })
+          dataSetValue({
+            name: 'metadata/actions',
+            value: {
+              values: contentId,
+              plugin: pluginContentId
+            },
+            options: {
+              id: key
+            }
+          })
         }
       }
     }
 
     // route: get a list of languages
-    $setRoute('/metadata/languages', {
+    httpSetRoute({
+      path: '/metadata/languages',
       handlers: [
-        $getDatabaseValue(['metadata/languages'])
+        databaseGetValue(['metadata/languages'])
       ]
     })
 
-    $setRoute('/metadata/plugins', {
+    httpSetRoute({
+      path: '/metadata/plugins',
       handlers: [
-        $getDatabaseValue(['metadata/plugins'])
+        databaseGetValue(['metadata/plugins'])
       ]
     })
 
-    $setRoute('/metadata/actions', {
+    httpSetRoute({
+      path: '/metadata/actions',
       handlers: [
-        $getDatabaseValue(['metadata/action'])
+        databaseGetValue(['metadata/action'])
       ]
     })
   }

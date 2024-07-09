@@ -1,5 +1,5 @@
 import createPlugin from '@dooksa/create-plugin'
-import { $getDataValue } from './data.js'
+import { dataGetValue } from './data.js'
 
 const content = createPlugin('content', {
   metadata: {
@@ -13,7 +13,7 @@ const content = createPlugin('content', {
     items: {
       type: 'collection',
       suffixId () {
-        return $getDataValue('metadata/currentLanguage').item
+        return dataGetValue({ name: 'metadata/currentLanguage' }).item
       },
       items: {
         type: 'object'
@@ -47,4 +47,3 @@ const content = createPlugin('content', {
 export { content }
 
 export default content
-

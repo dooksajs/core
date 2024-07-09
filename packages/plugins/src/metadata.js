@@ -1,5 +1,5 @@
 import createPlugin from '@dooksa/create-plugin'
-import { $setDataValue } from './data.js'
+import { dataSetValue } from './data.js'
 
 const metadata = createPlugin('metadata', {
   metadata: {
@@ -49,8 +49,8 @@ const metadata = createPlugin('metadata', {
    * @param {string[]} [param.languages=['en']]
    */
   setup ({ currentLanguage = 'en', languages = ['en'] } = {}) {
-    $setDataValue('metadata/currentLanguage', currentLanguage)
-    $setDataValue('metadata/languages', languages)
+    dataSetValue({ name: 'metadata/currentLanguage', value: currentLanguage })
+    dataSetValue({ name: 'metadata/languages', value: languages })
   }
 })
 

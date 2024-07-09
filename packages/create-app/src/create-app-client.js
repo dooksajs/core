@@ -1,4 +1,4 @@
-import { $setDataValue, lazyLoader } from '@dooksa/plugins'
+import { dataSetValue, lazyLoader } from '@dooksa/plugins'
 import appendPlugin from './append-plugin.js'
 
 function appendComponent (appComponents) {
@@ -146,9 +146,13 @@ function initialize (appSetup, appActions, appComponents, appDataModels, use) {
       const item = data.item[i]
 
       // need to check if any data requires an async plugin
-      $setDataValue(item.collection, item.item, {
-        id: item.id,
-        metadata: item.metadata
+      dataSetValue({
+        name: item.collection,
+        value: item.item,
+        options: {
+          id: item.id,
+          metadata: item.metadata
+        }
       })
     }
 

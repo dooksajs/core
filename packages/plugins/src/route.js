@@ -1,5 +1,5 @@
 import createPlugin from '@dooksa/create-plugin'
-import { $getDataValue } from './data.js'
+import { dataGetValue } from './data.js'
 import { hash } from '@dooksa/utils'
 
 const pathHash = {}
@@ -73,8 +73,8 @@ const route = createPlugin('route', {
       if (to === from) {
         return
       }
-      const fromSections = $getDataValue('page/items', { id: from })
-      const toSections = $getDataValue('page/items', { id: to })
+      const fromSections = dataGetValue({ name: 'page/items', id: from })
+      const toSections = dataGetValue({ name: 'page/items', id: to })
 
       if (toSections.isEmpty) {
         // get data

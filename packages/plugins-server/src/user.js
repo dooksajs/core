@@ -1,9 +1,9 @@
 import createPlugin from '@dooksa/create-plugin'
 import { randomBytes, scryptSync, timingSafeEqual } from 'crypto'
 import jwt from 'jsonwebtoken'
-import { $deleteDatabaseValue, $seedDatabase, $setDatabaseValue } from './database.js'
-import { $getDataValue, $setDataValue, dataGenerateId } from '@dooksa/plugins'
-import { $setRoute } from './http.js'
+import { databaseDeleteValue, databaseSeed, databaseSetValue } from './database.js'
+import { dataGetValue, dataGenerateId } from '@dooksa/plugins'
+import { httpSetRoute } from './http.js'
 import { middlewareSet } from './middleware.js'
 
 let cookieMaxAge = 43200
@@ -46,8 +46,8 @@ const user = createPlugin('user', {
       throw new Error('Invalid secret length; secret must be at 32 characters')
     }
 
-    $seedDatabase('user-items')
-    $seedDatabase('user-emails')
+    databaseSeed('user-items')
+    databaseSeed('user-emails')
 
     JWTSecret = secret
 
@@ -62,7 +62,8 @@ const user = createPlugin('user', {
     })
 
     // add routes
-    $setRoute('/user/register', {
+    httpSetRoute({
+      path: '/user/register',
       method: 'post',
       middleware: ['request/json'],
       handlers: [
@@ -71,7 +72,8 @@ const user = createPlugin('user', {
       ]
     })
 
-    $setRoute('/user/login', {
+    httpSetRoute({
+      path: '/user/login',
       method: 'post',
       middleware: ['request/json'],
       handlers: [
@@ -80,9 +82,10 @@ const user = createPlugin('user', {
       ]
     })
 
-    $setRoute('/user/delete', {
+    httpSetRoute({
+      path: '/user/delete',
       method: 'delete',
-      handlers: [$deleteDatabaseValue(['user/items'])]
+      handlers: [databaseDeleteValue(['user/items'])]
     })
   }
 })
@@ -179,7 +182,7 @@ function create (request, response) {
   const hash = hashPassword(request.body.password)
 
   // TODO: update snapshot
-  const email = $getDataValue('user/emails', { id: request.body.email })
+  const email = dataGetValue({ name: 'user/emails', id: request.body.email })
 
   if (!email.isEmpty) {
     return response.status(400).send({ message: 'Email must be unique' })
@@ -203,7 +206,7 @@ function create (request, response) {
     metadata
   }
 
-  const setData = $setDatabaseValue({
+  const setData = databaseSetValue({
     items: [
       emailItem, userItem
     ]
@@ -237,7 +240,7 @@ function login (request, response) {
   //   where.username = data.username
   // }
 
-  const userId = $getDataValue('user/emails', { id: data.email })
+  const userId = dataGetValue({ name: 'user/emails', id: data.email })
 
   if (userId.isEmpty) {
     return response.status(404).send({
@@ -245,7 +248,7 @@ function login (request, response) {
     })
   }
 
-  const user = $getDataValue('user/items', { id: userId.item })
+  const user = dataGetValue({ name: 'user/items', id: userId.item })
   const passwordMatch = matchPassword(data.password, user.item.password)
 
   if (!passwordMatch) {
