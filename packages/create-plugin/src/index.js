@@ -1,101 +1,178 @@
+
 /** @typedef {import('../../types.js').DataSchema} DataSchema */
 
+function mergeContextProperties (data, context) {
+  const result = {}
+
+  for (const key in data) {
+    if (Object.hasOwnProperty.call(data, key)) {
+      const element = data[key]
+
+      context[key] = element
+
+      if (typeof element === 'function') {
+        result[key] = element.bind(context)
+      } else {
+        result[key] = element
+      }
+    }
+  }
+
+  return result
+}
+
 /**
- * @template T
- * @template {Object} P
+ * Prefix action with plugin name
+ * @template {string} Name
+ * @template {string} Type
+ * @typedef {`${Name}${Capitalize<Type>}`} PluginExportAction
+ */
+
+/**
+ * @template This
+ * @template {Object} Params
  * @callback PluginSetup
- * @this {T}
- * @param {P} [param]
+ * @this {This}
+ * @param {Params} params
  */
 
 /**
- * @template {function} T
- * @typedef {Object.<string, T>} PluginData
+ * @typedef {Object} PluginActionContext
+ * @property {Object} [context]
+ * @property {Object} [payload]
+ * @property {Object} [blockValues]
  */
 
 /**
- * @template P
- * @template {Object.<string, (number|string|boolean|number[]|string[]|Object[]|Array[]|Object.<string,D>)>} D
- * @template {Object.<string, function>} A
- * @param {Object} plugin
- * @param {string} plugin.name
- * @param {D} [plugin.data]
- * @param {Object.<string, DataSchema>} [plugin.models]
- * @param {A} [plugin.methods]
- * @param {A} [plugin.actions]
- * @param {PluginSetup<D & A,P>} [plugin.setup] - Setup m
- * @returns {PluginResult}
+ * @template This
+ * @callback PluginAction
+ * @this {This}
+ * @param {Object} [params]
+ * @param {PluginActionContext} [context]
  */
-function createPlugin (plugin) {
-  /**
-   * @typedef {Object.<string,(D[keyof D]|A[keyof A])>} PluginContext
-   */
 
-  /** @type {PluginContext} */
+/**
+ * @typedef {Object} PluginMetadataItem
+ * @property {string} title
+ * @property {string} description
+ * @property {string} icon
+ */
+
+/**
+ * @typedef {Object} PluginMetadata
+ * @property {PluginMetadataItem} plugin
+ * @property {Object.<string, PluginMetadataItem>} [actions]
+ */
+
+/**
+ * @typedef {number|string|boolean} PluginDataTypes
+ * @typedef {Object.<string, PluginDataTypes|PluginDataTypes[]|Object.<string,PluginDataTypes>|Object.<string,PluginDataTypes>[]>} PluginData
+ */
+
+/**
+ * @template {PluginData} Data
+ * @template {Object.<string, Function>} Action
+ * @template {Object.<string, Function>} Method
+ * @typedef {Data & Action & Method} PluginContext
+ */
+
+/**
+ * @typedef {Object.<string, DataSchema>} PluginModal
+ */
+
+/**
+ * @template {Object.<string, Function>} Action
+ * @typedef {Object} PluginExport
+ * @property {string} name
+ * @property {Action} [actions]
+ * @property {PluginModal} [models]
+ * @property {Function} initialise
+ */
+
+/**
+ * @template {Object.<string, Function>} Action
+ * @template {Object.<string, Function>} Method
+ * @template {string} Name
+ * @template {PluginData} Data
+ * @param {Name} name
+ * @param {Object} data
+ * @param {PluginExport<Action>[]} [data.dependencies]
+ * @param {PluginMetadata} [data.metadata]
+ * @param {PluginModal} [data.models]
+ * @param {Data} [data.data] - Private data that can be used within actions/setup/methods
+ * @param {Method} [data.methods] - Private methods that can be used within actions/setup
+ * @param {Action} [data.actions] - Public methods (actions)
+ * @param {Object.<string, function>} [data.tokens]
+ * @param {PluginSetup<PluginContext<Data, Action, Method>, Object>} [data.setup] - Setup plugin
+ */
+function createPlugin (name, data) {
   const context = {}
-
   /**
-   * @typedef {Object} PluginResult
-   * @property {A} [actions]
-   * @property {Object.<string, DataSchema>} [models]
-   * @property {PluginSetup<D & A,P>} [setup]
-   * @property {string} name
+   * @typedef {Object} Plugin
+   * @property {PluginMetadata} [metadata]
+   * @property {Object} [tokens]
+   * @property {PluginSetup<PluginContext<Data, Action, Method>, Object>} [setup]
+   * @property {Object.<string, Function>} [actions]
    */
 
-  /** @type {PluginResult} */
-  const results = {
-    name: plugin.name,
-    actions: plugin.actions,
-    models: plugin.models,
-    setup: plugin.setup
+  /** @type {Plugin} */
+  const pluginData = {}
+
+  /**
+   * @type {PluginExport<Action>}
+   */
+  const plugin = {
+    name,
+    initialise () {
+      return pluginData
+    }
   }
 
-  if (plugin.data) {
-    for (const key in plugin.data) {
-      if (Object.hasOwnProperty.call(plugin.data, key)) {
-        const data = plugin.data[key]
+  if (data.data) {
+    mergeContextProperties(data.data, context)
+  }
 
-        context[key] = data
+  if (data.methods) {
+    mergeContextProperties(data.methods, context)
+  }
 
-        plugin.data[key] = data
+  if (data.models) {
+    plugin.models = data.models
+  }
+
+  if (data.tokens) {
+    pluginData.tokens = mergeContextProperties(data.tokens, context)
+  }
+
+  if (data.setup) {
+    pluginData.setup = data.setup.bind(context)
+  }
+
+
+
+  if (data.actions) {
+    pluginData.actions = {}
+    plugin.actions = {}
+
+    for (const key in data.actions) {
+      const context = { context: {}, payload: {}, blockValues: {} }
+
+      if (Object.hasOwnProperty.call(data.actions, key)) {
+        const action = data.actions[key].bind(context)
+
+        // app actions
+        pluginData.actions[name + '_' + key] = action
+
+        // export actions
+        plugin.actions[key] = (params) => {
+          return action(params, context)
+        }
       }
     }
   }
 
-  // assign action scope
-  if (plugin.methods) {
-    for (const key in plugin.methods) {
-      if (Object.hasOwnProperty.call(plugin.methods, key)) {
-        const method = plugin.methods[key]
 
-        context[key] = method
-
-        plugin.methods[key] = method.bind(context)
-      }
-    }
-  }
-
-
-  // assign action scope
-  if (plugin.actions) {
-    for (const key in plugin.actions) {
-      if (Object.hasOwnProperty.call(plugin.actions, key)) {
-        const action = plugin.actions[key]
-
-        context[key] = action
-
-        plugin.actions[key] = action.bind(context)
-        results.actions[key] = plugin.actions[key]
-      }
-    }
-  }
-
-  if (plugin.setup) {
-    plugin.setup = plugin.setup.bind(context)
-    results.setup = plugin.setup
-  }
-
-  return results
+  return plugin
 }
 
 export default createPlugin

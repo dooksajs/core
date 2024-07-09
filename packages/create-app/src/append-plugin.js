@@ -1,7 +1,8 @@
 import { parseSchema } from '@dooksa/utils'
 
 export default function appendPlugin (appPlugins, appSetup, appDataModels, appActions) {
-  const use = (plugin) => {
+  const use = (pluginData) => {
+    const plugin = pluginData.initialise()
     // check if plugin exists
     if (appPlugins.includes(plugin)) {
       const setup = plugin.setup
@@ -15,7 +16,9 @@ export default function appendPlugin (appPlugins, appSetup, appDataModels, appAc
 
     // store plugin
     appPlugins.push(plugin)
-    const { name, actions, models, dependencies, setup } = plugin
+    const { actions, dependencies, setup } = plugin
+    const name = pluginData.name
+    const models = pluginData.models
 
     if (setup) {
       appSetup.push({
@@ -32,11 +35,7 @@ export default function appendPlugin (appPlugins, appSetup, appDataModels, appAc
 
     // extract actions
     if (appActions && actions) {
-      for (const key in actions) {
-        if (Object.hasOwnProperty.call(actions, key)) {
-          appActions[name + '_' + key] = actions[key].bind(actions)
-        }
-      }
+      Object.assign(appActions, actions)
     }
 
     // extract data (need to parse and set default value)
@@ -69,7 +68,7 @@ export default function appendPlugin (appPlugins, appSetup, appDataModels, appAc
           }
 
           // data namespace
-          const collectionName = plugin.name + '/' + key
+          const collectionName = name + '/' + key
           const isCollection = schemaType === 'collection'
 
           appDataModels.values[collectionName] = dataValue()
