@@ -1,8 +1,7 @@
 import createPlugin from '@dooksa/create-plugin'
-import { deepClone } from '@dooksa/utils'
+import { fetchById } from './fetch.js'
+import { dataGetValue } from './data.js'
 import { operatorCompare, operatorEval } from './operator.js'
-import { dataGenerateId, $getDataValue, $setDataValue, $deleteDataValue } from './data.js'
-import { $fetchById } from './fetch.js'
 
 /**
  * @typedef {import('../../types.js').SetDataOptions} SetDataOptions
@@ -11,738 +10,256 @@ import { $fetchById } from './fetch.js'
  * @typedef {import('../../types.js').DataWhere} DataWhere
  */
 
+const dataTypes = {
+  object: () => ({}),
+  array: () => ([])
+}
+let $action = (name, param, context, callback) => {}
 
-let $action
-
-const processAction = {
-  /**
-   * Delete data value
-   * @param {Object} props
-   * @param {string} props.name - Collection name
-   * @param {string} props.id - document name
-   * @param {boolean} props.cascade - Delete related documents
-   * @param {boolean} props.listeners - Delete data listeners
-   * @returns
-   */
-  data_deleteDataValue (props) {
-    return $deleteDataValue(props.name, props.id, {
-      cascade: props.cascade,
-      listeners: props.listeners
-    })
-  },
-  /**
-   * Conditional statement
-   * @param {Object} props
-   * @param {Object[]} props.if
-   * @param {'=='|'!='|'>'|'>='|'<'|'<='|'!'|'%'|'++'|'--'|'-'|'+'|'*'|'**'|'!!'|'~'} props.if[].op
-   * @param {string|number} props.if[].from
-   * @param {string|number} props.if[].to
-   * @param {'&&'|'||'} props.if[].andOr
-   * @param {number[]} props.then
-   * @param {number[]} props.else
-   * @param {*} context
-   * @param {*} payload
-   * @param {*} lastBlock
-   * @param {*} blockProcess
-   * @param {*} sequenceProcess
-   * @returns {boolean}
-   */
-  action_ifElse (props, context, payload, lastBlock, blockProcess, sequenceProcess) {
-    let isValid
-
-    if (props.if.length > 1) {
-      const compareValues = []
-      /**
-       * @type {Object}
-       * @property {*} value_1
-       * @property {*} value_2
-       * @property {'&&'|'||'} op
-       */
-      let compareItem = {}
-
-      for (let i = 0; i < props.if.length; i++) {
-        const item = props.if[i]
-        const value = operatorEval({
-          name: item.op,
-          values: [item.from, item.to]
-        })
-
-        if (!compareItem.value_1) {
-          compareItem.value_1 = value
-        }
-
-        if (!compareItem.op) {
-          compareItem.op = item.andOr
-        }
-
-        if (!compareItem.value_2) {
-          if (!compareItem.op) {
-            throw new Error('Condition expects an operator')
-          }
-
-          compareItem.value_2 = value
-          compareValues.push(compareItem)
-          compareItem = {}
-        }
-      }
-
-      isValid = operatorCompare(compareValues)
-    } else {
-      const item = props.if[0]
-      isValid = operatorEval({
-        name: item.op,
-        values: [item.from, item.to]
-      })
-    }
-
-    // sequence conditional
-    let process = sequenceProcess
-
-    // action block conditional
-    if (!lastBlock) {
-      process = blockProcess
-    }
-
-    if (isValid) {
-      process.goto = props.then
-    } else {
-      process.goto = props.else
-    }
-
-    process.gotoIndex = 0
-    process.next = () => {
-      nextBranchProcess(sequenceProcess)
-    }
-
-    return isValid
-  },
-  /**
-   * Get action variable value
-   * @param {Object} props
-   * @param {string} props.id
-   * @param {GetValueQuery} props.query
-   */
-  action_getActionValue (props) {
-    const value = $getDataValue('action/values', { id: props.id })
-
-    if (!value.isEmpty) {
-      return getValue(value.item, props.query)
-    }
-  },
-  /**
-   * Get block value
-   * @param {Object} props
-   * @param {*} props.value
-   * @param {GetValueQuery} props.query
-   */
-  action_getBlockValue (props) {
-    if (props.value) {
-      return getValue(props.value, props.query)
-    }
-  },
-  /**
-   * Get data value
-   * @param {Object} props
-   * @param {string} props.name
-   * @param {GetDataQuery} [props.query]
-   */
-  data_getDataValue (props) {
-    const result = $getDataValue(props.name, props.query)
-
-    if (!result.isEmpty) {
-      return result.item
-    }
-  },
-  /**
-   * Get context value
-   * @param {GetValueQuery} props
-   * @param {Object} context
-   */
-  action_getContextValue (props, context) {
-    return getValue(context, props)
-  },
-  /**
-   * Get payload value
-   * @param {GetValueQuery} props
-   * @param {Object} context
-   * @param {*} payload
-   */
-  action_getPayloadValue (props, context, payload) {
-    return getValue(payload, props)
-  },
-  /**
-   * Get sequence result value
-   * @param {GetValueQuery} props
-   * @param {Object} sequenceProcess
-   * @param {Array} sequenceProcess.results
-   */
-  action_getSequenceValue (props, context, payload, lastBlock, blockProcess, sequenceProcess) {
-    return getValue(sequenceProcess.results, props)
-  },
-  /**
-   * Set action variable value
-   * @param {Object} props
-   * @param {string} props.id
-   * @param {Object[]} props.values
-   * @param {string} [props.values[].id]
-   * @param {string} [props.values[].prefixId]
-   * @param {string} [props.values[].suffixId]
-   * @param {*} props.values[].value
-   */
-  action_setActionValue (props) {
-    const values = {}
-    const id = props.id
-
-    for (let i = 0; i < props.values.length; i++) {
-      const item = props.values[i]
-      let valueId = item.id || dataGenerateId()
-
-      if (item.prefixId) {
-        valueId = item.prefixId + valueId
-      }
-
-      if (item.suffixId) {
-        valueId = valueId + item.suffixId
-      }
-
-      values[valueId] = item.value
-    }
-
-    return $setDataValue('action/values', values, {
-      id,
-      merge: true
-    })
-  },
-  /**
-   * Set data value
-   * @param {Object} props
-   * @param {string} props.name
-   * @param {*} props.value
-   * @param {SetDataOptions} props.options
-   */
-  data_setDataValue (props) {
-    return $setDataValue(props.name, props.value, props.options)
+function getValue (block, context, payload, blockValues) {
+  if (block.hasOwnProperty('blockValues')) {
+    return getBlockValues(block, context, payload, blockValues)
   }
+
+  const result = {
+    key: block.key,
+    value: block.value
+  }
+
+  if (block.hasOwnProperty('blockValue')) {
+    result.value = blockValues[block.blockValue]
+  }
+
+  return result
 }
 
-function nextProcess (process) {
-  const item = process.items[process.position++]
+function getBlockValues (block, context, payload, blockValues) {
+  const value = dataTypes[block.dataType]()
+  const blocks = block.blockValues
 
-  // go next
-  if (typeof item === 'function') {
-    item()
-
-    return true
-  }
-
-  if (process.resolve) {
-    process.resolve(process.results)
-  }
-
-  return false
-}
-
-function nextBranchProcess (process) {
-  process.position = process.goto[process.gotoIndex++]
-
-  const item = process.items[process.position]
-
-  // go next
-  if (typeof item === 'function') {
-    item()
-
-    return true
-  }
-
-  if (process.resolve) {
-    process.resolve(process.results)
-  }
-
-  return false
-}
-
-function processSequence (sequence, context, payload, blocks, expand, expandIndexes, position, sequenceProcess) {
-  const sequenceEnd = sequence.length - 1
-  const blockProcess = {
-    position: 0,
-    items: [],
-    results: []
-  }
-
-  // Add next block process
-  blockProcess.next = () => {
-    const isNext = nextProcess(blockProcess)
-
-    if (!isNext) {
-      // append final result to sequence process
-      sequenceProcess.results[position] = blockProcess.results[blockProcess.results.length - 1].item
-      sequenceProcess.next()
-    }
-  }
-
-  for (let i = 0; i < sequence.length; i++) {
-    const item = sequence[i]
-    const block = { id: item.id }
-    const blockOverwrites = blocks[i]
-
-    if (blockOverwrites) {
-      block.id = blockOverwrites.id
-      block.values = blockOverwrites.values
-    }
-
-    if (expand) {
-      const key = expandIndexes['action/blocks/' + block.id]
-      const blockData = expand[key]
-
-      if (blockData) {
-        block.item = blockData.item
-      }
-    }
-
-    const blockItem = () => {
-      const action = createAction(item, block, blockProcess.results)
-
-      // process local action
-      if (processAction[action.name]) {
-        const lastBlock = sequenceEnd === i
-
-        blockProcess.results.push({
-          item: processAction[action.name](action.params, context, payload, lastBlock, blockProcess, sequenceProcess),
-          path: item.path
-        })
-        blockProcess.next()
-      } else {
-        $action(action.name, action.params, {
-          onSuccess: (result) => {
-            blockProcess.results.push({
-              item: result,
-              path: item.path
-            })
-            blockProcess.next()
-          },
-          onError: (error) => {
-            /**
-             * @TODO Console error
-             * Until browser support cause @link https://caniuse.com/mdn-javascript_builtins_error_cause_displayed_in_console
-             */
-            if (navigator.userAgent.indexOf('Firefox') === -1) {
-              console.error(error)
-            }
-
-            throw new Error('Broken action block', { cause: error })
-          }
-        })
-      }
-    }
-
-    blockProcess.items.push(blockItem)
-  }
-
-  // run block process
-  blockProcess.next()
-}
-
-function createAction (item, block, data) {
-  if (!block.item) {
-    const blockData = $getDataValue('action/blocks', { id: item.id })
+  for (let i = 0; i < blocks.length; i++) {
+    const id = blocks[i]
+    const block = dataGetValue({ name: 'action/blocks', id })
 
     if (block.isEmpty) {
-      throw new Error('No action found: ' + item.id)
+      throw new Error('Action: block could not be found: ' + id)
     }
 
-    block.item = blockData.item
-  }
+    const result = getValue(block.item, context, payload, blockValues)
 
-  let deepCloned = false
-
-  if (block.values) {
-    block.item = deepClone({}, block.item)
-    deepCloned = true
-
-    for (let i = 0; i < block.values.length; i++) {
-      const keys = block.values[i].keys
-      const lastKey = keys.length - 1
-      let blockValue = block.item
-
-      for (let j = 0; j < lastKey; j++) {
-        const key = keys[j]
-
-        blockValue = blockValue[key]
-      }
-
-      blockValue[keys[lastKey]] = block.values[i].value
-    }
-  }
-
-  let params = block.item._$arg
-
-  if (item.children) {
-    if (!deepCloned) {
-      params = deepClone({}, block.item._$arg)
-    }
-
-    for (let i = 0; i < item.children.length; i++) {
-      const child = data[item.children[i]]
-      const lastChildIndex = child.path.length - 1
-
-      // node to traverse params and update value
-      let paramNode = params
-
-      for (let i = item.path.length + 1; i < lastChildIndex; i++) {
-        const path = child.path[i]
-
-        paramNode = paramNode[path]
-      }
-
-      paramNode[child.path[lastChildIndex]] = child.item
-    }
+    value[result.key] = result.value
+    blockValues[id] = value
   }
 
   return {
-    name: block.item._$a,
-    params
+    key: block.key,
+    value
   }
 }
 
-/**
- * @typedef {string[]|string} GetValueQuery
- */
+function processSequence (sequence, context, payload, blockValues = {}) {
+  const blockProcess = []
+  let blockProcessIndex = 0
 
-/**
- * Get result value
- * @private
- * @param {*} value
- * @param {GetValueQuery} [query] - Request to return a specific key value, dot notations are permitted
- * @returns {*[]|*}
- */
-function getValue (value, query) {
-  if (query == null) {
-    return value
-  }
+  for (let i = 0; i < sequence.length; i++) {
+    const blockSequence = dataGetValue({ name: 'action/blockSequences', id: sequence[i] }).item
 
-  // get single value
-  if (typeof query === 'string') {
-    const keys = query.split('.')
+    for (let j = 0; j < blockSequence[i].length; j++) {
+      const id = blockSequence[i][j]
+      const block = dataGetValue({ name: 'action/blocks', id })
 
-    if (keys.length === 1) {
-      return value[keys[0]]
-    }
+      if (block.isEmpty) {
+        throw new Error('Action: block could not be found: ' + id )
+      }
 
-    let result = value
+      if (block.item.method) {
+        blockProcess.push(() => {
+          const blockResult = getValue(block, context, payload, blockValues)
 
-    for (let i = 0; i < keys.length; i++) {
-      const key = keys[i]
+          blockProcessIndex++
 
-      if (result[key] != null) {
-        result = result[key]
-      } else {
-        /** @TODO Create custom ReferenceError */
-        throw new Error('Action get value was not defined: ' + key)
+          $action(block.item.method, blockResult.value, { context, payload, blockValues }, {
+            onSuccess: (result => {
+              blockValues[id] = result
+
+              if (blockProcess[blockProcessIndex]) {
+                blockProcess[blockProcessIndex]()
+              }
+            }),
+            onError: (error) => {
+              /**
+               * @TODO Console error
+               * Until browser support cause @link https://caniuse.com/mdn-javascript_builtins_error_cause_displayed_in_console
+               */
+              if (navigator.userAgent.indexOf('Firefox') === -1) {
+                console.error(error)
+              }
+
+              throw new Error('Broken action block', { cause: error })
+            }
+          })
+        })
       }
     }
 
-    return result
-  }
+    const nextProcess = blockProcess[blockProcessIndex]
 
-  const results = []
-
-  // get multiple values
-  for (let i = 0; i < query.length; i++) {
-    const keys = query[i].split('.')
-
-    if (query.length === 1 && keys.length === 1) {
-      return value[keys[0]]
+    if (typeof nextProcess === 'function') {
+      nextProcess()
     }
-
-    let result = value
-
-    for (let i = 0; i < keys.length; i++) {
-      const key = keys[i]
-
-      if (Object.hasOwnProperty.call(result, key)) {
-        result[key]
-      } else {
-        /** @TODO Create custom ReferenceError */
-        throw new Error('Action get value was not defined: ' + key)
-      }
-    }
-
-    results.push(result)
   }
-
-  return results
 }
 
 const action = createPlugin('action', {
-  metadata: {
-    plugin: {
-      title: 'Action',
-      description: 'Dooksa runtime interpreter',
-      icon: 'mdi:code-braces-box'
-    },
-    actions: {
-      dispatch: {
-        title: 'Dispatch',
-        description: 'Execute an action',
-        icon: 'mdi:play-box-multiple'
-      },
-      getActionValue: {
-        title: 'Get variable',
-        description: 'Retrieve variable value',
-        icon: 'mdi:application-variable'
-      },
-      getBlockValue: {
-        title: 'Get action block value',
-        description: 'Get value from returned action block value',
-        icon: 'mdi:variable-box'
-      },
-      getContextValue: {
-        title: 'Get context value',
-        description: 'Get value from current context values',
-        icon: 'mdi:variable'
-      },
-      getPayloadValue: {
-        title: 'Get payload value',
-        description: 'Get data from current event payload',
-        icon: 'mdi:input'
-      },
-      getSequenceValue: {
-        title: 'Get sequence value',
-        description: 'Get value from current sequence action',
-        icon: 'mdi:format-list-numbered'
-      },
-      ifElse: {
-        title: 'Condition',
-        description: 'The if...else statement executes a action',
-        icon: 'mdi:source-branch'
-      },
-      setActionValue: {
-        title: 'Set variable',
-        description: 'Store local variable',
-        icon: 'mdi:content-save-plus'
-      }
-    }
-  },
-  models: {
-    blocks: {
-      type: 'collection',
-      items: {
-        type: 'object'
-      }
-    },
-    items: {
-      type: 'collection',
-      items: {
-        type: 'array',
-        items: {
-          type: 'string',
-          relation: 'action/sequences'
-        }
-      }
-    },
-    sequences: {
-      type: 'collection',
-      items: {
-        type: 'array',
-        items: {
-          type: 'object',
-          properties: {
-            id: {
-              type: 'string',
-              relation: 'action/blocks'
-            },
-            path: {
-              type: 'array',
-              items: {
-                type: 'string'
-              }
-            },
-            children: {
-              type: 'array',
-              items: {
-                type: 'number'
-              }
-            }
-          }
-        }
-      }
-    },
-    values: {
-      type: 'collection',
-      items: {
-        type: 'object',
-        properties: {
-          _id: {
-            type: 'string',
-            relation: 'action/items'
-          }
-        }
-      }
-    },
-    dependencies: {
-      type: 'collection',
-      items: {
-        type: 'array',
-        items: {
-          type: 'string',
-          relation: 'action/items'
-        },
-        uniqueItems: true
-      }
-    }
-  },
   actions: {
-    /**
-     * Dispatch an action
-     * @param {Object} param
-     * @param {string} param.id - The Id of action
-     * @param {Object} param.context - The context of where the actions was emitted
-     * @param {Object} param.payload - The data to pass to the action
-     */
-    dispatch ({ id, context, payload }) {
+    dispatch ({ id }, { context, payload, blockValues }) {
       return new Promise((resolve, reject) => {
-        const actions = $getDataValue('action/items', {
+        const sequence = dataGetValue({
+          name: 'action/sequences',
           id,
           options: {
             expand: true
           }
         })
 
-        if (actions.isEmpty) {
-          return $fetchById({
-            collection: 'action',
+        // attempt to fetch action from backend
+        if (sequence.isEmpty) {
+          return fetchById({
+            collection: 'action/sequences',
             id: [id],
             expand: true
           })
             .then(data => {
               if (data.isEmpty) {
-                throw new Error('No action found: ' + id)
+                reject(new Error('No action found: ' + id))
               }
+
               this.dispatch({
-                id,
-                context,
-                payload
-              })
+                id
+              }, { context, payload, blockValues })
                 .then(result => resolve(result))
                 .then(error => reject(error))
             })
             .catch(error => reject(error))
         }
 
-        let blocks = {}
-
-        // fetch block modifiers
-        if (context.widgetId) {
-          blocks = $getDataValue('widget/actions', {
-            id: context.widgetId,
-            suffixId: context.widgetMode
-          })
-
-          if (!blocks.isEmpty && blocks.item[id]) {
-            blocks = blocks.item[id]
-          }
+        try {
+          processSequence(sequence.item, context, payload, blockValues)
+        } catch (error) {
+          reject(error)
         }
-
-        const sequenceProcess = {
-          position: 0,
-          items: [],
-          results: {},
-          resolve: resolve,
-          reject: reject
-        }
-        sequenceProcess.next = () => {
-          nextProcess(sequenceProcess)
-        }
-
-        for (let i = 0; i < actions.item.length; i++) {
-          const sequenceId = actions.item[i]
-          let sequence
-          let expand = []
-          let expandIndexes = {}
-
-          if (!actions.isExpandEmpty) {
-            const key = actions.expandIncluded['action/sequences/' + sequenceId]
-
-            sequence = actions.expand[key]
-
-            if (!sequence) {
-              throw new Error('Broken action sequence')
-            }
-
-            sequence = sequence.item
-            expand = actions.expand
-            expandIndexes = actions.expandIncluded
-          } else {
-            sequence = $getDataValue('action/sequences', { id: sequenceId })
-
-            if (sequence.isEmpty) {
-              throw new Error('Broken action sequence')
-            }
-
-            sequence = sequence.item
-          }
-
-          sequenceProcess.items.push(() => {
-            processSequence(
-              sequence,
-              context,
-              payload,
-              blocks[sequenceId] || {},
-              expand,
-              expandIndexes,
-              i,
-              sequenceProcess
-            )
-          })
-        }
-
-        sequenceProcess.next()
       })
-    }
-  },
-  actionSchemas: {
-    compare: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          value_1: {
-            $ref: 'primitives'
-          },
-          value_2: {
-            $ref: 'primitives'
-          },
-          op: {
-            enum: ['&&', '||']
+    },
+    /**
+     * Get action variable value
+     * @param {Object} props
+     * @param {string} props.id
+     * @param {GetDataQuery} props.query
+     */
+    getActionValue (props) {
+      const value = dataGetValue({ name: 'action/values', id: props.id })
+
+      if (!value.isEmpty) {
+        return getValue(value.item, props.query)
+      }
+    },
+    /**
+     * Get block value
+     * @param {Object} props
+     * @param {*} props.value
+     * @param {GetDataQuery} props.query
+     */
+    getBlockValue (props) {
+      if (props.value) {
+        return getValue(props.value, props.query)
+      }
+    },
+    /**
+     * Get context value
+     * @param {GetDataQuery} props
+     * @param {Object} ctx
+     */
+    getContextValue (props, ctx) {
+      return getValue(ctx.context, props)
+    },
+    /**
+     * Get payload value
+     * @param {GetDataQuery} props
+     */
+    getPayloadValue (props, { payload }) {
+      return getValue(payload, props)
+    },
+    /**
+     * Conditional statement
+     * @param {Object} props
+     * @param {Object} props.branch
+     * @param {Object[]} props.branch.if
+     * @param {'=='|'!='|'>'|'>='|'<'|'<='|'!'|'%'|'++'|'--'|'-'|'+'|'*'|'**'|'!!'|'~'} props.branch.if[].op
+     * @param {string|number} props.branch.if[].from
+     * @param {string|number} props.branch.if[].to
+     * @param {'&&'|'||'} props.branch.if[].andOr
+     * @param {number[]} props.branch.then
+     * @param {number[]} props.branch.else
+     * @param {*} props.context
+     * @param {*} props.payload
+     * @param {*} props.blockValues
+     */
+    ifElse ({ branch }, { context, payload, blockValues }) {
+      let isTruthy = false
+
+      if (branch.if.length > 1) {
+        const compareValues = []
+        /**
+         * @type {Object}
+         * @property {*} value_1
+         * @property {*} value_2
+         * @property {'&&'|'||'} op
+         */
+        let compareItem = {}
+
+        for (let i = 0; i < branch.if.length; i++) {
+          const item = branch.if[i]
+          const value = operatorEval({
+            name: item.op,
+            values: [item.from, item.to]
+          })
+
+          if (!compareItem.value_1) {
+            compareItem.value_1 = value
+          }
+
+          if (!compareItem.op) {
+            compareItem.op = item.andOr
+          }
+
+          if (!compareItem.value_2) {
+            if (!compareItem.op) {
+              throw new Error('Condition expects an operator')
+            }
+
+            compareItem.value_2 = value
+            compareValues.push(compareItem)
+            compareItem = {}
           }
         }
+
+        isTruthy = operatorCompare(compareValues)
+      } else {
+        const item = branch.if[0]
+
+        isTruthy = operatorEval({
+          name: item.op,
+          values: [item.from, item.to]
+        })
       }
-    },
-    eval: {
-      name: {
-        type: 'string'
-      },
-      values: {
-        oneOf: [
-          {
-            type: 'array',
-            items: {
-              type: 'string'
-            },
-            maxItems: 2
-          }
-        ]
+
+      if (isTruthy) {
+        return processSequence(branch.then, context, payload, blockValues)
       }
-    },
-    $defs: {
-      primitives: {
-        oneOf: [
-          { type: 'string' },
-          { type: 'number' },
-          { type: 'boolean' }
-        ]
-      }
+
+      return processSequence(branch.else, context, payload, blockValues)
     }
+
   },
   setup ({ action }) {
     $action = action
