@@ -121,6 +121,7 @@
 /**
  * Get data value query
  * @typedef {Object} GetDataQuery
+ * @property {string} name - Data collection name
  * @property {string} [id] - Data collection document id
  * @property {string} [prefixId] - Data collection document prefix
  * @property {string} [suffixId] - Data collection document suffix
