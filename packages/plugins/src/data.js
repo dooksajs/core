@@ -1839,14 +1839,14 @@ const data = createPlugin('data', {
   },
   /**
    * Setup database
-   * @param {Object} modal
+   * @param {Object} model
    */
-  setup (modal) {
-    database = modal.values
+  setup (model) {
+    database = model.values
 
     // setup plugin modals
-    for (let i = 0; i < modal.schema.length; i++) {
-      const schema = modal.schema[i]
+    for (let i = 0; i < model.schema.length; i++) {
+      const schema = model.schema[i]
       const entries = schema.entries
       const isCollection = schema.isCollection
       const name = schema.name
