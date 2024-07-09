@@ -90,9 +90,9 @@ function initialize (appSetup, appActions, appComponents, appDataModels, use) {
     })
 
     options.action = {
-      action: (name, params, callback = {}) => {
+      action: (name, params, context, callback = {}) => {
         actionWhenAvailable(name, () => {
-          const value = appActions[name](params)
+          const value = appActions[name](params, context)
           const onSuccess = callback.onSuccess
           const onError = callback.onError
 
