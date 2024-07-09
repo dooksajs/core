@@ -1230,9 +1230,9 @@ const data = createPlugin('data', {
      * Retrieve all entities from collection
      * @param {Object} param
      * @param {string} param.name - Name of collection
-     * @param {DataWhere[]} param.where
+     * @param {DataWhere[]} [param.where]
      */
-    find ({ name, where }) {
+    find ({ name, where = [] }) {
       const values = database[name]
 
       if (values == null) {
@@ -1250,13 +1250,11 @@ const data = createPlugin('data', {
             const dataResult = createDataValue(name, id)
             let isValid = true
 
-            if (where) {
-              for (let i = 0; i < where.length; i++) {
-                isValid = filterData(dataResult, where[i])
+            for (let i = 0; i < where.length; i++) {
+              isValid = filterData(dataResult, where[i])
 
-                if (!isValid) {
-                  continue valueLoop
-                }
+              if (!isValid) {
+                continue valueLoop
               }
             }
 
@@ -1279,15 +1277,13 @@ const data = createPlugin('data', {
       result.metadata = values._metadata
       result.previous = values._previous
 
-      if (where) {
-        for (let i = 0; i < where.length; i++) {
-          isValid = filterData(result, where[i])
+      for (let i = 0; i < where.length; i++) {
+        isValid = filterData(result, where[i])
 
-          if (!isValid) {
-            result.isEmpty = true
+        if (!isValid) {
+          result.isEmpty = true
 
-            return result
-          }
+          return result
         }
       }
 
