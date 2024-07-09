@@ -14,15 +14,6 @@ app.setup({
     database: {
       storage: './app/.ds_snapshots/development'
     }
-  },
-  loader: (filename) => {
-    return new Promise((resolve, reject) => {
-      import(`./app/plugins/${filename}.js`)
-        .then(({ default: plugin }) => {
-          resolve(plugin)
-        })
-        .catch(error => reject(error))
-    })
   }
 })
 
