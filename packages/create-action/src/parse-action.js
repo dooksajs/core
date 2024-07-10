@@ -1,14 +1,28 @@
 import { generateId } from '@dooksa/utils'
 
-function parseAction (data, methods, blocks = {}, blockValues, blockSequences = [], dataType, isHead = true) {
+/**
+ * Convert actions
+ * @param {*} data
+ * @param {*} methods
+ * @param {Object} [blocks={}]
+ * @param {string[]|string} [blockValues]
+ * @param {string[]} [blockSequences=[]]
+ * @param {string} [dataType]
+ * @param {Object[]} [$refs=[]]
+ * @param {boolean} [isHead]
+ */
+function parseAction (data, methods, blocks = {}, blockValues, blockSequences = [], dataType, $refs = [], isHead = true) {
   const results = []
 
   for (const key in data) {
     if (Object.hasOwnProperty.call(data, key)) {
       const item = data[key]
       const block = {}
-      const result = { isMethod: false, block }
-      let blockValue
+      const result = { block }
+
+      if (key === '$ref') {
+        result.$ref = item
+      }
 
       if (methods[key]) {
         result.isMethod = true
@@ -27,12 +41,10 @@ function parseAction (data, methods, blocks = {}, blockValues, blockSequences = 
         }
 
         dataType = block.dataType
-        blockValue = []
+        block.blockValues = []
 
-        block.blockValues = blockValue
-
-        parseAction(item, methods, blocks, blockValue, blockSequences, dataType, false)
-      } else {
+        parseAction(item, methods, blocks, block.blockValues, blockSequences, dataType, $refs, false)
+      } else if (item !== '$null') {
         block.value = item
       }
 
@@ -45,8 +57,12 @@ function parseAction (data, methods, blocks = {}, blockValues, blockSequences = 
     const item = results[i]
     const blockId = generateId()
 
+    if (item.hasOwnProperty('$ref')) {
+      $refs.push({ blockId, index: item.$ref })
+    }
+
     if (blockValues) {
-      if (dataType) {
+      if (dataType && Array.isArray(blockValues)) {
         blockValues.push(blockId)
       } else {
         blockValues = blockId
@@ -62,6 +78,7 @@ function parseAction (data, methods, blocks = {}, blockValues, blockSequences = 
 
   if (isHead) {
     return {
+      $refs,
       blocks,
       blockSequences
     }

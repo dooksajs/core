@@ -354,6 +354,20 @@ function createAction (id, data, dependencies = [], methods) {
 
     blockSequences[blockSequenceId] = action.blockSequences
     sequences.push(blockSequenceId)
+
+    for (let i = 0; i < action.$refs.length; i++) {
+      const $ref = action.$refs[i]
+
+      if ($ref.index > sequences.length) {
+        throw new Error('$ref is outside the block sequence')
+      }
+
+      const blockSequenceId = sequences[$ref.index]
+
+      blocks[$ref.blockId] = {
+        blockValue: blockSequences[blockSequenceId][0]
+      }
+    }
   }
 
   return {
