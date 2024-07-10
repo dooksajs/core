@@ -338,7 +338,7 @@ function createAction (id, data, dependencies = [], methods) {
   const blockSequences = {}
   let blocks = {}
 
-  if (!methods) {
+  if (methods) {
     Object.assign(methods, availableMethods)
   } else {
     methods = availableMethods
