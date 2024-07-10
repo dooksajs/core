@@ -6,8 +6,8 @@ import { httpSetRoute } from './http.js'
 const serverAction = createPlugin('action', {
   models: { ...action.models },
   setup ({ actions }) {
-    databaseSeed('action-items')
     databaseSeed('action-blocks')
+    databaseSeed('action-blockSequences')
     databaseSeed('action-sequences')
 
     if (actions) {
@@ -18,7 +18,7 @@ const serverAction = createPlugin('action', {
           name: 'action/sequences',
           value: action.sequences,
           options: {
-            merge: true
+            id: action.id
           }
         })
 
@@ -31,10 +31,10 @@ const serverAction = createPlugin('action', {
         })
 
         dataSetValue({
-          name: 'action/items',
-          value: action.items,
+          name: 'action/blockSequences',
+          value: action.blockSequences,
           options: {
-            id: action.id
+            merge: true
           }
         })
 
@@ -55,19 +55,19 @@ const serverAction = createPlugin('action', {
 
     // route: get a list of action sequence entries
     httpSetRoute({
-      path: '/action',
+      path: '/action/block-sequence',
       method: 'get',
       middleware: ['request/queryIsArray'],
-      handlers: [databaseGetValue(['action/items'])]
+      handlers: [databaseGetValue(['action/blockSequences'])]
     })
 
     // route: delete action sequence entries
     httpSetRoute({
-      path: '/action',
+      path: '/action/block-sequence',
       method: 'delete',
       middleware: ['user/auth', 'request/queryIsArray'],
       handlers: [
-        databaseDeleteValue(['action/items'])
+        databaseDeleteValue(['action/blockSequences'])
       ]
     })
 
