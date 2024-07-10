@@ -96,10 +96,6 @@ function initialize (appSetup, appActions, appComponents, appDataModels, use) {
           const onSuccess = callback.onSuccess
           const onError = callback.onError
 
-          if (!onSuccess || !onError) {
-            return value
-          }
-
           if (value instanceof Error) {
             onError(value)
           } else if (value instanceof Promise) {
