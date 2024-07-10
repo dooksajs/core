@@ -292,7 +292,7 @@ const action = createPlugin('action', {
         // attempt to fetch action from backend
         if (sequence.isEmpty) {
           return fetchById({
-            collection: 'action/sequences',
+            collection: 'action/sequence',
             id: [id],
             expand: true
           })
