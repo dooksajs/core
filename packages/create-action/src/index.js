@@ -1,21 +1,22 @@
 import parseAction from './parse-action.js'
 import availableMethods from './available-methods.js'
+import { generateId } from '@dooksa/utils'
 
 /**
  * @typedef {Object} Action
  * @property {ActionDispatch} [action_dispatch]
- * @property {DeleteDataValue} [data_deleteDataValue]
  * @property {ComponentRemove} [component_remove]
  * @property {ComponentRenderChildren} [component_renderChildren]
  * @property {EvalCondition} [action_ifElse]
  * @property {GetActionValue} [action_getActionValue]
+ * @property {SetActionValue} [action_setActionValue]
  * @property {GetBlockValue} [action_getBlockValue]
  * @property {Action|string[]|string} [action_getContextValue]
  * @property {Action|string[]|string} [action_getPayloadValue]
  * @property {Action|string[]|string} [action_getSequenceValue]
- * @property {GetDataValue} [data_getDataValue]
- * @property {SetActionValue} [action_setActionValue]
- * @property {SetDataValue} [data_setDataValue]
+ * @property {DataDeleteValue} [data_deleteValue]
+ * @property {DataGetValue} [data_getValue]
+ * @property {DataSetValue} [data_setValue]
  * @property {'$null'} [data_generateId]
  * @property {DataFind} [data_find]
  * @property {FetchGetAll} [fetch_getAll]
@@ -95,7 +96,7 @@ import availableMethods from './available-methods.js'
  */
 
 /**
- * @typedef {Object} DeleteDataValue
+ * @typedef {Object} DataDeleteValue
  * @property {Action|DataCollectionName} name
  * @property {Action|string} id
  * @property {Action|boolean} [cascade]
@@ -153,7 +154,7 @@ import availableMethods from './available-methods.js'
  */
 
 /**
- * @typedef {Object} GetDataValue
+ * @typedef {Object} DataGetValue
  * @property {Action|DataCollectionName} name
  * @property {Object} [query]
  * @property {Action|string} [query.id]
@@ -176,7 +177,7 @@ import availableMethods from './available-methods.js'
  */
 
 /**
- * @typedef {Object} SetDataValueOptions
+ * @typedef {Object} DataSetValueOptions
  * @property {Action|string} id
  * @property {Action|boolean} [stopPropagation]
  * @property {Action|boolean} [merge]
@@ -186,10 +187,10 @@ import availableMethods from './available-methods.js'
  */
 
 /**
- * @typedef {Object} SetDataValue
+ * @typedef {Object} DataSetValue
  * @property {Action|DataCollectionName} name
  * @property {Action|Action[]|string|number|boolean} value
- * @property {SetDataValueOptions} [options]
+ * @property {DataSetValueOptions} [options]
  */
 
 /**
@@ -330,28 +331,36 @@ import availableMethods from './available-methods.js'
  * @param {string} id
  * @param {Action[]} data
  * @param {string[]} [dependencies]
- * @param {Object.<string, boolean>} [availableActions=availableMethods] - Allowed actions
+ * @param {Object.<string, boolean>} [methods] - Allowed actions
  */
-function createAction (id, data, dependencies = [], availableActions = availableMethods) {
-  const items = []
+function createAction (id, data, dependencies = [], methods) {
+  const sequences = []
+  const blockSequences = {}
   let blocks = {}
-  let sequences = {}
 
+  if (!methods) {
+    Object.assign(methods, availableMethods)
+  } else {
+    methods = availableMethods
+  }
 
   for (let i = 0; i < data.length; i++) {
     const item = data[i]
-    const action = parseAction(item, availableActions)
+    const action = parseAction(item, methods)
 
-    items.push(action.sequenceId)
     blocks = Object.assign(blocks, action.blocks)
-    sequences[action.sequenceId] = action.sequences
+
+    const blockSequenceId = generateId()
+
+    blockSequences[blockSequenceId] = action.blockSequences
+    sequences.push(blockSequenceId)
   }
 
   return {
     id,
     blocks,
+    blockSequences,
     sequences,
-    items,
     dependencies
   }
 }
