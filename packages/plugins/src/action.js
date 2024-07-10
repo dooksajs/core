@@ -111,6 +111,124 @@ function processSequence (sequence, context, payload, blockValues = {}) {
 }
 
 const action = createPlugin('action', {
+  models: {
+    blocks: {
+      type: 'collection',
+      items: {
+        type: 'object',
+        properties: {
+          method: {
+            type: 'string'
+          },
+          dataType: {
+            type: 'string'
+          },
+          blockValue: {
+            type: 'string',
+            relation: 'action/blocks'
+          },
+          blockValues: {
+            type: 'array',
+            items: {
+              type: 'string',
+              relation: 'action/blocks'
+            }
+          },
+          key: {
+            type: 'string'
+          }
+        }
+      }
+    },
+    blockSequences: {
+      type: 'collection',
+      items: {
+        type: 'array',
+        items: {
+          type: 'string',
+          relation: 'action/blocks'
+        }
+      }
+    },
+    dependencies: {
+      type: 'collection',
+      items: {
+        type: 'array',
+        items: {
+          type: 'string',
+          relation: 'action/items'
+        },
+        uniqueItems: true
+      }
+    },
+    sequences: {
+      type: 'collection',
+      items: {
+        type: 'array',
+        items: {
+          type: 'string',
+          relation: 'action/blockSequences'
+        }
+      }
+    },
+    values: {
+      type: 'collection',
+      items: {
+        type: 'object',
+        properties: {
+          _id: {
+            type: 'string',
+            relation: 'action/blocks'
+          }
+        }
+      }
+    },
+    templates: {
+      type: 'collection',
+      items: {
+        type: 'object',
+        properties: {
+          blocks: {
+            type: 'object',
+            properties: {
+              method: {
+                type: 'string'
+              },
+              dataType: {
+                type: 'string'
+              },
+              blockValue: {
+                type: 'string',
+                relation: 'action/blocks'
+              },
+              blockValues: {
+                type: 'array',
+                items: {
+                  type: 'string',
+                  relation: 'action/blocks'
+                }
+              },
+              key: {
+                type: 'string'
+              }
+            }
+          },
+          blockSequences: {
+            type: 'array',
+            items: {
+              type: 'string'
+            }
+          },
+          sequences: {
+            type: 'array',
+            items: {
+              type: 'string'
+            }
+          }
+        }
+      }
+    }
+  },
   actions: {
     dispatch ({ id }, { context, payload, blockValues }) {
       return new Promise((resolve, reject) => {
