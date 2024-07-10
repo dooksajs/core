@@ -31,9 +31,81 @@ importers:
         version: link:../create-app
       '@dooksa/plugins':
         specifier: workspace:^
-        version: link:../app-plugins
+        version: link:../plugins
 
-  packages/app-plugins:
+  packages/app-server:
+    dependencies:
+      '@dooksa/actions':
+        specifier: workspace:^
+        version: link:../actions
+      '@dooksa/create-app':
+        specifier: workspace:^
+        version: link:../create-app
+      '@dooksa/plugins':
+        specifier: workspace:^
+        version: link:../plugins
+      '@dooksa/plugins-server':
+        specifier: workspace:^
+        version: link:../plugins-server
+
+  packages/components:
+    dependencies:
+      '@dooksa/create-component':
+        specifier: workspace:^
+        version: link:../create-component
+      iconify-icon:
+        specifier: ^2.1.0
+        version: 2.1.0
+
+  packages/create-action:
+    dependencies:
+      '@dooksa/utils':
+        specifier: workspace:^
+        version: link:../utils
+
+  packages/create-app:
+    dependencies:
+      '@dooksa/plugins':
+        specifier: workspace:^
+        version: link:../plugins
+      '@dooksa/utils':
+        specifier: workspace:^
+        version: link:../utils
+
+  packages/create-component:
+    dependencies:
+      '@dooksa/utils':
+        specifier: workspace:^
+        version: link:../utils
+
+  packages/create-plugin: {}
+
+  packages/playground:
+    dependencies:
+      '@dooksa/client':
+        specifier: workspace:^
+        version: link:../app-client
+      '@dooksa/plugins':
+        specifier: workspace:^
+        version: link:../plugins
+      '@dooksa/plugins-server':
+        specifier: workspace:^
+        version: link:../plugins-server
+      '@dooksa/server':
+        specifier: workspace:^
+        version: link:../app-server
+    devDependencies:
+      chalk:
+        specifier: ^5.3.0
+        version: 5.3.0
+      chokidar:
+        specifier: ^3.6.0
+        version: 3.6.0
+      esbuild:
+        specifier: ^0.21.4
+        version: 0.21.4
+
+  packages/plugins:
     dependencies:
       '@dooksa/components':
         specifier: workspace:^
@@ -57,22 +129,7 @@ importers:
         specifier: ^2.1.0
         version: 2.1.0
 
-  packages/app-server:
-    dependencies:
-      '@dooksa/actions':
-        specifier: workspace:^
-        version: link:../actions
-      '@dooksa/create-app':
-        specifier: workspace:^
-        version: link:../create-app
-      '@dooksa/plugins':
-        specifier: workspace:^
-        version: link:../app-plugins
-      '@dooksa/server-plugins':
-        specifier: workspace:^
-        version: link:../app-server-plugins
-
-  packages/app-server-plugins:
+  packages/plugins-server:
     dependencies:
       '@dooksa/components':
         specifier: workspace:^
@@ -82,7 +139,7 @@ importers:
         version: link:../create-plugin
       '@dooksa/plugins':
         specifier: workspace:^
-        version: link:../app-plugins
+        version: link:../plugins
       '@dooksa/theme':
         specifier: workspace:^
         version: link:../theme
@@ -104,63 +161,6 @@ importers:
       jsonwebtoken:
         specifier: ^9.0.2
         version: 9.0.2
-
-  packages/components:
-    dependencies:
-      '@dooksa/create-component':
-        specifier: workspace:^
-        version: link:../create-component
-      iconify-icon:
-        specifier: ^2.1.0
-        version: 2.1.0
-
-  packages/create-action:
-    dependencies:
-      '@dooksa/utils':
-        specifier: workspace:^
-        version: link:../utils
-
-  packages/create-app:
-    dependencies:
-      '@dooksa/plugins':
-        specifier: workspace:^
-        version: link:../app-plugins
-      '@dooksa/utils':
-        specifier: workspace:^
-        version: link:../utils
-
-  packages/create-component:
-    dependencies:
-      '@dooksa/utils':
-        specifier: workspace:^
-        version: link:../utils
-
-  packages/create-plugin: {}
-
-  packages/playground:
-    dependencies:
-      '@dooksa/client':
-        specifier: workspace:^
-        version: link:../app-client
-      '@dooksa/plugins':
-        specifier: workspace:^
-        version: link:../app-plugins
-      '@dooksa/server':
-        specifier: workspace:^
-        version: link:../app-server
-      '@dooksa/server-plugins':
-        specifier: workspace:^
-        version: link:../app-server-plugins
-    devDependencies:
-      chalk:
-        specifier: ^5.3.0
-        version: 5.3.0
-      chokidar:
-        specifier: ^3.6.0
-        version: 3.6.0
-      esbuild:
-        specifier: ^0.21.4
-        version: 0.21.4
 
   packages/theme:
     dependencies:
