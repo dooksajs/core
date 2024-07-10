@@ -229,6 +229,55 @@ const action = createPlugin('action', {
       }
     }
   },
+  metadata: {
+    plugin: {
+      title: 'Action',
+      description: 'Dooksa runtime interpreter',
+      icon: 'mdi:code-braces-box'
+    },
+    actions: {
+      dispatch: {
+        title: 'Dispatch',
+        description: 'Execute an action',
+        icon: 'mdi:play-box-multiple'
+      },
+      getActionValue: {
+        title: 'Get variable',
+        description: 'Retrieve variable value',
+        icon: 'mdi:application-variable'
+      },
+      getBlockValue: {
+        title: 'Get action block value',
+        description: 'Get value from returned action block value',
+        icon: 'mdi:variable-box'
+      },
+      getContextValue: {
+        title: 'Get context value',
+        description: 'Get value from current context values',
+        icon: 'mdi:variable'
+      },
+      getPayloadValue: {
+        title: 'Get payload value',
+        description: 'Get data from current event payload',
+        icon: 'mdi:input'
+      },
+      getSequenceValue: {
+        title: 'Get sequence value',
+        description: 'Get value from current sequence action',
+        icon: 'mdi:format-list-numbered'
+      },
+      ifElse: {
+        title: 'Condition',
+        description: 'The if...else statement executes a action',
+        icon: 'mdi:source-branch'
+      },
+      setActionValue: {
+        title: 'Set variable',
+        description: 'Store local variable',
+        icon: 'mdi:content-save-plus'
+      }
+    }
+  },
   actions: {
     dispatch ({ id }, { context, payload, blockValues }) {
       return new Promise((resolve, reject) => {
