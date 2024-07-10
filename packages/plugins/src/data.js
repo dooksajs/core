@@ -1,7 +1,7 @@
 import createPlugin from '@dooksa/create-plugin'
 import { operatorEval, listSplice } from './index.js'
 import { DataSchemaException, DataValueException } from './utils/Error.js'
-import { deepClone, isEnvServer, uuid } from '@dooksa/utils'
+import { deepClone, generateId, isEnvServer } from '@dooksa/utils'
 import { cloneDataValue, createDataValue } from './utils/createDataValue.js'
 
 /**
@@ -1179,14 +1179,6 @@ function validateSchema (data, path, source) {
       setRelation(data.collection, data.id, schema.options.relation, source)
     }
   }
-}
-
-/**
- * Generate a unique id
- * @returns {string}
- */
-function generateId () {
-  return '_' + uuid() + '_'
 }
 
 const data = createPlugin('data', {

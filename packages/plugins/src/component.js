@@ -1,7 +1,6 @@
 import createPlugin from '@dooksa/create-plugin'
 import {
   dataUnsafeSetValue,
-  dataGenerateId,
   dataGetValue,
   dataAddListener,
   dataSetValue,
@@ -11,6 +10,7 @@ import {
 import { eventEmit } from './event.js'
 import { componentOptions } from '@dooksa/create-component'
 import { removeAffix } from './utils/createDataValue.js'
+import { generateId } from '@dooksa/utils'
 
 /**
  * @typedef {import('@dooksa/create-component').Component} Component
@@ -411,7 +411,7 @@ function createNode (id, item) {
  * @param {string} [param.groupId]
  */
 function createTemplate ({
-  id = dataGenerateId(),
+  id = generateId(),
   template,
   parentId,
   rootId = id,

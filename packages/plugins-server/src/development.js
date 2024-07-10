@@ -1,6 +1,7 @@
 import createPlugin from '@dooksa/create-plugin'
 import { httpSetRoute } from './http.js'
-import { dataAddListener, dataDeleteListener, dataGenerateId } from '@dooksa/plugins'
+import { dataAddListener, dataDeleteListener } from '@dooksa/plugins'
+import { generateId } from '@dooksa/utils'
 
 export default createPlugin('development', {
   models: {
@@ -25,7 +26,7 @@ export default createPlugin('development', {
         // Retry connect every 10s
         response.write('retry: 10000\n\n')
 
-        const id = dataGenerateId()
+        const id = generateId()
         dataAddListener({
           name: 'development/rebuildClient',
           on: 'update',

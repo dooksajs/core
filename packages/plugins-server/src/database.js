@@ -2,7 +2,8 @@ import createPlugin from '@dooksa/create-plugin'
 import { existsSync, rename, readFile } from 'node:fs'
 import { writeFile } from 'fs/promises'
 import { resolve, join } from 'path'
-import { dataGetValue, dataSetValue, dataDeleteValue, dataGenerateId, dataFind } from '@dooksa/plugins'
+import { dataGetValue, dataSetValue, dataDeleteValue, dataFind } from '@dooksa/plugins'
+import { generateId } from '@dooksa/utils'
 
 /**
  * @typedef {import('../../types.js').DataWhere} DataWhere
@@ -59,7 +60,7 @@ function setSnapshot (collection) {
     }
 
     const timestamp = Date.now()
-    const uuid = dataGenerateId()
+    const uuid = generateId
     const fileName = collection.replace(/[A-Z]/g, letter => '-' + letter.toLowerCase()).replace('/', '-')
     const tempFilePath = join(snapshotPath, fileName + uuid + '.json')
     const filePath = join(snapshotPath, fileName + '.json')

@@ -1,6 +1,6 @@
 import deepClone from './deep-clone.js'
 import hash from './hash.js'
-import uuid from './uuid.js'
+import generateId from './generateId.js'
 import resourceLoader from './resource-loader.js'
 import sortObject from './sort-object.js'
 import objectHash from './object-hash.js'
@@ -11,7 +11,7 @@ export {
   parseSchema,
   isEnvServer,
   resourceLoader,
-  uuid,
+  generateId,
   hash,
   objectHash,
   deepClone,

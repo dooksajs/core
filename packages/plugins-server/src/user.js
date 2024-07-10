@@ -2,9 +2,10 @@ import createPlugin from '@dooksa/create-plugin'
 import { randomBytes, scryptSync, timingSafeEqual } from 'crypto'
 import jwt from 'jsonwebtoken'
 import { databaseDeleteValue, databaseSeed, databaseSetValue } from './database.js'
-import { dataGetValue, dataGenerateId } from '@dooksa/plugins'
+import { dataGetValue } from '@dooksa/plugins'
 import { httpSetRoute } from './http.js'
 import { middlewareSet } from './middleware.js'
+import { generateId } from '@dooksa/utils'
 
 let cookieMaxAge = 43200
 let JWTAlgorithm = 'HS256'
@@ -188,7 +189,7 @@ function create (request, response) {
     return response.status(400).send({ message: 'Email must be unique' })
   }
 
-  const userId = dataGenerateId
+  const userId = generateId
   const metadata = { userId }
   const emailItem = {
     collection: 'user/emails',
