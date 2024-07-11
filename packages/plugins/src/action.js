@@ -279,7 +279,7 @@ const action = createPlugin('action', {
     }
   },
   actions: {
-    dispatch ({ id }, { context, payload, blockValues }) {
+    dispatch ({ id, context, payload }, { blockValues }) {
       return new Promise((resolve, reject) => {
         const sequence = dataGetValue({
           name: 'action/sequences',
@@ -301,9 +301,7 @@ const action = createPlugin('action', {
                 reject(new Error('No action found: ' + id))
               }
 
-              this.dispatch({
-                id
-              }, { context, payload, blockValues })
+              this.dispatch({ id, context, payload })
                 .then(result => resolve(result))
                 .then(error => reject(error))
             })
