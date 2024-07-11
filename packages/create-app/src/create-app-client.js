@@ -3,6 +3,10 @@ import appendPlugin from './append-plugin.js'
 
 function appendComponent (appComponents) {
   return (component) => {
+    if (appComponents[component.id]) {
+      throw new Error('Component already exists: ' + component.id)
+    }
+
     appComponents[component.id] = component
   }
 }
