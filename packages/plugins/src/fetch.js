@@ -270,7 +270,7 @@ const $fetch = createPlugin('fetch', {
    * @param {Object} param
    * @param {string} [param.hostname='']
    */
-  setup ({ hostname }) {
+  setup ({ hostname = '' } = {}) {
     _hostname = hostname + _hostname
   }
 })
