@@ -1289,36 +1289,37 @@ const data = createPlugin('data', {
     },
     /**
      * Set data without schema validation
-     * @param {string} name
-     * @param {*} data
-     * @param {Object} options
-     * @param {string} options.id
+     * @param {Object} param
+     * @param {string} param.name
+     * @param {*} param.value
+     * @param {Object} [param.options]
+     * @param {string} param.options.id
      * @returns {DataValue}
      */
-    unsafeSetValue (name, data, options) {
+    unsafeSetValue ({ name, value, options }) {
       const result = createDataValue(name, options.id)
 
       if (options) {
         if (options.id == null) {
           // update collection
-          database[name] = data
+          database[name] = value
 
-          result.item = data
+          result.item = value
         } else {
-          result.item = data._item || data
+          result.item = value._item || value
 
-          const value = database[name][options.id] || {}
+          const data = database[name][options.id] || {}
 
           database[name][options.id] = {
-            _item: data._item || data,
-            _metadata: data._metadata || value._metadata || {}
+            _item: value._item || value,
+            _metadata: value._metadata || data._metadata || {}
           }
         }
       } else {
         // update collection
-        database[name] = data
+        database[name] = value
 
-        result.item = data
+        result.item = value
       }
 
       fireDataListeners(name, 'update', result)

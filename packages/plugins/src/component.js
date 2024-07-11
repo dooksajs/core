@@ -188,7 +188,7 @@ function createNode (id, item) {
   }
 
   node.dooksaComponentId = id
-  dataUnsafeSetValue('component/nodes', node, { id })
+  dataUnsafeSetValue({ name: 'component/nodes', value: node, options: { id } })
 
   const properties = dataGetValue({ name: 'component/properties', id }).item || template.properties
 
@@ -298,7 +298,7 @@ function createNode (id, item) {
           node.addEventListener(nodeEvent[1], handler)
 
           // store handler
-          dataUnsafeSetValue('event/handlers', handler, { id })
+          dataUnsafeSetValue({ name: 'event/handlers', value: handler, options: { id } })
           // handle removal
           dataAddListener({
             name: 'event/handlers',
@@ -445,7 +445,7 @@ function createTemplate ({
 
   // store node
   node.dooksaComponentId = id
-  dataUnsafeSetValue('component/nodes', node, options)
+  dataUnsafeSetValue({ name: 'component/nodes', value: node, options })
 
   // set core component values
   dataSetValue({ name: 'component/groups', value: groupId, options })
@@ -603,7 +603,7 @@ function createTemplate ({
           node.addEventListener(nodeEvent[1], handler)
 
           // store handler
-          dataUnsafeSetValue('event/handlers', handler, options)
+          dataUnsafeSetValue({ name: 'event/handlers', value: handler, options })
           // handle removal
           dataAddListener({
             name: 'event/handlers',
@@ -1053,8 +1053,12 @@ const component = createPlugin('component', {
       throw Error('No root element found: #' + rootId)
     }
 
-    dataUnsafeSetValue('component/nodes', document.body, {
-      id: 'body'
+    dataUnsafeSetValue({
+      name: 'component/nodes',
+      value: document.body,
+      options: {
+        id: 'body'
+      }
     })
 
     $component = component
