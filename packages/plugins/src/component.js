@@ -1006,8 +1006,7 @@ const component = createPlugin('component', {
 
       for (let i = 0; i < items.length; i++) {
         const childId = items[i]
-        const options = { id: childId }
-        const node = dataGetValue({ name: 'component/nodes', id })
+        const node = dataGetValue({ name: 'component/nodes', id: childId })
 
         if (!node.isEmpty) {
           children.push({
@@ -1017,7 +1016,7 @@ const component = createPlugin('component', {
           continue
         }
 
-        const item = dataGetValue({ name: 'component/items', id }).item
+        const item = dataGetValue({ name: 'component/items', id: childId }).item
 
         if (item.isTemplate) {
           const groupId = item.groupId || parentGroupId
