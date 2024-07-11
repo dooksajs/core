@@ -155,17 +155,18 @@ function createPlugin (name, data) {
     plugin.actions = {}
 
     for (const key in data.actions) {
-      const context = { context: {}, payload: {}, blockValues: {} }
+      const actionContext = { context: {}, payload: {}, blockValues: {} }
 
       if (Object.hasOwnProperty.call(data.actions, key)) {
         const action = data.actions[key].bind(context)
 
+        context[key] = action
         // app actions
         pluginData.actions[name + '_' + key] = action
 
         // export actions
         plugin.actions[key] = (params) => {
-          return action(params, context)
+          return action(params, actionContext)
         }
       }
     }
