@@ -41,7 +41,7 @@ const event = createPlugin('event', {
       const listeners = dataGetValue({
         name: 'event/listeners',
         id,
-        suffixId: name
+        prefixId: name
       })
 
       if (!listeners.isEmpty) {
