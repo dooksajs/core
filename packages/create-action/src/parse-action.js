@@ -5,13 +5,14 @@ import { generateId } from '@dooksa/utils'
  * @param {*} data
  * @param {*} methods
  * @param {Object} [blocks={}]
- * @param {string[]|string} [blockValues]
+ * @param {Object} [parentBlock]
  * @param {string[]} [blockSequences=[]]
  * @param {string} [dataType]
  * @param {Object[]} [$refs=[]]
+ * @param {Object[]} [$sequenceRefs=[]]
  * @param {boolean} [isHead]
  */
-function parseAction (data, methods, blocks = {}, blockValues, blockSequences = [], dataType, $refs = [], isHead = true) {
+function parseAction (data, methods, blocks = {}, parentBlock, blockSequences = [], dataType, $sequenceRefs = [], $refs = [], isHead = true) {
   const results = []
 
   for (const key in data) {
@@ -20,8 +21,23 @@ function parseAction (data, methods, blocks = {}, blockValues, blockSequences = 
       const block = {}
       const result = { block }
 
+
       if (key === '$ref') {
-        result.$ref = item
+        parentBlock.$ref = item
+
+        delete parentBlock.dataType
+        delete parentBlock.blockValues
+
+        break
+      }
+
+      if (key === '$sequenceRef') {
+        parentBlock.$sequenceRef = item
+
+        delete parentBlock.dataType
+        delete parentBlock.blockValues
+
+        break
       }
 
       if (methods[key]) {
@@ -34,22 +50,28 @@ function parseAction (data, methods, blocks = {}, blockValues, blockSequences = 
       }
 
       if (typeof item === 'object') {
-        block.dataType = 'object'
-
         if (Array.isArray(item)) {
           block.dataType = 'array'
+          block.blockValues = []
+        } else {
+          const keys = Object.keys(item)
+
+          if (!methods[keys[0]]) {
+            block.dataType = 'object'
+            block.blockValues = []
+          } else {
+            block.blockValue = true
+          }
         }
 
         dataType = block.dataType
-        block.blockValues = []
 
-        parseAction(item, methods, blocks, block.blockValues, blockSequences, dataType, $refs, false)
+        parseAction(item, methods, blocks, block, blockSequences, dataType, $sequenceRefs, $refs, false)
       } else if (item !== '$null') {
         block.value = item
       }
 
       results.push(result)
-
     }
   }
 
@@ -57,15 +79,19 @@ function parseAction (data, methods, blocks = {}, blockValues, blockSequences = 
     const item = results[i]
     const blockId = generateId()
 
-    if (item.hasOwnProperty('$ref')) {
-      $refs.push({ blockId, index: item.$ref })
+    if (item.block.hasOwnProperty('$ref')) {
+      $refs.push([blockId, item.block.$ref])
     }
 
-    if (blockValues) {
-      if (dataType && Array.isArray(blockValues)) {
-        blockValues.push(blockId)
-      } else {
-        blockValues = blockId
+    if (item.block.hasOwnProperty('$sequenceRef')) {
+      $sequenceRefs.push([blockId, item.block.$sequenceRef])
+    }
+
+    if (parentBlock) {
+      if (parentBlock.blockValues) {
+        parentBlock.blockValues.push(blockId)
+      } else if (parentBlock.blockValue) {
+        parentBlock.blockValue = blockId
       }
     }
 
@@ -78,6 +104,7 @@ function parseAction (data, methods, blocks = {}, blockValues, blockSequences = 
 
   if (isHead) {
     return {
+      $sequenceRefs,
       $refs,
       blocks,
       blockSequences

@@ -10,13 +10,97 @@ import { operatorCompare, operatorEval } from './operator.js'
  * @typedef {import('../../types.js').DataWhere} DataWhere
  */
 
+/**
+ * @typedef {string|string[]} GetDataValue
+ */
+
 const dataTypes = {
   object: () => ({}),
   array: () => ([])
 }
 let $action = (name, param, context, callback) => {}
 
-function getValue (block, context, payload, blockValues) {
+/**
+ * Get result value
+ * @private
+ * @param {*} value
+ * @param {GetDataValue} [query] - Request to return a specific key value, dot notations are permitted
+ * @returns {*[]|*}
+ */
+function getValue (value, query) {
+  if (query == null) {
+    return value
+  }
+
+  // get single value
+  if (typeof query === 'string') {
+    const keys = query.split('.')
+
+    if (keys.length === 1) {
+      return value[keys[0]]
+    }
+
+    let result = value
+
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i]
+
+      if (Object.hasOwnProperty.call(result, key)) {
+        result[key]
+      } else {
+        return
+      }
+    }
+
+    return result
+  }
+
+  const results = []
+
+  // get multiple values
+  for (let i = 0; i < query.length; i++) {
+    const keys = query[i].split('.')
+
+    if (query.length === 1 && keys.length === 1) {
+      return value[keys[0]]
+    }
+
+    let result = value
+
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i]
+
+      if (Object.hasOwnProperty.call(result, key)) {
+        result[key]
+      } else {
+        /** @TODO Create custom ReferenceError */
+        throw new Error('Action get value was not defined: ' + key)
+      }
+    }
+
+    results.push(result)
+  }
+
+  return results
+}
+
+function getBlockValue (id, blockValues) {
+  let value = blockValues[id]
+
+  if (!value) {
+    const blockData = dataGetValue({ name: 'action/blocks', id })
+
+    if (blockData.isEmpty) {
+      throw new Error('Action: block could not be found: ' + id)
+    }
+
+    value = blockData.item
+  }
+
+  return value
+}
+
+function getBlockValueByKey (block, context, payload, blockValues) {
   if (block.hasOwnProperty('blockValues')) {
     return getBlockValues(block, context, payload, blockValues)
   }
@@ -27,14 +111,14 @@ function getValue (block, context, payload, blockValues) {
   }
 
   if (block.hasOwnProperty('blockValue')) {
-    result.value = blockValues[block.blockValue]
+    result.value = getBlockValue(block.blockValue, blockValues)
   }
 
   return result
 }
 
 function getBlockValues (block, context, payload, blockValues) {
-  const value = dataTypes[block.dataType]()
+  let value = dataTypes[block.dataType]()
   const blocks = block.blockValues
 
   for (let i = 0; i < blocks.length; i++) {
@@ -45,9 +129,14 @@ function getBlockValues (block, context, payload, blockValues) {
       throw new Error('Action: block could not be found: ' + id)
     }
 
-    const result = getValue(block.item, context, payload, blockValues)
+    const result = getBlockValueByKey(block.item, context, payload, blockValues)
 
-    value[result.key] = result.value
+    if (result.key) {
+      value[result.key] = result.value
+    } else {
+      value = result.value
+    }
+
     blockValues[id] = value
   }
 
@@ -62,23 +151,36 @@ function processSequence (sequence, context, payload, blockValues = {}) {
   let blockProcessIndex = 0
 
   for (let i = 0; i < sequence.length; i++) {
-    const blockSequence = dataGetValue({ name: 'action/blockSequences', id: sequence[i] }).item
+    const blockSequenceId = sequence[i]
 
-    for (let j = 0; j < blockSequence[i].length; j++) {
-      const id = blockSequence[i][j]
+    // prevent processing blockSequence twice
+    if (blockValues[blockSequenceId]) {
+      continue
+    }
+
+    // set blockSequence as being processed
+    blockValues[blockSequenceId] = true
+
+    const blockSequence = dataGetValue({ name: 'action/blockSequences', id: blockSequenceId }).item
+
+    for (let i = 0; i < blockSequence.length; i++) {
+      const id = blockSequence[i]
       const block = dataGetValue({ name: 'action/blocks', id })
 
       if (block.isEmpty) {
         throw new Error('Action: block could not be found: ' + id )
       }
 
-      if (block.item.method) {
+      const methodName = block.item.method
+
+      // prepare block method
+      if (methodName) {
         blockProcess.push(() => {
-          const blockResult = getValue(block, context, payload, blockValues)
+          const blockResult = getBlockValueByKey(block.item, context, payload, blockValues)
 
           blockProcessIndex++
 
-          $action(block.item.method, blockResult.value, { context, payload, blockValues }, {
+          $action(methodName, blockResult.value, { context, payload, blockValues }, {
             onSuccess: (result => {
               blockValues[id] = result
 
@@ -301,7 +403,7 @@ const action = createPlugin('action', {
                 reject(new Error('No action found: ' + id))
               }
 
-              this.dispatch({ id, context, payload })
+              this.dispatch({ id, context, payload }, { blockValues })
                 .then(result => resolve(result))
                 .then(error => reject(error))
             })
@@ -319,7 +421,7 @@ const action = createPlugin('action', {
      * Get action variable value
      * @param {Object} props
      * @param {string} props.id
-     * @param {GetDataQuery} props.query
+     * @param {GetDataValue} props.query
      */
     getActionValue (props) {
       const value = dataGetValue({ name: 'action/values', id: props.id })
@@ -332,7 +434,7 @@ const action = createPlugin('action', {
      * Get block value
      * @param {Object} props
      * @param {*} props.value
-     * @param {GetDataQuery} props.query
+     * @param {GetDataValue} props.query
      */
     getBlockValue (props) {
       if (props.value) {
@@ -341,15 +443,15 @@ const action = createPlugin('action', {
     },
     /**
      * Get context value
-     * @param {GetDataQuery} props
+     * @param {GetDataValue} props
      * @param {Object} ctx
      */
-    getContextValue (props, ctx) {
-      return getValue(ctx.context, props)
+    getContextValue (props, { context }) {
+      return getValue(context, props)
     },
     /**
      * Get payload value
-     * @param {GetDataQuery} props
+     * @param {GetDataValue} props
      */
     getPayloadValue (props, { payload }) {
       return getValue(payload, props)
@@ -369,7 +471,7 @@ const action = createPlugin('action', {
      * @param {*} props.payload
      * @param {*} props.blockValues
      */
-    ifElse ({ branch }, { context, payload, blockValues }) {
+    ifElse (branch, { context, payload, blockValues }) {
       let isTruthy = false
 
       if (branch.if.length > 1) {
