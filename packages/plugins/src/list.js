@@ -185,49 +185,32 @@ const list = createPlugin('list', {
         context.$list = {}
       }
 
-      if (async) {
-        return new Promise((resolve, reject) => {
-          const promises = []
+      return new Promise((resolve, reject) => {
+        const promises = []
 
-          for (const key in items) {
-            if (Object.hasOwnProperty.call(items, key)) {
-              const promise = new Promise((resolve, reject) => {
-                actionDispatch({
-                  id: actionId,
-                  context,
-                  payload: {
-                    key,
-                    value: items[key]
-                  }
-                })
-                  .then(result => resolve(result))
-                  .catch(error => reject(error))
+        for (const key in items) {
+          if (Object.hasOwnProperty.call(items, key)) {
+            const promise = new Promise((resolve, reject) => {
+              actionDispatch({
+                id: actionId,
+                context,
+                payload: {
+                  key,
+                  value: items[key]
+                }
               })
+                .then(result => resolve(result))
+                .catch(error => reject(error))
+            })
 
-              promises.push(promise)
-            }
+            promises.push(promise)
           }
-
-          Promise.all(promises)
-            .then(() => resolve(context.$list))
-            .catch(error => reject(error))
-        })
-      }
-
-      for (const key in items) {
-        if (Object.hasOwnProperty.call(items, key)) {
-          actionDispatch({
-            id: actionId,
-            context,
-            payload: {
-              key,
-              value: items[key]
-            }
-          })
         }
-      }
 
-      return context.$list
+        Promise.all(promises)
+          .then(() => resolve(context.$list))
+          .catch(error => reject(error))
+      })
     },
     /**
      * s returns the first index at which a given element can be found in the array, or -1 if it is not present.
