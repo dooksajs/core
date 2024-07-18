@@ -8,6 +8,7 @@ import { generateId } from '@dooksa/utils'
  * @property {GetActionValue} [action_getActionValue]
  * @property {GetBlockValue} [action_getBlockValue]
  * @property {Action|string[]|string} [action_getContextValue]
+ * @property {DataGetValue} [action_getDataValue]
  * @property {Action|string[]|string} [action_getPayloadValue]
  * @property {EvalCondition} [action_ifElse]
  * @property {OperatorCompare[]} [action_ifElse]
@@ -156,16 +157,17 @@ import { generateId } from '@dooksa/utils'
 /**
  * @typedef {Object} DataGetValue
  * @property {Action|DataCollectionName} name
- * @property {Object} [query]
- * @property {Action|string} [query.id]
- * @property {Action|string} [query.prefixId]
- * @property {Action|string} [query.suffixId]
- * @property {Object} [query.options]
- * @property {Action|boolean} [query.options.expand]
- * @property {Object.<string,Action|boolean>} [query.options.expandExclude]
- * @property {Action|boolean} [query.options.expandClone]
- * @property {Action|string[]|string|number[]|number} [query.options.position]
- * @property {Action|boolean} [query.options.clone]
+ * @property {Action|string} [id]
+ * @property {Action|string} [prefixId]
+ * @property {Action|string} [suffixId]
+ * @property {Object} [options]
+ * @property {Action|boolean} [options.expand]
+ * @property {Object.<string,Action|boolean>} [options.expandExclude]
+ * @property {Action|boolean} [options.expandClone]
+ * @property {Action|string[]|string|number[]|number} [options.position]
+ * @property {Action|boolean} [options.clone]
+ */
+
  */
 
 /**

@@ -3,6 +3,7 @@ const availableMethods = {
   action_getActionValue: true,
   action_getBlockValue: true,
   action_getContextValue: true,
+  action_getDataValue: true,
   action_getPayloadValue: true,
   action_setActionValue: true,
   bootstrapCollapse_create: true,

@@ -531,6 +531,13 @@ const action = createPlugin('action', {
       return getValue(context, props)
     },
     /**
+     * @param {GetDataQuery} props
+     * @returns {import('./data.js').DataValue}
+     */
+    getDataValue (props) {
+      return dataGetValue(props).item
+    },
+    /**
      * Get payload value
      * @param {GetDataValue} props
      */
