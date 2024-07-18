@@ -128,7 +128,7 @@ import createMixin from './mixin.js'
  * @property {string} id - Component id
  * @property {Function} [component] - Lazy load component
  * @property {Function} [initialize] - Constructor function to create a component instance
- * @property {string} [tag] - Element tag name
+ * @property {string} tag - Element tag name
  */
 
 export {
