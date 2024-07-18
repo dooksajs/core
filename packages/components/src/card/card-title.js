@@ -8,7 +8,7 @@ const cardTitleText = extendText({
 })
 
 const cardTitle = createComponent({
-  id: 'cardText',
+  id: 'card-title',
   tag: 'h5',
   children: [cardTitleText],
   allowedChildren: [text],

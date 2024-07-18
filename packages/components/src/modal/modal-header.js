@@ -8,7 +8,7 @@ const closeBtn = extendComponent(button, {
 })
 
 const modalHeader = createComponent({
-  id: 'modal-content',
+  id: 'modal-header',
   tag: 'div',
   children: [modalTitle, closeBtn],
   allowedChildren: [modalTitle, closeBtn],
