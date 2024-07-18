@@ -136,10 +136,15 @@ import { generateId } from '@dooksa/utils'
  */
 
 /**
+ * @typedef {Object} EvalConditionRef
+ * @property {number} $sequenceRef
+ */
+
+/**
  * @typedef {Object} EvalCondition
  * @property {Array<EvalConditionFrom|EvalConditionAndOr>} if
- * @property {number[]} then
- * @property {number[]} else
+ * @property {EvalConditionRef[]} then
+ * @property {EvalConditionRef[]} else
  */
 
 /**
