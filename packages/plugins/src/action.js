@@ -481,7 +481,7 @@ const action = createPlugin('action', {
           })
             .then(data => {
               if (data.isEmpty) {
-                reject(new Error('No action found: ' + id))
+                return reject(new Error('No action found: ' + id))
               }
 
               this.dispatch({ id, context, payload }, { blockValues })
