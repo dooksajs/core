@@ -87,7 +87,7 @@ function getValue (value, query) {
 function getBlockValue (id, blockValues) {
   let value = blockValues[id]
 
-  if (!value) {
+  if (!blockValues.hasOwnProperty(id)) {
     const blockData = dataGetValue({ name: 'action/blocks', id })
 
     if (blockData.isEmpty) {
