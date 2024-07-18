@@ -1,7 +1,8 @@
 import createPlugin from '@dooksa/create-plugin'
 import { fetchById } from './fetch.js'
-import { dataGetValue } from './data.js'
+import { dataGetValue, dataSetValue } from './data.js'
 import { operatorCompare, operatorEval } from './operator.js'
+import { generateId } from '@dooksa/utils'
 
 /**
  * @typedef {import('../../types.js').SetDataOptions} SetDataOptions
@@ -155,7 +156,7 @@ function processSequence (sequence, context, payload, blockValues = {}) {
 
     // prevent processing blockSequence twice
     if (blockValues[blockSequenceId]) {
-      continue
+      return
     }
 
     // set blockSequence as being processed
@@ -171,16 +172,16 @@ function processSequence (sequence, context, payload, blockValues = {}) {
         throw new Error('Action: block could not be found: ' + id )
       }
 
-      const methodName = block.item.method
+      const item = block.item
 
       // prepare block method
-      if (methodName) {
+      if (item.method) {
         blockProcess.push(() => {
           const blockResult = getBlockValueByKey(block.item, context, payload, blockValues)
 
           blockProcessIndex++
 
-          $action(methodName, blockResult.value, { context, payload, blockValues }, {
+          $action(item.method, blockResult.value, { context, payload, blockValues }, {
             onSuccess: (result => {
               blockValues[id] = result
 
@@ -201,6 +202,12 @@ function processSequence (sequence, context, payload, blockValues = {}) {
             }
           })
         })
+      } else if (item.ifElse) {
+        blockProcess.push(() => {
+          const blockResult = getBlockValueByKey(block.item, context, payload, blockValues)
+
+          ifElse(blockResult.value, { context, payload, blockValues })
+        })
       }
     }
 
@@ -212,6 +219,77 @@ function processSequence (sequence, context, payload, blockValues = {}) {
   }
 }
 
+/**
+ * Conditional statement
+ * @param {Object} props
+ * @param {Object} props.branch
+ * @param {Object[]} props.branch.if
+ * @param {'=='|'!='|'>'|'>='|'<'|'<='|'!'|'%'|'++'|'--'|'-'|'+'|'*'|'**'|'!!'|'~'} props.branch.if[].op
+ * @param {string|number} props.branch.if[].from
+ * @param {string|number} props.branch.if[].to
+ * @param {'&&'|'||'} props.branch.if[].andOr
+ * @param {number[]} props.branch.then
+ * @param {number[]} props.branch.else
+ * @param {*} props.context
+ * @param {*} props.payload
+ * @param {*} props.blockValues
+ */
+function ifElse (branch, { context, payload, blockValues }) {
+  let isTruthy = false
+
+  if (branch.if.length > 1) {
+    const compareValues = []
+    /**
+     * @type {Object}
+     * @property {*} value_1
+     * @property {*} value_2
+     * @property {'&&'|'||'} op
+     */
+    let compareItem = {}
+
+    for (let i = 0; i < branch.if.length; i++) {
+      const item = branch.if[i]
+      const value = operatorEval({
+        name: item.op,
+        values: [item.from, item.to]
+      })
+
+      if (!compareItem.value_1) {
+        compareItem.value_1 = value
+      }
+
+      if (!compareItem.op) {
+        compareItem.op = item.andOr
+      }
+
+      if (!compareItem.value_2) {
+        if (!compareItem.op) {
+          throw new Error('Condition expects an operator')
+        }
+
+        compareItem.value_2 = value
+        compareValues.push(compareItem)
+        compareItem = {}
+      }
+    }
+
+    isTruthy = operatorCompare(compareValues)
+  } else {
+    const item = branch.if[0]
+
+    isTruthy = operatorEval({
+      name: item.op,
+      values: [item.from, item.to]
+    })
+  }
+
+  if (isTruthy) {
+    return processSequence(branch.then, context, payload, blockValues)
+  }
+
+  return processSequence(branch.else, context, payload, blockValues)
+}
+
 const action = createPlugin('action', {
   models: {
     blocks: {
@@ -219,6 +297,9 @@ const action = createPlugin('action', {
       items: {
         type: 'object',
         properties: {
+          ifElse: {
+            type: 'boolean'
+          },
           method: {
             type: 'string'
           },

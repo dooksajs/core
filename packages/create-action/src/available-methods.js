@@ -4,7 +4,6 @@ const availableMethods = {
   action_getBlockValue: true,
   action_getContextValue: true,
   action_getPayloadValue: true,
-  action_ifElse: true,
   action_setActionValue: true,
   bootstrapCollapse_create: true,
   bootstrapCollapse_hide: true,

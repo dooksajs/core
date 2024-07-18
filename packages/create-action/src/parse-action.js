@@ -41,11 +41,14 @@ function parseAction (data, methods, blocks = {}, parentBlock, blockSequences = 
       }
 
       if (methods[key]) {
-        result.isMethod = true
+        result.isBlockSequence = true
         block.method = key
+      } else if (key === 'action_ifElse') {
+        result.isBlockSequence = true
+        block.ifElse = true
       }
 
-      if (!isHead && !result.isMethod) {
+      if (!isHead && !result.isBlockSequence) {
         block.key = key
       }
 
@@ -95,7 +98,7 @@ function parseAction (data, methods, blocks = {}, parentBlock, blockSequences = 
       }
     }
 
-    if (item.isMethod) {
+    if (item.isBlockSequence) {
       blockSequences.push(blockId)
     }
 
