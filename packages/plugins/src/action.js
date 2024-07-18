@@ -462,7 +462,18 @@ const action = createPlugin('action', {
     }
   },
   actions: {
-    dispatch ({ id, context, payload }, { blockValues }) {
+    /**
+     * @param {Object} param
+     * @param {string} param.id
+     * @param {Object} param.context
+     * @param {Object} param.payload
+     * @param {boolean} [param.clearBlockValues]
+     */
+    dispatch ({ id, context, payload, clearBlockValues }, { blockValues } ) {
+      if (clearBlockValues) {
+        blockValues = {}
+      }
+
       return new Promise((resolve, reject) => {
         const sequence = dataGetValue({
           name: 'action/sequences',

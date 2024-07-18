@@ -49,7 +49,8 @@ const event = createPlugin('event', {
           actionDispatch({
             id: listeners.item[i],
             context,
-            payload
+            payload,
+            clearBlockValues: true
           })
         }
       }
