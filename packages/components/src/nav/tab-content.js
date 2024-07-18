@@ -2,7 +2,8 @@ import { createComponent, extendComponent } from '@dooksa/create-component'
 import { borderMixin, flexMixin, roundedMixin, spacingMixin } from '../mixins/index.js'
 
 const tabContent = createComponent({
-  id: 'div',
+  id: 'tab-content',
+  tag: 'div',
   properties: [
     {
       name: 'className',

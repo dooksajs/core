@@ -2,7 +2,8 @@ import { createComponent, extendComponent } from '@dooksa/create-component'
 import { flexMixin } from '../mixins/index.js'
 
 const tabPane = createComponent({
-  id: 'div',
+  id: 'tab-pane',
+  tag: 'div',
   properties: [
     {
       name: 'className',
