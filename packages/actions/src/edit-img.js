@@ -2,17 +2,15 @@ import createAction from '@dooksa/create-action'
 
 export default createAction('edit-img', [
   { // get content id
-    get_dataValue: {
+    action_getDataValue: {
       name: 'component/content',
-      query: {
-        id: {
-          get_contextValue: 'id'
-        }
+      id: {
+        action_getContextValue: 'id'
       }
     }
   },
   { // set image component
-    set_dataValue: {
+    data_setValue: {
       name: 'component/items',
       value: {
         id: 'img',
@@ -22,22 +20,22 @@ export default createAction('edit-img', [
     }
   },
   { // component id
-    get_blockValue: {
+    action_getBlockValue: {
       value: {
-        get_sequenceValue: '1'
+        $ref: 1
       },
       query: 'id'
     }
   },
   { // add image
-    set_dataValue: {
+    data_setValue: {
       name: 'component/children',
       value: {
-        get_sequenceValue: '2'
+        $ref: 2
       },
       options: {
         id: {
-          get_contextValue: 'parentId'
+          action_getContextValue: 'parentId'
         },
         update: {
           method: 'push'
@@ -46,26 +44,22 @@ export default createAction('edit-img', [
     }
   },
   { // update image content
-    set_dataValue: {
+    data_setValue: {
       name: 'content/items',
       value: {
-        get_dataValue: {
+        action_getDataValue: {
           name: 'content/items',
-          query: {
-            id: {
-              get_sequenceValue: '0'
-            }
+          id: {
+            $ref: 0
           }
         }
       },
       options: {
         id: {
-          get_dataValue: {
+          action_getDataValue: {
             name: 'component/content',
-            query: {
-              id: {
-                get_sequenceValue: '2'
-              }
+            id: {
+              $ref: 2
             }
           }
         }
@@ -73,7 +67,7 @@ export default createAction('edit-img', [
     }
   },
   {
-    set_dataValue: {
+    data_setValue: {
       name: 'component/items',
       value: {
         id: 'input-file',
@@ -83,15 +77,15 @@ export default createAction('edit-img', [
     }
   },
   {
-    get_blockValue: {
+    action_getBlockValue: {
       value: {
-        get_sequenceValue: '5'
+        $ref: 5
       },
       query: 'id'
     }
   },
   {
-    set_dataValue: {
+    data_setValue: {
       name: 'component/items',
       value: {
         id: 'label',
@@ -101,23 +95,23 @@ export default createAction('edit-img', [
     }
   },
   {
-    get_blockValue: {
+    action_getBlockValue: {
       value: {
-        get_sequenceValue: '7'
+        $ref: 7
       },
       query: 'id'
     }
   },
   {
-    set_actionValue: {
+    action_setActionValue: {
       id: {
-        get_sequenceValue: '8'
+        $ref: 8
       },
       values: [
         {
           id: 'htmlFor',
           value: {
-            get_sequenceValue: '6'
+            $ref: 6
           }
         },
         {
@@ -128,19 +122,19 @@ export default createAction('edit-img', [
     }
   },
   {
-    set_dataValue: {
+    data_setValue: {
       name: 'component/children',
       value: [
         {
-          get_sequenceValue: '8'
+          $ref: 8
         },
         {
-          get_sequenceValue: '6'
+          $ref: 6
         }
       ],
       options: {
         id: {
-          get_contextValue: 'parentId'
+          action_getContextValue: 'parentId'
         },
         update: {
           method: 'push'
