@@ -544,77 +544,34 @@ const action = createPlugin('action', {
     getPayloadValue (props, { payload }) {
       return getValue(payload, props)
     },
-    /**
-     * Conditional statement
-     * @param {Object} props
-     * @param {Object} props.branch
-     * @param {Object[]} props.branch.if
-     * @param {'=='|'!='|'>'|'>='|'<'|'<='|'!'|'%'|'++'|'--'|'-'|'+'|'*'|'**'|'!!'|'~'} props.branch.if[].op
-     * @param {string|number} props.branch.if[].from
-     * @param {string|number} props.branch.if[].to
-     * @param {'&&'|'||'} props.branch.if[].andOr
-     * @param {number[]} props.branch.then
-     * @param {number[]} props.branch.else
-     * @param {*} props.context
-     * @param {*} props.payload
-     * @param {*} props.blockValues
-     */
-    ifElse (branch, { context, payload, blockValues }) {
-      let isTruthy = false
+    setActionValue (props) {
+      const values = {}
+      const id = props.id
 
-      if (branch.if.length > 1) {
-        const compareValues = []
-        /**
-         * @type {Object}
-         * @property {*} value_1
-         * @property {*} value_2
-         * @property {'&&'|'||'} op
-         */
-        let compareItem = {}
+      for (let i = 0; i < props.values.length; i++) {
+        const item = props.values[i]
+        let valueId = item.id || generateId()
 
-        for (let i = 0; i < branch.if.length; i++) {
-          const item = branch.if[i]
-          const value = operatorEval({
-            name: item.op,
-            values: [item.from, item.to]
-          })
-
-          if (!compareItem.value_1) {
-            compareItem.value_1 = value
-          }
-
-          if (!compareItem.op) {
-            compareItem.op = item.andOr
-          }
-
-          if (!compareItem.value_2) {
-            if (!compareItem.op) {
-              throw new Error('Condition expects an operator')
-            }
-
-            compareItem.value_2 = value
-            compareValues.push(compareItem)
-            compareItem = {}
-          }
+        if (item.prefixId) {
+          valueId = item.prefixId + valueId
         }
 
-        isTruthy = operatorCompare(compareValues)
-      } else {
-        const item = branch.if[0]
+        if (item.suffixId) {
+          valueId = valueId + item.suffixId
+        }
 
-        isTruthy = operatorEval({
-          name: item.op,
-          values: [item.from, item.to]
-        })
+        values[valueId] = item.value
       }
 
-      if (isTruthy) {
-        return processSequence(branch.then, context, payload, blockValues)
-      }
-
-      return processSequence(branch.else, context, payload, blockValues)
+      return dataSetValue({
+        name: 'action/values',
+        value: values,
+        options: {
+          id,
+          merge: true
+        }
+      })
     }
-
   },
   setup ({ action }) {
     $action = action
