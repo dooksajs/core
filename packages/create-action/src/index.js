@@ -1,6 +1,6 @@
-import parseAction from './parse-action.js'
 import availableMethods from './available-methods.js'
-import { generateId } from '@dooksa/utils'
+import compileAction from './compile-action.js'
+import createAction from './create-action.js'
 
 /**
  * @typedef {Object} Action
@@ -173,6 +173,8 @@ import { generateId } from '@dooksa/utils'
  * @property {Action|boolean} [options.clone]
  */
 
+/**
+ * @typedef {Object.<string,string|boolean|number|Action>} NestedData
  */
 
 /**
@@ -180,7 +182,7 @@ import { generateId } from '@dooksa/utils'
  * @property {Action|string} id
  * @property {Action|string} [prefixId]
  * @property {Action|string} [suffixId]
- * @property {Action|string|number|boolean} value
+ * @property {Action|string|number|boolean|NestedData} value
  */
 
 /**
@@ -334,73 +336,10 @@ import { generateId } from '@dooksa/utils'
  * @property {Action|string} id
  */
 
-/**
- * @param {string} id
- * @param {Action[]} data
- * @param {string[]} [dependencies]
- * @param {Object.<string, boolean>} [methods] - Allowed actions
- */
-function createAction (id, data, dependencies = [], methods = availableMethods) {
-  const sequences = []
-  const blockSequences = {}
-  let sequenceRefs = []
-  let blocks = {}
-
-  if (methods) {
-    Object.assign(methods, availableMethods)
-  }
-
-  for (let i = 0; i < data.length; i++) {
-    const item = data[i]
-    const action = parseAction(item, methods)
-    const blockSequenceId = generateId()
-
-    blockSequences[blockSequenceId] = action.blockSequences
-    Object.assign(blocks, action.blocks)
-    sequences.push(blockSequenceId)
-
-    if (action.$sequenceRefs.length) {
-      sequenceRefs = sequenceRefs.concat(action.$sequenceRefs)
-    }
-
-    for (let i = 0; i < action.$refs.length; i++) {
-      const [blockId, sequenceIndex] = action.$refs[i]
-
-      if (sequenceIndex >= sequences.length) {
-        throw new Error('$ref is outside the block sequence')
-      }
-
-      const blockSequenceId = sequences[sequenceIndex]
-      const block = blocks[blockId]
-      const blockSequence = blockSequences[blockSequenceId]
-
-      // add ref block id
-      block.blockValue = blockSequence[blockSequence.length - 1]
-      // remove ref
-      delete block.$ref
-    }
-  }
-
-  for (let i = 0; i < sequenceRefs.length; i++) {
-    const [blockId, index] = sequenceRefs[i]
-    const block = blocks[blockId]
-
-    block.value = sequences[index]
-    delete block.$sequenceRef
-  }
-
-  return {
-    id,
-    blocks,
-    blockSequences,
-    sequences,
-    dependencies
-  }
-}
-
 export {
   createAction,
-  availableMethods
+  availableMethods,
+  compileAction
 }
 
 export default createAction
