@@ -1,9 +1,10 @@
-import { generateId } from '@dooksa/utils'
-
 /**
  * Convert actions
  * @param {*} data
  * @param {*} methods
+ * @param {Object} uuid
+ * @param {string} uuid.prefix
+ * @param {number} uuid.increment
  * @param {Object} [blocks={}]
  * @param {Object} [parentBlock]
  * @param {string[]} [blockSequences=[]]
@@ -12,7 +13,7 @@ import { generateId } from '@dooksa/utils'
  * @param {Object[]} [$sequenceRefs=[]]
  * @param {boolean} [isHead]
  */
-function parseAction (data, methods, blocks = {}, parentBlock, blockSequences = [], dataType, $sequenceRefs = [], $refs = [], isHead = true) {
+function parseAction (data, methods, uuid, blocks = {}, parentBlock, blockSequences = [], dataType, $sequenceRefs = [], $refs = [], isHead = true) {
   const results = []
 
   for (const key in data) {
@@ -69,7 +70,7 @@ function parseAction (data, methods, blocks = {}, parentBlock, blockSequences = 
 
         dataType = block.dataType
 
-        parseAction(item, methods, blocks, block, blockSequences, dataType, $sequenceRefs, $refs, false)
+        parseAction(item, methods, uuid, blocks, block, blockSequences, dataType, $sequenceRefs, $refs, false)
       } else if (item !== '$null') {
         block.value = item
       }
@@ -80,7 +81,7 @@ function parseAction (data, methods, blocks = {}, parentBlock, blockSequences = 
 
   for (let i = 0; i < results.length; i++) {
     const item = results[i]
-    const blockId = generateId()
+    const blockId = uuid.prefix + '_' + ++uuid.increment
 
     if (item.block.hasOwnProperty('$ref')) {
       $refs.push([blockId, item.block.$ref])
