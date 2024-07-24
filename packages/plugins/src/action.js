@@ -374,6 +374,9 @@ const action = createPlugin('action', {
           blocks: {
             type: 'object',
             properties: {
+              ifElse: {
+                type: 'boolean'
+              },
               method: {
                 type: 'string'
               },
@@ -397,10 +400,7 @@ const action = createPlugin('action', {
             }
           },
           blockSequences: {
-            type: 'array',
-            items: {
-              type: 'string'
-            }
+            type: 'object'
           },
           sequences: {
             type: 'array',
