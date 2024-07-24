@@ -1,4 +1,5 @@
 import createPlugin from '@dooksa/create-plugin'
+import { compileAction } from '@dooksa/create-action'
 import { action, dataSetValue } from '@dooksa/plugins'
 import { databaseSeed, databaseGetValue, databaseDeleteValue } from './database.js'
 import { httpSetRoute } from './http.js'
@@ -13,10 +14,23 @@ const serverAction = createPlugin('action', {
     if (actions) {
       for (let i = 0; i < actions.length; i++) {
         const action = actions[i]
+        const compiledAction = compileAction(action)
+
+        dataSetValue({
+          name: 'action/templates',
+          value: {
+            blocks: action.blocks,
+            blockSequences: action.blockSequences,
+            sequences: action.sequences
+          },
+          options: {
+            id: action.id
+          }
+        })
 
         dataSetValue({
           name: 'action/sequences',
-          value: action.sequences,
+          value: compiledAction.sequences,
           options: {
             id: action.id
           }
@@ -24,7 +38,7 @@ const serverAction = createPlugin('action', {
 
         dataSetValue({
           name: 'action/blocks',
-          value: action.blocks,
+          value: compiledAction.blocks,
           options: {
             merge: true
           }
@@ -32,7 +46,7 @@ const serverAction = createPlugin('action', {
 
         dataSetValue({
           name: 'action/blockSequences',
-          value: action.blockSequences,
+          value: compiledAction.blockSequences,
           options: {
             merge: true
           }

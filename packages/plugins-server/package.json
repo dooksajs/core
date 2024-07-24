@@ -8,6 +8,7 @@
   "type": "module",
   "main": "./src/index.js",
   "dependencies": {
+    "@dooksa/create-action": "workspace:^",
     "@dooksa/create-plugin": "workspace:^",
     "@dooksa/plugins": "workspace:^",
     "@dooksa/components": "workspace:^",
