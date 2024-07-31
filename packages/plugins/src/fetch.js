@@ -122,11 +122,12 @@ const $fetch = createPlugin('fetch', {
     getAll ({ collection, page, perPage, limit, where, expand, sync = true }) {
       const and = '&'
       let query = '?'
-      let firstQuery = true
+      let firstQueryOption = true
 
       if (page) {
-        if (firstQuery) {
-          firstQuery = false
+        if (firstQueryOption) {
+          firstQueryOption = false
+        } else {
           query += and
         }
 
@@ -134,8 +135,9 @@ const $fetch = createPlugin('fetch', {
       }
 
       if (perPage) {
-        if (firstQuery) {
-          firstQuery = false
+        if (firstQueryOption) {
+          firstQueryOption = false
+        } else {
           query += and
         }
 
@@ -143,8 +145,9 @@ const $fetch = createPlugin('fetch', {
       }
 
       if (limit) {
-        if (firstQuery) {
-          firstQuery = false
+        if (firstQueryOption) {
+          firstQueryOption = false
+        } else {
           query += and
         }
 
@@ -152,8 +155,9 @@ const $fetch = createPlugin('fetch', {
       }
 
       if (where) {
-        if (firstQuery) {
-          firstQuery = false
+        if (firstQueryOption) {
+          firstQueryOption = false
+        } else {
           query += and
         }
 
@@ -161,12 +165,13 @@ const $fetch = createPlugin('fetch', {
       }
 
       if (expand) {
-        if (firstQuery) {
-          firstQuery = false
+        if (firstQueryOption) {
+          firstQueryOption = false
+        } else {
           query += and
         }
 
-        query += expand
+        query += 'expand=true'
       }
 
       // reset query
