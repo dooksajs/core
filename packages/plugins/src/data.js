@@ -1222,9 +1222,10 @@ const data = createPlugin('data', {
      * Retrieve all entities from collection
      * @param {Object} param
      * @param {string} param.name - Name of collection
+     * @param {boolean} [param.expand] - Collect related documents
      * @param {DataWhere[]} [param.where]
      */
-    find ({ name, where = [] }) {
+    find ({ name, where = [], expand }) {
       const values = database[name]
 
       if (values == null) {
@@ -1241,6 +1242,10 @@ const data = createPlugin('data', {
             const value = values[id]
             const dataResult = createDataValue(name, id)
             let isValid = true
+
+            if (expand) {
+              // @TODO expand
+            }
 
             for (let i = 0; i < where.length; i++) {
               isValid = filterData(dataResult, where[i])
