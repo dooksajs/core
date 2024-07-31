@@ -147,7 +147,7 @@ function getBlockValues (block, context, payload, blockValues) {
   }
 }
 
-function processSequence (sequence, context, payload, blockValues = {}) {
+function processSequence (sequence, context, payload, blockValues = {}, startProcess = true) {
   const blockProcess = []
   let blockProcessIndex = 0
 
@@ -196,18 +196,29 @@ function processSequence (sequence, context, payload, blockValues = {}) {
       } else if (item.ifElse) {
         blockProcess.push(() => {
           const blockResult = getBlockValueByKey(block.item, context, payload, blockValues)
+          const processItems = ifElse(blockResult.value, { context, payload, blockValues })
 
-          ifElse(blockResult.value, { context, payload, blockValues })
+          blockProcessIndex++
+
+          for (let index = 0; index < processItems.length; index++) {
+            blockProcess[blockProcess.length] = processItems[index]
+          }
+
+          if (blockProcess[blockProcessIndex]) {
+            blockProcess[blockProcessIndex]()
+          }
         })
       }
     }
 
     const nextProcess = blockProcess[blockProcessIndex]
 
-    if (typeof nextProcess === 'function') {
+    if (startProcess && typeof nextProcess === 'function') {
       nextProcess()
     }
   }
+
+  return blockProcess
 }
 
 /**
@@ -275,10 +286,10 @@ function ifElse (branch, { context, payload, blockValues }) {
   }
 
   if (isTruthy) {
-    return processSequence(branch.then, context, payload, blockValues)
+    return processSequence(branch.then, context, payload, blockValues, false)
   }
 
-  return processSequence(branch.else, context, payload, blockValues)
+  return processSequence(branch.else, context, payload, blockValues, false)
 }
 
 const action = createPlugin('action', {
