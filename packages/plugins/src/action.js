@@ -474,10 +474,12 @@ const action = createPlugin('action', {
      * @param {Object} param.context
      * @param {Object} param.payload
      * @param {boolean} [param.clearBlockValues]
+     * @param {Object} [actionContext]
+     * @param {Object} [actionContext.blockValues]
      */
-    dispatch ({ id, context, payload, clearBlockValues }, { blockValues } ) {
+    dispatch ({ id, context, payload, clearBlockValues }, actionContext ) {
       if (clearBlockValues) {
-        blockValues = {}
+        actionContext.blockValues = {}
       }
 
       return new Promise((resolve, reject) => {
@@ -501,7 +503,7 @@ const action = createPlugin('action', {
                 return reject(new Error('No action found: ' + id))
               }
 
-              this.dispatch({ id, context, payload }, { blockValues })
+              this.dispatch({ id, context, payload }, actionContext)
                 .then(result => resolve(result))
                 .then(error => reject(error))
             })
@@ -509,7 +511,7 @@ const action = createPlugin('action', {
         }
 
         try {
-          processSequence(sequence.item, context, payload, blockValues)
+          processSequence(sequence.item, context, payload, actionContext.blockValues)
         } catch (error) {
           reject(error)
         }
