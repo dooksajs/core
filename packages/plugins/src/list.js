@@ -175,10 +175,9 @@ const list = createPlugin('list', {
      * @param {Object} param.context - Context for action, A new property named "$list" is created with the data type of the "item"
      * @param {Array|Object} param.items - Array used for iteration
      * @param {string} param.actionId - Action ID used to execute
-     * @param {boolean} param.async - Indicates the iteration will return a promise
-     * @returns {Array|Promise}
+     * @returns {Promise}
      */
-    forEach ({ context, items, actionId, async }) {
+    forEach ({ context, items, actionId }) {
       if (Array.isArray(items)) {
         context.$list = []
       } else {
@@ -197,7 +196,8 @@ const list = createPlugin('list', {
                 payload: {
                   key,
                   value: items[key]
-                }
+                },
+                clearBlockValues: false
               })
                 .then(result => resolve(result))
                 .catch(error => reject(error))
