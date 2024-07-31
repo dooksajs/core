@@ -153,15 +153,6 @@ function processSequence (sequence, context, payload, blockValues = {}) {
 
   for (let i = 0; i < sequence.length; i++) {
     const blockSequenceId = sequence[i]
-
-    // prevent processing blockSequence twice
-    if (blockValues[blockSequenceId]) {
-      return
-    }
-
-    // set blockSequence as being processed
-    blockValues[blockSequenceId] = true
-
     const blockSequence = dataGetValue({ name: 'action/blockSequences', id: blockSequenceId }).item
 
     for (let i = 0; i < blockSequence.length; i++) {
