@@ -319,6 +319,10 @@ const action = createPlugin('action', {
               relation: 'action/blocks'
             }
           },
+          blockSequence: {
+            type: 'string',
+            relation: 'action/blockSequences'
+          },
           key: {
             type: 'string'
           }
