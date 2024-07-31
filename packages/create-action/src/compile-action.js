@@ -100,9 +100,12 @@ function compileAction (action) {
         }
 
         const id = objectHash(targetBlockSequence)
+        const sequenceIndex = sequences.indexOf(id)
 
+        sequences.splice(sequenceIndex, 1)
         blockSequences[id] = targetBlockSequence
         block.value = id
+        block.blockSequence = id
 
         // hash current object
         const blockId = objectHash(block)
