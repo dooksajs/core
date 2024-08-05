@@ -1,54 +1,84 @@
 import createPlugin from '@dooksa/create-plugin'
-import { dataSetValue, metadata } from '@dooksa/plugins'
+import { dataSetValue } from '@dooksa/plugins'
 import { databaseSeed, databaseGetValue } from './database.js'
 import { httpSetRoute } from './http.js'
-import { hash } from '@dooksa/utils'
-
-hash.init()
-
-function createContentId (value) {
-  return '_' + hash.update(value) + '_'
-}
 
 export default createPlugin('metadata', {
   models: {
-    ...metadata.models
+    currentLanguage: {
+      type: 'string'
+    },
+    languages: {
+      type: 'array',
+      items: {
+        type: 'string'
+      }
+    },
+    plugins: {
+      type: 'collection',
+      items: {
+        type: 'object',
+        properties: {
+          title: {
+            type: 'string'
+          },
+          description: {
+            type: 'string'
+          },
+          icon: {
+            type: 'string'
+          }
+        }
+      }
+    },
+    actions: {
+      type: 'collection',
+      items: {
+        type: 'object',
+        properties: {
+          pluginId: {
+            type: 'string',
+            relation: 'metadata/plugins'
+          },
+          title: {
+            type: 'string'
+          },
+          description: {
+            type: 'string'
+          },
+          icon: {
+            type: 'string'
+          }
+        }
+      }
+    }
   },
-  setup ({ metadata }) {
+  setup ({ plugins }) {
     databaseSeed('metadata-currentLanguage')
     databaseSeed('metadata-languages')
 
     // set plugin metadata
-    for (let i = 0; i < metadata.length; i++) {
-      const data = metadata[i]
-      const pluginContentId = createContentId(data.name)
+    for (let i = 0; i < plugins.length; i++) {
+      const plugin = plugins[i]
+      const metadata = plugin.metadata
 
-      dataSetValue({
-        name: 'content/item',
-        value: data.plugin,
-        options: {
-          id: pluginContentId
-        }
-      })
       dataSetValue({
         name: 'metadata/plugins',
-        value: pluginContentId,
+        value: metadata.plugin,
         options: {
-          id: data.name
+          id: plugin.name
         }
       })
 
-      for (const key in data.actions) {
-        if (Object.hasOwnProperty.call(data.actions, key)) {
-          const contentId = createContentId(key)
+      for (const key in metadata.actions) {
+        if (Object.hasOwnProperty.call(metadata.actions, key)) {
+          const actionMetadataValue = Object.assign({
+            pluginId: plugin.name
+          }, metadata.actions[key])
 
-          dataSetValue({ name: 'content/item', value: data.actions[key], options: { id: contentId } })
           dataSetValue({
             name: 'metadata/actions',
-            value: {
-              values: contentId,
-              plugin: pluginContentId
-            },
+            value: actionMetadataValue,
             options: {
               id: key
             }
@@ -75,7 +105,7 @@ export default createPlugin('metadata', {
     httpSetRoute({
       path: '/metadata/actions',
       handlers: [
-        databaseGetValue(['metadata/action'])
+        databaseGetValue(['metadata/actions'])
       ]
     })
   }
