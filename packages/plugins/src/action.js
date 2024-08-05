@@ -170,14 +170,13 @@ function processSequence (sequence, context, payload, blockValues = {}, startPro
         blockProcess.push(() => {
           const blockResult = getBlockValueByKey(block.item, context, payload, blockValues)
 
-          blockProcessIndex++
-
           $action(item.method, blockResult.value, { context, payload, blockValues }, {
             onSuccess: (result => {
+              const nextProcess = blockProcess[++blockProcessIndex]
               blockValues[id] = result
 
-              if (blockProcess[blockProcessIndex]) {
-                blockProcess[blockProcessIndex]()
+              if (nextProcess) {
+                nextProcess()
               }
             }),
             onError: (error) => {
@@ -198,24 +197,24 @@ function processSequence (sequence, context, payload, blockValues = {}, startPro
           const blockResult = getBlockValueByKey(block.item, context, payload, blockValues)
           const processItems = ifElse(blockResult.value, { context, payload, blockValues })
 
-          blockProcessIndex++
-
           for (let index = 0; index < processItems.length; index++) {
             blockProcess[blockProcess.length] = processItems[index]
           }
 
-          if (blockProcess[blockProcessIndex]) {
-            blockProcess[blockProcessIndex]()
+          const nextProcess = blockProcess[++blockProcessIndex]
+
+          if (nextProcess) {
+            nextProcess()
           }
         })
       }
     }
+  }
 
-    const nextProcess = blockProcess[blockProcessIndex]
+  const nextProcess = blockProcess[blockProcessIndex]
 
-    if (startProcess && typeof nextProcess === 'function') {
-      nextProcess()
-    }
+  if (startProcess && typeof nextProcess === 'function') {
+    nextProcess()
   }
 
   return blockProcess
