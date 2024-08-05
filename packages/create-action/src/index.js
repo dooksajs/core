@@ -82,6 +82,7 @@ import createAction from './create-action.js'
  * 'component/properties'|
  * 'component/options'|
  * 'component/groups'|
+ * 'component/belongsToGroup'|
  * 'component/roots'|
  * 'content/items'|
  * 'event/listeners'|
@@ -222,12 +223,12 @@ import createAction from './create-action.js'
 /**
  * @typedef {Object} FetchGetAll
  * @property {Action|string} collection
- * @property {Action|boolean} expand
- * @property {Action|number} limit
- * @property {Action|number} page
- * @property {Action|number} perPage
- * @property {Action|boolean} sync
- * @property {Action|string} where
+ * @property {Action|boolean} [expand]
+ * @property {Action|number} [limit]
+ * @property {Action|number} [page]
+ * @property {Action|number} [perPage]
+ * @property {Action|boolean} [sync]
+ * @property {Action|string} [where]
  */
 
 /**
@@ -251,7 +252,6 @@ import createAction from './create-action.js'
  * @property {Action} items
  * @property {Action|string} actionId
  * @property {Action} [context]
- * @property {Action|boolean} [async]
  */
 
 /**
