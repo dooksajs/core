@@ -371,6 +371,17 @@ const action = createPlugin('action', {
         }
       }
     },
+    valueGroups: {
+      type: 'collection',
+      items: {
+        type: 'array',
+        items: {
+          type: 'string',
+          relation: 'action/values'
+        },
+        uniqueItems: true
+      }
+    },
     templates: {
       type: 'collection',
       items: {
@@ -520,13 +531,34 @@ const action = createPlugin('action', {
      * Get action variable value
      * @param {Object} props
      * @param {string} props.id
-     * @param {GetDataValue} props.query
+     * @param {string} [props.prefixId]
+     * @param {string} [props.suffixId]
+     * @param {string} props.query
      */
     getActionValue (props) {
-      const value = dataGetValue({ name: 'action/values', id: props.id })
+      const value = dataGetValue({
+        name: 'action/values',
+        id: props.id
+      })
 
       if (!value.isEmpty) {
-        return getValue(value.item, props.query)
+        let query = props.query
+
+        if (props.prefixId) {
+          query = props.prefixId + query
+        }
+
+        if (props.suffixId) {
+          const splitQuery = query.split('.')
+
+          query = splitQuery[0] + props.suffixId
+
+          for (let i = 1; i < splitQuery.length; i++) {
+            query = query + query
+          }
+        }
+
+        return getValue(value.item, query)
       }
     },
     /**
@@ -562,7 +594,7 @@ const action = createPlugin('action', {
     getPayloadValue (props, { payload }) {
       return getValue(payload, props)
     },
-    setActionValue (props) {
+    setActionValue (props, { context }) {
       const values = {}
       const id = props.id
 
@@ -580,6 +612,17 @@ const action = createPlugin('action', {
 
         values[valueId] = item.value
       }
+
+      dataSetValue({
+        name: 'action/valueGroups',
+        value: id,
+        options: {
+          id: context.groupId,
+          update: {
+            method: 'push'
+          }
+        }
+      })
 
       return dataSetValue({
         name: 'action/values',
