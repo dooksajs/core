@@ -1,11 +1,5 @@
 import appendPlugin from './append-plugin.js'
 
-function appendMetadata (appMetadata) {
-  return (metadata) => {
-    appMetadata.push(metadata)
-  }
-}
-
 function appendAction (appActionData) {
   return (action) => {
     appActionData.push(action)
@@ -36,7 +30,7 @@ function initialize (appSetup, appActionData, appDataModels, appStartServer, app
       actions: appActionData
     }
     options.metadata = {
-      metadata: appMetadata
+      plugins: appMetadata
     }
 
     // setup plugins
@@ -66,7 +60,6 @@ function createAppServer ({ plugins = [], clientPlugins = [], actions = [] } = {
   const appDataModels = { values: {}, schema: [] }
   const usePlugin = appendPlugin(appPlugins, appSetup, appDataModels)
   const useAction = appendAction(appActionData)
-  const useMetadata = appendMetadata(appMetadata)
   let appStartServer
 
   for (let i = 0; i < plugins.length; i++) {
@@ -88,14 +81,13 @@ function createAppServer ({ plugins = [], clientPlugins = [], actions = [] } = {
     const plugin = clientPlugins[i]
 
     if (plugin.metadata) {
-      appendMetadata(plugin.metadata)
+      appMetadata.push({ name: plugin.name, metadata: plugin.metadata })
     }
   }
 
   return {
     usePlugin,
     useAction,
-    useMetadata,
     setup: initialize(appSetup, appActionData, appDataModels, appStartServer, appMetadata)
   }
 }
