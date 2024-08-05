@@ -128,6 +128,10 @@ function createPlugin (name, data) {
     }
   }
 
+  if (data.metadata) {
+    plugin.metadata = data.metadata
+  }
+
   if (data.data) {
     mergeContextProperties(data.data, context)
   }
@@ -147,8 +151,6 @@ function createPlugin (name, data) {
   if (data.setup) {
     pluginData.setup = data.setup.bind(context)
   }
-
-
 
   if (data.actions) {
     pluginData.actions = {}
