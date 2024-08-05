@@ -399,7 +399,7 @@ function setCollectionItems (data, path, sources, metadata) {
         validateDataType(path, target._item, schemaType)
 
         if (schema.options && schema.options.relation) {
-          setRelation(data.collection, id, schema.options.relation, target._item)
+          addRelation(data.collection, id, schema.options.relation, target._item)
         }
 
         // store old values
@@ -701,22 +701,33 @@ function setDataOptions (data, source, options) {
     const schemaPathItem = schemaPath + '/items'
     const schemaItem = databaseSchema[schemaPathItem]
     const updateMethod = options.update.method
+    let relation
 
     // validate source
-    if (schemaItem && (updateMethod === 'push' || updateMethod === 'unshift')) {
-      if (Array.isArray(source)) {
-        for (let i = 0; i < source.length; i++) {
-          const item = source[i]
-
-          validateSchema(data, schemaPathItem, item)
+    if (schemaItem) {
+      if (schemaItem.options && schemaItem.options.relation) {
+        relation = {
+          target: data.collection,
+          id: data.id,
+          source: schemaItem.options.relation
         }
-      } else {
-        validateSchema(data, schemaPathItem, source)
+      }
+
+      if (updateMethod === 'push' || updateMethod === 'unshift') {
+        if (Array.isArray(source)) {
+          for (let i = 0; i < source.length; i++) {
+            const item = source[i]
+
+            validateSchema(data, schemaPathItem, item)
+          }
+        } else {
+          validateSchema(data, schemaPathItem, source)
+        }
       }
     }
 
     // update target array
-    const result = updateArray(targetItem, source, options.update)
+    const result = updateArray(targetItem, source, options.update, relation)
 
     if (!result.isValid) {
       return result
@@ -742,7 +753,7 @@ function setDataOptions (data, source, options) {
       }
 
       if (schema.options.relation) {
-        setRelation(data.collection, data.id, schema.options.relation, source)
+        addRelation(data.collection, data.id, schema.options.relation, source)
       }
 
       return {
@@ -787,13 +798,13 @@ function setMetadata (item = {}, options) {
 }
 
 /**
- * Set the association id
+ * Add the association id
  * @param {string} collection - Primary collection
  * @param {string} docId - Primary id
  * @param {string} refCollection - Foreign collection
  * @param {string} refId - Foreign id
  */
-function setRelation (collection, docId, refCollection, refId) {
+function addRelation (collection, docId, refCollection, refId) {
   const name = collection + '/' + docId
   const usedName = refCollection + '/' + refId
 
@@ -812,14 +823,58 @@ function setRelation (collection, docId, refCollection, refId) {
   }
 }
 
-function updateArray (target, source, options) {
+/**
+ * Remove the association id
+ * @param {string} collection - Primary collection
+ * @param {string} docId - Primary id
+ * @param {string} refCollection - Foreign collection
+ * @param {string} refId - Foreign id
+ */
+function removeRelation (collection, docId, refCollection, refId) {
+  const name = collection + '/' + docId
+  const usedName = refCollection + '/' + refId
+  const relation = databaseRelation[name]
+  const relationUsedIn = databaseRelationInUse[usedName]
+
+  if (relation) {
+    const index = relation.indexOf(usedName)
+
+    if (index != -1) {
+      relation.splice(index, 1)
+    }
+
+    if (!relation.length) {
+      delete databaseRelation[name]
+    }
+  }
+
+  if (relationUsedIn) {
+    const index = relationUsedIn.indexOf(name)
+
+    if (index != -1) {
+      relationUsedIn.splice(index, 1)
+    }
+
+    if (!relationUsedIn.length) {
+      delete databaseRelationInUse[usedName]
+    }
+  }
+}
+
+function updateArray (target, source, options, relation) {
   const result = { isValid: true, isComplete: false }
   source = Array.isArray(source) ? source : [source]
 
   switch (options.method) {
     case 'push':
       for (let i = 0; i < source.length; i++) {
-        target.push(source[i])
+        const value = source[i]
+
+        target.push(value)
+
+        if (relation) {
+          addRelation(relation.target, relation.id, relation.source, value)
+        }
       }
 
       updateArrayItemFreeze(target, source.length)
@@ -832,6 +887,10 @@ function updateArray (target, source, options) {
 
         if (index !== -1) {
           target.splice(index, 1)
+
+          if (relation) {
+            removeRelation(relation.target, relation.id, relation.source, value)
+          }
         } else {
           // Did nothing, don't fire update event
           // @TODO Ideally a new property should be used for non events like this
@@ -842,7 +901,11 @@ function updateArray (target, source, options) {
 
       break
     case 'pop':
-      target.pop()
+      const value = target.pop()
+
+      if (relation) {
+        removeRelation(relation.target, relation.id, relation.source, value)
+      }
 
       break
     case 'shift':
@@ -851,7 +914,13 @@ function updateArray (target, source, options) {
       break
     case 'unshift':
       for (let i = 0; i < source.length; i++) {
-        target.unshift(source[i])
+        const value = source[i]
+
+        target.unshift(value)
+
+        if (relation) {
+          addRelation(relation.target, relation.id, relation.source, value)
+        }
       }
 
       updateArrayItemFreeze(target, source.length)
@@ -864,6 +933,12 @@ function updateArray (target, source, options) {
         source,
         deleteCount: options.deleteCount
       })
+
+      if (source && relation) {
+        for (let i = 0; i < source.length; i++) {
+          addRelation(relation.target, relation.id, relation.source, source[i])
+        }
+      }
 
       updateArrayItemFreeze(target, source.length)
   }
@@ -957,7 +1032,7 @@ function validateSchemaArray (data, path, source) {
     } else {
       // set relation for array of strings
       if (schemaItems.options && schemaItems.options.relation) {
-        setRelation(data.collection, data.id, schemaItems.options.relation, item)
+        addRelation(data.collection, data.id, schemaItems.options.relation, item)
       }
 
       validateDataType(schemaName, item, schemaItems.type)
@@ -1092,7 +1167,7 @@ function validateSchemaObjectPatternProperties (data, properties, propertiesChec
             const propertyOptions = property.options || {}
 
             if (propertyOptions.relation) {
-              setRelation(data.collection, data.id, propertyOptions.relation, sourceItem)
+              addRelation(data.collection, data.id, propertyOptions.relation, sourceItem)
             }
           }
         }
@@ -1146,7 +1221,7 @@ function validateSchemaObjectProperties (data, properties, propertiesChecked, so
           }
         } else {
           if (propertyOptions.relation) {
-            setRelation(data.collection, data.id, propertyOptions.relation, value)
+            addRelation(data.collection, data.id, propertyOptions.relation, value)
           }
         }
       }
@@ -1176,7 +1251,7 @@ function validateSchema (data, path, source) {
     validateDataType(path, source, schema.type)
 
     if (schema.options && schema.options.relation) {
-      setRelation(data.collection, data.id, schema.options.relation, source)
+      addRelation(data.collection, data.id, schema.options.relation, source)
     }
   }
 }
