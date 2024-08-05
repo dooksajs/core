@@ -431,6 +431,7 @@ function createTemplate ({
       id,
       template,
       parentId,
+      rootId,
       groupId
     }, template, createTemplate)
   }
