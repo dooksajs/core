@@ -235,7 +235,7 @@ function createNode (id, item) {
 
   const children = dataGetValue({ name: 'component/children', id, options: { expand: true } })
   const rootId = dataGetValue({ name: 'component/roots', id }).item
-  const groupId = dataGetValue({ name: 'component/groups', id }).item
+  const groupId = dataGetValue({ name: 'component/belongsToGroup', id }).item
   const parentId = dataGetValue({ name: 'component/parents', id }).item
   const event = dataGetValue({ name: 'component/events', id })
   const childNodes = []
@@ -448,10 +448,22 @@ function createTemplate ({
   dataUnsafeSetValue({ name: 'component/nodes', value: node, options })
 
   // set core component values
-  dataSetValue({ name: 'component/groups', value: groupId, options })
   dataSetValue({ name: 'component/roots', value: rootId, options })
   dataSetValue({ name: 'component/parents', value: parentId, options })
   dataSetValue({ name: 'component/items', value: component, options })
+
+  // set group
+  dataSetValue({
+    name: 'component/groups',
+    value: id,
+    options: {
+      id: groupId,
+      update: {
+        method: 'push'
+      }
+    }
+  })
+  dataSetValue({ name: 'component/belongsToGroup', value: groupId, options })
 
   // set properties to node
   if (template.properties) {
@@ -877,10 +889,22 @@ const component = createPlugin('component', {
         relation: 'content/items'
       }
     },
+    belongsToGroup: {
+      type: 'collection',
+      items: {
+        type: 'string',
+        relation: 'component/groups'
+      }
+    },
     groups: {
       type: 'collection',
       items: {
-        type: 'string'
+        type: 'array',
+        items: {
+          type: 'string',
+          relation: 'component/items'
+        },
+        uniqueItems: true
       }
     }
   },
@@ -979,7 +1003,52 @@ const component = createPlugin('component', {
         }
       }
 
-      dataDeleteValue({ name: 'component/groups', id })
+      // remove component from group
+      const groupId = dataGetValue({ name: 'component/belongsToGroup', id }).item
+      const group = dataSetValue({
+        name: 'component/groups',
+        value: id,
+        options: {
+          id: groupId,
+          update: {
+            method: 'pull'
+          }
+        }
+      })
+
+      // clean up empty group
+      if (!group.item.length) {
+        dataDeleteValue({ name: 'component/groups', id: groupId })
+
+        let actionValueGroup = dataGetValue({ name: 'action/valueGroups', id: groupId })
+
+        if (!actionValueGroup.isEmpty) {
+          // remove action values
+          for (let i = 0; i < actionValueGroup.item.length; i++) {
+            const id = actionValueGroup.item[i]
+
+            dataSetValue({
+              name: 'action/valueGroups',
+              value: id,
+              options: {
+                id: groupId,
+                update: {
+                  method: 'pull'
+                }
+              }
+            })
+            dataDeleteValue({ name: 'action/values', id })
+          }
+        }
+
+        actionValueGroup = dataGetValue({ name: 'action/valueGroups', id: groupId })
+
+        if (!actionValueGroup.item.length) {
+          dataDeleteValue({ name: 'action/valueGroups', id: groupId })
+        }
+      }
+
+      dataDeleteValue({ name: 'component/belongsToGroup', id })
       dataDeleteValue({ name: 'component/nodes', id })
       dataDeleteValue({ name: 'component/parents', id })
       dataDeleteValue({ name: 'component/roots', id })
@@ -1000,7 +1069,7 @@ const component = createPlugin('component', {
       }
 
       const node = dataGetValue({ name: 'component/nodes', id }).item
-      const parentGroupId = dataGetValue({ name: 'component/groups', id }).item
+      const parentGroupId = dataGetValue({ name: 'component/belongsToGroup', id }).item
       const children = []
       let childIsLazy = false
 
@@ -1020,7 +1089,6 @@ const component = createPlugin('component', {
 
         if (item.isTemplate) {
           const groupId = item.groupId || parentGroupId
-
           const result = createTemplate({
             id: childId,
             template: $component(item.id),
