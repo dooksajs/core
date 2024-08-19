@@ -43,6 +43,7 @@ import createMixin from './mixin.js'
  * @typedef {Object} ComponentExtend
  * @property {ComponentMixinMetadata} [metadata]
  * @property {ComponentEvent[]} [events]
+ * @property {boolean} [extendEvents]
  * @property {Object} [options]
  * @property {Array<Component|ComponentInstance>} [children]
  */

@@ -191,7 +191,7 @@ function componentOptions (options, templateOptions, properties = []) {
 * @param {Component} component
 * @param {ComponentExtend} extend
 */
-function extendComponent (component, { metadata, options, children, events }) {
+function extendComponent (component, { metadata, options, children, events, extendEvents }) {
   const result = Object.assign({}, component)
   let properties = component.properties
 
@@ -209,7 +209,11 @@ function extendComponent (component, { metadata, options, children, events }) {
   }
 
   if (events) {
-    result.events = events
+    if (extendEvents) {
+      result.events = result.events.concat(events)
+    } else {
+      result.events = events
+    }
   }
 
   const componentChildren = children || component.children
