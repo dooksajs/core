@@ -276,37 +276,17 @@ function createNode (id, item) {
       })
 
       if (eventTypes[on] && !hasEvent[on]) {
-        const nodeEvent = on.split('/')
+        const [eventType, eventValue] = on.split('/')
 
-        if (nodeEvent[0] === 'node') {
+        if (eventType === 'node' || eventType === 'observeProperty') {
           hasEvent[on] = true
-          const handler = (payload) => {
-            // fire node events
-            eventEmit({
-              name: on,
-              id,
-              context: {
-                id,
-                rootId,
-                parentId,
-                groupId
-              },
-              payload
-            })
-          }
 
-          node.addEventListener(nodeEvent[1], handler)
-
-          // store handler
-          dataUnsafeSetValue({ name: 'event/handlers', value: handler, options: { id } })
-          // handle removal
-          dataAddListener({
-            name: 'event/handlers',
-            on: 'delete',
+          nodeEvent(eventType, eventValue, node, on, id, {
             id,
-            handler () {
-              node.removeEventListener(on, handler)
-            }
+            rootId,
+            parentId,
+            groupId,
+            contentId
           })
         }
       }
@@ -395,6 +375,63 @@ function createNode (id, item) {
     id,
     item: node
   }
+}
+
+function observeElement (element, property, callback) {
+  const elementPrototype = Object.getPrototypeOf(element)
+
+  if (elementPrototype.hasOwnProperty(property)) {
+    const descriptor = Object.getOwnPropertyDescriptor(elementPrototype, property)
+
+    Object.defineProperty(element, property, {
+      get: function () {
+        return descriptor.get.apply(this, arguments)
+      },
+      set: function () {
+        descriptor.set.apply(this, arguments)
+        const newValue = this[property]
+        callback(newValue)
+        return newValue
+      }
+    })
+  }
+}
+
+function nodeEvent (eventType, eventValue, node, on, id, context) {
+  let handler = (payload) => {
+    // fire node events
+    eventEmit({
+      name: on,
+      id,
+      context,
+      payload
+    })
+  }
+
+  if (eventType === 'node') {
+    node.addEventListener(eventValue, handler)
+  } else {
+    observeElement(node, eventValue, (value) => {
+      handler({
+        prop: eventValue,
+        value
+      })
+    })
+  }
+
+
+  // handle removal
+  dataAddListener({
+    name: 'event/handlers',
+    on: 'delete',
+    id,
+    handler () {
+      node.removeEventListener(on, handler)
+    }
+  })
+
+  // store handler
+  dataUnsafeSetValue({ name: 'event/handlers', value: handler, options: { id } })
 }
 
 /**
@@ -593,38 +630,17 @@ function createTemplate ({
       })
 
       if (eventTypes[on] && !hasEvent[on]) {
-        const nodeEvent = on.split('/')
+        const [eventType, eventValue] = on.split('/')
 
-        if (nodeEvent[0] === 'node') {
+        if (eventType === 'node' || eventType === 'observeProperty') {
           hasEvent[on] = true
-          const handler = (payload) => {
-            // fire node events
-            eventEmit({
-              name: on,
-              id,
-              context: {
-                id,
-                rootId,
-                parentId,
-                groupId,
-                contentId
-              },
-              payload
-            })
-          }
 
-          node.addEventListener(nodeEvent[1], handler)
-
-          // store handler
-          dataUnsafeSetValue({ name: 'event/handlers', value: handler, options })
-          // handle removal
-          dataAddListener({
-            name: 'event/handlers',
-            on: 'delete',
+          nodeEvent(eventType, eventValue, node, on, id, {
             id,
-            handler () {
-              node.removeEventListener(on, handler)
-            }
+            rootId,
+            parentId,
+            groupId,
+            contentId
           })
         }
       }
