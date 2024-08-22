@@ -36,7 +36,7 @@ export default createPlugin('metadata', {
       items: {
         type: 'object',
         properties: {
-          pluginId: {
+          plugin: {
             type: 'string',
             relation: 'metadata/plugins'
           },
@@ -72,13 +72,9 @@ export default createPlugin('metadata', {
 
       for (const key in metadata.actions) {
         if (Object.hasOwnProperty.call(metadata.actions, key)) {
-          const actionMetadataValue = Object.assign({
-            pluginId: plugin.name
-          }, metadata.actions[key])
-
           dataSetValue({
             name: 'metadata/actions',
-            value: actionMetadataValue,
+            value: metadata.actions[key],
             options: {
               id: key
             }

@@ -22,8 +22,18 @@ const metadata = createPlugin('metadata', {
     plugins: {
       type: 'collection',
       items: {
-        type: 'string',
-        relation: 'content/item'
+        type: 'object',
+        properties: {
+          title: {
+            type: 'string'
+          },
+          description: {
+            type: 'string'
+          },
+          icon: {
+            type: 'string'
+          }
+        }
       }
     },
     actions: {
@@ -33,11 +43,16 @@ const metadata = createPlugin('metadata', {
         properties: {
           plugin: {
             type: 'string',
-            relation: 'content/item'
+            relation: 'metadata/plugins'
           },
-          values: {
-            type: 'string',
-            relation: 'content/item'
+          title: {
+            type: 'string'
+          },
+          description: {
+            type: 'string'
+          },
+          icon: {
+            type: 'string'
           }
         }
       }
