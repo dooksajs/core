@@ -391,10 +391,17 @@ const database = createPlugin('database', {
 
         for (let i = 0; i < collections.length; i++) {
           const collection = collections[i]
-
           // fetch collection
           if (!request.query.id) {
-            const dataValues = dataFind({ name: collection, where })
+            const args = { name: collection, where }
+
+            if (request.query.expand) {
+              args.options = {
+                expand: true
+              }
+            }
+
+            const dataValues = dataFind(args)
 
             result = result.concat(dataValues)
 
