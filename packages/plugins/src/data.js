@@ -7,6 +7,7 @@ import { cloneDataValue, createDataValue } from './utils/createDataValue.js'
 /**
  * @typedef {import('../../types.js').SetDataOptions} SetDataOptions
  * @typedef {import('../../types.js').GetDataQuery} GetDataQuery
+ * @typedef {import('../../types.js').GetDataOption} GetDataOption
  * @typedef {import('../../types.js').DataSchema} DataSchema
  * @typedef {import('../../types.js').DataWhere} DataWhere
  * @typedef {import('./utils/createDataValue.js').DataValue} DataValue
@@ -172,6 +173,75 @@ function createTarget (type, metadata, target) {
   target._metadata = setMetadata(target._metadata, metadata)
 
   return target
+}
+
+/**
+ * Fetch related data
+ * @param {string} name - Name of data collection
+ * @param {DataValue} result - Data result
+ * @param {GetDataOption} [options]
+ */
+function getExpandedData (name, result, options) {
+  const relations = databaseRelation[name + '/' + result.id]
+
+  result.isExpandEmpty = !relations
+
+  if (relations) {
+    result.isExpandEmpty = false
+    result.expandIncluded = options.expandExclude ?? {}
+
+    for (let i = 0; i < relations.length; i++) {
+      const relation = relations[i]
+
+      // prevent duplication and infinite loop
+      if (result.expandIncluded[relation] != null) {
+        continue
+      }
+
+      result.expandIncluded[relation] = true
+
+      const item = relation.split('/')
+      const name = item[0] + '/' + item[1]
+      const id = item.splice(2).join('/')
+      const value = dataGetValue({
+        name,
+        id,
+        options: {
+          expand: true,
+          expandExclude: result.expandIncluded,
+          expandClone: options.expandClone,
+          clone: options.expandClone
+        }
+      })
+
+      if (value.isEmpty) {
+        continue
+      }
+
+      if (!value.isExpandEmpty) {
+        for (let i = 0; i < value.expand.length; i++) {
+          const item = value.expand[i]
+          const name = item.collection + '/' + item.id
+
+          if (options.expandClone) {
+            item.item = cloneDataValue(item)
+          }
+
+          result.expandIncluded[name] = result.expand.length
+          result.expand.push(item)
+        }
+      }
+
+      result.expandIncluded[relation] = result.expand.length
+
+      const expandedResult = createDataValue(name, value.id)
+
+      expandedResult.item = !options.expandClone ? value.item : cloneDataValue(value)
+      expandedResult.metadata = value.metadata
+
+      result.expand.push(expandedResult)
+    }
+  }
 }
 
 /**
@@ -1299,8 +1369,9 @@ const data = createPlugin('data', {
      * @param {string} param.name - Name of collection
      * @param {boolean} [param.expand] - Collect related documents
      * @param {DataWhere[]} [param.where]
+     * @param {GetDataOption} [param.options]
      */
-    find ({ name, where = [], expand }) {
+    find ({ name, where = [], options = {} }) {
       const values = database[name]
 
       if (values == null) {
@@ -1318,10 +1389,6 @@ const data = createPlugin('data', {
             const dataResult = createDataValue(name, id)
             let isValid = true
 
-            if (expand) {
-              // @TODO expand
-            }
-
             for (let i = 0; i < where.length; i++) {
               isValid = filterData(dataResult, where[i])
 
@@ -1334,6 +1401,11 @@ const data = createPlugin('data', {
             dataResult.item = value._item
             dataResult.metadata = value._metadata
             dataResult.previous = value._previous
+
+            if (options.expand) {
+              getExpandedData(name, dataResult, options)
+            }
+
             valueItems.push(dataResult)
           }
         }
@@ -1724,65 +1796,8 @@ const data = createPlugin('data', {
         return result
       }
 
-      const relations = databaseRelation[name + '/' + result.id]
-
-      result.isExpandEmpty = !relations
-
-      if (options.expand && relations) {
-        result.isExpandEmpty = false
-        result.expandIncluded = options.expandExclude ?? {}
-
-        for (let i = 0; i < relations.length; i++) {
-          const relation = relations[i]
-
-          // prevent duplication and infinite loop
-          if (result.expandIncluded[relation] != null) {
-            continue
-          }
-
-          result.expandIncluded[relation] = true
-
-          const item = relation.split('/')
-          const name = item[0] + '/' + item[1]
-          const id = item.splice(2).join('/')
-          const value = this.getValue({
-            name,
-            id,
-            options: {
-              expand: true,
-              expandExclude: result.expandIncluded,
-              expandClone: options.expandClone,
-              clone: options.expandClone
-            }
-          })
-
-          if (value.isEmpty) {
-            continue
-          }
-
-          if (!value.isExpandEmpty) {
-            for (let i = 0; i < value.expand.length; i++) {
-              const item = value.expand[i]
-              const name = item.collection + '/' + item.id
-
-              if (options.expandClone) {
-                item.item = cloneDataValue(item)
-              }
-
-              result.expandIncluded[name] = result.expand.length
-              result.expand.push(item)
-            }
-          }
-
-          result.expandIncluded[relation] = result.expand.length
-
-          const expandedResult = createDataValue(name, value.id)
-
-          expandedResult.item = !options.expandClone ? value.item : cloneDataValue(value)
-          expandedResult.metadata = value.metadata
-
-          result.expand.push(expandedResult)
-        }
+      if (options.expand) {
+        getExpandedData(name, result, options)
       }
 
       // return a mutable item

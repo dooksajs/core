@@ -116,6 +116,18 @@
  * @property {Object} [update] - Update target with source
  * @property {(string[] & number[]) | (string[] | number[])} [update.position] - Update nested data within target with source
  * @property {'push'|'pull'|'pop'|'shift'|'unshift'|'splice'} [update.method] - Type of update method
+ * @property {number} [update.startIndex] - Zero-based index at which to start changing the array
+ * @property {number} [update.deleteCount] - An integer indicating the number of elements in the array to remove from start
+ */
+
+/**
+ * Get data value query
+ * @typedef {Object} GetDataOption
+ * @property {boolean} [expand] - Expand all relational data
+ * @property {Object} [expandExclude] - Exclude items from expanding
+ * @property {boolean} [expandClone] - Expanded items returns a deep clone of the item value
+ * @property {string|number} [position] - (@TODO double check type) Return the value by key of the data value
+ * @property {boolean} [clone] - Returns a deep clone of the item value
  */
 
 /**
@@ -125,12 +137,7 @@
  * @property {string} [id] - Data collection document id
  * @property {string} [prefixId] - Data collection document prefix
  * @property {string} [suffixId] - Data collection document suffix
- * @property {Object} [options] - Options
- * @property {boolean} [options.expand] - Expand all relational data
- * @property {Object} [options.expandExclude] - Exclude items from expanding
- * @property {boolean} [options.expandClone] - Expanded items returns a deep clone of the item value
- * @property {string|number} [options.position] - (@TODO double check type) Return the value by key of the data value
- * @property {boolean} [options.clone] - Returns a deep clone of the item value
+ * @property {GetDataOption} [options] - Options
  */
 
 export default {}
