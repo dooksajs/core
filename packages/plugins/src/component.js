@@ -377,7 +377,7 @@ function createNode (id, item) {
   }
 }
 
-function observeElement (element, property, callback) {
+function observeNodeProperty (element, property, callback) {
   const elementPrototype = Object.getPrototypeOf(element)
 
   if (elementPrototype.hasOwnProperty(property)) {
@@ -409,9 +409,20 @@ function nodeEvent (eventType, eventValue, node, on, id, context) {
   }
 
   if (eventType === 'node') {
-    node.addEventListener(eventValue, handler)
+    if (eventValue === 'checked') {
+      node.addEventListener('input', handler)
+
+      observeNodeProperty(node, eventValue, (value) => {
+        handler({
+          prop: eventValue,
+          value
+        })
+      })
+    } else {
+      node.addEventListener(eventValue, handler)
+    }
   } else {
-    observeElement(node, eventValue, (value) => {
+    observeNodeProperty(node, eventValue, (value) => {
       handler({
         prop: eventValue,
         value
@@ -1060,7 +1071,7 @@ const component = createPlugin('component', {
 
         actionValueGroup = dataGetValue({ name: 'action/valueGroups', id: groupId })
 
-        if (!actionValueGroup.item.length) {
+        if (!actionValueGroup.isEmpty && !actionValueGroup.item.length) {
           dataDeleteValue({ name: 'action/valueGroups', id: groupId })
         }
       }
