@@ -21,7 +21,13 @@ function getCache (id) {
 
   for (let i = 0; i < cache.data.length; i++) {
     const item = cache.data[i]
-    const data = dataGetValue({ name: item.collection, id: item.id })
+    const data = dataGetValue({
+      name: item.collection,
+      id: item.id,
+      options: {
+        expand: item.expand
+      }
+    })
 
     result.push(data)
   }
@@ -56,17 +62,13 @@ function setRequestData (data, id) {
             metadata: data.metadata
           }
         })
-
-        requestCache.push({
-          id: data.id,
-          collection: data.collection
-        })
       }
     }
 
     requestCache.push({
       id: dataItem.id,
-      collection: dataItem.collection
+      collection: dataItem.collection,
+      expand: !!dataItem.expand
     })
 
     dataAddListener({
