@@ -266,6 +266,10 @@ const list = createPlugin('list', {
      */
     splice ({ target, source, start, deleteCount = 0 }) {
       if (start == null) {
+        if (source !== undefined) {
+          throw new Error('Splice with source expects a start position but found ' + start)
+        }
+
         return target.splice(0)
       }
 
