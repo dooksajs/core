@@ -33,7 +33,7 @@ function getValue (value, query) {
     return value
   }
 
-  // get single value
+  // get single by dot notation
   if (typeof query === 'string') {
     const keys = query.split('.')
 
@@ -56,9 +56,13 @@ function getValue (value, query) {
     return result
   }
 
-  const results = []
+  if (typeof query === 'number') {
+    return value[query]
+  }
 
-  // get multiple values
+  let result = value
+
+  // get value by array
   for (let i = 0; i < query.length; i++) {
     const keys = query[i].split('.')
 
@@ -66,7 +70,6 @@ function getValue (value, query) {
       return value[keys[0]]
     }
 
-    let result = value
 
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i]
@@ -78,11 +81,9 @@ function getValue (value, query) {
         throw new Error('Action get value was not defined: ' + key)
       }
     }
-
-    results.push(result)
   }
 
-  return results
+  return result
 }
 
 function getBlockValue (id, blockValues) {
