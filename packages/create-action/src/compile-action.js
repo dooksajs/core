@@ -43,6 +43,7 @@ function compileAction (action) {
 
       if (block.ifElse) {
         ifElse.push({
+          ifElseBlockId: blockId,
           sequenceIndex: i,
           blockSequenceIndex: j,
           blockSequenceId: blockSequenceRefId,
@@ -66,7 +67,7 @@ function compileAction (action) {
   }
 
   for (let i = ifElse.length - 1; i > -1; i--) {
-    let { block, blockSequenceId, blockSequenceIndex, sequenceIndex } = ifElse[i]
+    let { block, blockSequenceId, blockSequenceIndex, sequenceIndex, ifElseBlockId } = ifElse[i]
 
     for (let i = 0; i < block.blockValues.length; i++) {
       const id = block.blockValues[i]
@@ -124,8 +125,11 @@ function compileAction (action) {
     // replace template with compiled if else block id
     const prevBlockSequenceId = collection[blockSequenceId]
     const blockId = objectHash(block)
+
     blockSequences[prevBlockSequenceId][blockSequenceIndex] = blockId
     blocks[blockId] = block
+    // allow if statements to reference if statements
+    collection[ifElseBlockId] = blockId
     // new id
     const newBlockSequenceId = objectHash(blockSequences[prevBlockSequenceId])
     blockSequences[newBlockSequenceId] = blockSequences[prevBlockSequenceId]
