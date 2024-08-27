@@ -148,7 +148,7 @@ function getBlockValues (block, context, payload, blockValues) {
   }
 }
 
-function processSequence (sequence, context, payload, blockValues = {}, startProcess = true) {
+function processSequence (sequence, context, payload, blockValues = {}, callback, startProcess) {
   const blockProcess = []
   let blockProcessIndex = 0
 
@@ -177,8 +177,10 @@ function processSequence (sequence, context, payload, blockValues = {}, startPro
               blockValues[id] = result
 
               if (nextProcess) {
-                nextProcess()
+                return nextProcess()
               }
+
+              callback()
             }),
             onError: (error) => {
               /**
@@ -196,17 +198,20 @@ function processSequence (sequence, context, payload, blockValues = {}, startPro
       } else if (item.ifElse) {
         blockProcess.push(() => {
           const blockResult = getBlockValueByKey(block.item, context, payload, blockValues)
-          const processItems = ifElse(blockResult.value, { context, payload, blockValues })
+          const processItems = ifElse(blockResult.value, callback, { context, payload, blockValues })
 
+          // append new process items
           for (let index = 0; index < processItems.length; index++) {
-            blockProcess[blockProcess.length] = processItems[index]
+            blockProcess.push(processItems[index])
           }
 
           const nextProcess = blockProcess[++blockProcessIndex]
 
           if (nextProcess) {
-            nextProcess()
+            return nextProcess()
           }
+
+          callback()
         })
       }
     }
@@ -236,7 +241,7 @@ function processSequence (sequence, context, payload, blockValues = {}, startPro
  * @param {*} props.payload
  * @param {*} props.blockValues
  */
-function ifElse (branch, { context, payload, blockValues }) {
+function ifElse (branch, callback, { context, payload, blockValues }) {
   let isTruthy = false
 
   if (branch.if.length > 1) {
@@ -286,10 +291,10 @@ function ifElse (branch, { context, payload, blockValues }) {
   }
 
   if (isTruthy) {
-    return processSequence(branch.then, context, payload, blockValues, false)
+    return processSequence(branch.then, context, payload, blockValues, callback)
   }
 
-  return processSequence(branch.else, context, payload, blockValues, false)
+  return processSequence(branch.else, context, payload, blockValues, callback)
 }
 
 const action = createPlugin('action', {
@@ -522,7 +527,7 @@ const action = createPlugin('action', {
         }
 
         try {
-          processSequence(sequence.item, context, payload, actionContext.blockValues)
+          processSequence(sequence.item, context, payload, actionContext.blockValues, resolve, true)
         } catch (error) {
           reject(error)
         }
