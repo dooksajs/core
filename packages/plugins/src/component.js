@@ -415,7 +415,10 @@ function nodeEvent (eventType, eventValue, node, on, id, context) {
       observeNodeProperty(node, eventValue, (value) => {
         handler({
           prop: eventValue,
-          value
+          value,
+          target: { // mimic node event handler
+            checked: value
+          }
         })
       })
     } else {
@@ -429,7 +432,6 @@ function nodeEvent (eventType, eventValue, node, on, id, context) {
       })
     })
   }
-
 
   // handle removal
   dataAddListener({
