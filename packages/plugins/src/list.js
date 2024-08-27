@@ -178,33 +178,31 @@ const list = createPlugin('list', {
      * @returns {Promise}
      */
     forEach ({ context, items, actionId }) {
+      let length = items.length
+
       if (Array.isArray(items)) {
         context.$list = []
       } else {
+        items = Object.keys(items)
+        length = items.length
         context.$list = {}
       }
 
       return new Promise((resolve, reject) => {
         const promises = []
 
-        for (const key in items) {
-          if (Object.hasOwnProperty.call(items, key)) {
-            const promise = new Promise((resolve, reject) => {
-              actionDispatch({
-                id: actionId,
-                context,
-                payload: {
-                  key,
-                  value: items[key]
-                },
-                clearBlockValues: false
-              })
-                .then(result => resolve(result))
-                .catch(error => reject(error))
-            })
-
-            promises.push(promise)
-          }
+        for (let i = 0; i < items.length; i++) {
+          promises.push(actionDispatch({
+            id: actionId,
+            context,
+            payload: {
+              key: i,
+              value: items[i],
+              items,
+              length
+            },
+            clearBlockValues: false
+          }))
         }
 
         Promise.all(promises)
