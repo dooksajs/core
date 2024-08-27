@@ -180,10 +180,11 @@ import createAction from './create-action.js'
 
 /**
  * @typedef {Object} SetActionValue
- * @property {Action|string} id
+ * @property {Action|string} id - Action value ID
+ * @property {Action|string} groupId - Action value group ID
  * @property {Action|string} [prefixId]
  * @property {Action|string} [suffixId]
- * @property {Action|string|number|boolean|NestedData} value
+ * @property {Action[]|string[]|number[]|boolean[]|NestedData[]} values
  */
 
 /**

@@ -623,7 +623,7 @@ const action = createPlugin('action', {
         name: 'action/valueGroups',
         value: id,
         options: {
-          id: context.groupId,
+          id: props.groupId || context.groupId,
           update: {
             method: 'push'
           }
