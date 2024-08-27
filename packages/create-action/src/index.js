@@ -190,11 +190,14 @@ import createAction from './create-action.js'
 /**
  * @typedef {Object} DataSetValueOptions
  * @property {Action|string} id
+ * @property {Object} [metadata] - Document metadata
  * @property {Action|boolean} [stopPropagation]
  * @property {Action|boolean} [merge]
  * @property {Object} [update]
  * @property {Action[]|string[]|number[]} [update.position]
  * @property {'push'|'pull'|'pop'|'shift'|'unshift'|'splice'} [update.method]
+ * @property {Action|number} [update.startIndex] - Zero-based index at which to start changing the array
+ * @property {Action|number} [update.deleteCount] - An integer indicating the number of elements in the array to remove from start
  */
 
 /**
