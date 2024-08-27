@@ -84,6 +84,7 @@ function mergeContextProperties (data, context) {
  * @template {Object.<string, Function>} Action
  * @typedef {Object} PluginExport
  * @property {string} name
+ * @property {PluginMetadata} [metadata]
  * @property {Action} [actions]
  * @property {PluginModal} [models]
  * @property {Function} initialise
@@ -129,7 +130,24 @@ function createPlugin (name, data) {
   }
 
   if (data.metadata) {
-    plugin.metadata = data.metadata
+    plugin.metadata = {
+      plugin: data.metadata.plugin
+    }
+
+    if (data.metadata.actions) {
+      /** @type {Object.<string, PluginMetadataItem>} */
+      const actions = {}
+
+      for (const key in data.metadata.actions) {
+        if (Object.hasOwnProperty.call(data.metadata.actions, key)) {
+          actions[name + '_' + key] = Object.assign({
+            plugin: name
+          }, data.metadata.actions[key])
+        }
+      }
+
+      plugin.metadata.actions = actions
+    }
   }
 
   if (data.data) {
@@ -157,18 +175,20 @@ function createPlugin (name, data) {
     plugin.actions = {}
 
     for (const key in data.actions) {
-      const actionContext = { context: {}, payload: {}, blockValues: {} }
-
       if (Object.hasOwnProperty.call(data.actions, key)) {
-        const action = data.actions[key].bind(context)
+        const actionContext = { context: {}, payload: {}, blockValues: {} }
 
-        context[key] = action
-        // app actions
-        pluginData.actions[name + '_' + key] = action
+        if (Object.hasOwnProperty.call(data.actions, key)) {
+          const action = data.actions[key].bind(context)
 
-        // export actions
-        plugin.actions[key] = (params) => {
-          return action(params, actionContext)
+          context[key] = action
+          // app actions
+          pluginData.actions[name + '_' + key] = action
+
+          // export actions
+          plugin.actions[key] = (params) => {
+            return action(params, actionContext)
+          }
         }
       }
     }
