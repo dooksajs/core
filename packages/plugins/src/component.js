@@ -766,41 +766,84 @@ function createTemplate ({
   }
 }
 
+function updateChildren (id, parent, nextChildNodes) {
+  const prevChildNodes = parent.childNodes
+  const removeNodes = {}
+  let childLength = nextChildNodes.length
 
-function updateChildren (parent, childNodes) {
-  if (parent.childNodes.length > childNodes.length) {
-    parent: for (let i = 0; i < parent.childNodes.length; i++) {
-      const prevNode = parent.childNodes[i]
+  if (prevChildNodes.length > nextChildNodes.length) {
+    childLength = prevChildNodes.length
+  }
 
-      // check if node exists in new list
-      for (let i = 0; i < childNodes.length; i++) {
-        const nextNode = childNodes[i].item
+  for (let i = 0; i < childLength; i++) {
+    let nextNode = nextChildNodes[i]
+    const prevNode = prevChildNodes[i]
 
-        if (nextNode === prevNode) {
-          continue parent
+    // exit if we've reached the end of nextNodes
+    if (nextNode) {
+      nextNode = nextNode.item
+    } else {
+      break
+    }
+
+    // replace previous node
+    if (!prevNode) {
+      parent.appendChild(nextNode)
+    } else if (nextNode !== prevNode) {
+      // node was inserted
+      const prevComponentId = prevNode.dooksaComponentId
+      const nextComponentId = nextNode.dooksaComponentId
+      const prevNodeBelongsTo = dataGetValue({
+        name: 'component/parents',
+        id: prevComponentId
+      })
+
+      // Mark node to be removed does not belong to next list
+      if (prevNodeBelongsTo.item === id) {
+        let markToRemove = true
+
+        for (let j = i; j < nextChildNodes.length; j++) {
+          const node = nextChildNodes[j].item
+
+          if (node === prevNode) {
+            markToRemove = false
+            break
+          }
         }
+
+        if (markToRemove) {
+          removeNodes[prevComponentId] = prevNode
+        }
+      } else if (removeNodes[nextComponentId]) {
+        delete removeNodes[nextComponentId]
       }
 
-      // remove unused node
-      componentRemove({ id: prevNode.dooksaComponentId })
-      prevNode.remove()
+      // replace prev node with next
+      prevNode.replaceWith(nextNode)
     }
-  } else {
-    for (let i = 0; i < childNodes.length; i++) {
-      const nextNode = childNodes[i].item
-      const prevNode = parent.childNodes[i]
+  }
 
-      if (nextNode !== prevNode) {
-        if (!prevNode) {
-          parent.appendChild(nextNode)
-        } else {
-          parent.insertBefore(nextNode, prevNode)
-        }
+  // remove excess unused nodes
+  if (prevChildNodes.length > nextChildNodes.length) {
+    for (let i = nextChildNodes.length; i < prevChildNodes.length; i++) {
+      const node = prevChildNodes[i]
+      const componentId = node.dooksaComponentId
+
+      if (removeNodes[componentId] === undefined) {
+        componentRemove({ id: componentId, stopPropagation: true })
+        node.remove()
       }
     }
   }
-}
 
+  for (const key in removeNodes) {
+    if (Object.hasOwnProperty.call(removeNodes, key)) {
+      const node = removeNodes[key]
+
+      componentRemove({ id: node.dooksaComponentId, stopPropagation: true })
+    }
+  }
+}
 
 const component = createPlugin('component', {
   metadata: {
@@ -944,9 +987,10 @@ const component = createPlugin('component', {
      * @param {Object} param
      * @param {string} param.id
      * @param {boolean} [param.stopPropagation=false]
+     * @param {Object} [context]
      * @param {boolean} [isHead=true]
      */
-    remove ({ id, stopPropagation = false }, isHead = true) {
+    remove ({ id, stopPropagation = false }, context, isHead = true) {
       const parentId = dataGetValue({ name: 'component/parents', id }).item
       const parentChildren = dataGetValue({ name: 'component/children', id: parentId })
 
@@ -1029,7 +1073,7 @@ const component = createPlugin('component', {
         dataDeleteValue({ name: 'component/children', id, stopPropagation: true })
 
         for (let i = 0; i < children.item.length; i++) {
-          this.remove({ id: children.item[i] }, false)
+          this.remove({ id: children.item[i] }, context, false)
         }
       }
 
@@ -1135,11 +1179,11 @@ const component = createPlugin('component', {
       if (childIsLazy) {
         return Promise.all(children)
           .then(results => {
-            updateChildren(node, results)
+            updateChildren(id, node, results)
           })
           .catch(error => console.error(error))
       } else {
-        updateChildren(node, children)
+        updateChildren(id, node, children)
       }
     }
   },
