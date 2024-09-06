@@ -148,114 +148,120 @@ const operators = {
 
 const operator = createPlugin('operator', {
   metadata: {
-    plugin: {
-      title: 'Operator',
-      description: 'Common operators for Dooksa',
-      icon: 'ph:math-operations-fill'
-    },
-    actions: {
-      compare: {
+    title: 'Operator',
+    description: 'Common operators for Dooksa',
+    icon: 'ph:math-operations-fill'
+  },
+  actions: {
+    compare: {
+      metadata: {
         title: 'Compare',
         description: 'Compare two or more values',
         icon: 'mdi:equal-box'
       },
-      eval: {
-        title: 'Evaluate two values',
-        description: 'Evaluate two values using an operator',
-        icon: 'ph:math-operations-fill'
-      }
-    }
-  },
-  actionSchemas: {
-    compare: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          value_1: {
-            $ref: 'primitives'
-          },
-          value_2: {
-            $ref: 'primitives'
-          },
-          op: {
-            enum: ['&&', '||']
+      parameters: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            value_1: {
+              title: 'This',
+              type: 'primitives',
+              group: 'Compare',
+              component: 'action-parma-value',
+              required: true
+            },
+            value_2: {
+              title: 'That',
+              type: 'primitives',
+              group: 'Compare',
+              component: 'action-parma-value',
+              required: true
+            },
+            op: {
+              group: 'Compare',
+              type: 'string',
+              component: 'action-param-operator-compare-op',
+              required: true
+            }
           }
         }
+      },
+      /**
+       * Compare two or more values
+       * @param {Object[]} values - Contains two values or more values which are compared
+       * @param {*} values[].value_1 - Contains two values or more values which are compared
+       * @param {*} values[].value_2 - Contains two values or more values which are compared
+       * @param {'&&'|'||'} values[].op - Contains two values or more values which are compared
+       * @example
+       * const andValues = ['1', '&&', 1]
+       */
+      method (values) {
+        let result = false
+
+        for (let i = 0; i < values.length; i++) {
+          const item = values[i]
+
+          if (item.op === '&&') {
+            if ((item.value_1 && item.value_2)) {
+              result = true
+            } else {
+              break
+            }
+          }
+
+          if (item.op === '||') {
+            if ((item.value_1 || item.value_2)) {
+              result = true
+            } else {
+              break
+            }
+          }
+        }
+
+        return result
       }
     },
     eval: {
-      name: {
-        type: 'string'
+      metadata: {
+        title: 'Evaluate two values',
+        description: 'Evaluate two values using an operator',
+        icon: 'ph:math-operations-fill'
       },
-      values: {
-        oneOf: [
-          {
+      parameters: {
+        type: 'object',
+        properties: {
+          name: {
+            title: 'Operator',
+            type: 'string',
+            component: 'action-param-operator-eval-name',
+            required: true
+          },
+          values: {
             type: 'array',
             items: {
-              type: 'string'
+              title: 'Values',
+              type: 'string',
+              component: 'action-param-operator-eval-values',
+              required: true
             },
-            maxItems: 2
-          }
-        ]
-      }
-    },
-    $defs: {
-      primitives: {
-        oneOf: [
-          { type: 'string' },
-          { type: 'number' },
-          { type: 'boolean' }
-        ]
-      }
-    }
-  },
-  actions: {
-    /**
-     * Compare two or more values
-     * @param {Object[]} values - Contains two values or more values which are compared
-     * @param {*} values[].value_1 - Contains two values or more values which are compared
-     * @param {*} values[].value_2 - Contains two values or more values which are compared
-     * @param {'&&'|'||'} values[].op - Contains two values or more values which are compared
-     * @example
-     * const andValues = ['1', '&&', 1]
-     */
-    compare (values) {
-      let result = false
-
-      for (let i = 0; i < values.length; i++) {
-        const item = values[i]
-
-        if (item.op === '&&') {
-          if ((item.value_1 && item.value_2)) {
-            result = true
-          } else {
-            break
+            maxItems: 2,
+            required: true
           }
         }
-
-        if (item.op === '||') {
-          if ((item.value_1 || item.value_2)) {
-            result = true
-          } else {
-            break
-          }
+      },
+      /**
+       * Evaluate two values
+       * @param {Object} eval - The Object containing the data to evaluate two values
+       * @param {string} eval.name - Operator name
+       * @param {OperatorValues} eval.values - Contains two values to be evaluated
+       */
+      method ({ name, values }) {
+        if (operators[name]) {
+          return operators[name](values)
+        } else {
+          throw new Error('No operator found: ' + name)
         }
-      }
-
-      return result
-    },
-    /**
-     * Evaluate two values
-     * @param {Object} eval - The Object containing the data to evaluate two values
-     * @param {string} eval.name - Operator name
-     * @param {OperatorValues} eval.values - Contains two values to be evaluated
-     */
-    eval ({ name, values }) {
-      if (operators[name]) {
-        return operators[name](values)
-      } else {
-        throw new Error('No operator found: ' + name)
       }
     }
   }

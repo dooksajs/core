@@ -22,7 +22,7 @@ const availableMethods = {
   fetch_getAll: true,
   fetch_getById: true,
   list_filter: true,
-  list_forEach: true,
+  list_map: true,
   list_indexOf: true,
   list_push: true,
   list_sort: true,

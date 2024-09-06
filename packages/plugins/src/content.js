@@ -3,11 +3,9 @@ import { dataGetValue } from './data.js'
 
 const content = createPlugin('content', {
   metadata: {
-    plugin: {
-      title: 'Content',
-      description: 'Manage content',
-      icon: 'mdi:text'
-    }
+    title: 'Content',
+    description: 'Manage content',
+    icon: 'mdi:text'
   },
   models: {
     items: {

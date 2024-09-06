@@ -1328,601 +1328,862 @@ function validateSchema (data, path, source) {
 
 const data = createPlugin('data', {
   metadata: {
-    plugin: {
-      title: 'Data',
-      description: 'Fetch data from the backend',
-      icon: 'mdi:file-document-box-search'
-    },
-    actions: {
-      generateId: {
+    title: 'Data',
+    description: 'Dooksa state management system',
+    icon: 'mdi:database'
+  },
+  actions: {
+    generateId: {
+      metadata: {
         title: 'Generate ID',
-        description: 'Generate a unique ID',
+        description: 'Create a unique ID',
         icon: 'mdi:identifier'
       },
-      find: {
-        title: 'Find',
+      method: generateId
+    },
+    find: {
+      metadata: {
+        title: 'Find document',
         description: 'Search for instances from a collection',
         icon: 'mdi:search'
       },
-      deleteDataValue: {
-        title: 'Delete state value',
-        description: 'Delete value from app state',
-        icon: 'mdi:trash'
-      },
-      getDataValue: {
-        title: 'Get state value',
-        description: 'Get value from app state',
-        icon: 'mdi:application-variable'
-      },
-      setDataValue: {
-        title: 'Set state value',
-        description: 'Update the app state',
-        icon: 'mdi:save'
-      }
-    }
-  },
-  actions: {
-    generateId,
-    /**
-     * Retrieve all entities from collection
-     * @param {Object} param
-     * @param {string} param.name - Name of collection
-     * @param {boolean} [param.expand] - Collect related documents
-     * @param {DataWhere[]} [param.where]
-     * @param {GetDataOption} [param.options]
-     */
-    find ({ name, where = [], options = {} }) {
-      const values = database[name]
-
-      if (values == null) {
-        throw new DataValueException('No collection found: ' + name)
-      }
-
-      const schema = databaseSchema[name]
-
-      if (schema.type === 'collection') {
-        const valueItems = []
-
-        valueLoop: for (const id in values) {
-          if (Object.hasOwnProperty.call(values, id)) {
-            const value = values[id]
-            const dataResult = createDataValue(name, id)
-            let isValid = true
-
-            for (let i = 0; i < where.length; i++) {
-              isValid = filterData(dataResult, where[i])
-
-              if (!isValid) {
-                continue valueLoop
+      parameters: {
+        type: 'object',
+        properties: {
+          name: {
+            title: 'Name',
+            type: 'string',
+            component: 'action-param-collection',
+            required: true
+          },
+          where: {
+            title: 'Where',
+            type: 'array',
+            component: 'action-param-data-find-where'
+          },
+          options: {
+            type: 'object',
+            properties: {
+              expand: {
+                type: 'boolean',
+                title: 'Expand',
+                group: 'Options',
+                component: 'action-param-boolean'
+              },
+              expandClone: {
+                type: 'boolean',
+                group: 'Options',
+                title: 'Deep copy expanded documents',
+                component: 'action-param-boolean'
+              },
+              clone: {
+                type: 'boolean',
+                title: 'Deep copy',
+                group: 'Options',
+                component: 'action-param-boolean'
+              },
+              position: {
+                title: 'Result key',
+                type: 'string',
+                group: 'Options',
+                component: 'action-param-string'
               }
             }
-
-            dataResult.isEmpty = false
-            dataResult.item = value._item
-            dataResult.metadata = value._metadata
-            dataResult.previous = value._previous
-
-            if (options.expand) {
-              getExpandedData(name, dataResult, options)
-            }
-
-            valueItems.push(dataResult)
           }
         }
+      },
+      /**
+       * Retrieve all entities from collection
+       * @param {Object} param
+       * @param {string} param.name - Name of collection
+       * @param {DataWhere[]} [param.where]
+       * @param {GetDataOption} [param.options]
+       */
+      method ({ name, where = [], options = {} }) {
+        const values = database[name]
 
-        return valueItems
-      }
+        if (values == null) {
+          throw new DataValueException('No collection found: ' + name)
+        }
 
-      const result = createDataValue(name)
-      let isValid = true
+        const schema = databaseSchema[name]
 
-      result.isEmpty = false
-      result.item = values._item
-      result.metadata = values._metadata
-      result.previous = values._previous
+        if (schema.type === 'collection') {
+          const valueItems = []
 
-      for (let i = 0; i < where.length; i++) {
-        isValid = filterData(result, where[i])
+          valueLoop: for (const id in values) {
+            if (Object.hasOwnProperty.call(values, id)) {
+              const value = values[id]
+              const dataResult = createDataValue(name, id)
+              let isValid = true
+
+              for (let i = 0; i < where.length; i++) {
+                isValid = filterData(dataResult, where[i])
+
+                if (!isValid) {
+                  continue valueLoop
+                }
+              }
+
+              dataResult.isEmpty = false
+              dataResult.item = value._item
+              dataResult.metadata = value._metadata
+              dataResult.previous = value._previous
+
+              if (options.expand) {
+                getExpandedData(name, dataResult, options)
+              }
+
+              valueItems.push(dataResult)
+            }
+          }
+
+          return valueItems
+        }
+
+        const result = createDataValue(name)
+        let isValid = true
+
+        result.isEmpty = false
+        result.item = values._item
+        result.metadata = values._metadata
+        result.previous = values._previous
+
+        for (let i = 0; i < where.length; i++) {
+          isValid = filterData(result, where[i])
+
+          if (!isValid) {
+            result.isEmpty = true
+
+            return result
+          }
+        }
 
         if (!isValid) {
           result.isEmpty = true
 
           return result
         }
+
+        return [result]
       }
-
-      if (!isValid) {
-        result.isEmpty = true
-
-        return result
-      }
-
-      return [result]
     },
-    /**
-     * Set data without schema validation
-     * @param {Object} param
-     * @param {string} param.name
-     * @param {*} param.value
-     * @param {Object} [param.options]
-     * @param {string} param.options.id
-     * @returns {DataValue}
-     */
-    unsafeSetValue ({ name, value, options }) {
-      const result = createDataValue(name, options.id)
+    unsafeSetValue: {
+      /**
+       * Set data without schema validation
+       * @param {Object} param
+       * @param {string} param.name
+       * @param {*} param.value
+       * @param {Object} [param.options]
+       * @param {string} param.options.id
+       * @returns {DataValue}
+       */
+      method ({ name, value, options }) {
+        const result = createDataValue(name, options.id)
 
-      if (options) {
-        if (options.id == null) {
+        if (options) {
+          if (options.id == null) {
+            // update collection
+            database[name] = value
+
+            result.item = value
+          } else {
+            result.item = value._item || value
+
+            const data = database[name][options.id] || {}
+
+            database[name][options.id] = {
+              _item: value._item || value,
+              _metadata: value._metadata || data._metadata || {}
+            }
+          }
+        } else {
           // update collection
           database[name] = value
 
           result.item = value
-        } else {
-          result.item = value._item || value
+        }
 
-          const data = database[name][options.id] || {}
+        fireDataListeners(name, 'update', result)
 
-          database[name][options.id] = {
-            _item: value._item || value,
-            _metadata: value._metadata || data._metadata || {}
+        return result
+      }
+    },
+    addListener: {
+      metadata: {
+        title: 'Add data listener',
+        description: 'Add an action to a data event',
+        icon: 'clarity:cursor-hand-click-line'
+      },
+      parameters: {
+        type: 'object',
+        properties: {
+          name: {
+            title: 'Name',
+            type: 'string',
+            component: 'action-param-collection',
+            required: true
+          },
+          id: {
+            title: 'Document ID',
+            type: 'string',
+            component: 'action-param-collection-document',
+            required: true
+          },
+          on: {
+            title: 'Event',
+            type: 'string',
+            component: 'action-param-event-listener',
+            required: true
+          },
+          handler: {
+            title: 'Action',
+            type: 'string',
+            component: 'action-param-action',
+            required: true
+          },
+          handlerId: {
+            title: 'Handler ID',
+            type: 'string',
+            component: 'action-param-value'
+          },
+          priority: {
+            title: 'Event priority',
+            group: 'Options',
+            type: 'boolean',
+            component: 'action-param-number'
+          },
+          captureAll: {
+            title: 'Fire action on all events',
+            group: 'Options',
+            type: 'boolean',
+            component: 'action-param-boolean'
           }
         }
-      } else {
-        // update collection
-        database[name] = value
+      },
+      /**
+       * Add data listener
+       * @param {Object} param
+       * @param {string} param.name - Collection name
+       * @param {'update'|'delete'} [param.on='update'] - Data event name
+       * @param {string} [param.id] - Data collection Id
+       * @param {number} [param.priority]
+       * @param {boolean} [param.force] - Force the event to fire
+       * @param {boolean} [param.captureAll] - Fire action on all events
+       * @param {string} [param.handlerId=''] - Id of handler
+       * @param {Function|string} param.handler
+       */
+      method ({
+        name,
+        id,
+        on = 'update',
+        priority,
+        force,
+        captureAll,
+        handler,
+        handlerId = generateId()
+      }) {
+        const listeners = getDataListeners(name, on, id)
 
-        result.item = value
-      }
+        // set default listener value
+        if (!listeners.items) {
+          const priorityKey = on + 'Priority'
 
-      fireDataListeners(name, 'update', result)
+          if (id) {
+            dataListeners[on][name][id] = []
+            dataListeners[priorityKey][name][id] = []
 
-      return result
-    },
-    /**
-     * Add data listener
-     * @param {Object} param
-     * @param {string} param.name - Collection name
-     * @param {'update'|'delete'} [param.on='update'] - Data event name
-     * @param {string} [param.id] - Data collection Id
-     * @param {number} [param.priority]
-     * @param {boolean} [param.force] - Force the event to fire
-     * @param {string} [param.capture] - Force the event to fire
-     * @param {string} [param.handlerId=''] - Id of handler
-     * @param {Function} param.handler
-     */
-    addListener ({
-      name,
-      id,
-      on = 'update',
-      priority,
-      force,
-      capture,
-      handler,
-      handlerId = generateId()
-    }) {
-      const listeners = getDataListeners(name, on, id)
+            listeners.items = dataListeners[on][name][id] = []
+            listeners.priority = dataListeners[priorityKey][name][id] = []
+          } else {
+            dataListeners[on][name] = []
+            dataListeners[priorityKey][name] = []
 
-      // set default listener value
-      if (!listeners.items) {
-        const priorityKey = on + 'Priority'
+            listeners.items = dataListeners[on][name]
+            listeners.priority = dataListeners[priorityKey][name]
+          }
+        }
+
+        const handlers = dataHandlers[on][name]
+
+        if (captureAll) {
+          listeners.all.push({
+            force,
+            value: handler
+          })
+
+          handlers[handlerId] = handler
+
+          return handlerId
+        }
 
         if (id) {
-          dataListeners[on][name][id] = []
-          dataListeners[priorityKey][name][id] = []
-
-          listeners.items = dataListeners[on][name][id] = []
-          listeners.priority = dataListeners[priorityKey][name][id] = []
-        } else {
-          dataListeners[on][name] = []
-          dataListeners[priorityKey][name] = []
-
-          listeners.items = dataListeners[on][name]
-          listeners.priority = dataListeners[priorityKey][name]
+          handlerId = id + handlerId
         }
-      }
 
-      const handlers = dataHandlers[on][name]
+        // add listener
+        if (!isNaN(priority)) {
+          listeners.items.push({
+            force,
+            value: handler
+          })
+          handlers[handlerId] = handler
 
-      if (capture === 'all') {
-        listeners.all.push({
+
+          return handlerId
+        }
+
+        listeners.priority.push({
           force,
+          priority,
           value: handler
         })
+
+        // sort by acceding order
+        listeners.priority.sort((a, b) => a.priority - b.priority)
 
         handlers[handlerId] = handler
 
         return handlerId
       }
-
-      if (id) {
-        handlerId = id + handlerId
-      }
-
-      // add listener
-      if (!isNaN(priority)) {
-        listeners.items.push({
-          force,
-          value: handler
-        })
-        handlers[handlerId] = handler
-
-
-        return handlerId
-      }
-
-      listeners.priority.push({
-        force,
-        priority,
-        value: handler
-      })
-
-      // sort by acceding order
-      listeners.priority.sort((a, b) => a.priority - b.priority)
-
-      handlers[handlerId] = handler
-
-      return handlerId
     },
-    /**
-     * Delete data listeners
-     * @param {Object} item
-     * @param {string} item.name - Data collection name
-     * @param {'update'|'delete'} [item.on='update'] - Data event name
-     * @param {string} [item.id] - Data collection Id
-     * @param {string} item.handlerId - The reference handler Id that will be removed
-     */
-    deleteListener ({
-      name,
-      id,
-      on = 'update',
-      handlerId
-    }) {
-      const listeners = getDataListeners(name, on, id)
+    deleteListener: {
+      metadata: {
+        title: 'Delete data listener',
+        description: 'Remove action attached to a data event',
+        icon: 'mdi:trash'
+      },
+      parameters: {
+        type: 'object',
+        properties: {
+          name: {
+            title: 'Name',
+            type: 'string',
+            component: 'action-param-collection',
+            required: true
+          },
+          id: {
+            title: 'Document ID',
+            type: 'string',
+            component: 'action-param-collection-document',
+            required: true
+          },
+          on: {
+            title: 'Event',
+            type: 'string',
+            component: 'action-param-event-listener',
+            required: true
+          },
+          handlerId: {
+            title: 'Handler ID',
+            type: 'string',
+            component: 'action-param-value',
+            required: true
+          }
+        }
+      },
+      /**
+       * Delete data listeners
+       * @param {Object} item
+       * @param {string} item.name - Data collection name
+       * @param {string} [item.id] - Data collection Id
+       * @param {'update'|'delete'} [item.on='update'] - Data event name
+       * @param {string} item.handlerId - The reference handler Id that will be removed
+       */
+      method ({
+        name,
+        id,
+        on = 'update',
+        handlerId
+      }) {
+        const listeners = getDataListeners(name, on, id)
 
-      if (id) {
-        handlerId = id + handlerId
-      }
+        if (id) {
+          handlerId = id + handlerId
+        }
 
-      const handler = dataHandlers[on][name][handlerId]
-      const handlerIndex = listeners.items.indexOf(handler)
-      const handlerPriorityIndex = listeners.priority.indexOf(handler)
-      let isHandler = false
+        const handler = dataHandlers[on][name][handlerId]
+        const handlerIndex = listeners.items.indexOf(handler)
+        const handlerPriorityIndex = listeners.priority.indexOf(handler)
+        let isHandler = false
 
-      // remove handler
-      if (handlerIndex !== -1) {
-        listeners.items.splice(handlerIndex, 1)
+        // remove handler
+        if (handlerIndex !== -1) {
+          listeners.items.splice(handlerIndex, 1)
 
-        isHandler = true
-      }
+          isHandler = true
+        }
 
-      if (handlerPriorityIndex !== -1) {
-        listeners.priority.splice(handlerIndex, 1)
+        if (handlerPriorityIndex !== -1) {
+          listeners.priority.splice(handlerIndex, 1)
 
-        isHandler = true
-      }
+          isHandler = true
+        }
 
-      if (isHandler) {
-        delete dataHandlers[on][name][handlerId]
-      }
-    },
-    /**
-     * Delete data value
-     * @param {Object} param
-     * @param {string} param.name - Collection name
-     * @param {string} param.id - Document id
-     * @param {boolean} [param.cascade] - Delete related data
-     * @param {boolean} [param.listeners] - Delete related listeners
-     * @param {boolean} [param.stopPropagation] - Prevent further event phases
-     * @returns {Object}
-     */
-    deleteValue ({
-      name,
-      id,
-      cascade,
-      listeners,
-      stopPropagation
-    }) {
-      const collection = database[name]
-
-      if (collection == null) {
-        throw new DataSchemaException({
-          schemaPath: name,
-          keyword: 'schema',
-          message: 'Collection not found'
-        })
-      }
-
-      const relationName = name + '/' + id
-
-      // check if data is in use
-      if (databaseRelationInUse[relationName]) {
-        return {
-          inUse: true,
-          deleted: false
+        if (isHandler) {
+          delete dataHandlers[on][name][handlerId]
         }
       }
+    },
+    deleteValue: {
+      metadata: {
+        title: 'Delete value',
+        description: 'Delete value from app state',
+        icon: 'mdi:trash'
+      },
+      parameters: {
+        type: 'object',
+        properties: {
+          name: {
+            title: 'Name',
+            type: 'string',
+            component: 'action-param-collection',
+            required: true
+          },
+          id: {
+            title: 'Document ID',
+            type: 'string',
+            component: 'action-param-collection-document',
+            required: true
+          },
+          cascade: {
+            title: 'Delete related data',
+            type: 'boolean',
+            group: 'Options',
+            component: 'action-param-boolean'
+          },
+          listeners: {
+            title: 'Delete related listeners',
+            type: 'boolean',
+            group: 'Options',
+            component: 'action-param-boolean'
+          },
+          stopPropagation: {
+            title: 'Prevent further event phases',
+            type: 'boolean',
+            group: 'Options',
+            component: 'action-param-boolean'
+          }
+        }
+      },
+      /**
+       * Delete data value
+       * @param {Object} param
+       * @param {string} param.name - Collection name
+       * @param {string} param.id - Document id
+       * @param {boolean} [param.cascade] - Delete related data
+       * @param {boolean} [param.listeners] - Delete related listeners
+       * @param {boolean} [param.stopPropagation] - Prevent further event phases
+       * @returns {Object}
+       */
+      method ({
+        name,
+        id,
+        cascade,
+        listeners,
+        stopPropagation
+      }) {
+        const collection = database[name]
 
-      // check if we can clean up related data
-      const relations = databaseRelation[relationName]
+        if (collection == null) {
+          throw new DataSchemaException({
+            schemaPath: name,
+            keyword: 'schema',
+            message: 'Collection not found'
+          })
+        }
 
-      if (relations) {
-        for (let i = 0; i < relations.length; i++) {
-          const usedRelationName = relations[i]
-          const usedRelations = databaseRelationInUse[usedRelationName]
+        const relationName = name + '/' + id
 
-          if (usedRelations && usedRelations.length) {
-            // remove relationship
-            databaseRelationInUse[usedRelationName] = usedRelations.filter(item => item !== relationName)
+        // check if data is in use
+        if (databaseRelationInUse[relationName]) {
+          return {
+            inUse: true,
+            deleted: false
+          }
+        }
 
-            // clear up data if not in use
-            if (!databaseRelationInUse[usedRelationName].length) {
-              const splitName = usedRelationName.split('/')
+        // check if we can clean up related data
+        const relations = databaseRelation[relationName]
 
-              delete databaseRelationInUse[usedRelationName]
+        if (relations) {
+          for (let i = 0; i < relations.length; i++) {
+            const usedRelationName = relations[i]
+            const usedRelations = databaseRelationInUse[usedRelationName]
 
-              if (cascade) {
-                this.deleteValue({ name: splitName[0] + '/' + splitName[1], id: splitName[2], cascade })
+            if (usedRelations && usedRelations.length) {
+              // remove relationship
+              databaseRelationInUse[usedRelationName] = usedRelations.filter(item => item !== relationName)
+
+              // clear up data if not in use
+              if (!databaseRelationInUse[usedRelationName].length) {
+                const splitName = usedRelationName.split('/')
+
+                delete databaseRelationInUse[usedRelationName]
+
+                if (cascade) {
+                  this.deleteValue({ name: splitName[0] + '/' + splitName[1], id: splitName[2], cascade })
+                }
+
+                relations.splice(i, 1)
+                i--
               }
-
-              relations.splice(i, 1)
-              i--
             }
+          }
+
+          if (!relations.length) {
+            delete databaseRelation[relationName]
           }
         }
 
-        if (!relations.length) {
-          delete databaseRelation[relationName]
-        }
-      }
+        if (collection[id]) {
+          const result = createDataValue(name, id)
 
-      if (collection[id]) {
-        const result = createDataValue(name, id)
+          result.item = collection[id]._item
+          result.metadata = collection[id]._metadata
 
-        result.item = collection[id]._item
-        result.metadata = collection[id]._metadata
+          if (!stopPropagation) {
+            fireDataListeners(name, 'delete', result)
+          }
 
-        if (!stopPropagation) {
-          fireDataListeners(name, 'delete', result)
+          delete collection[id]
         }
 
-        delete collection[id]
-      }
-
-      return {
-        inUse: false,
-        deleted: true
+        return {
+          inUse: false,
+          deleted: true
+        }
       }
     },
-    /**
-     * Get data value
-     * @param {GetDataQuery} param
-     * @returns {DataValue}
-     */
-    getValue ({ name, id, prefixId, suffixId, options }) {
-      if (database[name] == null) {
-        throw new DataValueException('No such collection "' + name +"'")
-      }
-
-      const result = createDataValue(name, id)
-      const schema = databaseSchema[name]
-
-      if (schema.type === 'collection' && id == null) {
-        result.isEmpty = true
-
-        return result
-      }
-
-      if (id != null) {
-        // find document using custom affixes
-        if (prefixId || suffixId) {
-          let itemId
-
-          if (prefixId && suffixId) {
-            const prefix = createAffix(prefixId)
-            const suffix = createAffix(suffixId)
-
-            itemId = prefix + id + suffix
-          } else if (prefixId) {
-            const prefix = createAffix(prefixId)
-
-            itemId = prefix + id
-          } else if (suffixId) {
-            const suffix = createAffix(suffixId)
-
-            itemId = id + suffix
-          }
-
-          const value = database[name][itemId]
-
-          if (value != null) {
-            result.isEmpty = false
-            result.isAffixEmpty = false
-            result.id = itemId
-            result.item = value._item
-            result.metadata = value._metadata || false
-
-            if (value._previous) {
-              result.previous = value._previous
+    getValue: {
+      metadata: {
+        title: 'Get value',
+        description: 'Get value from app state',
+        icon: 'mdi:application-braces'
+      },
+      parameters: {
+        type: 'object',
+        properties: {
+          name: {
+            title: 'Name',
+            type: 'string',
+            component: 'action-param-collection',
+            required: true
+          },
+          id: {
+            title: 'Document ID',
+            type: 'string',
+            component: 'action-param-collection-document'
+          },
+          prefixId: {
+            title: 'Delete related data',
+            type: 'boolean',
+            component: 'action-param-value'
+          },
+          suffixId: {
+            title: 'Delete related listeners',
+            type: 'boolean',
+            component: 'action-param-value'
+          },
+          options: {
+            type: 'object',
+            properties: {
+              expand: {
+                type: 'boolean',
+                title: 'Expand',
+                group: 'Options',
+                component: 'action-param-boolean'
+              },
+              expandClone: {
+                type: 'boolean',
+                group: 'Options',
+                title: 'Deep copy expanded documents',
+                component: 'action-param-boolean'
+              },
+              clone: {
+                type: 'boolean',
+                title: 'Deep copy',
+                group: 'Options',
+                component: 'action-param-boolean'
+              },
+              position: {
+                title: 'Result key',
+                type: 'string',
+                group: 'Options',
+                component: 'action-param-string'
+              }
             }
           }
         }
-
-        if (result.isAffixEmpty) {
-          let itemId = id
-
-          // find document using default affixes
-          if (database[name][id] == null && schema.id) {
-            if (schema.id.prefix && schema.id.suffix) {
-              const prefix = createAffix(schema.id.prefix)
-              const suffix = createAffix(schema.id.suffix)
-
-              itemId = prefix + id + suffix
-            } else if (schema.id.prefix) {
-              const prefix = createAffix(schema.id.prefix)
-
-              itemId = prefix + id
-            } else {
-              const suffix = createAffix(schema.id.suffix)
-
-              itemId = id + suffix
-            }
-          }
-
-          const value = database[name][itemId]
-
-          if (value != null) {
-            result.isEmpty = false
-            result.isAffixEmpty = false
-            result.id = itemId
-            result.item = value._item
-            result.metadata = value._metadata || {}
-
-            if (value._previous) {
-              result.previous = value._previous
-            }
-          }
+      },
+      /**
+       * Get data value
+       * @param {GetDataQuery} param
+       * @returns {DataValue}
+       */
+      method ({ name, id, prefixId, suffixId, options }) {
+        if (database[name] == null) {
+          throw new DataValueException('No such collection "' + name +"'")
         }
-      } else {
-        result.item = database[name]
-      }
 
-      if (result.item == null) {
-        return result
-      }
+        const result = createDataValue(name, id)
+        const schema = databaseSchema[name]
 
-      result.isEmpty = false
-
-      if (!options) {
-        return result
-      }
-
-      if (options.expand) {
-        getExpandedData(name, result, options)
-      }
-
-      // return a mutable item
-      if (options.clone) {
-        result.item = cloneDataValue(result)
-      }
-
-      // return a value from position
-      if (Number.isInteger(options.position)) {
-        if (result.item[options.position]) {
-          result.item = result.item[options.position]
-        } else {
+        if (schema.type === 'collection' && id == null) {
           result.isEmpty = true
 
           return result
         }
-      }
 
-      // TODO: create copy (structuredClone) if options.clone is true
+        if (id != null) {
+          // find document using custom affixes
+          if (prefixId || suffixId) {
+            let itemId
 
-      return result
-    },
-    /**
-     * Set data value
-     * @param {Object} param
-     * @param {string} param.name - Name of collection
-     * @param {*} param.value - Data to be set
-     * @param {SetDataOptions} [param.options] - Set data options
-     * @returns {DataValue}
-     */
-    setValue ({ name, value, options }) {
-      const schema = databaseSchema[name]
+            if (prefixId && suffixId) {
+              const prefix = createAffix(prefixId)
+              const suffix = createAffix(suffixId)
 
-      if (!schema) {
-        throw new DataSchemaException({
-          schemaPath: name,
-          keyword: 'schema',
-          message: 'Schema not found'
-        })
-      }
+              itemId = prefix + id + suffix
+            } else if (prefixId) {
+              const prefix = createAffix(prefixId)
 
-      if (value == null) {
-        throw new DataSchemaException({
-          schemaPath: name,
-          keyword: 'source',
-          message: 'Source was undefined'
-        })
-      }
+              itemId = prefix + id
+            } else if (suffixId) {
+              const suffix = createAffix(suffixId)
 
-      let result = createDataValue(name)
-      let target = database[name]
+              itemId = id + suffix
+            }
 
-      if (target == null) {
-        // set default value
-        target = newDataInstance(schema.type)
-      }
+            const value = database[name][itemId]
 
-      result = setData(
-        name,
-        target,
-        value._item || value,
-        options
-      )
+            if (value != null) {
+              result.isEmpty = false
+              result.isAffixEmpty = false
+              result.id = itemId
+              result.item = value._item
+              result.metadata = value._metadata || false
 
-      if (!result.isValid) {
+              if (value._previous) {
+                result.previous = value._previous
+              }
+            }
+          }
+
+          if (result.isAffixEmpty) {
+            let itemId = id
+
+            // find document using default affixes
+            if (database[name][id] == null && schema.id) {
+              if (schema.id.prefix && schema.id.suffix) {
+                const prefix = createAffix(schema.id.prefix)
+                const suffix = createAffix(schema.id.suffix)
+
+                itemId = prefix + id + suffix
+              } else if (schema.id.prefix) {
+                const prefix = createAffix(schema.id.prefix)
+
+                itemId = prefix + id
+              } else {
+                const suffix = createAffix(schema.id.suffix)
+
+                itemId = id + suffix
+              }
+            }
+
+            const value = database[name][itemId]
+
+            if (value != null) {
+              result.isEmpty = false
+              result.isAffixEmpty = false
+              result.id = itemId
+              result.item = value._item
+              result.metadata = value._metadata || {}
+
+              if (value._previous) {
+                result.previous = value._previous
+              }
+            }
+          }
+        } else {
+          result.item = database[name]
+        }
+
+        if (result.item == null) {
+          return result
+        }
+
+        result.isEmpty = false
+
+        if (!options) {
+          return result
+        }
+
+        if (options.expand) {
+          getExpandedData(name, result, options)
+        }
+
+        // return a mutable item
+        if (options.clone) {
+          result.item = cloneDataValue(result)
+        }
+
+        // return a value from position
+        if (Number.isInteger(options.position)) {
+          if (result.item[options.position]) {
+            result.item = result.item[options.position]
+          } else {
+            result.isEmpty = true
+
+            return result
+          }
+        }
+
+        // TODO: create copy (structuredClone) if options.clone is true
+
         return result
       }
-
-      // freeze new item
-      if (typeof result.item === 'object') {
-        Object.freeze(result.item)
-      }
-
-      // set new value
-      database[name] = result.target
-
-      const dataResult = createDataValue(name, result.id)
-
-      dataResult.item = result.item
-      dataResult.isEmpty = false
-      dataResult.previous = result.previous
-      dataResult.metadata = result.metadata
-
-      // notify listeners
-      fireDataListeners(name, 'update', dataResult, (options && options.stopPropagation) ?? false)
-
-      return dataResult
     },
-    /**
-     * Add data modal
-     * @param {Object} param
-     * @param {string} param.namespace
-     * @param {*} param.schema - Result of schema.process
-     */
-    setModal ({ namespace, schema }) {
-      if (!schema) {
-        throw new DataSchemaException({
-          message: 'Data modal expects schema',
-          schemaPath: 'modal',
-          keyword: 'modal'
-        })
+    setValue: {
+      metadata: {
+        title: 'Set value',
+        description: 'Update the app state',
+        icon: 'mdi:content-save-cog'
+      },
+      parameters: {
+        type: 'object',
+        properties: {
+          name: {
+            title: 'Name',
+            type: 'string',
+            component: 'action-param-collection',
+            required: true
+          },
+          value: {
+            title: 'Value',
+            type: 'any',
+            component: 'action-param-value',
+            required: true
+          },
+          options: {
+            type: 'object',
+            properties: {
+              id: {
+                type: 'string',
+                title: 'id',
+                component: 'action-param-value'
+              },
+              merge: {
+                type: 'boolean',
+                title: 'Merge data',
+                group: 'Options',
+                component: 'action-param-boolean'
+              },
+              stopPropagation: {
+                title: 'Prevent further event phases',
+                type: 'boolean',
+                group: 'Options',
+                component: 'action-param-boolean'
+              },
+              update: {
+                type: 'object',
+                properties: {
+                  position: {
+                    type: 'array',
+                    group: 'Update',
+                    title: 'Property',
+                    component: 'action-param-string'
+                  },
+                  method: {
+                    type: 'string',
+                    group: 'Update',
+                    title: 'Method',
+                    component: 'action-param-data-set-value-method'
+                  },
+                  startIndex: {
+                    type: 'number',
+                    group: 'Update',
+                    title: 'Start index',
+                    component: 'action-param-number'
+                  },
+                  deleteCount: {
+                    type: 'number',
+                    group: 'Update',
+                    title: 'Delete count',
+                    component: 'action-param-number'
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      /**
+       * Set data value
+       * @param {Object} param
+       * @param {string} param.name - Name of collection
+       * @param {*} param.value - Data to be set
+       * @param {SetDataOptions} [param.options] - Set data options
+       * @returns {DataValue}
+       */
+      method ({ name, value, options }) {
+        const schema = databaseSchema[name]
+
+        if (!schema) {
+          throw new DataSchemaException({
+            schemaPath: name,
+            keyword: 'schema',
+            message: 'Schema not found'
+          })
+        }
+
+        if (value == null) {
+          throw new DataSchemaException({
+            schemaPath: name,
+            keyword: 'source',
+            message: 'Source was undefined'
+          })
+        }
+
+        let result = createDataValue(name)
+        let target = database[name]
+
+        if (target == null) {
+          // set default value
+          target = newDataInstance(schema.type)
+        }
+
+        result = setData(
+          name,
+          target,
+          value._item || value,
+          options
+        )
+
+        if (!result.isValid) {
+          return result
+        }
+
+        // freeze new item
+        if (typeof result.item === 'object') {
+          Object.freeze(result.item)
+        }
+
+        // set new value
+        database[name] = result.target
+
+        const dataResult = createDataValue(name, result.id)
+
+        dataResult.item = result.item
+        dataResult.isEmpty = false
+        dataResult.previous = result.previous
+        dataResult.metadata = result.metadata
+
+        // notify listeners
+        fireDataListeners(name, 'update', dataResult, (options && options.stopPropagation) ?? false)
+
+        return dataResult
       }
-
-      // set data item schema
-      for (let i = 0; i < schema.length; i++) {
-        const item = schema[i]
-
-        databaseSchema[item.id] = item.entry
-      }
-
-      // listener data type
-      let type = 'array'
-      if (schema.isCollection) {
-        type = 'object'
-      }
-
-      // prepare listeners
-      dataListeners.delete[namespace] = newDataInstance(type)
-      dataListeners.deletePriority[namespace] = newDataInstance(type)
-      dataListeners.update[namespace] = newDataInstance(type)
-      dataListeners.updatePriority[namespace] = newDataInstance(type)
-
-      // prepare handlers
-      dataHandlers.delete[namespace] = {}
-      dataHandlers.update[namespace] = {}
     }
   },
   /**
@@ -1970,7 +2231,6 @@ const dataDeleteValue = data.actions.deleteValue
 const dataGetValue = data.actions.getValue
 const dataAddListener = data.actions.addListener
 const dataDeleteListener = data.actions.deleteListener
-const dataSetModal = data.actions.setModal
 
 export {
   data,
@@ -1980,7 +2240,6 @@ export {
   dataFind,
   dataGenerateId,
   dataGetValue,
-  dataSetModal,
   dataSetValue,
   dataUnsafeSetValue
 }

@@ -37,31 +37,10 @@ function mergeContextProperties (data, context) {
  */
 
 /**
- * @typedef {Object} PluginActionContext
- * @property {Object} [context]
- * @property {Object} [payload]
- * @property {Object} [blockValues]
- */
-
-/**
- * @template This
- * @callback PluginAction
- * @this {This}
- * @param {Object} [params]
- * @param {PluginActionContext} [context]
- */
-
-/**
- * @typedef {Object} PluginMetadataItem
+ * @typedef {Object} PluginMetadata
  * @property {string} title
  * @property {string} description
  * @property {string} icon
- */
-
-/**
- * @typedef {Object} PluginMetadata
- * @property {PluginMetadataItem} plugin
- * @property {Object.<string, PluginMetadataItem>} [actions]
  */
 
 /**
@@ -84,25 +63,70 @@ function mergeContextProperties (data, context) {
  * @template {Object.<string, Function>} Action
  * @typedef {Object} PluginExport
  * @property {string} name
- * @property {PluginMetadata} [metadata]
- * @property {Action} [actions]
+ * @property {Object} metadata
+ * @property {PluginMetadata} metadata.plugin
+ * @property {Object.<string, PluginMetadata>} [metadata.actions]
+ * @property {{ [Property in keyof Action]: Action[Property] }} [actions]
  * @property {PluginModal} [models]
  * @property {Function} initialise
  */
 
 /**
+ * @typedef {Object} PluginActionContext
+ * @property {Object} [context]
+ * @property {Object} [payload]
+ * @property {Object} [blockValues]
+ */
+
+/**
+ * @template This
+ * @callback PluginActionMethod
+ * @this {This}
+ * @param {Object} [params]
+ * @param {PluginActionContext} [context]
+ */
+
+/**
+ * @typedef {Object} PluginActionParameter
+ * @property {'string'|'number'|'array'|'object'|'boolean'} type
+ * @property {Object.<string, PluginActionParameterItem>} [properties]
+ * @property {PluginActionParameterItem} [items]
+ */
+
+/**
+ * @typedef {Object} PluginActionParameterItem
+ * @property {string} [title]
+ * @property {'string'|'number'|'array'|'object'|'boolean'|'any'|'primitives'} type
+ * @property {string} [component]
+ * @property {string} [group]
+ * @property {Object.<string, PluginActionParameterItem>} [properties]
+ * @property {PluginActionParameterItem} [items]
+ * @property {boolean} [required]
+ * @property {number} [maxItems]
+ */
+
+/**
+ * @template {PluginData} Data
  * @template {Object.<string, Function>} Action
  * @template {Object.<string, Function>} Method
- * @template {string} Name
+ * @typedef {Object} PluginAction
+ * @property {PluginActionMethod<PluginContext<Data,Action,Method>>} method
+ * @property {PluginMetadata} [metadata]
+ * @property {PluginActionParameter} [parameters]
+ */
+
+/**
+ * @template {Object.<string, Function>} Action
+ * @template {Object.<string, Function>} Method
  * @template {PluginData} Data
- * @param {Name} name
+ * @param {string} name
  * @param {Object} data
  * @param {PluginExport<Action>[]} [data.dependencies]
  * @param {PluginMetadata} [data.metadata]
  * @param {PluginModal} [data.models]
  * @param {Data} [data.data] - Private data that can be used within actions/setup/methods
  * @param {Method} [data.methods] - Private methods that can be used within actions/setup
- * @param {Action} [data.actions] - Public methods (actions)
+ * @param {Object.<string, PluginAction<Data,Action,Method>>|Action} [data.actions] - Public methods (actions)
  * @param {Object.<string, function>} [data.tokens]
  * @param {PluginSetup<PluginContext<Data, Action, Method>, Object>} [data.setup] - Setup plugin
  */
@@ -110,7 +134,9 @@ function createPlugin (name, data) {
   const context = {}
   /**
    * @typedef {Object} Plugin
-   * @property {PluginMetadata} [metadata]
+   * @property {Object} [metadata]
+   * @property {PluginMetadata} metadata.plugin
+   * @property {Object.<string, PluginMetadata>} [metadata.actions]
    * @property {Object} [tokens]
    * @property {PluginSetup<PluginContext<Data, Action, Method>, Object>} [setup]
    * @property {Object.<string, Function>} [actions]
@@ -124,29 +150,11 @@ function createPlugin (name, data) {
    */
   const plugin = {
     name,
+    metadata: {
+      plugin: data.metadata
+    },
     initialise () {
       return pluginData
-    }
-  }
-
-  if (data.metadata) {
-    plugin.metadata = {
-      plugin: data.metadata.plugin
-    }
-
-    if (data.metadata.actions) {
-      /** @type {Object.<string, PluginMetadataItem>} */
-      const actions = {}
-
-      for (const key in data.metadata.actions) {
-        if (Object.hasOwnProperty.call(data.metadata.actions, key)) {
-          actions[name + '_' + key] = Object.assign({
-            plugin: name
-          }, data.metadata.actions[key])
-        }
-      }
-
-      plugin.metadata.actions = actions
     }
   }
 
@@ -171,29 +179,49 @@ function createPlugin (name, data) {
   }
 
   if (data.actions) {
-    pluginData.actions = {}
+    /** @type {Object.<string, PluginMetadata>} */
+    const metadata = {}
+    let hasMetadata = false
     plugin.actions = {}
+    pluginData.actions = {}
 
     for (const key in data.actions) {
       if (Object.hasOwnProperty.call(data.actions, key)) {
+        const action = data.actions[key]
         const actionContext = { context: {}, payload: {}, blockValues: {} }
+        const actionName = name + '_' + key
+        let method
 
-        if (Object.hasOwnProperty.call(data.actions, key)) {
-          const action = data.actions[key].bind(context)
+        if (typeof action === 'object') {
+          method = action.method.bind(context)
 
-          context[key] = action
-          // app actions
-          pluginData.actions[name + '_' + key] = action
-
-          // export actions
-          plugin.actions[key] = (params) => {
-            return action(params, actionContext)
+          // action metadata
+          if (action.metadata) {
+            hasMetadata = true
+            metadata[actionName] = Object.assign({
+              plugin: name
+            }, action.metadata)
           }
+        } else {
+          method = action.bind(context)
+        }
+
+        context[key] = method
+
+        // app actions
+        pluginData.actions[actionName] = method
+
+        // export actions
+        plugin.actions[key] = (params) => {
+          return method(params, actionContext)
         }
       }
     }
-  }
 
+    if (hasMetadata) {
+      plugin.metadata.actions = metadata
+    }
+  }
 
   return plugin
 }

@@ -60,222 +60,230 @@ function sortDescending (a, b) {
 
 const list = createPlugin('list', {
   metadata: {
-    plugin: {
-      title: 'List',
-      description: 'Manage a collection of data.',
-      icon: 'mdi:application-array'
-    },
-    actions: {
-      filter: {
+    title: 'List',
+    description: 'Manage a collection of data.',
+    icon: 'mdi:application-array'
+  },
+  actions: {
+    filter: {
+      metadata: {
         title: 'Filter list',
         description: 'Create a new filtered list.',
         icon: 'mdi:filter'
       },
-      forEach: {
-        title: 'Loop list',
-        description: 'Iterate a list and optionally map values to a new list.',
-        icon: 'mdi:reiterate'
-      },
-      indexOf: {
-        title: 'Index number',
-        description: 'Retrieve the first index at which the given value can be found.',
-        icon: 'mdi:number-0-box-multiple-outline'
-      },
-      push: {
-        title: 'Push value to list',
-        description: 'Adds the specified value to the end of an array.',
-        icon: 'mdi:format-list-group-plus'
-      },
-      sort: {
-        title: 'Sort list',
-        description: 'Sort list ascending or descending',
-        icon: 'mdi:sort'
-      },
-      splice: {
-        title: 'Splice list',
-        description: 'Remove or replace existing values and/or adding new values',
-        icon: 'mdi:list-status'
-      }
-    }
-  },
-  actions: {
-    /**
-     * Filter items based on conditions
-     * @param {Object} param
-     * @param {ArraySortValue[]} param.items
-     * @param {ArrayFilterBy[]} param.options
-     * @returns {Object}
-     */
-    filter ({ items, options }) {
-      const result = {
-        items: [],
-        usedWidgets: {}
-      }
+      /**
+       * Filter items based on conditions
+       * @param {Object} param
+       * @param {ArraySortValue[]} param.items
+       * @param {ArrayFilterBy[]} param.options
+       * @returns {Object}
+       */
+      method ({ items, options }) {
+        const result = {
+          items: [],
+          usedWidgets: {}
+        }
 
-      filter: for (let i = 0; i < items.length; i++) {
-        const item = items[i]
+        filter: for (let i = 0; i < items.length; i++) {
+          const item = items[i]
 
-        if (options.length > 1) {
-          let compareValues = []
-          /**
-           * @type {Object}
-           * @property {*} value_1
-           * @property {*} value_2
-           * @property {'&&'|'||'} op
-           */
-          let compareItem = {}
+          if (options.length > 1) {
+            let compareValues = []
+            /**
+             * @type {Object}
+             * @property {*} value_1
+             * @property {*} value_2
+             * @property {'&&'|'||'} op
+             */
+            let compareItem = {}
 
-          for (let i = 0; i < options.length; i++) {
-            const option = options[i]
-            const value = operatorEval({
+            for (let i = 0; i < options.length; i++) {
+              const option = options[i]
+              const value = operatorEval({
+                name: option.name,
+                values: [item.value, option.value]
+              })
+
+              if (!compareItem.value_1) {
+                compareItem.value_1 = value
+              }
+
+              if (!compareItem.value_2) {
+                compareItem.op = '&&'
+                compareItem.value_2 = value
+                compareValues.push(compareItem)
+                compareItem = {}
+              }
+            }
+
+            const isValid = operatorCompare(compareValues)
+
+            if (!isValid) {
+              continue filter
+            }
+
+            compareValues = []
+          } else {
+            const option = options[0]
+            const isValid = operatorEval({
               name: option.name,
               values: [item.value, option.value]
             })
 
-            if (!compareItem.value_1) {
-              compareItem.value_1 = value
-            }
-
-            if (!compareItem.value_2) {
-              compareItem.op = '&&'
-              compareItem.value_2 = value
-              compareValues.push(compareItem)
-              compareItem = {}
+            if (!isValid) {
+              continue filter
             }
           }
 
-          const isValid = operatorCompare(compareValues)
+          result.items.push(item)
+          result.usedWidgets[item.widgetId] = true
+        }
 
-          if (!isValid) {
-            continue filter
-          }
+        return result
+      }
+    },
+    map: {
+      metadata: {
+        title: 'Map',
+        description: 'Iterate a list and optionally map values to a new list.',
+        icon: 'mdi:reiterate'
+      },
+      /**
+       * Executes a provided action once for each array element.
+       * @param {Object} param
+       * @param {Object} param.context - Context for action, A new property named "$list" is created with the data type of the "item"
+       * @param {Array|Object} param.items - Array used for iteration
+       * @param {string} param.actionId - Action ID used to execute
+       * @returns {Promise}
+       */
+      method ({ context, items, actionId }) {
+        let length = items.length
 
-          compareValues = []
+        if (Array.isArray(items)) {
+          context.$list = []
         } else {
-          const option = options[0]
-          const isValid = operatorEval({
-            name: option.name,
-            values: [item.value, option.value]
-          })
+          items = Object.keys(items)
+          length = items.length
+          context.$list = {}
+        }
 
-          if (!isValid) {
-            continue filter
+        return new Promise((resolve, reject) => {
+          const promises = []
+
+          for (let i = 0; i < items.length; i++) {
+            promises.push(actionDispatch({
+              id: actionId,
+              context,
+              payload: {
+                key: i,
+                value: items[i],
+                items,
+                length
+              },
+              clearBlockValues: false
+            }))
+          }
+
+          Promise.all(promises)
+            .then(() => resolve(context.$list))
+            .catch(error => reject(error))
+        })
+      }
+    },
+    indexOf: {
+      metadata: {
+        title: 'Index number',
+        description: 'Retrieve the first index at which the given value can be found.',
+        icon: 'mdi:number-0-box-multiple-outline'
+      },
+      /**
+       * s returns the first index at which a given element can be found in the array, or -1 if it is not present.
+       * @param {Object} param
+       * @param {Array} param.items
+       * @param {number|string} param.value
+       * @returns {number}
+       */
+      method ({ items, value }) {
+        for (let i = 0; i < items.length; i++) {
+          const item = items[i]
+
+          if (item === value) {
+            return i
           }
         }
 
-        result.items.push(item)
-        result.usedWidgets[item.widgetId] = true
+        return -1
       }
-
-      return result
     },
-    /**
-     * Executes a provided action once for each array element.
-     * @param {Object} param
-     * @param {Object} param.context - Context for action, A new property named "$list" is created with the data type of the "item"
-     * @param {Array|Object} param.items - Array used for iteration
-     * @param {string} param.actionId - Action ID used to execute
-     * @returns {Promise}
-     */
-    forEach ({ context, items, actionId }) {
-      let length = items.length
-
-      if (Array.isArray(items)) {
-        context.$list = []
-      } else {
-        items = Object.keys(items)
-        length = items.length
-        context.$list = {}
+    push: {
+      metadata: {
+        title: 'Push value to list',
+        description: 'Adds the specified value to the end of an array.',
+        icon: 'mdi:format-list-group-plus'
+      },
+      /**
+       * Adds the specified elements to the end of an array
+       * @param {Object} param
+       * @param {Array} param.target - Array which the new element will be appended
+       * @param {*} param.source - The element that will be appended to the end of the array
+       */
+      method ({ target, source }) {
+        target.push(source)
       }
-
-      return new Promise((resolve, reject) => {
-        const promises = []
-
-        for (let i = 0; i < items.length; i++) {
-          promises.push(actionDispatch({
-            id: actionId,
-            context,
-            payload: {
-              key: i,
-              value: items[i],
-              items,
-              length
-            },
-            clearBlockValues: false
-          }))
+    },
+    sort: {
+      metadata: {
+        title: 'Sort list',
+        description: 'Sort list ascending or descending',
+        icon: 'mdi:sort'
+      },
+      /**
+       * Sort list ascending or descending
+       * @param {Object} param
+       * @param {Array} param.items
+       * @param {ArraySortBy} param.type - Sort by
+       * @returns {ArraySortValue[]}
+       */
+      method ({ items, type }) {
+        if (type === 'ascending') {
+          return items.sort(sortAscending)
+        } else if (type === 'descending') {
+          return items.sort(sortDescending)
         }
 
-        Promise.all(promises)
-          .then(() => resolve(context.$list))
-          .catch(error => reject(error))
-      })
-    },
-    /**
-     * s returns the first index at which a given element can be found in the array, or -1 if it is not present.
-     * @param {Object} param
-     * @param {Array} param.items
-     * @param {number|string} param.value
-     * @returns {number}
-     */
-    indexOf ({ items, value }) {
-      for (let i = 0; i < items.length; i++) {
-        const item = items[i]
-
-        if (item === value) {
-          return i
-        }
+        throw new Error('Sort method does not exist: ' + type )
       }
+    },
+    splice: {
+      metadata: {
+        title: 'Splice list',
+        description: 'Remove or replace existing values and/or adding new values',
+        icon: 'mdi:list-status'
+      },
+      /**
+       * Remove or replace existing values and/or adding new values
+       * @param {Object} param
+       * @param {Array} param.target - The array which will be modified
+       * @param {*} param.source - The elements to add to the array, beginning from start.
+       * @param {number} param.start - Zero-based index at which to start changing the array, converted to an integer.
+       * @param {number} param.deleteCount - An integer indicating the number of elements in the array to remove from start.
+       * @returns {Array}
+       */
+      method ({ target, source, start, deleteCount = 0 }) {
+        if (start == null) {
+          if (source !== undefined) {
+            throw new Error('Splice with source expects a start position but found ' + start)
+          }
 
-      return -1
-    },
-    /**
-     * Adds the specified elements to the end of an array
-     * @param {Object} param
-     * @param {Array} param.target - Array which the new element will be appended
-     * @param {*} param.source - The element that will be appended to the end of the array
-     */
-    push ({ target, source }) {
-      target.push(source)
-    },
-    /**
-     * Sort list ascending or descending
-     * @param {Object} param
-     * @param {Array} param.items
-     * @param {ArraySortBy} param.type - Sort by
-     * @returns {ArraySortValue[]}
-     */
-    sort ({ items, type }) {
-      if (type === 'ascending') {
-        return items.sort(sortAscending)
-      } else if (type === 'descending') {
-        return items.sort(sortDescending)
-      }
-
-      throw new Error('Sort method does not exist: ' + type )
-    },
-    /**
-     * Remove or replace existing values and/or adding new values
-     * @param {Object} param
-     * @param {Array} param.target - The array which will be modified
-     * @param {*} param.source - The elements to add to the array, beginning from start.
-     * @param {number} param.start - Zero-based index at which to start changing the array, converted to an integer.
-     * @param {number} param.deleteCount - An integer indicating the number of elements in the array to remove from start.
-     * @returns {Array}
-     */
-    splice ({ target, source, start, deleteCount = 0 }) {
-      if (start == null) {
-        if (source !== undefined) {
-          throw new Error('Splice with source expects a start position but found ' + start)
+          return target.splice(0)
         }
 
-        return target.splice(0)
-      }
+        if (Array.isArray(source)) {
+          return target.splice(start, deleteCount, ...source)
+        }
 
-      if (Array.isArray(source)) {
-        return target.splice(start, deleteCount, ...source)
+        return target.splice(start, deleteCount, source)
       }
-
-      return target.splice(start, deleteCount, source)
     }
   }
 })

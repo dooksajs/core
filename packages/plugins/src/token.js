@@ -73,11 +73,9 @@ function tokenUpdateText (process, item, insert, start, end, updateText) {
 
 const token = createPlugin('token', {
   metadata: {
-    plugin: {
-      title: 'Token',
-      description: 'Provides a placeholder variable',
-      icon: 'gravity-ui:square-brackets-letter-a'
-    }
+    title: 'Token',
+    description: 'Provides a placeholder variable',
+    icon: 'gravity-ui:square-brackets-letter-a'
   },
   tokens: {
     empty () {
@@ -95,129 +93,133 @@ const token = createPlugin('token', {
     }
   },
   actions: {
-    parseText (value) {
-      // return empty
-      if (value === '[empty]') {
-        return {
-          value: '',
-          token: false
-        }
-      }
-
-      const pattern = /\[(.+)\]/
-      const findToken = new RegExp(pattern, 'g')
-      const token = findToken.test(value)
-
-      return { value, token }
-    },
-    /**
-     * Convert tokens to related string and update the element that the content is attached to
-     * @param {Object} param
-     * @param {string} param.viewId An ID related to the content and the target, usually the element ID
-     * @param {string} param.text The original text that includes the tokens
-     * @param {Function} param.updateText This the function that updates the element, e.g. element.textContent
-     */
-    textContent ({ viewId, text, updateText }) {
-      let tokenIndex = 0
-      // create new process if text is different or no process exists
-      if (!tokenProcess[viewId] || tokenProcess[viewId].tokens !== text) {
-        tokenProcess[viewId] = {
-          list: {},
-          text,
-          tokenised: false,
-          tokens: text
-        }
-      }
-
-      const item = tokenProcess[viewId]
-
-      if (item.tokenised) {
-        item.text = text
-        let valuePadding = 0
-
-        for (const tokenIndex in item.list) {
-          if (Object.hasOwnProperty.call(item.list, tokenIndex)) {
-            const token = item.list[tokenIndex]
-            const prevLength = token.valueLength
-
-            if (valuePadding) {
-              token.start = token.start + valuePadding
-              token.end = token.end + valuePadding
-            }
-
-            const nextLength = tokenGet(
-              'values',
-              viewId,
-              item,
-              tokenIndex,
-              token.id,
-              token.args,
-              token.start,
-              token.end,
-              updateText
-            )
-
-            if (prevLength !== nextLength) {
-              valuePadding = nextLength - prevLength
-            }
+    parseText: {
+      method (value) {
+        // return empty
+        if (value === '[empty]') {
+          return {
+            value: '',
+            token: false
           }
         }
 
-        return
+        const pattern = /\[(.+)\]/
+        const findToken = new RegExp(pattern, 'g')
+        const token = findToken.test(value)
+
+        return { value, token }
       }
+    },
+    textContent: {
+      /**
+       * Convert tokens to related string and update the element that the content is attached to
+       * @param {Object} param
+       * @param {string} param.viewId An ID related to the content and the target, usually the element ID
+       * @param {string} param.text The original text that includes the tokens
+       * @param {Function} param.updateText This the function that updates the element, e.g. element.textContent
+       */
+      method ({ viewId, text, updateText }) {
+        let tokenIndex = 0
+        // create new process if text is different or no process exists
+        if (!tokenProcess[viewId] || tokenProcess[viewId].tokens !== text) {
+          tokenProcess[viewId] = {
+            list: {},
+            text,
+            tokenised: false,
+            tokens: text
+          }
+        }
 
-      for (let i = 0; i < item.text.length; i++) {
-        const bracketLeft = item.text[i]
-        // find open bracket
-        if (bracketLeft === '[') {
-          let token = ''
+        const item = tokenProcess[viewId]
 
-          for (let j = i + 1; j < item.text.length; j++) {
-            const bracketRight = item.text[j]
-            // find closing bracket then process token
-            if (bracketRight === ']') {
-              let valueLength = 0
-              // token found
-              if (token.length > 1) {
-                const tokenArgs = token.split(':')
-                const tokenId = tokenArgs[0] + '/' + tokenArgs[1]
-                const end = j + 1
+        if (item.tokenised) {
+          item.text = text
+          let valuePadding = 0
 
-                item.list[tokenIndex] = {
-                  id: tokenId,
-                  processed: false,
-                  args: tokenArgs,
-                  value: '',
-                  start: i,
-                  end
-                }
-                // get token
-                valueLength = tokenGet(
-                  'values',
-                  viewId,
-                  item,
-                  tokenIndex,
-                  tokenId,
-                  tokenArgs,
-                  i,
-                  end,
-                  updateText
-                )
-                // increment token process index
-                tokenIndex++
+          for (const tokenIndex in item.list) {
+            if (Object.hasOwnProperty.call(item.list, tokenIndex)) {
+              const token = item.list[tokenIndex]
+              const prevLength = token.valueLength
+
+              if (valuePadding) {
+                token.start = token.start + valuePadding
+                token.end = token.end + valuePadding
               }
 
-              i = i + valueLength
+              const nextLength = tokenGet(
+                'values',
+                viewId,
+                item,
+                tokenIndex,
+                token.id,
+                token.args,
+                token.start,
+                token.end,
+                updateText
+              )
 
-              break
+              if (prevLength !== nextLength) {
+                valuePadding = nextLength - prevLength
+              }
             }
+          }
 
-            token += bracketRight
+          return
+        }
+
+        for (let i = 0; i < item.text.length; i++) {
+          const bracketLeft = item.text[i]
+          // find open bracket
+          if (bracketLeft === '[') {
+            let token = ''
+
+            for (let j = i + 1; j < item.text.length; j++) {
+              const bracketRight = item.text[j]
+              // find closing bracket then process token
+              if (bracketRight === ']') {
+                let valueLength = 0
+                // token found
+                if (token.length > 1) {
+                  const tokenArgs = token.split(':')
+                  const tokenId = tokenArgs[0] + '/' + tokenArgs[1]
+                  const end = j + 1
+
+                  item.list[tokenIndex] = {
+                    id: tokenId,
+                    processed: false,
+                    args: tokenArgs,
+                    value: '',
+                    start: i,
+                    end
+                  }
+                  // get token
+                  valueLength = tokenGet(
+                    'values',
+                    viewId,
+                    item,
+                    tokenIndex,
+                    tokenId,
+                    tokenArgs,
+                    i,
+                    end,
+                    updateText
+                  )
+                  // increment token process index
+                  tokenIndex++
+                }
+
+                i = i + valueLength
+
+                break
+              }
+
+              token += bracketRight
+            }
           }
         }
-      }
 
-      item.tokenised = true
+        item.tokenised = true
+      }
     }
   }
 })

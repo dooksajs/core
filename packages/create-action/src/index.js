@@ -30,7 +30,7 @@ import createAction from './create-action.js'
  * @property {FetchGetAll} [fetch_getAll]
  * @property {FetchGetById} [fetch_getById]
  * @property {ListFilter} [list_filter]
- * @property {ListForEach} [list_forEach]
+ * @property {ListMap} [list_map]
  * @property {ListIndexOf} [list_indexOf]
  * @property {ListPush} [list_push]
  * @property {ListSort} [list_sort]
@@ -56,8 +56,11 @@ import createAction from './create-action.js'
 
 /**
  * @typedef {Object} ActionDispatchContext
- * @property {Action|string} [contentId]
  * @property {Action|string} [id]
+ * @property {Action|string} [contentId]
+ * @property {Action|string} [groupId]
+ * @property {Action|string} [parentId]
+ * @property {Action|string} [rootId]
  * @property {Action|Array<Action|string>} [components]
  */
 
@@ -88,7 +91,9 @@ import createAction from './create-action.js'
  * 'event/listeners'|
  * 'event/handlers'|
  * 'metadata/currentLanguage'|
- * 'metadata/currentLanguages'|
+ * 'metadata/languages'|
+ * 'metadata/plugins'|
+ * 'metadata/actions'|
  * 'page/id'|
  * 'page/events'|
  * 'page/items'|
@@ -181,7 +186,7 @@ import createAction from './create-action.js'
 /**
  * @typedef {Object} SetActionValue
  * @property {Action|string} id - Action value ID
- * @property {Action|string} groupId - Action value group ID
+ * @property {Action|string} [groupId] - Action value group ID
  * @property {Action|string} [prefixId]
  * @property {Action|string} [suffixId]
  * @property {Action[]|string[]|number[]|boolean[]|NestedData[]} values
@@ -252,7 +257,7 @@ import createAction from './create-action.js'
  */
 
 /**
- * @typedef {Object} ListForEach
+ * @typedef {Object} ListMap
  * @property {Action} items
  * @property {Action|string} actionId
  * @property {Action} [context]

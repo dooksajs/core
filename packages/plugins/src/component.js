@@ -847,23 +847,9 @@ function updateChildren (id, parent, nextChildNodes) {
 
 const component = createPlugin('component', {
   metadata: {
-    plugin: {
-      title: 'Component',
-      description: '',
-      icon: 'mdi:widgets'
-    },
-    actions: {
-      remove: {
-        title: 'Remove component',
-        description: 'Remove a single component and it\'s dependencies',
-        icon: 'mdi:layers-remove'
-      },
-      renderChildren: {
-        title: 'Render children',
-        description: 'Render child components',
-        icon: 'mdi:layers'
-      }
-    }
+    title: 'Component',
+    description: '',
+    icon: 'mdi:widgets'
   },
   models: {
     nodes: {
@@ -982,208 +968,248 @@ const component = createPlugin('component', {
     }
   },
   actions: {
-    /**
-     * Remove component
-     * @param {Object} param
-     * @param {string} param.id
-     * @param {boolean} [param.stopPropagation=false]
-     * @param {Object} [context]
-     * @param {boolean} [isHead=true]
-     */
-    remove ({ id, stopPropagation = false }, context, isHead = true) {
-      const parentId = dataGetValue({ name: 'component/parents', id }).item
-      const parentChildren = dataGetValue({ name: 'component/children', id: parentId })
+    remove: {
+      metadata: {
+        title: 'Remove component',
+        description: 'Remove a single component and it\'s dependencies',
+        icon: 'mdi:layers-remove'
+      },
+      parameters: {
+        type: 'object',
+        properties: {
+          id: {
+            title: 'Component',
+            type: 'string',
+            component: 'action-param-component-item',
+            required: true
+          },
+          stopPropagation: {
+            title: 'Prevent further event phases',
+            type: 'boolean',
+            group: 'Options',
+            component: 'action-param-boolean'
+          }
+        }
+      },
+      /**
+       * Remove component
+       * @param {Object} param
+       * @param {string} param.id
+       * @param {boolean} [param.stopPropagation=false]
+       * @param {Object} [context]
+       * @param {boolean} [isHead=true]
+       */
+      method ({ id, stopPropagation = false }, context, isHead = true) {
+        const parentId = dataGetValue({ name: 'component/parents', id }).item
+        const parentChildren = dataGetValue({ name: 'component/children', id: parentId })
 
-      // remove component from parent
-      if (isHead && !parentChildren.isEmpty) {
-        const children = []
+        // remove component from parent
+        if (isHead && !parentChildren.isEmpty) {
+          const children = []
 
-        // filter out current node
-        for (let i = 0; i < parentChildren.item.length; i++) {
-          const componentId = parentChildren.item[i]
+          // filter out current node
+          for (let i = 0; i < parentChildren.item.length; i++) {
+            const componentId = parentChildren.item[i]
 
-          if (id !== componentId) {
-            children.push(componentId)
+            if (id !== componentId) {
+              children.push(componentId)
+            }
+          }
+
+          if (!children.length) {
+            dataDeleteValue({ name: 'component/children', id: parentId })
+          } else if (children.length !== parentChildren.item.length) {
+            dataSetValue({
+              name: 'component/children',
+              value: children,
+              options: {
+                id: parentId,
+                stopPropagation
+              }
+            })
           }
         }
 
-        if (!children.length) {
-          dataDeleteValue({ name: 'component/children', id: parentId })
-        } else if (children.length !== parentChildren.item.length) {
-          dataSetValue({
-            name: 'component/children',
-            value: children,
+        const events = dataGetValue({ name: 'component/events', id })
+
+        // remove event handlers
+        if (!events.isEmpty) {
+          for (let i = 0; i < events.item.length; i++) {
+            const event = events.item[i]
+
+            dataDeleteValue({ name: 'event/handlers', id: event.id })
+          }
+        }
+
+        const content = dataGetValue({ name: 'component/content', id })
+
+        if (!content.isEmpty) {
+          const contentId = content.item
+          const contentComponents = dataGetValue({ name: 'content/components', id: contentId })
+
+          if (!contentComponents.isEmpty) {
+            if (contentComponents.item.length === 1) {
+              const content = dataGetValue({ name: 'content/languages', id: contentId })
+
+              dataDeleteValue({ name: 'content/languages', id: contentId })
+              dataDeleteValue({ name: 'content/components', id: contentId })
+
+              // remove all content languages
+              for (let i = 0; i < content.item.length; i++) {
+                dataDeleteValue({ name: 'content/items', id: content.item[i] })
+              }
+            } else {
+              // remove current component from content used by list
+              dataSetValue({
+                name: 'content/components',
+                value: id,
+                options: {
+                  id: contentId,
+                  update: {
+                    method: 'pull'
+                  }
+                }
+              })
+            }
+          }
+
+          dataDeleteValue({ name: 'component/content', id })
+        }
+
+        const children = dataGetValue({ name: 'component/children', id })
+
+        if (!children.isEmpty) {
+          dataDeleteValue({ name: 'component/children', id, stopPropagation: true })
+
+          for (let i = 0; i < children.item.length; i++) {
+            this.remove({ id: children.item[i] }, context, false)
+          }
+        }
+
+        // remove component from group
+        const componentGroupId = dataGetValue({ name: 'component/belongsToGroup', id }).item
+        const componentGroup = dataSetValue({
+          name: 'component/groups',
+          value: id,
+          options: {
+            id: componentGroupId,
+            update: {
+              method: 'pull'
+            }
+          }
+        })
+
+        // clean up action variables
+        if (!componentGroup.item.length) {
+          const actionGroupId = dataGetValue({
+            name: 'action/valueBelongsToGroup',
+            id: componentGroupId
+          }).item
+
+          dataDeleteValue({ name: 'action/values', id: componentGroupId })
+
+          const valueGroup = dataSetValue({
+            name: 'action/valueGroups',
+            value: actionGroupId,
             options: {
-              id: parentId,
-              stopPropagation
+              id: componentGroupId,
+              update: {
+                method: 'pull'
+              }
             }
           })
-        }
-      }
 
-      const events = dataGetValue({ name: 'component/events', id })
-
-      // remove event handlers
-      if (!events.isEmpty) {
-        for (let i = 0; i < events.item.length; i++) {
-          const event = events.item[i]
-
-          dataDeleteValue({ name: 'event/handlers', id: event.id })
-        }
-      }
-
-      const content = dataGetValue({ name: 'component/content', id })
-
-      if (!content.isEmpty) {
-        const contentId = content.item
-        const contentComponents = dataGetValue({ name: 'content/components', id: contentId })
-
-        if (!contentComponents.isEmpty) {
-          if (contentComponents.item.length === 1) {
-            const content = dataGetValue({ name: 'content/languages', id: contentId })
-
-            dataDeleteValue({ name: 'content/languages', id: contentId })
-            dataDeleteValue({ name: 'content/components', id: contentId })
-
-            // remove all content languages
-            for (let i = 0; i < content.item.length; i++) {
-              dataDeleteValue({ name: 'content/items', id: content.item[i] })
-            }
-          } else {
-            // remove current component from content used by list
-            dataSetValue({
-              name: 'content/components',
-              value: id,
-              options: {
-                id: contentId,
-                update: {
-                  method: 'pull'
-                }
-              }
-            })
+          if (!valueGroup.isEmpty && !valueGroup.item.length) {
+            dataDeleteValue({ name: 'action/valueGroups', id: actionGroupId })
           }
         }
 
-        dataDeleteValue({ name: 'component/content', id })
+        dataDeleteValue({ name: 'component/belongsToGroup', id })
+        dataDeleteValue({ name: 'component/nodes', id })
+        dataDeleteValue({ name: 'component/parents', id })
+        dataDeleteValue({ name: 'component/roots', id })
+        dataDeleteValue({ name: 'component/items', id })
       }
-
-      const children = dataGetValue({ name: 'component/children', id })
-
-      if (!children.isEmpty) {
-        dataDeleteValue({ name: 'component/children', id, stopPropagation: true })
-
-        for (let i = 0; i < children.item.length; i++) {
-          this.remove({ id: children.item[i] }, context, false)
-        }
-      }
-
-      // remove component from group
-      const groupId = dataGetValue({ name: 'component/belongsToGroup', id }).item
-      const group = dataSetValue({
-        name: 'component/groups',
-        value: id,
-        options: {
-          id: groupId,
-          update: {
-            method: 'pull'
-          }
-        }
-      })
-
-      // clean up empty group
-      if (!group.item.length) {
-        dataDeleteValue({ name: 'component/groups', id: groupId })
-
-        let actionValueGroup = dataGetValue({ name: 'action/valueGroups', id: groupId })
-
-        if (!actionValueGroup.isEmpty) {
-          // remove action values
-          for (let i = 0; i < actionValueGroup.item.length; i++) {
-            const id = actionValueGroup.item[i]
-
-            dataSetValue({
-              name: 'action/valueGroups',
-              value: id,
-              options: {
-                id: groupId,
-                update: {
-                  method: 'pull'
-                }
-              }
-            })
-            dataDeleteValue({ name: 'action/values', id })
-          }
-        }
-
-        actionValueGroup = dataGetValue({ name: 'action/valueGroups', id: groupId })
-
-        if (!actionValueGroup.isEmpty && !actionValueGroup.item.length) {
-          dataDeleteValue({ name: 'action/valueGroups', id: groupId })
-        }
-      }
-
-      dataDeleteValue({ name: 'component/belongsToGroup', id })
-      dataDeleteValue({ name: 'component/nodes', id })
-      dataDeleteValue({ name: 'component/parents', id })
-      dataDeleteValue({ name: 'component/roots', id })
-      dataDeleteValue({ name: 'component/items', id })
     },
-    /**
-     * Render children components
-     * @param {Object} param
-     * @param {string} param.id - Parent component ID
-     * @param {string[]} [param.items] - List of child component ID's
-     */
-    renderChildren ({
-      id,
-      items
-    }) {
-      if (!items) {
-        items = dataGetValue({ name: 'component/children', id }).item
-      }
-
-      const node = dataGetValue({ name: 'component/nodes', id }).item
-      const parentGroupId = dataGetValue({ name: 'component/belongsToGroup', id }).item
-      const children = []
-      let childIsLazy = false
-
-      for (let i = 0; i < items.length; i++) {
-        const childId = items[i]
-        const node = dataGetValue({ name: 'component/nodes', id: childId })
-
-        if (!node.isEmpty) {
-          children.push({
-            item: node.item
-          })
-
-          continue
+    renderChildren: {
+      metadata: {
+        title: 'Render children',
+        description: 'Render child components',
+        icon: 'mdi:layers'
+      },
+      parameters: {
+        type: 'object',
+        properties: {
+          id: {
+            title: 'Component',
+            type: 'string',
+            component: 'action-param-component-item',
+            required: true
+          },
+          items: {
+            title: 'List of children',
+            type: 'array',
+            component: 'action-param-value'
+          }
+        }
+      },
+      /**
+       * Render children components
+       * @param {Object} param
+       * @param {string} param.id - Parent component ID
+       * @param {string[]} [param.items] - List of child component ID's
+       */
+      method ({
+        id,
+        items
+      }) {
+        if (!items) {
+          items = dataGetValue({ name: 'component/children', id }).item
         }
 
-        const item = dataGetValue({ name: 'component/items', id: childId }).item
+        const node = dataGetValue({ name: 'component/nodes', id }).item
+        const parentGroupId = dataGetValue({ name: 'component/belongsToGroup', id }).item
+        const children = []
+        let childIsLazy = false
 
-        if (item.isTemplate) {
-          const groupId = item.groupId || parentGroupId
-          const result = createTemplate({
-            id: childId,
-            template: $component(item.id),
-            parentId: id,
-            rootId: childId,
-            groupId
-          })
+        for (let i = 0; i < items.length; i++) {
+          const childId = items[i]
+          const node = dataGetValue({ name: 'component/nodes', id: childId })
 
-          childIsLazy = (result instanceof Promise)
-          children.push(result)
+          if (!node.isEmpty) {
+            children.push({
+              item: node.item
+            })
+
+            continue
+          }
+
+          const item = dataGetValue({ name: 'component/items', id: childId }).item
+
+          if (item.isTemplate) {
+            const groupId = item.groupId || parentGroupId
+            const result = createTemplate({
+              id: childId,
+              template: $component(item.id),
+              parentId: id,
+              rootId: childId,
+              groupId
+            })
+
+            childIsLazy = (result instanceof Promise)
+            children.push(result)
+          }
         }
-      }
 
-      if (childIsLazy) {
-        return Promise.all(children)
-          .then(results => {
-            updateChildren(id, node, results)
-          })
-          .catch(error => console.error(error))
-      } else {
-        updateChildren(id, node, children)
+        if (childIsLazy) {
+          return Promise.all(children)
+            .then(results => {
+              updateChildren(id, node, results)
+            })
+            .catch(error => console.error(error))
+        } else {
+          updateChildren(id, node, children)
+        }
       }
     }
   },
@@ -1223,7 +1249,7 @@ const component = createPlugin('component', {
     dataAddListener({
       name: 'component/children',
       on: 'delete',
-      capture: 'all',
+      captureAll: true,
       handler: (data) => {
         for (let i = 0; i < data.item.length; i++) {
           this.remove({
@@ -1236,7 +1262,7 @@ const component = createPlugin('component', {
     dataAddListener({
       name: 'component/children',
       on: 'update',
-      capture: 'all',
+      captureAll: true,
       handler: (data) => {
         const id = data.id
         const options = {

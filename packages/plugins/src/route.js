@@ -38,77 +38,79 @@ function currentId () {
 
 const route = createPlugin('route', {
   metadata: {
-    plugin: {
-      title: 'Route',
-      description: 'Client side routing.',
-      icon: 'mdi:router'
-    },
-    actions: {
-      navigate: {
+    title: 'Route',
+    description: 'Client side routing.',
+    icon: 'mdi:router'
+  },
+  actions: {
+    navigate: {
+      metadata: {
         title: 'Navigate to',
         description: 'Change page by path.',
         icon: 'gis:route-end'
       },
-      currentId: {
+      /**
+       * @param {Object} param
+       * @param {string} param.to
+       */
+      method ({ to }) {
+        const from = currentPath()
+
+        // exit if path is the same as current path
+        if (to === from) {
+          return
+        }
+        const fromSections = dataGetValue({ name: 'page/items', id: from })
+        const toSections = dataGetValue({ name: 'page/items', id: to })
+
+        if (toSections.isEmpty) {
+          // get data
+        }
+
+        for (const sectionId in toSections.item) {
+          if (Object.hasOwnProperty.call(toSections.item, sectionId)) {
+            const toViewId = toSections.item[sectionId]
+            const fromViewId = fromSections.item[sectionId]
+
+            if (!fromViewId) {
+              //
+            } else if (fromViewId !== toViewId) {
+              // viewDetach(fromViewId)
+            }
+          }
+        }
+
+        for (const sectionId in fromSections.item) {
+          if (Object.hasOwnProperty.call(fromSections.item, sectionId)) {
+            const toViewId = toSections.item[sectionId]
+            const fromViewId = fromSections.item[sectionId]
+
+            if (!toViewId) {
+              // viewDetach(fromViewId)
+            }
+          }
+        }
+
+        // update history
+        window.history.pushState({ to, from }, '', to)
+      }
+    },
+    currentPath: {
+      metadata: {
+        title: 'Current path',
+        description: 'Current path name',
+        icon: 'formkit:url'
+      },
+      method: currentPath
+    },
+    currentId: {
+      metadata: {
         title: 'Current path ID',
         description: 'Hash current path name.',
         icon: 'mdi:hashtag'
       },
-      currentPath: {
-        title: 'Current path',
-        description: 'Current path name',
-        icon: 'formkit:url'
-      }
+      method: currentId
     }
-  },
-  actions: {
-    /**
-     * @param {Object} param
-     * @param {string} param.to
-     */
-    navigate ({ to }) {
-      const from = currentPath()
-
-      // exit if path is the same as current path
-      if (to === from) {
-        return
-      }
-      const fromSections = dataGetValue({ name: 'page/items', id: from })
-      const toSections = dataGetValue({ name: 'page/items', id: to })
-
-      if (toSections.isEmpty) {
-        // get data
-      }
-
-      for (const sectionId in toSections.item) {
-        if (Object.hasOwnProperty.call(toSections.item, sectionId)) {
-          const toViewId = toSections.item[sectionId]
-          const fromViewId = fromSections.item[sectionId]
-
-          if (!fromViewId) {
-            //
-          } else if (fromViewId !== toViewId) {
-            // viewDetach(fromViewId)
-          }
-        }
-      }
-
-      for (const sectionId in fromSections.item) {
-        if (Object.hasOwnProperty.call(fromSections.item, sectionId)) {
-          const toViewId = toSections.item[sectionId]
-          const fromViewId = fromSections.item[sectionId]
-
-          if (!toViewId) {
-            // viewDetach(fromViewId)
-          }
-        }
-      }
-
-      // update history
-      window.history.pushState({ to, from }, '', to)
-    },
-    currentPath,
-    currentId
   },
   models: {
     sections: {

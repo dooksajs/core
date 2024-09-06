@@ -3,11 +3,9 @@ import { dataGetValue, routeCurrentId, dataSetValue } from './index.js'
 
 const page = createPlugin('page', {
   metadata: {
-    plugin: {
-      title: 'Page',
-      description: 'Manage dooksa pages',
-      icon: 'bi:layout-text-window'
-    }
+    title: 'Page',
+    description: 'Manage dooksa pages',
+    icon: 'bi:layout-text-window'
   },
   models: {
     id: {
@@ -43,142 +41,148 @@ const page = createPlugin('page', {
     }
   },
   actions: {
-    /**
-     *
-     * @param {Object} param
-     * @param {string} param.id -
-     * @returns
-     */
-    save (id) {
-      const pageData = this.getById(id)
+    save: {
+      /**
+       *
+       * @param {Object} param
+       * @param {string} param.id -
+       * @returns
+       */
+      method (id) {
+        const pageData = this.getById(id)
 
-      if (pageData.isEmpty) {
-        return
-      }
-
-      fetch('http://localhost:3000/', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(pageData.item)
-      })
-        .then((response) => {
-          console.log(response)
-          if (response.status !== 201) {
-            return
-          }
-
-          return response.json()
-        })
-        .then(data => {
-          console.log(data)
-        })
-        .catch(e => console.log(e))
-    },
-    getById (id) {
-      const pageData = dataGetValue({
-        name: 'page/items',
-        id,
-        options: {
-          expand: true
+        if (pageData.isEmpty) {
+          return
         }
-      })
 
-      if (pageData.isEmpty) {
-        return {
-          isEmpty: true
-        }
-      }
+        fetch('http://localhost:3000/', {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(pageData.item)
+        })
+          .then((response) => {
+            console.log(response)
+            if (response.status !== 201) {
+              return
+            }
 
-      const data = [{
-        collection: 'page/items',
-        id,
-        item: pageData.item,
-        metadata: pageData.metadata
-      }]
-
-      const expandExclude = pageData.expandIncluded
-
-      for (let i = 0; i < pageData.expand.length; i++) {
-        const item = pageData.expand[i]
-
-        data.push(item)
-
-        if (item.collection === 'component/items') {
-          this.appendExpand({
-            collection: 'component/children',
-            id: item.id,
-            data,
-            expandExclude
+            return response.json()
           })
+          .then(data => {
+            console.log(data)
+          })
+          .catch(e => console.log(e))
+      }
+    },
+    getById: {
+      method (id) {
+        const pageData = dataGetValue({
+          name: 'page/items',
+          id,
+          options: {
+            expand: true
+          }
+        })
 
-          for (let i = 0; i < data.length; i++) {
-            const child = data[i]
+        if (pageData.isEmpty) {
+          return {
+            isEmpty: true
+          }
+        }
 
-            if (child.collection === 'component/items') {
-              if (child.id !== item.id) {
+        const data = [{
+          collection: 'page/items',
+          id,
+          item: pageData.item,
+          metadata: pageData.metadata
+        }]
+
+        const expandExclude = pageData.expandIncluded
+
+        for (let i = 0; i < pageData.expand.length; i++) {
+          const item = pageData.expand[i]
+
+          data.push(item)
+
+          if (item.collection === 'component/items') {
+            this.appendExpand({
+              collection: 'component/children',
+              id: item.id,
+              data,
+              expandExclude
+            })
+
+            for (let i = 0; i < data.length; i++) {
+              const child = data[i]
+
+              if (child.collection === 'component/items') {
+                if (child.id !== item.id) {
+                  this.appendExpand({
+                    collection: 'component/children',
+                    id: child.id,
+                    data,
+                    expandExclude
+                  })
+                }
+
                 this.appendExpand({
-                  collection: 'component/children',
+                  collection: 'component/content',
                   id: child.id,
                   data,
                   expandExclude
                 })
               }
-
-              this.appendExpand({
-                collection: 'component/content',
-                id: child.id,
-                data,
-                expandExclude
-              })
             }
           }
         }
-      }
 
-      return {
-        isEmpty: false,
-        item: data
+        return {
+          isEmpty: false,
+          item: data
+        }
       }
     },
-    /**
-     * Get data and append
-     * @param {Object} param
-     * @param {string} param.collection,
-     * @param {string} param.id,
-     * @param {*} param.data
-     * @param {Object} [param.expandExclude]
-     * @param {boolean} [param.expand=true]
-     */
-    appendExpand ({ collection, id, data, expandExclude, expand = true }) {
-      const getData = dataGetValue({
-        name: collection,
-        id,
-        options: {
-          expand,
-          expandExclude
+    appendExpand: {
+      /**
+       * Get data and append
+       * @param {Object} param
+       * @param {string} param.collection,
+       * @param {string} param.id,
+       * @param {*} param.data
+       * @param {Object} [param.expandExclude]
+       * @param {boolean} [param.expand=true]
+       */
+      method ({ collection, id, data, expandExclude, expand = true }) {
+        const getData = dataGetValue({
+          name: collection,
+          id,
+          options: {
+            expand,
+            expandExclude
+          }
+        })
+
+        if (getData.isEmpty) {
+          return
         }
-      })
 
-      if (getData.isEmpty) {
-        return
-      }
+        data.push({
+          collection,
+          id: getData.id,
+          item: getData.item,
+          metadata: getData.metadata
+        })
 
-      data.push({
-        collection,
-        id: getData.id,
-        item: getData.item,
-        metadata: getData.metadata
-      })
+        if (getData.isExpandEmpty) {
+          return
+        }
 
-      if (getData.isExpandEmpty) {
-        return
-      }
-
-      for (let i = 0; i < getData.expand.length; i++) {
-        data.push(getData.expand[i])
+        for (let i = 0; i < getData.expand.length; i++) {
+          data.push(getData.expand[i])
+        }
       }
     }
   },
