@@ -156,8 +156,10 @@ const list = createPlugin('list', {
        * @param {string} param.actionId - Action ID used to execute
        * @returns {Promise}
        */
-      method ({ context, items, actionId }) {
+      method ({ context, items, actionId }, action) {
         let length = items.length
+
+        context = context || action.context
 
         if (Array.isArray(items)) {
           context.$list = []
