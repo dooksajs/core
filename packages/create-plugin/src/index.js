@@ -63,9 +63,11 @@ function mergeContextProperties (data, context) {
  * @template {Object.<string, Function>} Action
  * @typedef {Object} PluginExport
  * @property {string} name
- * @property {Object} metadata
+ * @property {Object} [metadata]
  * @property {PluginMetadata} metadata.plugin
  * @property {Object.<string, PluginMetadata>} [metadata.actions]
+ * @property {Object} [metadata.actionParameters]
+ * @property {Object} [metadata.actionSchemas]
  * @property {{ [Property in keyof Action]: Action[Property] }} [actions]
  * @property {PluginModal} [models]
  * @property {Function} initialise
@@ -88,21 +90,30 @@ function mergeContextProperties (data, context) {
 
 /**
  * @typedef {Object} PluginActionParameter
- * @property {'string'|'number'|'array'|'object'|'boolean'} type
+ * @property {'string'|'number'|'array'|'object'|'boolean'} [type]
  * @property {Object.<string, PluginActionParameterItem>} [properties]
  * @property {PluginActionParameterItem} [items]
+ * @property {PluginActionParameterComponent} [component]
  */
 
 /**
  * @typedef {Object} PluginActionParameterItem
  * @property {string} [title]
  * @property {'string'|'number'|'array'|'object'|'boolean'|'any'|'primitives'} type
- * @property {string} [component]
+ * @property {PluginActionParameterComponent} [component]
  * @property {string} [group]
  * @property {Object.<string, PluginActionParameterItem>} [properties]
  * @property {PluginActionParameterItem} [items]
  * @property {boolean} [required]
  * @property {number} [maxItems]
+ */
+
+/**
+ * @typedef {Object} PluginActionParameterComponent
+ * @property {string} title
+ * @property {string} id
+ * @property {string} [group]
+ * @property {number} [order]
  */
 
 /**
@@ -114,6 +125,140 @@ function mergeContextProperties (data, context) {
  * @property {PluginMetadata} [metadata]
  * @property {PluginActionParameter} [parameters]
  */
+
+/**
+ * Extract component data from parameter schema
+ * @param {PluginActionParameter|PluginActionParameterItem} params
+ * @param {Object} [entry={}]
+ * @param {Object[]} [results=[]]
+ * @param {Object} [groups={}]
+ * @param {boolean} [isHead=true]
+ */
+function parseParameters (
+  params,
+  entry = {},
+  results = [],
+  groups = {},
+  isHead = true
+) {
+  switch (params.type) {
+    case 'object': {
+      const props = params.properties
+
+      for (const key in props) {
+        const component = props[key].component
+        const item = {}
+
+        if (component) {
+          if (component.group) {
+            const groupId = component.group
+            let group = groups[groupId]
+
+            if (!group) {
+              groups[groupId] = {
+                title: groupId,
+                items: []
+              }
+              group = groups[groupId]
+              results.push(group)
+            }
+
+            group.items.push(item)
+          } else if (component.title) {
+            entry = {
+              title: component.title,
+              items: []
+            }
+
+            results.push(entry)
+            entry.items.push(item)
+          } else {
+            throw new Error('Component missing title property')
+          }
+        }
+
+        parseParameters(props[key], item, results, groups, false)
+      }
+
+      break
+    }
+    case 'array': {
+      if (!params.items) {
+        throw new Error('Action schema type "array" expects property "items" but found none')
+      }
+      const component = params.items.component
+
+      if (!component) {
+        break
+      }
+
+      const item = {}
+
+      if (component.group) {
+        const groupId = component.group
+        let group = groups[groupId]
+
+        if (!group) {
+          groups[groupId] = {
+            title: groupId,
+            items: []
+          }
+          group = groups[groupId]
+          results.push(group)
+        }
+
+        group.items.push(item)
+      } else if (component.title) {
+        entry = {
+          title: component.title,
+          items: []
+        }
+
+        results.push(entry)
+        entry.items.push(item)
+      }
+
+      parseParameters(params.items, item, results, groups, false)
+      break
+    }
+    default:
+      const component = params.component
+
+      if (!component) {
+        break
+      }
+
+      const title = component.title
+      const id = component.id
+
+      if (!title) {
+        throw new Error('Component missing title property')
+      }
+
+      if (!id) {
+        throw new Error('Component missing id property')
+      }
+
+      // update metadata entry
+      entry.title = title
+
+      if (isHead) {
+        entry.items = [{ id, title }]
+
+        results.push(entry)
+      } else {
+        entry.id = id
+      }
+
+      // remove component property from schema
+      delete params.component
+
+      break
+  }
+
+  return results
+}
+
 
 /**
  * @template {Object.<string, Function>} Action
@@ -134,27 +279,23 @@ function createPlugin (name, data) {
   const context = {}
   /**
    * @typedef {Object} Plugin
-   * @property {Object} [metadata]
-   * @property {PluginMetadata} metadata.plugin
-   * @property {Object.<string, PluginMetadata>} [metadata.actions]
    * @property {Object} [tokens]
    * @property {PluginSetup<PluginContext<Data, Action, Method>, Object>} [setup]
    * @property {Object.<string, Function>} [actions]
    */
 
   /** @type {Plugin} */
-  const pluginData = {}
+  const pluginInit = {}
+  const metadata = { plugin: data.metadata }
 
   /**
    * @type {PluginExport<Action>}
    */
-  const plugin = {
+  const pluginExport = {
     name,
-    metadata: {
-      plugin: data.metadata
-    },
+    metadata,
     initialise () {
-      return pluginData
+      return pluginInit
     }
   }
 
@@ -167,23 +308,27 @@ function createPlugin (name, data) {
   }
 
   if (data.models) {
-    plugin.models = data.models
+    pluginExport.models = data.models
   }
 
   if (data.tokens) {
-    pluginData.tokens = mergeContextProperties(data.tokens, context)
+    pluginInit.tokens = mergeContextProperties(data.tokens, context)
   }
 
   if (data.setup) {
-    pluginData.setup = data.setup.bind(context)
+    pluginInit.setup = data.setup.bind(context)
   }
 
   if (data.actions) {
     /** @type {Object.<string, PluginMetadata>} */
     const metadata = {}
+    const parameters = {}
+    const schemas = {}
     let hasMetadata = false
-    plugin.actions = {}
-    pluginData.actions = {}
+    let hasParameters = false
+
+    pluginExport.actions = {}
+    pluginInit.actions = {}
 
     for (const key in data.actions) {
       if (Object.hasOwnProperty.call(data.actions, key)) {
@@ -202,6 +347,12 @@ function createPlugin (name, data) {
               plugin: name
             }, action.metadata)
           }
+
+          if (action.parameters) {
+            hasParameters = true
+            parameters[actionName] = parseParameters(action.parameters)
+            schemas[actionName] = action.parameters
+          }
         } else {
           method = action.bind(context)
         }
@@ -209,21 +360,26 @@ function createPlugin (name, data) {
         context[key] = method
 
         // app actions
-        pluginData.actions[actionName] = method
+        pluginInit.actions[actionName] = method
 
         // export actions
-        plugin.actions[key] = (params) => {
+        pluginExport.actions[key] = (params) => {
           return method(params, actionContext)
         }
       }
     }
 
     if (hasMetadata) {
-      plugin.metadata.actions = metadata
+      pluginExport.metadata.actions = metadata
+    }
+
+    if (hasParameters) {
+      pluginExport.metadata.actionParameters = parameters
+      pluginExport.metadata.actionSchemas = schemas
     }
   }
 
-  return plugin
+  return pluginExport
 }
 
 export default createPlugin
