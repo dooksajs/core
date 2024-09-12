@@ -106,34 +106,46 @@ const $fetch = createPlugin('fetch', {
         type: 'object',
         properties: {
           collection: {
-            title: 'Collection',
             type: 'string',
-            component: 'action-param-collection'
+            component: {
+              title: 'Collection',
+              id: 'action-param-collection'
+            }
           },
           expand: {
-            title: 'Fetch related documents',
             type: 'boolean',
-            component: 'action-param-boolean'
+            component: {
+              title: 'Fetch related documents',
+              id: 'action-param-boolean'
+            }
           },
           page: {
-            title: 'Page offset',
             type: 'number',
-            component: 'action-param-number'
+            component: {
+              title: 'Page offset',
+              id: 'action-param-number'
+            }
           },
           perPage: {
-            title: 'Amount of documents per page request (default to 25)',
             type: 'number',
-            component: 'action-param-number'
+            component: {
+              title: 'Amount of documents per page request (default to 25)',
+              id: 'action-param-number'
+            }
           },
           limit: {
-            title: 'The max returned documents',
             type: 'number',
-            component: 'action-param-number'
+            component: {
+              title: 'The max returned documents',
+              id: 'action-param-number'
+            }
           },
           where: {
-            title: 'Where',
             type: 'string',
-            component: 'action-param-string'
+            component: {
+              title: 'Where',
+              id: 'action-param-string'
+            }
           }
         }
       },
@@ -247,21 +259,27 @@ const $fetch = createPlugin('fetch', {
         type: 'object',
         properties: {
           collection: {
-            title: 'Collection',
             type: 'string',
-            component: 'action-param-collection',
+            component: {
+              title: 'Collection',
+              id: 'action-param-collection'
+            },
             required: true
           },
           id: {
-            title: 'Document',
             type: 'string',
-            component: 'action-param-value',
+            component: {
+              title: 'Document',
+              id: 'action-param-value'
+            },
             required: true
           },
           expand: {
-            title: 'Fetch related documents',
             type: 'boolean',
-            component: 'action-param-boolean'
+            component: {
+              title: 'Fetch related documents',
+              id: 'action-param-boolean'
+            }
           }
         }
       },
