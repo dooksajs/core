@@ -1,57 +1,11 @@
 import createPlugin from '@dooksa/create-plugin'
-import { dataSetValue } from '@dooksa/plugins'
+import { dataSetValue, metadata } from '@dooksa/plugins'
 import { databaseSeed, databaseGetValue } from './database.js'
 import { httpSetRoute } from './http.js'
 
 export default createPlugin('metadata', {
   models: {
-    currentLanguage: {
-      type: 'string'
-    },
-    languages: {
-      type: 'array',
-      items: {
-        type: 'string'
-      }
-    },
-    plugins: {
-      type: 'collection',
-      items: {
-        type: 'object',
-        properties: {
-          title: {
-            type: 'string'
-          },
-          description: {
-            type: 'string'
-          },
-          icon: {
-            type: 'string'
-          }
-        }
-      }
-    },
-    actions: {
-      type: 'collection',
-      items: {
-        type: 'object',
-        properties: {
-          plugin: {
-            type: 'string',
-            relation: 'metadata/plugins'
-          },
-          title: {
-            type: 'string'
-          },
-          description: {
-            type: 'string'
-          },
-          icon: {
-            type: 'string'
-          }
-        }
-      }
-    }
+    ...metadata.models
   },
   setup ({ plugins }) {
     databaseSeed('metadata-currentLanguage')
