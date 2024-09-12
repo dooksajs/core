@@ -978,16 +978,20 @@ const component = createPlugin('component', {
         type: 'object',
         properties: {
           id: {
-            title: 'Component',
             type: 'string',
-            component: 'action-param-component-item',
+            component: {
+              title: 'Component',
+              id: 'action-param-component-item'
+            },
             required: true
           },
           stopPropagation: {
-            title: 'Prevent further event phases',
             type: 'boolean',
-            group: 'Options',
-            component: 'action-param-boolean'
+            component: {
+              group: 'Options',
+              title: 'Prevent further event phases',
+              id: 'action-param-boolean'
+            }
           }
         }
       },
@@ -1141,15 +1145,22 @@ const component = createPlugin('component', {
         type: 'object',
         properties: {
           id: {
-            title: 'Component',
             type: 'string',
-            component: 'action-param-component-item',
+            component: {
+              title: 'Component',
+              id: 'action-param-component-item'
+            },
             required: true
           },
           items: {
-            title: 'List of children',
             type: 'array',
-            component: 'action-param-value'
+            items: {
+              type: 'string',
+              component: {
+                title: 'List of children',
+                id: 'action-param-value'
+              }
+            }
           }
         }
       },
