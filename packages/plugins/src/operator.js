@@ -165,23 +165,30 @@ const operator = createPlugin('operator', {
           type: 'object',
           properties: {
             value_1: {
-              title: 'This',
               type: 'primitives',
-              group: 'Compare',
-              component: 'action-parma-value',
+              component: {
+                group: 'Compare',
+                title: 'This',
+                id: 'action-parma-value'
+              },
               required: true
             },
             value_2: {
-              title: 'That',
               type: 'primitives',
-              group: 'Compare',
-              component: 'action-parma-value',
+              component: {
+                group: 'Compare',
+                title: 'That',
+                id: 'action-parma-value'
+              },
               required: true
             },
             op: {
-              group: 'Compare',
               type: 'string',
-              component: 'action-param-operator-compare-op',
+              component: {
+                title: 'Operation',
+                group: 'Compare',
+                id: 'action-param-operator-compare-op'
+              },
               required: true
             }
           }
@@ -232,17 +239,21 @@ const operator = createPlugin('operator', {
         type: 'object',
         properties: {
           name: {
-            title: 'Operator',
             type: 'string',
-            component: 'action-param-operator-eval-name',
+            component: {
+              title: 'Operator',
+              id: 'action-param-operator-eval-name'
+            },
             required: true
           },
           values: {
             type: 'array',
             items: {
-              title: 'Values',
               type: 'string',
-              component: 'action-param-operator-eval-values',
+              component: {
+                title: 'Values',
+                id: 'action-param-operator-eval-values'
+              },
               required: true
             },
             maxItems: 2,
