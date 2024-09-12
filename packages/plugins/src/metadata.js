@@ -3,11 +3,9 @@ import { dataSetValue } from './data.js'
 
 const metadata = createPlugin('metadata', {
   metadata: {
-    plugin: {
-      title: 'Metadata',
-      description: 'Additional information about plugins and their actions',
-      icon: 'carbon:data-volume'
-    }
+    title: 'Metadata',
+    description: 'Additional information about plugins and their actions',
+    icon: 'carbon:data-volume'
   },
   models: {
     currentLanguage: {
@@ -53,6 +51,34 @@ const metadata = createPlugin('metadata', {
           },
           icon: {
             type: 'string'
+          }
+        }
+      }
+    },
+    actionParameters: {
+      type: 'collection',
+      items: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            title: {
+              type: 'string'
+            },
+            items: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  id: {
+                    type: 'string'
+                  },
+                  title: {
+                    type: 'string'
+                  }
+                }
+              }
+            }
           }
         }
       }
