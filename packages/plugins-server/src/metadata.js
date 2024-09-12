@@ -35,6 +35,18 @@ export default createPlugin('metadata', {
           })
         }
       }
+
+      for (const key in metadata.actionParameters) {
+        if (Object.hasOwnProperty.call(metadata.actionParameters, key)) {
+          dataSetValue({
+            name: 'metadata/actionParameters',
+            value: metadata.actionParameters[key],
+            options: {
+              id: key
+            }
+          })
+        }
+      }
     }
 
     // route: get a list of languages
@@ -56,6 +68,14 @@ export default createPlugin('metadata', {
       path: '/metadata/actions',
       handlers: [
         databaseGetValue(['metadata/actions'])
+      ]
+    })
+
+    httpSetRoute({
+      path: '/metadata/actions-parameters',
+      middleware: ['request/queryIsArray'],
+      handlers: [
+        databaseGetValue(['metadata/actionParameters'])
       ]
     })
   }
