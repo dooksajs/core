@@ -89,21 +89,22 @@ function mergeProperties (target, source) {
 }
 
 /**
-* Convert component options to properties
-* @param {ComponentOption} options
-* @param {ComponentOption} templateOptions
-* @param {ComponentProperty[]} properties
-* @returns {ComponentProperty[]}
-*/
+ * Convert component options to properties
+ * @param {ComponentOption} options
+ * @param {ComponentOption} templateOptions
+ * @param {ComponentProperty[]} properties
+ * @returns {ComponentProperty[]}
+ */
 function componentOptions (options, templateOptions, properties = []) {
-  properties = properties.slice()
   let replacedPropertyValue = ''
+  properties = properties.slice()
 
   for (const key in options) {
     if (Object.hasOwnProperty.call(options, key)) {
       const templateOption = templateOptions[key]
       const propertyName = templateOption.name
 
+      // Check if property value has already been replaced
       if (replacedPropertyValue === propertyName) {
         continue
       }
@@ -155,23 +156,28 @@ function componentOptions (options, templateOptions, properties = []) {
         if (property.name === propertyName) {
           hasProperty = true
 
-          if (property) {
-            if (templateOption.replace) {
-              replacedPropertyValue = propertyName
-              newProperty.value = newPropertyValue
+          if (templateOption.replace) {
+            replacedPropertyValue = propertyName
+            newProperty.value = newPropertyValue
+            properties[i] = newProperty
+            break
+          } else if (templateOption.toggle) {
+            // remove value
+            if (!item) {
+              newProperty.value = property.value.replace(newProperty.value, '')
               properties[i] = newProperty
               break
-            } else if (templateOption.toggle) {
-              // remove value
-              if (!item) {
-                newProperty.value = property.value.replace(newProperty.value, '')
-                properties[i] = newProperty
-                break
-              }
             }
           }
 
-          newProperty.value = property.value + ' ' + newProperty.value
+          let value = property.value
+
+          // prepare to append new value separated by space
+          if (value) {
+            value = value + ' '
+          }
+
+          newProperty.value = property.value + newProperty.value
 
           properties[i] = newProperty
         }
