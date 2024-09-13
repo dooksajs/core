@@ -244,8 +244,8 @@ import createAction from './create-action.js'
  * @typedef {Object} FetchGetById
  * @property {Action|string} collection
  * @property {Action|string[]} id
- * @property {Action|boolean} expand
- * @property {Action|boolean} sync
+ * @property {Action|boolean} [expand]
+ * @property {Action|boolean} [sync]
  */
 
 /**
@@ -298,7 +298,7 @@ import createAction from './create-action.js'
 
 /**
  * @typedef {Object} OperatorEval
- * @property {Action|string} name
+ * @property {Action|'=='|'!='|'>'|'>='|'<'|'<='|'!'|'%'|'++'|'--'|'-'|'+'|'*'|'**'|'!!'|'~'} name
  * @property {Array<Action|string|number>} values
  */
 
