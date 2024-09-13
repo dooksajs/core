@@ -177,7 +177,7 @@ function componentOptions (options, templateOptions, properties = []) {
             value = value + ' '
           }
 
-          newProperty.value = property.value + newProperty.value
+          newProperty.value = value + newProperty.value
 
           properties[i] = newProperty
         }
