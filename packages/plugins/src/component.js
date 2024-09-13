@@ -588,19 +588,31 @@ function createTemplate ({
   }
 
   if (template.options) {
+    const handler = (options) => {
+      const properties = componentOptions(options.item, template.options, template.properties)
+
+      dataSetValue({
+        name: 'component/properties',
+        value: properties,
+        options
+      })
+    }
+
+    const options = dataGetValue({
+      name: 'component/options',
+      id
+    })
+
+    // update properties if options exist
+    if (!options.isEmpty) {
+      handler(options)
+    }
+
     dataAddListener({
       name: 'component/options',
       on: 'update',
       id,
-      handler: (options) => {
-        const properties = componentOptions(options.item, template.options, template.properties)
-
-        dataSetValue({
-          name: 'component/properties',
-          value: properties,
-          options
-        })
-      }
+      handler
     })
   }
 
