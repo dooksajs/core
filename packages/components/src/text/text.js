@@ -2,6 +2,7 @@ import { createComponent, extendComponent } from '@dooksa/create-component'
 
 const text = createComponent({
   id: 'text',
+  tag: '$null',
   initialize: () => new Text(''),
   content: [
     {
