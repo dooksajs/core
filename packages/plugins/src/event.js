@@ -1,13 +1,19 @@
 import createPlugin from '@dooksa/create-plugin'
 import { actionDispatch, dataGetValue } from './index.js'
 
+/**
+ * @typedef {Object} EventEmit
+ * @property {string} name - Name of event
+ * @property {string} id - Event id is the listener reference item
+ * @property {Object} [context] - The action that runs on the event
+ * @property {Object} [payload] - The action that runs on the event
+ */
+
 const event = createPlugin('event', {
   metadata: {
-    plugin: {
-      title: 'Event',
-      description: 'Event manager',
-      icon: 'mdi:fire'
-    }
+    title: 'Event',
+    description: 'Event manager',
+    icon: 'mdi:fire'
   },
   models: {
     listeners: {
@@ -31,11 +37,7 @@ const event = createPlugin('event', {
   actions: {
     /**
      * Emit event
-     * @param {Object} param
-     * @param {string} param.name - Name of event
-     * @param {string} param.id - Event id is the listener reference item
-     * @param {Object} [param.context] - The action that runs on the event
-     * @param {Object} [param.payload] - The action that runs on the event
+     * @param {EventEmit} param
      */
     emit ({ name, id, context, payload }) {
       const listeners = dataGetValue({
