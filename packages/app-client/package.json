@@ -13,6 +13,8 @@
   "dependencies": {
     "@dooksa/plugins": "workspace:^",
     "@dooksa/create-app": "workspace:^",
-    "@dooksa/components": "workspace:^"
+    "@dooksa/component-base": "workspace:^",
+    "@dooksa/component-extra": "workspace:^",
+    "@dooksa/component-bootstrap": "workspace:^"
   }
 }
