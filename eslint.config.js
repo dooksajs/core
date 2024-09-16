@@ -6,11 +6,15 @@ export default [
       '@stylistic/js': stylisticJs
     },
     rules: {
+      '@stylistic/js/max-len': ['error', {
+        code: 80,
+        ignoreComments: true
+      }],
       '@stylistic/js/indent': [
         'error', 2, {
           SwitchCase: 1,
-          VariableDeclarator: 'first',
-          outerIIFEBody: 'off',
+          VariableDeclarator: 1,
+          outerIIFEBody: 1,
           MemberExpression: 1,
           FunctionExpression: {
             body: 1,
@@ -26,6 +30,25 @@ export default [
           ignoreComments: false
         }
       ],
+      '@stylistic/js/object-property-newline': 'error',
+      '@stylistic/js/object-curly-newline': ['error', {
+        ObjectExpression: {
+          multiline: true,
+          minProperties: 1
+        },
+        ObjectPattern: {
+          multiline: true,
+          minProperties: 2
+        },
+        ImportDeclaration: {
+          multiline: true,
+          minProperties: 3
+        },
+        ExportDeclaration: {
+          multiline: true,
+          minProperties: 3
+        }
+      }],
       '@stylistic/js/quote-props': ['error', 'as-needed'],
       '@stylistic/js/space-before-function-paren': ['error', 'always'],
       '@stylistic/js/function-call-spacing': ['error', 'never'],
