@@ -125,10 +125,26 @@ import createMixin from './mixin.js'
  */
 
 /**
+ * @callback EventEmitCallback
+ * @param {import('../../plugins/src/event.js').EventEmit} param
+ */
+
+/**
+ * @callback TemplateInitialize
+ * @param {Object} component
+ * @param {string} component.id
+ * @param {string} [component.parentId]
+ * @param {string} [component.rootId]
+ * @param {string} [component.groupId]
+ * @param {Component} [component.template]
+ * @param {EventEmitCallback} emit
+ */
+
+/**
  * @typedef {Object} ComponentData
  * @property {string} id - Component id
  * @property {Function} [component] - Lazy load component
- * @property {Function} [initialize] - Constructor function to create a component instance
+ * @property {TemplateInitialize} [initialize] - Constructor function to create a component instance
  * @property {string} tag - Element tag name
  */
 

@@ -181,7 +181,9 @@ function createNode (id, item) {
 
   // Custom element constructor
   if (typeof template.initialize === 'function') {
-    node = template.initialize()
+    node = template.initialize({
+      id
+    }, eventEmit)
   } else {
     // create element
     node = document.createElement(template.tag)
@@ -488,7 +490,13 @@ function createTemplate ({
 
   // Custom element constructor
   if (typeof template.initialize === 'function') {
-    node = template.initialize()
+    node = template.initialize({
+      id,
+      template,
+      parentId,
+      rootId,
+      groupId
+    }, eventEmit)
   } else {
     // create element
     node = document.createElement(template.tag)
