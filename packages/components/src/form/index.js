@@ -1,7 +1,0 @@
-export { formCheck, extendFormCheck } from './form-check.js'
-export { inputCheckbox, extendInputCheckbox } from './input-checkbox.js'
-export { inputCheckboxButton, extendInputCheckboxButton } from './input-checkbox-button.js'
-export { inputColor, extendInputColor } from './input-color.js'
-export { inputFile, extendInputFile } from './input-file.js'
-export { inputText, extendInputText } from './input-text.js'
-export { label, extendLabel } from './label.js'

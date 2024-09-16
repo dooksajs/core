@@ -1,7 +1,0 @@
-export { modal, extendModal } from './modal.js'
-export { modalBody, extendModalBody } from './modal-body.js'
-export { modalContent, extendModalContent } from './modal-content.js'
-export { modalDialog, extendModalDialog } from './modal-dialog.js'
-export { modalFooter, extendModalFooter } from './modal-footer.js'
-export { modalHeader, extendModalHeader } from './modal-header.js'
-export { modalTitle, extendModalTitle } from './modal-title.js'

@@ -1,8 +1,0 @@
-export { anchor, extendAnchor } from './anchor.js'
-export { div, extendDiv } from './div.js'
-export { hr, extendHr } from './hr.js'
-export { h1, extendH1 } from './h1.js'
-export { h2, extendH2 } from './h2.js'
-export { h5, extendH5 } from './h5.js'
-export { span, extendSpan } from './span.js'
-export { img, extendImg } from './img.js'

@@ -1,6 +1,0 @@
-export { cardBody, extendCardBody } from './card-body.js'
-export { cardHeader, extendCardHeader } from './card-header.js'
-export { cardImg, extendCardImg } from './card-img.js'
-export { cardText, extendCardText } from './card-text.js'
-export { cardTitle, extendCardTitle } from './card-title.js'
-export { card, extendCard } from './card.js'
