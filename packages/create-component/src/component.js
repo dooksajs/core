@@ -159,27 +159,24 @@ function componentOptions (options, templateOptions, properties = []) {
           if (templateOption.replace) {
             replacedPropertyValue = propertyName
             newProperty.value = newPropertyValue
-            properties[i] = newProperty
-            break
           } else if (templateOption.toggle) {
             // remove value
             if (!item) {
               newProperty.value = property.value.replace(newProperty.value, '')
-              properties[i] = newProperty
-              break
             }
+          } else if (typeof newProperty.value === 'string') {
+            let value = property.value
+
+            // prepare to append new value separated by space
+            if (value) {
+              value = value + ' '
+            }
+
+            newProperty.value = value + newProperty.value
           }
-
-          let value = property.value
-
-          // prepare to append new value separated by space
-          if (value) {
-            value = value + ' '
-          }
-
-          newProperty.value = value + newProperty.value
 
           properties[i] = newProperty
+          break
         }
       }
 

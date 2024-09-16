@@ -534,15 +534,6 @@ function createTemplate ({
     }
 
     setProperties(node, template.properties)
-
-    dataAddListener({
-      name: 'component/properties',
-      on: 'update',
-      id,
-      handler: (options) => {
-        setProperties(node, options.item)
-      }
-    })
   }
 
   // set content
@@ -596,6 +587,17 @@ function createTemplate ({
   }
 
   if (template.options) {
+    // Update element attributes
+    dataAddListener({
+      name: 'component/properties',
+      on: 'update',
+      id,
+      handler: (options) => {
+        setProperties(node, options.item)
+      }
+    })
+
+    // Compile component options
     const handler = (options) => {
       const properties = componentOptions(options.item, template.options, template.properties)
 
@@ -616,6 +618,7 @@ function createTemplate ({
       handler(options)
     }
 
+    // Update component options/properties
     dataAddListener({
       name: 'component/options',
       on: 'update',
