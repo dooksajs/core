@@ -72,7 +72,9 @@ function setContent (node, content, values) {
  */
 function setProperties (element, properties = []) {
   for (let i = 0; i < properties.length; i++) {
-    const { name, value } = properties[i]
+    const {
+      name, value
+    } = properties[i]
 
     if (element[name] != null) {
       element[name] = value
@@ -138,7 +140,10 @@ function contentListeners (id, contentId, contentNoAffixId, node, templateConten
 
       // change content lang
       contentId = contentNoAffixId + data.item
-      const content = dataGetValue({ name: 'content/items', id })
+      const content = dataGetValue({
+        name: 'content/items',
+        id
+      })
 
       if (!content.isEmpty) {
         setContent(node, templateContent, content.item)
@@ -161,7 +166,10 @@ function contentListeners (id, contentId, contentNoAffixId, node, templateConten
     on: 'update',
     id,
     handler: (data) => {
-      const content = dataGetValue({ name: 'content/items', id: data.item })
+      const content = dataGetValue({
+        name: 'content/items',
+        id: data.item
+      })
 
       setContent(node, templateContent, content.item)
     }
@@ -189,10 +197,19 @@ function createNode (id, item) {
     node = document.createElement(template.tag)
   }
 
-  node.dooksaComponentId = id
-  dataUnsafeSetValue({ name: 'component/nodes', value: node, options: { id } })
+  node.__dooksaId__ = id
+  dataUnsafeSetValue({
+    name: 'component/nodes',
+    value: node,
+    options: {
+      id
+    }
+  })
 
-  const properties = dataGetValue({ name: 'component/properties', id }).item || template.properties
+  const properties = dataGetValue({
+    name: 'component/properties',
+    id
+  }).item || template.properties
 
   if (!properties) {
     setProperties(node, properties)
@@ -215,7 +232,13 @@ function createNode (id, item) {
       handler: (options) => {
         const properties = componentOptions(options.item, template.options, template.properties)
 
-        dataSetValue({ name: 'component/properties', value: properties, options: { id } })
+        dataSetValue({
+          name: 'component/properties',
+          value: properties,
+          options: {
+            id
+          }
+        })
       }
     })
   }
@@ -223,7 +246,9 @@ function createNode (id, item) {
   const content = dataGetValue({
     name: 'component/content',
     id,
-    options: { expand: true }
+    options: {
+      expand: true
+    }
   })
   let contentId
   if (!content.isEmpty) {
@@ -235,11 +260,29 @@ function createNode (id, item) {
     contentListeners(id, contentData.id, contentId, node, template.content)
   }
 
-  const children = dataGetValue({ name: 'component/children', id, options: { expand: true } })
-  const rootId = dataGetValue({ name: 'component/roots', id }).item
-  const groupId = dataGetValue({ name: 'component/belongsToGroup', id }).item
-  const parentId = dataGetValue({ name: 'component/parents', id }).item
-  const event = dataGetValue({ name: 'component/events', id })
+  const children = dataGetValue({
+    name: 'component/children',
+    id,
+    options: {
+      expand: true
+    }
+  })
+  const rootId = dataGetValue({
+    name: 'component/roots',
+    id
+  }).item
+  const groupId = dataGetValue({
+    name: 'component/belongsToGroup',
+    id
+  }).item
+  const parentId = dataGetValue({
+    name: 'component/parents',
+    id
+  }).item
+  const event = dataGetValue({
+    name: 'component/events',
+    id
+  })
   const childNodes = []
   let childIsLazy = false
   let hasCreateEvent = false
@@ -250,7 +293,9 @@ function createNode (id, item) {
     const hasEvent = {}
 
     for (let i = 0; i < events.length; i++) {
-      const { on, actionId } = events[i]
+      const {
+        on, actionId
+      } = events[i]
       const eventData = dataSetValue({
         name: 'event/listeners',
         value: actionId,
@@ -311,7 +356,10 @@ function createNode (id, item) {
   if (!children.isEmpty) {
     for (let i = 0; i < children.expand.length; i++) {
       const component = children.expand[i]
-      let childNode = dataGetValue({ name: 'component/nodes', id: component.id })
+      let childNode = dataGetValue({
+        name: 'component/nodes',
+        id: component.id
+      })
 
       if (component.item.isTemplate) {
         childNode = createTemplate({
@@ -446,7 +494,13 @@ function nodeEvent (eventType, eventValue, node, on, id, context) {
   })
 
   // store handler
-  dataUnsafeSetValue({ name: 'event/handlers', value: handler, options: { id } })
+  dataUnsafeSetValue({
+    name: 'event/handlers',
+    value: handler,
+    options: {
+      id
+    }
+  })
 }
 
 /**
@@ -473,7 +527,9 @@ function createTemplate ({
     id: template.id,
     type: template.type
   }
-  const options = { id }
+  const options = {
+    id
+  }
   const properties = {}
   let node
   let contentId
@@ -503,13 +559,29 @@ function createTemplate ({
   }
 
   // store node
-  node.dooksaComponentId = id
-  dataUnsafeSetValue({ name: 'component/nodes', value: node, options })
+  node.__dooksaId__ = id
+  dataUnsafeSetValue({
+    name: 'component/nodes',
+    value: node,
+    options
+  })
 
   // set core component values
-  dataSetValue({ name: 'component/roots', value: rootId, options })
-  dataSetValue({ name: 'component/parents', value: parentId, options })
-  dataSetValue({ name: 'component/items', value: component, options })
+  dataSetValue({
+    name: 'component/roots',
+    value: rootId,
+    options
+  })
+  dataSetValue({
+    name: 'component/parents',
+    value: parentId,
+    options
+  })
+  dataSetValue({
+    name: 'component/items',
+    value: component,
+    options
+  })
 
   // set group
   dataSetValue({
@@ -522,12 +594,18 @@ function createTemplate ({
       }
     }
   })
-  dataSetValue({ name: 'component/belongsToGroup', value: groupId, options })
+  dataSetValue({
+    name: 'component/belongsToGroup',
+    value: groupId,
+    options
+  })
 
-  // set properties to node
+  // set default properties to node
   if (template.properties) {
     for (let i = 0; i < template.properties.length; i++) {
-      const { name, value } = template.properties[i]
+      const {
+        name, value
+      } = template.properties[i]
 
       // prepare default content values
       properties[name] = value
@@ -553,7 +631,10 @@ function createTemplate ({
       content[data.name] = contentValue
     }
 
-    const contentData = dataSetValue({ name: 'content/items', value: content })
+    const contentData = dataSetValue({
+      name: 'content/items',
+      value: content
+    })
     contentId = removeAffix(contentData.id)
 
     dataSetValue({
@@ -583,7 +664,13 @@ function createTemplate ({
     })
 
     setContent(node, template.content, content)
-    contentListeners(id, contentData.id, removeAffix(contentData.id), node, template.content)
+    contentListeners(
+      id,
+      contentData.id,
+      removeAffix(contentData.id),
+      node,
+      template.content
+    )
   }
 
   if (template.options) {
@@ -599,7 +686,11 @@ function createTemplate ({
 
     // Compile component options
     const handler = (options) => {
-      const properties = componentOptions(options.item, template.options, template.properties)
+      const properties = componentOptions(
+        options.item,
+        template.options,
+        template.properties
+      )
 
       dataSetValue({
         name: 'component/properties',
@@ -638,7 +729,9 @@ function createTemplate ({
     const hasEvent = {}
 
     for (let i = 0; i < events.length; i++) {
-      const { on, actionId } = events[i]
+      const {
+        on, actionId
+      } = events[i]
       const eventData = dataSetValue({
         name: 'event/listeners',
         value: actionId,
@@ -814,8 +907,8 @@ function updateChildren (id, parent, nextChildNodes) {
       parent.appendChild(nextNode)
     } else if (nextNode !== prevNode) {
       // node was inserted
-      const prevComponentId = prevNode.dooksaComponentId
-      const nextComponentId = nextNode.dooksaComponentId
+      const prevComponentId = prevNode.__dooksaId__
+      const nextComponentId = nextNode.__dooksaId__
       const prevNodeBelongsTo = dataGetValue({
         name: 'component/parents',
         id: prevComponentId
@@ -850,10 +943,13 @@ function updateChildren (id, parent, nextChildNodes) {
   if (prevChildNodes.length > nextChildNodes.length) {
     for (let i = nextChildNodes.length; i < prevChildNodes.length; i++) {
       const node = prevChildNodes[i]
-      const componentId = node.dooksaComponentId
+      const componentId = node.__dooksaId__
 
       if (removeNodes[componentId] === undefined) {
-        componentRemove({ id: componentId, stopPropagation: true })
+        componentRemove({
+          id: componentId,
+          stopPropagation: true
+        })
         node.remove()
       }
     }
@@ -863,7 +959,10 @@ function updateChildren (id, parent, nextChildNodes) {
     if (Object.hasOwnProperty.call(removeNodes, key)) {
       const node = removeNodes[key]
 
-      componentRemove({ id: node.dooksaComponentId, stopPropagation: true })
+      componentRemove({
+        id: node.__dooksaId__,
+        stopPropagation: true
+      })
     }
   }
 }
@@ -1026,9 +1125,17 @@ const component = createPlugin('component', {
        * @param {Object} [context]
        * @param {boolean} [isHead=true]
        */
-      method ({ id, stopPropagation = false }, context, isHead = true) {
-        const parentId = dataGetValue({ name: 'component/parents', id }).item
-        const parentChildren = dataGetValue({ name: 'component/children', id: parentId })
+      method ({
+        id, stopPropagation = false
+      }, context, isHead = true) {
+        const parentId = dataGetValue({
+          name: 'component/parents',
+          id
+        }).item
+        const parentChildren = dataGetValue({
+          name: 'component/children',
+          id: parentId
+        })
 
         // remove component from parent
         if (isHead && !parentChildren.isEmpty) {
@@ -1044,7 +1151,10 @@ const component = createPlugin('component', {
           }
 
           if (!children.length) {
-            dataDeleteValue({ name: 'component/children', id: parentId })
+            dataDeleteValue({
+              name: 'component/children',
+              id: parentId
+            })
           } else if (children.length !== parentChildren.item.length) {
             dataSetValue({
               name: 'component/children',
@@ -1057,33 +1167,57 @@ const component = createPlugin('component', {
           }
         }
 
-        const events = dataGetValue({ name: 'component/events', id })
+        const events = dataGetValue({
+          name: 'component/events',
+          id
+        })
 
         // remove event handlers
         if (!events.isEmpty) {
           for (let i = 0; i < events.item.length; i++) {
             const event = events.item[i]
 
-            dataDeleteValue({ name: 'event/handlers', id: event.id })
+            dataDeleteValue({
+              name: 'event/handlers',
+              id: event.id
+            })
           }
         }
 
-        const content = dataGetValue({ name: 'component/content', id })
+        const content = dataGetValue({
+          name: 'component/content',
+          id
+        })
 
         if (!content.isEmpty) {
           const contentId = content.item
-          const contentComponents = dataGetValue({ name: 'content/components', id: contentId })
+          const contentComponents = dataGetValue({
+            name: 'content/components',
+            id: contentId
+          })
 
           if (!contentComponents.isEmpty) {
             if (contentComponents.item.length === 1) {
-              const content = dataGetValue({ name: 'content/languages', id: contentId })
+              const content = dataGetValue({
+                name: 'content/languages',
+                id: contentId
+              })
 
-              dataDeleteValue({ name: 'content/languages', id: contentId })
-              dataDeleteValue({ name: 'content/components', id: contentId })
+              dataDeleteValue({
+                name: 'content/languages',
+                id: contentId
+              })
+              dataDeleteValue({
+                name: 'content/components',
+                id: contentId
+              })
 
               // remove all content languages
               for (let i = 0; i < content.item.length; i++) {
-                dataDeleteValue({ name: 'content/items', id: content.item[i] })
+                dataDeleteValue({
+                  name: 'content/items',
+                  id: content.item[i]
+                })
               }
             } else {
               // remove current component from content used by list
@@ -1100,21 +1234,36 @@ const component = createPlugin('component', {
             }
           }
 
-          dataDeleteValue({ name: 'component/content', id })
+          dataDeleteValue({
+            name: 'component/content',
+            id
+          })
         }
 
-        const children = dataGetValue({ name: 'component/children', id })
+        const children = dataGetValue({
+          name: 'component/children',
+          id
+        })
 
         if (!children.isEmpty) {
-          dataDeleteValue({ name: 'component/children', id, stopPropagation: true })
+          dataDeleteValue({
+            name: 'component/children',
+            id,
+            stopPropagation: true
+          })
 
           for (let i = 0; i < children.item.length; i++) {
-            this.remove({ id: children.item[i] }, context, false)
+            this.remove({
+              id: children.item[i]
+            }, context, false)
           }
         }
 
         // remove component from group
-        const componentGroupId = dataGetValue({ name: 'component/belongsToGroup', id }).item
+        const componentGroupId = dataGetValue({
+          name: 'component/belongsToGroup',
+          id
+        }).item
         const componentGroup = dataSetValue({
           name: 'component/groups',
           value: id,
@@ -1133,7 +1282,10 @@ const component = createPlugin('component', {
             id: componentGroupId
           }).item
 
-          dataDeleteValue({ name: 'action/values', id: componentGroupId })
+          dataDeleteValue({
+            name: 'action/values',
+            id: componentGroupId
+          })
 
           const valueGroup = dataSetValue({
             name: 'action/valueGroups',
@@ -1147,15 +1299,33 @@ const component = createPlugin('component', {
           })
 
           if (!valueGroup.isEmpty && !valueGroup.item.length) {
-            dataDeleteValue({ name: 'action/valueGroups', id: actionGroupId })
+            dataDeleteValue({
+              name: 'action/valueGroups',
+              id: actionGroupId
+            })
           }
         }
 
-        dataDeleteValue({ name: 'component/belongsToGroup', id })
-        dataDeleteValue({ name: 'component/nodes', id })
-        dataDeleteValue({ name: 'component/parents', id })
-        dataDeleteValue({ name: 'component/roots', id })
-        dataDeleteValue({ name: 'component/items', id })
+        dataDeleteValue({
+          name: 'component/belongsToGroup',
+          id
+        })
+        dataDeleteValue({
+          name: 'component/nodes',
+          id
+        })
+        dataDeleteValue({
+          name: 'component/parents',
+          id
+        })
+        dataDeleteValue({
+          name: 'component/roots',
+          id
+        })
+        dataDeleteValue({
+          name: 'component/items',
+          id
+        })
       }
     },
     renderChildren: {
@@ -1198,17 +1368,29 @@ const component = createPlugin('component', {
         items
       }) {
         if (!items) {
-          items = dataGetValue({ name: 'component/children', id }).item
+          items = dataGetValue({
+            name: 'component/children',
+            id
+          }).item
         }
 
-        const node = dataGetValue({ name: 'component/nodes', id }).item
-        const parentGroupId = dataGetValue({ name: 'component/belongsToGroup', id }).item
+        const node = dataGetValue({
+          name: 'component/nodes',
+          id
+        }).item
+        const parentGroupId = dataGetValue({
+          name: 'component/belongsToGroup',
+          id
+        }).item
         const children = []
         let childIsLazy = false
 
         for (let i = 0; i < items.length; i++) {
           const childId = items[i]
-          const node = dataGetValue({ name: 'component/nodes', id: childId })
+          const node = dataGetValue({
+            name: 'component/nodes',
+            id: childId
+          })
 
           if (!node.isEmpty) {
             children.push({
@@ -1218,7 +1400,10 @@ const component = createPlugin('component', {
             continue
           }
 
-          const item = dataGetValue({ name: 'component/items', id: childId }).item
+          const item = dataGetValue({
+            name: 'component/items',
+            id: childId
+          }).item
 
           if (item.isTemplate) {
             const groupId = item.groupId || parentGroupId
@@ -1247,7 +1432,9 @@ const component = createPlugin('component', {
       }
     }
   },
-  setup ({ rootId = 'root', component }) {
+  setup ({
+    rootId = 'root', component
+  }) {
     const rootEl = document.getElementById(rootId)
 
     if (!rootEl) {
@@ -1264,7 +1451,10 @@ const component = createPlugin('component', {
 
     $component = component
 
-    const rootItem = dataGetValue({ name: 'component/items', id: 'root' })
+    const rootItem = dataGetValue({
+      name: 'component/items',
+      id: 'root'
+    })
     let element
 
     if (!rootItem.isEmpty) {
@@ -1302,13 +1492,18 @@ const component = createPlugin('component', {
         const options = {
           name: 'component/childrenBeforeUpdate',
           id,
-          context: { id },
+          context: {
+            id
+          },
           payload: data.item
         }
 
         eventEmit(options)
 
-        const render = this.renderChildren({ id, items: data.item })
+        const render = this.renderChildren({
+          id,
+          items: data.item
+        })
 
         if (render instanceof Promise) {
           render.then(() => {
