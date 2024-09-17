@@ -1,11 +1,5 @@
 /**
- * @typedef {import('./index.js').ComponentData} ComponentData
- * @typedef {import('./index.js').ComponentDataValues} ComponentDataValues
- * @typedef {import('./index.js').ComponentMixinMetadata} ComponentMixinMetadata
- * @typedef {import('./index.js').Component} Component
- * @typedef {import('./index.js').ComponentOption} ComponentOption
- * @typedef {import('./index.js').ComponentProperty} ComponentProperty
- * @typedef {import('./index.js').ComponentExtend} ComponentExtend
+ * @import {ComponentData, ComponentDataValues, ComponentMixinMetadata, Component, ComponentOption, ComponentProperty, ComponentExtend} from './types.js
  */
 
 /**
