@@ -8,6 +8,7 @@ import flexMixin from './flex.js'
 import fontMixin from './font.js'
 import formControlMixin from './form-control.js'
 import gapMixin from './gap.js'
+import headingMixin from './heading.js'
 import insetMixin from './inset.js'
 import overflowMixin from './overflow.js'
 import positionMixin from './position.js'
@@ -29,6 +30,7 @@ export {
   fontMixin,
   formControlMixin,
   gapMixin,
+  headingMixin,
   insetMixin,
   overflowMixin,
   positionMixin,
