@@ -1,4 +1,4 @@
-import { extendText, extendSelectOption } from '@dooksa/component-base'
+import { extendText, extendOption } from '@dooksa/component-base'
 
 const text = extendText({
   events: [
@@ -9,7 +9,7 @@ const text = extendText({
   ]
 })
 
-export default extendSelectOption({
+export default extendOption({
   metadata: {
     id: 'action-param-collection-option'
   },
