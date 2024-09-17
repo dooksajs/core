@@ -1,5 +1,5 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
-import { formControlMixin, inputAllMixin } from '@dooksa/component-mixins'
+import { eventTypeElementChangeMixin, formControlMixin, inputAllMixin } from '@dooksa/component-mixins'
 
 export const inputColor = createComponent({
   id: 'input-color',
@@ -40,12 +40,11 @@ export const inputColor = createComponent({
       name: 'id'
     }
   }
-}, [formControlMixin, inputAllMixin])
+}, [formControlMixin, inputAllMixin, eventTypeElementChangeMixin])
 
 /**
- * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('../mixins/styles/form-control.js').FormControlMixin} FormControlMixin
- * @typedef {import('../mixins/input/input-all.js').InputAllMixin} InputAllMixin
+ * @import {InputAllMixin, FormControlMixin, EventTypeElementChangeMixin } from '@dooksa/component-mixins'
+ * @import {ComponentExtend} from '@dooksa/create-component'
  */
 
 /**
@@ -60,7 +59,18 @@ export const inputColor = createComponent({
  */
 
 /**
- * @param {ComponentExtend|ComponentExtendInputTextColor} options
+ * @typedef {Object} ComponentExtendEventInputColor
+ * @property {EventTypeElementChangeMixin} on
+ * @property {string} actionId
+ */
+
+/**
+ * @typedef {Object} ComponentExtendEvent
+ * @property {ComponentExtendEventInputColor[]} events
+ */
+
+/**
+ * @param {ComponentExtend|ComponentExtendInputTextColor|ComponentExtendEvent} options
  */
 export const extendInputColor = function (options) {
   return extendComponent(inputColor, options)

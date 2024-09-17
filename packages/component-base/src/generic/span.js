@@ -9,10 +9,8 @@ const span = createComponent({
 }, [spacingMixin, flexMixin, displayMixin])
 
 /**
- * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('@dooksa/component-mixins/src/styles/flex.js').FlexMixin} FlexMixin
- * @typedef {import('@dooksa/component-mixins/src/styles/spacing.js').SpacingMixin} SpacingMixin
- * @typedef {import('@dooksa/component-mixins/src/styles/display.js').DisplayMixin} DisplayMixin
+ * @import {FlexMixin, SpacingMixin, DisplayMixin} from '@dooksa/component-mixins'
+ * @import {ComponentExtend} from '@dooksa/create-component'
  */
 
 /**

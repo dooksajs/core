@@ -1,5 +1,6 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
 import { extendText } from '../content/text.js'
+import { buttonMixin, eventTypeMouseMixin, positionMixin } from '@dooksa/component-mixins'
 
 const anchorText = extendText({
   options: {
@@ -23,14 +24,31 @@ const anchor = createComponent({
       nodePropertyName: 'href'
     }
   ]
-})
+}, [buttonMixin, positionMixin, eventTypeMouseMixin])
 
 /**
- * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
+ * @import {ComponentExtend} from '@dooksa/create-component'
+ * @import {ButtonMixin, PositionMixin, EventTypeMouseMixin} from '@dooksa/component-mixins'
  */
 
 /**
- * @param {ComponentExtend} options
+ * @typedef {Object} ComponentExtendAnchor
+ * @property {ButtonMixin|PositionMixin} options
+ */
+
+/**
+ * @typedef {Object} ComponentExtendEventAnchor
+ * @property {EventTypeMouseMixin} on
+ * @property {string} actionId
+ */
+
+/**
+ * @typedef {Object} ComponentExtendEvent
+ * @property {ComponentExtendEventAnchor[]} events
+ */
+
+/**
+ * @param {ComponentExtend|ComponentExtendAnchor|ComponentExtendEvent} options
  */
 function extendAnchor (options) {
   return extendComponent(anchor, options)

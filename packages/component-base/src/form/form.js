@@ -61,17 +61,13 @@ export const form = createComponent({
       }
     }
   },
-  events: [
-    {
-      on: 'component/mount',
-      actionId: 'form-no'
-    }
-  ]
+  eventTypes: {
+    'node/submit': true
+  }
 })
 
-
-/**
- * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
+/** 
+ * @import {ComponentExtend} from '@dooksa/create-component'
  */
 
 /**
@@ -89,7 +85,18 @@ export const form = createComponent({
  */
 
 /**
- * @param {ComponentExtend|ComponentExtendForm} options
+ * @typedef {Object} ComponentExtendEventForm
+ * @property {'node/submit'} on
+ * @property {string} actionId
+ */
+
+/**
+ * @typedef {Object} ComponentExtendEvent
+ * @property {ComponentExtendEventForm[]} events
+ */
+
+/**
+ * @param {ComponentExtend|ComponentExtendForm|ComponentExtendEvent} options
  */
 export const extendForm = function (options) {
   return extendComponent(form, options)

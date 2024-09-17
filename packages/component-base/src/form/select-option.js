@@ -7,8 +7,8 @@ const text = extendText({
   }
 })
 
-export const selectOption = createComponent({
-  id: 'select-option',
+export const option = createComponent({
+  id: 'option',
   tag: 'option',
   children: [text],
   options: {
@@ -31,20 +31,19 @@ export const selectOption = createComponent({
  */
 
 /**
- * @typedef {Object} ExtendSelectOptionOption
+ * @typedef {Object} ExtendOptionOption
  * @property {boolean} [selected]
  * @property {string} [value]
  */
 
 /**
- * @typedef {Object} ExtendSelectOption
- * @property {ExtendSelectOptionOption} options
+ * @typedef {Object} ExtendOption
+ * @property {ExtendOptionOption} options
  */
-
 
 /**
- * @param {ComponentExtend|ExtendSelectOption} options
+ * @param {ComponentExtend|ExtendOption} options
  */
-export const extendSelectOption = function (options) {
-  return extendComponent(selectOption, options)
+export const extendOption = function (options) {
+  return extendComponent(option, options)
 }

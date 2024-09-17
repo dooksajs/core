@@ -1,5 +1,7 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
 import {
+  eventTypeElementCancelMixin,
+  eventTypeElementChangeMixin,
   formControlMixin, inputAllMixin, inputFileMixin
 } from '@dooksa/component-mixins'
 
@@ -21,13 +23,11 @@ export const inputFile = createComponent({
       name: 'id'
     }
   }
-}, [formControlMixin, inputAllMixin, inputFileMixin])
+}, [formControlMixin, inputAllMixin, inputFileMixin, eventTypeElementChangeMixin, eventTypeElementCancelMixin])
 
 /**
- * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('@dooksa/component-mixins/src/styles/form-control.js').FormControlMixin} FormControlMixin
- * @typedef {import('@dooksa/component-mixins/src/input/input-all.js').InputAllMixin} InputAllMixin
- * @typedef {import('@dooksa/component-mixins/src/input/input-file.js').InputFileMixin} InputFileMixin
+ * @import {InputAllMixin, FormControlMixin, InputFileMixin, EventTypeElementChangeMixin, EventTypeElementCancelMixin } from '@dooksa/component-mixins'
+ * @import {ComponentExtend} from '@dooksa/create-component'
  */
 
 /**
@@ -35,14 +35,24 @@ export const inputFile = createComponent({
  * @property {string} [id]
  */
 
-
 /**
  * @typedef {Object} ComponentExtendInputFile
  * @property {ComponentExtendInputFileOptions|FormControlMixin|InputAllMixin|InputFileMixin} options
  */
 
 /**
- * @param {ComponentExtend|ComponentExtendInputFile} options
+ * @typedef {Object} ComponentExtendEventInputFile
+ * @property {EventTypeElementChangeMixin|EventTypeElementCancelMixin} on
+ * @property {string} actionId
+ */
+
+/**
+ * @typedef {Object} ComponentExtendEvent
+ * @property {ComponentExtendEventInputFile[]} events
+ */
+
+/**
+ * @param {ComponentExtend|ComponentExtendInputFile|ComponentExtendEvent} options
  */
 export const extendInputFile = function (options) {
   return extendComponent(inputFile, options)

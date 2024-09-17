@@ -1,6 +1,6 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
 import {
-  ariaLabelMixin, formControlMixin, inputAllMixin, inputTextMixin
+  ariaLabelMixin, eventTypeElementChangeMixin, formControlMixin, inputAllMixin, inputTextMixin
 } from '@dooksa/component-mixins'
 
 export const inputText = createComponent({
@@ -25,16 +25,13 @@ export const inputText = createComponent({
   options: {
     id: {
       name: 'id'
-    }
+    },
   }
-}, [formControlMixin, inputAllMixin, inputTextMixin, ariaLabelMixin])
+}, [formControlMixin, inputAllMixin, inputTextMixin, ariaLabelMixin, eventTypeElementChangeMixin])
 
 /**
- * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('@dooksa/component-mixins/src/styles/form-control.js').FormControlMixin} FormControlMixin
- * @typedef {import('@dooksa/component-mixins/src/input/input-all.js').InputAllMixin} InputAllMixin
- * @typedef {import('@dooksa/component-mixins/src/input/input-text.js').InputTextMixin} InputTextMixin
- * @typedef {import('@dooksa/component-mixins/src/aria/aria-label.js').AriaLabelMixin} AriaLabelMixin
+ * @import {InputAllMixin, InputTextMixin, AriaLabelMixin, FormControlMixin, EventTypeElementChangeMixin } from '@dooksa/component-mixins'
+ * @import {ComponentExtend} from '@dooksa/create-component'
  */
 
 /**
@@ -46,6 +43,18 @@ export const inputText = createComponent({
  * @typedef {Object} ComponentExtendInputText
  * @property {ComponentExtendInputTextOptions|FormControlMixin|InputAllMixin|InputTextMixin|AriaLabelMixin} options
  */
+
+/**
+ * @typedef {Object} ComponentExtendEventInputText
+ * @property {EventTypeElementChangeMixin} on
+ * @property {string} actionId
+ */
+
+/**
+ * @typedef {Object} ComponentExtendEvent
+ * @property {ComponentExtendEventInputText[]} events
+ */
+
 
 /**
  * @param {ComponentExtend|ComponentExtendInputText} options

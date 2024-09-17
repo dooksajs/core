@@ -9,12 +9,9 @@ export const h4 = createComponent({
 }, [spacingMixin, flexMixin, displayMixin])
 
 /**
- * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('../mixins/styles/flex.js').FlexMixin} FlexMixin
- * @typedef {import('../mixins/styles/spacing.js').SpacingMixin} SpacingMixin
- * @typedef {import('../mixins/styles/display.js').DisplayMixin} DisplayMixin
+ * @import {ComponentExtend} from '@dooksa/create-component'
+ * @import {FlexMixin, SpacingMixin, DisplayMixin} from '@dooksa/component-mixins'
  */
-
 /**
  * @typedef {Object} ComponentExtendH4
  * @property {FlexMixin|SpacingMixin|DisplayMixin} options

@@ -52,8 +52,8 @@ const formCheck = createComponent({
   ]
 })
 
-/**
- * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
+/** 
+ * @import {ComponentExtend} from '@dooksa/create-component'
  */
 
 /**

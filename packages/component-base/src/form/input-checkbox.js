@@ -1,6 +1,11 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
 import {
-  ariaControlsMixin, ariaExpandedMixin, eventTypeElementChangeMixin, eventTypeMouseMixin, inputAllMixin, inputCheckboxMixin
+  ariaControlsMixin,
+  ariaExpandedMixin,
+  eventTypeElementChangeMixin,
+  eventTypeMouseMixin,
+  inputAllMixin,
+  inputCheckboxMixin
 } from '@dooksa/component-mixins'
 
 export const inputCheckbox = createComponent({
@@ -39,11 +44,8 @@ export const inputCheckbox = createComponent({
 }, [inputAllMixin, inputCheckboxMixin, ariaExpandedMixin, ariaControlsMixin, eventTypeMouseMixin, eventTypeElementChangeMixin])
 
 /**
- * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('../mixins/input/input-all.js').InputAllMixin} InputAllMixin
- * @typedef {import('../mixins/input/input-checkbox.js').InputCheckboxMixin} InputCheckboxMixin
- * @typedef {import('../mixins/aria/aria-controls.js').AriaControlsMixin} AriaControlsMixin
- * @typedef {import('../mixins/aria/aria-expanded.js').AriaExpandedMixin} AriaExpandedMixin
+ * @import {ComponentExtend} from '@dooksa/create-component'
+ * @import {InputAllMixin, InputCheckboxMixin, AriaControlsMixin, AriaExpandedMixin, EventTypeMouseMixin, EventTypeElementChangeMixin} from '@dooksa/component-mixins'
  */
 
 /**
@@ -57,7 +59,18 @@ export const inputCheckbox = createComponent({
  */
 
 /**
- * @param {ComponentExtend|ComponentExtendInputCheckbox} options
+ * @typedef {Object} ComponentExtendEventInputCheckbox
+ * @property {'observeProperty/checked'|EventTypeMouseMixin|EventTypeElementChangeMixin} on
+ * @property {string} actionId
+ */
+
+/**
+ * @typedef {Object} ComponentExtendEvent
+ * @property {ComponentExtendEventInputCheckbox[]} events
+ */
+
+/**
+ * @param {ComponentExtend|ComponentExtendInputCheckbox|ComponentExtendEvent} options
  */
 export const extendInputCheckbox = function (options) {
   return extendComponent(inputCheckbox, options)

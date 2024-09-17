@@ -31,8 +31,8 @@ export const img = createComponent({
 }, [spacingMixin])
 
 /**
- * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('../mixins/styles/spacing.js').SpacingMixin} SpacingMixin
+ * @import {ComponentExtend} from '@dooksa/create-component'
+ * @import {SpacingMixin} from '@dooksa/component-mixins'
  */
 
 /**

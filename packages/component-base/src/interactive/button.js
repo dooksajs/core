@@ -34,24 +34,34 @@ export const button = createComponent({
   }
 }, [buttonMixin, eventTypeMouseMixin])
 
-
 /**
- * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('@dooksa/component-mixins/src/styles/button.js').ButtonMixin} ButtonMixin
+ * @import {ComponentExtend} from '@dooksa/create-component'
+ * @import {ButtonMixin, EventTypeMouseMixin} from '@dooksa/component-mixins'
  */
 
 /**
- * @typedef {Object} ButtonExtendOption
+ * @typedef {Object} ComponentExtendButtonOption
  * @property {'submit'|'reset'|'button'} [options.type]
  */
 
 /**
- * @typedef {Object} ButtonExtendOptions
- * @property {ButtonMixin|ButtonExtendOption} options
+ * @typedef {Object} ComponentExtendButton
+ * @property {ButtonMixin|ComponentExtendButtonOption} options
  */
 
 /**
- * @param {ComponentExtend|ButtonExtendOptions} options
+ * @typedef {Object} ComponentExtendEventButton
+ * @property {EventTypeMouseMixin} on
+ * @property {string} actionId
+ */
+
+/**
+ * @typedef {Object} ComponentExtendEvent
+ * @property {ComponentExtendEventButton[]} events
+ */
+
+/**
+ * @param {ComponentExtend|ComponentExtendButton|ComponentExtendEventButton} options
  */
 export const extendButton = function (options) {
   return extendComponent(button, options)
