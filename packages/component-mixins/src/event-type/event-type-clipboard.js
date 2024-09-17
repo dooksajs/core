@@ -1,5 +1,11 @@
 import { createMixin } from '@dooksa/create-component'
 
+/**
+ * @typedef {'node/copy'|
+ * 'node/cut'|
+ * 'node/paste'} EventTypeClipboardMixin
+ */
+
 export default createMixin({
   metadata: {
     id: 'event-type-clipboard'

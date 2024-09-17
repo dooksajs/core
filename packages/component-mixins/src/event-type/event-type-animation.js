@@ -1,8 +1,15 @@
 import { createMixin } from '@dooksa/create-component'
 
+/**
+ * @typedef {'node/animationcancel'|
+ * 'node/animationend'|
+ * 'node/animationiteration'|
+ * 'node/animationstart'} EventTypeAnimationMixin
+ */
+
 export default createMixin({
   metadata: {
-    id: 'even-type-animation'
+    id: 'event-type-animation'
   },
   data: {
     eventTypes: {

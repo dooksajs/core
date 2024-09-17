@@ -1,10 +1,14 @@
 import { createMixin } from '@dooksa/create-component'
 
 /**
+ * @typedef {'auto'|'hidden'|'visible'|'scroll'} OverFlow
+ */
+
+/**
  * @typedef {Object} OverflowMixin
- * @property {'auto'|'hidden'|'visible'|'scroll'} [overflow]
- * @property {'auto'|'hidden'|'visible'|'scroll'} [overflowHorizontal]
- * @property {'auto'|'hidden'|'visible'|'scroll'} [overflowVertical]
+ * @property {OverFlow} [overflow]
+ * @property {OverFlow} [overflowHorizontal]
+ * @property {OverFlow} [overflowVertical]
  */
 
 export default createMixin({

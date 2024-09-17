@@ -1,10 +1,12 @@
 import { createMixin } from '@dooksa/create-component'
 
 /**
+ * @import {Opacity, ColorExtra} from '@dooksa/create-component'
+ */
+
+/**
  * @typedef {'all'|'top'|'bottom'|'end'|'stop'} BorderDirection
  * @typedef {'1'|'2'|'3'|'4'|'5'} BorderWidth
- * @typedef {import('@dooksa/create-component').Opacity} Opacity
- * @typedef {import('@dooksa/create-component').ColorExtra} ColorExtra
  */
 
 /**

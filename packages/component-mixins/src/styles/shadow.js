@@ -1,10 +1,13 @@
 import { createMixin } from '@dooksa/create-component'
 
 /**
- * @typedef {Object} ShadowMixin
- * @property {'none'|'sm'|'md'|'lg'} [shadow]
+ * @import {BreakpointNoneLg} from '@dooksa/create-component'
  */
 
+/**
+ * @typedef {Object} ShadowMixin
+ * @property {BreakpointNoneLg} [shadow]
+ */
 
 export default createMixin({
   metadata: {

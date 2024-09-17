@@ -1,7 +1,7 @@
 import { createMixin } from '@dooksa/create-component'
 
 /**
- * @typedef {import('@dooksa/create-component').Spacer} Spacer
+ * @import {Spacer} from '@dooksa/create-component'
  */
 
 /**
@@ -10,7 +10,6 @@ import { createMixin } from '@dooksa/create-component'
  * @property {Spacer} [gapRow]
  * @property {Spacer} [gapColumn]
  */
-
 
 export default createMixin({
   metadata: {

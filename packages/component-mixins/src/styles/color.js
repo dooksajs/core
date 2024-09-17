@@ -1,8 +1,12 @@
 import { createMixin } from '@dooksa/create-component'
 
 /**
+ * @import {Color} from '@dooksa/create-component'
+ */
+
+/**
  * @typedef {Object} ColorMixin
- * @property {import('@dooksa/create-component').Color} [color]
+ * @property {Color} [color]
  */
 
 export default createMixin({

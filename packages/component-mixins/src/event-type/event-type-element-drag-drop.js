@@ -1,5 +1,15 @@
 import { createMixin } from '@dooksa/create-component'
 
+/**
+ * @typedef {'node/drag'|
+ * 'node/dragend'|
+ * 'node/dragenter'|
+ * 'node/dragleave'|
+ * 'node/dragover'|
+ * 'node/dragstart'|
+ * 'node/drop'} EventTypeElementDragDropMixin
+ */
+
 export default createMixin({
   metadata: {
     id: 'event-type-element-drag-drop'

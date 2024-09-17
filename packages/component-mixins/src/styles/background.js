@@ -1,10 +1,14 @@
 import { createMixin } from '@dooksa/create-component'
 
 /**
+ * @import {Color, Opacity} from '@dooksa/create-component'
+ */
+
+/**
  * @typedef {Object} BackgroundMixin
- * @property {import('@dooksa/create-component').Color|'transparent'} [backgroundColor]
+ * @property {Color|'transparent'} [backgroundColor]
  * @property {boolean} [backgroundGradient]
- * @property {import('@dooksa/create-component').Opacity} [backgroundOpacity]
+ * @property {Opacity} [backgroundOpacity]
  */
 
 export default createMixin({

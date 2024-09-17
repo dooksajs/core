@@ -1,8 +1,8 @@
 import {
-  extendText, extendSelectOption, extendSelect
+  extendText, extendOption, extendSelect
 } from '@dooksa/component-base'
 
-const selectOption = extendSelectOption({
+const selectOption = extendOption({
   children: [
     extendText({
       options: {

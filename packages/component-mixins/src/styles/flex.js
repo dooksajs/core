@@ -1,8 +1,7 @@
 import { createMixin } from '@dooksa/create-component'
 
 /**
- * @typedef {import('@dooksa/create-component').BreakpointAlwaysXXL} BreakpointAlwaysXXL
- * @typedef {import('@dooksa/create-component').BreakpointSmXXL} BreakpointSmXXL
+ * @import {BreakpointAlwaysXXL, BreakpointSmXXL} from '@dooksa/create-component'
  */
 
 /**

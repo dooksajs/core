@@ -1,7 +1,7 @@
 import { createMixin } from '@dooksa/create-component'
 
 /**
- * @typedef {import('@dooksa/create-component').Spacer} Spacer
+ * @import {Spacer} from '@dooksa/create-component'
  * @typedef {'end'|'start'|'top'|'bottom'|'xAxis'|'yAxis'|'none'} SpacingDirection
  */
 
