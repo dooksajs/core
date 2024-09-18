@@ -1,4 +1,5 @@
 /**
+ * @import {IdMixin} from './global/id.js'
  * @import {FlexMixin} from './styles/flex.js'
  * @import {TextMixin} from './styles/text.js'
  * @import {HeadingMixin} from './styles/heading.js'
@@ -55,6 +56,7 @@
  */
 
 /**
+ * @typedef {IdMixin} IdMixin
  * @typedef {FlexMixin} FlexMixin
  * @typedef {AriaControlsMixin} AriaControlsMixin
  * @typedef {AriaCurrentMixin} AriaCurrentMixin

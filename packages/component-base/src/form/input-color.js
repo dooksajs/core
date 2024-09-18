@@ -1,5 +1,5 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
-import { eventTypeElementChangeMixin, formControlMixin, inputAllMixin } from '@dooksa/component-mixins'
+import { eventTypeElementChangeMixin, formControlMixin, idMixin, inputAllMixin } from '@dooksa/component-mixins'
 
 export const inputColor = createComponent({
   id: 'input-color',
@@ -35,15 +35,12 @@ export const inputColor = createComponent({
   options: {
     title: {
       name: 'title'
-    },
-    id: {
-      name: 'id'
     }
   }
-}, [formControlMixin, inputAllMixin, eventTypeElementChangeMixin])
+}, [idMixin, formControlMixin, inputAllMixin, eventTypeElementChangeMixin])
 
 /**
- * @import {InputAllMixin, FormControlMixin, EventTypeElementChangeMixin } from '@dooksa/component-mixins'
+ * @import {IdMixin, InputAllMixin, FormControlMixin, EventTypeElementChangeMixin } from '@dooksa/component-mixins'
  * @import {ComponentExtend} from '@dooksa/create-component'
  */
 
@@ -55,7 +52,7 @@ export const inputColor = createComponent({
 
 /**
  * @typedef {Object} ComponentExtendInputTextColor
- * @property {ComponentExtendInputTextColorOptions|FormControlMixin|InputAllMixin} options
+ * @property {ComponentExtendInputTextColorOptions|IdMixin|FormControlMixin|InputAllMixin} options
  */
 
 /**

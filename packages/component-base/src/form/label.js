@@ -1,6 +1,10 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
 import {
-  buttonMixin, eventTypeMouseMixin, textMixin, ariaLabelMixin
+  buttonMixin,
+  eventTypeMouseMixin,
+  textMixin,
+  ariaLabelMixin,
+  idMixin
 } from '@dooksa/component-mixins'
 import { extendText } from '../content/text.js'
 
@@ -38,22 +42,14 @@ export const label = createComponent({
       toggle: true
     },
     for: {
-      name: 'htmlFor'
-    },
-    id: {
-      name: 'id'
+      name: 'htmlFor',
+      replace: true
     }
-  },
-  events: [
-    {
-      on: 'component/mount',
-      actionId: 'label-html-for'
-    }
-  ]
-}, [textMixin, buttonMixin, ariaLabelMixin, eventTypeMouseMixin])
+  }
+}, [idMixin, textMixin, buttonMixin, ariaLabelMixin, eventTypeMouseMixin])
 
 /**
- * @import {EventTypeMouseMixin, TextMixin, ButtonMixin, AriaLabelMixin} from '@dooksa/component-mixins'
+ * @import {IdMixin, EventTypeMouseMixin, TextMixin, ButtonMixin, AriaLabelMixin} from '@dooksa/component-mixins'
  * @import  {ComponentExtend} from '@dooksa/create-component'
  */
 
@@ -70,7 +66,7 @@ export const label = createComponent({
 
 /**
  * @typedef {Object} ComponentExtendLabel
- * @property {ComponentExtendLabelOptions|TextMixin|ButtonMixin|AriaLabelMixin} options
+ * @property {ComponentExtendLabelOptions|IdMixin|TextMixin|ButtonMixin|AriaLabelMixin} options
  */
 
 /**

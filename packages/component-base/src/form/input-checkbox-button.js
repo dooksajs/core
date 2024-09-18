@@ -1,6 +1,6 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
 import {
-  ariaControlsMixin, ariaExpandedMixin, eventTypeElementChangeMixin, inputAllMixin, inputCheckboxMixin
+  ariaControlsMixin, ariaExpandedMixin, eventTypeElementChangeMixin, idMixin, inputAllMixin, inputCheckboxMixin
 } from '@dooksa/component-mixins'
 
 export const inputCheckboxButton = createComponent({
@@ -26,11 +26,6 @@ export const inputCheckboxButton = createComponent({
       nodePropertyName: 'checked'
     }
   ],
-  options: {
-    id: {
-      name: 'id'
-    }
-  },
   events: [
     {
       on: 'component/mount',
@@ -40,10 +35,10 @@ export const inputCheckboxButton = createComponent({
   eventTypes: {
     'observeProperty/checked': true,
   }
-}, [inputAllMixin, inputCheckboxMixin, ariaExpandedMixin, ariaControlsMixin, eventTypeElementChangeMixin])
+}, [idMixin, inputAllMixin, inputCheckboxMixin, ariaExpandedMixin, ariaControlsMixin, eventTypeElementChangeMixin])
 
 /**
- * @import {InputAllMixin, InputCheckboxMixin, AriaControlsMixin, AriaExpandedMixin, EventTypeElementChangeMixin} from '@dooksa/component-mixins'
+ * @import {IdMixin, InputAllMixin, InputCheckboxMixin, AriaControlsMixin, AriaExpandedMixin, EventTypeElementChangeMixin} from '@dooksa/component-mixins'
  * @import {ComponentExtend} from '@dooksa/create-component'
  */
 
@@ -54,7 +49,7 @@ export const inputCheckboxButton = createComponent({
 
 /**
  * @typedef {Object} ComponentExtendInputCheckboxButton
- * @property {ComponentExtendInputCheckboxButtonOptions|InputCheckboxMixin|InputAllMixin|AriaExpandedMixin|AriaControlsMixin} options
+ * @property {ComponentExtendInputCheckboxButtonOptions|IdMixin|InputCheckboxMixin|InputAllMixin|AriaExpandedMixin|AriaControlsMixin} options
  */
 
 /**

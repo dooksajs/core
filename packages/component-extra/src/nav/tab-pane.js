@@ -1,5 +1,5 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
-import { flexMixin } from '@dooksa/component-mixins'
+import { flexMixin, idMixin } from '@dooksa/component-mixins'
 
 export const tabPane = createComponent({
   id: 'tab-pane',
@@ -19,9 +19,6 @@ export const tabPane = createComponent({
     }
   ],
   options: {
-    id: {
-      name: 'id'
-    },
     tabIndex: {
       name: 'tabindex',
       values: {
@@ -35,11 +32,11 @@ export const tabPane = createComponent({
       toggle: true
     }
   }
-}, [flexMixin])
+}, [idMixin, flexMixin])
 
 /**
- * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('@dooksa/component-mixins/src/styles/flex.js').FlexMixin} FlexMixin
+ * @import {FlexMixin, IdMixin} from '@dooksa/component-mixins'
+ * @import {ComponentExtend} from '@dooksa/create-component'
  */
 
 /**
@@ -51,7 +48,7 @@ export const tabPane = createComponent({
 
 /**
  * @typedef {Object} ComponentExtendTabPaneOption
- * @property {ComponentExtendTabPane|FlexMixin} options
+ * @property {ComponentExtendTabPane|FlexMixin|IdMixin} options
  */
 
 /**
