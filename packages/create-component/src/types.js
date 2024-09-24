@@ -40,6 +40,7 @@
 /**
 * Create a modified component
 * @typedef {Object} ComponentExtend
+* @property {ComponentProperty[]} [properties]
 * @property {ComponentMixinMetadata} [metadata]
 * @property {ComponentEvent[]} [events]
 * @property {boolean} [extendEvents]
