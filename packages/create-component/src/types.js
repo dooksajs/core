@@ -105,7 +105,7 @@
  * @typedef {'component/mount'|
  * 'component/create'|
  * 'component/childrenAfterUpdate'|
- * 'component/childrenBeforeUpdate'} ComponentEventType
+ * 'component/childrenBeforeUpdate'|string} ComponentEventType
  */
 
 /**
