@@ -12,7 +12,8 @@ export default createMixin({
   data: {
     options: {
       name: {
-        name: 'name'
+        name: 'name',
+        replace: true
       }
     }
   }
