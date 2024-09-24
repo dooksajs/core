@@ -43,28 +43,32 @@ export const inputCheckboxButton = createComponent({
  */
 
 /**
- * @typedef {Object} ComponentExtendInputCheckboxButtonOptions
+ * @typedef {Object} ExtendInputCheckboxButtonOption
  * @property {string} [id]
  */
 
 /**
- * @typedef {Object} ComponentExtendInputCheckboxButton
- * @property {ComponentExtendInputCheckboxButtonOptions|IdMixin|InputCheckboxMixin|InputAllMixin|AriaExpandedMixin|AriaControlsMixin} options
+ * @typedef {Object} ExtendInputCheckboxButtonMixin
+ * @property {ExtendInputCheckboxButtonOption|IdMixin|InputCheckboxMixin|InputAllMixin|AriaExpandedMixin|AriaControlsMixin} options
  */
 
 /**
- * @typedef {Object} ComponentExtendEventInputCheckboxButton
+ * @typedef {Object} ExtendInputCheckboxButtonEvent
  * @property {'observeProperty/checked'|EventTypeElementChangeMixin} on
  * @property {string} actionId
  */
 
 /**
- * @typedef {Object} ComponentExtendEvent
- * @property {ComponentExtendEventInputCheckboxButton[]} events
+ * @typedef {Object} ExtendInputCheckboxButtonEventMixin
+ * @property {ExtendInputCheckboxButtonEvent[]} events
  */
 
 /**
- * @param {ComponentExtend|ComponentExtendInputCheckboxButton|ComponentExtendEvent} options
+ * @typedef {ComponentExtend|ExtendInputCheckboxButtonEventMixin|ExtendInputCheckboxButtonMixin} ExtendInputCheckboxButton
+ */
+
+/**
+ * @param {ExtendInputCheckboxButton} options
  */
 export const extendInputCheckboxButton = function (options) {
   return extendComponent(inputCheckboxButton, options)

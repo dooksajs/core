@@ -36,12 +36,16 @@ export const img = createComponent({
  */
 
 /**
- * @typedef {Object} ComponentExtendImg
+ * @typedef {Object} ExtendImgOptionMixin
  * @property {SpacingMixin} options
  */
 
 /**
- * @param {ComponentExtend|ComponentExtendImg} options
+ * @typedef {ComponentExtend|ExtendImgOptionMixin} ExtendImg
+ */
+
+/**
+ * @param {ExtendImg} options
  */
 export const extendImg = function (options) {
   return extendComponent(img, options)

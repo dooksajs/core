@@ -40,28 +40,32 @@ export const button = createComponent({
  */
 
 /**
- * @typedef {Object} ComponentExtendButtonOption
- * @property {'submit'|'reset'|'button'} [options.type]
+ * @typedef {Object} ExtendButtonOption
+ * @property {'submit'|'reset'|'button'} [type]
  */
 
 /**
- * @typedef {Object} ComponentExtendButton
- * @property {ButtonMixin|ComponentExtendButtonOption} options
+ * @typedef {Object} ExtendButtonOptionMixin
+ * @property {ButtonMixin|ExtendButtonOption} options
  */
 
 /**
- * @typedef {Object} ComponentExtendEventButton
+ * @typedef {Object} ExtendButtonEvent
  * @property {EventTypeMouseMixin} on
  * @property {string} actionId
  */
 
 /**
- * @typedef {Object} ComponentExtendEvent
- * @property {ComponentExtendEventButton[]} events
+ * @typedef {Object} ExtendButtonEventMixin
+ * @property {ExtendButtonEvent[]} events
  */
 
 /**
- * @param {ComponentExtend|ComponentExtendButton|ComponentExtendEventButton} options
+ * @typedef {ComponentExtend|ExtendButtonEventMixin|ExtendButtonOptionMixin} ExtendButton
+ */
+
+/**
+ * @param {ExtendButton} options
  */
 export const extendButton = function (options) {
   return extendComponent(button, options)

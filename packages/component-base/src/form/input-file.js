@@ -26,28 +26,32 @@ export const inputFile = createComponent({
  */
 
 /**
- * @typedef {Object} ComponentExtendInputFileOptions
+ * @typedef {Object} ExtendInputFileOption
  * @property {string} [id]
  */
 
 /**
- * @typedef {Object} ComponentExtendInputFile
- * @property {ComponentExtendInputFileOptions|FormControlMixin|InputAllMixin|InputFileMixin|IdMixin} options
+ * @typedef {Object} ExtendInputFileOptionMixin
+ * @property {ExtendInputFileOption|FormControlMixin|InputAllMixin|InputFileMixin|IdMixin} options
  */
 
 /**
- * @typedef {Object} ComponentExtendEventInputFile
+ * @typedef {Object} ExtendInputFileEvent
  * @property {EventTypeElementChangeMixin|EventTypeElementCancelMixin} on
  * @property {string} actionId
  */
 
 /**
- * @typedef {Object} ComponentExtendEvent
- * @property {ComponentExtendEventInputFile[]} events
+ * @typedef {Object} ExtendInputFileEventMixin
+ * @property {ExtendInputFileEvent[]} events
  */
 
 /**
- * @param {ComponentExtend|ComponentExtendInputFile|ComponentExtendEvent} options
+ * @typedef {ComponentExtend|ExtendInputFileEventMixin|ExtendInputFileOptionMixin} ExtendInputFile
+ */
+
+/**
+ * @param {ExtendInputFile} options
  */
 export const extendInputFile = function (options) {
   return extendComponent(inputFile, options)

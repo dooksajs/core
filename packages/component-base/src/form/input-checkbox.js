@@ -45,28 +45,32 @@ export const inputCheckbox = createComponent({
  */
 
 /**
- * @typedef {Object} ComponentExtendInputTextOptions
+ * @typedef {Object} ExtendInputTextOption
  * @property {string} [id]
  */
 
 /**
- * @typedef {Object} ComponentExtendInputCheckbox
- * @property {ComponentExtendInputTextOptions|IdMixin|InputCheckboxMixin|InputAllMixin|AriaExpandedMixin|AriaControlsMixin} options
+ * @typedef {Object} ExtendInputTextOptionMixin
+ * @property {ExtendInputTextOption|IdMixin|InputCheckboxMixin|InputAllMixin|AriaExpandedMixin|AriaControlsMixin} options
  */
 
 /**
- * @typedef {Object} ComponentExtendEventInputCheckbox
+ * @typedef {Object} ExtendInputCheckboxEvent
  * @property {'observeProperty/checked'|EventTypeMouseMixin|EventTypeElementChangeMixin} on
  * @property {string} actionId
  */
 
 /**
- * @typedef {Object} ComponentExtendEvent
- * @property {ComponentExtendEventInputCheckbox[]} events
+ * @typedef {Object} ExtendInputCheckboxEventMixin
+ * @property {ExtendInputCheckboxEvent[]} events
  */
 
 /**
- * @param {ComponentExtend|ComponentExtendInputCheckbox|ComponentExtendEvent} options
+ * @typedef {ComponentExtend|ExtendInputCheckboxEventMixin|ExtendInputTextOptionMixin} ExtendInputCheckbox
+ */
+
+/**
+ * @param {ExtendInputCheckbox} options
  */
 export const extendInputCheckbox = function (options) {
   return extendComponent(inputCheckbox, options)

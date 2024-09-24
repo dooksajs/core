@@ -54,7 +54,7 @@ export const label = createComponent({
  */
 
 /**
- * @typedef {Object} ComponentExtendLabelOptions
+ * @typedef {Object} ExtendLabelOption
  * @property {string} [placeholder]
  * @property {boolean} [disabled]
  * @property {boolean} [readonly]
@@ -65,23 +65,27 @@ export const label = createComponent({
  */
 
 /**
- * @typedef {Object} ComponentExtendLabel
- * @property {ComponentExtendLabelOptions|IdMixin|TextMixin|ButtonMixin|AriaLabelMixin} options
+ * @typedef {Object} ExtendLabelOptionMixin
+ * @property {ExtendLabelOption|IdMixin|TextMixin|ButtonMixin|AriaLabelMixin} options
  */
 
 /**
- * @typedef {Object} ComponentExtendEventLabel
+ * @typedef {Object} ExtendLabelEvent
  * @property {EventTypeMouseMixin} on
  * @property {string} actionId
  */
 
 /**
- * @typedef {Object} ComponentExtendEvent
- * @property {ComponentExtendEventLabel[]} events
+ * @typedef {Object} ExtendLabelEventMixin
+ * @property {ExtendLabelEvent[]} events
  */
 
 /**
- * @param {ComponentExtend|ComponentExtendLabel|ComponentExtendEvent} options
+ * @typedef {ComponentExtend|ExtendLabelEventMixin|ExtendLabelOptionMixin} ExtendLabel
+ */
+
+/**
+ * @param {ExtendLabel} options
  */
 export const extendLabel = function (options) {
   return extendComponent(label, options)

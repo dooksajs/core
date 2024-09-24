@@ -27,7 +27,7 @@ export const option = createComponent({
 })
 
 /**
- * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
+ * @import  {ComponentExtend} from '@dooksa/create-component'
  */
 
 /**
@@ -37,12 +37,16 @@ export const option = createComponent({
  */
 
 /**
- * @typedef {Object} ExtendOption
+ * @typedef {Object} ExtendOptionOptionMixin
  * @property {ExtendOptionOption} options
  */
 
 /**
- * @param {ComponentExtend|ExtendOption} options
+ * @typedef {ComponentExtend|ExtendOptionOptionMixin} ExtendOption
+ */
+
+/**
+ * @param {ExtendOption} options
  */
 export const extendOption = function (options) {
   return extendComponent(option, options)

@@ -12,12 +12,16 @@ export const paragraph = createComponent({
  */
 
 /**
- * @typedef {Object} ComponentExtendParagraph
+ * @typedef {Object} ExtendParagraphOptionMixin
  * @property {SpacingMixin|TextMixin|HeadingMixin} options
  */
 
 /**
- * @param {ComponentExtend|ComponentExtendParagraph} options
+ * @typedef {ComponentExtend|ExtendParagraphOptionMixin} ExtendParagraph
+ */
+
+/**
+ * @param {ExtendParagraph} options
  */
 export const extendParagraph = function (options) {
   return extendComponent(paragraph, options)

@@ -37,9 +37,8 @@ export const select = createComponent({
 }, [ariaLabelMixin, inputAllMixin])
 
 /**
- * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('@dooksa/component-mixins/src/aria/aria-label.js').AriaLabelMixin} AriaLabelMixin
- * @typedef {import('@dooksa/component-mixins/src/input/input-all.js').InputAllMixin} InputAllMixin
+ * @import {AriaLabelMixin, InputAllMixin} from '@dooksa/component-mixins'
+ * @import  {ComponentExtend} from '@dooksa/create-component'
  */
 
 /**
@@ -50,12 +49,16 @@ export const select = createComponent({
  */
 
 /**
- * @typedef {Object} ExtendSelect
+ * @typedef {Object} ExtendSelectOptionMixin
  * @property {ExtendSelectOption|AriaLabelMixin|InputAllMixin} options
  */
 
 /**
- * @param {ComponentExtend|ExtendSelect} options
+ * @typedef {ComponentExtend|ExtendSelectOptionMixin} ExtendSelect
+ */
+
+/**
+ * @param {ExtendSelect} options
  */
 export const extendSelect = function (options) {
   return extendComponent(select, options)

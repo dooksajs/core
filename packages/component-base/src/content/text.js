@@ -22,13 +22,17 @@ export const text = createComponent({
  */
 
 /**
- * @typedef {Object} ComponentExtendText
+ * @typedef {Object} ExtendTextOption
  * @property {Object} options
  * @property {string} [options.text] - Text
  */
 
 /**
- * @param {ComponentExtend|ComponentExtendText} options
+ * @typedef {ComponentExtend|ExtendTextOption} ExtendText
+ */
+
+/**
+ * @param {ExtendText} options
  */
 export const extendText = function (options) {
   return extendComponent(text, options)

@@ -8,7 +8,7 @@ const anchorText = extendText({
   }
 })
 
-const anchor = createComponent({
+export const anchor = createComponent({
   id: 'anchor',
   tag: 'a',
   children: [anchorText],
@@ -32,29 +32,28 @@ const anchor = createComponent({
  */
 
 /**
- * @typedef {Object} ComponentExtendAnchor
+ * @typedef {Object} ExtendAnchorOptionMixin
  * @property {ButtonMixin|PositionMixin} options
  */
 
 /**
- * @typedef {Object} ComponentExtendEventAnchor
+ * @typedef {Object} ExtendAnchorEvent
  * @property {EventTypeMouseMixin} on
  * @property {string} actionId
  */
 
 /**
- * @typedef {Object} ComponentExtendEvent
- * @property {ComponentExtendEventAnchor[]} events
+ * @typedef {Object} ExtendEventMixin
+ * @property {ExtendAnchorEvent[]} events
  */
 
 /**
- * @param {ComponentExtend|ComponentExtendAnchor|ComponentExtendEvent} options
+ * @typedef {ComponentExtend|ExtendAnchorOptionMixin|ExtendEventMixin} ExtendAnchor
  */
-function extendAnchor (options) {
-  return extendComponent(anchor, options)
-}
 
-export {
-  anchor,
-  extendAnchor
+/**
+ * @param {ExtendAnchor} options
+ */
+export const extendAnchor = function (options) {
+  return extendComponent(anchor, options)
 }

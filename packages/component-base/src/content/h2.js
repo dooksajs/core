@@ -14,12 +14,16 @@ export const h2 = createComponent({
  */
 
 /**
- * @typedef {Object} ComponentExtendH2
+ * @typedef {Object} ExtendH2OptionMixin
  * @property {FlexMixin|SpacingMixin|DisplayMixin} options
  */
 
 /**
- * @param {ComponentExtend|ComponentExtendH2} options
+ * @typedef {ComponentExtend|ExtendH2OptionMixin} ExtendH2
+ */
+
+/**
+ * @param {ExtendH2} options
  */
 export const extendH2 = function (options) {
   return extendComponent(h2, options)

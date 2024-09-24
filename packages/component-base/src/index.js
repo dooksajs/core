@@ -15,15 +15,21 @@ import { extendInputColor, inputColor } from './form/input-color.js'
 import { extendInputFile, inputFile } from './form/input-file.js'
 import { extendInputText, inputText } from './form/input-text.js'
 import { extendLabel, label } from './form/label.js'
-import { extendOption, option } from './form/select-option.js'
+import { extendOption, option } from './form/option.js'
 import { extendSelect, select } from './form/select.js'
 import { div, extendDiv } from './generic/div.js'
 import { extendHr, hr } from './generic/hr.js'
 import { extendSpan, span } from './generic/span.js'
 import { anchor, extendAnchor } from './interactive/anchor.js'
 import { button, extendButton } from './interactive/button.js'
+import { details, extendDetails } from './interactive/details.js'
+import { extendSummary, summary } from './interactive/summary.js'
+
+export * from './types.js'
 
 export {
+  extendDetails,
+  extendSummary,
   extendAnchor,
   extendButton,
   extendDiv,
@@ -48,6 +54,8 @@ export {
 }
 
 export default [
+  summary,
+  details,
   anchor,
   button,
   div,

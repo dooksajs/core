@@ -71,7 +71,7 @@ export const form = createComponent({
  */
 
 /**
- * @typedef {Object} ComponentExtendFormOptions
+ * @typedef {Object} ExtendFormOption
  * @property {'none'|'sentences'|'words'|'characters'} [autocapitalize] - Controls whether inputted text is automatically capitalized and, if so, in what manner.
  * @property {'on'|'off'} [autocomplete] - Indicates whether input elements can by default have their values automatically completed by the browser.
  * @property {string} [name]
@@ -80,23 +80,27 @@ export const form = createComponent({
  */
 
 /**
- * @typedef {Object} ComponentExtendForm
- * @property {ComponentExtendFormOptions} options
+ * @typedef {Object} ExtendFormMixin
+ * @property {ExtendFormOption} options
  */
 
 /**
- * @typedef {Object} ComponentExtendEventForm
+ * @typedef {Object} ExtendFormEvent
  * @property {'node/submit'} on
  * @property {string} actionId
  */
 
 /**
- * @typedef {Object} ComponentExtendEvent
- * @property {ComponentExtendEventForm[]} events
+ * @typedef {Object} ExtendFormEventMixin
+ * @property {ExtendFormEvent[]} events
  */
 
 /**
- * @param {ComponentExtend|ComponentExtendForm|ComponentExtendEvent} options
+ * @typedef {ComponentExtend|ExtendFormEventMixin|ExtendFormMixin} ExtendForm
+ */
+
+/**
+ * @param {ExtendForm} options
  */
 export const extendForm = function (options) {
   return extendComponent(form, options)

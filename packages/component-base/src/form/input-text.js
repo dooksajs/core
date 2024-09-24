@@ -30,29 +30,32 @@ export const inputText = createComponent({
  */
 
 /**
- * @typedef {Object} ComponentExtendInputTextOptions
+ * @typedef {Object} ExtendInputTextOption
  * @property {string} [id]
  */
 
 /**
- * @typedef {Object} ComponentExtendInputText
- * @property {ComponentExtendInputTextOptions|IdMixin|FormControlMixin|InputAllMixin|InputTextMixin|AriaLabelMixin} options
+ * @typedef {Object} ExtendInputTextOptionMixin
+ * @property {ExtendInputTextOption|IdMixin|FormControlMixin|InputAllMixin|InputTextMixin|AriaLabelMixin} options
  */
 
 /**
- * @typedef {Object} ComponentExtendEventInputText
+ * @typedef {Object} ExtendInputTextEvent
  * @property {EventTypeElementChangeMixin} on
  * @property {string} actionId
  */
 
 /**
- * @typedef {Object} ComponentExtendEvent
- * @property {ComponentExtendEventInputText[]} events
+ * @typedef {Object} ExtendInputTextEventMixin
+ * @property {ExtendInputTextEvent[]} events
  */
 
+/**
+ * @typedef {ComponentExtend|ExtendInputTextEventMixin|ExtendInputTextOptionMixin} ExtendInputText
+ */
 
 /**
- * @param {ComponentExtend|ComponentExtendInputText} options
+ * @param {ExtendInputText} options
  */
 export const extendInputText = function (options) {
   return extendComponent(inputText, options)

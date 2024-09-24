@@ -20,7 +20,7 @@ const label = extendLabel({
   ]
 })
 
-const formCheck = createComponent({
+export const formCheck = createComponent({
   id: 'form-check',
   tag: 'div',
   children: [inputCheckbox, label],
@@ -57,25 +57,24 @@ const formCheck = createComponent({
  */
 
 /**
- * @typedef {Object} ComponentExtendFormCheckOptions
+ * @typedef {Object} ExtendFormCheckOption
  * @property {boolean} [switch]
  * @property {boolean} [inline]
  * @property {boolean} [reverse]
  */
 
 /**
- * @typedef {Object} ComponentExtendFormCheck
- * @property {ComponentExtendFormCheckOptions} options
+ * @typedef {Object} ExtendFormCheckOptionMixin
+ * @property {ExtendFormCheckOption} options
  */
 
 /**
- * @param {ComponentExtend|ComponentExtendFormCheck} options
+ * @typedef {ComponentExtend|ExtendFormCheckOptionMixin} ExtendFormCheck
  */
-function extendFormCheck (options) {
-  return extendComponent(formCheck, options)
-}
 
-export {
-  formCheck,
-  extendFormCheck
+/**
+ * @param {ExtendFormCheck} options
+ */
+export const extendFormCheck = function (options) {
+  return extendComponent(formCheck, options)
 }

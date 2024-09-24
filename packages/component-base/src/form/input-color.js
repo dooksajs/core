@@ -45,29 +45,33 @@ export const inputColor = createComponent({
  */
 
 /**
- * @typedef {Object} ComponentExtendInputTextColorOptions
+ * @typedef {Object} ExtendInputColorOption
  * @property {string} [title]
  * @property {string} [id]
  */
 
 /**
- * @typedef {Object} ComponentExtendInputTextColor
- * @property {ComponentExtendInputTextColorOptions|IdMixin|FormControlMixin|InputAllMixin} options
+ * @typedef {Object} ExtendInputColorOptionMixin
+ * @property {ExtendInputColorOption|IdMixin|FormControlMixin|InputAllMixin} options
  */
 
 /**
- * @typedef {Object} ComponentExtendEventInputColor
+ * @typedef {Object} ExtendInputColorEvent
  * @property {EventTypeElementChangeMixin} on
  * @property {string} actionId
  */
 
 /**
- * @typedef {Object} ComponentExtendEvent
- * @property {ComponentExtendEventInputColor[]} events
+ * @typedef {Object} ExtendInputColorEventMixin
+ * @property {ExtendInputColorEvent[]} events
  */
 
 /**
- * @param {ComponentExtend|ComponentExtendInputTextColor|ComponentExtendEvent} options
+ * @typedef {ComponentExtend|ExtendInputColorEventMixin|ExtendInputColorOptionMixin} ExtendInputColor
+ */
+
+/**
+ * @param {ExtendInputColor} options
  */
 export const extendInputColor = function (options) {
   return extendComponent(inputColor, options)

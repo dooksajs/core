@@ -77,7 +77,11 @@ export const div = createComponent({
  */
 
 /**
- * @param {ComponentExtend|ExtendDivOptions} options
+ * @typedef {ComponentExtend|ExtendDivOptions} ExtendDiv 
+ */
+
+/**
+ * @param {ExtendDiv} options
  */
 export const extendDiv = function (options) {
   return extendComponent(div, options)

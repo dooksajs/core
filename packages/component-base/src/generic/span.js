@@ -14,12 +14,16 @@ const span = createComponent({
  */
 
 /**
- * @typedef {Object} ComponentExtendSpan
+ * @typedef {Object} ExtendSpanMixin
  * @property {FlexMixin|SpacingMixin|DisplayMixin} options
  */
 
 /**
- * @param {ComponentExtend|ComponentExtendSpan} options
+ * @typedef {ComponentExtend|ExtendSpanMixin} ExtendSpan
+ */
+
+/**
+ * @param {ExtendSpan} options
  */
 function extendSpan (options) {
   return extendComponent(span, options)

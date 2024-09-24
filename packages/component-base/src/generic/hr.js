@@ -14,19 +14,16 @@ export const hr = createComponent({
  */
 
 /**
- * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('@dooksa/component-mixins/src/styles/flex.js').FlexMixin} FlexMixin
- * @typedef {import('@dooksa/component-mixins/src/styles/spacing.js').SpacingMixin} SpacingMixin
- * @typedef {import('@dooksa/component-mixins/src/styles/display.js').DisplayMixin} DisplayMixin
- */
-
-/**
- * @typedef {Object} ComponentExtendHr
+ * @typedef {Object} ExtendHrOptionMixin
  * @property {FlexMixin|SpacingMixin|DisplayMixin} options
  */
 
 /**
- * @param {ComponentExtend|ComponentExtendHr} options
+ * @typedef {ComponentExtend|ExtendHrOptionMixin} ExtendHr
+ */
+
+/**
+ * @param {ExtendHr} options
  */
 export const extendHr = function (options) {
   return extendComponent(hr, options)
