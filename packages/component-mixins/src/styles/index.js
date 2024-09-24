@@ -5,6 +5,7 @@ import colorMixin from './color.js'
 import containerMixin from './container.js'
 import displayMixin from './display.js'
 import flexMixin from './flex.js'
+import focusRingMixin from './focus-ring.js'
 import fontMixin from './font.js'
 import formControlMixin from './form-control.js'
 import gapMixin from './gap.js'
@@ -20,6 +21,7 @@ import transformTranslateMixin from './transform-translate.js'
 import zIndexMixin from './z-index.js'
 
 export {
+  focusRingMixin,
   backgroundMixin,
   borderMixin,
   buttonMixin,

@@ -53,9 +53,11 @@
  * @import {AriaExpandedMixin} from './aria/aria-expanded.js'
  * @import {AriaLabelMixin} from './aria/aria-label.js'
  * @import {AriaSelectedMixin} from './aria/aria-selected.js'
+ * @import {FocusRingMixin} from './styles/focus-ring.js'
  */
 
 /**
+ * @typedef {FocusRingMixin} FocusRingMixin
  * @typedef {IdMixin} IdMixin
  * @typedef {FlexMixin} FlexMixin
  * @typedef {AriaControlsMixin} AriaControlsMixin
