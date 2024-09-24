@@ -51,6 +51,9 @@ const metadata = createPlugin('metadata', {
           },
           icon: {
             type: 'string'
+          },
+          component: {
+            type: 'string'
           }
         }
       }
