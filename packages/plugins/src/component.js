@@ -285,7 +285,7 @@ function createNode (id, item) {
   })
   const childNodes = []
   let childIsLazy = false
-  let hasCreateEvent = false
+  let hasMountEvent = false
 
   if (!event.isEmpty) {
     const events = event.item
@@ -307,8 +307,8 @@ function createNode (id, item) {
         }
       })
 
-      if (on === 'component/create') {
-        hasCreateEvent = true
+      if (on === 'component/mount') {
+        hasMountEvent = true
       }
 
       dataSetValue({
@@ -339,9 +339,9 @@ function createNode (id, item) {
       }
     }
 
-    // fire mount event
+    // fire create event
     eventEmit({
-      name: 'component/mount',
+      name: 'component/create',
       id,
       context: {
         id,
@@ -383,10 +383,10 @@ function createNode (id, item) {
             node.appendChild(result[i].item)
           }
 
-          if (hasCreateEvent) {
+          if (hasMountEvent) {
             // fire created event
             eventEmit({
-              name: 'component/create',
+              name: 'component/mount',
               id,
               context: {
                 id,
@@ -406,10 +406,10 @@ function createNode (id, item) {
     }
   }
 
-  if (hasCreateEvent && !childIsLazy) {
+  if (hasMountEvent && !childIsLazy) {
     // fire created event
     eventEmit({
-      name: 'component/create',
+      name: 'component/mount',
       id,
       context: {
         id,
@@ -720,7 +720,7 @@ function createTemplate ({
 
   const childNodes = []
   let childIsLazy = false
-  let hasCreateEvent = false
+  let hasMountEvent = false
 
   // set events
   if (template.events) {
@@ -743,8 +743,8 @@ function createTemplate ({
         }
       })
 
-      if (on === 'component/create') {
-        hasCreateEvent = true
+      if (on === 'component/mount') {
+        hasMountEvent = true
       }
 
       dataSetValue({
@@ -777,7 +777,7 @@ function createTemplate ({
 
     // fire mount event
     eventEmit({
-      name: 'component/mount',
+      name: 'component/create',
       id,
       context: {
         id,
@@ -825,10 +825,10 @@ function createTemplate ({
             }
           })
 
-          if (hasCreateEvent) {
+          if (hasMountEvent) {
             // fire mount event
             eventEmit({
-              name: 'component/create',
+              name: 'component/mount',
               id,
               context: {
                 id,
@@ -862,9 +862,9 @@ function createTemplate ({
   }
 
   // fire created event
-  if (hasCreateEvent && !childIsLazy) {
+  if (hasMountEvent && !childIsLazy) {
     eventEmit({
-      name: 'component/create',
+      name: 'component/mount',
       id,
       context: {
         id,
