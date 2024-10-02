@@ -283,15 +283,24 @@ function createNode (id, item) {
     name: 'component/events',
     id
   })
-  const childNodes = []
-  let childIsLazy = false
-  let hasMountEvent = false
+
+  const context = {
+    id,
+    rootId,
+    parentId,
+    groupId,
+    contentId
+  }
+  let hasBeforeCreateEvent = false
+  let hasCreatedEvent = false
+  let beforeCreateResult
 
   if (!event.isEmpty) {
     const events = event.item
     const eventTypes = template.eventTypes || {}
     const hasEvent = {}
 
+    // add events
     for (let i = 0; i < events.length; i++) {
       const {
         on, actionId
@@ -301,14 +310,14 @@ function createNode (id, item) {
         value: actionId,
         options: {
           id: 'component/' + on + id,
-          update: {
-            method: 'push'
-          }
+          update: { method: 'push' }
         }
       })
 
-      if (on === 'component/mount') {
-        hasMountEvent = true
+      if (on === 'component/created') {
+        hasCreatedEvent = true
+      } else if (on === 'component/beforeCreate') {
+        hasBeforeCreateEvent = true
       }
 
       dataSetValue({
@@ -316,9 +325,7 @@ function createNode (id, item) {
         value: eventData.id,
         options: {
           id,
-          update: {
-            method: 'pull'
-          }
+          update: { method: 'pull' }
         }
       })
 
@@ -328,96 +335,51 @@ function createNode (id, item) {
         if (eventType === 'node' || eventType === 'observeProperty') {
           hasEvent[on] = true
 
-          nodeEvent(eventType, eventValue, node, on, id, {
-            id,
-            rootId,
-            parentId,
-            groupId,
-            contentId
-          })
+          nodeEvent(eventType, eventValue, node, on, id, context)
         }
       }
     }
 
-    // fire create event
-    eventEmit({
-      name: 'component/create',
-      id,
-      context: {
+    // fire beforeCreate event
+    if (hasBeforeCreateEvent) {
+      beforeCreateResult = eventEmit({
+        name: 'component/beforeCreate',
         id,
-        rootId,
-        contentId,
-        parentId,
-        groupId
-      }
-    })
+        context
+      })
+    }
   }
 
   if (!children.isEmpty) {
-    for (let i = 0; i < children.expand.length; i++) {
-      const component = children.expand[i]
-      let childNode = dataGetValue({
-        name: 'component/nodes',
-        id: component.id
-      })
-
-      if (component.item.isTemplate) {
-        childNode = createTemplate({
-          id: component.id,
-          template: $component(component.item.id),
-          parentId: id,
-          rootId: component.id,
-          groupId: component.id
+    // wait for created events before creating children
+    if (hasBeforeCreateEvent) {
+      Promise.all(beforeCreateResult)
+        .then(() => {
+          createChildNodes(
+            node,
+            children.expand,
+            id,
+            rootId,
+            groupId
+          )
         })
-
-        childIsLazy = (childNode instanceof Promise)
-      }
-
-      childNodes.push(childNode)
-    }
-
-    if (childIsLazy) {
-      Promise.all(childNodes)
-        .then(result => {
-          for (let i = 0; i < result.length; i++) {
-            node.appendChild(result[i].item)
-          }
-
-          if (hasMountEvent) {
-            // fire created event
-            eventEmit({
-              name: 'component/mount',
-              id,
-              context: {
-                id,
-                rootId,
-                contentId,
-                parentId,
-                groupId
-              }
-            })
-          }
-        })
-        .catch(error => console.error(error))
     } else {
-      for (let i = 0; i < childNodes.length; i++) {
-        node.appendChild(childNodes[i].item)
-      }
+      createChildNodes(
+        node,
+        children.children,
+        id,
+        rootId,
+        groupId
+      )
     }
   }
 
-  if (hasMountEvent && !childIsLazy) {
-    // fire created event
+  // fire created event
+  if (hasCreatedEvent) {
     eventEmit({
-      name: 'component/mount',
+      name: 'component/created',
       id,
-      context: {
-        id,
-        rootId,
-        contentId,
-        parentId,
-        groupId
-      }
+      context
     })
   }
 
@@ -718,10 +680,16 @@ function createTemplate ({
     })
   }
 
-  const childNodes = []
-  let childIsLazy = false
-  let hasMountEvent = false
-
+  const context = {
+    id,
+    rootId,
+    contentId,
+    parentId,
+    groupId
+  }
+  let hasCreatedEvent = false
+  let hasBeforeCreateEvent = false
+  let beforeCreateResult
   // set events
   if (template.events) {
     const events = template.events
@@ -730,21 +698,22 @@ function createTemplate ({
 
     for (let i = 0; i < events.length; i++) {
       const {
-        on, actionId
+        on,
+        actionId
       } = events[i]
       const eventData = dataSetValue({
         name: 'event/listeners',
         value: actionId,
         options: {
           id: on + id,
-          update: {
-            method: 'push'
-          }
+          update: { method: 'push' }
         }
       })
 
-      if (on === 'component/mount') {
-        hasMountEvent = true
+      if (on === 'component/created') {
+        hasCreatedEvent = true
+      } else if (on === 'component/beforeCreate') {
+        hasBeforeCreateEvent = true
       }
 
       dataSetValue({
@@ -752,9 +721,7 @@ function createTemplate ({
         value: eventData.id,
         options: {
           id,
-          update: {
-            method: 'push'
-          }
+          update: { method: 'push' }
         }
       })
 
@@ -764,115 +731,51 @@ function createTemplate ({
         if (eventType === 'node' || eventType === 'observeProperty') {
           hasEvent[on] = true
 
-          nodeEvent(eventType, eventValue, node, on, id, {
-            id,
-            rootId,
-            parentId,
-            groupId,
-            contentId
-          })
+          nodeEvent(eventType, eventValue, node, on, id, context)
         }
       }
     }
 
-    // fire mount event
-    eventEmit({
-      name: 'component/create',
-      id,
-      context: {
+    // fire beforeCreate event
+    if (hasBeforeCreateEvent) {
+      beforeCreateResult = eventEmit({
+        name: 'component/beforeCreate',
         id,
-        rootId,
-        contentId,
-        parentId,
-        groupId
-      }
-    })
+        context
+      })
+    }
   }
 
   if (template.children) {
-    for (let i = 0; i < template.children.length; i++) {
-      const result = createTemplate({
-        template: template.children[i],
-        parentId: id,
+    // wait for created events before creating children
+    if (hasBeforeCreateEvent) {
+      Promise.all(beforeCreateResult)
+        .then(() => {
+          createTemplateChildNodes(
+            node,
+            template.children,
+            id,
+            rootId,
+            groupId
+          )
+        })
+    } else {
+      createTemplateChildNodes(
+        node,
+        template.children,
+        id,
         rootId,
         groupId
-      })
-
-      if (result instanceof Promise) {
-        childIsLazy = true
-      }
-
-      childNodes.push(result)
-    }
-
-    if (childIsLazy) {
-      Promise.all(childNodes)
-        .then(results => {
-          const children = []
-
-          for (let i = 0; i < results.length; i++) {
-            const result = results[i]
-            node.appendChild(result.item)
-            children.push(result.id)
-          }
-
-          dataSetValue({
-            name: 'component/children',
-            value: children,
-            options: {
-              id,
-              stopPropagation: true
-            }
-          })
-
-          if (hasMountEvent) {
-            // fire mount event
-            eventEmit({
-              name: 'component/mount',
-              id,
-              context: {
-                id,
-                rootId,
-                contentId,
-                parentId,
-                groupId
-              }
-            })
-          }
-        })
-        .catch(error => console.error(error))
-    } else {
-      const children = []
-      for (let i = 0; i < childNodes.length; i++) {
-        const childNode = childNodes[i]
-
-        node.appendChild(childNode.item)
-        children.push(childNode.id)
-      }
-
-      dataSetValue({
-        name: 'component/children',
-        value: children,
-        options: {
-          id,
-          stopPropagation: true
-        }
-      })
+      )
     }
   }
 
   // fire created event
-  if (hasMountEvent && !childIsLazy) {
+  if (hasCreatedEvent) {
     eventEmit({
-      name: 'component/mount',
+      name: 'component/created',
       id,
-      context: {
-        id,
-        rootId,
-        contentId,
-        parentId,
-        groupId
-      }
+      context
     })
   }
 
@@ -880,6 +783,113 @@ function createTemplate ({
     id,
     item: node
   }
+}
+
+function createChildNodes (node, components, parentId, parentRootId, parentGroupId) {
+  let childIsLazy = false
+  let childNodes = []
+
+  for (let i = 0; i < components.length; i++) {
+    const {
+      id,
+      item
+    } = components[i]
+    let childNode = dataGetValue({
+      name: 'component/nodes',
+      id
+    })
+
+    if (item.isTemplate) {
+      let rootId = parentRootId
+      let groupId = parentGroupId
+
+      // check if component is a new group
+      if (item.groupId) {
+        rootId = id
+        groupId = item.groupId
+      }
+
+      childNode = createTemplate({
+        id,
+        template: $component(item.id),
+        parentId,
+        rootId,
+        groupId
+      })
+
+      if (childNode instanceof Promise) {
+        childIsLazy = true
+      }
+    }
+
+    childNodes.push(childNode)
+  }
+
+  if (childIsLazy) {
+    Promise.all(childNodes)
+      .then(result => {
+        for (let i = 0; i < result.length; i++) {
+          node.appendChild(result[i].item)
+        }
+      })
+      .catch(error => console.error(error))
+  } else {
+    for (let i = 0; i < childNodes.length; i++) {
+      node.appendChild(childNodes[i].item)
+    }
+  }
+}
+
+function createTemplateChildNodes (node, children, id, rootId, groupId) {
+  const childNodes = []
+  let childIsLazy = false
+
+  for (let i = 0; i < children.length; i++) {
+    const result = createTemplate({
+      template: children[i],
+      parentId: id,
+      rootId,
+      groupId
+    })
+
+    if (result instanceof Promise) {
+      childIsLazy = true
+    }
+
+    childNodes.push(result)
+  }
+
+  if (childIsLazy) {
+    Promise.all(childNodes)
+      .then(childNodes => {
+        appendChildNodes(id, node, childNodes)
+      })
+      .catch(error => console.error(error))
+  } else {
+    appendChildNodes(id, node, childNodes)
+  }
+}
+
+function appendChildNodes (id, node, childNodes) {
+  const value = []
+
+  for (let i = 0; i < childNodes.length; i++) {
+    const childNode = childNodes[i]
+    // append child node
+    node.appendChild(childNode.item)
+    // store component id
+    value.push(childNode.id)
+  }
+
+  // set children component ids to parent
+  dataSetValue({
+    name: 'component/children',
+    value,
+    options: {
+      id,
+      stopPropagation: true
+    }
+  })
 }
 
 function updateChildren (id, parent, nextChildNodes) {
