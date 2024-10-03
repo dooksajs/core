@@ -1,0 +1,13 @@
+{
+  "collection": "component/items",
+  "item": {
+    "root": {
+      "id": "div"
+    },
+    "_componentOne_": {
+      "id": "action-add-block",
+      "isTemplate": true,
+      "groupId": "_componentOne_"
+    }
+  }
+}
