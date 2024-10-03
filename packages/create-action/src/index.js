@@ -14,12 +14,6 @@ import createAction from './create-action.js'
  * @property {OperatorCompare[]} [action_ifElse]
  * @property {SetActionValue} [action_setActionValue]
  * @property {number} [$ref]
- * @property {BootstrapCollapseCreate} [bootstrapCollapse_create]
- * @property {BootstrapCollapse} [bootstrapCollapse_hide]
- * @property {BootstrapCollapse} [bootstrapCollapse_show]
- * @property {BootstrapCollapse} [bootstrapCollapse_toggle]
- * @property {BootstrapModalCreate} [bootstrapModal_create]
- * @property {BootstrapModalShow} [bootstrapModal_show]
  * @property {ComponentRemove} [component_remove]
  * @property {ComponentRenderChildren} [component_renderChildren]
  * @property {DataDeleteValue} [data_deleteValue]
@@ -322,33 +316,6 @@ import createAction from './create-action.js'
 /**
  * @typedef {Object} RouteNavigate
  * @property {Action|string} to
- */
-
-/**
- * @typedef {Object} BootstrapModalCreate
- * @property {Action|string} id
- * @property {Object} [options]
- * @property {Action|boolean|'static'} [options.backdrop]
- * @property {Action|boolean} [focus]
- * @property {Action|boolean} [keyboard]
- */
-
-/**
- * @typedef {Object} BootstrapModalShow
- * @property {Action|string} id
- */
-
-/**
- * @typedef {Object} BootstrapCollapseCreate
- * @property {Action|string} id
- * @property {Action|string} [parentId]
- * @property {Action|string} [collapseId]
- * @property {Action|boolean} [toggle]
- */
-
-/**
- * @typedef {Object} BootstrapCollapse
- * @property {Action|string} id
  */
 
 export {

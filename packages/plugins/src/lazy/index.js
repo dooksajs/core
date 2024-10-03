@@ -1,7 +1,12 @@
-const pluginFilenames = {
-  bootstrapModal: 'bootstrap-modal',
-  bootstrapCollapse: 'bootstrap-collapse'
-}
+/**
+ * @type {Object.<string, string>} List of lazy plugins
+ * @example
+ * {
+ *   bootstrapModal: 'bootstrap-modal',
+ *   bootstrapCollapse: 'bootstrap-collapse'
+ * }
+ */
+const pluginFilenames = {}
 
 function lazyLoader (pluginName) {
   return new Promise((resolve, reject) => {
