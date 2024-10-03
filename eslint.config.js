@@ -6,10 +6,6 @@ export default [
       '@stylistic/js': stylisticJs
     },
     rules: {
-      '@stylistic/js/max-len': ['error', {
-        code: 80,
-        ignoreComments: true
-      }],
       '@stylistic/js/indent': [
         'error', 2, {
           SwitchCase: 1,
@@ -30,23 +26,24 @@ export default [
           ignoreComments: false
         }
       ],
+      '@stylistic/js/object-curly-spacing': ['error', 'always'],
       '@stylistic/js/object-property-newline': 'error',
       '@stylistic/js/object-curly-newline': ['error', {
         ObjectExpression: {
           multiline: true,
-          minProperties: 1
+          consistent: true
         },
         ObjectPattern: {
           multiline: true,
-          minProperties: 2
+          consistent: true
         },
         ImportDeclaration: {
           multiline: true,
-          minProperties: 3
+          consistent: true
         },
         ExportDeclaration: {
           multiline: true,
-          minProperties: 3
+          consistent: true
         }
       }],
       '@stylistic/js/quote-props': ['error', 'as-needed'],
@@ -73,7 +70,7 @@ export default [
           after: true
         }
       ],
-      '@stylistic/js/object-curly-spacing': ['error', 'always'],
+      '@stylistic/js/comma-style': ['error', 'last'],
       '@stylistic/js/array-bracket-spacing': ['error', 'never'],
       '@stylistic/js/array-bracket-newline': ['error', 'consistent'],
       '@stylistic/js/array-element-newline': ['error', 'consistent'],
