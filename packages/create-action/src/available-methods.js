@@ -19,6 +19,7 @@ const availableMethods = {
   data_generateId: true,
   data_getValue: true,
   data_setValue: true,
+  icon_render: true,
   fetch_getAll: true,
   fetch_getById: true,
   list_filter: true,

@@ -1,64 +1,64 @@
-import { createComponent, extendComponent } from '@dooksa/create-component'
+import {
+  createComponent, extendComponent
+} from '@dooksa/create-component'
 import { spacingMixin } from '@dooksa/component-mixins'
 
 export const icon = createComponent({
   id: 'icon',
-  tag: 'iconify-icon',
-  component: () => import('iconify-icon'),
+  tag: 'span',
   content: [
     {
       name: 'value',
-      nodePropertyName: 'icon'
+      nodePropertyName: 'data-icon'
     }
   ],
   properties: [
     {
-      name: 'icon',
-      value: 'mdi:settings'
-    },
-    {
-      name: 'inline',
-      value: 'inline'
+      name: 'className',
+      value: 'icon'
     }
   ],
   options: {
     icon: {
-      name: 'icon',
+      name: 'data-icon',
       replace: true
-    },
-    inline: {
-      name: 'inline',
-      values: {
-        on: 'inline',
-        off: ''
-      }
     }
   },
-  styles: [
+  eventTypes: { 'observeAttribute/data-icon': true },
+  events: [
     {
-      name: 'font-size',
-      type: 'unit'
+      on: 'component/created',
+      actionId: 'icon-render'
+    },
+    {
+      on: 'observeAttribute/data-icon',
+      actionId: 'icon-render'
     }
   ]
 }, [spacingMixin])
 
 /**
- * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('../../mixins/styles/spacing.js').SpacingMixin} SpacingMixin
+ * @import {ComponentExtend} from '@dooksa/create-component'
+ * @import {SpacingMixin} from '@dooksa/component-mixins'
  */
 
 /**
- * @typedef {Object} ComponentExtendText
+ * @typedef {Object} ExtendIconOption
  * @property {string} [icon] - Icon value from iconify
+ * @property {boolean} [inline] - Add vertical-align to icon
  */
 
 /**
- * @typedef {Object} MergeOptions
- * @property {SpacingMixin|ComponentExtendText} options
+ * @typedef {Object} ExtendIconOptionMixin
+ * @property {SpacingMixin|ExtendIconOption} options
  */
 
 /**
- * @param {ComponentExtend|MergeOptions} options
+ * @typedef {ComponentExtend|ExtendIconOptionMixin} ExtendIcon
+ */
+
+/**
+ * @param {ExtendIcon} options
  */
 export const extendIcon = function (options) {
   return extendComponent(icon, options)

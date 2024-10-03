@@ -29,6 +29,7 @@ import createAction from './create-action.js'
  * @property {DataSetValue} [data_setValue]
  * @property {FetchGetAll} [fetch_getAll]
  * @property {FetchGetById} [fetch_getById]
+ * @property {IconRender} [icon_render]
  * @property {ListFilter} [list_filter]
  * @property {ListMap} [list_map]
  * @property {ListIndexOf} [list_indexOf]
@@ -41,6 +42,11 @@ import createAction from './create-action.js'
  * @property {'$null'} [route_currentId]
  * @property {'$null'} [route_currentPath]
  * @property {RouteNavigate} [route_navigate]
+ */
+
+/**
+ * @typedef {Object} IconRender
+ * @property {Action|string} componentId
  */
 
 /**

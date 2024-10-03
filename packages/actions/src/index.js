@@ -6,6 +6,7 @@ import onCreateLabelText from './on-create-label-text.js'
 import onCreateSetOptionId from './on-create-set-option-id.js'
 export * from './select-edit/index.js'
 export * from './accordion/index.js'
+export * from './icon/index.js'
 
 export {
   editImg,
