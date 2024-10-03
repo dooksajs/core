@@ -11,7 +11,6 @@
     "@dooksa/create-action": "workspace:^",
     "@dooksa/create-plugin": "workspace:^",
     "@dooksa/plugins": "workspace:^",
-    "@dooksa/components": "workspace:^",
     "@dooksa/theme": "workspace:^",
     "@dooksa/utils": "workspace:^",
     "compression": "^1.7.4",

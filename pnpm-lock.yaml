@@ -99,15 +99,6 @@ importers:
         specifier: workspace:^
         version: link:../create-component
 
-  packages/components:
-    dependencies:
-      '@dooksa/create-component':
-        specifier: workspace:^
-        version: link:../create-component
-      iconify-icon:
-        specifier: ^2.1.0
-        version: 2.1.0
-
   packages/create-action:
     dependencies:
       '@dooksa/utils':
@@ -158,15 +149,9 @@ importers:
 
   packages/plugins:
     dependencies:
-      '@dooksa/components':
-        specifier: workspace:^
-        version: link:../components
       '@dooksa/create-action':
         specifier: workspace:^
         version: link:../create-action
-      '@dooksa/create-component':
-        specifier: workspace:^
-        version: link:../create-component
       '@dooksa/create-plugin':
         specifier: workspace:^
         version: link:../create-plugin
@@ -176,15 +161,9 @@ importers:
       bootstrap:
         specifier: ^5.3.3
         version: 5.3.3(@popperjs/core@2.11.8)
-      iconify-icon:
-        specifier: ^2.1.0
-        version: 2.1.0
 
   packages/plugins-server:
     dependencies:
-      '@dooksa/components':
-        specifier: workspace:^
-        version: link:../components
       '@dooksa/create-action':
         specifier: workspace:^
         version: link:../create-action
