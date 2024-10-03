@@ -1,0 +1,67 @@
+@keyframes grid-expand {
+  from {
+    grid-template-rows: 0fr;
+  }
+
+  to {
+    grid-template-rows: 1fr;
+  }
+}
+
+details.accordion-item {
+  border-bottom: 0;
+
+  .accordion-collapse {
+    overflow: hidden;
+    display: grid;
+    animation-timing-function: ease;
+    animation-duration: 0.35s;
+
+    &.collapsing {
+      animation-direction: reverse;
+    }
+  }
+
+  .accordion-inner {
+    min-height: 0;
+  }
+
+  &:first-of-type .accordion-button {
+    border-top-right-radius: var(--#{$prefix}accordion-border-radius);
+    border-top-left-radius: var(--#{$prefix}accordion-border-radius);
+  }
+
+  &[open] {
+    border-bottom: var(--#{$prefix}accordion-border-width) solid var(--#{$prefix}accordion-border-color);
+
+    .accordion-collapse {
+      animation-name: grid-expand;
+    }
+
+    .accordion-button::after {
+      background-image: var(--#{$prefix}accordion-btn-icon);
+      transform: var(--#{$prefix}accordion-btn-icon-transform);
+    }
+  }
+
+  &:not([open]) {
+    .accordion-button {
+      background-color: var(--#{$prefix}accordion-bg);
+
+      &::after {
+        background-image: var(--#{$prefix}accordion-btn-active-icon);
+        transform: unset;
+      }
+    }
+
+    &:last-of-type .accordion-button {
+      border-bottom-right-radius: var(--#{$prefix}accordion-border-radius);
+      border-bottom-left-radius: var(--#{$prefix}accordion-border-radius);
+    }
+  }
+}
+
+/* Hide the default disclosure triangle on Safari */
+summary.accordion-button::-webkit-details-marker {
+  display: none;
+}

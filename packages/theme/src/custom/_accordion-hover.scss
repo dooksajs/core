@@ -1,0 +1,6 @@
+.accordion-hover {
+  .accordion-button:hover {
+    color: var(--#{$prefix}accordion-btn-hover-color);
+    background-color: var(--#{$prefix}accordion-btn-hover-bg);
+  }
+}
