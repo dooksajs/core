@@ -8,29 +8,19 @@ const metadata = createPlugin('metadata', {
     icon: 'carbon:data-volume'
   },
   models: {
-    currentLanguage: {
-      type: 'string'
-    },
+    currentLanguage: { type: 'string' },
     languages: {
       type: 'array',
-      items: {
-        type: 'string'
-      }
+      items: { type: 'string' }
     },
     plugins: {
       type: 'collection',
       items: {
         type: 'object',
         properties: {
-          title: {
-            type: 'string'
-          },
-          description: {
-            type: 'string'
-          },
-          icon: {
-            type: 'string'
-          }
+          title: { type: 'string' },
+          description: { type: 'string' },
+          icon: { type: 'string' }
         }
       }
     },
@@ -43,18 +33,11 @@ const metadata = createPlugin('metadata', {
             type: 'string',
             relation: 'metadata/plugins'
           },
-          title: {
-            type: 'string'
-          },
-          description: {
-            type: 'string'
-          },
-          icon: {
-            type: 'string'
-          },
-          component: {
-            type: 'string'
-          }
+          method: { type: 'string' },
+          title: { type: 'string' },
+          description: { type: 'string' },
+          icon: { type: 'string' },
+          component: { type: 'string' }
         }
       }
     },
@@ -65,20 +48,14 @@ const metadata = createPlugin('metadata', {
         items: {
           type: 'object',
           properties: {
-            title: {
-              type: 'string'
-            },
+            title: { type: 'string' },
             items: {
               type: 'array',
               items: {
                 type: 'object',
                 properties: {
-                  id: {
-                    type: 'string'
-                  },
-                  title: {
-                    type: 'string'
-                  }
+                  id: { type: 'string' },
+                  title: { type: 'string' }
                 }
               }
             }
@@ -92,9 +69,18 @@ const metadata = createPlugin('metadata', {
    * @param {string} [param.currentLanguage='en']
    * @param {string[]} [param.languages=['en']]
    */
-  setup ({ currentLanguage = 'en', languages = ['en'] } = {}) {
-    dataSetValue({ name: 'metadata/currentLanguage', value: currentLanguage })
-    dataSetValue({ name: 'metadata/languages', value: languages })
+  setup ({
+    currentLanguage = 'en',
+    languages = ['en']
+  } = {}) {
+    dataSetValue({
+      name: 'metadata/currentLanguage',
+      value: currentLanguage
+    })
+    dataSetValue({
+      name: 'metadata/languages',
+      value: languages
+    })
   }
 })
 
