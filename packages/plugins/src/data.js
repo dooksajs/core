@@ -1989,21 +1989,30 @@ const data = createPlugin('data', {
       },
       /**
        * Get data value
-       * @param {GetDataQuery} param
+       * @param {GetDataQuery} query
        * @returns {DataValue}
        */
-      method ({ name, id, prefixId, suffixId, options }) {
-        if (database[name] == null) {
+      method (query) {
+        const { name, id, prefixId, suffixId, options } = query
+        const collection = database[name]
+
+        if (collection == null) {
           throw new DataValueException('No such collection "' + name +"'")
         }
 
         const result = createDataValue(name, id)
         const schema = databaseSchema[name]
 
-        if (schema.type === 'collection' && id == null) {
-          result.isEmpty = true
+        // return collection
+        if (schema.type === 'collection') {
+          if (!query.hasOwnProperty('id')) {
+            result.isEmpty = false
+            result.item = collection
 
-          return result
+            return result
+          } else if (id == null) {
+            return result
+          }
         }
 
         if (id != null) {
@@ -2026,7 +2035,7 @@ const data = createPlugin('data', {
               itemId = id + suffix
             }
 
-            const value = database[name][itemId]
+            const value = collection[itemId]
 
             if (value != null) {
               result.isEmpty = false
