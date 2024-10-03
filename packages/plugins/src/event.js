@@ -29,9 +29,7 @@ const event = createPlugin('event', {
     handlers: {
       type: 'collection',
       uniqueItems: true,
-      items: {
-        type: 'array'
-      }
+      items: { type: 'array' }
     }
   },
   actions: {
@@ -67,6 +65,8 @@ const event = createPlugin('event', {
 
 const eventEmit = event.actions.emit
 
-export { event, eventEmit }
+export {
+  event, eventEmit
+}
 
 export default event
