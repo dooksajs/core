@@ -45,17 +45,22 @@ const event = createPlugin('event', {
         id,
         prefixId: name
       })
+      const eventPromises = []
 
       if (!listeners.isEmpty) {
         for (let i = 0; i < listeners.item.length; i++) {
-          actionDispatch({
-            id: listeners.item[i],
-            context,
-            payload,
-            clearBlockValues: true
-          })
+          eventPromises.push(
+            actionDispatch({
+              id: listeners.item[i],
+              context,
+              payload,
+              clearBlockValues: true
+            })
+          )
         }
       }
+
+      return eventPromises
     }
   }
 })
