@@ -32,9 +32,7 @@ const routeTypes = {
   put: true,
   delete: true
 }
-const routes = {
-  all: []
-}
+const routes = { all: [] }
 let apiPrefix = ''
 let cookieSecret = ''
 let app
@@ -42,9 +40,7 @@ let server
 
 const $http = createPlugin('http', {
   models: {
-    status: {
-      type: 'string'
-    }
+    status: { type: 'string' }
   },
   actions: {
     /**
@@ -112,13 +108,19 @@ const $http = createPlugin('http', {
         port = port || this.address().port
         console.log('✨ Dooksa! ' + path + ':' + port)
 
-        dataSetValue({ name: 'http/status', value: 'start' })
+        dataSetValue({
+          name: 'http/status',
+          value: 'start'
+        })
       })
     },
     stop () {
       server.close()
 
-      dataSetValue({ name: 'http/status', value: 'stop' })
+      dataSetValue({
+        name: 'http/status',
+        value: 'stop'
+      })
     }
   },
   setup ({
