@@ -12,6 +12,7 @@ import operator from './operator.js'
 import token from './token.js'
 import query from './query.js'
 import route from './route.js'
+import icon from './icon.js'
 
 export * from './content.js'
 export * from './data.js'
@@ -26,6 +27,7 @@ export * from './operator.js'
 export * from './token.js'
 export * from './query.js'
 export * from './route.js'
+export * from './icon.js'
 export * from './lazy/index.js'
 
 export default [
@@ -40,6 +42,7 @@ export default [
   page,
   operator,
   token,
+  icon,
   query,
   route
 ]
