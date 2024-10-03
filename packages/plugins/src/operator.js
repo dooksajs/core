@@ -264,7 +264,7 @@ const operator = createPlugin('operator', {
       /**
        * Evaluate two values
        * @param {Object} eval - The Object containing the data to evaluate two values
-       * @param {string} eval.name - Operator name
+       * @param {'=='|'!='|'>'|'>='|'<'|'<='|'!'|'%'|'++'|'--'|'-'|'+'|'*'|'**'|'!!'|'~'} eval.name - Operator name
        * @param {OperatorValues} eval.values - Contains two values to be evaluated
        */
       method ({ name, values }) {
