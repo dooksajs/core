@@ -58,6 +58,21 @@ function sortDescending (a, b) {
   return 0
 }
 
+const mapKeyValue = {
+  array (i, items) {
+    return {
+      key: i,
+      value: items[i]
+    }
+  },
+  object (i, items) {
+    return {
+      key: items[i][0],
+      value: items[i][1]
+    }
+  }
+}
+
 const list = createPlugin('list', {
   metadata: {
     title: 'List',
@@ -158,13 +173,16 @@ const list = createPlugin('list', {
        */
       method ({ context, items, actionId }, action) {
         let length = items.length
-
+        let method = 'array'
         context = context || action.context
 
+        // process array
         if (Array.isArray(items)) {
           context.$list = []
         } else {
-          items = Object.keys(items)
+          // process object
+          method = 'object'
+          items = Object.entries(items)
           length = items.length
           context.$list = {}
         }
@@ -173,12 +191,14 @@ const list = createPlugin('list', {
           const promises = []
 
           for (let i = 0; i < items.length; i++) {
+            const result = mapKeyValue[method](i, items)
+
             promises.push(actionDispatch({
               id: actionId,
               context,
               payload: {
-                key: i,
-                value: items[i],
+                key: result.key,
+                value: result.value,
                 items,
                 length
               },
