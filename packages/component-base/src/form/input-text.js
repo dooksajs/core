@@ -1,6 +1,11 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
 import {
-  ariaLabelMixin, eventTypeElementChangeMixin, formControlMixin, idMixin, inputAllMixin, inputTextMixin
+  ariaLabelMixin,
+  eventTypeElementChangeMixin,
+  formControlMixin,
+  idMixin,
+  inputAllMixin,
+  inputTextMixin
 } from '@dooksa/component-mixins'
 
 export const inputText = createComponent({

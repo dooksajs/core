@@ -2,7 +2,10 @@ import { createComponent, extendComponent } from '@dooksa/create-component'
 import {
   eventTypeElementCancelMixin,
   eventTypeElementChangeMixin,
-  formControlMixin, idMixin, inputAllMixin, inputFileMixin
+  formControlMixin,
+  idMixin,
+  inputAllMixin,
+  inputFileMixin
 } from '@dooksa/component-mixins'
 
 export const inputFile = createComponent({
@@ -17,8 +20,15 @@ export const inputFile = createComponent({
       name: 'className',
       value: 'form-control'
     }
-  ],
-}, [idMixin ,formControlMixin, inputAllMixin, inputFileMixin, eventTypeElementChangeMixin, eventTypeElementCancelMixin])
+  ]
+}, [
+  idMixin,
+  formControlMixin,
+  inputAllMixin,
+  inputFileMixin,
+  eventTypeElementChangeMixin,
+  eventTypeElementCancelMixin
+])
 
 /**
  * @import {IdMixin, InputAllMixin, FormControlMixin, InputFileMixin, EventTypeElementChangeMixin, EventTypeElementCancelMixin } from '@dooksa/component-mixins'

@@ -1,5 +1,10 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
-import { ariaLabelMixin, inputAllMixin } from '@dooksa/component-mixins'
+import {
+  ariaLabelMixin,
+  inputAllMixin,
+  eventTypeElementChangeMixin,
+  idMixin
+} from '@dooksa/component-mixins'
 
 export const select = createComponent({
   id: 'select',
@@ -34,11 +39,16 @@ export const select = createComponent({
       }
     }
   }
-}, [ariaLabelMixin, inputAllMixin])
+}, [
+  ariaLabelMixin,
+  inputAllMixin,
+  eventTypeElementChangeMixin,
+  idMixin
+])
 
 /**
- * @import {AriaLabelMixin, InputAllMixin} from '@dooksa/component-mixins'
- * @import  {ComponentExtend} from '@dooksa/create-component'
+ * @import {AriaLabelMixin, InputAllMixin, EventTypeElementChangeMixin, IdMixin} from '@dooksa/component-mixins'
+ * @import  {ComponentExtend, ComponentEventOn} from '@dooksa/create-component'
  */
 
 /**
@@ -50,11 +60,22 @@ export const select = createComponent({
 
 /**
  * @typedef {Object} ExtendSelectOptionMixin
- * @property {ExtendSelectOption|AriaLabelMixin|InputAllMixin} options
+ * @property {ExtendSelectOption|AriaLabelMixin|InputAllMixin|IdMixin} [options]
  */
 
 /**
- * @typedef {ComponentExtend|ExtendSelectOptionMixin} ExtendSelect
+ * @typedef {Object} ExtendSelectEvent
+ * @property {EventTypeElementChangeMixin|ComponentEventOn} on
+ * @property {string} actionId
+ */
+
+/**
+ * @typedef {Object} ExtendSelectEventMixin
+ * @property {ExtendSelectEvent[]} [events]
+ */
+
+/**
+ * @typedef {ComponentExtend|ExtendSelectOptionMixin|ExtendSelectEventMixin} ExtendSelect
  */
 
 /**
