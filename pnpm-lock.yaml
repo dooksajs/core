@@ -155,9 +155,6 @@ importers:
       '@dooksa/utils':
         specifier: workspace:^
         version: link:../utils
-      bootstrap:
-        specifier: ^5.3.3
-        version: 5.3.3(@popperjs/core@2.11.8)
 
   packages/plugins-server:
     dependencies:
