@@ -24,16 +24,10 @@ export {
   selectEditOuterLink,
   actionTabContent,
   actionTabs,
-  actionParamCollectionOption,
-  actionParamCollection,
-  actionParamGenerateId,
   actionEditorAddButton,
   actionEditorBlockSelector,
   actionEditorContainer,
-  actionEditorBlockSelectorListAction,
-  actionCard,
-  actionCardAccordion,
-  actionCardAccordionItem
+  actionEditorBlockSelectorListAction
 }
 
 export default [
@@ -45,14 +39,8 @@ export default [
   selectEditOuterLink,
   actionTabContent,
   actionTabs,
-  actionParamCollectionOption,
-  actionParamCollection,
-  actionParamGenerateId,
   actionEditorAddButton,
   actionEditorBlockSelector,
   actionEditorContainer,
-  actionEditorBlockSelectorListAction,
-  actionCard,
-  actionCardAccordion,
-  actionCardAccordionItem
+  actionEditorBlockSelectorListAction
 ]
