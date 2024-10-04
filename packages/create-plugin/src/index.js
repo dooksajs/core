@@ -45,7 +45,7 @@ function mergeContextProperties (data, context) {
  */
 
 /**
- * @typedef {number|string|boolean} PluginDataTypes
+ * @typedef {number|string|boolean|MutationObserver} PluginDataTypes
  * @typedef {Object.<string, PluginDataTypes|PluginDataTypes[]|Object.<string,PluginDataTypes>|Object.<string,PluginDataTypes>[]>} PluginData
  */
 
@@ -113,7 +113,7 @@ function mergeContextProperties (data, context) {
  * @template {Object.<string, Function>} Method
  * @typedef {Object} PluginAction
  * @property {PluginActionMethod<PluginContext<Data,Action,Method>>} method
- * @property {PluginMetadata} [metadata]
+ * @property {PluginMetadata|PluginMetadata[]} [metadata]
  * @property {PluginActionParameter} [parameters]
  */
 
@@ -189,7 +189,11 @@ function createPlugin (name, data) {
     for (const key in data.actions) {
       if (Object.hasOwnProperty.call(data.actions, key)) {
         const action = data.actions[key]
-        const actionContext = { context: {}, payload: {}, blockValues: {} }
+        const actionContext = {
+          context: {},
+          payload: {},
+          blockValues: {}
+        }
         const actionName = name + '_' + key
         let method
 
@@ -199,9 +203,21 @@ function createPlugin (name, data) {
           // action metadata
           if (action.metadata) {
             hasMetadata = true
-            metadata[actionName] = Object.assign({
-              plugin: name
-            }, action.metadata)
+
+            // append plugin/method data to action metadata
+            if (Array.isArray(action.metadata)) {
+              for (let i = 0; i < action.metadata.length; i++) {
+                metadata[actionName + '__' + i] = Object.assign({
+                  plugin: name,
+                  method: actionName
+                }, action.metadata[i])
+              }
+            } else {
+              metadata[actionName] = Object.assign({
+                plugin: name,
+                method: actionName
+              }, action.metadata)
+            }
           }
 
           if (action.parameters) {
