@@ -9,6 +9,7 @@
  * @import {ExtendH4} from './content/h4.js'
  * @import {ExtendH5} from './content/h5.js'
  * @import {ExtendH6} from './content/h6.js'
+ * @import {ExtendSmall} from './content/small.js'
  * @import {ExtendImg} from './content/img.js'
  * @import {ExtendParagraph} from './content/paragraph.js'
  * @import {ExtendText} from './content/text.js'
@@ -28,6 +29,7 @@
  */
 
 /**
+ * @typedef {ExtendSmall} ComponentExtendSmall
  * @typedef {ExtendButton} ComponentExtendButton
  * @typedef {ExtendAnchor} ComponentExtendAnchor
  * @typedef {ExtendDetails} ComponentExtendDetails
