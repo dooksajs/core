@@ -188,32 +188,39 @@ function componentOptions (options, templateOptions, properties = []) {
 * @param {Component} component
 * @param {ComponentExtend} extend
 */
-function extendComponent (component, { metadata, options, children, events, extendEvents }) {
+function extendComponent (component, extend) {
   const result = Object.assign({}, component)
-  let properties = component.properties
+  let properties = component.properties || []
 
-  if (metadata) {
-    result.id = metadata.id
+  if (extend.properties) {
+    properties = properties.concat(extend.properties)
+  }
+
+  if (extend.metadata) {
+    result.id = extend.metadata.id
     result.parentId = component.id
   }
 
-  if (options) {
-    properties = componentOptions(options, component.options, component.properties)
+  if (extend.options) {
+    properties = componentOptions(extend.options, component.options, component.properties)
   }
 
-  if (properties) {
+  // append properties
+  if (properties.length) {
     result.properties = properties
   }
 
-  if (events) {
-    if (extendEvents) {
-      result.events = result.events.concat(events)
+  if (extend.events) {
+    if (extend.clearDefaultEvents) {
+      result.events = extend.events
+    } else if (result.events) {
+      result.events = result.events.concat(extend.events)
     } else {
-      result.events = events
+      result.events = extend.events
     }
   }
 
-  const componentChildren = children || component.children
+  const componentChildren = extend.children || component.children
 
   if (componentChildren) {
     result.children = componentChildren
