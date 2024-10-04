@@ -3,6 +3,7 @@ import { parseSchema } from '@dooksa/utils'
 export default function appendPlugin (appPlugins, appSetup, appDataModels, appActions) {
   const use = (pluginData) => {
     const plugin = pluginData.initialise()
+
     // check if plugin exists
     if (appPlugins.includes(plugin)) {
       const setup = plugin.setup
@@ -16,7 +17,11 @@ export default function appendPlugin (appPlugins, appSetup, appDataModels, appAc
 
     // store plugin
     appPlugins.push(plugin)
-    const { actions, dependencies, setup } = plugin
+    const {
+      actions,
+      dependencies,
+      setup
+    } = plugin
     const name = pluginData.name
     const models = pluginData.models
 
