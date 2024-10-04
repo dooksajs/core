@@ -26,12 +26,8 @@ function initialize (appSetup, appActionData, appDataModels, appStartServer, app
       }
     }
 
-    options.action = {
-      actions: appActionData
-    }
-    options.metadata = {
-      plugins: appMetadata
-    }
+    options.action = { actions: appActionData }
+    options.metadata = { plugins: appMetadata }
 
     // setup plugins
     for (let i = 0; i < appSetup.length; i++) {
@@ -52,12 +48,20 @@ function initialize (appSetup, appActionData, appDataModels, appStartServer, app
  * Create Dooksa app
  * @param {Object} plugins
  */
-function createAppServer ({ plugins = [], clientPlugins = [], actions = [] } = {}) {
+function createAppServer ({
+  plugins = [],
+  clientPlugins = [],
+  actions = []
+} = {}) {
   const appPlugins = []
   const appSetup = []
   const appActionData = []
   const appMetadata = []
-  const appDataModels = { values: {}, schema: [] }
+  const appDataModels = {
+    values: {},
+    schema: [],
+    names: []
+  }
   const usePlugin = appendPlugin(appPlugins, appSetup, appDataModels)
   const useAction = appendAction(appActionData)
   let appStartServer
@@ -81,7 +85,10 @@ function createAppServer ({ plugins = [], clientPlugins = [], actions = [] } = {
     const plugin = clientPlugins[i]
 
     if (plugin.metadata) {
-      appMetadata.push({ name: plugin.name, metadata: plugin.metadata })
+      appMetadata.push({
+        name: plugin.name,
+        metadata: plugin.metadata
+      })
     }
   }
 
