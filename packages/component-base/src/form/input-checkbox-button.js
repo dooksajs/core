@@ -28,7 +28,7 @@ export const inputCheckboxButton = createComponent({
   ],
   events: [
     {
-      on: 'component/mount',
+      on: 'component/created',
       actionId: 'label-id'
     }
   ],

@@ -30,13 +30,11 @@ export const inputCheckbox = createComponent({
   ],
   events: [
     {
-      on: 'component/mount',
+      on: 'component/created',
       actionId: 'label-id'
     }
   ],
-  eventTypes: {
-    'observeProperty/checked': true
-  }
+  eventTypes: { 'observeProperty/checked': true }
 }, [idMixin, inputAllMixin, inputCheckboxMixin, ariaExpandedMixin, ariaControlsMixin, eventTypeMouseMixin, eventTypeElementChangeMixin])
 
 /**

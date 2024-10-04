@@ -5,7 +5,7 @@ import { extendInputCheckbox } from './input-checkbox.js'
 const inputCheckbox = extendInputCheckbox({
   events: [
     {
-      on: 'component/mount',
+      on: 'component/created',
       actionId: 'input-label-id'
     }
   ]
@@ -14,7 +14,7 @@ const inputCheckbox = extendInputCheckbox({
 const label = extendLabel({
   events: [
     {
-      on: 'component/mount',
+      on: 'component/created',
       actionId: 'input-label-id'
     }
   ]
@@ -46,13 +46,13 @@ export const formCheck = createComponent({
   },
   events: [
     {
-      on: 'component/mount',
+      on: 'component/created',
       actionId: 'create-id-for-input-label'
     }
   ]
 })
 
-/** 
+/**
  * @import {ComponentExtend} from '@dooksa/create-component'
  */
 

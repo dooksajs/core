@@ -9,12 +9,10 @@ import {
 import { extendText } from '../content/text.js'
 
 const labelText = extendText({
-  options: {
-    text: 'Label'
-  },
+  options: { text: 'Label' },
   events: [
     {
-      on: 'component/create',
+      on: 'component/beforeCreate',
       actionId: 'on-create-label-text'
     }
   ]
