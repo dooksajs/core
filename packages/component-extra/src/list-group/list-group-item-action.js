@@ -1,6 +1,11 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
 import {
-  ariaCurrentMixin, ariaDisabledMixin, displayMixin, eventTypeMouseMixin, flexMixin, gapMixin
+  ariaCurrentMixin,
+  ariaDisabledMixin,
+  displayMixin,
+  eventTypeMouseMixin,
+  flexMixin,
+  gapMixin
 } from '@dooksa/component-mixins'
 import listGroupItemOptions from './list-group-item-options.js'
 
@@ -24,12 +29,9 @@ export const listGroupItemAction = createComponent({
 }, [ariaCurrentMixin, ariaDisabledMixin, displayMixin, flexMixin, gapMixin, eventTypeMouseMixin])
 
 /**
- * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('../mixins/aria/aria-current.js').AriaCurrentMixin} AriaCurrentMixin
- * @typedef {import('../mixins/styles/flex.js').FlexMixin} FlexMixin
- * @typedef {import('../mixins/styles/display.js').DisplayMixin} DisplayMixin
- * @typedef {import('../mixins/styles/gap.js').GapMixin} GapMixin
- * @typedef {import('./list-group-options.js').ExtendListGroupOptions} ExtendListGroupOptions
+ * @import {ComponentExtend} from '@dooksa/create-component'
+ * @import {AriaCurrentMixin, FlexMixin, DisplayMixin, GapMixin} from '@dooksa/component-mixins'
+ * @import {ExtendListGroupOptions} from './list-group-options.js'
  */
 
 /**

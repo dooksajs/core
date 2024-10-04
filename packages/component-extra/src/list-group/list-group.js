@@ -5,7 +5,6 @@ import listGroupOptions from './list-group-options.js'
 export const listGroup = createComponent({
   id: 'list-group',
   tag: 'ul',
-  allowedChildren: [],
   properties: [
     {
       name: 'className',
@@ -16,9 +15,9 @@ export const listGroup = createComponent({
 }, [ariaDisabledMixin])
 
 /**
- * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('../../mixins/aria/aria-disabled.js').AriaDisabledMixin} AriaDisabledMixin
- * @typedef {import('./list-group-options.js').ExtendListGroupOptions} ExtendListGroupOptions
+ * @import {ComponentExtend} from '@dooksa/create-component'
+ * @import {AriaDisabledMixin} from '@dooksa/component-mixins'
+ * @import {ExtendListGroupOptions} from './list-group-options.js'
  */
 
 /**
