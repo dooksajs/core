@@ -81,9 +81,7 @@ function initialize (appSetup, appActions, appComponents, appDataModels, use) {
     options = {},
     lazy = {},
     loader
-  } = {
-    loader: () => {}
-  }) => {
+  } = { loader: () => {} }) => {
     const actionWhenAvailable = callbackWhenAvailable({
       actions: appActions,
       lazy,
@@ -96,14 +94,14 @@ function initialize (appSetup, appActions, appComponents, appDataModels, use) {
     options.action = {
       action: (name, params, context, callback = {}) => {
         actionWhenAvailable(name, () => {
-          const value = appActions[name](params, context)
+          const result = appActions[name](params, context)
           const onSuccess = callback.onSuccess
           const onError = callback.onError
 
-          if (value instanceof Error) {
-            onError(value)
-          } else if (value instanceof Promise) {
-            Promise.resolve(value)
+          if (result instanceof Error) {
+            onError(result)
+          } else if (result instanceof Promise) {
+            Promise.resolve(result)
               .then(results => {
                 onSuccess(results)
               })
@@ -111,7 +109,7 @@ function initialize (appSetup, appActions, appComponents, appDataModels, use) {
                 onError(error)
               })
           } else {
-            onSuccess(value)
+            onSuccess(result)
           }
         })
       }
@@ -173,12 +171,19 @@ function initialize (appSetup, appActions, appComponents, appDataModels, use) {
  * Create Dooksa app
  * @param {Object} plugins
  */
-function createAppClient ({ plugins = [], components = [] } = {}) {
+function createAppClient ({
+  plugins = [],
+  components = []
+} = {}) {
   const appPlugins = []
   const appSetup = []
   const appActions = {}
   const appComponents = []
-  const appDataModels = { values: {}, schema: [] }
+  const appDataModels = {
+    values: {},
+    schema: [],
+    names: []
+  }
   const usePlugin = appendPlugin(appPlugins, appSetup, appDataModels, appActions)
   const useComponent = appendComponent(appComponents)
 
