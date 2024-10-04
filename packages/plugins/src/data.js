@@ -558,8 +558,10 @@ function setCollectionItems (data, path, sources, metadata) {
  * @returns {Object}
  */
 function setData (collection, target, source, options) {
-  const data = { target,
-    collection }
+  const data = {
+    target,
+    collection
+  }
   const schema = databaseSchema[collection]
   let isValid = true
 
@@ -833,9 +835,7 @@ function setDataOptions (data, source, options) {
     }
   }
 
-  return {
-    isValid: true
-  }
+  return { isValid: true }
 }
 
 function setMetadata (item = {}, options) {
@@ -932,7 +932,10 @@ function removeRelation (collection, docId, refCollection, refId) {
 }
 
 function updateArray (target, source, options, relation) {
-  const result = { isValid: true, isComplete: false }
+  const result = {
+    isValid: true,
+    isComplete: false
+  }
   source = Array.isArray(source) ? source : [source]
 
   switch (options.method) {
@@ -1190,7 +1193,13 @@ function validateSchemaObjectOption (path, data) {
   }
 }
 
-function validateSchemaObjectPatternProperties (data, properties, propertiesChecked, source, path) {
+function validateSchemaObjectPatternProperties (
+  data,
+  properties,
+  propertiesChecked,
+  source,
+  path
+) {
   for (let i = 0; i < properties.length; i++) {
     const property = properties[i]
 
@@ -1420,7 +1429,11 @@ const data = createPlugin('data', {
        * @param {DataWhere[]} [param.where]
        * @param {GetDataOption} [param.options]
        */
-      method ({ name, where = [], options = {} }) {
+      method ({
+        name,
+        where = [],
+        options = {}
+      }) {
         const values = database[name]
 
         if (values == null) {
@@ -1875,7 +1888,11 @@ const data = createPlugin('data', {
                 delete databaseRelationInUse[usedRelationName]
 
                 if (cascade) {
-                  this.deleteValue({ name: splitName[0] + '/' + splitName[1], id: splitName[2], cascade })
+                  this.deleteValue({
+                    name: splitName[0] + '/' + splitName[1],
+                    id: splitName[2],
+                    cascade
+                  })
                 }
 
                 relations.splice(i, 1)
