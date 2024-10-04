@@ -159,6 +159,9 @@ const icon = createPlugin('icon', {
                   valueCache[currentIconId] = value
                 }
 
+                // fade new icon
+                component.node.classList.add('fade-in')
+                // add svg icon
                 component.node.innerHTML = value
               }
             }

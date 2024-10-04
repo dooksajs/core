@@ -3,7 +3,23 @@
   width: 1em;
   height: 1em;
 
+  &.fade-in svg {
+    animation-name: fade-icon;
+    animation-duration: 100ms;
+    animation-fill-mode: forwards;
+  }
+
   svg {
     display: block;
+  }
+}
+
+@keyframes fade-icon {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
   }
 }
