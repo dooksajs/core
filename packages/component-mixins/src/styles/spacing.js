@@ -19,8 +19,8 @@ import { createMixin } from '@dooksa/create-component'
 
 /**
  * @typedef {Object} SpacingMixin
- * @property {SpacingMargin} [margin]
- * @property {SpacingPadding} [padding]
+ * @property {SpacingMargin[]} [margin]
+ * @property {SpacingPadding[]} [padding]
  */
 
 const directions = {
@@ -34,31 +34,53 @@ const directions = {
 }
 
 export default createMixin({
-  metadata: {
-    id: 'spacing'
-  },
+  metadata: { id: 'spacing' },
   data: {
     options: {
       margin: {
         name: 'className',
         /**
          * Margin
-         * @param {SpacingMargin} param
+         * @param {SpacingMargin[]} options
          * @returns {string}
          */
-        computedValue ({ strength, direction = 'none' }) {
-          return 'm' + directions[direction] + '-' + strength
+        computedValue (options) {
+          let classNames = ''
+          let firstChar = 'm'
+
+          for (let i = 0; i < options.length; i++) {
+            const {
+              strength, direction = 'none'
+            } = options[i]
+
+            classNames += firstChar + directions[direction] + '-' + strength
+            firstChar = ' m'
+          }
+
+          return classNames
         }
       },
       padding: {
         name: 'className',
         /**
          * Padding
-         * @param {SpacingPadding} param
+         * @param {SpacingPadding[]} options
          * @returns {string}
          */
-        computedValue ({ strength, direction = 'none' }) {
-          return 'p' + directions[direction] + '-' + strength
+        computedValue (options) {
+          let classNames = ''
+          let firstChar = 'p'
+
+          for (let i = 0; i < options.length; i++) {
+            const {
+              strength, direction = 'none'
+            } = options[i]
+
+            classNames += firstChar + directions[direction] + '-' + strength
+            firstChar = ' p'
+          }
+
+          return classNames
         }
       }
     },
