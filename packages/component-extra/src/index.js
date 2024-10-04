@@ -1,5 +1,6 @@
 import { accordionBody, extendAccordionBody } from './accordion/accordion-body.js'
-import { accordionButton, extendAccordionButton } from './accordion/accordion-button.js'
+import { accordionCollapse, extendAccordionCollapse } from './accordion/accordion-collapse.js'
+import { accordionInner, extendAccordionInner } from './accordion/accordion-inner.js'
 import { accordionHeader, extendAccordionHeader } from './accordion/accordion-header.js'
 import { accordionItem, extendAccordionItem } from './accordion/accordion-item.js'
 import { accordion, extendAccordion } from './accordion/accordion.js'
@@ -25,12 +26,13 @@ import { extendTabContent, tabContent } from './nav/tab-content.js'
 import { extendTabPane, tabPane } from './nav/tab-pane.js'
 
 export {
+  extendAccordionInner,
   extendAccordionItem,
   extendButtonGroup,
   extendAccordion,
   extendAccordionBody,
   extendAccordionHeader,
-  extendAccordionButton,
+  extendAccordionCollapse,
   extendContainer,
   extendCard,
   extendCardBody,
@@ -53,10 +55,11 @@ export {
 }
 
 export default [
+  accordionInner,
   accordion,
   accordionItem,
   accordionBody,
-  accordionButton,
+  accordionCollapse,
   accordionHeader,
   buttonGroup,
   icon,
@@ -79,4 +82,3 @@ export default [
   listGroupItemAction,
   container
 ]
-

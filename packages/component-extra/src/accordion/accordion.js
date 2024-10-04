@@ -1,10 +1,8 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
-import { accordionItem } from './accordion-item.js'
 
 export const accordion = createComponent({
   id: 'accordion',
   tag: 'div',
-  allowedChildren: [accordionItem],
   properties: [
     {
       name: 'className',
@@ -15,28 +13,37 @@ export const accordion = createComponent({
     flush: {
       name: 'className',
       value: 'accordion-flush'
+    },
+    hover: {
+      name: 'className',
+      value: 'accordion-hover'
     }
   },
   events: [
     {
-      on: 'component/create',
+      on: 'component/beforeCreate',
       actionId: 'accordion-generate-name'
     }
   ]
 })
 
 /**
- * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
+ * @import {ComponentExtend} from '@dooksa/create-component'
  */
 
 /**
- * @typedef {Object} ComponentExtendAccordion
+ * @typedef {Object} ExtendAccordionOption
  * @property {Object} options
  * @property {boolean} [options.flush]
+ * @property {boolean} [options.hover]
  */
 
 /**
- * @param {ComponentExtend|ComponentExtendAccordion} options
+ * @typedef {ComponentExtend|ExtendAccordionOption} ExtendAccordion
+ */
+
+/**
+ * @param {ExtendAccordion} options
  */
 export const extendAccordion = function (options) {
   return extendComponent(accordion, options)

@@ -1,30 +1,27 @@
-import { createComponent, extendComponent } from '@dooksa/create-component'
-import { extendText } from '@dooksa/component-base'
+import { extendComponent } from '@dooksa/create-component'
+import {
+  extendSummary, extendText
+} from '@dooksa/component-base'
 
-const text = extendText({
-  options: {
-    text: 'Accordion Item'
-  }
-})
+const accordionHeaderText = extendText({ options: { text: 'Accordion heading' } })
 
-export const accordionHeader = createComponent({
-  id: 'accordion-header',
-  tag: 'summary',
-  children: [text],
+export const accordionHeader = extendSummary({
+  metadata: { id: 'accordion-header' },
   properties: [
     {
       name: 'className',
-      value: 'accordion-button collapsed'
+      value: 'accordion-button'
     }
-  ]
+  ],
+  children: [accordionHeaderText]
 })
 
 /**
- * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
+ * @import {ComponentExtendSummary} from '@dooksa/component-base'
  */
 
 /**
- * @param {ComponentExtend} options
+ * @param {ComponentExtendSummary} options
  */
 export const extendAccordionHeader = function (options) {
   return extendComponent(accordionHeader, options)

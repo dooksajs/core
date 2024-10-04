@@ -1,23 +1,35 @@
-import { extendComponent, createComponent } from '@dooksa/create-component'
+import { borderMixin } from '@dooksa/component-mixins'
+import {
+  extendComponent, createComponent
+} from '@dooksa/create-component'
 
 export const accordionBody = createComponent({
   id: 'accordion-body',
   tag: 'div',
-  children: [],
   properties: [
     {
       name: 'className',
       value: 'accordion-body'
     }
   ]
-})
+}, [borderMixin])
 
 /**
- * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
+ * @import {ComponentExtend} from '@dooksa/create-component'
+ * @import {BorderMixin} from '@dooksa/component-mixins'
  */
 
 /**
- * @param {ComponentExtend} options
+ * @typedef {Object} ExtendAccordionBodyOption
+ * @property {BorderMixin} options
+ */
+
+/**
+ * @typedef {ComponentExtend|ExtendAccordionBodyOption} ExtendAccordionBody
+ */
+
+/**
+ * @param {ExtendAccordionBody} options
  */
 export const extendAccordionBody = function (options) {
   return extendComponent(accordionBody, options)
