@@ -64,6 +64,24 @@ function setContent (node, content, values) {
   }
 }
 
+function objectHasSetter (object, property, result = { hasSetter: false }) {
+  const descriptor = Object.getOwnPropertyDescriptor(object, property)
+
+  if (descriptor && descriptor.set) {
+    result.hasSetter = true
+
+    return
+  }
+
+  const prototype = Object.getPrototypeOf(object)
+
+  if (prototype) {
+    objectHasSetter(prototype, property, result)
+  }
+
+  return result.hasSetter
+}
+
 /**
  * Set properties to element
  * @param {HTMLElement} element - view node id
@@ -76,8 +94,15 @@ function setProperties (element, properties = []) {
       name, value
     } = properties[i]
 
-    if (element[name] != null) {
-      element[name] = value
+    if (element.hasAttribute && element.hasAttribute(name)) {
+      if (element.getAttribute(name) !== value) {
+        element.setAttribute(name, value)
+      }
+    } else if (objectHasSetter(element, name)) {
+      // update if new value
+      if (element[name] !== value) {
+        element[name] = value
+      }
     } else {
       element.setAttribute(name, value)
     }
