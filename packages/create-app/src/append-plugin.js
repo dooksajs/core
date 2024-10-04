@@ -72,6 +72,7 @@ export default function appendPlugin (appPlugins, appSetup, appDataModels, appAc
           const isCollection = schemaType === 'collection'
 
           appDataModels.values[collectionName] = dataValue()
+          appDataModels.names.push(collectionName)
           appDataModels.schema.push({
             name: collectionName,
             entries: parseSchema.process({}, collectionName, modelItem, [], true),

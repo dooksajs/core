@@ -2292,9 +2292,16 @@ const data = createPlugin('data', {
    * @param {Object} model
    */
   setup (model) {
+    // set plugin collections
     database = model.values
-
-    // setup plugin modals
+    // store all collection names
+    const collectionName = 'data/collections'
+    database[collectionName] = model.names.sort()
+    databaseSchema[collectionName] = {
+      type: 'array',
+      items: { type: 'string' }
+    }
+    // setup plugin schemas
     for (let i = 0; i < model.schema.length; i++) {
       const schema = model.schema[i]
       const entries = schema.entries
