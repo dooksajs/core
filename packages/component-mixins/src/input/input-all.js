@@ -8,14 +8,10 @@ import { createMixin } from '@dooksa/create-component'
  */
 
 export default createMixin({
-  metadata: {
-    id: 'input-all'
-  },
+  metadata: { id: 'input-all' },
   data: {
     options: {
-      name: {
-        name: 'name'
-      },
+      name: { name: 'name' },
       disabled: {
         name: 'disabled',
         values: {

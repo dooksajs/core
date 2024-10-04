@@ -11,9 +11,7 @@ import { createMixin } from '@dooksa/create-component'
  */
 
 export default createMixin({
-  metadata: {
-    id: 'focus-ring'
-  },
+  metadata: { id: 'focus-ring' },
   data: {
     options: {
       focusRing: {

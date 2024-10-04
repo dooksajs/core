@@ -10,9 +10,7 @@ import { createMixin } from '@dooksa/create-component'
  */
 
 export default createMixin({
-  metadata: {
-    id: 'color'
-  },
+  metadata: { id: 'color' },
   data: {
     options: {
       color: {
