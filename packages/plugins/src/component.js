@@ -214,9 +214,7 @@ function createNode (id, item) {
 
   // Custom element constructor
   if (typeof template.initialize === 'function') {
-    node = template.initialize({
-      id
-    }, eventEmit)
+    node = template.initialize({ id }, eventEmit)
   } else {
     // create element
     node = document.createElement(template.tag)
@@ -226,9 +224,7 @@ function createNode (id, item) {
   dataUnsafeSetValue({
     name: 'component/nodes',
     value: node,
-    options: {
-      id
-    }
+    options: { id }
   })
 
   const properties = dataGetValue({
@@ -260,9 +256,7 @@ function createNode (id, item) {
         dataSetValue({
           name: 'component/properties',
           value: properties,
-          options: {
-            id
-          }
+          options: { id }
         })
       }
     })
@@ -271,9 +265,7 @@ function createNode (id, item) {
   const content = dataGetValue({
     name: 'component/content',
     id,
-    options: {
-      expand: true
-    }
+    options: { expand: true }
   })
   let contentId
   if (!content.isEmpty) {
@@ -288,9 +280,7 @@ function createNode (id, item) {
   const children = dataGetValue({
     name: 'component/children',
     id,
-    options: {
-      expand: true
-    }
+    options: { expand: true }
   })
   const rootId = dataGetValue({
     name: 'component/roots',
@@ -415,6 +405,12 @@ function createNode (id, item) {
   }
 }
 
+/**
+ * Observe node prototype property
+ * @param {HTMLElement} element
+ * @param {string} property - Property name of getter/setter
+ * @param {Function} callback
+ */
 function observeNodeProperty (element, property, callback) {
   const elementPrototype = Object.getPrototypeOf(element)
 
@@ -572,9 +568,7 @@ function createTemplate ({
     id: template.id,
     type: template.type
   }
-  const options = {
-    id
-  }
+  const options = { id }
   const properties = {}
   let node
   let contentId
@@ -634,9 +628,7 @@ function createTemplate ({
     value: id,
     options: {
       id: groupId,
-      update: {
-        method: 'push'
-      }
+      update: { method: 'push' }
     }
   })
   dataSetValue({
@@ -687,9 +679,7 @@ function createTemplate ({
       value: contentData.id,
       options: {
         id: contentId,
-        update: {
-          method: 'push'
-        }
+        update: { method: 'push' }
       }
     })
     dataSetValue({
@@ -697,9 +687,7 @@ function createTemplate ({
       value: id,
       options: {
         id: contentId,
-        update: {
-          method: 'push'
-        }
+        update: { method: 'push' }
       }
     })
     dataSetValue({
@@ -1070,9 +1058,7 @@ const component = createPlugin('component', {
   models: {
     nodes: {
       type: 'collection',
-      items: {
-        type: 'object'
-      }
+      items: { type: 'object' }
     },
     events: {
       type: 'collection',
@@ -1085,9 +1071,7 @@ const component = createPlugin('component', {
               type: 'string',
               relation: 'event/listeners'
             },
-            on: {
-              type: 'string'
-            },
+            on: { type: 'string' },
             actionId: {
               type: 'string',
               relation: 'action/items'
@@ -1101,23 +1085,15 @@ const component = createPlugin('component', {
       items: {
         type: 'object',
         properties: {
-          id: {
-            type: 'string'
-          },
-          hash: {
-            type: 'string'
-          },
-          isTemplate: {
-            type: 'boolean'
-          }
+          id: { type: 'string' },
+          hash: { type: 'string' },
+          isTemplate: { type: 'boolean' }
         }
       }
     },
     options: {
       type: 'collection',
-      items: {
-        type: 'object'
-      }
+      items: { type: 'object' }
     },
     properties: {
       type: 'collection',
@@ -1125,11 +1101,7 @@ const component = createPlugin('component', {
         type: 'array',
         items: {
           type: 'object',
-          properties: {
-            name: {
-              type: 'string'
-            }
-          }
+          properties: { name: { type: 'string' } }
         }
       }
     },
@@ -1320,9 +1292,7 @@ const component = createPlugin('component', {
                 value: id,
                 options: {
                   id: contentId,
-                  update: {
-                    method: 'pull'
-                  }
+                  update: { method: 'pull' }
                 }
               })
             }
@@ -1347,9 +1317,7 @@ const component = createPlugin('component', {
           })
 
           for (let i = 0; i < children.item.length; i++) {
-            this.remove({
-              id: children.item[i]
-            }, context, false)
+            this.remove({ id: children.item[i] }, context, false)
           }
         }
 
@@ -1363,9 +1331,7 @@ const component = createPlugin('component', {
           value: id,
           options: {
             id: componentGroupId,
-            update: {
-              method: 'pull'
-            }
+            update: { method: 'pull' }
           }
         })
 
@@ -1386,9 +1352,7 @@ const component = createPlugin('component', {
             value: actionGroupId,
             options: {
               id: componentGroupId,
-              update: {
-                method: 'pull'
-              }
+              update: { method: 'pull' }
             }
           })
 
@@ -1487,9 +1451,7 @@ const component = createPlugin('component', {
           })
 
           if (!node.isEmpty) {
-            children.push({
-              item: node.item
-            })
+            children.push({ item: node.item })
 
             continue
           }
@@ -1551,9 +1513,7 @@ const component = createPlugin('component', {
     dataUnsafeSetValue({
       name: 'component/nodes',
       value: document.body,
-      options: {
-        id: 'body'
-      }
+      options: { id: 'body' }
     })
 
     $component = component
@@ -1583,9 +1543,7 @@ const component = createPlugin('component', {
       captureAll: true,
       handler: (data) => {
         for (let i = 0; i < data.item.length; i++) {
-          this.remove({
-            id: data.item[i]
-          })
+          this.remove({ id: data.item[i] })
         }
       }
     })
@@ -1599,9 +1557,7 @@ const component = createPlugin('component', {
         const options = {
           name: 'component/childrenBeforeUpdate',
           id,
-          context: {
-            id
-          },
+          context: { id },
           payload: data.item
         }
 
