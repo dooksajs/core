@@ -26,9 +26,9 @@ function hashBlock (block, sourceBlock, targetBlock, collection) {
 }
 
 function compileAction (action) {
-  const collection = {}
-  const blocks = {}
-  const blockSequences = {}
+  const collection = Object.create(null)
+  const blocks = Object.create(null)
+  const blockSequences = Object.create(null)
   const sequences = []
   const ifElse = []
 

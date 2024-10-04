@@ -11,10 +11,6 @@ function objectHash (source) {
 
   const target = sortObject(source)
 
-  if (target === '__proto__' || target === 'constructor' || target === 'prototype') {
-    throw new Error('Invalid hash ID')
-  }
-
   return hash.update(target)
 }
 
