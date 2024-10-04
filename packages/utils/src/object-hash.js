@@ -11,17 +11,11 @@ function objectHash (source) {
 
   const target = sortObject(source)
 
-  validateHash(target)
-
-  return hash.update(target)
-}
-
-function validateHash (hash) {
-  if (hash === '__proto__' || hash === 'constructor' || hash === 'prototype') {
+  if (target === '__proto__' || target === 'constructor' || target === 'prototype') {
     throw new Error('Invalid hash ID')
   }
 
-  return true
+  return hash.update(target)
 }
 
 export default objectHash
