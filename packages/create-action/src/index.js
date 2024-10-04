@@ -76,6 +76,7 @@ import createAction from './create-action.js'
  * 'action/items'|
  * 'action/sequences'|
  * 'action/values'|
+ * 'data/collections'|
  * 'content/items'|
  * 'component/nodes'|
  * 'component/items'|
@@ -156,6 +157,8 @@ import createAction from './create-action.js'
 /**
  * @typedef {Object} GetActionValue
  * @property {Action|string} id
+ * @property {Action|string} [prefixId]
+ * @property {Action|string} [suffixId]
  * @property {Action|string[]|string} [query]
  */
 
@@ -189,7 +192,20 @@ import createAction from './create-action.js'
  * @property {Action|string} [groupId] - Action value group ID
  * @property {Action|string} [prefixId]
  * @property {Action|string} [suffixId]
- * @property {Action[]|string[]|number[]|boolean[]|NestedData[]} values
+ * @property {Object[]} values
+ * @property {Action|string} values[].id
+ * @property {Action|string} [values[].prefixId]
+ * @property {Action|string} [values[].suffixId]
+ * @property {Action[]|
+ * string[]|
+ * number[]|
+ * boolean[]|
+ * NestedData[]|
+ * Action|
+ * string|
+ * number|
+ * boolean|
+ * NestedData} values[].value
  */
 
 /**
@@ -208,7 +224,7 @@ import createAction from './create-action.js'
 /**
  * @typedef {Object} DataSetValue
  * @property {Action|DataCollectionName} name
- * @property {Action|Action[]|string|number|boolean} value
+ * @property {Action|Action[]|string|number|boolean|NestedData} value
  * @property {DataSetValueOptions} [options]
  */
 
@@ -260,7 +276,7 @@ import createAction from './create-action.js'
  * @typedef {Object} ListMap
  * @property {Action} items
  * @property {Action|string} actionId
- * @property {Action} [context]
+ * @property {ActionDispatchContext} [context]
  */
 
 /**
