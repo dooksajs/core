@@ -14,7 +14,9 @@ import actionCardAccordionItem from './action-card/action-card-accordion-item.js
 import actionCardAccordion from './action-card/action-card-accordion.js'
 import actionCard from './action-card/action-card.js'
 
+
 export {
+  actionCard,
   actionSelect,
   selectEditInner,
   selectEditInnerLink,
@@ -35,6 +37,7 @@ export {
 }
 
 export default [
+  actionCard,
   actionSelect,
   selectEditInner,
   selectEditInnerLink,
