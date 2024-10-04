@@ -19,8 +19,10 @@ import spacingMixin from './spacing.js'
 import textMixin from './text.js'
 import transformTranslateMixin from './transform-translate.js'
 import zIndexMixin from './z-index.js'
+import textColorMixin from './text-color.js'
 
 export {
+  textColorMixin,
   focusRingMixin,
   backgroundMixin,
   borderMixin,

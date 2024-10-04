@@ -54,9 +54,13 @@
  * @import {AriaLabelMixin} from './aria/aria-label.js'
  * @import {AriaSelectedMixin} from './aria/aria-selected.js'
  * @import {FocusRingMixin} from './styles/focus-ring.js'
+ * @import {TextColorMixin} from './styles/text-color.js'
+ * @import {TextOpacityMixin} from './styles/text-opacity.js'
  */
 
 /**
+ * @typedef {TextOpacityMixin} TextOpacityMixin
+ * @typedef {TextColorMixin} TextColorMixin
  * @typedef {FocusRingMixin} FocusRingMixin
  * @typedef {IdMixin} IdMixin
  * @typedef {FlexMixin} FlexMixin
@@ -120,4 +124,3 @@
  * @typedef {EventTypeMouseMixin} EventTypeMouseMixin
  * @typedef {TranslateMixin} TranslateMixin
  */
-
