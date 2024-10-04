@@ -36,9 +36,9 @@ import { generateId } from '@dooksa/utils'
  * @param {string} name
  * @returns {Component}
  */
-let $component = (name) => ({
-  id: ''
-})
+let $component = (name) => ({ id: '' })
+const attributeObserverCallbacks = {}
+let attributeObserver
 
 function getContent (node, content) {
   const result = {}
@@ -357,7 +357,7 @@ function createNode (id, item) {
       if (eventTypes[on] && !hasEvent[on]) {
         const [eventType, eventValue] = on.split('/')
 
-        if (eventType === 'node' || eventType === 'observeProperty') {
+        if (eventType === 'node' || eventType === 'observeProperty' || eventType === 'observeAttribute') {
           hasEvent[on] = true
 
           nodeEvent(eventType, eventValue, node, on, id, context)
@@ -404,7 +404,8 @@ function createNode (id, item) {
     eventEmit({
       name: 'component/created',
       id,
-      context
+      context,
+      payload: node
     })
   }
 
@@ -434,8 +435,48 @@ function observeNodeProperty (element, property, callback) {
   }
 }
 
+/**
+ * Attribute observer handler
+ * @param {Function} callback
+ */
+function observeNodeAttributeCallback (callback) {
+  return function (mutation) {
+    const prop = mutation.attributeName
+
+    callback({
+      prop,
+      oldValue: mutation.oldValue,
+      value: mutation.target.getAttribute(prop)
+    })
+  }
+}
+
+/**
+ * Observe node attribute
+ * @param {string} id
+ * @param {HTMLElement} element
+ * @param {string} property
+ * @param {Function} callback
+ */
+function observeNodeAttribute (id, element, property, callback) {
+  const attributeCallback = observeNodeAttributeCallback(callback)
+
+  // add attribute observer callback
+  if (!attributeObserverCallbacks[id]) {
+    attributeObserverCallbacks[id] = { [property]: attributeCallback }
+  } else {
+    attributeObserverCallbacks[id][property] = attributeCallback
+  }
+
+  // observe element
+  attributeObserver.observe(element, {
+    attributes: true,
+    attributeOldValue: true
+  })
+}
+
 function nodeEvent (eventType, eventValue, node, on, id, context) {
-  let handler = (payload) => {
+  const handler = (payload) => {
     // fire node events
     eventEmit({
       name: on,
@@ -444,30 +485,49 @@ function nodeEvent (eventType, eventValue, node, on, id, context) {
       payload
     })
   }
+  let removeHandler = () => {}
 
-  if (eventType === 'node') {
-    if (eventValue === 'checked') {
-      node.addEventListener('input', handler)
+  switch (eventType) {
+    case 'node':
+      if (eventValue !== 'checked') {
+        node.addEventListener(eventValue, handler)
+      } else {
+        node.addEventListener('input', handler)
 
+        observeNodeProperty(node, eventValue, (value) => {
+          handler({
+            prop: eventValue,
+            value,
+            target: { // mimic node event handler
+              checked: value
+            }
+          })
+        })
+      }
+
+      removeHandler = () => {
+        node.removeEventListener(on, handler)
+      }
+      break
+    case 'observeProperty':
       observeNodeProperty(node, eventValue, (value) => {
         handler({
           prop: eventValue,
-          value,
-          target: { // mimic node event handler
-            checked: value
-          }
+          value
         })
       })
-    } else {
-      node.addEventListener(eventValue, handler)
-    }
-  } else {
-    observeNodeProperty(node, eventValue, (value) => {
-      handler({
-        prop: eventValue,
-        value
-      })
-    })
+      break
+    case 'observeAttribute':
+      observeNodeAttribute(id, node, eventValue, handler)
+      removeHandler = () => {
+        delete attributeObserverCallbacks[id][eventValue]
+
+        // clear node
+        if (!Object.keys(attributeObserverCallbacks[id]).length) {
+          delete attributeObserverCallbacks[id]
+        }
+      }
+      break
   }
 
   // handle removal
@@ -476,7 +536,7 @@ function nodeEvent (eventType, eventValue, node, on, id, context) {
     on: 'delete',
     id,
     handler () {
-      node.removeEventListener(on, handler)
+      removeHandler()
     }
   })
 
@@ -484,9 +544,7 @@ function nodeEvent (eventType, eventValue, node, on, id, context) {
   dataUnsafeSetValue({
     name: 'event/handlers',
     value: handler,
-    options: {
-      id
-    }
+    options: { id }
   })
 }
 
@@ -753,7 +811,7 @@ function createTemplate ({
       if (eventTypes[on] && !hasEvent[on]) {
         const [eventType, eventValue] = on.split('/')
 
-        if (eventType === 'node' || eventType === 'observeProperty') {
+        if (eventType === 'node' || eventType === 'observeProperty' || eventType === 'observeAttribute') {
           hasEvent[on] = true
 
           nodeEvent(eventType, eventValue, node, on, id, context)
@@ -766,7 +824,8 @@ function createTemplate ({
       beforeCreateResult = eventEmit({
         name: 'component/beforeCreate',
         id,
-        context
+        context,
+        payload: node
       })
     }
   }
@@ -1475,6 +1534,19 @@ const component = createPlugin('component', {
     if (!rootEl) {
       throw Error('No root element found: #' + rootId)
     }
+
+    attributeObserver = new MutationObserver(function (mutationsList) {
+      for (const mutation of mutationsList) {
+        // @ts-ignore
+        const id = mutation.target.__dooksaId__
+
+        if (attributeObserverCallbacks[id] &&
+          typeof attributeObserverCallbacks[id][mutation.attributeName] === 'function'
+        ) {
+          attributeObserverCallbacks[id][mutation.attributeName](mutation)
+        }
+      }
+    })
 
     dataUnsafeSetValue({
       name: 'component/nodes',
