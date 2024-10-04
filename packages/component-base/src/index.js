@@ -4,6 +4,7 @@ import { extendH3, h3 } from './content/h3.js'
 import { extendH4, h4 } from './content/h4.js'
 import { extendH5, h5 } from './content/h5.js'
 import { extendH6, h6 } from './content/h6.js'
+import { extendSmall, small } from './content/small.js'
 import { extendImg, img } from './content/img.js'
 import { extendParagraph, paragraph } from './content/paragraph.js'
 import { extendText, text } from './content/text.js'
@@ -28,6 +29,7 @@ import { extendSummary, summary } from './interactive/summary.js'
 export * from './types.js'
 
 export {
+  extendSmall,
   extendDetails,
   extendSummary,
   extendAnchor,
@@ -54,6 +56,7 @@ export {
 }
 
 export default [
+  small,
   summary,
   details,
   anchor,
