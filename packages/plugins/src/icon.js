@@ -18,16 +18,6 @@ const icon = createPlugin('icon', {
       type: 'collection',
       items: { type: 'string' }
     },
-    queue: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          id: { type: 'string' },
-          componentId: { type: 'string' }
-        }
-      }
-    },
     aliases: {
       type: 'collection',
       items: {
