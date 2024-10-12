@@ -2,7 +2,7 @@
 
 > [!WARNING]  
 > Please keep in mind that Dooksa is still under active development and full backward compatibility is not guaranteed before reaching v1.0.0. Dooksa is not recommended for production critical applications yet.
-> Attention. This repo is not for building a website. It for those who want to improve dooksa
+> Attention. This repo is not for building a website. It is for those who want to improve dooksa. A separate repo will be made available with a suitable Dockerfile to deploy to the cloud service provider of your choice.
 
 ##Description
 
@@ -14,7 +14,8 @@ You simply build your application by editing sections of your application interf
 Dooksa provides a front and back-end system where you create your apps in the same manner, with the same syntax. and with the saeme processes.
 Dooksa gives you unrestricted freedom over your own application project, to modify as it fits your needs. Importantly, there are no abstractions dependent upon version upgrades. The system has zero dependencies on node modules.
 
-If you want to create a dooksa application, run the create dooksa script (insert link) and example It will be usingthe dist files from core.
+The system is fully extendable and does not require programming knowledge, but it does require an understanding of programming pronciples. It offers a low-code solution with integrated tools and a unified plugin system for both front and back end site development. The benefits of this include managing both the data and state of the application, and having to only learn one system in order to extend the back or front ends.
+if you want to create a Dooksa application, run the create Dooksa script (insert link) and example it will be using the dist files from core.
 Create scripotdoes not exist yet. Hence playground ... See below
 
 
