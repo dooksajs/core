@@ -12,49 +12,63 @@ export default createPlugin('development', {
       type: 'number'
     }
   },
+  data: {
+    sse_streams: {}
+  },
   setup () {
     // sse rebuild notification
     httpSetRoute({
       path: '/esbuild',
       handlers: [(request, response) => {
-        response.writeHead(200, {
-          'Content-Type': 'text/event-stream',
-          Connection: 'keep-alive',
-          'Cache-Control': 'no-cache'
-        })
+        if (!response.sse) {
+          return response.send('Server-Sent Events Not Supported!')
+        }
 
-        // Retry connect every 10s
-        response.write('retry: 10000\n\n')
+        // open sse stream
+        response.sse.send()
 
         const id = generateId()
+
+        // assign a unique identifier to this stream and store it in our broadcast pool
+        response.sse.id = id
+        this.sse_streams[id] = response.sse
+
+        // emit client rebuild data
         dataAddListener({
           name: 'development/rebuildClient',
           on: 'update',
           handlerId: id,
           handler: (data) => {
-            response.write('event: rebuild-client\n')
-            response.write('data: ' + JSON.stringify(data) + '\n\n')
+            response.sse.send(id, 'rebuild-client', JSON.stringify(data))
           }
         })
 
+        // emit server rebuild data
         dataAddListener({
           name: 'development/rebuildServer',
           on: 'update',
           handlerId: id,
           handler: (data) => {
-            response.write('event: rebuild-client\n')
-            response.write('data: ' + JSON.stringify(data) + '\n\n')
+            response.sse.send(id, 'rebuild-server', JSON.stringify(data))
           }
         })
 
-        // Close the connection when the client disconnects
-        request.on('close', () => {
+        // close the connection when the client disconnects
+        response.once('close', () => {
+          // delete client/server rebuild data listeners
           dataDeleteListener({
             name: 'development/rebuildClient',
             on: 'update',
             handlerId: id
           })
-          response.end('OK')
+          dataDeleteListener({
+            name: 'development/rebuildServer',
+            on: 'update',
+            handlerId: id
+          })
+
+          // Delete the stream from our broadcast pool
+          delete this.sse_streams[response.sse.id]
         })
       }]
     })
