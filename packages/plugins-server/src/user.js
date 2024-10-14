@@ -142,7 +142,7 @@ function auth (request, response, next) {
 
   jwt.verify(token, JWTSecret, (error, decoded) => {
     if (error) {
-      return response.status(403).send(error)
+      return response.status(403).json(error)
     }
 
     request.userId = decoded.data.id
@@ -160,13 +160,13 @@ function checkPassword (request, response, next) {
 
   if (password) {
     if (password.length < 8 || password.length > 72) {
-      return response.status(400).send({
+      return response.status(400).json({
         status: 400,
         message: 'The length must be between 8 and 72.'
       })
     }
   } else {
-    return response.status(400).send({
+    return response.status(400).json({
       status: 400,
       message: 'User registration requires a password'
     })
@@ -183,10 +183,13 @@ function create (request, response) {
   const hash = hashPassword(request.body.password)
 
   // TODO: update snapshot
-  const email = dataGetValue({ name: 'user/emails', id: request.body.email })
+  const email = dataGetValue({
+    name: 'user/emails',
+    id: request.body.email
+  })
 
   if (!email.isEmpty) {
-    return response.status(400).send({ message: 'Email must be unique' })
+    return response.status(400).json({ message: 'Email must be unique' })
   }
 
   const userId = generateId
@@ -215,13 +218,13 @@ function create (request, response) {
 
   if (!setData.isValid) {
     if (setData.snapshotError) {
-      response.status(500).send(setData.snapshotError)
+      response.status(500).json(setData.snapshotError)
     }
 
-    return response.status(400).send(setData.error.details)
+    return response.status(400).sejsonnd(setData.error.details)
   }
 
-  response.status(201).send({
+  response.status(201).json({
     message: 'Successfully created account'
   })
 }
@@ -241,19 +244,25 @@ function login (request, response) {
   //   where.username = data.username
   // }
 
-  const userId = dataGetValue({ name: 'user/emails', id: data.email })
+  const userId = dataGetValue({
+    name: 'user/emails',
+    id: data.email
+  })
 
   if (userId.isEmpty) {
-    return response.status(404).send({
+    return response.status(404).json({
       message: 'No user found'
     })
   }
 
-  const user = dataGetValue({ name: 'user/items', id: userId.item })
+  const user = dataGetValue({
+    name: 'user/items',
+    id: userId.item
+  })
   const passwordMatch = matchPassword(data.password, user.item.password)
 
   if (!passwordMatch) {
-    return response.status(400).send({
+    return response.status(400).json({
       message: 'Password is incorrect'
     })
   }
@@ -285,7 +294,10 @@ function login (request, response) {
 function sign ({ payload, expiresIn }) {
   return jwt.sign({
     data: payload
-  }, JWTSecret, { algorithm: JWTAlgorithm, expiresIn })
+  }, JWTSecret, {
+    algorithm: JWTAlgorithm,
+    expiresIn
+  })
 }
 
 export default user

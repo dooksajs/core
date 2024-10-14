@@ -32,7 +32,7 @@ function create ({ request, response }) {
 
   response.set('Content-Security-Policy', csp)
 
-  response.status(200).send(
+  response.status(200).html(
     `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><link rel="icon" type="image/x-icon" href="/favicon.ico"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dooksa</title></head><body>
       <div id="root"></div>
       <script>${app}</script>
@@ -56,8 +56,14 @@ const pageServer = createPlugin('page', {
   },
   setup ({ app = '', css = '' } = {}) {
     databaseSeed('page-items')
-    dataSetValue({ name: 'page/app', value: app })
-    dataSetValue({ name: 'page/css', value: css })
+    dataSetValue({
+      name: 'page/app',
+      value: app
+    })
+    dataSetValue({
+      name: 'page/css',
+      value: css
+    })
 
     hash.init()
 
@@ -79,7 +85,10 @@ const pageServer = createPlugin('page', {
           next()
         },
         (request, response) => {
-          create({ request, response })
+          create({
+            request,
+            response
+          })
         }
       ]
     })
@@ -88,7 +97,7 @@ const pageServer = createPlugin('page', {
       path: '/',
       method: 'post',
       suffix: '',
-      middleware: ['request/json', 'user/auth'],
+      middleware: ['user/auth', 'request/json'],
       handlers: [(request, response) => {
         const setData = databaseSetValue({
           items: request.body,
@@ -97,13 +106,13 @@ const pageServer = createPlugin('page', {
 
         if (!setData.isValid) {
           if (setData.snapshotError) {
-            return response.status(500).send(setData.snapshotError)
+            return response.status(500).json(setData.snapshotError)
           }
 
-          return response.status(400).send(setData.error.details)
+          return response.status(400).json(setData.error.details)
         }
 
-        response.status(201).send(setData)
+        response.status(201).json(setData)
       }]
     })
   }

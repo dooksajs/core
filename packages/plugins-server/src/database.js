@@ -65,7 +65,11 @@ function setSnapshot (collection) {
     const tempFilePath = join(snapshotPath, fileName + uuid + '.json')
     const filePath = join(snapshotPath, fileName + '.json')
 
-    writeFile(tempFilePath, JSON.stringify({ collection, item: data.item, createdAt: timestamp }))
+    writeFile(tempFilePath, JSON.stringify({
+      collection,
+      item: data.item,
+      createdAt: timestamp
+    }))
       .then(() => {
         rename(tempFilePath, filePath, (error) => {
           if (error) {
@@ -393,7 +397,10 @@ const database = createPlugin('database', {
           const collection = collections[i]
           // fetch collection
           if (!request.query.id) {
-            const args = { name: collection, where }
+            const args = {
+              name: collection,
+              where
+            }
 
             if (request.query.expand) {
               args.options = {
@@ -410,7 +417,10 @@ const database = createPlugin('database', {
 
           for (let i = 0; i < request.query.id.length; i++) {
             const id = request.query.id[i]
-            const args = { name: collection, id }
+            const args = {
+              name: collection,
+              id
+            }
             const value = { id }
 
             if (request.query.expand) {
@@ -424,7 +434,7 @@ const database = createPlugin('database', {
             const data = dataGetValue(args)
 
             if (data.isEmpty) {
-              return response.status(404).send('Document not found:', collection, id)
+              return response.status(404).send(`Document not found: ${collection} ${id}`)
             }
 
             value.item = data.item
@@ -436,7 +446,10 @@ const database = createPlugin('database', {
             }
 
             if (where) {
-              const data = dataFind({ name: collection, where })
+              const data = dataFind({
+                name: collection,
+                where
+              })
 
               if (data) {
                 result.push(data)
@@ -457,7 +470,7 @@ const database = createPlugin('database', {
         //   }
         // }
 
-        response.status(200).send(result)
+        response.status(200).json(result)
       }
     },
     deleteValue (collections) {
@@ -469,17 +482,21 @@ const database = createPlugin('database', {
 
           for (let i = 0; i < request.query.id.length; i++) {
             const id = request.query.id[i]
-            const data = dataDeleteValue({ name: collection, id, cascade: request.query.cascade })
+            const data = dataDeleteValue({
+              name: collection,
+              id,
+              cascade: request.query.cascade
+            })
 
             if (!data.deleted) {
-              return response.status(400).send('Could not delete document:', collection, id)
+              return response.status(400).send(`Could not delete document: ${collection} ${id}`)
             }
 
             result += 1
           }
 
           if (snapshotError[collection]) {
-            return response.status(500).send(snapshotError[collection])
+            return response.status(500).json(snapshotError[collection])
           }
 
           setSnapshot(collections)

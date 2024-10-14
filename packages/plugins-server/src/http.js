@@ -1,10 +1,10 @@
 import createPlugin from '@dooksa/create-plugin'
 import { dataSetValue } from '@dooksa/plugins'
 import { middlewareGet, middlewareSet } from './middleware.js'
-import express from 'express'
 import helmet from 'helmet'
 import cookieParser from 'cookie-parser'
 import compression from 'compression'
+import HyperExpress from 'hyper-express'
 
 /**
  * @typedef {import('./middleware.js').Middleware} Middleware
@@ -126,8 +126,7 @@ const $http = createPlugin('http', {
   setup ({
     cookieSecret = '',
     api = '/_',
-    publicPath,
-    webServerLogger
+    publicPath
   } = {}) {
     DEV: {
       cookieSecret = 'Invalid cookie secret length; secret must be at 32 characters'
@@ -144,7 +143,7 @@ const $http = createPlugin('http', {
     // prepare api route suffix
     routes[apiPrefix] = []
 
-    app = express()
+    app = new HyperExpress.Server()
     cookieSecret = cookieSecret
 
     let secure = true
@@ -152,11 +151,14 @@ const $http = createPlugin('http', {
     if (process.env.NODE_ENV === 'development') {
       secure = false
     } else {
+      // @ts-ignore
       app.use(compression())
+      // @ts-ignore
+      app.use(helmet())
     }
 
     // setup plugins
-    app.use(helmet())
+    // @ts-ignore
     app.use(cookieParser(cookieSecret, {
       // @ts-ignore
       httpOnly: true,
@@ -164,22 +166,49 @@ const $http = createPlugin('http', {
       secure
     }))
 
+    // handle json requests
     middlewareSet({
       name: 'request/json',
-      handler: express.json
+      handler: (request, response, next) => {
+        // skip if body exists
+        if (typeof request.body === 'object') {
+          return next()
+        }
+
+        request.json()
+          .then(body => {
+            request.body = body
+            next()
+          })
+          .catch(error => {
+            response.status(500).send(error)
+          })
+      }
     })
 
+    // handle urlencoded requests
     middlewareSet({
       name: 'request/urlencoded',
-      handler: express.urlencoded({ extended: false })
+      handler: (request, response, next) => {
+        // skip if body exists
+        if (typeof request.body === 'object') {
+          return next()
+        }
+
+        request.urlencoded()
+          .then(body => {
+            request.body = body
+            next()
+          })
+          .catch(error => {
+            response.status(500).send(error)
+          })
+      }
     })
 
-    if (webServerLogger) {
-      app.use(webServerLogger)
-    }
-
     if (publicPath) {
-      app.use(express.static(publicPath))
+      /** https://github.com/kartikk221/hyper-express/blob/master/docs/LiveDirectory.md */
+      // app.use(express.static(publicPath))
     }
   }
 })

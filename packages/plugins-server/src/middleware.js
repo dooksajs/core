@@ -10,7 +10,7 @@ import createPlugin from '@dooksa/create-plugin'
 const handlers = {
   'request/checkBody' (request, response, next) {
     if (Object.getPrototypeOf(request.body) !== Object.prototype || !Object.keys(request.body).length) {
-      return response.status(400).send({
+      return response.status(400).json({
         message: 'Missing data'
       })
     }
@@ -24,7 +24,7 @@ const handlers = {
       if (query) {
         request.query.id = [query]
       } else {
-        return response.status(400).send({
+        return response.status(400).json({
           details: {
             message: 'Query is undefined'
           },
