@@ -1,7 +1,7 @@
 import { readdirSync, existsSync, writeFileSync } from 'node:fs'
 import { resolve, extname } from 'node:path'
 import { tmpdir } from 'node:os'
-import sass from 'node-sass'
+import { compileString } from 'sass'
 
 const themePath = import.meta.dirname
 const bootstrapPath = resolve(themePath, 'bootstrap')
@@ -66,13 +66,13 @@ function getStyles (path) {
 
 function compileSass (path) {
   const sassString = getStyles(path)
-  const result = sass.renderSync({
-    data: sassString,
-    includePaths: [path, bootstrapPath, customPath]
+  const result = compileString(sassString, {
+    loadPaths: [path, bootstrapPath, customPath],
+    silenceDeprecations: ['color-functions', 'mixed-decls']
   })
 
   return {
-    css: result.css.toString()
+    css: result.css
   }
 }
 

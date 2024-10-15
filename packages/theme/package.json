@@ -11,6 +11,6 @@
     "bootstrap": "^5.3.3"
   },
   "devDependencies": {
-    "node-sass": "^9.0.0"
+    "sass": "^1.79.5"
   }
 }
