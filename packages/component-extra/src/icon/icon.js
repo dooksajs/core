@@ -60,6 +60,6 @@ export const icon = createComponent({
 /**
  * @param {ExtendIcon} options
  */
-export const extendIcon = function (options) {
+export const createIcon = function (options) {
   return extendComponent(icon, options)
 }

@@ -83,6 +83,6 @@ export const div = createComponent({
 /**
  * @param {ExtendDiv} options
  */
-export const extendDiv = function (options) {
+export const createDiv = function (options) {
   return extendComponent(div, options)
 }

@@ -1,12 +1,12 @@
 import {
-  extendAccordionCollapse,
-  extendAccordionInner
+  createAccordionCollapse,
+  createAccordionInner
 } from '@dooksa/component-extra'
 import actionAddBlockList from './action-add-block-list.js'
 
-const container = extendAccordionInner({ children: [actionAddBlockList] })
+const container = createAccordionInner({ children: [actionAddBlockList] })
 
-export default extendAccordionCollapse({
+export default createAccordionCollapse({
   metadata: { id: 'action-add-block-body' },
   children: [container]
 })

@@ -23,6 +23,6 @@ export const paragraph = createComponent({
 /**
  * @param {ExtendParagraph} options
  */
-export const extendParagraph = function (options) {
+export const createParagraph = function (options) {
   return extendComponent(paragraph, options)
 }

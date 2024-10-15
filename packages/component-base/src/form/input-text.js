@@ -62,6 +62,6 @@ export const inputText = createComponent({
 /**
  * @param {ExtendInputText} options
  */
-export const extendInputText = function (options) {
+export const createInputText = function (options) {
   return extendComponent(inputText, options)
 }

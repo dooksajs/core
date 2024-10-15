@@ -1,11 +1,11 @@
 import {
-  extendText, extendOption
+  createText, createOption
 } from '@dooksa/component-base'
 
-export default extendOption({
+export default createOption({
   metadata: { id: 'option-variable-value' },
   children: [
-    extendText({
+    createText({
       events: [
         {
           on: 'component/beforeCreate',

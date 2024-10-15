@@ -1,11 +1,11 @@
 import {
-  extendText,
-  extendLabel,
-  extendSpan
+  createText,
+  createLabel,
+  createSpan
 } from '@dooksa/component-base'
-import { extendIcon } from '@dooksa/component-extra'
+import { createIcon } from '@dooksa/component-extra'
 
-const icon = extendIcon({
+const icon = createIcon({
   options: {
     margin: [{
       direction: 'end',
@@ -19,7 +19,7 @@ const icon = extendIcon({
     }
   ]
 })
-const labelText = extendText({
+const labelText = createText({
   options: { text: '' },
   events: [
     {
@@ -28,12 +28,12 @@ const labelText = extendText({
     }
   ]
 })
-const labelStarText = extendText({ options: { text: ' *' } })
-const labelStar = extendSpan({
+const labelStarText = createText({ options: { text: ' *' } })
+const labelStar = createSpan({
   children: [labelStarText],
   options: { textColor: 'danger' }
 })
-export default extendLabel({
+export default createLabel({
   metadata: { id: 'action-card-body-label-required' },
   children: [icon, labelText, labelStar],
   events: [

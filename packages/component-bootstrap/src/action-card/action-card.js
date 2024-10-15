@@ -1,7 +1,7 @@
-import { extendCard } from '@dooksa/component-extra'
+import { createCard } from '@dooksa/component-extra'
 import actionCardHeader from './action-card-header.js'
 
-export default extendCard({
+export default createCard({
   metadata: { id: 'action-card' },
   children: [actionCardHeader],
   options: {

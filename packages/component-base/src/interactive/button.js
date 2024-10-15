@@ -1,11 +1,9 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
 import { buttonMixin, eventTypeMouseMixin } from '@dooksa/component-mixins'
-import { extendText } from '../content/text.js'
+import { createText } from '../content/text.js'
 
-const btnText = extendText({
-  options: {
-    text: 'Button'
-  }
+const btnText = createText({
+  options: { text: 'Button' }
 })
 
 export const button = createComponent({
@@ -67,6 +65,6 @@ export const button = createComponent({
 /**
  * @param {ExtendButton} options
  */
-export const extendButton = function (options) {
+export const createButton = function (options) {
   return extendComponent(button, options)
 }

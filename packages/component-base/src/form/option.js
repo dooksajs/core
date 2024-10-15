@@ -1,7 +1,7 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
-import { extendText } from '../content/text.js'
+import { createText } from '../content/text.js'
 
-const text = extendText({
+const text = createText({
   options: {
     text: 'Select option'
   }
@@ -48,6 +48,6 @@ export const option = createComponent({
 /**
  * @param {ExtendOption} options
  */
-export const extendOption = function (options) {
+export const createOption = function (options) {
   return extendComponent(option, options)
 }

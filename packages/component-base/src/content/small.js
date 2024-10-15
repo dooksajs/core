@@ -26,6 +26,6 @@ export const small = createComponent({
 /**
  * @param {ExtendSmall} options
  */
-export const extendSmall = function (options) {
+export const createSmall = function (options) {
   return extendComponent(small, options)
 }

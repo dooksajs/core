@@ -28,7 +28,7 @@ export const listGroup = createComponent({
 /**
  * @param {ComponentExtend|ExtendListGroup} options
  */
-export const extendListGroup = function (options) {
+export const createListGroup = function (options) {
   return extendComponent(listGroup, options)
 }
 

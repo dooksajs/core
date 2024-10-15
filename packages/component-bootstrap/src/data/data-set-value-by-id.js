@@ -1,37 +1,37 @@
-import { extendCardBody } from '@dooksa/component-extra'
+import { createCardBody } from '@dooksa/component-extra'
 import {
-  extendDiv, extendOption, extendSelect, extendText
+  createDiv, createInputText, createOption, createSelect, createText
 } from '@dooksa/component-base'
 import actionCardBodyLabelRequired from '../action-card/action-card-body-label-required.js'
 
-const dataSelectorDiv = extendDiv({
+const dataSelectorMethod = createDiv({
   children: [
-    extendSelect({
+    createSelect({
       children: [
-        extendOption({
+        createOption({
           children: [
-            extendText({ options: { text: 'Select selection method' } })
+            createText({ options: { text: 'Select selection method' } })
           ],
           options: {
             selected: true,
             value: ''
           }
         }),
-        extendOption({
+        createOption({
           children: [
-            extendText({ options: { text: 'Select list' } })
+            createText({ options: { text: 'Select list' } })
           ],
           options: { value: 'document-by-id' }
         }),
-        extendOption({
+        createOption({
           children: [
-            extendText({ options: { text: 'Context value' } })
+            createText({ options: { text: 'Context value' } })
           ],
           options: { value: 'document-by-context' }
         }),
-        extendOption({
+        createOption({
           children: [
-            extendText({ options: { text: 'Action result' } })
+            createText({ options: { text: 'Action result' } })
           ],
           options: { value: 'document-by-action' }
         })
@@ -54,21 +54,28 @@ const dataSelectorDiv = extendDiv({
       {
         direction: 'start',
         strength: '3'
-      },
-      {
-        direction: 'bottom',
-        strength: '3'
       }
     ]
   }
 })
 
-export default extendCardBody({
-  metadata: { id: 'data-set-value-by-id' },
+const dataSelectorMethodContainer = createDiv({
   children: [
+    createInputText({
+
+    }),
     actionCardBodyLabelRequired,
-    dataSelectorDiv
-  ],
+    dataSelectorMethod
+  ]
+})
+
+export default createCardBody({
+  metadata: { id: 'data-set-value-by-id' },
+  children: [dataSelectorMethodContainer],
+  options: {
+    displayGrid: 'always',
+    gapRow: '2'
+  },
   events: [
     {
       on: 'component/beforeCreate',

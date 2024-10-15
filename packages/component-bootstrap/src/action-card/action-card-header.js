@@ -1,13 +1,13 @@
 import {
-  extendDiv,
-  extendH2,
-  extendText
+  createDiv,
+  createH2,
+  createText
 } from '@dooksa/component-base'
 import {
-  extendCardHeader, extendIcon
+  createCardHeader, createIcon
 } from '@dooksa/component-extra'
 
-const cardText = extendText({
+const cardText = createText({
   events: [
     {
       on: 'component/created',
@@ -15,7 +15,7 @@ const cardText = extendText({
     }
   ]
 })
-const cardTitle = extendText({
+const cardTitle = createText({
   events: [
     {
       on: 'component/created',
@@ -24,8 +24,8 @@ const cardTitle = extendText({
   ]
 })
 
-const cardHeading = extendH2({ children: [cardTitle] })
-const cardHeaderIcon = extendIcon({
+const cardHeading = createH2({ children: [cardTitle] })
+const cardHeaderIcon = createIcon({
   options: {
     margin: [{
       strength: '2',
@@ -39,12 +39,12 @@ const cardHeaderIcon = extendIcon({
     }
   ]
 })
-const cardHeaderDivIcon = extendDiv({
+const cardHeaderDivIcon = createDiv({
   children: [cardHeaderIcon, cardText],
   options: { fontSize: '5' }
 })
-const cardHeaderDiv2 = extendDiv({ children: [cardHeaderDivIcon, cardHeading] })
-const icon = extendIcon({
+const cardHeaderDiv2 = createDiv({ children: [cardHeaderDivIcon, cardHeading] })
+const icon = createIcon({
   options: { icon: 'mdi:plus-circle-outline' },
   events: [
     {
@@ -53,7 +53,7 @@ const icon = extendIcon({
     }
   ]
 })
-const cardHeaderDiv = extendDiv({
+const cardHeaderDiv = createDiv({
   children: [icon],
   options: {
     rounded: 'regular',
@@ -75,7 +75,7 @@ const cardHeaderDiv = extendDiv({
   }
 })
 
-export default extendCardHeader({
+export default createCardHeader({
   children: [cardHeaderDiv, cardHeaderDiv2],
   options: {
     position: 'relative',

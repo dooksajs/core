@@ -76,6 +76,6 @@ export const inputColor = createComponent({
 /**
  * @param {ExtendInputColor} options
  */
-export const extendInputColor = function (options) {
+export const createInputColor = function (options) {
   return extendComponent(inputColor, options)
 }

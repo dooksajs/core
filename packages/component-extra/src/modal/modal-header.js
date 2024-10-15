@@ -1,11 +1,11 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
 import { modalTitle } from './modal-title.js'
-import { extendButton } from '@dooksa/component-base'
+import { createButton } from '@dooksa/component-base'
 import {
   backgroundMixin, displayMixin, flexMixin
 } from '@dooksa/component-mixins'
 
-const closeBtn = extendButton({
+const closeBtn = createButton({
   options: {
     btnClose: true
   }
@@ -39,6 +39,6 @@ export const modalHeader = createComponent({
 /**
  * @param {ComponentExtend|ExtendModalHeader} options
  */
-export const extendModalHeader = function (options) {
+export const createModalHeader = function (options) {
   return extendComponent(modalHeader, options)
 }

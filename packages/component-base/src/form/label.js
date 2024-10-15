@@ -6,9 +6,9 @@ import {
   ariaLabelMixin,
   idMixin
 } from '@dooksa/component-mixins'
-import { extendText } from '../content/text.js'
+import { createText } from '../content/text.js'
 
-const labelText = extendText({
+const labelText = createText({
   options: { text: 'Label' },
   events: [
     {
@@ -85,6 +85,6 @@ export const label = createComponent({
 /**
  * @param {ExtendLabel} options
  */
-export const extendLabel = function (options) {
+export const createLabel = function (options) {
   return extendComponent(label, options)
 }

@@ -1,26 +1,32 @@
 import {
-  extendText, extendH2,
-  extendDiv,
-  extendButton
+  createButton,
+  createDiv,
+  createH2,
+  createText
 } from '@dooksa/component-base'
 import {
-  extendListGroupAction, extendCard, extendCardBody, extendCardHeader, extendCardText, extendCardTitle, extendIcon
+  createCard,
+  createCardBody,
+  createCardHeader,
+  createCardText,
+  createCardTitle,
+  createIcon,
+  createListGroupAction
 } from '@dooksa/component-extra'
 
-const cardText = extendText({
+const cardText = createText({
   options: {
     text: 'Action block are the building blocks for an action'
   }
 })
 
-const cardTitle = extendText({
+const cardTitle = createText({
   options: {
     text: 'Action block'
   }
 })
 
-
-const cardHeaderIcon = extendIcon({
+const cardHeaderIcon = createIcon({
   options: {
     icon: 'bi:collection-play-fill',
     margin: {
@@ -30,28 +36,28 @@ const cardHeaderIcon = extendIcon({
   }
 })
 
-const cardHeading = extendH2({
+const cardHeading = createH2({
   children: [cardHeaderIcon, cardTitle]
 })
 
-const cardHeaderDivIcon = extendDiv({
+const cardHeaderDivIcon = createDiv({
   children: [cardText],
   options: {
     fontSize: '5'
   }
 })
 
-const cardHeaderText = extendDiv({
+const cardHeaderText = createDiv({
   children: [cardHeading, cardHeaderDivIcon]
 })
 
-const icon = extendIcon({
+const icon = createIcon({
   options: {
     icon: 'mdi:application-braces'
   }
 })
 
-const iconBox = extendDiv({
+const iconBox = createDiv({
   children: [icon],
   options: {
     rounded: 'regular',
@@ -73,19 +79,19 @@ const iconBox = extendDiv({
   }
 })
 
-const closeText = extendText({
+const closeText = createText({
   options: {
     text: 'Cancel'
   }
 })
 
-const closeIcon = extendIcon({
+const closeIcon = createIcon({
   options: {
     icon: 'mdi:close'
   }
 })
 
-const closeButton = extendButton({
+const closeButton = createButton({
   children: [closeIcon, closeText],
   options: {
     btnVariant: 'light'
@@ -98,7 +104,7 @@ const closeButton = extendButton({
   ]
 })
 
-const closeContainer = extendDiv({
+const closeContainer = createDiv({
   children: [closeButton],
   options: {
     displayFlex: 'always',
@@ -112,7 +118,7 @@ const closeContainer = extendDiv({
   }
 })
 
-const cardHeader = extendCardHeader({
+const cardHeader = createCardHeader({
   children: [iconBox, cardHeaderText, closeContainer],
   options: {
     color: 'success',
@@ -121,44 +127,44 @@ const cardHeader = extendCardHeader({
   }
 })
 
-const cardBodyTitleText = extendText({
+const cardBodyTitleText = createText({
   options: {
     text: 'Select an action'
   }
 })
 
-const cardBodyTitle = extendCardTitle({
+const cardBodyTitle = createCardTitle({
   children: [cardBodyTitleText]
 })
 
-const cardBodyTextText = extendText({
+const cardBodyTextText = createText({
   options: {
     text: 'Choose an action below or filter the results by using the search'
   }
 })
 
-const cardBodyText = extendCardText({
+const cardBodyText = createCardText({
   children: [cardBodyTextText]
 })
 
 
-const cardBody = extendCardBody({
+const cardBody = createCardBody({
   children: [cardBodyTitle, cardBodyText]
 })
 
-const listGroup = extendListGroupAction({
+const listGroup = createListGroupAction({
   options: {
     flush: true
   },
   events: [
     {
-      on: 'component/mount',
+      on: 'component/created',
       actionId: 'action-editor-list-group'
     }
   ]
 })
 
-export default extendCard({
+export default createCard({
   metadata: {
     id: 'action-editor-block-selector'
   },

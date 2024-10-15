@@ -1,24 +1,20 @@
 import { createComponent } from '@dooksa/create-component'
-import { extendText, extendDiv } from '@dooksa/component-base'
-import { extendIcon } from '@dooksa/component-extra'
+import { createText, createDiv } from '@dooksa/component-base'
+import { createIcon } from '@dooksa/component-extra'
 
-const editText = extendText({
-  options: {
-    text: 'Edit'
-  }
-})
+const editText = createText({ options: { text: 'Edit' } })
 
-const btnIcon = extendIcon({
+const btnIcon = createIcon({
   options: {
     icon: 'bi:pencil-square',
-    margin: {
+    margin: [{
       strength: '1',
       direction: 'end'
-    }
+    }]
   }
 })
 
-const btn = extendDiv({
+const btn = createDiv({
   children: [btnIcon, editText],
   options: {
     btn: true,
@@ -27,7 +23,7 @@ const btn = extendDiv({
   }
 })
 
-const div = extendDiv({
+const div = createDiv({
   children: [btn],
   options: {
     position: 'absolute',
@@ -58,22 +54,16 @@ const selectEditOuterLink = createComponent({
       actionId: 'select-edit-modal'
     }
   ],
-  eventTypes: {
-    click: true
-  }
+  eventTypes: { click: true }
 })
 
-const selectEditOuter = extendDiv({
-  metadata: {
-    id: 'select-edit-outer'
-  },
+const selectEditOuter = createDiv({
+  metadata: { id: 'select-edit-outer' },
   children: [selectEditOuterLink],
-  options: {
-    position: 'relative'
-  },
+  options: { position: 'relative' },
   events: [
     {
-      on: 'component/create',
+      on: 'component/beforeCreate',
       actionId: 'select-edit-add-component'
     }
   ]

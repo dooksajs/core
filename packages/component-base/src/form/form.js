@@ -42,9 +42,7 @@ export const form = createComponent({
       value: 'was-validated',
       toggle: true
     },
-    name: {
-      name: 'name'
-    },
+    name: { name: 'name' },
     rel: {
       name: 'rel',
       values: {
@@ -61,12 +59,10 @@ export const form = createComponent({
       }
     }
   },
-  eventTypes: {
-    'node/submit': true
-  }
+  eventTypes: { 'node/submit': true }
 })
 
-/** 
+/**
  * @import {ComponentExtend} from '@dooksa/create-component'
  */
 
@@ -102,6 +98,6 @@ export const form = createComponent({
 /**
  * @param {ExtendForm} options
  */
-export const extendForm = function (options) {
+export const createForm = function (options) {
   return extendComponent(form, options)
 }

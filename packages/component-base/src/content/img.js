@@ -47,6 +47,6 @@ export const img = createComponent({
 /**
  * @param {ExtendImg} options
  */
-export const extendImg = function (options) {
+export const createImg = function (options) {
   return extendComponent(img, options)
 }

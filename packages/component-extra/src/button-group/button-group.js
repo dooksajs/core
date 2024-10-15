@@ -1,40 +1,40 @@
 import { extendComponent, createComponent } from '@dooksa/create-component'
-import { extendButton, extendText } from '@dooksa/component-base'
+import { createButton, createText } from '@dooksa/component-base'
 import { ariaLabelMixin } from '@dooksa/component-mixins'
 
-const leftText = extendText({
+const leftText = createText({
   options: {
     text: 'Left'
   }
 })
 
-const middleText = extendText({
+const middleText = createText({
   options: {
     text: 'Middle'
   }
 })
 
-const rightText = extendText({
+const rightText = createText({
   options: {
     text: 'Right'
   }
 })
 
-const leftBtn = extendButton({
+const leftBtn = createButton({
   children: [leftText],
   options: {
     btnVariant: 'primary'
   }
 })
 
-const middleBtn = extendButton({
+const middleBtn = createButton({
   children: [middleText],
   options: {
     btnVariant: 'primary'
   }
 })
 
-const rightBtn = extendButton({
+const rightBtn = createButton({
   children: [rightText],
   options: {
     btnVariant: 'primary'
@@ -74,6 +74,6 @@ export const buttonGroup = createComponent({
 /**
  * @param {ComponentExtend|ButtonGroupExtend} options
  */
-export const extendButtonGroup = function (options) {
+export const createButtonGroup = function (options) {
   return extendComponent(buttonGroup, options)
 }

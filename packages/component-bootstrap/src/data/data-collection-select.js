@@ -1,18 +1,20 @@
 import {
-  extendSelect,
-  extendDiv,
-  extendOption,
-  extendText
+  createSelect,
+  createDiv,
+  createOption,
+  createText
 } from '@dooksa/component-base'
 
-export default extendDiv({
+export default createDiv({
   metadata: { id: 'data-collection-select' },
   children: [
-    extendSelect({
+    createSelect({
       children: [
-        extendOption({
+        createOption({
           children: [
-            extendText({ options: { text: 'Select collection' } })
+            createText({
+              options: { text: 'Select collection' }
+            })
           ],
           options: {
             selected: true,
@@ -39,9 +41,11 @@ export default extendDiv({
 
   ],
   options: {
-    margin: [{
-      direction: 'start',
-      strength: '3'
-    }]
+    margin: [
+      {
+        direction: 'start',
+        strength: '3'
+      }
+    ]
   }
 })

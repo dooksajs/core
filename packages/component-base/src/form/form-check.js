@@ -1,8 +1,8 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
-import { extendLabel } from './label.js'
-import { extendInputCheckbox } from './input-checkbox.js'
+import { createLabel } from './label.js'
+import { createInputCheckbox } from './input-checkbox.js'
 
-const inputCheckbox = extendInputCheckbox({
+const inputCheckbox = createInputCheckbox({
   events: [
     {
       on: 'component/created',
@@ -11,7 +11,7 @@ const inputCheckbox = extendInputCheckbox({
   ]
 })
 
-const label = extendLabel({
+const label = createLabel({
   events: [
     {
       on: 'component/created',
@@ -75,6 +75,6 @@ export const formCheck = createComponent({
 /**
  * @param {ExtendFormCheck} options
  */
-export const extendFormCheck = function (options) {
+export const createFormCheck = function (options) {
   return extendComponent(formCheck, options)
 }

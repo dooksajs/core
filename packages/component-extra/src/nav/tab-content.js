@@ -1,7 +1,5 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
-import {
-  borderMixin, flexMixin, roundedMixin, spacingMixin
-} from '@dooksa/component-mixins'
+import { borderMixin, flexMixin, roundedMixin, spacingMixin } from '@dooksa/component-mixins'
 
 export const tabContent = createComponent({
   id: 'tab-content',
@@ -30,7 +28,7 @@ export const tabContent = createComponent({
 /**
  * @param {ComponentExtend|ComponentExtendTabContentOption} options
  */
-export const extendTabContent = function (options) {
+export const createTabContent = function (options) {
   return extendComponent(tabContent, options)
 }
 

@@ -1,6 +1,6 @@
-import { extendSelect } from '@dooksa/component-base'
+import { createSelect } from '@dooksa/component-base'
 
-export default extendSelect({
+export default createSelect({
   metadata: {
     id: 'action-select'
   },

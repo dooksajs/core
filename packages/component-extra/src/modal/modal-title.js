@@ -1,7 +1,7 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
-import { extendText } from '@dooksa/component-base'
+import { createText } from '@dooksa/component-base'
 
-const modalText = extendText({
+const modalText = createText({
   options: {
     text: 'Modal title...'
   }
@@ -26,7 +26,7 @@ export const modalTitle = createComponent({
 /**
  * @param {ComponentExtend} options
  */
-export const extendModalTitle = function (options) {
+export const createModalTitle = function (options) {
   return extendComponent(modalTitle, options)
 }
 

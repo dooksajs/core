@@ -1,18 +1,18 @@
 import {
-  extendSelect,
-  extendDiv,
-  extendText,
-  extendOption
+  createSelect,
+  createDiv,
+  createText,
+  createOption
 } from '@dooksa/component-base'
 
-export default extendDiv({
+export default createDiv({
   metadata: { id: 'data-document-select' },
   children: [
-    extendSelect({
+    createSelect({
       children: [
-        extendOption({
+        createOption({
           children: [
-            extendText({ options: { text: 'Select document' } })
+            createText({ options: { text: 'Select document' } })
           ],
           options: {
             selected: true,
@@ -44,3 +44,8 @@ export default extendDiv({
     }]
   }
 })
+
+
+const data = {
+  name: 'john'
+}

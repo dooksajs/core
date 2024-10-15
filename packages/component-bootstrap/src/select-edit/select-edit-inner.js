@@ -1,14 +1,14 @@
 import { createComponent } from '@dooksa/create-component'
-import { extendText, extendDiv } from '@dooksa/component-base'
-import { extendIcon } from '@dooksa/component-extra'
+import { createText, createDiv } from '@dooksa/component-base'
+import { createIcon } from '@dooksa/component-extra'
 
-const editText = extendText({
+const editText = createText({
   options: {
     text: 'Edit'
   }
 })
 
-const btnIcon = extendIcon({
+const btnIcon = createIcon({
   options: {
     icon: 'bi:pencil-square',
     margin: {
@@ -18,7 +18,7 @@ const btnIcon = extendIcon({
   }
 })
 
-const btn = extendDiv({
+const btn = createDiv({
   children: [btnIcon, editText],
   options: {
     btn: true,
@@ -27,7 +27,7 @@ const btn = extendDiv({
   }
 })
 
-const div = extendDiv({
+const div = createDiv({
   children: [btn],
   options: {
     position: 'absolute',
@@ -62,7 +62,7 @@ const selectEditInnerLink = createComponent({
 })
 
 
-const selectEditInner = extendDiv({
+const selectEditInner = createDiv({
   metadata: {
     id: 'select-edit-inner'
   },
@@ -72,7 +72,7 @@ const selectEditInner = extendDiv({
   },
   events: [
     {
-      on: 'component/create',
+      on: 'component/beforeCreate',
       actionId: 'select-edit-add-component'
     }
   ]

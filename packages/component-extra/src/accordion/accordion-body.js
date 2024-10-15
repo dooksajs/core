@@ -31,6 +31,6 @@ export const accordionBody = createComponent({
 /**
  * @param {ExtendAccordionBody} options
  */
-export const extendAccordionBody = function (options) {
+export const createAccordionBody = function (options) {
   return extendComponent(accordionBody, options)
 }

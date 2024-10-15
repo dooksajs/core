@@ -1,7 +1,7 @@
 import { extendComponent } from '@dooksa/create-component'
-import { extendDetails } from '@dooksa/component-base'
+import { createDetails } from '@dooksa/component-base'
 
-export const accordionItem = extendDetails({
+export const accordionItem = createDetails({
   metadata: { id: 'accordion-item' },
   properties: [
     {
@@ -18,6 +18,6 @@ export const accordionItem = extendDetails({
 /**
  * @param {ComponentExtendDetails} options
  */
-export const extendAccordionItem = function (options) {
+export const createAccordionItem = function (options) {
   return extendComponent(accordionItem, options)
 }

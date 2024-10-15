@@ -25,6 +25,6 @@ export const h3 = createComponent({
 /**
  * @param {ExtendH3} options
  */
-export const extendH3 = function (options) {
+export const createH3 = function (options) {
   return extendComponent(h3, options)
 }

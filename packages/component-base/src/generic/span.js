@@ -35,11 +35,11 @@ const span = createComponent({
 /**
  * @param {ExtendSpan} options
  */
-function extendSpan (options) {
+function createSpan(options) {
   return extendComponent(span, options)
 }
 
 export {
   span,
-  extendSpan
+  createSpan
 }

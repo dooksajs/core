@@ -1,16 +1,12 @@
 import { createComponent } from '@dooksa/create-component'
-import { extendIcon } from '@dooksa/component-extra'
+import { createIcon } from '@dooksa/component-extra'
 import {
-  extendDiv, extendHr, extendText, extendLabel, extendInputCheckboxButton
+  createDiv, createHr, createText, createLabel, createInputCheckboxButton
 } from '@dooksa/component-base'
 
-const editText = extendText({
-  options: {
-    text: 'Add action block'
-  }
-})
+const editText = createText({ options: { text: 'Add action block' } })
 
-const btnIcon = extendIcon({
+const btnIcon = createIcon({
   options: {
     icon: 'mdi:plus-circle-outline',
     margin: {
@@ -20,7 +16,7 @@ const btnIcon = extendIcon({
   }
 })
 
-const label = extendLabel({
+const label = createLabel({
   children: [btnIcon, editText],
   options: {
     formLabel: false,
@@ -29,27 +25,25 @@ const label = extendLabel({
   },
   events: [
     {
-      on: 'component/mount',
+      on: 'component/created',
       actionId: 'label-html-for'
     }
   ]
 })
 
-const inputCheckbox = extendInputCheckboxButton({
-  options: {
-    ariaExpanded: 'false'
-  },
+const inputCheckbox = createInputCheckboxButton({
+  options: { ariaExpanded: 'false' },
   events: [
     {
-      on: 'component/mount',
+      on: 'component/created',
       actionId: 'input-id'
     },
     {
-      on: 'component/mount',
+      on: 'component/created',
       actionId: 'action-value-content-id'
     },
     {
-      on: 'component/mount',
+      on: 'component/created',
       actionId: 'action-value-root-id'
     },
     {
@@ -59,7 +53,7 @@ const inputCheckbox = extendInputCheckboxButton({
   ]
 })
 
-const middleDiv = extendDiv({
+const middleDiv = createDiv({
   children: [inputCheckbox, label],
   options: {
     padding: {
@@ -69,13 +63,7 @@ const middleDiv = extendDiv({
   }
 })
 
-const hr = extendHr({
-  options: {
-    flexGrow: {
-      size: '1'
-    }
-  }
-})
+const hr = createHr({ options: { flexGrow: { size: '1' } } })
 
 export default createComponent({
   id: 'action-editor-add-button',
@@ -85,12 +73,6 @@ export default createComponent({
     {
       name: 'className',
       value: 'd-flex my-2 align-items-center'
-    }
-  ],
-  events: [
-    {
-      on: 'component/mount',
-      actionId: 'set-action-input-id'
     }
   ]
 })

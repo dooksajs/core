@@ -31,6 +31,6 @@ export const modalBody = createComponent({
 /**
  * @param {ComponentExtend|ExtendModalBody} options
  */
-export const extendModalBody = function (options) {
+export const createModalBody = function (options) {
   return extendComponent(modalBody, options)
 }

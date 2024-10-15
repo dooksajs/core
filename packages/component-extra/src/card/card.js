@@ -37,6 +37,6 @@ export const card = createComponent({
 /**
  * @param {ComponentExtend|ComponentExtendCard} options
  */
-export const extendCard = function (options) {
+export const createCard = function (options) {
   return extendComponent(card, options)
 }

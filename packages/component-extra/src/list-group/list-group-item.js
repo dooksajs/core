@@ -33,6 +33,6 @@ export const listGroupItem = createComponent({
 /**
  * @param {ComponentExtend|ExtendListGroupItem} options
  */
-export const extendListGroupItem = function (options) {
+export const createListGroupItem = function (options) {
   return extendComponent(listGroupItem, options)
 }

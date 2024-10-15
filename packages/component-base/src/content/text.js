@@ -17,7 +17,7 @@ export const text = createComponent({
   }
 })
 
-/** 
+/**
  * @import {ComponentExtend} from '@dooksa/create-component'
  */
 
@@ -34,6 +34,6 @@ export const text = createComponent({
 /**
  * @param {ExtendText} options
  */
-export const extendText = function (options) {
+export const createText = function (options) {
   return extendComponent(text, options)
 }

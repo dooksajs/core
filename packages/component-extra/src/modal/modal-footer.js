@@ -30,6 +30,6 @@ export const modalFooter = createComponent({
 /**
  * @param {ComponentExtend|ExtendModalFooter} options
  */
-export const extendModalFooter = function (options) {
+export const createModalFooter = function (options) {
   return extendComponent(modalFooter, options)
 }

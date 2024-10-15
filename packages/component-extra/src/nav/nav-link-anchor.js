@@ -1,8 +1,8 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
-import { extendText } from '@dooksa/component-base'
+import { createText } from '@dooksa/component-base'
 import { ariaCurrentMixin, ariaSelectedMixin } from '@dooksa/component-mixins'
 
-const navLinkText = extendText({
+const navLinkText = createText({
   options: {
     text: 'Link'
   }
@@ -66,6 +66,6 @@ export const navLinkAnchor = createComponent({
 /**
  * @param {ComponentExtend|ComponentExtendNavLinkOption} options
  */
-export const extendNavLinkAnchor = function (options) {
+export const createNavLinkAnchor = function (options) {
   return extendComponent(navLinkAnchor, options)
 }

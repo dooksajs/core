@@ -80,6 +80,6 @@ export const inputCheckboxButton = createComponent({
 /**
  * @param {ExtendInputCheckboxButton} options
  */
-export const extendInputCheckboxButton = function (options) {
+export const createInputCheckboxButton = function (options) {
   return extendComponent(inputCheckboxButton, options)
 }

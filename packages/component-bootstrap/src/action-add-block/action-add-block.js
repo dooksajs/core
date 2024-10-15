@@ -1,9 +1,9 @@
 import {
-  extendAccordion, extendAccordionItem
+  createAccordion, createAccordionItem
 } from '@dooksa/component-extra'
 import actionAddBlockHeading from './action-add-block-heading.js'
 
-const actionDetailItem = extendAccordionItem({
+const actionDetailItem = createAccordionItem({
   children: [actionAddBlockHeading],
   options: {
     focusRing: true,
@@ -21,7 +21,7 @@ const actionDetailItem = extendAccordionItem({
   ]
 })
 
-export default extendAccordion({
+export default createAccordion({
   metadata: { id: 'action-add-block' },
   options: { hover: true },
   children: [actionDetailItem]

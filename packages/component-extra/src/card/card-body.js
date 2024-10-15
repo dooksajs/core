@@ -1,3 +1,4 @@
+import { displayMixin, gapMixin } from '@dooksa/component-mixins'
 import { createComponent, extendComponent } from '@dooksa/create-component'
 
 export const cardBody = createComponent({
@@ -9,15 +10,25 @@ export const cardBody = createComponent({
       value: 'card-body'
     }
   ]
-})
+}, [displayMixin, gapMixin])
 
 /**
- * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
+ * @import {ComponentExtend} from '@dooksa/create-component'
+ * @import {DisplayMixin, GapMixin} from '@dooksa/component-mixins'
  */
 
 /**
- * @param {ComponentExtend} options
+ * @typedef {Object} ExtendCardBodyOptionMixin
+ * @property {DisplayMixin|GapMixin} options
  */
-export const extendCardBody = function (options) {
+
+/**
+ * @typedef {ComponentExtend|ExtendCardBodyOptionMixin} ExtendCarBody
+ */
+
+/**
+ * @param {ExtendCarBody} options
+ */
+export const createCardBody = function (options) {
   return extendComponent(cardBody, options)
 }

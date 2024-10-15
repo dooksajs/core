@@ -1,12 +1,12 @@
-import { extendTabContent, extendTabPane } from '@dooksa/component-extra'
+import { createTabContent, createTabPane } from '@dooksa/component-extra'
 
-const tabPane = extendTabPane({
+const tabPane = createTabPane({
   options: {
     active: true
   }
 })
 
-export default extendTabContent({
+export default createTabContent({
   metadata: {
     id: 'action-tab-content'
   },

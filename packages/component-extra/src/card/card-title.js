@@ -1,7 +1,7 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
-import { extendText } from '@dooksa/component-base'
+import { createText } from '@dooksa/component-base'
 
-const cardTitleText = extendText({
+const cardTitleText = createText({
   options: {
     text: 'Card title'
   }
@@ -26,6 +26,6 @@ export const cardTitle = createComponent({
 /**
  * @param {ComponentExtend} options
  */
-export const extendCardTitle = function (options) {
+export const createCardTitle = function (options) {
   return extendComponent(cardTitle, options)
 }

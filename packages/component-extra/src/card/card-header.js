@@ -2,9 +2,9 @@ import { createComponent, extendComponent } from '@dooksa/create-component'
 import {
   colorMixin, displayMixin, flexMixin, positionMixin
 } from '@dooksa/component-mixins'
-import { extendText } from '@dooksa/component-base'
+import { createText } from '@dooksa/component-base'
 
-const cardHeaderText = extendText({
+const cardHeaderText = createText({
   options: {
     text: 'Header'
   }
@@ -23,22 +23,23 @@ export const cardHeader = createComponent({
 }, [flexMixin, displayMixin, positionMixin, colorMixin])
 
 /**
- * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('../../mixins/styles/flex.js').FlexMixin} FlexMixin
- * @typedef {import('../../mixins/styles/display.js').DisplayMixin} DisplayMixin
- * @typedef {import('../../mixins/styles/position.js').PositionMixin} PositionMixin
- * @typedef {import('../../mixins/styles/color.js').ColorMixin} ColorMixin
+ * @import {ComponentExtend} from '@dooksa/create-component'
+ * @import {DisplayMixin, FlexMixin, PositionMixin, ColorMixin} from '@dooksa/component-mixins'
  */
 
 /**
- * @typedef {Object} ComponentExtendCardHeader
- * @property {FlexMixin|DisplayMixin|PositionMixin|ColorMixin} options
+ * @typedef {Object} ExtendCardHeaderOptionMixin
+ * @property {DisplayMixin|FlexMixin|PositionMixin|ColorMixin} options
  */
 
 /**
- * @param {ComponentExtend|ComponentExtendCardHeader} options
+ * @typedef {ComponentExtend|ExtendCardHeaderOptionMixin} ExtendCardHeader
  */
-export const extendCardHeader = function (options) {
+
+/**
+ * @param {ExtendCardHeader} options
+ */
+export const createCardHeader = function (options) {
   return extendComponent(cardHeader, options)
 }
 

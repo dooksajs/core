@@ -1,6 +1,6 @@
-import { extendListGroupAction } from '@dooksa/component-extra'
+import { createListGroupAction } from '@dooksa/component-extra'
 
-export default extendListGroupAction({
+export default createListGroupAction({
   options: { flush: true },
   events: [
     {

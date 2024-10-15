@@ -1,20 +1,20 @@
 import {
-  extendSmall,
-  extendText
+  createSmall,
+  createText
 } from '@dooksa/component-base'
 import {
-  extendAccordionHeader,
-  extendIcon
+  createAccordionHeader,
+  createIcon
 } from '@dooksa/component-extra'
 
-const actionHeadingText = extendText({ options: { text: 'Add action block ' } })
-const actionSubHeadingText = extendText({ options: { text: '- Expand to select action' } })
-const actionSubHeading = extendSmall({
+const actionHeadingText = createText({ options: { text: 'Add action block ' } })
+const actionSubHeadingText = createText({ options: { text: '- Expand to select action' } })
+const actionSubHeading = createSmall({
   children: [actionSubHeadingText],
   options: { textColor: 'secondary' }
 })
 
-const actionHeadingIcon = extendIcon({
+const actionHeadingIcon = createIcon({
   options: {
     margin: [{
       direction: 'end',
@@ -24,7 +24,7 @@ const actionHeadingIcon = extendIcon({
   }
 })
 
-export default extendAccordionHeader({
+export default createAccordionHeader({
   children: [
     actionHeadingIcon,
     actionHeadingText,

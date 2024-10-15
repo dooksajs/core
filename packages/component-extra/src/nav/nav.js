@@ -44,6 +44,6 @@ export const nav = createComponent({
 /**
  * @param {ComponentExtend|ComponentExtendNavOption} options
  */
-export const extendNav = function (options) {
+export const createNav = function (options) {
   return extendComponent(nav, options)
 }

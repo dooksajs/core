@@ -102,7 +102,7 @@ export const modal = createComponent({
 /**
  * @param {ComponentExtend|ExtendModalOptions} options
  */
-export const extendModal = function (options) {
+export const createModal = function (options) {
   return extendComponent(modal, options)
 }
 

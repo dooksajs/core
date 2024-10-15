@@ -1,20 +1,20 @@
 import {
-  extendNav, extendNavLinkButton, extendNavItem
+  createNav, createNavLinkButton, createNavItem
 } from '@dooksa/component-extra'
-import { extendText } from '@dooksa/component-base'
+import { createText } from '@dooksa/component-base'
 
 // Value tab
-const textValue = extendText({
+const textValue = createText({
   options: {
     text: 'Value'
   }
 })
 
-const navLinkValue = extendNavLinkButton({
+const navLinkValue = createNavLinkButton({
   children: [textValue]
 })
 
-const navItemValue = extendNavItem({
+const navItemValue = createNavItem({
   children: [navLinkValue],
   options: {
     rolePresentation: true
@@ -22,17 +22,17 @@ const navItemValue = extendNavItem({
 })
 
 // Variable tab
-const textVariable = extendText({
+const textVariable = createText({
   options: {
     text: 'Variable'
   }
 })
 
-const navLinkVariable = extendNavLinkButton({
+const navLinkVariable = createNavLinkButton({
   children: [textVariable]
 })
 
-const navItemVariable = extendNavItem({
+const navItemVariable = createNavItem({
   children: [navLinkVariable],
   options: {
     rolePresentation: true
@@ -40,24 +40,24 @@ const navItemVariable = extendNavItem({
 })
 
 // Action tab
-const textAction = extendText({
+const textAction = createText({
   options: {
     text: 'Action'
   }
 })
 
-const navLinkAction = extendNavLinkButton({
+const navLinkAction = createNavLinkButton({
   children: [textAction]
 })
 
-const navItemAction = extendNavItem({
+const navItemAction = createNavItem({
   children: [navLinkAction],
   options: {
     rolePresentation: true
   }
 })
 
-export default extendNav({
+export default createNav({
   metadata: {
     id: 'action-tabs'
   },

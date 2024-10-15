@@ -1,57 +1,57 @@
-import { accordionBody, extendAccordionBody } from './accordion/accordion-body.js'
-import { accordionCollapse, extendAccordionCollapse } from './accordion/accordion-collapse.js'
-import { accordionInner, extendAccordionInner } from './accordion/accordion-inner.js'
-import { accordionHeader, extendAccordionHeader } from './accordion/accordion-header.js'
-import { accordionItem, extendAccordionItem } from './accordion/accordion-item.js'
-import { accordion, extendAccordion } from './accordion/accordion.js'
-import { buttonGroup, extendButtonGroup } from './button-group/button-group.js'
-import { cardBody, extendCardBody } from './card/card-body.js'
-import { cardHeader, extendCardHeader } from './card/card-header.js'
-import { cardImg, extendCardImg } from './card/card-img.js'
-import { cardText, extendCardText } from './card/card-text.js'
-import { cardTitle, extendCardTitle } from './card/card-title.js'
-import { card, extendCard } from './card/card.js'
-import { extendIcon, icon } from './icon/icon.js'
-import { container, extendContainer } from './layout/container.js'
-import { extendListGroupAction, listGroupAction } from './list-group/list-group-action.js'
-import { extendListGroupItemActionLink, listGroupItemActionLink } from './list-group/list-group-item-action-link.js'
-import { extendListGroupItemAction, listGroupItemAction } from './list-group/list-group-item-action.js'
-import { extendListGroupItem, listGroupItem } from './list-group/list-group-item.js'
-import { extendListGroup, listGroup } from './list-group/list-group.js'
-import { extendNavItem, navItem } from './nav/nav-item.js'
-import { extendNavLinkAnchor, navLinkAnchor } from './nav/nav-link-anchor.js'
-import { extendNavLinkButton, navLinkButton } from './nav/nav-link-button.js'
-import { extendNav, nav } from './nav/nav.js'
-import { extendTabContent, tabContent } from './nav/tab-content.js'
-import { extendTabPane, tabPane } from './nav/tab-pane.js'
+import { accordionBody, createAccordionBody } from './accordion/accordion-body.js'
+import { accordionCollapse, createAccordionCollapse } from './accordion/accordion-collapse.js'
+import { accordionInner, createAccordionInner } from './accordion/accordion-inner.js'
+import { accordionHeader, createAccordionHeader } from './accordion/accordion-header.js'
+import { accordionItem, createAccordionItem } from './accordion/accordion-item.js'
+import { accordion, createAccordion } from './accordion/accordion.js'
+import { buttonGroup, createButtonGroup } from './button-group/button-group.js'
+import { cardBody, createCardBody } from './card/card-body.js'
+import { cardHeader, createCardHeader } from './card/card-header.js'
+import { cardImg, createCardImg } from './card/card-img.js'
+import { cardText, createCardText } from './card/card-text.js'
+import { cardTitle, createCardTitle } from './card/card-title.js'
+import { card, createCard } from './card/card.js'
+import { createIcon, icon } from './icon/icon.js'
+import { container, createContainer } from './layout/container.js'
+import { createListGroupAction, listGroupAction } from './list-group/list-group-action.js'
+import { createListGroupItemActionLink, listGroupItemActionLink } from './list-group/list-group-item-action-link.js'
+import { createListGroupItemAction, listGroupItemAction } from './list-group/list-group-item-action.js'
+import { createListGroupItem, listGroupItem } from './list-group/list-group-item.js'
+import { createListGroup, listGroup } from './list-group/list-group.js'
+import { createNavItem, navItem } from './nav/nav-item.js'
+import { createNavLinkAnchor, navLinkAnchor } from './nav/nav-link-anchor.js'
+import { createNavLinkButton, navLinkButton } from './nav/nav-link-button.js'
+import { createNav, nav } from './nav/nav.js'
+import { createTabContent, tabContent } from './nav/tab-content.js'
+import { createTabPane, tabPane } from './nav/tab-pane.js'
 
 export {
-  extendAccordionInner,
-  extendAccordionItem,
-  extendButtonGroup,
-  extendAccordion,
-  extendAccordionBody,
-  extendAccordionHeader,
-  extendAccordionCollapse,
-  extendContainer,
-  extendCard,
-  extendCardBody,
-  extendCardHeader,
-  extendCardImg,
-  extendCardText,
-  extendCardTitle,
-  extendIcon,
-  extendNav,
-  extendNavItem,
-  extendNavLinkAnchor,
-  extendNavLinkButton,
-  extendTabContent,
-  extendTabPane,
-  extendListGroup,
-  extendListGroupAction,
-  extendListGroupItem,
-  extendListGroupItemAction,
-  extendListGroupItemActionLink
+  createAccordionInner,
+  createAccordionItem,
+  createButtonGroup,
+  createAccordion,
+  createAccordionBody,
+  createAccordionHeader,
+  createAccordionCollapse,
+  createContainer,
+  createCard,
+  createCardBody,
+  createCardHeader,
+  createCardImg,
+  createCardText,
+  createCardTitle,
+  createIcon,
+  createNav,
+  createNavItem,
+  createNavLinkAnchor,
+  createNavLinkButton,
+  createTabContent,
+  createTabPane,
+  createListGroup,
+  createListGroupAction,
+  createListGroupItem,
+  createListGroupItemAction,
+  createListGroupItemActionLink
 }
 
 export default [

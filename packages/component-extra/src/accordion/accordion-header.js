@@ -1,11 +1,11 @@
 import { extendComponent } from '@dooksa/create-component'
 import {
-  extendSummary, extendText
+  createSummary, createText
 } from '@dooksa/component-base'
 
-const accordionHeaderText = extendText({ options: { text: 'Accordion heading' } })
+const accordionHeaderText = createText({ options: { text: 'Accordion heading' } })
 
-export const accordionHeader = extendSummary({
+export const accordionHeader = createSummary({
   metadata: { id: 'accordion-header' },
   properties: [
     {
@@ -23,6 +23,6 @@ export const accordionHeader = extendSummary({
 /**
  * @param {ComponentExtendSummary} options
  */
-export const extendAccordionHeader = function (options) {
+export const createAccordionHeader = function (options) {
   return extendComponent(accordionHeader, options)
 }

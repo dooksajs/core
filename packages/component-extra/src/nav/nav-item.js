@@ -36,6 +36,6 @@ export const navItem = createComponent({
 /**
  * @param {ComponentExtend|ComponentExtendNavItemOption} options
  */
-export const extendNavItem = function (options) {
+export const createNavItem = function (options) {
   return extendComponent(navItem, options)
 }

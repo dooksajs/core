@@ -1,8 +1,8 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
-import { extendText } from '../content/text.js'
+import { createText } from '../content/text.js'
 import { buttonMixin, eventTypeMouseMixin, positionMixin } from '@dooksa/component-mixins'
 
-const anchorText = extendText({
+const anchorText = createText({
   options: {
     text: 'Link text...'
   }
@@ -54,6 +54,6 @@ export const anchor = createComponent({
 /**
  * @param {ExtendAnchor} options
  */
-export const extendAnchor = function (options) {
+export const createAnchor = function (options) {
   return extendComponent(anchor, options)
 }

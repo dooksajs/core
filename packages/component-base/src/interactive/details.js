@@ -1,9 +1,20 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
-import { eventTypeMouseMixin, focusRingMixin, nameMixin, shadowMixin } from '@dooksa/component-mixins'
+import {
+  eventTypeMouseMixin,
+  focusRingMixin,
+  nameMixin,
+  shadowMixin
+} from '@dooksa/component-mixins'
 
 export const details = createComponent({
   id: 'details',
   tag: 'details',
+  content: [
+    {
+      name: 'open',
+      nodePropertyName: 'open'
+    }
+  ],
   options: {
     open: {
       name: 'open',
@@ -13,13 +24,11 @@ export const details = createComponent({
       }
     }
   },
-  eventTypes: {
-    'node/toggle': true
-  },
+  eventTypes: { 'node/toggle': true }
 }, [nameMixin, shadowMixin, focusRingMixin, eventTypeMouseMixin])
 
 /**
- * @import {ComponentExtend} from '@dooksa/create-component'
+ * @import {ComponentExtend, ComponentEventOn} from '@dooksa/create-component'
  * @import {NameMixin, ShadowMixin, FocusRingMixin} from '@dooksa/component-mixins'
  */
 
@@ -34,12 +43,23 @@ export const details = createComponent({
  */
 
 /**
- * @typedef {ComponentExtend|ExtendDetailsOptionMixin} ExtendDetails
+ * @typedef {Object} ExtendDetailsEvent
+ * @property {'node/toggle'|ComponentEventOn} on
+ * @property {string} actionId
+ */
+
+/**
+ * @typedef {Object} ExtendDetailsEventMixin
+ * @property {ExtendDetailsEvent[]} [events]
+ */
+
+/**
+ * @typedef {ComponentExtend|ExtendDetailsOptionMixin|ExtendDetailsEventMixin} ExtendDetails
  */
 
 /**
  * @param {ExtendDetails} options
  */
-export const extendDetails = function (options) {
+export const createDetails = function (options) {
   return extendComponent(details, options)
 }

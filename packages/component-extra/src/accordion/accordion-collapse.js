@@ -21,6 +21,6 @@ export const accordionCollapse = createComponent({
 /**
  * @param {ComponentExtend} options
  */
-export const extendAccordionCollapse = function (options) {
+export const createAccordionCollapse = function (options) {
   return extendComponent(accordionCollapse, options)
 }

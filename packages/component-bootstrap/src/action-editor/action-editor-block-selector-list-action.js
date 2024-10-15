@@ -1,35 +1,35 @@
-import { extendDiv, extendText } from '@dooksa/component-base'
+import { createDiv, createText } from '@dooksa/component-base'
 import {
-  extendListGroupItemAction, extendIcon, extendCardTitle, extendCardText
+  createListGroupItemAction, createIcon, createCardTitle, createCardText
 } from '@dooksa/component-extra'
 
-const headerText = extendText({
+const headerText = createText({
   events: [
     {
-      on: 'component/create',
+      on: 'component/beforeCreate',
       actionId: 'action-editor-list-group-button-title'
     }
   ]
 })
 
-const header = extendCardTitle({
+const header = createCardTitle({
   children: [headerText]
 })
 
-const text = extendText({
+const text = createText({
   events: [
     {
-      on: 'component/create',
+      on: 'component/beforeCreate',
       actionId: 'action-editor-list-group-button-description'
     }
   ]
 })
 
-const textContainer = extendCardText({
+const textContainer = createCardText({
   children: [text]
 })
 
-const textColumn = extendDiv({
+const textColumn = createDiv({
   children: [header, textContainer],
   options: {
     flexGrow: {
@@ -38,16 +38,16 @@ const textColumn = extendDiv({
   }
 })
 
-const icon = extendIcon({
+const icon = createIcon({
   events: [
     {
-      on: 'component/create',
+      on: 'component/beforeCreate',
       actionId: 'action-editor-list-group-button-icon'
     }
   ]
 })
 
-const iconColumn = extendDiv({
+const iconColumn = createDiv({
   children: [icon],
   options: {
     margin: {
@@ -72,7 +72,7 @@ const iconColumn = extendDiv({
   }
 })
 
-export default extendListGroupItemAction({
+export default createListGroupItemAction({
   metadata: {
     id: 'action-editor-block-selector-list-action'
   },
