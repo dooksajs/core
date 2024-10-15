@@ -6,6 +6,7 @@ export default [
       '@stylistic/js': stylisticJs
     },
     rules: {
+      'curly-newline': ['error', 'always'],
       '@stylistic/js/indent': [
         'error', 2, {
           SwitchCase: 1,
