@@ -264,6 +264,46 @@ const serverAction = createPlugin('action', {
       request.body.sequence = result
 
       next()
+    },
+    setAction (action) {
+      const compiledAction = compileAction(action)
+
+      dataSetValue({
+        name: 'action/sequences',
+        value: compiledAction.sequences,
+        options: {
+          id: action.id
+        }
+      })
+
+      dataSetValue({
+        name: 'action/blocks',
+        value: compiledAction.blocks,
+        options: {
+          merge: true
+        }
+      })
+
+      dataSetValue({
+        name: 'action/blockSequences',
+        value: compiledAction.blockSequences,
+        options: {
+          merge: true
+        }
+      })
+
+      for (let i = 0; i < action.dependencies.length; i++) {
+        dataSetValue({
+          name: 'action/dependencies',
+          value: action.dependencies[i],
+          options: {
+            id: action.id,
+            update: {
+              method: 'push'
+            }
+          }
+        })
+      }
     }
   },
   setup ({ actions }) {
@@ -271,59 +311,9 @@ const serverAction = createPlugin('action', {
     databaseSeed('action-blockSequences')
     databaseSeed('action-sequences')
 
-    if (actions) {
+    if (Array.isArray(actions)) {
       for (let i = 0; i < actions.length; i++) {
-        const action = actions[i]
-        const compiledAction = compileAction(action)
-
-        dataSetValue({
-          name: 'action/templates',
-          value: {
-            blocks: action.blocks,
-            blockSequences: action.blockSequences,
-            sequences: action.sequences
-          },
-          options: {
-            id: action.id
-          }
-        })
-
-        dataSetValue({
-          name: 'action/sequences',
-          value: compiledAction.sequences,
-          options: {
-            id: action.id
-          }
-        })
-
-        dataSetValue({
-          name: 'action/blocks',
-          value: compiledAction.blocks,
-          options: {
-            merge: true
-          }
-        })
-
-        dataSetValue({
-          name: 'action/blockSequences',
-          value: compiledAction.blockSequences,
-          options: {
-            merge: true
-          }
-        })
-
-        for (let i = 0; i < action.dependencies.length; i++) {
-          dataSetValue({
-            name: 'action/dependencies',
-            value: action.dependencies[i],
-            options: {
-              id: action.id,
-              update: {
-                method: 'push'
-              }
-            }
-          })
-        }
+        this.setAction(actions[i])
       }
     }
 
@@ -351,7 +341,40 @@ const serverAction = createPlugin('action', {
       method: 'get',
       middleware: ['request/queryIsArray'],
       handlers: [
+        (request, response, next) => {
+          console.log(request.cookies)
+
+          next()
+        },
         databaseGetValue(['action/sequences'])
+      ]
+    })
+
+    httpSetRoute({
+      path: '/action/sequence',
+      method: 'post',
+      middleware: ['request/urlencoded'],
+      handlers: [
+        this.parseSequence,
+        /**
+         * @param {Request} request
+         * @param {Response} response
+         */
+        (request, response) => {
+          const id = request.body['action-name']
+
+          dataSetValue({
+            name: 'action/templates',
+            value: request.body,
+            options: { id }
+          })
+
+          const action = createAction(id, request.body.sequence.data)
+
+          this.setAction(action)
+
+          response.status(201).send('created')
+        }
       ]
     })
 
