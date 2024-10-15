@@ -1,12 +1,14 @@
 import stylisticJs from '@stylistic/eslint-plugin-js'
+import stylisticPlus from '@stylistic/eslint-plugin-plus'
 
 export default [
   {
     plugins: {
-      '@stylistic/js': stylisticJs
+      '@stylistic/js': stylisticJs,
+      '@stylistic/plus': stylisticPlus
     },
     rules: {
-      'curly-newline': ['error', 'always'],
+      '@stylistic/plus/curly-newline': ['error', 'always'],
       '@stylistic/js/indent': [
         'error', 2, {
           SwitchCase: 1,
