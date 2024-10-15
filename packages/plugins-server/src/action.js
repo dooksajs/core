@@ -194,7 +194,7 @@ const serverAction = createPlugin('action', {
                 throw new Error('DooksaError: Expected a closing square bracket "]" but the last character is "' + char + '" in key "' + key + '"')
               }
 
-              if (prevChars != '') {
+              if (!prevItem) {
                 // set key/value
                 if (currentItem) {
                   // handle object property
