@@ -4,12 +4,30 @@ import { action, dataSetValue } from '@dooksa/plugins'
 import { databaseSeed, databaseGetValue, databaseDeleteValue } from './database.js'
 import { httpSetRoute } from './http.js'
 
+/**
+ * @typedef {Object} ActionSequenceResult
+ * @property {Object.<string, number>} refs
+ * @property {Action[]} [data]
+ */
+
+/**
+ * @import {Action} from '@dooksa/create-action'
+ * @import {Request, Response} from 'hyper-express'
+ * @typedef {Object} ActionSequence
+ * @property {Object} body
+ * @property {ActionSequenceResult} body.sequence
+ * @typedef {Request|ActionSequence} RequestAction
+ */
+
 const serverAction = createPlugin('action', {
   models: { ...action.models },
   methods: {
     /**
+     * @param {RequestAction} request
+     * @param {Response} response
+     * @param {Function} next
      * @example
-     * const formData = {
+     * const body = {
      *  '[0]': true,
      *  '[1]a': true,
      *  '[1]b.c[0]': true,
@@ -19,8 +37,10 @@ const serverAction = createPlugin('action', {
      *  '[3][0]': true,
      *  '[3][1]a': true
      * }
+     * parseSequence({ body })
      */
     parseSequence (request, response, next) {
+      /** @type {ActionSequenceResult} */
       const result = {
         refs: {}
       }
@@ -29,6 +49,11 @@ const serverAction = createPlugin('action', {
 
       for (const key in request.body) {
         if (Object.prototype.hasOwnProperty.call(request.body, key)) {
+          // skip non array "[id]" key
+          if (key[0] !== '[') {
+            continue
+          }
+
           const value = request.body[key]
           const lastIndex = key.length - 1
           let currentItem = item
