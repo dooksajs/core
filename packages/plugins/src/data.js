@@ -3,14 +3,11 @@ import { operatorEval, listSplice } from './index.js'
 import { DataSchemaException, DataValueException } from './utils/Error.js'
 import { deepClone, generateId, isEnvServer } from '@dooksa/utils'
 import { cloneDataValue, createDataValue } from './utils/createDataValue.js'
+import { getValue } from './utils/getValue.js'
 
 /**
- * @typedef {import('../../types.js').SetDataOptions} SetDataOptions
- * @typedef {import('../../types.js').GetDataQuery} GetDataQuery
- * @typedef {import('../../types.js').GetDataOption} GetDataOption
- * @typedef {import('../../types.js').DataSchema} DataSchema
- * @typedef {import('../../types.js').DataWhere} DataWhere
- * @typedef {import('./utils/createDataValue.js').DataValue} DataValue
+ * @import {SetDataOptions, GetDataQuery, GetDataOption, DataSchema, DataWhere} from '../../types.js'
+ * @import {DataValue} from './utils/createDataValue.js'
  */
 
 let database = {}
@@ -2126,14 +2123,8 @@ const data = createPlugin('data', {
         }
 
         // return a value from position
-        if (Number.isInteger(options.position)) {
-          if (result.item[options.position]) {
-            result.item = result.item[options.position]
-          } else {
-            result.isEmpty = true
-
-            return result
-          }
+        if (options.position) {
+          result.item = getValue(result.item, options.position)
         }
 
         // TODO: create copy (structuredClone) if options.clone is true

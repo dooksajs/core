@@ -3,6 +3,7 @@ import { fetchById } from './fetch.js'
 import { dataGetValue, dataSetValue } from './data.js'
 import { operatorCompare, operatorEval } from './operator.js'
 import { generateId } from '@dooksa/utils'
+import { getValue } from './utils/getValue.js'
 
 /**
  * @typedef {import('../../types.js').SetDataOptions} SetDataOptions
@@ -19,71 +20,7 @@ const dataTypes = {
   object: () => ({}),
   array: () => ([])
 }
-let $action = (name, param, context, callback) => {}
-
-/**
- * Get result value
- * @private
- * @param {*} value
- * @param {GetDataValue} [query] - Request to return a specific key value, dot notations are permitted
- * @returns {*[]|*}
- */
-function getValue (value, query) {
-  if (query == null) {
-    return value
-  }
-
-  // get single by dot notation
-  if (typeof query === 'string') {
-    const keys = query.split('.')
-
-    if (keys.length === 1) {
-      return value[keys[0]]
-    }
-
-    let result = value
-
-    for (let i = 0; i < keys.length; i++) {
-      const key = keys[i]
-
-      if (result != null) {
-        result = result[key]
-      } else {
-        return
-      }
-    }
-
-    return result
-  }
-
-  if (typeof query === 'number') {
-    return value[query]
-  }
-
-  let result = value
-
-  // get value by array
-  for (let i = 0; i < query.length; i++) {
-    const keys = query[i].split('.')
-
-    if (query.length === 1 && keys.length === 1) {
-      return value[keys[0]]
-    }
-
-
-    for (let i = 0; i < keys.length; i++) {
-      const key = keys[i]
-
-      if (Object.hasOwnProperty.call(result, key)) {
-        result[key]
-      } else {
-        /** @TODO Create custom ReferenceError */
-        throw new Error('Action get value was not defined: ' + key)
-      }
-    }
-  }
-
-  return result
+let $action = (name, param, context, callback) => {
 }
 
 function getBlockValue (id, blockValues) {
