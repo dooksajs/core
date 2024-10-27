@@ -11,23 +11,17 @@ function deepClone (target, source, freeze) {
       if (Object.hasOwnProperty.call(source, prop)) {
         const nextSource = source[prop]
 
-        if (Array.isArray(nextSource)) {
-          target[prop] = deepClone([], nextSource)
-        } else if (typeof nextSource === 'object' && nextSource !== null) {
-          target[prop] = deepClone({}, nextSource)
-        } else if (typeof nextSource === 'number') {
-          target[prop] = new Number(nextSource).valueOf()
-        } else if (typeof nextSource === 'string') {
-          target[prop] = new String(nextSource).valueOf()
+        if (typeof nextSource === 'object') {
+          if (Array.isArray(nextSource)) {
+            target[prop] = deepClone([], nextSource)
+          } else {
+            target[prop] = deepClone({}, nextSource)
+          }
         } else {
           target[prop] = nextSource
         }
       }
     }
-  } else if (typeof source === 'number') {
-    target = new Number(source).valueOf()
-  } else if (typeof source === 'string') {
-    target = new String(source).valueOf()
   } else {
     target = source
   }
@@ -38,5 +32,6 @@ function deepClone (target, source, freeze) {
 
   return target
 }
+
 
 export default deepClone
