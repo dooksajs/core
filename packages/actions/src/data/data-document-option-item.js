@@ -17,18 +17,18 @@ export default createAction('data-document-option-item', [
     }
   },
   {
-    action_setActionValue: {
-      id: { action_getContextValue: 'groupId' },
+    variable_setValue: {
+      scope: { action_getContextValue: 'groupId' },
       values: [
         {
           id: 'option-text',
           prefixId: { $ref: 1 },
-          value: { action_getPayloadValue: 'value.id' }
+          value: { action_getPayloadValue: 'key' }
         },
         {
           id: 'option-value',
           prefixId: { $ref: 1 },
-          value: { action_getPayloadValue: 'value.id' }
+          value: { action_getPayloadValue: 'key' }
         }
       ]
     }
@@ -36,7 +36,9 @@ export default createAction('data-document-option-item', [
   {
     data_setValue: {
       name: 'component/options',
-      value: { value: { action_getPayloadValue: 'value.id' } },
+      value: {
+        value: { action_getPayloadValue: 'key' }
+      },
       options: { id: { $ref: 1 } }
     }
   },

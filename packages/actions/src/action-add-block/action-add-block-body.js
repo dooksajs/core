@@ -21,8 +21,8 @@ export default createAction('action-add-block-body', [
     }
   },
   {
-    action_setActionValue: {
-      id: { action_getContextValue: 'id' },
+    variable_setValue: {
+      scope: { action_getContextValue: 'id' },
       values: [
         {
           id: 'hasBody',

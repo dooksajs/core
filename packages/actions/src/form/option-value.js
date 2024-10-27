@@ -6,8 +6,8 @@ export default createAction('option-value', [
       name: 'component/options',
       value: {
         value: {
-          action_getActionValue: {
-            id: { action_getContextValue: 'groupId' },
+          variable_getValue: {
+            scope: { action_getContextValue: 'groupId' },
             prefixId: { action_getContextValue: 'id' },
             query: 'option-value'
           }

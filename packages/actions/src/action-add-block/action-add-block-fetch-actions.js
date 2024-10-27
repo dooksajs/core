@@ -9,43 +9,21 @@ export default createAction('action-add-block-fetch-actions', [
     }
   },
   {
-    action_setActionValue: {
-      id: { action_getContextValue: 'groupId' },
+    $id: 'component-content-id',
+    variable_getValue: {
+      scope: { action_getContextValue: 'groupId' },
+      query: 'component-content-id'
+    }
+          }
+  },
+  {
+    variable_setValue: {
+      scope: { action_getContextValue: 'groupId' },
       values: [
         {
           id: 'component-content-id',
           value: {
-            action_getActionValue: {
-              id: { action_getContextValue: 'groupId' },
-              query: 'component-content-id'
-            }
-          }
-        },
-        {
-          id: 'action-block-selector-id',
-          value: {
-            action_getActionValue: {
-              id: { action_getContextValue: 'groupId' },
-              query: 'action-block-selector-id'
-            }
-          }
-        },
-        {
-          id: 'action-block-selector-parent-id',
-          value: {
-            action_getActionValue: {
-              id: { action_getContextValue: 'groupId' },
-              query: 'action-block-selector-parent-id'
-            }
-          }
-        },
-        {
-          id: 'action-block-selector-index',
-          value: {
-            action_getActionValue: {
-              id: { action_getContextValue: 'groupId' },
-              query: 'action-block-selector-index'
-            }
+            $ref: 1
           }
         }
       ]

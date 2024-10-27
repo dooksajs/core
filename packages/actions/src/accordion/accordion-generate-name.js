@@ -5,8 +5,8 @@ export default createAction('accordion-generate-name', [
     data_generateId: '$null'
   },
   {
-    action_setActionValue: {
-      id: {
+    variable_setValue: {
+      scope: {
         action_getContextValue: 'groupId'
       },
       values: [

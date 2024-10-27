@@ -6,8 +6,8 @@ export default createAction('action-card-body-label-icon', [
       name: 'component/options',
       value: {
         icon: {
-          action_getActionValue: {
-            id: { action_getContextValue: 'groupId' },
+          variable_getValue: {
+            scope: { action_getContextValue: 'groupId' },
             query: 'action-card-body-label-icon'
           }
         }

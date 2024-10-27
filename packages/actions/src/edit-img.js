@@ -103,8 +103,8 @@ export default createAction('edit-img', [
     }
   },
   {
-    action_setActionValue: {
-      id: {
+    variable_setValue: {
+      scope: {
         $ref: 8
       },
       values: [

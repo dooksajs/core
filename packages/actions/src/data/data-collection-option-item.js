@@ -17,8 +17,8 @@ export default createAction('data-collection-option-item', [
     }
   },
   {
-    action_setActionValue: {
-      id: { action_getContextValue: 'groupId' },
+    variable_setValue: {
+      scope: { action_getContextValue: 'groupId' },
       values: [
         {
           id: 'option-text',

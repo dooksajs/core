@@ -18,8 +18,8 @@ export default createAction('action-add-block-list-item', [
     }
   },
   {
-    action_setActionValue: {
-      id: { action_getContextValue: 'groupId' },
+    variable_setValue: {
+      scope: { action_getContextValue: 'groupId' },
       values: [
         {
           id: 'metadata',

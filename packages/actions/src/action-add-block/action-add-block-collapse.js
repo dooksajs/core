@@ -7,8 +7,8 @@ export default createAction('action-add-block-collapse', [
       value: { open: false },
       options: {
         id: {
-          action_getActionValue: {
-            id: { action_getContextValue: 'groupId' },
+          variable_getValue: {
+            scope: { action_getContextValue: 'groupId' },
             query: 'component-content-id'
           }
         },

@@ -2,8 +2,8 @@ import createAction from '@dooksa/create-action'
 
 export default createAction('accordion-set-details-name', [
   {
-    action_getActionValue: {
-      id: {
+    variable_getValue: {
+      scope: {
         action_getContextValue: 'groupId'
       },
       query: 'name'

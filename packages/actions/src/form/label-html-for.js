@@ -2,8 +2,8 @@ import createAction from '@dooksa/create-action'
 
 export default createAction('label-html-for', [
   {
-    action_getActionValue: {
-      id: {
+    variable_getValue: {
+      scope: {
         action_getContextValue: 'groupId'
       },
       query: 'input-id'
@@ -41,8 +41,8 @@ export default createAction('label-html-for', [
     }
   },
   {
-    action_setActionValue: {
-      id: {
+    variable_setValue: {
+      scope: {
         action_getContextValue: 'groupId'
       },
       values: [
@@ -57,8 +57,8 @@ export default createAction('label-html-for', [
     data_generateId: '$null'
   },
   {
-    action_setActionValue: {
-      id: {
+    variable_setValue: {
+      scope: {
         action_getContextValue: 'groupId'
       },
       values: [

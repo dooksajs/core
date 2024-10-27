@@ -9,9 +9,9 @@ export default createAction('data-document-option', [
           value: {
             data_getValue: {
               name: {
-                action_getActionValue: {
-                  id: { action_getContextValue: 'groupId' },
-                  query: 'data-document-select-id'
+                variable_getValue: {
+                  scope: { action_getContextValue: 'groupId' },
+                  query: 'data-document-collection'
                 }
               }
             }

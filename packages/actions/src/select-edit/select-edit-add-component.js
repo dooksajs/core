@@ -2,19 +2,19 @@ import createAction from '@dooksa/create-action'
 
 export default createAction('select-edit-add-component', [
   {
-    set_dataValue: {
+    data_setValue: {
       name: 'component/children',
       value: {
-        get_actionValue: {
-          id: {
-            get_contextValue: 'id'
+        variable_getValue: {
+          scope: {
+            action_getContextValue: 'id'
           },
           query: 'componentId'
         }
       },
       options: {
         id: {
-          get_contextValue: 'id'
+          action_getContextValue: 'id'
         },
         update: {
           method: 'push'

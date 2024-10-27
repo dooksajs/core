@@ -5,9 +5,9 @@ export default createAction('on-create-label-text', [{
     name: 'content/items',
     value: {
       value: {
-        get_actionValue: {
-          id: {
-            get_contextValue: 'rootId'
+        variable_getValue: {
+          scope: {
+            action_getContextValue: 'rootId'
           },
           query: 'text'
         }

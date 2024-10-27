@@ -2,8 +2,8 @@ import createAction from '@dooksa/create-action'
 
 export default createAction('input-id', [
   {
-    action_getActionValue: {
-      id: { action_getContextValue: 'groupId' },
+    variable_getValue: {
+      scope: { action_getContextValue: 'groupId' },
       query: 'input-id'
     }
   },
@@ -31,8 +31,8 @@ export default createAction('input-id', [
     }
   },
   {
-    action_setActionValue: {
-      id: { action_getContextValue: 'groupId' },
+    variable_setValue: {
+      scope: { action_getContextValue: 'groupId' },
       values: [
         {
           id: 'input-id',
@@ -43,8 +43,8 @@ export default createAction('input-id', [
   },
   { data_generateId: '$null' },
   {
-    action_setActionValue: {
-      id: { action_getContextValue: 'groupId' },
+    variable_setValue: {
+      scope: { action_getContextValue: 'groupId' },
       values: [
         {
           id: 'input-id',

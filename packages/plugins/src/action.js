@@ -302,72 +302,10 @@ const action = createPlugin('action', {
         }
       }
     },
-    values: {
-      type: 'collection',
-      items: {
-        type: 'object',
-        properties: {
-          _id: {
-            type: 'string',
-            relation: 'action/blocks'
-          }
-        }
-      }
-    },
-    valueGroups: {
-      type: 'collection',
-      items: {
-        type: 'array',
-        items: {
-          type: 'string',
-          relation: 'action/values'
-        },
-        uniqueItems: true
-      }
-    },
     templates: {
       type: 'collection',
       items: {
-        type: 'object',
-        properties: {
-          blocks: {
-            type: 'object',
-            properties: {
-              ifElse: {
-                type: 'boolean'
-              },
-              method: {
-                type: 'string'
-              },
-              dataType: {
-                type: 'string'
-              },
-              blockValue: {
-                type: 'string',
-                relation: 'action/blocks'
-              },
-              blockValues: {
-                type: 'array',
-                items: {
-                  type: 'string',
-                  relation: 'action/blocks'
-                }
-              },
-              key: {
-                type: 'string'
-              }
-            }
-          },
-          blockSequences: {
-            type: 'object'
-          },
-          sequences: {
-            type: 'array',
-            items: {
-              type: 'string'
-            }
-          }
-        }
+        type: 'object'
       }
     }
   },
@@ -433,47 +371,6 @@ const action = createPlugin('action', {
         })
       }
     },
-    getActionValue: {
-      metadata: {
-        title: 'Get variable',
-        description: 'Retrieve variable value',
-        icon: 'mdi:application-variable'
-      },
-      /**
-       * Get action variable value
-       * @param {Object} props
-       * @param {string} props.id
-       * @param {string} [props.prefixId]
-       * @param {string} [props.suffixId]
-       * @param {string} props.query
-       */
-      method (props) {
-        const value = dataGetValue({
-          name: 'action/values',
-          id: props.id
-        })
-
-        if (!value.isEmpty) {
-          let query = props.query
-
-          if (props.prefixId) {
-            query = props.prefixId + query
-          }
-
-          if (props.suffixId) {
-            const splitQuery = query.split('.')
-
-            query = splitQuery[0] + props.suffixId
-
-            for (let i = 1; i < splitQuery.length; i++) {
-              query = query + query
-            }
-          }
-
-          return getValue(value.item, query)
-        }
-      }
-    },
     getBlockValue: {
       metadata: {
         title: 'Get action block value',
@@ -528,69 +425,6 @@ const action = createPlugin('action', {
         icon: 'mdi:source-branch'
       },
       method: ifElse
-    },
-    /**
-     * @param {GetDataQuery} props
-     * @returns {import('./data.js').DataValue}
-     */
-    getDataValue (props) {
-      return dataGetValue(props).item
-    },
-    setActionValue: {
-      metadata: {
-        title: 'Get sequence value',
-        description: 'Get value from current sequence action',
-        icon: 'mdi:format-list-numbered'
-      },
-      method (props, { context }) {
-        const values = {}
-        const id = props.id
-
-        for (let i = 0; i < props.values.length; i++) {
-          const item = props.values[i]
-          let valueId = item.id || generateId()
-
-          if (item.prefixId) {
-            valueId = item.prefixId + valueId
-          }
-
-          if (item.suffixId) {
-            valueId = valueId + item.suffixId
-          }
-
-          values[valueId] = item.value
-        }
-
-        const groupId = props.groupId || context.groupId
-
-        dataSetValue({
-          name: 'action/valueBelongsToGroup',
-          value: groupId,
-          options: {
-            id: id
-          }
-        })
-
-        dataSetValue({
-          name: 'action/valueGroups',
-          value: id,
-          options: {
-            id: groupId,
-            update: {
-              method: 'push'
-            }
-          }
-        })
-
-        return dataSetValue({
-          name: 'action/values',
-          value: values,
-          options: {
-            id,
-            merge: true
-          }
-        })
-      }
     }
   },
   setup ({ action }) {

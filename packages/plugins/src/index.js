@@ -14,6 +14,7 @@ import query from './query.js'
 import route from './route.js'
 import icon from './icon.js'
 import form from './icon.js'
+import variable from './variable.js'
 
 export * from './content.js'
 export * from './data.js'
@@ -30,11 +31,13 @@ export * from './query.js'
 export * from './route.js'
 export * from './icon.js'
 export * from './form.js'
+export * from './variable.js'
 export * from './lazy/index.js'
 
 export default [
   content,
   data,
+  variable,
   action,
   component,
   $fetch,

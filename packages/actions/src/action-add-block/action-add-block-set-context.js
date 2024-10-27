@@ -2,8 +2,8 @@ import createAction from '@dooksa/create-action'
 
 export default createAction('action-add-block-set-context', [
   {
-    action_setActionValue: {
-      id: { action_getContextValue: 'groupId' },
+    variable_setValue: {
+      scope: { action_getContextValue: 'groupId' },
       values: [
         {
           id: 'component-content-id',

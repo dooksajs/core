@@ -6,8 +6,8 @@ export default createAction('option-text', [
       name: 'content/items',
       value: {
         value: {
-          action_getActionValue: {
-            id: { action_getContextValue: 'groupId' },
+          variable_getValue: {
+            scope: { action_getContextValue: 'groupId' },
             prefixId: { action_getContextValue: 'parentId' },
             query: 'option-text'
           }

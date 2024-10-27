@@ -2,8 +2,8 @@ import createAction from '@dooksa/create-action'
 
 export default createAction('action-add-block-list-item-icon', [
   {
-    action_getActionValue: {
-      id: { action_getContextValue: 'groupId' },
+    variable_getValue: {
+      scope: { action_getContextValue: 'groupId' },
       prefixId: { action_getContextValue: 'rootId' },
       query: 'metadata'
     }

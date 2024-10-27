@@ -2,8 +2,8 @@ import createAction from '@dooksa/create-action'
 
 export default createAction('action-card-description', [
   {
-    action_getActionValue: {
-      id: { action_getContextValue: 'groupId' },
+    variable_getValue: {
+      scope: { action_getContextValue: 'groupId' },
       query: 'metadata'
     }
   },
