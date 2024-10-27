@@ -1,5 +1,5 @@
 import createPlugin from '@dooksa/create-plugin'
-import { compileAction } from '@dooksa/create-action'
+import { createAction, compileAction } from '@dooksa/create-action'
 import { action, dataSetValue } from '@dooksa/plugins'
 import { databaseSeed, databaseGetValue, databaseDeleteValue } from './database.js'
 import { httpSetRoute } from './http.js'
@@ -341,11 +341,6 @@ const serverAction = createPlugin('action', {
       method: 'get',
       middleware: ['request/queryIsArray'],
       handlers: [
-        (request, response, next) => {
-          console.log(request.cookies)
-
-          next()
-        },
         databaseGetValue(['action/sequences'])
       ]
     })
