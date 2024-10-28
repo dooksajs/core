@@ -27,6 +27,11 @@ const icon = createPlugin('icon', {
     }
   },
   actions: {
+    /**
+     * Render icon
+     * @param {object} param
+     * @param {string} param.componentId
+     */
     render ({ componentId }) {
       const component = dataGetValue({
         name: 'component/nodes',
