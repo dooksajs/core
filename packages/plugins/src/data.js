@@ -1345,12 +1345,6 @@ const data = createPlugin('data', {
         description: 'Create a unique ID',
         icon: 'mdi:identifier'
       },
-      parameters: {
-        component: {
-          id: 'action-param-generate-id',
-          title: 'Details'
-        }
-      },
       method: generateId
     },
     find: {
@@ -1364,56 +1358,28 @@ const data = createPlugin('data', {
         properties: {
           name: {
             type: 'string',
-            component: {
-              title: 'Name',
-              id: 'action-param-collection'
-            },
             required: true
           },
           where: {
             type: 'array',
             items: {
-              type: 'any',
-              component: {
-                title: 'Where',
-                id: 'action-param-data-find-where'
-              }
+              type: 'any'
             }
           },
           options: {
             type: 'object',
             properties: {
               expand: {
-                type: 'boolean',
-                component: {
-                  group: 'Options',
-                  title: 'Expand',
-                  id: 'action-param-boolean'
-                }
+                type: 'boolean'
               },
               expandClone: {
-                type: 'boolean',
-                component: {
-                  group: 'Options',
-                  title: 'Deep copy expanded documents',
-                  id: 'action-param-boolean'
-                }
+                type: 'boolean'
               },
               clone: {
-                type: 'boolean',
-                component: {
-                  group: 'Options',
-                  title: 'Deep copy',
-                  id: 'action-param-boolean'
-                }
+                type: 'boolean'
               },
               position: {
-                type: 'string',
-                component: {
-                  title: 'Result key',
-                  group: 'Options',
-                  id: 'action-param-string'
-                }
+                type: 'string'
               }
             }
           }
@@ -1551,58 +1517,28 @@ const data = createPlugin('data', {
         properties: {
           name: {
             type: 'string',
-            component: {
-              title: 'Name',
-              id: 'action-param-collection'
-            },
             required: true
           },
           id: {
             type: 'string',
-            component: {
-              title: 'Document ID',
-              id: 'action-param-collection-document'
-            },
             required: true
           },
           on: {
             type: 'string',
-            component: {
-              title: 'Event',
-              id: 'action-param-event-listener'
-            },
             required: true
           },
           handler: {
             type: 'string',
-            component: {
-              title: 'Action',
-              id: 'action-param-action'
-            },
             required: true
           },
           handlerId: {
-            type: 'string',
-            component: {
-              title: 'Handler ID',
-              id: 'action-param-value'
-            }
+            type: 'string'
           },
           priority: {
-            type: 'boolean',
-            component: {
-              group: 'Options',
-              title: 'Event priority',
-              id: 'action-param-number'
-            }
+            type: 'boolean'
           },
           captureAll: {
-            type: 'boolean',
-            component: {
-              group: 'Options',
-              title: 'Fire action on all events',
-              id: 'action-param-boolean'
-            }
+            type: 'boolean'
           }
         }
       },
@@ -1703,34 +1639,18 @@ const data = createPlugin('data', {
         properties: {
           name: {
             type: 'string',
-            component: {
-              title: 'Name',
-              id: 'action-param-collection'
-            },
             required: true
           },
           id: {
             type: 'string',
-            component: {
-              title: 'Document ID',
-              id: 'action-param-collection-document'
-            },
             required: true
           },
           on: {
             type: 'string',
-            component: {
-              title: 'Event',
-              id: 'action-param-event-listener'
-            },
             required: true
           },
           handlerId: {
             type: 'string',
-            component: {
-              title: 'Handler ID',
-              id: 'action-param-value'
-            },
             required: true
           }
         }
@@ -1789,43 +1709,20 @@ const data = createPlugin('data', {
         properties: {
           name: {
             type: 'string',
-            component: {
-              title: 'Name',
-              id: 'action-param-collection'
-            },
             required: true
           },
           id: {
             type: 'string',
-            component: {
-              title: 'Document ID',
-              id: 'action-param-collection-document'
-            },
             required: true
           },
           cascade: {
-            type: 'boolean',
-            component: {
-              title: 'Delete related data',
-              group: 'Options',
-              id: 'action-param-boolean'
-            }
+            type: 'boolean'
           },
           listeners: {
-            type: 'boolean',
-            component: {
-              title: 'Delete related listeners',
-              group: 'Options',
-              id: 'action-param-boolean'
-            }
+            type: 'boolean'
           },
           stopPropagation: {
-            type: 'boolean',
-            component: {
-              title: 'Prevent further event phases',
-              group: 'Options',
-              id: 'action-param-boolean'
-            }
+            type: 'boolean'
           }
         }
       },
@@ -1938,69 +1835,31 @@ const data = createPlugin('data', {
         properties: {
           name: {
             type: 'string',
-            component: {
-              title: 'Name',
-              id: 'action-param-collection'
-            },
             required: true
           },
           id: {
-            type: 'string',
-            component: {
-              title: 'Document ID',
-              id: 'action-param-collection-document'
-            }
+            type: 'string'
           },
           prefixId: {
-            type: 'boolean',
-            component: {
-              title: 'Id prefix',
-              group: 'Advanced options',
-              id: 'action-param-value'
-            }
+            type: 'boolean'
           },
           suffixId: {
-            type: 'boolean',
-            component: {
-              group: 'Advanced options',
-              title: 'Id suffix',
-              id: 'action-param-value'
-            }
+            type: 'boolean'
           },
           options: {
             type: 'object',
             properties: {
               expand: {
-                type: 'boolean',
-                component: {
-                  title: 'Expand',
-                  group: 'Options',
-                  id: 'action-param-boolean'
-                }
+                type: 'boolean'
               },
               expandClone: {
-                type: 'boolean',
-                component: {
-                  title: 'Deep copy expanded documents',
-                  group: 'Options',
-                  id: 'action-param-boolean'
-                }
+                type: 'boolean'
               },
               clone: {
-                type: 'boolean',
-                component: {
-                  title: 'Deep copy',
-                  group: 'Options',
-                  id: 'action-param-boolean'
-                }
+                type: 'boolean'
               },
               position: {
-                type: 'string',
-                component: {
-                  title: 'Result key',
-                  group: 'Options',
-                  id: 'action-param-string'
-                }
+                type: 'string'
               }
             }
           }
@@ -2138,55 +1997,36 @@ const data = createPlugin('data', {
       }
     },
     setValue: {
-      metadata: {
-        title: 'Set value',
-        description: 'Update the app state',
-        icon: 'mdi:content-save-cog'
-      },
+      metadata: [
+        {
+          title: 'Update document by ID',
+          description: 'Update a select document',
+          icon: 'mdi:content-save-cog',
+          component: 'data-set-value-by-id'
+        }
+      ],
       parameters: {
         type: 'object',
         properties: {
           name: {
             type: 'string',
-            component: {
-              title: 'Name',
-              id: 'action-param-collection'
-            },
             required: true
           },
           value: {
-            type: 'any',
-            component: {
-              title: 'Value',
-              id: 'action-param-value'
-            },
+            type: 'any', // type by reference (this name prop)
             required: true
           },
           options: {
             type: 'object',
             properties: {
               id: {
-                type: 'string',
-                component: {
-                  title: 'id',
-                  id: 'action-param-value'
-                }
+                type: 'string'
               },
               merge: {
-                type: 'boolean',
-                component: {
-                  group: 'Options',
-                  title: 'Merge data',
-                  id: 'action-param-boolean'
-                }
+                type: 'boolean'
               },
               stopPropagation: {
-                type: 'boolean',
-                component: {
-                  title: 'Prevent further event phases',
-                  group: 'Options',
-                  id: 'action-param-boolean'
-                }
+                type: 'boolean'
               },
               update: {
                 type: 'object',
@@ -2194,37 +2034,17 @@ const data = createPlugin('data', {
                   position: {
                     type: 'array',
                     items: {
-                      type: 'string',
-                      component: {
-                        group: 'Update',
-                        title: 'Property',
-                        id: 'action-param-string'
-                      }
+                      type: 'string'
                     }
                   },
                   method: {
-                    type: 'string',
-                    component: {
-                      group: 'Update',
-                      title: 'Method',
-                      id: 'action-param-data-set-value-method'
-                    }
+                    type: 'string'
                   },
                   startIndex: {
-                    type: 'number',
-                    component: {
-                      group: 'Update',
-                      title: 'Start index',
-                      id: 'action-param-number'
-                    }
+                    type: 'number'
                   },
                   deleteCount: {
-                    type: 'number',
-                    component: {
-                      group: 'Update',
-                      title: 'Delete count',
-                      id: 'action-param-number'
-                    }
+                    type: 'number'
                   }
                 }
               }
