@@ -429,7 +429,8 @@ function newDataInstance (type) {
     case 'boolean':
       return new Boolean().valueOf()
     case 'function':
-      return () => {}
+      return () => {
+      }
     case 'node':
       return new Object()
     case 'number':
@@ -449,7 +450,7 @@ function newDataInstance (type) {
  * @param {*} metadata
  * @returns
  */
-function setCollectionItems (data, path, sources, metadata) {
+function mergeCollectionItems (data, path, sources, metadata) {
   const schema = databaseSchema[path]
   const schemaType = schema.type
 
@@ -541,6 +542,46 @@ function setCollectionItems (data, path, sources, metadata) {
       }
 
       data.target[id] = result
+    }
+  }
+}
+
+/**
+ * Validate and collection items
+ * @param {*} data
+ * @param {*} path
+ * @param {*} sources
+ * @param {*} metadata
+ * @returns
+ */
+function replaceCollectionItems (data, path, sources, metadata) {
+  const schemaPath = path + '/items'
+  const schema = databaseSchema[schemaPath]
+  const schemaType = schema.type
+
+  // set values
+  for (const id in sources) {
+    if (Object.hasOwnProperty.call(sources, id)) {
+      const clone = newDataInstance(schemaType)
+      const source = deepClone(clone, sources[id], true)
+      const target = {
+        _item: source._item || source,
+        _metadata: source._metadata || metadata || {}
+      }
+
+      // validate current value
+      validateDataType(schemaPath, target._item, schemaType)
+
+      // validate object source values
+      if (schemaType === 'object') {
+        validateSchemaObject(data, schemaPath, target._item)
+      } else if (schemaType === 'array') {
+        validateSchemaArray(data, schemaPath, target._item)
+      } else if (schema.options && schema.options.relation) {
+        addRelation(data.collection, id, schema.options.relation, target._item)
+      }
+
+      data.target[id] = target
     }
   }
 }
@@ -658,7 +699,18 @@ function setDataOptions (data, source, options) {
     data.id = id
 
     if (options.merge) {
-      setCollectionItems(data, schemaPath, { [id]: source }, options.metadata)
+      const collection = Object.create(null)
+      collection[id] = source
+      mergeCollectionItems(data, schemaPath, collection, options.metadata)
+
+      return {
+        complete: true,
+        isValid: true
+      }
+    } else if (options.replace) {
+      const collection = Object.create(null)
+      collection[id] = source
+      replaceCollectionItems(data, data.collection, collection, options.metadata)
 
       return {
         complete: true,
@@ -667,7 +719,14 @@ function setDataOptions (data, source, options) {
     }
   } else {
     if (options.merge) {
-      setCollectionItems(data, schemaPath, source, options.metadata)
+      mergeCollectionItems(data, schemaPath, source, options.metadata)
+
+      return {
+        complete: true,
+        isValid: true
+      }
+    } else if (options.replace) {
+      replaceCollectionItems(data, data.collection, source, options.metadata)
 
       return {
         complete: true,
@@ -808,6 +867,7 @@ function setDataOptions (data, source, options) {
     // ISSUE: containsDuplicates expects an array
     if (schema && schema.options) {
       if (schema.options.uniqueItems) {
+        // @TODO this is too slow, perhaps use a hash table or use a Map
         const hasDuplicates = arrayHasDuplicates(targetItem)
 
         if (hasDuplicates) {
