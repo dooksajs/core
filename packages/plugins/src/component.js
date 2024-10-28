@@ -481,7 +481,8 @@ function nodeEvent (eventType, eventValue, node, on, id, context) {
       payload
     })
   }
-  let removeHandler = () => {}
+  let removeHandler = () => {
+  }
 
   switch (eventType) {
     case 'node':
@@ -906,7 +907,8 @@ function createTemplate ({
     eventEmit({
       name: 'component/created',
       id,
-      context
+      context,
+      payload: node
     })
   }
 
