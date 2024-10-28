@@ -1922,6 +1922,11 @@ const data = createPlugin('data', {
         }
       }
     },
+    getSchema: {
+      method (name) {
+        return databaseSchema[name]
+      }
+    },
     getValue: {
       metadata: {
         title: 'Get value',
@@ -2347,6 +2352,7 @@ const dataDeleteValue = data.actions.deleteValue
 const dataGetValue = data.actions.getValue
 const dataAddListener = data.actions.addListener
 const dataDeleteListener = data.actions.deleteListener
+const dataGetSchema = data.actions.getSchema
 
 export {
   data,
@@ -2357,7 +2363,8 @@ export {
   dataGenerateId,
   dataGetValue,
   dataSetValue,
-  dataUnsafeSetValue
+  dataUnsafeSetValue,
+  dataGetSchema
 }
 
 export default data
