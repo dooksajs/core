@@ -22,13 +22,6 @@ function mergeContextProperties (data, context) {
 }
 
 /**
- * Prefix action with plugin name
- * @template {string} Name
- * @template {string} Type
- * @typedef {`${Name}${Capitalize<Type>}`} PluginExportAction
- */
-
-/**
  * @template This
  * @template {Object} Params
  * @callback PluginSetup
@@ -118,10 +111,11 @@ function mergeContextProperties (data, context) {
  */
 
 /**
+ * @template {string} Name
  * @template {Object.<string, Function>} Action
  * @template {Object.<string, Function>} Method
  * @template {PluginData} Data
- * @param {string} name
+ * @param {Name} name
  * @param {Object} data
  * @param {PluginExport<Action>[]} [data.dependencies]
  * @param {PluginMetadata} [data.metadata]
