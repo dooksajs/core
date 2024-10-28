@@ -221,7 +221,7 @@ function getExpandedData (name, result, options) {
           const name = item.collection + '/' + item.id
 
           if (options.expandClone) {
-            item.item = cloneDataValue(item)
+            item.item = cloneDataValue(item.item)
           }
 
           result.expandIncluded[name] = result.expand.length
@@ -2119,7 +2119,7 @@ const data = createPlugin('data', {
 
         // return a mutable item
         if (options.clone) {
-          result.item = cloneDataValue(result)
+          result.item = cloneDataValue(result.item)
         }
 
         // return a value from position
