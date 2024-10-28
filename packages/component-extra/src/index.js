@@ -24,6 +24,8 @@ import { createNavLinkButton, navLinkButton } from './nav/nav-link-button.js'
 import { createNav, nav } from './nav/nav.js'
 import { createTabContent, tabContent } from './nav/tab-content.js'
 import { createTabPane, tabPane } from './nav/tab-pane.js'
+import { createRow, row } from './grid/row.js'
+import { createColumn, column } from './grid/column.js'
 
 export {
   createAccordionInner,
@@ -40,11 +42,13 @@ export {
   createCardImg,
   createCardText,
   createCardTitle,
+  createColumn,
   createIcon,
   createNav,
   createNavItem,
   createNavLinkAnchor,
   createNavLinkButton,
+  createRow,
   createTabContent,
   createTabPane,
   createListGroup,
@@ -69,10 +73,12 @@ export default [
   cardImg,
   cardText,
   cardTitle,
+  column,
   nav,
   navItem,
   navLinkAnchor,
   navLinkButton,
+  row,
   tabContent,
   tabPane,
   listGroup,
