@@ -562,7 +562,7 @@ function createTemplate ({
   template,
   parentId,
   rootId = id,
-  groupId = id
+  groupId
 }) {
   const component = {
     id: template.id,
@@ -572,6 +572,65 @@ function createTemplate ({
   const properties = {}
   let node
   let contentId
+  let parentGroupId
+  const parentGroup = dataGetValue({
+    name: 'component/belongsToGroup',
+    id: parentId
+  })
+
+  if (parentGroup.isEmpty) {
+    parentGroupId = 'global'
+  } else {
+    parentGroupId = parentGroup.item
+  }
+
+  // assign parent group id
+  if (!groupId) {
+    groupId = parentGroupId
+  } else {
+    const scope = dataGetValue({
+      name: 'variable/scopes',
+      id: groupId
+    })
+
+    if (scope.isEmpty) {
+      // get parent scope
+      const parentScope = dataGetValue({
+        name: 'variable/scopes',
+        id: parentGroupId,
+        options: {
+          clone: true
+        }
+      })
+
+      if (parentScope.isEmpty) {
+        // set new group scope
+        dataSetValue({
+          name: 'variable/scopes',
+          value: [groupId, 'global'],
+          options: {
+            id: groupId,
+            replace: true
+          }
+        })
+      } else {
+        const newScope = parentScope.item
+
+        // extend scope from parent scope
+        newScope.unshift(groupId)
+
+        // set new group scope
+        dataSetValue({
+          name: 'variable/scopes',
+          value: newScope,
+          options: {
+            id: groupId,
+            replace: true
+          }
+        })
+      }
+    }
+  }
 
   if (!template.isLoaded) {
     return lazyLoad({
@@ -1153,6 +1212,17 @@ const component = createPlugin('component', {
         },
         uniqueItems: true
       }
+    },
+    belongsToScopes: {
+      type: 'collection',
+      items: {
+        type: 'array',
+        items: {
+          type: 'string',
+          relation: 'action/scopes'
+        },
+        uniqueItems: true
+      }
     }
   },
   actions: {
@@ -1337,30 +1407,47 @@ const component = createPlugin('component', {
 
         // clean up action variables
         if (!componentGroup.item.length) {
-          const actionGroupId = dataGetValue({
-            name: 'action/valueBelongsToGroup',
-            id: componentGroupId
+          // delete component block variables
+          dataDeleteValue({
+            name: 'variable/values',
+            id
           }).item
 
+          // delete group block variables
           dataDeleteValue({
-            name: 'action/values',
+            name: 'variable/values',
             id: componentGroupId
           })
 
-          const valueGroup = dataSetValue({
-            name: 'action/valueGroups',
-            value: actionGroupId,
-            options: {
-              id: componentGroupId,
-              update: { method: 'pull' }
-            }
+          // delete value group
+          dataDeleteValue({
+            name: 'variable/scopes',
+            id: componentGroupId
           })
+        }
 
-          if (!valueGroup.isEmpty && !valueGroup.item.length) {
-            dataDeleteValue({
-              name: 'action/valueGroups',
-              id: actionGroupId
+        // delete component defined scopes
+        const scopes = dataGetValue({
+          name: 'component/belongsToScopes',
+          id
+        })
+
+        if (!scopes.isEmpty) {
+          for (let i = 0; i < scopes.item.length; i++) {
+            const scopeId = scopes.item[i]
+            const group = dataGetValue({
+              name: 'component/groups',
+              id: scopeId
             })
+
+            // check if scope belongs to an existing group
+            if (group.isEmpty || (!group.isEmpty && !group.item.length)) {
+              // delete values in scope
+              dataDeleteValue({
+                name: 'variable/values',
+                id: scopeId
+              })
+            }
           }
         }
 
@@ -1436,10 +1523,6 @@ const component = createPlugin('component', {
           name: 'component/nodes',
           id
         }).item
-        const parentGroupId = dataGetValue({
-          name: 'component/belongsToGroup',
-          id
-        }).item
         const children = []
         let childIsLazy = false
 
@@ -1462,13 +1545,12 @@ const component = createPlugin('component', {
           }).item
 
           if (item.isTemplate) {
-            const groupId = item.groupId || parentGroupId
             const result = createTemplate({
               id: childId,
               template: $component(item.id),
               parentId: id,
               rootId: childId,
-              groupId
+              groupId: item.groupId
             })
 
             childIsLazy = (result instanceof Promise)
