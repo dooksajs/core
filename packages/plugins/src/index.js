@@ -1,6 +1,7 @@
 // @ts-nocheck
 import content from './content.js'
 import data from './data.js'
+import editor from './editor.js'
 import action from './action.js'
 import component from './component.js'
 import $fetch from './fetch.js'
@@ -18,6 +19,7 @@ import variable from './variable.js'
 
 export * from './content.js'
 export * from './data.js'
+export * from './editor.js'
 export * from './action.js'
 export * from './component.js'
 export * from './fetch.js'
@@ -38,6 +40,7 @@ export default [
   content,
   data,
   variable,
+  editor,
   action,
   component,
   $fetch,
