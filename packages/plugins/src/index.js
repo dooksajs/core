@@ -1,5 +1,4 @@
 // @ts-nocheck
-import content from './content.js'
 import data from './data.js'
 import editor from './editor.js'
 import action from './action.js'
@@ -17,7 +16,6 @@ import icon from './icon.js'
 import form from './icon.js'
 import variable from './variable.js'
 
-export * from './content.js'
 export * from './data.js'
 export * from './editor.js'
 export * from './action.js'
@@ -37,7 +35,6 @@ export * from './variable.js'
 export * from './lazy/index.js'
 
 export default [
-  content,
   data,
   variable,
   editor,
