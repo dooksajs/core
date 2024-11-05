@@ -73,6 +73,7 @@
  * @property {Object.<string, (string|boolean)>} [values] - Attribute values
  * @property {string|boolean} [value] - Attribute value
  * @property {Function} [computedValue]
+ * @property {Infix} [infixValues] - Class names that often have breakpoints
  */
 
 /**
@@ -153,4 +154,19 @@
  * @property {Function} [component] - Lazy load component
  * @property {TemplateInitialize} [initialize] - Constructor function to create a component instance
  * @property {string} tag - Element tag name
+ */
+
+/**
+ * @typedef {Object} Infix
+ * @property {string} className - Base class name
+ * @property {InfixItem[]} infixes - Possible class affixes
+ * @property {string} [separator='-'] - Infix separator
+ * @property {string} [suffix] - Suffix value
+ */
+
+/**
+ * @typedef {Object} InfixItem
+ * @property {Object.<string, string>} [values] - A map of all possible infix values
+ * @property {string} name - The key name to match the possible values
+ * @property {string} [separator] - Infix instance separator
  */

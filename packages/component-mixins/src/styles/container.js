@@ -1,12 +1,18 @@
 import { createMixin } from '@dooksa/create-component'
+import { breakpoints } from './utils.js'
 
 /**
  * @import {BreakpointAlwaysXXL} from '@dooksa/create-component'
  */
 
 /**
+ * @typedef {Object} ContainerBreakpoint
+ * @property {BreakpointAlwaysXXL|'fluid'} breakpoint
+ */
+
+/**
  * @typedef {Object} ContainerMixin
- * @property {BreakpointAlwaysXXL|'fluid'} [container]
+ * @property {ContainerBreakpoint[]} [container]
  */
 
 export default createMixin({
@@ -17,15 +23,12 @@ export default createMixin({
     options: {
       container: {
         name: 'className',
-        /**
-         * @param {BreakpointAlwaysXXL|'fluid'} breakpoint
-         */
-        computedValue (breakpoint) {
-          if (breakpoint !== 'always') {
-            return 'container-' + breakpoint
-          }
-
-          return 'container'
+        infixValues: {
+          className: 'container',
+          infixes: [{
+            values: Object.assign({ fluid: 'fluid' }, breakpoints),
+            name: 'breakpoint'
+          }]
         }
       }
     }

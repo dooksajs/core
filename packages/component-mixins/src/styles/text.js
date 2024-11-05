@@ -1,14 +1,19 @@
 import { createMixin } from '@dooksa/create-component'
+import { breakpoints } from './utils.js'
 
 /**
  * @import {BreakpointAlwaysXXL} from '@dooksa/create-component'
  */
 
 /**
+ * @typedef {Object} TextAlign
+ * @property {BreakpointAlwaysXXL} [breakpoint]
+ * @property {'start'|'center'|'end'} align
+ */
+
+/**
  * @typedef {Object} TextMixin
- * @property {BreakpointAlwaysXXL} [textAlignStart]
- * @property {BreakpointAlwaysXXL} [textAlignCenter]
- * @property {BreakpointAlwaysXXL} [textAlignEnd]
+ * @property {TextAlign[]} [textAlign]
  * @property {'wrap'|'nowrap'|'break'} [textWrap]
  * @property {'lowercase'|'uppercase'|'capitalize'} [textTransform]
  * @property {'underline'|'lineThrough'|'none'} [textDecoration]
@@ -20,49 +25,24 @@ export default createMixin({
   },
   data: {
     options: {
-      textAlignStart: {
+      textAlign: {
         name: 'className',
-        /**
-         * Text start
-         * @param {BreakpointAlwaysXXL} [breakpoint]
-         * @returns {string}
-         */
-        computedValue (breakpoint) {
-          if (breakpoint !== 'always') {
-            return 'text-' + breakpoint + '-start'
-          }
-
-          return 'text-start'
-        }
-      },
-      textAlignCenter: {
-        name: 'className',
-        /**
-         * Text center
-         * @param {BreakpointAlwaysXXL} [breakpoint]
-         * @returns {string}
-         */
-        computedValue (breakpoint) {
-          if (breakpoint !== 'always') {
-            return 'text-' + breakpoint + '-center'
-          }
-
-          return 'text-center'
-        }
-      },
-      textAlignEnd: {
-        name: 'className',
-        /**
-         * Text end
-         * @param {BreakpointAlwaysXXL} [breakpoint]
-         * @returns {string}
-         */
-        computedValue (breakpoint) {
-          if (breakpoint !== 'always') {
-            return 'text-' + breakpoint + '-end'
-          }
-
-          return 'text-end'
+        infixValues: {
+          className: 'text',
+          infixes: [
+            {
+              name: 'breakpoint',
+              values: breakpoints
+            },
+            {
+              name: 'align',
+              values: {
+                start: 'start',
+                center: 'center',
+                end: 'end'
+              }
+            }
+          ]
         }
       },
       textWrap: {

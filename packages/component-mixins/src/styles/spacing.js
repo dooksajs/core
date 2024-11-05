@@ -1,4 +1,5 @@
 import { createMixin } from '@dooksa/create-component'
+import { directions } from './utils.js'
 
 /**
  * @import {Spacer} from '@dooksa/create-component'
@@ -23,15 +24,6 @@ import { createMixin } from '@dooksa/create-component'
  * @property {SpacingPadding[]} [padding]
  */
 
-const directions = {
-  end: 'e',
-  start: 's',
-  top: 't',
-  bottom: 'b',
-  xAxis: 'x',
-  yAxis: 'y',
-  none: ''
-}
 
 export default createMixin({
   metadata: { id: 'spacing' },
@@ -39,48 +31,56 @@ export default createMixin({
     options: {
       margin: {
         name: 'className',
-        /**
-         * Margin
-         * @param {SpacingMargin[]} options
-         * @returns {string}
-         */
-        computedValue (options) {
-          let classNames = ''
-          let firstChar = 'm'
-
-          for (let i = 0; i < options.length; i++) {
-            const {
-              strength, direction = 'none'
-            } = options[i]
-
-            classNames += firstChar + directions[direction] + '-' + strength
-            firstChar = ' m'
-          }
-
-          return classNames
+        infixValues: {
+          className: 'm',
+          infixes: [
+            {
+              values: directions,
+              name: 'direction',
+              separator: ''
+            },
+            {
+              values: {
+                n5: 'n5',
+                n4: 'n4',
+                n3: 'n3',
+                n2: 'n2',
+                n1: 'n1',
+                0: '0',
+                1: '1',
+                2: '2',
+                3: '3',
+                4: '4',
+                5: '5',
+                auto: 'auto'
+              },
+              name: 'strength'
+            }
+          ]
         }
       },
       padding: {
         name: 'className',
-        /**
-         * Padding
-         * @param {SpacingPadding[]} options
-         * @returns {string}
-         */
-        computedValue (options) {
-          let classNames = ''
-          let firstChar = 'p'
-
-          for (let i = 0; i < options.length; i++) {
-            const {
-              strength, direction = 'none'
-            } = options[i]
-
-            classNames += firstChar + directions[direction] + '-' + strength
-            firstChar = ' p'
-          }
-
-          return classNames
+        infixValues: {
+          className: 'p',
+          infixes: [
+            {
+              values: directions,
+              name: 'direction',
+              separator: ''
+            },
+            {
+              values: {
+                0: '0',
+                1: '1',
+                2: '2',
+                3: '3',
+                4: '4',
+                5: '5'
+              },
+              name: 'strength'
+            }
+          ]
         }
       }
     },
