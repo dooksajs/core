@@ -30,7 +30,7 @@
  * @import {NameMixin} from './global/name.js'
  * @import {TabIndexMixin} from './global/tabindex.js'
  * @import {TranslateMixin} from './global/translate.js'
- * @import {JustifyContentMixin, AlignContentMixin, AlignItemsSelfMixin, FlexSizeMixin, FlexOrderMixin} from './styles/flex.js'
+ * @import {JustifyContentMixin, AlignContentMixin, AlignItemsMixin, FlexSizeMixin, FlexOrderMixin} from './styles/flex.js'
  * @import {EventTypeAnimationMixin} from './event-type/event-type-animation.js'
  * @import {EventTypeClipboardMixin} from './event-type/event-type-clipboard.js'
  * @import {EventTypeCompositionMixin} from './event-type/event-type-composition.js'
@@ -56,6 +56,8 @@
  * @import {FocusRingMixin} from './styles/focus-ring.js'
  * @import {TextColorMixin} from './styles/text-color.js'
  * @import {TextOpacityMixin} from './styles/text-opacity.js'
+ * @import {FloatMixin} from './styles/float.js'
+ * @import {SizingMixin} from './styles/sizing.js'
  */
 
 /**
@@ -102,7 +104,7 @@
  * @typedef {FontMixin} FontMixin
  * @typedef {JustifyContentMixin} JustifyContentMixin
  * @typedef {AlignContentMixin} AlignContentMixin
- * @typedef {AlignItemsSelfMixin} AlignItemsSelfMixin
+ * @typedef {AlignItemsMixin} AlignItemsMixin
  * @typedef {FlexSizeMixin} FlexSizeMixin
  * @typedef {FlexOrderMixin} FlexOrderMixin
  * @typedef {DisplayMixin} DisplayMixin
@@ -123,4 +125,6 @@
  * @typedef {AriaLabelMixin} AriaLabelMixin
  * @typedef {EventTypeMouseMixin} EventTypeMouseMixin
  * @typedef {TranslateMixin} TranslateMixin
+ * @typedef {FloatMixin} FloatMixin
+ * @typedef {SizingMixin} SizingMixin
  */

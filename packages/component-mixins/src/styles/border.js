@@ -26,28 +26,25 @@ export default createMixin({
     options: {
       border: {
         name: 'className',
-        /**
-         * @param {BorderDirection} direction
-         */
-        computedValue (direction) {
-          if (direction !== 'all') {
-            return 'border-' + direction
-          }
-
-          return 'border'
+        values: {
+          all: 'border',
+          top: 'border-top',
+          end: 'border-end',
+          bottom: 'border-bottom',
+          start: 'border-start'
         }
       },
       borderRemove: {
         name: 'className',
         /**
-         * @param {BorderDirection} direction
+         * @param {BorderDirection[]} direction
          */
-        computedValue (direction) {
-          if (direction !== 'all') {
-            return 'border-' + direction + '-0'
-          }
-
-          return 'border-0'
+        values: {
+          all: 'border-0',
+          top: 'border-top-0',
+          end: 'border-end-0',
+          bottom: 'border-bottom-0',
+          start: 'border-start-0'
         }
       },
       borderWidth: {
@@ -65,7 +62,7 @@ export default createMixin({
          * @param {Opacity} strength
          */
         computedValue (strength) {
-          return 'border-opacity' + strength
+          return 'border-opacity-' + strength
         }
       },
       borderColor: {
