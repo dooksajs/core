@@ -20,8 +20,10 @@ import textMixin from './text.js'
 import transformTranslateMixin from './transform-translate.js'
 import zIndexMixin from './z-index.js'
 import textColorMixin from './text-color.js'
+import floatMixin from './float.js'
 
 export {
+  floatMixin,
   textColorMixin,
   focusRingMixin,
   backgroundMixin,
