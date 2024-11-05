@@ -2,10 +2,11 @@ import { createMixin } from '@dooksa/create-component'
 
 /**
  * @typedef {Object} InputAllMixin
- * @property {string} [name] - Input name
- * @property {string} [value] - Input value
- * @property {'true'|'false'} [disabled] - Input is disabled
- * @property {'true'|'false'} [required] - Input is required
+ * @property {string} [name] - Name of the form control. Submitted with the form as part of a name/value pair
+ * @property {string} [value] - The value of the control. When specified in the HTML, corresponds to the initial value
+ * @property {string} [form] - Associates the control with a form element
+ * @property {'true'|'false'} [disabled] - Whether the form control is disabled
+ * @property {'true'|'false'} [required] - A value is required or must be checked for the form to be submittable
  */
 
 export default createMixin({
@@ -32,6 +33,10 @@ export default createMixin({
       },
       value: {
         name: 'value'
+      },
+      form: {
+        name: 'form',
+        replace: true
       }
     }
   }
