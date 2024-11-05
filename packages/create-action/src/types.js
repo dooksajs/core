@@ -5,7 +5,7 @@
  * @property {ActionDispatch} [action_dispatch]
  * @property {GetActionValue} [variable_getValue]
  * @property {GetBlockValue} [action_getBlockValue]
- * @property {Action|'id'|'groupId'|'parentId'|'rootId'|'contentId'|'blockId'} [action_getContextValue]
+ * @property {Action|'id'|'groupId'|'parentId'|'rootId'} [action_getContextValue]
  * @property {Action|string[]|string} [action_getPayloadValue]
  * @property {EvalCondition} [action_ifElse]
  * @property {OperatorCompare[]} [action_ifElse]
@@ -55,7 +55,6 @@
 /**
  * @typedef {Object} ActionDispatchContext
  * @property {Action|string} [id]
- * @property {Action|string} [contentId]
  * @property {Action|string} [groupId]
  * @property {Action|string} [parentId]
  * @property {Action|string} [rootId]
@@ -79,7 +78,6 @@
 * 'component/nodes'|
 * 'component/items'|
 * 'component/children'|
-* 'component/content'|
 * 'component/parents'|
 * 'component/properties'|
 * 'component/options'|

@@ -27,7 +27,6 @@ import { generateId } from '@dooksa/utils'
  * @property {ComponentInstance} [component]
  * @property {Component} [template]
  * @property {Node} [node] - Component node
- * @property {Object} [content]
  * @property {ComponentEvent[]} [events]
  * @property {ComponentItem[]} [children]
  */
@@ -39,30 +38,6 @@ import { generateId } from '@dooksa/utils'
 let $component = (name) => ({ id: '' })
 const attributeObserverCallbacks = {}
 let attributeObserver
-
-function getContent (node, content) {
-  const result = {}
-
-  for (let i = 0; i < content.length; i++) {
-    const item = content[i]
-
-    if (item.nodePropertyName) {
-      result[item.name] = node[item.nodePropertyName]
-    }
-  }
-
-  return result
-}
-
-function setContent (node, content, values) {
-  for (let i = 0; i < content.length; i++) {
-    const item = content[i]
-
-    if (item.nodePropertyName) {
-      node[item.nodePropertyName] = values[item.name]
-    }
-  }
-}
 
 function objectHasSetter (object, property, result = { hasSetter: false }) {
   const descriptor = Object.getOwnPropertyDescriptor(object, property)
@@ -90,20 +65,13 @@ function objectHasSetter (object, property, result = { hasSetter: false }) {
  */
 function setProperties (element, properties = []) {
   for (let i = 0; i < properties.length; i++) {
-    const {
-      name, value
-    } = properties[i]
+    const { name, value } = properties[i]
 
-    if (element.hasAttribute && element.hasAttribute(name)) {
-      if (element.getAttribute(name) !== value) {
-        element.setAttribute(name, value)
-      }
-    } else if (objectHasSetter(element, name)) {
-      // update if new value
-      if (element[name] !== value) {
-        element[name] = value
-      }
+    // check if element named has attribute or setter
+    if ((element.hasAttribute && element.hasAttribute(name)) || objectHasSetter(element, name)) {
+      element[name] = value
     } else {
+      // set new attribute
       element.setAttribute(name, value)
     }
   }
@@ -130,74 +98,6 @@ function lazyLoad (item, template, cb) {
         resolve(cb(item))
       })
       .catch(error => reject(error))
-  })
-}
-
-/**
- * Update content attached to component
- * @param {string} id - component id
- * @param {string} contentId - content id
- * @param {string} contentNoAffixId - content id without language suffix
- * @param {Node} node - Node attached to component
- * @param {Object[]} templateContent - Component content template
- */
-function contentListeners (id, contentId, contentNoAffixId, node, templateContent) {
-  // update element content if content data changes
-  let handlerId = dataAddListener({
-    name: 'content/items',
-    on: 'update',
-    id: contentId,
-    handler: (data) => {
-      setContent(node, templateContent, data.item)
-    }
-  })
-
-  dataAddListener({
-    name: 'metadata/currentLanguage',
-    on: 'update',
-    handler: (data) => {
-      dataDeleteListener({
-        name: 'content/items',
-        on: 'update',
-        id: contentId,
-        handlerId
-      })
-
-      // change content lang
-      contentId = contentNoAffixId + data.item
-      const content = dataGetValue({
-        name: 'content/items',
-        id
-      })
-
-      if (!content.isEmpty) {
-        setContent(node, templateContent, content.item)
-      }
-
-      handlerId = dataAddListener({
-        name: 'content/items',
-        on: 'update',
-        id: contentId,
-        handler: (data) => {
-          setContent(node, templateContent, data.item)
-        }
-      })
-    }
-  })
-
-  // update element content if component content is changed
-  dataAddListener({
-    name: 'component/content',
-    on: 'update',
-    id,
-    handler: (data) => {
-      const content = dataGetValue({
-        name: 'content/items',
-        id: data.item
-      })
-
-      setContent(node, templateContent, content.item)
-    }
   })
 }
 
@@ -262,21 +162,6 @@ function createNode (id, item) {
     })
   }
 
-  const content = dataGetValue({
-    name: 'component/content',
-    id,
-    options: { expand: true }
-  })
-  let contentId
-  if (!content.isEmpty) {
-    const contentData = content.extend[0]
-    const template = $component(item.id)
-
-    contentId = removeAffix(contentData.id)
-    setContent(node, template.content, contentData.item)
-    contentListeners(id, contentData.id, contentId, node, template.content)
-  }
-
   const children = dataGetValue({
     name: 'component/children',
     id,
@@ -303,8 +188,7 @@ function createNode (id, item) {
     id,
     rootId,
     parentId,
-    groupId,
-    contentId
+    groupId
   }
   let hasBeforeCreateEvent = false
   let hasCreatedEvent = false
@@ -572,7 +456,6 @@ function createTemplate ({
   const options = { id }
   const properties = {}
   let node
-  let contentId
   let parentGroupId
   const parentGroup = dataGetValue({
     name: 'component/belongsToGroup',
@@ -711,61 +594,6 @@ function createTemplate ({
     setProperties(node, template.properties)
   }
 
-  // set content
-  if (template.content) {
-    const content = {}
-    const nodeValues = getContent(node, template.content)
-
-    for (let i = 0; i < template.content.length; i++) {
-      const data = template.content[i]
-      let contentValue = properties[data.nodePropertyName]
-
-      if (contentValue == null) {
-        contentValue = nodeValues[data.nodePropertyName]
-      }
-
-      // add default value from props
-      content[data.name] = contentValue
-    }
-
-    const contentData = dataSetValue({
-      name: 'content/items',
-      value: content
-    })
-    contentId = removeAffix(contentData.id)
-
-    dataSetValue({
-      name: 'content/languages',
-      value: contentData.id,
-      options: {
-        id: contentId,
-        update: { method: 'push' }
-      }
-    })
-    dataSetValue({
-      name: 'content/components',
-      value: id,
-      options: {
-        id: contentId,
-        update: { method: 'push' }
-      }
-    })
-    dataSetValue({
-      name: 'component/content',
-      value: contentId,
-      options
-    })
-
-    setContent(node, template.content, content)
-    contentListeners(
-      id,
-      contentData.id,
-      removeAffix(contentData.id),
-      node,
-      template.content
-    )
-  }
-
   if (template.options) {
     // Update element attributes
     dataAddListener({
@@ -778,9 +606,9 @@ function createTemplate ({
     })
 
     // Compile component options
-    const handler = (options) => {
+    const handler = (optionData) => {
       const properties = componentOptions(
-        options.item,
+        optionData.item,
         template.options,
         template.properties
       )
@@ -814,7 +642,6 @@ function createTemplate ({
   const context = {
     id,
     rootId,
-    contentId,
     parentId,
     groupId
   }
@@ -1190,13 +1017,6 @@ const component = createPlugin('component', {
         }
       }
     },
-    content: {
-      type: 'collection',
-      items: {
-        type: 'string',
-        relation: 'content/items'
-      }
-    },
     belongsToGroup: {
       type: 'collection',
       items: {
@@ -1320,60 +1140,6 @@ const component = createPlugin('component', {
               id: event.id
             })
           }
-        }
-
-        const content = dataGetValue({
-          name: 'component/content',
-          id
-        })
-
-        if (!content.isEmpty) {
-          const contentId = content.item
-          const contentComponents = dataGetValue({
-            name: 'content/components',
-            id: contentId
-          })
-
-          if (!contentComponents.isEmpty) {
-            if (contentComponents.item.length === 1) {
-              const content = dataGetValue({
-                name: 'content/languages',
-                id: contentId
-              })
-
-              dataDeleteValue({
-                name: 'content/languages',
-                id: contentId
-              })
-              dataDeleteValue({
-                name: 'content/components',
-                id: contentId
-              })
-
-              // remove all content languages
-              for (let i = 0; i < content.item.length; i++) {
-                dataDeleteValue({
-                  name: 'content/items',
-                  id: content.item[i]
-                })
-              }
-            } else {
-              // remove current component from content used by list
-              dataSetValue({
-                name: 'content/components',
-                value: id,
-                options: {
-                  id: contentId,
-                  update: { method: 'pull' }
-                }
-              })
-            }
-          }
-
-          dataDeleteValue({
-            name: 'component/content',
-            id
-          })
         }
 
         const children = dataGetValue({

@@ -1,6 +1,5 @@
 import $http from './http.js'
 import action from './action.js'
-import content from './content.js'
 import component from './component.js'
 import database from './database.js'
 import metadata from './metadata.js'
@@ -24,7 +23,6 @@ export {
   metadata,
   middleware,
   user,
-  content,
   component,
   development,
   event,
