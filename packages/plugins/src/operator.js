@@ -9,142 +9,222 @@ import createPlugin from '@dooksa/create-plugin'
  * [0]
  */
 
-const operators = {
-  /**
-   * Equality
-   * @private
-   * @param {OperatorValues} v
-   * @returns {boolean}
-   */
-  '==': v => v[0] === v[1],
-  /**
-   * Inequality
-   * @private
-   * @param {OperatorValues} v
-   * @returns {boolean}
-   */
-  '!=': v => v[0] !== v[1],
-  /**
-   * Greater than
-   * @private
-   * @param {OperatorValues} v
-   * @returns {boolean}
-   */
-  '>': v => v[0] > v[1],
-  /**
-   * Greater than or equal operator
-   * @private
-   * @param {OperatorValues} v
-   * @returns {boolean}
-   */
-  '>=': v => v[0] >= v[1],
-  /**
-   * Less than
-   * @private
-   * @param {OperatorValues} v
-   * @returns {boolean}
-   */
-  '<': v => v[0] < v[1],
-  /**
-   * Less than or equal operator
-   * @private
-   * @param {OperatorValues} v
-   * @returns {boolean}
-   */
-  '<=': v => v[0] <= v[1],
-  /**
-   * Logical NOT
-   * @private
-   * @param {OperatorValues} v
-   * @returns {boolean}
-   */
-  '!': v => !v[0],
-  /**
-   * Remainder operator
-   * @private
-   * @param {number[]} v
-   * @returns {number}
-   */
-  '%': v => v[0] % v[1],
-  /**
-   * Increment operator
-   * @private
-   * @param {number[]} v
-   * @returns {number|string}
-   */
-  '++': v => {
-    let num = v[0]
-
-    if (v instanceof String) {
-      num = parseInt(v[0])
-      num++
-
-      return num.toString()
-    }
-
-    return ++num
-  },
-  /**
-   * Decrement operator
-   * @private
-   * @param {number[]} v
-   * @returns {number|string}
-   */
-  '--': v => {
-    let num = v[0]
-
-    if (v instanceof String) {
-      num = parseInt(v[0])
-      num--
-
-      return num.toString()
-    }
-
-    return --num
-  },
-  /**
-   * Negation operator
-   * @private
-   * @param {number[]} v
-   * @returns {number}
-   */
-  '-': v => v[0] - v[1],
-  /**
-   * Plus operator
-   * @private
-   * @param {number[]} v
-   * @returns {number}
-   */
-  '+': v => v[0] + v[1],
-  /**
-   * Multiplication operator
-   * @private
-   * @param {number[]} v
-   * @returns {number}
-   */
-  '*': v => v[0] * v[1],
-  /**
-   * Exponentiation operator
-   * @private
-   * @param {number[]} v
-   * @returns {number}
-   */
-  '**': v => v[0] ** v[1],
-  /**
-   * Boolean value
-   * @private
-   * @param {OperatorValues} v
-   * @returns {boolean}
-   */
-  '!!': v => Boolean(v[0]),
-  /**
-   * Check if value is within an string or array
-   * @private
-   * @param {(string|Array)} v
-   * @return {boolean}
-   */
-  '~': v => v[0].includes(v[1])
+/**
+ * Equality
+ * @private
+ * @param {OperatorValues} v
+ * @returns {boolean}
+ */
+function equality (v) {
+  return v[0] === v[1]
 }
+/**
+ * Inequality
+ * @private
+ * @param {OperatorValues} v
+ * @returns {boolean}
+ */
+function inequality (v) {
+  return v[0] !== v[1]
+}
+/**
+ * Greater than
+ * @private
+ * @param {OperatorValues} v
+ * @returns {boolean}
+ */
+function greaterThan (v) {
+  return v[0] > v[1]
+}
+/**
+ * Greater than or equal operator
+ * @private
+ * @param {OperatorValues} v
+ * @returns {boolean}
+ */
+function greaterThanOrEqual (v) {
+  return v[0] >= v[1]
+}
+/**
+ * Less than
+ * @private
+ * @param {OperatorValues} v
+ * @returns {boolean}
+ */
+function lessThan (v) {
+  return v[0] < v[1]
+}
+/**
+ * Less than or equal operator
+ * @private
+ * @param {OperatorValues} v
+ * @returns {boolean}
+ */
+function lessThanOrEqual (v) {
+  return v[0] <= v[1]
+}
+/**
+ * Logical NOT
+ * @private
+ * @param {OperatorValues} v
+ * @returns {boolean}
+ */
+function logicalNot (v) {
+  return !v[0]
+}
+/**
+ * Remainder operator
+ * @private
+ * @param {number[]} v
+ * @returns {number}
+ */
+function remainder (v) {
+  let result = 0
+
+  for (let i = 0; i < v.length; i++) {
+    result %= v[i]
+  }
+
+  return result
+}
+/**
+ * Increment operator
+ * @private
+ * @param {number[]} v
+ * @returns {number|string}
+ */
+function increment (v) {
+  let num = v[0]
+  const type = typeof num
+
+  if (type === 'string') {
+    // @ts-ignore
+    num = parseInt(num)
+    num++
+
+    return num.toString()
+  } else if (type != 'number') {
+    throw new Error('DooksaError: Increment operator expects a number but found "' + type + '"')
+  }
+
+  return ++num
+}
+/**
+ * Decrement operator
+ * @private
+ * @param {number[]} v
+ * @returns {number|string}
+ */
+function decrement (v) {
+  let num = v[0]
+  const type = typeof num
+
+  if (type === 'string') {
+    // @ts-ignore
+    num = parseInt(num)
+    num--
+
+    return num.toString()
+  } else if (type != 'number') {
+    throw new Error('DooksaError: Decrement operator expects a number but found "' + type + '"')
+  }
+
+  return --num
+}
+/**
+ * Negation operator
+ * @private
+ * @param {number[]} v
+ * @returns {number}
+ */
+function negation (v) {
+  let result = 0
+
+  for (let i = 0; i < v.length; i++) {
+    result -= v[i]
+  }
+
+  return result
+}
+/**
+ * Plus operator
+ * @private
+ * @param {number[]|string[]} v
+ * @returns {number|string}
+ */
+function addition (v) {
+  let result = ''
+
+  if (typeof v[0] === 'number') {
+    result = 0
+  }
+
+  for (let i = 0; i < v.length; i++) {
+    result += v[i]
+  }
+
+  return result
+}
+/**
+ * Multiplication operator
+ * @private
+ * @param {number[]} v
+ * @returns {number}
+ */
+function multiplication (v) {
+  let result = 0
+
+  for (let i = 0; i < v.length; i++) {
+    result *= v[i]
+  }
+
+  return result
+}
+/**
+ * Exponentiation operator
+ * @private
+ * @param {number[]} v
+ * @returns {number}
+ */
+function exponentiation (v) {
+  return v[0] ** v[1]
+}
+/**
+ * Boolean value
+ * @private
+ * @param {OperatorValues} v
+ * @returns {boolean}
+ */
+function isBoolean (v) {
+  return Boolean(v[0])
+}
+/**
+ * Check if value is within an string or array
+ * @private
+ * @param {(string|Array)} v
+ * @return {boolean}
+ */
+function isLike (v) {
+  return v[0].includes(v[1])
+}
+
+const operators = Object.create(null)
+operators['=='] = equality
+operators['!='] = inequality
+operators['>'] = greaterThan
+operators['>='] = greaterThanOrEqual
+operators['<'] = lessThan
+operators['<='] = lessThanOrEqual
+operators['!'] = logicalNot
+operators['%'] = remainder
+operators['++'] = increment
+operators['--'] = decrement
+operators['-'] = negation
+operators['+'] = addition
+operators['*'] = multiplication
+operators['**'] = exponentiation
+operators['!!'] = isBoolean
+operators['~'] = isLike
 
 const operator = createPlugin('operator', {
   metadata: {
