@@ -11,6 +11,7 @@ import parseAction from './parse-action.js'
 function createAction (id, data, dependencies = [], methods = availableMethods) {
   const sequences = []
   const blockSequences = {}
+  const blockIndexes = {}
   let sequenceRefs = []
   let blocks = {}
 
@@ -28,6 +29,10 @@ function createAction (id, data, dependencies = [], methods = availableMethods) 
     const action = parseAction(item, methods, actionId)
     const blockSequenceId = actionId.prefix + '_' + ++actionId.increment
 
+    if (action.id) {
+      blockIndexes[action.id] = blockSequenceId
+    }
+
     blockSequences[blockSequenceId] = action.blockSequences
     Object.assign(blocks, action.blocks)
     sequences.push(blockSequenceId)
@@ -37,13 +42,18 @@ function createAction (id, data, dependencies = [], methods = availableMethods) 
     }
 
     for (let i = 0; i < action.$refs.length; i++) {
-      const [blockId, sequenceIndex] = action.$refs[i]
+      const [blockId, index] = action.$refs[i]
+      let blockSequenceId = blockIndexes[index]
 
-      if (sequenceIndex >= sequences.length) {
-        throw new Error('$ref is outside the block sequence')
+      // handle $ref referencing an index number
+      if (typeof index === 'number') {
+        if (index >= sequences.length) {
+          throw new Error('$ref is outside the block sequence')
+        }
+
+        blockSequenceId = sequences[index]
       }
 
-      const blockSequenceId = sequences[sequenceIndex]
       const block = blocks[blockId]
       const blockSequence = blockSequences[blockSequenceId]
 
@@ -57,8 +67,15 @@ function createAction (id, data, dependencies = [], methods = availableMethods) 
   for (let i = 0; i < sequenceRefs.length; i++) {
     const [blockId, index] = sequenceRefs[i]
     const block = blocks[blockId]
+    let blockValue = blockIndexes[index]
 
-    block.value = sequences[index]
+    if (typeof index === 'number') {
+      blockValue = sequences[index]
+    }
+
+    // update ref value
+    block.value = blockValue
+    // delete unused property
     delete block.$sequenceRef
   }
 

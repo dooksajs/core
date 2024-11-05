@@ -10,7 +10,7 @@
  * @property {EvalCondition} [action_ifElse]
  * @property {OperatorCompare[]} [action_ifElse]
  * @property {SetActionValue} [variable_setValue]
- * @property {number} [$ref]
+ * @property {number|string} [$ref]
  * @property {ComponentRemove} [component_remove]
  * @property {ComponentRenderChildren} [component_renderChildren]
  * @property {DataDeleteValue} [data_deleteValue]
@@ -130,7 +130,7 @@
 * @typedef {Object} EvalConditionFrom
 * @property {Operator} op
 * @property {Action|string|number} from
-* @property {Action|string|number|boolean} to
+* @property {Action|string|number|boolean} [to]
 */
 
 /**
@@ -140,7 +140,7 @@
 
 /**
 * @typedef {Object} EvalConditionRef
-* @property {number} $sequenceRef
+* @property {number|string} $sequenceRef
 */
 
 /**

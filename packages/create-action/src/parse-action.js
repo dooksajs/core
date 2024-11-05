@@ -13,8 +13,20 @@
  * @param {Object[]} [$sequenceRefs=[]]
  * @param {boolean} [isHead]
  */
-function parseAction (data, methods, uuid, blocks = {}, parentBlock, blockSequences = [], dataType, $sequenceRefs = [], $refs = [], isHead = true) {
+function parseAction (
+  data,
+  methods,
+  uuid,
+  blocks = {},
+  parentBlock,
+  blockSequences = [],
+  dataType,
+  $sequenceRefs = [],
+  $refs = [],
+  isHead = true
+) {
   const results = []
+  let id
 
   for (const key in data) {
     if (Object.hasOwnProperty.call(data, key)) {
@@ -22,6 +34,11 @@ function parseAction (data, methods, uuid, blocks = {}, parentBlock, blockSequen
       const block = {}
       const result = { block }
 
+      if (key === '$id' && isHead) {
+        id = item
+        delete item.$id
+        continue
+      }
 
       if (key === '$ref') {
         parentBlock.$ref = item
@@ -110,6 +127,7 @@ function parseAction (data, methods, uuid, blocks = {}, parentBlock, blockSequen
     return {
       $sequenceRefs,
       $refs,
+      id,
       blocks,
       blockSequences
     }
