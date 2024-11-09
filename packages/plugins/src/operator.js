@@ -207,6 +207,15 @@ function isBoolean (v) {
 function isLike (v) {
   return v[0].includes(v[1])
 }
+/**
+ * Check if value is within an string or array
+ * @private
+ * @param {*[]} v
+ * @return {string}
+ */
+function typeOf (v) {
+  return typeof v[0]
+}
 
 const operators = Object.create(null)
 operators['=='] = equality
@@ -225,6 +234,7 @@ operators['*'] = multiplication
 operators['**'] = exponentiation
 operators['!!'] = isBoolean
 operators['~'] = isLike
+operators['typeof'] = typeOf
 
 const operator = createPlugin('operator', {
   metadata: {
@@ -344,7 +354,7 @@ const operator = createPlugin('operator', {
       /**
        * Evaluate two values
        * @param {Object} eval - The Object containing the data to evaluate two values
-       * @param {'=='|'!='|'>'|'>='|'<'|'<='|'!'|'%'|'++'|'--'|'-'|'+'|'*'|'**'|'!!'|'~'} eval.name - Operator name
+       * @param {'=='|'!='|'>'|'>='|'<'|'<='|'!'|'%'|'++'|'--'|'-'|'+'|'*'|'**'|'!!'|'~'|'typeof'} eval.name - Operator name
        * @param {OperatorValues} eval.values - Contains two values to be evaluated
        */
       method ({ name, values }) {
