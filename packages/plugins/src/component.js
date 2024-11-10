@@ -446,7 +446,7 @@ function createTemplate ({
   id = generateId(),
   template,
   parentId,
-  rootId = id,
+  rootId,
   groupId
 }) {
   const component = {
@@ -454,7 +454,7 @@ function createTemplate ({
     type: template.type
   }
   const options = { id }
-  const properties = {}
+  const properties = Object.create(null)
   let node
   let parentGroupId
   const parentGroup = dataGetValue({
@@ -468,51 +468,60 @@ function createTemplate ({
     parentGroupId = parentGroup.item
   }
 
-  // assign parent group id
   if (!groupId) {
+    // assign parent group id
     groupId = parentGroupId
-  } else {
-    const scope = dataGetValue({
-      name: 'variable/scopes',
-      id: groupId
+  }
+
+  if (!rootId) {
+    // this instance is the root node
+    rootId = id
+
+    const parentRootId = dataGetValue({
+      name: 'component/roots',
+      id: parentId
     })
 
-    if (scope.isEmpty) {
-      // get parent scope
-      const parentScope = dataGetValue({
+    if (!parentRootId.isEmpty) {
+      const parentRootScope = dataGetValue({
         name: 'variable/scopes',
-        id: parentGroupId,
+        id: parentRootId.item,
         options: {
           clone: true
         }
       })
 
-      if (parentScope.isEmpty) {
-        // set new group scope
-        dataSetValue({
-          name: 'variable/scopes',
-          value: [groupId, 'global'],
-          options: {
-            id: groupId,
-            replace: true
-          }
-        })
-      } else {
-        const newScope = parentScope.item
+      if (!parentRootScope.isEmpty) {
+        const scope = parentRootScope.item
 
-        // extend scope from parent scope
-        newScope.unshift(groupId)
+        if (parentGroupId !== groupId) {
+          // add new group to scope
+          scope.unshift(groupId)
+        }
+
+        // add current root node to scope
+        scope.unshift(id)
 
         // set new group scope
         dataSetValue({
           name: 'variable/scopes',
-          value: newScope,
+          value: scope,
           options: {
-            id: groupId,
+            id,
             replace: true
           }
         })
       }
+    } else {
+      // set new group scope
+      dataSetValue({
+        name: 'variable/scopes',
+        value: [id, groupId],
+        options: {
+          id,
+          replace: true
+        }
+      })
     }
   }
 
@@ -1317,7 +1326,6 @@ const component = createPlugin('component', {
               id: childId,
               template: $component(item.id),
               parentId: id,
-              rootId: childId,
               groupId: item.groupId
             })
 

@@ -44,6 +44,7 @@ const variable = createPlugin('variable', {
        */
       method (props, { context }) {
         if (props.scope) {
+          // get variable from specific scope
           const value = dataGetValue({
             name: 'variable/values',
             id: props.scope
@@ -69,19 +70,22 @@ const variable = createPlugin('variable', {
           return
         }
 
-        const groups = dataGetValue({
+        // get scopes
+        const scopes = dataGetValue({
           name: 'variable/scopes',
-          id: context.groupId
+          id: context.rootId
         }).item
 
-        for (let i = 0; i < groups.length; i++) {
+        for (let i = 0; i < scopes.length; i++) {
+          // search for variable in scope
           const values = dataGetValue({
             name: 'variable/values',
-            id: groups[i]
+            id: scopes[i]
           })
-          let query = props.query
 
           if (!values.isEmpty) {
+            let query = props.query
+
             if (props.prefixId) {
               query = props.prefixId + query
             }
