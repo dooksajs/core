@@ -13,6 +13,8 @@
  * @property {number|string} [$ref]
  * @property {ComponentRemove} [component_remove]
  * @property {ComponentRenderChildren} [component_renderChildren]
+ * @property {DataAddListener} [data_addListener]
+ * @property {DataAddListener} [data_deleteListener]
  * @property {DataDeleteValue} [data_deleteValue]
  * @property {DataFind} [data_find]
  * @property {'$null'} [data_generateId]
@@ -120,6 +122,28 @@
  * @property {Action|string} id
  * @property {Action|boolean} [cascade]
  * @property {Action|boolean} [listeners]
+ */
+
+/**
+ * Add data listener
+ * @typedef {Object} DataAddListener
+ * @property {DataCollectionName} name - Collection name
+ * @property {'update'|'delete'} [on='update'] - Fire handler on data event
+ * @property {Action|string} [id] - Document Id
+ * @property {number} [priority]
+ * @property {boolean} [force] - Force the event to fire
+ * @property {boolean} [captureAll] - Fire action on all events
+ * @property {Action|string} [handlerId=''] - Id of handler
+ * @property {Action|string} handler
+ */
+
+/**
+ * Delete data listener
+ * @typedef {Object} DataDeleteListener
+ * @property {DataCollectionName} name - Collection name
+ * @property {Action|string} [id] - Document Id
+ * @property {'update'|'delete'} [on='update'] - Fire handler on data event
+ * @property {Action|string} handlerId - The reference handler Id that will be removed
  */
 
 /**

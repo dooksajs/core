@@ -7,6 +7,8 @@ const availableMethods = {
   variable_setValue: true,
   component_remove: true,
   component_renderChildren: true,
+  data_addListener: true,
+  data_deleteListener: true,
   data_deleteValue: true,
   data_find: true,
   data_generateId: true,
