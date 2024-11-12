@@ -156,7 +156,7 @@ const variable = createPlugin('variable', {
         } else {
           const scope = dataGetValue({
             name: 'variable/scopes',
-            id: context.groupId
+            id: context.rootId
           }).item
 
           // assign values to matching variables in parent scope
@@ -201,7 +201,7 @@ const variable = createPlugin('variable', {
               name: 'variable/values',
               value: values,
               options: {
-                id: context.groupId,
+                id: context.rootId,
                 merge: true
               }
             })
