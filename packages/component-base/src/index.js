@@ -1,3 +1,4 @@
+import { createFieldset, fieldset } from './form/fieldset.js'
 import { createH1, h1 } from './content/h1.js'
 import { createH2, h2 } from './content/h2.js'
 import { createH3, h3 } from './content/h3.js'
@@ -36,6 +37,7 @@ export {
   createAnchor,
   createButton,
   createDiv,
+  createFieldset,
   createForm,
   createFormCheck,
   createH1,
@@ -63,6 +65,7 @@ export default [
   anchor,
   button,
   div,
+  fieldset,
   form,
   formCheck,
   h1,
