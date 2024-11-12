@@ -18,16 +18,14 @@ export const img = createComponent({
       value: ''
     }
   ],
-  content: [
-    {
-      name: 'src',
-      nodePropertyName: 'src'
+  options: {
+    src: {
+      name: 'src'
     },
-    {
-      name: 'alt',
-      nodePropertyName: 'alt'
+    alt: {
+      name: 'alt'
     }
-  ]
+  }
 }, [spacingMixin])
 
 /**
