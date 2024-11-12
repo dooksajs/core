@@ -2,7 +2,7 @@ import { createComponent, extendComponent } from '@dooksa/create-component'
 
 export const summary = createComponent({
   id: 'summary',
-  tag: 'summary',
+  tag: 'summary'
 })
 
 /**

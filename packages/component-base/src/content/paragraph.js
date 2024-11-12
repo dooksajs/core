@@ -3,10 +3,10 @@ import { createComponent, extendComponent } from '@dooksa/create-component'
 
 export const paragraph = createComponent({
   id: 'paragraph',
-  tag: 'p',
+  tag: 'p'
 }, [spacingMixin, textMixin, headingMixin])
 
-/** 
+/**
  * @import {ComponentExtend} from '@dooksa/create-component'
  * @import {HeadingMixin, TextMixin, SpacingMixin} from '@dooksa/component-mixins'
  */

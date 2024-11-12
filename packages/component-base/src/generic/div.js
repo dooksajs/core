@@ -77,7 +77,7 @@ export const div = createComponent({
  */
 
 /**
- * @typedef {ComponentExtend|ExtendDivOptions} ExtendDiv 
+ * @typedef {ComponentExtend|ExtendDivOptions} ExtendDiv
  */
 
 /**
