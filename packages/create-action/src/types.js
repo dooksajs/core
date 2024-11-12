@@ -34,6 +34,13 @@
  * @property {'$null'} [route_currentId]
  * @property {'$null'} [route_currentPath]
  * @property {RouteNavigate} [route_navigate]
+ * @property {RegexPattern} [regex_pattern]
+ */
+
+/**
+ * @typedef {Object} RegexPattern
+ * @property {Action|string} pattern - The text of the regular expression. This can also be another RegExp object.
+ * @property {Action|string} [flags] - If specified, flags is a string that contains the flags to add. Alternatively, if a RegExp object is supplied for the pattern, the flags string will replace any of that object's flags (and lastIndex will be reset to 0).
  */
 
 /**

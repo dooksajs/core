@@ -30,7 +30,7 @@ const availableMethods = {
   route_currentId: true,
   route_currentPath: true,
   route_navigate: true,
-  token_textContent: true
+  regex_pattern: true
 }
 
 export default availableMethods
