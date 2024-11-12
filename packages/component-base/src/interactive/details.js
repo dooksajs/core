@@ -9,12 +9,6 @@ import {
 export const details = createComponent({
   id: 'details',
   tag: 'details',
-  content: [
-    {
-      name: 'open',
-      nodePropertyName: 'open'
-    }
-  ],
   options: {
     open: {
       name: 'open',

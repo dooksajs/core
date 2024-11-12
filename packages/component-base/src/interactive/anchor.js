@@ -18,12 +18,11 @@ export const anchor = createComponent({
       value: ''
     }
   ],
-  content: [
-    {
-      name: 'href',
-      nodePropertyName: 'href'
+  options: {
+    href: {
+      name: 'href'
     }
-  ]
+  }
 }, [buttonMixin, positionMixin, eventTypeMouseMixin])
 
 /**

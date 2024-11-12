@@ -4,12 +4,6 @@ export const text = createComponent({
   id: 'text',
   tag: '$null',
   initialize: () => new Text(''),
-  content: [
-    {
-      name: 'value',
-      nodePropertyName: 'nodeValue'
-    }
-  ],
   options: {
     text: {
       name: 'nodeValue'
