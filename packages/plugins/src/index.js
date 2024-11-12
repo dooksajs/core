@@ -15,6 +15,7 @@ import route from './route.js'
 import icon from './icon.js'
 import form from './icon.js'
 import variable from './variable.js'
+import string from './string.js'
 import regex from './regex.js'
 
 export * from './data.js'
@@ -31,6 +32,7 @@ export * from './token.js'
 export * from './query.js'
 export * from './route.js'
 export * from './icon.js'
+export * from './string.js'
 export * from './form.js'
 export * from './variable.js'
 export * from './regex.js'
@@ -53,5 +55,6 @@ export default [
   icon,
   query,
   route,
-  form
+  form,
+  string
 ]
