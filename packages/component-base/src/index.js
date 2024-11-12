@@ -15,6 +15,7 @@ import { createInputCheckboxButton, inputCheckboxButton } from './form/input-che
 import { createInputCheckbox, inputCheckbox } from './form/input-checkbox.js'
 import { createInputColor, inputColor } from './form/input-color.js'
 import { createInputFile, inputFile } from './form/input-file.js'
+import { createInputHidden, inputHidden } from './form/input-hidden.js'
 import { createInputText, inputText } from './form/input-text.js'
 import { createLabel, label } from './form/label.js'
 import { createLegend, legend } from './form/legend.js'
@@ -52,6 +53,7 @@ export {
   createInputCheckboxButton,
   createInputColor,
   createInputFile,
+  createInputHidden,
   createInputText,
   createLabel,
   createLegend,
@@ -80,6 +82,7 @@ export default [
   inputCheckboxButton,
   inputColor,
   inputFile,
+  inputHidden,
   inputText,
   label,
   legend,
