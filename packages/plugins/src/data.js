@@ -1,5 +1,5 @@
 import createPlugin from '@dooksa/create-plugin'
-import { operatorEval, listSplice } from './index.js'
+import { operatorEval, listSplice, actionDispatch } from './index.js'
 import { DataSchemaException, DataValueException } from './utils/Error.js'
 import { deepClone, generateId, isEnvServer } from '@dooksa/utils'
 import { cloneDataValue, createDataValue } from './utils/createDataValue.js'
@@ -1623,7 +1623,7 @@ const data = createPlugin('data', {
         captureAll,
         handler,
         handlerId = generateId()
-      }) {
+      }, action) {
         const listeners = getDataListeners(name, on, id)
 
         // set default listener value
@@ -1642,6 +1642,18 @@ const data = createPlugin('data', {
 
             listeners.items = dataListeners[on][name]
             listeners.priority = dataListeners[priorityKey][name]
+          }
+        }
+
+        if (typeof handler === 'string') {
+          const id = handler
+          // call action dispatch for actions
+          handler = (value) =>{
+            actionDispatch({
+              id,
+              payload: value.item,
+              context: action.context
+            })
           }
         }
 
