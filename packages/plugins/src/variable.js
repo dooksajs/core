@@ -3,6 +3,30 @@ import { dataGetValue, dataSetValue } from './data.js'
 import { generateId } from '@dooksa/utils'
 import { getValue } from './utils/getValue.js'
 
+/**
+ * Add affix to query
+ * @param {string} query
+ * @param {string} prefix
+ * @param {string} suffix
+ */
+function affixQuery (query, prefix, suffix) {
+  if (prefix) {
+    query = prefix + query
+  }
+
+  if (suffix) {
+    const splitQuery = query.split('.')
+
+    query = splitQuery[0] + suffix
+
+    for (let i = 1; i < splitQuery.length; i++) {
+      query = query + query
+    }
+  }
+
+  return query
+}
+
 const variable = createPlugin('variable', {
   metadata: {
     title: 'Variable',
@@ -51,18 +75,7 @@ const variable = createPlugin('variable', {
           })
 
           if (!value.isEmpty) {
-            let query = props.query
-
-            if (props.prefixId) {
-              query = props.prefixId + query
-            }
-
-            if (props.suffixId) {
-              const splitQuery = query.split('.')
-
-              splitQuery[0] = splitQuery[0] + props.suffixId
-              query = splitQuery.join('.')
-            }
+            const query = affixQuery(props.query, props.prefixId, props.suffixId)
 
             return getValue(value.item, query)
           }
@@ -84,22 +97,7 @@ const variable = createPlugin('variable', {
           })
 
           if (!values.isEmpty) {
-            let query = props.query
-
-            if (props.prefixId) {
-              query = props.prefixId + query
-            }
-
-            if (props.suffixId) {
-              const splitQuery = query.split('.')
-
-              query = splitQuery[0] + props.suffixId
-
-              for (let i = 1; i < splitQuery.length; i++) {
-                query = query + query
-              }
-            }
-
+            const query = affixQuery(props.query, props.prefixId, props.suffixId)
             const value = getValue(values.item, query)
 
             if (value) {
