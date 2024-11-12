@@ -16,6 +16,7 @@ import { createInputColor, inputColor } from './form/input-color.js'
 import { createInputFile, inputFile } from './form/input-file.js'
 import { createInputText, inputText } from './form/input-text.js'
 import { createLabel, label } from './form/label.js'
+import { createLegend, legend } from './form/legend.js'
 import { createOption, option } from './form/option.js'
 import { createSelect, select } from './form/select.js'
 import { div, createDiv } from './generic/div.js'
@@ -51,7 +52,7 @@ export {
   createInputFile,
   createInputText,
   createLabel,
-  createParagraph, createSelect,
+  createLegend,
   createOption, createSpan, createText
 }
 
@@ -78,6 +79,7 @@ export default [
   inputFile,
   inputText,
   label,
+  legend,
   paragraph,
   select,
   option,
