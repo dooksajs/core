@@ -25,7 +25,7 @@ export default createMixin({
       float: {
         name: 'className',
         infixValues: {
-          className: 'container',
+          className: 'float',
           infixes: [
             {
               name: 'breakpoint',
