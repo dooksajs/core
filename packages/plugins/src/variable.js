@@ -114,8 +114,8 @@ const variable = createPlugin('variable', {
         icon: 'mdi:format-list-numbered'
       },
       method (props, { context }) {
-        const values = {}
-        const valueIds = []
+        const newValues = {}
+        const newValueKeys = []
 
         for (let i = 0; i < props.values.length; i++) {
           const item = props.values[i]
@@ -129,8 +129,8 @@ const variable = createPlugin('variable', {
             valueId = valueId + item.suffixId
           }
 
-          valueIds.push(valueId)
-          values[valueId] = item.value
+          newValueKeys.push(valueId)
+          newValues[valueId] = item.value
         }
 
         if (props.scope) {
@@ -147,7 +147,7 @@ const variable = createPlugin('variable', {
 
           return dataSetValue({
             name: 'variable/values',
-            value: values,
+            value: newValues,
             options: {
               id: props.scope,
               merge: true
@@ -171,14 +171,16 @@ const variable = createPlugin('variable', {
               let hasValue = false
               const value = {}
 
-              for (let i = 0; i < valueIds.length; i++) {
-                const id = valueIds[i]
+              for (let i = 0; i < newValueKeys.length; i++) {
+                const key = newValueKeys[i]
 
-                if (values.item.hasOwnProperty(id)) {
+                if (values.item.hasOwnProperty(key)) {
+                  // set new value
                   hasValue = true
-                  value[id] = values[id]
-                  delete values[id]
-                  valueIds.splice(i, 1)
+                  value[key] = newValues[key]
+                  // remove used value
+                  delete newValues[key]
+                  newValueKeys.splice(i--, 1)
                 }
               }
 
@@ -192,14 +194,19 @@ const variable = createPlugin('variable', {
                   }
                 })
               }
+
+              // no values left to set
+              if (!newValueKeys.length) {
+                return
+              }
             }
           }
 
           // assign value to current context
-          if (valueIds.length) {
+          if (newValueKeys.length) {
             dataSetValue({
               name: 'variable/values',
-              value: values,
+              value: newValues,
               options: {
                 id: context.rootId,
                 merge: true
