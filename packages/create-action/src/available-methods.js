@@ -30,6 +30,7 @@ const availableMethods = {
   route_currentId: true,
   route_currentPath: true,
   route_navigate: true,
+  string_replace: true,
   regex_pattern: true
 }
 

@@ -34,7 +34,15 @@
  * @property {'$null'} [route_currentId]
  * @property {'$null'} [route_currentPath]
  * @property {RouteNavigate} [route_navigate]
+ * @property {StringReplace} [string_replace]
  * @property {RegexPattern} [regex_pattern]
+ */
+
+/**
+ * @typedef {Object} StringReplace
+ * @property {Action|string} value - Target string
+ * @property {Action|string} pattern - Can be a string or regular expression
+ * @property {Action|string} replacement - String that will replace what matches the pattern
  */
 
 /**
