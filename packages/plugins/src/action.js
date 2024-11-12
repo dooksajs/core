@@ -193,6 +193,11 @@ function ifElse (branch, callback, { context, payload, blockValues }) {
 
     for (let i = 0; i < branch.if.length; i++) {
       const item = branch.if[i]
+      if (item.andOr) {
+        compareItem.op = item.andOr
+        continue
+      }
+
       const value = operatorEval({
         name: item.op,
         values: [item.from, item.to]
@@ -200,13 +205,7 @@ function ifElse (branch, callback, { context, payload, blockValues }) {
 
       if (!compareItem.value_1) {
         compareItem.value_1 = value
-      }
-
-      if (!compareItem.op) {
-        compareItem.op = item.andOr
-      }
-
-      if (!compareItem.value_2) {
+      } else {
         if (!compareItem.op) {
           throw new Error('Condition expects an operator')
         }
