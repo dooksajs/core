@@ -112,17 +112,19 @@ const icon = createPlugin('icon', {
             }
           })
           .then(data => {
-            const valueCache = {}
-
             for (const key in currentIconQueue.components) {
               if (Object.prototype.hasOwnProperty.call(currentIconQueue.components, key)) {
                 const component = currentIconQueue.components[key]
                 let currentIconId = component.iconId
+                let isAlias = false
 
                 // check if id is an alias
                 if (data.aliases && data.aliases[component.iconId]) {
+                  isAlias = true
                   currentIconId = data.aliases[component.iconId].parent
                 }
+
+                let parentId = iconPrefix + ':' + currentIconId
 
                 // check if icon exists
                 if (!data.icons[currentIconId]) {
@@ -133,25 +135,18 @@ const icon = createPlugin('icon', {
                   ${data.icons[currentIconId].body}
                 </svg>`
 
-                // cache icon
-                if (!valueCache[iconId]) {
-                  dataSetValue({
-                    name: 'icon/items',
-                    value,
-                    options: { id }
-                  })
-                  valueCache[iconId] = value
-                }
+                dataSetValue({
+                  name: 'icon/items',
+                  value,
+                  options: { id: parentId }
+                })
 
-                // cache alias
-                if (iconId !== currentIconId && valueCache[currentIconId]) {
+                if (isAlias) {
                   dataSetValue({
-                    name: 'icon/items',
-                    value: id,
-                    options: { id: iconPrefix + ':' + currentIconId }
+                    name: 'icon/aliases',
+                    value: parentId,
+                    options: { id: component.iconId }
                   })
-
-                  valueCache[currentIconId] = value
                 }
 
                 // fade new icon
