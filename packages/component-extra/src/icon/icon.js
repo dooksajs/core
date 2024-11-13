@@ -16,6 +16,10 @@ export const icon = createComponent({
     {
       name: 'className',
       value: 'icon'
+    },
+    {
+      name: 'aria-hidden',
+      value: 'true'
     }
   ],
   options: {
