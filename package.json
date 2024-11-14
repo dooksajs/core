@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "build-server": "node ./scripts/build-server.js",
-    "build-client": "node ./scripts/build-client.js"
+    "build-client": "node ./scripts/build-client.js",
+    "dev": "pnpm --filter playground run dev"
   },
   "types": "./packages/types.js",
   "license": "AGPL-3.0-or-later",
