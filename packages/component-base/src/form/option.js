@@ -3,7 +3,7 @@ import { createText } from '../content/text.js'
 
 const text = createText({
   options: {
-    text: 'Select option'
+    value: 'Select option'
   }
 })
 

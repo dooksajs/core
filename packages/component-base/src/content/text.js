@@ -5,7 +5,7 @@ export const text = createComponent({
   tag: '$null',
   initialize: () => new Text(''),
   options: {
-    text: {
+    value: {
       name: 'nodeValue'
     }
   }
@@ -18,7 +18,7 @@ export const text = createComponent({
 /**
  * @typedef {Object} ExtendTextOption
  * @property {Object} options
- * @property {string} [options.text] - Text
+ * @property {string} [options.value] - Text
  */
 
 /**

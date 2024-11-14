@@ -2,7 +2,7 @@ import { createComponent } from '@dooksa/create-component'
 import { createText, createDiv } from '@dooksa/component-base'
 import { createIcon } from '@dooksa/component-extra'
 
-const editText = createText({ options: { text: 'Edit' } })
+const editText = createText({ options: { value: 'Edit' } })
 
 const btnIcon = createIcon({
   options: {

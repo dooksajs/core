@@ -6,7 +6,7 @@ import { createText } from '@dooksa/component-base'
 
 const cardHeaderText = createText({
   options: {
-    text: 'Header'
+    value: 'Header'
   }
 })
 

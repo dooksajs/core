@@ -7,8 +7,8 @@ import {
   createIcon
 } from '@dooksa/component-extra'
 
-const actionHeadingText = createText({ options: { text: 'Add action block ' } })
-const actionSubHeadingText = createText({ options: { text: '- Expand to select action' } })
+const actionHeadingText = createText({ options: { value: 'Add action block ' } })
+const actionSubHeadingText = createText({ options: { value: '- Expand to select action' } })
 const actionSubHeading = createSmall({
   children: [actionSubHeadingText],
   options: { textColor: 'secondary' }

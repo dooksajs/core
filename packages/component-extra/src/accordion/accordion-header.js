@@ -3,7 +3,11 @@ import {
   createSummary, createText
 } from '@dooksa/component-base'
 
-const accordionHeaderText = createText({ options: { text: 'Accordion heading' } })
+const accordionHeaderText = createText({
+  options: {
+    value: 'Accordion heading'
+  }
+})
 
 export const accordionHeader = createSummary({
   metadata: { id: 'accordion-header' },

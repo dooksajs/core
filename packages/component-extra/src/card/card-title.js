@@ -3,7 +3,7 @@ import { createText } from '@dooksa/component-base'
 
 const cardTitleText = createText({
   options: {
-    text: 'Card title'
+    value: 'Card title'
   }
 })
 

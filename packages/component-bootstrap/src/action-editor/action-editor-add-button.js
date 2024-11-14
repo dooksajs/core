@@ -4,7 +4,11 @@ import {
   createDiv, createHr, createText, createLabel, createInputCheckboxButton
 } from '@dooksa/component-base'
 
-const editText = createText({ options: { text: 'Add action block' } })
+const editText = createText({
+  options: {
+    value: 'Add action block'
+  }
+})
 
 const btnIcon = createIcon({
   options: {

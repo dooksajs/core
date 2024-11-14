@@ -4,19 +4,19 @@ import { ariaLabelMixin } from '@dooksa/component-mixins'
 
 const leftText = createText({
   options: {
-    text: 'Left'
+    value: 'Left'
   }
 })
 
 const middleText = createText({
   options: {
-    text: 'Middle'
+    value: 'Middle'
   }
 })
 
 const rightText = createText({
   options: {
-    text: 'Right'
+    value: 'Right'
   }
 })
 

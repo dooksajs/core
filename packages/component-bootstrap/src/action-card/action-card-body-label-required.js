@@ -20,7 +20,7 @@ const icon = createIcon({
   ]
 })
 const labelText = createText({
-  options: { text: '' },
+  options: { value: '' },
   events: [
     {
       on: 'component/created',
@@ -28,7 +28,7 @@ const labelText = createText({
     }
   ]
 })
-const labelStarText = createText({ options: { text: ' *' } })
+const labelStarText = createText({ options: { value: ' *' } })
 const labelStar = createSpan({
   children: [labelStarText],
   options: { textColor: 'danger' }

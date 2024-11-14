@@ -9,7 +9,7 @@ import {
 import { createText } from '../content/text.js'
 
 const labelText = createText({
-  options: { text: 'Label' },
+  options: { value: 'Label' },
   events: [
     {
       on: 'component/beforeCreate',

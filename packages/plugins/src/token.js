@@ -66,9 +66,9 @@ function tokenSplice (string, start, end, insert = '') {
 
 function tokenUpdateText (process, item, insert, start, end, updateText) {
   item.valueLength = insert.toString().length
-  process.text = tokenSplice(process.text, start, end, insert)
+  process.value = tokenSplice(process.value, start, end, insert)
 
-  updateText(process.text)
+  updateText(process.value)
 }
 
 const token = createPlugin('token', {
@@ -107,7 +107,10 @@ const token = createPlugin('token', {
         const findToken = new RegExp(pattern, 'g')
         const token = findToken.test(value)
 
-        return { value, token }
+        return {
+          value,
+          token
+        }
       }
     },
     textContent: {
@@ -133,7 +136,7 @@ const token = createPlugin('token', {
         const item = tokenProcess[viewId]
 
         if (item.tokenised) {
-          item.text = text
+          item.value = text
           let valuePadding = 0
 
           for (const tokenIndex in item.list) {
@@ -167,14 +170,14 @@ const token = createPlugin('token', {
           return
         }
 
-        for (let i = 0; i < item.text.length; i++) {
-          const bracketLeft = item.text[i]
+        for (let i = 0; i < item.value.length; i++) {
+          const bracketLeft = item.value[i]
           // find open bracket
           if (bracketLeft === '[') {
             let token = ''
 
-            for (let j = i + 1; j < item.text.length; j++) {
-              const bracketRight = item.text[j]
+            for (let j = i + 1; j < item.value.length; j++) {
+              const bracketRight = item.value[j]
               // find closing bracket then process token
               if (bracketRight === ']') {
                 let valueLength = 0

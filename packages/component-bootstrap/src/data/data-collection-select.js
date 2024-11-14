@@ -13,7 +13,7 @@ export default createDiv({
         createOption({
           children: [
             createText({
-              options: { text: 'Select collection' }
+              options: { value: 'Select collection' }
             })
           ],
           options: {

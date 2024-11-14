@@ -6,7 +6,7 @@ import { createText } from '@dooksa/component-base'
 // Value tab
 const textValue = createText({
   options: {
-    text: 'Value'
+    value: 'Value'
   }
 })
 
@@ -24,7 +24,7 @@ const navItemValue = createNavItem({
 // Variable tab
 const textVariable = createText({
   options: {
-    text: 'Variable'
+    value: 'Variable'
   }
 })
 
@@ -42,7 +42,7 @@ const navItemVariable = createNavItem({
 // Action tab
 const textAction = createText({
   options: {
-    text: 'Action'
+    value: 'Action'
   }
 })
 

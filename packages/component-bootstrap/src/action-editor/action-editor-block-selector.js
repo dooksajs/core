@@ -16,13 +16,13 @@ import {
 
 const cardText = createText({
   options: {
-    text: 'Action block are the building blocks for an action'
+    value: 'Action block are the building blocks for an action'
   }
 })
 
 const cardTitle = createText({
   options: {
-    text: 'Action block'
+    value: 'Action block'
   }
 })
 
@@ -129,7 +129,7 @@ const cardHeader = createCardHeader({
 
 const cardBodyTitleText = createText({
   options: {
-    text: 'Select an action'
+    value: 'Select an action'
   }
 })
 
@@ -139,7 +139,7 @@ const cardBodyTitle = createCardTitle({
 
 const cardBodyTextText = createText({
   options: {
-    text: 'Choose an action below or filter the results by using the search'
+    value: 'Choose an action below or filter the results by using the search'
   }
 })
 

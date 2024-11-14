@@ -4,7 +4,7 @@ import { buttonMixin, eventTypeMouseMixin, positionMixin } from '@dooksa/compone
 
 const anchorText = createText({
   options: {
-    text: 'Link text...'
+    value: 'Link text...'
   }
 })
 

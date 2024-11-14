@@ -4,17 +4,17 @@ import { createIcon } from '@dooksa/component-extra'
 
 const editText = createText({
   options: {
-    text: 'Edit'
+    value: 'Edit'
   }
 })
 
 const btnIcon = createIcon({
   options: {
     icon: 'bi:pencil-square',
-    margin: {
+    margin: [{
       strength: '1',
       direction: 'end'
-    }
+    }]
   }
 })
 
