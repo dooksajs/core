@@ -2,7 +2,6 @@ import createPlugin from '@dooksa/create-plugin'
 import { dataSetValue } from '@dooksa/plugins'
 import { middlewareGet, middlewareSet } from './middleware.js'
 import helmet from 'helmet'
-import cookieParser from 'cookie-parser'
 import compression from 'compression'
 import HyperExpress from 'hyper-express'
 
@@ -146,25 +145,12 @@ const $http = createPlugin('http', {
     app = new HyperExpress.Server()
     cookieSecret = cookieSecret
 
-    let secure = true
-
-    if (process.env.NODE_ENV === 'development') {
-      secure = false
-    } else {
+    if (process.env.NODE_ENV === 'production') {
       // @ts-ignore
       app.use(compression())
       // @ts-ignore
       app.use(helmet())
     }
-
-    // setup plugins
-    // @ts-ignore
-    app.use(cookieParser(cookieSecret, {
-      // @ts-ignore
-      httpOnly: true,
-      sameSite: true,
-      secure
-    }))
 
     // handle json requests
     middlewareSet({
