@@ -32,9 +32,10 @@ const textContainer = createCardText({
 const textColumn = createDiv({
   children: [header, textContainer],
   options: {
-    flexGrow: {
+    flexSize: [{
+      type: 'grow',
       size: '1'
-    }
+    }]
   }
 })
 
@@ -50,25 +51,19 @@ const icon = createIcon({
 const iconColumn = createDiv({
   children: [icon],
   options: {
-    margin: {
+    margin: [{
       direction: 'top',
       strength: 1
-    },
-    padding: {
-      strength: '2'
-    },
+    }],
+    padding: [{ strength: '2' }],
     shadow: 'sm',
     border: 'all',
     rounded: 'regular',
     borderColor: 'dark',
-    displayFlex: 'always',
-    alignItems: {
-      position: 'center'
-    },
+    display: [{ type: 'flex' }],
+    alignItems: [{ position: 'center' }],
     fontSize: '2',
-    justifyContent: {
-      position: 'center'
-    }
+    justifyContent: [{ position: 'center' }]
   }
 })
 
@@ -78,7 +73,7 @@ export default createListGroupItemAction({
   },
   children: [iconColumn, textColumn],
   options: {
-    displayFlex: 'always',
+    display: [{ type: 'flex' }],
     gap: '3'
   },
   events: [

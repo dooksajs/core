@@ -59,18 +59,18 @@ const cardHeaderDiv = createDiv({
     rounded: 'regular',
     shadow: 'sm',
     fontSize: '1',
-    displayFlex: 'always',
+    display: [{ type: 'flex' }],
     backgroundColor: 'white',
-    alignItems: { position: 'center' },
-    justifyContent: { position: 'center' },
+    alignItems: [{ position: 'center' }],
+    justifyContent: [{ position: 'center' }],
     margin: [{
-      strength: '2',
+      strength: '3',
       direction: 'end'
     }],
-    padding: {
+    padding: [{
       strength: '3',
       direction: 'xAxis'
-    },
+    }],
     border: 'all'
   }
 })
@@ -79,6 +79,6 @@ export default createCardHeader({
   children: [cardHeaderDiv, cardHeaderDiv2],
   options: {
     position: 'relative',
-    displayFlex: 'always'
+    display: [{ type: 'flex' }]
   }
 })

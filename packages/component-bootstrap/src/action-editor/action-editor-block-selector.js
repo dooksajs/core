@@ -29,10 +29,10 @@ const cardTitle = createText({
 const cardHeaderIcon = createIcon({
   options: {
     icon: 'bi:collection-play-fill',
-    margin: {
+    margin: [{
       strength: '2',
       direction: 'end'
-    }
+    }]
   }
 })
 
@@ -63,25 +63,25 @@ const iconBox = createDiv({
     rounded: 'regular',
     shadow: 'sm',
     fontSize: '3',
-    displayFlex: 'always',
+    display: [{ type: 'flex' }],
     backgroundColor: 'white',
-    alignItems: {
+    alignItems: [{
       position: 'center'
-    },
-    justifyContent: {
+    }],
+    justifyContent: [{
       position: 'center'
-    },
-    margin: {
+    }],
+    margin: [{
       strength: '2',
       direction: 'end'
-    },
+    }],
     border: 'all'
   }
 })
 
 const closeText = createText({
   options: {
-    text: 'Cancel'
+    value: 'Cancel'
   }
 })
 
@@ -107,14 +107,14 @@ const closeButton = createButton({
 const closeContainer = createDiv({
   children: [closeButton],
   options: {
-    displayFlex: 'always',
-    alignItems: {
+    display: [{ type: 'flex' }],
+    alignItems: [{
       position: 'center'
-    },
-    margin: {
+    }],
+    margin: [{
       direction: 'start',
       strength: 'auto'
-    }
+    }]
   }
 })
 
@@ -123,7 +123,7 @@ const cardHeader = createCardHeader({
   options: {
     color: 'success',
     position: 'relative',
-    displayFlex: 'always'
+    display: [{ type: 'flex' }]
   }
 })
 

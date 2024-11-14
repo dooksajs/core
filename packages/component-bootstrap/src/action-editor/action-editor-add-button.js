@@ -13,10 +13,10 @@ const editText = createText({
 const btnIcon = createIcon({
   options: {
     icon: 'mdi:plus-circle-outline',
-    margin: {
+    margin: [{
       strength: '1',
       direction: 'end'
-    }
+    }]
   }
 })
 
@@ -44,11 +44,7 @@ const inputCheckbox = createInputCheckboxButton({
     },
     {
       on: 'component/created',
-      actionId: 'action-value-content-id'
-    },
-    {
-      on: 'component/created',
-      actionId: 'action-value-root-id'
+      actionId: 'variable-root-id'
     },
     {
       on: 'node/checked',
@@ -60,14 +56,21 @@ const inputCheckbox = createInputCheckboxButton({
 const middleDiv = createDiv({
   children: [inputCheckbox, label],
   options: {
-    padding: {
+    padding: [{
       strength: '2',
       direction: 'xAxis'
-    }
+    }]
   }
 })
 
-const hr = createHr({ options: { flexGrow: { size: '1' } } })
+const hr = createHr({
+  options: {
+    flexSize: [{
+      type: 'grow',
+      size: '1'
+    }]
+  }
+})
 
 export default createComponent({
   id: 'action-editor-add-button',

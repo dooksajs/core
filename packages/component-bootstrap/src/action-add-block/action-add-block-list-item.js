@@ -29,7 +29,12 @@ const text = createText({
 const textContainer = createCardText({ children: [text] })
 const textColumn = createDiv({
   children: [header, textContainer],
-  options: { flexGrow: { size: '1' } }
+  options: {
+    flexSize: [{
+      type: 'grow',
+      size: '1'
+    }]
+  }
 })
 const icon = createIcon({
   events: [
@@ -51,10 +56,10 @@ const iconColumn = createDiv({
     border: 'all',
     rounded: 'regular',
     borderColor: 'dark',
-    displayFlex: 'always',
-    alignItems: { position: 'center' },
+    display: [{ type: 'flex' }],
+    alignItems: [{ position: 'center' }],
     fontSize: '2',
-    justifyContent: { position: 'center' }
+    justifyContent: [{ position: 'center' }]
   }
 })
 
@@ -62,7 +67,7 @@ export default createListGroupItemAction({
   metadata: { id: 'action-add-block-list-item' },
   children: [iconColumn, textColumn],
   options: {
-    displayFlex: 'always',
+    display: [{ type: 'flex' }],
     gap: '3'
   },
   events: [
