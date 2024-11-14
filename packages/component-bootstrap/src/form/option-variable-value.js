@@ -1,6 +1,4 @@
-import {
-  createText, createOption
-} from '@dooksa/component-base'
+import { createText, createOption } from '@dooksa/component-base'
 
 export default createOption({
   metadata: { id: 'option-variable-value' },
@@ -8,7 +6,7 @@ export default createOption({
     createText({
       events: [
         {
-          on: 'component/beforeCreate',
+          on: 'component/created',
           actionId: 'option-text'
         }
       ]
@@ -16,7 +14,7 @@ export default createOption({
   ],
   events: [
     {
-      on: 'component/beforeCreate',
+      on: 'component/created',
       actionId: 'option-value'
     }
   ]
