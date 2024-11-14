@@ -113,6 +113,7 @@
  * @property {Object} [metadata] - Document metadata
  * @property {boolean} [stopPropagation] - Prevents further propagation of the update event
  * @property {boolean} [merge] - Merge target with source
+ * @property {boolean} [replace] - Replace target with source
  * @property {Object} [update] - Update target with source
  * @property {(string[] & number[]) | (string[] | number[])} [update.position] - Update nested data within target with source
  * @property {'push'|'pull'|'pop'|'shift'|'unshift'|'splice'} [update.method] - Type of update method
@@ -126,7 +127,7 @@
  * @property {boolean} [expand] - Expand all relational data
  * @property {Object} [expandExclude] - Exclude items from expanding
  * @property {boolean} [expandClone] - Expanded items returns a deep clone of the item value
- * @property {string|number} [position] - (@TODO double check type) Return the value by key of the data value
+ * @property {string|string[]} [position] - Return the value by key of the data value
  * @property {boolean} [clone] - Returns a deep clone of the item value
  */
 
