@@ -1,0 +1,16 @@
+{
+    "_type": "request",
+    "method": "DELETE",
+    "body": {
+        "mimeType": "No Body"
+    },
+    "url": "http://localhost:6362/_/action/sequence?id=test",
+    "sortOrder": 1,
+    "parameters": [
+        {
+            "name": "id",
+            "value": "test"
+        }
+    ],
+    "pathParameters": []
+}

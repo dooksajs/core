@@ -1,0 +1,38 @@
+{
+  "_type": "request",
+  "method": "POST",
+  "body": {
+    "mimeType": "application/x-www-form-urlencoded",
+    "params": [
+      {
+        "name": "action-name",
+        "value": "test"
+      },
+      {
+        "name": "[1]action-method",
+        "value": "variable_getValue"
+      },
+      {
+        "name": "[1]variable_getValue.id",
+        "value": "hello"
+      },
+      {
+        "name": "[1]variable_getValue.query",
+        "value": "$null"
+      }
+    ]
+  },
+  "url": "http://localhost:6362/_/action/sequence",
+  "sortOrder": 2,
+  "parameters": [],
+  "headers": [
+    {
+      "name": "Content-Type",
+      "value": "application/x-www-form-urlencoded"
+    }
+  ],
+  "pathParameters": [],
+  "authentication": {
+    "type": "No Auth"
+  }
+}

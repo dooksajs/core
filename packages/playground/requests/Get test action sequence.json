@@ -1,0 +1,30 @@
+{
+    "_type": "request",
+    "method": "GET",
+    "body": {
+        "mimeType": "No Body"
+    },
+    "url": "http://localhost:6362/_/action/sequence?id=test&expand=true",
+    "sortOrder": 0,
+    "parameters": [
+        {
+            "name": "id",
+            "value": "test"
+        },
+        {
+            "name": "expand",
+            "value": "true"
+        }
+    ],
+    "pathParameters": [],
+    "authentication": {
+        "type": "No Auth",
+        "token": "test"
+    },
+    "headers": [
+        {
+            "name": "Set-Cookie",
+            "value": "test=test"
+        }
+    ]
+}
