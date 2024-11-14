@@ -4,7 +4,7 @@ import { ariaCurrentMixin, ariaSelectedMixin } from '@dooksa/component-mixins'
 
 const navLinkText = createText({
   options: {
-    text: 'Link'
+    value: 'Link'
   }
 })
 

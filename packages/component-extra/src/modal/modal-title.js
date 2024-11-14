@@ -3,7 +3,7 @@ import { createText } from '@dooksa/component-base'
 
 const modalText = createText({
   options: {
-    text: 'Modal title...'
+    value: 'Modal title...'
   }
 })
 
