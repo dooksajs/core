@@ -3,7 +3,7 @@ import createAction from '@dooksa/create-action'
 export default createAction('option-text', [
   {
     data_setValue: {
-      name: 'content/items',
+      name: 'component/options',
       value: {
         value: {
           variable_getValue: {
@@ -13,7 +13,10 @@ export default createAction('option-text', [
           }
         }
       },
-      options: { id: { action_getContextValue: 'contentId' } }
+      options: {
+        id: { action_getContextValue: 'id' },
+        merge: true
+      }
     }
   }
 ])
