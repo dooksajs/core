@@ -1,3 +1,1 @@
-import iconRender from './icon-render.js'
-
-export { iconRender }
+export * from './icon-render.js'
