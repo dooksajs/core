@@ -1,6 +1,6 @@
 import createAction from '@dooksa/create-action'
 
-export default createAction('data-document-option-item', [
+export const dataDocumentOptionItem = createAction('data-document-option-item', [
   {
     data_setValue: {
       name: 'component/items',

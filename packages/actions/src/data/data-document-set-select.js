@@ -1,7 +1,8 @@
 import createAction from '@dooksa/create-action'
 
-export default createAction('data-document-set-select', [
+export const dataDocumentSetSelect = createAction('data-document-set-select', [
   {
+    $id: 'collection_value',
     variable_setValue: {
       scope: { action_getContextValue: 'groupId' },
       values: [{
@@ -11,6 +12,7 @@ export default createAction('data-document-set-select', [
     }
   },
   {
+    $id: 'component_document_select',
     data_setValue: {
       name: 'component/items',
       value: {
@@ -20,18 +22,17 @@ export default createAction('data-document-set-select', [
     }
   },
   {
-    data_setValue: {
-      name: 'component/items',
-      value: {
-        id: 'action-card-body-label-required',
-        isTemplate: true
-      }
+    $id: 'component_document_select_id',
+    action_getBlockValue: {
+      value: { $ref: 'component_document_select' },
+      query: 'id'
     }
   },
   {
+    $id: 'root_id',
     variable_getValue: {
       scope: { action_getContextValue: 'groupId' },
-      query: 'data-document-root-id'
+      query: 'variable_context_id'
     }
   },
   {
@@ -39,11 +40,11 @@ export default createAction('data-document-set-select', [
       scope: { action_getContextValue: 'groupId' },
       values: [
         {
-          id: 'action-card-body-label-icon',
+          id: 'action_card_body_label_icon',
           value: 'mdi:file-document'
         },
         {
-          id: 'action-card-body-label-text',
+          id: 'action_card_body_label_text',
           value: 'Document ID'
         }
       ]
@@ -52,36 +53,12 @@ export default createAction('data-document-set-select', [
   {
     data_setValue: {
       name: 'component/children',
-      value: {
-        action_getBlockValue: {
-          value: { $ref: 2 },
-          query: 'id'
-        }
-      },
+      value: { $ref: 'component_document_select_id' },
       options: {
-        id: { $ref: 3 },
+        id: { $ref: 'root_id' },
         update: {
           method: 'splice',
           startIndex: 2,
-          deleteCount: 1
-        }
-      }
-    }
-  },
-  {
-    data_setValue: {
-      name: 'component/children',
-      value: {
-        action_getBlockValue: {
-          value: { $ref: 1 },
-          query: 'id'
-        }
-      },
-      options: {
-        id: { $ref: 3 },
-        update: {
-          method: 'splice',
-          startIndex: 3,
           deleteCount: 1
         }
       }

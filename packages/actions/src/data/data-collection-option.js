@@ -1,6 +1,6 @@
 import createAction from '@dooksa/create-action'
 
-export default createAction('data-collection-option', [
+export const dataCollectionOption = createAction('data-collection-option', [
   {
     list_map: {
       actionId: 'data-collection-option-item',

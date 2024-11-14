@@ -1,6 +1,6 @@
 import createAction from '@dooksa/create-action'
 
-export default createAction('data-collection-option-item', [
+export const dataCollectionOptionItem = createAction('data-collection-option-item', [
   {
     data_setValue: {
       name: 'component/items',

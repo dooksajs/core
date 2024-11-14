@@ -9,10 +9,6 @@ export default createDiv({
     {
       on: 'component/beforeCreate',
       actionId: 'data-collection-label'
-    },
-    {
-      on: 'component/beforeCreate',
-      actionId: 'data-document-root-id'
     }
   ]
 })

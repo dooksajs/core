@@ -1,6 +1,6 @@
 import createAction from '@dooksa/create-action'
 
-export default createAction('data-set-value-by-id-update-fieldset', [
+export const dataSetValueByIdUpdateFieldset = createAction('data-set-value-by-id-update-fieldset', [
   {
     action_ifElse: {
       if: [
@@ -10,11 +10,16 @@ export default createAction('data-set-value-by-id-update-fieldset', [
           op: '=='
         }
       ],
-      then: [{ $sequenceRef: 1 }, { $sequenceRef: 2 }],
+      then: [
+        { $sequenceRef: 'component_select_document' },
+        { $sequenceRef: 'component_select_document_id' },
+        { $sequenceRef: 'component_children_root_select_document' }
+      ],
       else: []
     }
   },
   {
+    $id: 'component_select_document',
     data_setValue: {
       name: 'component/items',
       value: {
@@ -24,14 +29,17 @@ export default createAction('data-set-value-by-id-update-fieldset', [
     }
   },
   {
+    $id: 'component_select_document_id',
+    action_getBlockValue: {
+      value: { $ref: 1 },
+      query: 'id'
+    }
+  },
+  {
+    $id: 'component_children_root_select_document',
     data_setValue: {
       name: 'component/children',
-      value: {
-        action_getBlockValue: {
-          value: { $ref: 1 },
-          query: 'id'
-        }
-      },
+      value: { $ref: 'component_select_document_id' },
       options: {
         id: { action_getContextValue: 'rootId' },
         update: {

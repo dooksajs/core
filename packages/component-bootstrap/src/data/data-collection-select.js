@@ -22,11 +22,18 @@ export default createDiv({
           }
         })
       ],
-      options: { required: true },
+      options: {
+        name: 'name',
+        required: true
+      },
       events: [
         {
           on: 'component/created',
           actionId: 'input-id'
+        },
+        {
+          on: 'component/created',
+          actionId: 'action-input-name-prefix-action'
         },
         {
           on: 'component/created',
@@ -44,7 +51,7 @@ export default createDiv({
     margin: [
       {
         direction: 'start',
-        strength: '3'
+        strength: '4'
       }
     ]
   }

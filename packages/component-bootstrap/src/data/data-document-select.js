@@ -4,48 +4,61 @@ import {
   createText,
   createOption
 } from '@dooksa/component-base'
+import actionCardBodyLabelRequired from '../action-card/action-card-body-label-required.js'
 
 export default createDiv({
   metadata: { id: 'data-document-select' },
   children: [
-    createSelect({
+    actionCardBodyLabelRequired,
+    createDiv({
       children: [
-        createOption({
+        createSelect({
           children: [
-            createText({ options: { text: 'Select document' } })
+            createOption({
+              children: [
+                createText({ options: { value: 'Select document' } })
+              ],
+              options: {
+                selected: true,
+                value: ''
+              }
+            })
           ],
           options: {
-            selected: true,
-            value: ''
-          }
+            name: 'options.id',
+            required: true
+          },
+          events: [
+            {
+              on: 'component/created',
+              actionId: 'input-id'
+            },
+            {
+              on: 'component/created',
+              actionId: 'action-input-name-prefix-action'
+            },
+            {
+              on: 'component/created',
+              actionId: 'data-document-option'
+            },
+            {
+              on: 'node/input',
+              actionId: 'data-document-value'
+            }
+          ]
         })
       ],
-      options: { required: true },
-      events: [
-        {
-          on: 'component/created',
-          actionId: 'input-id'
-        },
-        {
-          on: 'component/created',
-          actionId: 'data-document-option'
-        },
-        {
-          on: 'node/input',
-          actionId: 'data-document-set-fieldset'
-        }
-      ]
+      options: {
+        margin: [{
+          direction: 'start',
+          strength: '4'
+        }],
+        display: [{
+          type: 'grid'
+        }],
+        gap: '3'
+      }
     })
-  ],
-  options: {
-    margin: [{
-      direction: 'start',
-      strength: '3'
-    }]
-  }
+  ]
 })
 
-
-const data = {
-  name: 'john'
-}
