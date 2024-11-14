@@ -1,6 +1,6 @@
 import createAction from '@dooksa/create-action'
 
-export default createAction('action-add-block-list-item-description', [
+export const actionAddBlockListItemDescription = createAction('action-add-block-list-item-description', [
   {
     variable_getValue: {
       scope: { action_getContextValue: 'groupId' },
@@ -16,7 +16,7 @@ export default createAction('action-add-block-list-item-description', [
   },
   {
     data_setValue: {
-      name: 'content/items',
+      name: 'component/options',
       value: {
         value: {
           action_getBlockValue: {
@@ -25,7 +25,10 @@ export default createAction('action-add-block-list-item-description', [
           }
         }
       },
-      options: { id: { action_getContextValue: 'contentId' } }
+      options: {
+        id: { action_getContextValue: 'id' },
+        merge: true
+      }
     }
   }
 ])

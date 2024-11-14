@@ -1,6 +1,6 @@
 import createAction from '@dooksa/create-action'
 
-export default createAction('action-add-block-list-item', [
+export const actionAddBlockListItem = createAction('action-add-block-list-item', [
   {
     data_setValue: {
       name: 'component/items',

@@ -1,14 +1,10 @@
 import createAction from '@dooksa/create-action'
 
-export default createAction('action-add-block-set-context', [
+export const actionAddBlockSetContext = createAction('action-add-block-set-context', [
   {
     variable_setValue: {
       scope: { action_getContextValue: 'groupId' },
       values: [
-        {
-          id: 'component-content-id',
-          value: { action_getContextValue: 'contentId' }
-        },
         {
           id: 'component-id',
           value: { action_getContextValue: 'id' }

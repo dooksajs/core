@@ -1,6 +1,6 @@
 import createAction from '@dooksa/create-action'
 
-export default createAction('action-add-block-list-item-icon', [
+export const actionAddBlockListItemIcon = createAction('action-add-block-list-item-icon', [
   {
     variable_getValue: {
       scope: { action_getContextValue: 'groupId' },

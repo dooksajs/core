@@ -1,32 +1,11 @@
 import createAction from '@dooksa/create-action'
 
-export default createAction('action-add-block-fetch-actions', [
+export const actionAddBlockFetchActions = createAction('action-add-block-fetch-actions', [
   {
     fetch_getAll: {
       collection: 'metadata/actions',
       sync: true,
       expand: true
-    }
-  },
-  {
-    $id: 'component-content-id',
-    variable_getValue: {
-      scope: { action_getContextValue: 'groupId' },
-      query: 'component-content-id'
-    }
-          }
-  },
-  {
-    variable_setValue: {
-      scope: { action_getContextValue: 'groupId' },
-      values: [
-        {
-          id: 'component-content-id',
-          value: {
-            $ref: 1
-          }
-        }
-      ]
     }
   },
   {

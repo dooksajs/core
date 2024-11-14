@@ -1,9 +1,9 @@
 import createAction from '@dooksa/create-action'
 
-export default createAction('action-add-block-body', [
+export const actionAddBlockBody = createAction('action-add-block-body', [
   {
-    action_getActionValue: {
-      id: { action_getContextValue: 'id' },
+    variable_getValue: {
+      scope: { action_getContextValue: 'id' },
       query: 'hasBody'
     }
   },
