@@ -1,16 +1,16 @@
 import createAction from '@dooksa/create-action'
 
 export default createAction('on-create-set-option-id', [{
-  set_dataValue: {
+  data_setValue: {
     name: 'component/options',
     value: {
       id: {
-        get_contextValue: 'rootId'
+        action_getContextValue: 'rootId'
       }
     },
     options: {
       id: {
-        get_contextValue: 'id'
+        action_getContextValue: 'id'
       },
       merge: true
     }

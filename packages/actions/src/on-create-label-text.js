@@ -1,8 +1,8 @@
 import createAction from '@dooksa/create-action'
 
 export default createAction('on-create-label-text', [{
-  set_dataValue: {
-    name: 'content/items',
+  data_setValue: {
+    name: 'component/options',
     value: {
       value: {
         variable_getValue: {
@@ -15,8 +15,9 @@ export default createAction('on-create-label-text', [{
     },
     options: {
       id: {
-        get_contextValue: 'contentId'
-      }
+        action_getContextValue: 'id'
+      },
+      merge: true
     }
   }
 }])

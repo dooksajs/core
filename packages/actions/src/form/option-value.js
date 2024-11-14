@@ -13,7 +13,10 @@ export default createAction('option-value', [
           }
         }
       },
-      options: { id: { action_getContextValue: 'id' } }
+      options: {
+        id: { action_getContextValue: 'id' },
+        merge: true
+      }
     }
   }
 ])
