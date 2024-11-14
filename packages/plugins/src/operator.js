@@ -10,6 +10,10 @@ import createPlugin from '@dooksa/create-plugin'
  */
 
 /**
+ * @typedef {'=='|'!='|'>'|'>='|'<'|'<='|'!'|'%'|'++'|'--'|'-'|'+'|'*'|'**'|'!!'|'~'|'typeof'} Operator
+ */
+
+/**
  * Equality
  * @private
  * @param {OperatorValues} v
@@ -264,29 +268,14 @@ const operator = createPlugin('operator', {
           properties: {
             value_1: {
               type: 'primitives',
-              component: {
-                group: 'Compare',
-                title: 'This',
-                id: 'action-parma-value'
-              },
               required: true
             },
             value_2: {
               type: 'primitives',
-              component: {
-                group: 'Compare',
-                title: 'That',
-                id: 'action-parma-value'
-              },
               required: true
             },
             op: {
               type: 'string',
-              component: {
-                title: 'Operation',
-                group: 'Compare',
-                id: 'action-param-operator-compare-op'
-              },
               required: true
             }
           }
@@ -338,20 +327,12 @@ const operator = createPlugin('operator', {
         properties: {
           name: {
             type: 'string',
-            component: {
-              title: 'Operator',
-              id: 'action-param-operator-eval-name'
-            },
             required: true
           },
           values: {
             type: 'array',
             items: {
               type: 'string',
-              component: {
-                title: 'Values',
-                id: 'action-param-operator-eval-values'
-              },
               required: true
             },
             maxItems: 2,
@@ -362,7 +343,7 @@ const operator = createPlugin('operator', {
       /**
        * Evaluate two values
        * @param {Object} eval - The Object containing the data to evaluate two values
-       * @param {'=='|'!='|'>'|'>='|'<'|'<='|'!'|'%'|'++'|'--'|'-'|'+'|'*'|'**'|'!!'|'~'|'typeof'} eval.name - Operator name
+       * @param {Operator} eval.name - Operator name
        * @param {OperatorValues} eval.values - Contains two values to be evaluated
        */
       method ({ name, values }) {
