@@ -2,7 +2,7 @@ import createAction from '@dooksa/create-action'
 
 export default createAction('select-edit-modal', [
   {
-    set_dataValue: {
+    data_setValue: {
       name: 'component/items',
       value: {
         id: 'modal-section-edit',
@@ -11,25 +11,25 @@ export default createAction('select-edit-modal', [
     }
   },
   {
-    get_blockValue: {
+    action_getBlockValue: {
       value: {
-        get_sequenceValue: '0'
+        $ref: 0
       },
       query: 'id'
     }
   },
   {
-    set_actionValue: {
+    variable_setValue: {
       id: {
-        get_sequenceValue: '1'
+        $ref: 1
       },
       values: [
         {
           id: 'componentId',
           value: {
-            get_actionValue: {
-              id: {
-                get_contextValue: 'rootId'
+            variable_getValue: {
+              scope: {
+                action_getContextValue: 'rootId'
               },
               query: 'componentId'
             }
@@ -39,10 +39,10 @@ export default createAction('select-edit-modal', [
     }
   },
   {
-    set_dataValue: {
+    data_setValue: {
       name: 'component/children',
       value: {
-        get_sequenceValue: '1'
+        $ref: 1
       },
       options: {
         id: 'root',
@@ -55,14 +55,14 @@ export default createAction('select-edit-modal', [
   {
     bootstrapModal_create: {
       id: {
-        get_sequenceValue: '1'
+        $ref: 1
       }
     }
   },
   {
     bootstrapModal_show: {
       id: {
-        get_sequenceValue: '1'
+        $ref: 1
       }
     }
   }

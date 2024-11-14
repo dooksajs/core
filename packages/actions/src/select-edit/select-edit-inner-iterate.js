@@ -2,24 +2,24 @@ import createAction from '@dooksa/create-action'
 
 export default createAction('select-edit-inner-iterate', [
   { // get component template id
-    get_dataValue: {
+    variable_getValue: {
       name: 'component/items',
       query: {
         id: {
-          get_payloadValue: 'value'
+          action_getPayloadValue: 'value'
         }
       }
     }
   },
   { // Replace current component with 'bootstrap-select-edit-link'
-    eval_condition: {
+    action_ifElse: {
       if: [
         {
           op: '!=',
           from: {
-            get_blockValue: {
+            action_getBlockValue: {
               value: {
-                get_sequenceValue: '0'
+                $ref: 0
               },
               query: 'id'
             }
@@ -27,12 +27,12 @@ export default createAction('select-edit-inner-iterate', [
           to: 'select-edit-inner'
         }
       ],
-      then: [2, 3, 4, 5],
-      else: [6]
+      then: [{ $sequenceRef: 2 }, { $sequenceRef: 3 }, { $sequenceRef: 4 }, { $sequenceRef: 5 }],
+      else: [{ $sequenceRef: 6 }]
     }
   },
   {
-    set_dataValue: {
+    data_setValue: {
       name: 'component/items',
       value: {
         id: 'select-edit-inner',
@@ -41,23 +41,23 @@ export default createAction('select-edit-inner-iterate', [
     }
   },
   {
-    get_blockValue: {
+    action_getBlockValue: {
       value: {
-        get_sequenceValue: '2'
+        $ref: 2
       },
       query: 'id'
     }
   },
   {
-    set_actionValue: {
-      id: {
-        get_sequenceValue: '3'
+    variable_setValue: {
+      scope: {
+        $ref: 3
       },
       values: [
         {
           id: 'componentId',
           value: {
-            get_payloadValue: 'value'
+            action_getPayloadValue: 'value'
           }
         }
       ]
@@ -66,20 +66,20 @@ export default createAction('select-edit-inner-iterate', [
   { // Add edit section link to parent list
     list_push: {
       target: {
-        get_contextValue: '$list'
+        action_getContextValue: '$list'
       },
       source: {
-        get_sequenceValue: '3'
+        $ref: 3
       }
     }
   },
   { // Add edit section link to parent list
     list_push: {
       target: {
-        get_contextValue: '$list'
+        action_getContextValue: '$list'
       },
       source: {
-        get_payloadValue: 'value'
+        action_getPayloadValue: 'value'
       }
     }
   }

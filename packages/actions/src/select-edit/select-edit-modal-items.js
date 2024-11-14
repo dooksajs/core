@@ -2,27 +2,26 @@ import createAction from '@dooksa/create-action'
 
 export default createAction('select-edit-modal-items', [
   {
-    get_actionValue: {
-      id: {
-        get_contextValue: 'rootId'
+    variable_getValue: {
+      scope: {
+        action_getContextValue: 'rootId'
       },
       query: 'componentId'
     }
   },
   {
-    eval_condition: {
+    action_ifElse: {
       if: [
         {
           from: {
-            get_blockValue: {
+            action_getBlockValue: {
               value: {
-                get_dataValue: {
+                action_getDataValue: {
                   name: 'component/items',
-                  query: {
-                    id: {
-                      get_sequenceValue: '0'
-                    }
+                  id: {
+                    $ref: 0
                   }
+
                 }
               },
               query: 'type'
@@ -32,7 +31,7 @@ export default createAction('select-edit-modal-items', [
           op: '=='
         }
       ],
-      then: [2],
+      then: [{ $sequenceRef: 2 }],
       else: []
     }
   },
@@ -41,10 +40,10 @@ export default createAction('select-edit-modal-items', [
       id: 'edit-img',
       context: {
         id: {
-          get_sequenceValue: '0'
+          $ref: 0
         },
         parentId: {
-          get_contextValue: 'id'
+          action_getContextValue: 'id'
         }
       }
     }

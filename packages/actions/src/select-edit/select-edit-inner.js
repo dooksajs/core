@@ -2,54 +2,51 @@ import createAction from '@dooksa/create-action'
 
 export default createAction('select-edit-inner', [
   {
-    get_dataValue: {
+    action_getDataValue: {
       name: 'component/children',
-      query: {
-        id: {
-          get_contextValue: 'id'
-        }
+      id: {
+        action_getContextValue: 'id'
       }
     }
   },
   {
-    eval_condition: {
+    action_ifElse: {
       if: [{
         op: '>',
         from: {
-          get_blockValue: {
+          action_getBlockValue: {
             value: {
-              get_sequenceValue: '0'
+              $ref: 0
             },
             query: 'length'
           }
         },
         to: 0
       }],
-      then: [2, 3],
+      then: [{ $sequenceRef: 2 }, { $sequenceRef: 3 }],
       else: []
     }
   },
   {
-    list_forEach: {
-      async: true,
+    list_map: {
       items: {
-        get_sequenceValue: '0'
+        $ref: 0
       },
       context: {
-        get_contextValue: '$null'
+        action_getContextValue: '$null'
       },
       actionId: 'select-edit-inner-iterate'
     }
   },
   {
-    set_dataValue: {
+    data_setValue: {
       name: 'component/children',
       value: {
-        get_sequenceValue: '2'
+        $ref: 2
       },
       options: {
         id: {
-          get_contextValue: 'id'
+          action_getContextValue: 'id'
         }
       }
     }
