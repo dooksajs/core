@@ -214,7 +214,15 @@ function isLike (v) {
  * @return {string}
  */
 function typeOf (v) {
-  return typeof v[0]
+  const value = v[0]
+  const type = typeof value
+
+  // return array
+  if (type === 'object' && Array.isArray(value)) {
+    return 'array'
+  }
+
+  return typeof type
 }
 
 const operators = Object.create(null)
