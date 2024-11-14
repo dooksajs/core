@@ -1184,12 +1184,6 @@ const component = createPlugin('component', {
 
         // clean up action variables
         if (!componentGroup.item.length) {
-          // delete component block variables
-          dataDeleteValue({
-            name: 'variable/values',
-            id
-          }).item
-
           // delete group block variables
           dataDeleteValue({
             name: 'variable/values',
@@ -1202,6 +1196,19 @@ const component = createPlugin('component', {
             id: componentGroupId
           })
         }
+
+        // delete variable scopes
+        dataDeleteValue({
+          name: 'variable/scopes',
+          id
+        })
+
+        // delete local variables
+        dataDeleteValue({
+          name: 'variable/values',
+          id
+        })
+
 
         // delete component defined scopes
         const scopes = dataGetValue({
