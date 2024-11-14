@@ -6,7 +6,7 @@ import compression from 'compression'
 import HyperExpress from 'hyper-express'
 
 /**
- * @typedef {import('./middleware.js').Middleware} Middleware
+ * @import {Middleware} from './middleware.js'
  */
 
 function useRoutes () {
