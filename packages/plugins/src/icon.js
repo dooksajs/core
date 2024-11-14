@@ -115,36 +115,38 @@ const icon = createPlugin('icon', {
             for (const key in currentIconQueue.components) {
               if (Object.prototype.hasOwnProperty.call(currentIconQueue.components, key)) {
                 const component = currentIconQueue.components[key]
-                let currentIconId = component.iconId
+                let iconName = component.iconId
                 let isAlias = false
 
                 // check if id is an alias
                 if (data.aliases && data.aliases[component.iconId]) {
                   isAlias = true
-                  currentIconId = data.aliases[component.iconId].parent
+                  iconName = data.aliases[component.iconId].parent
                 }
 
-                let parentId = iconPrefix + ':' + currentIconId
+                // full icon id
+                let id = iconPrefix + ':' + iconName
 
                 // check if icon exists
-                if (!data.icons[currentIconId]) {
+                if (!data.icons[iconName]) {
                   continue
                 }
 
                 const value = `<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewbox="0 0 24 24">
-                  ${data.icons[currentIconId].body}
+                  ${data.icons[iconName].body}
                 </svg>`
 
                 dataSetValue({
                   name: 'icon/items',
                   value,
-                  options: { id: parentId }
+                  options: { id }
                 })
 
                 if (isAlias) {
+                  // store icon alias
                   dataSetValue({
                     name: 'icon/aliases',
-                    value: parentId,
+                    value: id,
                     options: { id: component.iconId }
                   })
                 }
