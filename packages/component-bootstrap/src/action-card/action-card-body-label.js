@@ -8,7 +8,7 @@ const icon = createIcon({
   options: {
     margin: [{
       direction: 'end',
-      strength: '1'
+      strength: '2'
     }]
   },
   events: [
@@ -19,7 +19,6 @@ const icon = createIcon({
   ]
 })
 const labelText = createText({
-  options: { text: '' },
   events: [
     {
       on: 'component/created',

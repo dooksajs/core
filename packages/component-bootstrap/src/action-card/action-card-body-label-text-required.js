@@ -1,7 +1,7 @@
 import {
   createText,
-  createLabel,
-  createSpan
+  createSpan,
+  createDiv
 } from '@dooksa/component-base'
 import { createIcon } from '@dooksa/component-extra'
 
@@ -33,13 +33,13 @@ const labelStar = createSpan({
   children: [labelStarText],
   options: { textColor: 'danger' }
 })
-export default createLabel({
-  metadata: { id: 'action-card-body-label-required' },
+export default createDiv({
+  metadata: { id: 'action-card-body-label-text-required' },
   children: [icon, labelText, labelStar],
-  events: [
-    {
-      on: 'component/created',
-      actionId: 'label-html-for'
-    }
-  ]
+  options: {
+    margin: [{
+      direction: 'bottom',
+      strength: '2'
+    }]
+  }
 })
