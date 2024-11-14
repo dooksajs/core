@@ -1,5 +1,6 @@
 /**
  * @import {ExtendAnchor} from './interactive/anchor.js'
+ * @import {ExtendCode} from './content/code.js'
  * @import {ExtendButton} from './interactive/button.js'
  * @import {ExtendDetails} from './interactive/details.js'
  * @import {ExtendDiv} from './generic/div.js'
@@ -31,6 +32,7 @@
 /**
  * @typedef {ExtendAnchor} ComponentExtendAnchor
  * @typedef {ExtendButton} ComponentExtendButton
+ * @typedef {ExtendCode} ComponentExtendCode
  * @typedef {ExtendDetails} ComponentExtendDetails
  * @typedef {ExtendDiv} ComponentExtendDiv
  * @typedef {ExtendForm} ComponentExtendForm
