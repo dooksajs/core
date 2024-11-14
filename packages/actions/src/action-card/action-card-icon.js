@@ -1,6 +1,6 @@
 import createAction from '@dooksa/create-action'
 
-export default createAction('action-card-icon', [
+export const actionCardIcon = createAction('action-card-icon', [
   {
     variable_getValue: {
       scope: { action_getContextValue: 'groupId' },
@@ -15,16 +15,19 @@ export default createAction('action-card-icon', [
   },
   {
     data_setValue: {
-      name: 'content/items',
+      name: 'component/options',
       value: {
-        value: {
+        icon: {
           action_getBlockValue: {
             query: 'item.icon',
             value: { $ref: 1 }
           }
         }
       },
-      options: { id: { action_getContextValue: 'contentId' } }
+      options: {
+        id: { action_getContextValue: 'id' },
+        merge: true
+      }
     }
   }
 ])

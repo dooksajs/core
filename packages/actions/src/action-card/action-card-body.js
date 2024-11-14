@@ -1,6 +1,6 @@
 import createAction from '@dooksa/create-action'
 
-export default createAction('action-card-body', [
+export const actionCardBody = createAction('action-card-body', [
   {
     variable_getValue: {
       scope: { action_getContextValue: 'groupId' },

@@ -1,6 +1,6 @@
 import createAction from '@dooksa/create-action'
 
-export default createAction('action-card-body-label-icon', [
+export const actionCardBodyLabelIcon = createAction('action-card-body-label-icon', [
   {
     data_setValue: {
       name: 'component/options',
@@ -8,7 +8,7 @@ export default createAction('action-card-body-label-icon', [
         icon: {
           variable_getValue: {
             scope: { action_getContextValue: 'groupId' },
-            query: 'action-card-body-label-icon'
+            query: 'action_card_body_label_icon'
           }
         }
       },
