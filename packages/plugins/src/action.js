@@ -1,8 +1,7 @@
 import createPlugin from '@dooksa/create-plugin'
 import { fetchById } from './fetch.js'
-import { dataGetValue, dataSetValue } from './data.js'
+import { dataGetValue } from './data.js'
 import { operatorCompare, operatorEval } from './operator.js'
-import { generateId } from '@dooksa/utils'
 import { getValue } from './utils/getValue.js'
 
 /**
@@ -22,6 +21,8 @@ const dataTypes = {
 }
 let $action = (name, param, context, callback) => {
 }
+// current action in progress
+let $actionId = ''
 
 function getBlockValue (id, blockValues) {
   let value = blockValues[id]
@@ -387,6 +388,7 @@ const action = createPlugin('action', {
           }
 
           try {
+            DEV: $actionId = id
             processSequence(sequence.item, context, payload, actionContext.blockValues, resolve, true)
           } catch (error) {
             reject(error)
