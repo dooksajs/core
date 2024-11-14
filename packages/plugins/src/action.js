@@ -27,7 +27,10 @@ function getBlockValue (id, blockValues) {
   let value = blockValues[id]
 
   if (!blockValues.hasOwnProperty(id)) {
-    const blockData = dataGetValue({ name: 'action/blocks', id })
+    const blockData = dataGetValue({
+      name: 'action/blocks',
+      id
+    })
 
     if (blockData.isEmpty) {
       throw new Error('Action: block could not be found: ' + id)
@@ -62,7 +65,10 @@ function getBlockValues (block, context, payload, blockValues) {
 
   for (let i = 0; i < blocks.length; i++) {
     const id = blocks[i]
-    const block = dataGetValue({ name: 'action/blocks', id })
+    const block = dataGetValue({
+      name: 'action/blocks',
+      id
+    })
 
     if (block.isEmpty) {
       throw new Error('Action: block could not be found: ' + id)
@@ -91,11 +97,17 @@ function processSequence (sequence, context, payload, blockValues = {}, callback
 
   for (let i = 0; i < sequence.length; i++) {
     const blockSequenceId = sequence[i]
-    const blockSequence = dataGetValue({ name: 'action/blockSequences', id: blockSequenceId }).item
+    const blockSequence = dataGetValue({
+      name: 'action/blockSequences',
+      id: blockSequenceId
+    }).item
 
     for (let i = 0; i < blockSequence.length; i++) {
       const id = blockSequence[i]
-      const block = dataGetValue({ name: 'action/blocks', id })
+      const block = dataGetValue({
+        name: 'action/blocks',
+        id
+      })
 
       if (block.isEmpty) {
         throw new Error('Action: block could not be found: ' + id )
@@ -108,7 +120,11 @@ function processSequence (sequence, context, payload, blockValues = {}, callback
         blockProcess.push(() => {
           const blockResult = getBlockValueByKey(block.item, context, payload, blockValues)
 
-          $action(item.method, blockResult.value, { context, payload, blockValues }, {
+          $action(item.method, blockResult.value, {
+            context,
+            payload,
+            blockValues
+          }, {
             onSuccess: (result => {
               const nextProcess = blockProcess[++blockProcessIndex]
               blockValues[id] = result
@@ -135,7 +151,11 @@ function processSequence (sequence, context, payload, blockValues = {}, callback
       } else if (item.ifElse) {
         blockProcess.push(() => {
           const blockResult = getBlockValueByKey(block.item, context, payload, blockValues)
-          const processItems = ifElse(blockResult.value, callback, { context, payload, blockValues })
+          const processItems = ifElse(blockResult.value, callback, {
+            context,
+            payload,
+            blockValues
+          })
 
           // append new process items
           for (let index = 0; index < processItems.length; index++) {
@@ -355,7 +375,11 @@ const action = createPlugin('action', {
                   return reject(new Error('No action found: ' + id))
                 }
 
-                this.dispatch({ id, context, payload }, actionContext)
+                this.dispatch({
+                  id,
+                  context,
+                  payload
+                }, actionContext)
                   .then(result => resolve(result))
                   .then(error => reject(error))
               })

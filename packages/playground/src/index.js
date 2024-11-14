@@ -60,12 +60,18 @@ esbuild.context({
             const fileExtension = extname(file.path)
 
             if (fileExtension === '.js') {
-              dataSetValue({ name: 'page/app', value: result.outputFiles[i].text })
+              dataSetValue({
+                name: 'page/app',
+                value: result.outputFiles[i].text
+              })
             }
           }
 
           // notify sse to reload
-          dataSetValue({ name: 'development/rebuildClient', value: ++rebuildClientNum })
+          dataSetValue({
+            name: 'development/rebuildClient',
+            value: ++rebuildClientNum
+          })
         }
       })
     }

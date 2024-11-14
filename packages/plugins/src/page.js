@@ -127,13 +127,6 @@ const page = createPlugin('page', {
                     expandExclude
                   })
                 }
-
-                this.appendExpand({
-                  collection: 'component/content',
-                  id: child.id,
-                  data,
-                  expandExclude
-                })
               }
             }
           }
@@ -187,7 +180,10 @@ const page = createPlugin('page', {
     }
   },
   setup () {
-    const component = dataGetValue({ name: 'page/items', id: routeCurrentId() })
+    const component = dataGetValue({
+      name: 'page/items',
+      id: routeCurrentId()
+    })
 
     if (component.isEmpty) {
       return
