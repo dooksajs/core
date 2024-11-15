@@ -153,10 +153,11 @@ function negation (v) {
 /**
  * Plus operator
  * @private
- * @param {number[]|string[]} v
- * @returns {number|string}
+ * @param {number[] & string[]} v
+ * @returns {number | string}
  */
 function addition (v) {
+  /** @type {string | number} */
   let result = ''
 
   if (typeof v[0] === 'number') {
