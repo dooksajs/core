@@ -227,7 +227,7 @@ function typeOf (v) {
     return 'array'
   }
 
-  return typeof type
+  return type
 }
 
 const operators = Object.create(null)
