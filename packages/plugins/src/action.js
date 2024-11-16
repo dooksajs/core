@@ -224,7 +224,7 @@ function ifElse (branch, callback, { context, payload, blockValues }) {
         values: [item.from, item.to]
       })
 
-      if (!compareItem.value_1) {
+      if (!compareItem.hasOwnProperty('value_1')) {
         compareItem.value_1 = value
       } else {
         if (!compareItem.op) {
