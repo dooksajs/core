@@ -28,7 +28,7 @@ const result = await esbuild.build({
   metafile: true,
   minify: true,
   dropLabels: ['DEV'],
-  reserveProps: /__d__/
+  reserveProps: /__d/
 })
 
 console.log(await esbuild.analyzeMetafile(result.metafile))

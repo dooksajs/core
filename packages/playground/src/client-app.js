@@ -11,4 +11,3 @@ eventSource.addEventListener('rebuild-server', () => {
 })
 
 app.setup()
-

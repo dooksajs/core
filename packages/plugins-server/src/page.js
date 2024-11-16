@@ -17,7 +17,7 @@ function create ({ request, response }) {
   response.set('Content-Type', 'text/html')
 
   const data = request.pageData ? JSON.stringify(request.pageData) : ''
-  const app = '(() => {const __ds__ =' + data + ';' + appString + '})()'
+  let app = '(() => {const __ds =' + data + ';' + appString
   let csp = ''
 
   PROD: {
@@ -27,6 +27,8 @@ function create ({ request, response }) {
   DEV: {
     csp = "script-src 'unsafe-inline'; style-src 'unsafe-inline';"
   }
+
+  app += '})()'
 
   const css = dataGetValue({ name: 'page/css' }).item || ''
 
