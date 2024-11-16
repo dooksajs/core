@@ -9,7 +9,7 @@ export const dataDocumentValue = createAction('data-document-value', [
     }
   },
   {
-    $id: 'document_value',
+    $id: 'document_result',
     data_getValue: {
       name: { $ref: 'collection_value' },
       id: { action_getPayloadValue: 'target.value' }
@@ -18,7 +18,7 @@ export const dataDocumentValue = createAction('data-document-value', [
   {
     $id: 'document_item',
     action_getBlockValue: {
-      value: { $ref: 'document_value' },
+      value: { $ref: 'document_result' },
       query: 'item'
     }
   },
@@ -27,10 +27,10 @@ export const dataDocumentValue = createAction('data-document-value', [
     editor_getSchema: { $ref: 'collection_value' }
   },
   {
-    $id: 'schema_type',
-    action_getBlockValue: {
-      value: { $ref: 'schema' },
-      query: 'type'
+    $id: 'data_type',
+    operator_eval: {
+      name: 'typeof',
+      values: [{ $ref: 'document_item' }]
     }
   },
   {
@@ -76,14 +76,15 @@ export const dataDocumentValue = createAction('data-document-value', [
     action_ifElse: {
       if: [
         {
-          from: { $ref: 'schema_type' },
+          from: { $ref: 'data_type' },
           to: 'string',
           op: '=='
         }
       ],
       then: [
         { $sequenceRef: 'action_input_string' },
-        { $sequenceRef: 'component_children_action_input_string' }
+        { $sequenceRef: 'action_input_string_id' },
+        { $sequenceRef: 'append_action_input_string' }
       ],
       else: [
         { $sequenceRef: 'ifelse_handle_object' }
@@ -101,15 +102,17 @@ export const dataDocumentValue = createAction('data-document-value', [
     }
   },
   {
-    $id: 'component_children_action_input_string',
+    $id: 'action_input_string_id',
+    action_getBlockValue: {
+      value: { $ref: 'action_input_string' },
+      query: 'id'
+    }
+  },
+  {
+    $id: 'append_action_input_string',
     data_setValue: {
       name: 'component/children',
-      value: {
-        action_getBlockValue: {
-          value: { $ref: 'action_input_string' },
-          query: 'id'
-        }
-      },
+      value: { $ref: 'action_input_string_id' },
       options: {
         id: {
           $ref: 'root_id'
@@ -127,42 +130,21 @@ export const dataDocumentValue = createAction('data-document-value', [
     action_ifElse: {
       if: [
         {
-          from: { $ref: 'schema_type' },
+          from: { $ref: 'data_type' },
           to: 'object',
           op: '=='
         }
       ],
       then: [
-        { $sequenceRef: 'schema_properties' },
-        { $sequenceRef: 'schema_properties_action_input_value' },
         { $sequenceRef: 'action_input_object' },
         { $sequenceRef: 'action_input_object_id' },
+        { $sequenceRef: 'schema_properties' },
+        { $sequenceRef: 'schema_properties_action_input_value' },
         { $sequenceRef: 'component_children_action_input_object' }
       ],
       else: [{
         $sequenceRef: 'ifelse_handle_array'
       }]
-    }
-  },
-  {
-    $id: 'schema_properties',
-    action_getBlockValue: {
-      value: { $ref: 'schema' },
-      query: 'properties'
-    }
-  },
-  {
-    $id: 'schema_properties_action_input_value',
-    variable_setValue: {
-      scope: {
-        action_getContextValue: 'groupId'
-      },
-      values: [
-        {
-          id: 'action-input-schema',
-          value: { $ref: 'schema_properties' }
-        }
-      ]
     }
   },
   {
@@ -180,6 +162,25 @@ export const dataDocumentValue = createAction('data-document-value', [
     action_getBlockValue: {
       value: { $ref: 'action_input_object' },
       query: 'id'
+    }
+  },
+  {
+    $id: 'schema_properties',
+    action_getBlockValue: {
+      value: { $ref: 'schema' },
+      query: 'properties'
+    }
+  },
+  {
+    $id: 'schema_properties_action_input_value',
+    variable_setValue: {
+      scope: { $ref: 'action_input_object_id' },
+      values: [
+        {
+          id: 'action-input-schema',
+          value: { $ref: 'schema_properties' }
+        }
+      ]
     }
   },
   {
@@ -206,40 +207,19 @@ export const dataDocumentValue = createAction('data-document-value', [
     action_ifElse: {
       if: [
         {
-          from: { $ref: 'schema_type' },
+          from: { $ref: 'data_type' },
           to: 'array',
           op: '=='
         }
       ],
       then: [
-        { $sequenceRef: 'schema_items' },
-        { $sequenceRef: 'schema_items_action_input_value' },
         { $sequenceRef: 'action_input_array_items' },
         { $sequenceRef: 'action_input_array_items_id' },
+        { $sequenceRef: 'schema_items' },
+        { $sequenceRef: 'schema_items_action_input_value' },
         { $sequenceRef: 'component_children_action_input_array' }
       ],
       else: []
-    }
-  },
-  {
-    $id: 'schema_items',
-    action_getBlockValue: {
-      value: { $ref: 'schema' },
-      query: 'items'
-    }
-  },
-  {
-    $id: 'schema_items_action_input_value',
-    variable_setValue: {
-      scope: {
-        action_getContextValue: 'groupId'
-      },
-      values: [
-        {
-          id: 'action-input-schema',
-          value: { $ref: 'schema_items' }
-        }
-      ]
     }
   },
   {
@@ -257,6 +237,25 @@ export const dataDocumentValue = createAction('data-document-value', [
     action_getBlockValue: {
       value: { $ref: 'action_input_array_items' },
       query: 'id'
+    }
+  },
+  {
+    $id: 'schema_items',
+    action_getBlockValue: {
+      value: { $ref: 'schema' },
+      query: 'items'
+    }
+  },
+  {
+    $id: 'schema_items_action_input_value',
+    variable_setValue: {
+      scope: { $ref: 'action_input_array_items_id' },
+      values: [
+        {
+          id: 'action-input-schema',
+          value: { $ref: 'schema_items' }
+        }
+      ]
     }
   },
   {

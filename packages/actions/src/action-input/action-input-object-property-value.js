@@ -2,35 +2,9 @@ import createAction from '@dooksa/create-action'
 
 export const actionInputObjectPropertyValue = createAction('action-input-object-property-value', [
   {
-    variable_setValue: {
-      scope: { action_getContextValue: 'rootId' },
-      values: [
-        {
-          id: 'action-input-object-property',
-          value: { action_getContextValue: 'id' }
-        }
-      ]
-    }
-  },
-  {
     $id: 'action_input_value',
     variable_getValue: {
       query: 'action-input-value'
-    }
-  },
-  {
-    action_ifElse: {
-      if: [
-        {
-          from: { $ref: 'action_input_value' },
-          op: '!!'
-        }
-      ],
-      then: [
-        { $sequenceRef: 'data_type' },
-        { $sequenceRef: 'process_data' }
-      ],
-      else: [{ $sequenceRef: 'process_schema' }]
     }
   },
   {
@@ -38,6 +12,21 @@ export const actionInputObjectPropertyValue = createAction('action-input-object-
     operator_eval: {
       name: 'typeof',
       values: [{ $ref: 'action_input_value' }]
+    }
+  },
+  {
+    action_ifElse: {
+      if: [
+        {
+          from: { $ref: 'data_type' },
+          to: 'undefined',
+          op: '!='
+        }
+      ],
+      then: [
+        { $sequenceRef: 'process_data' }
+      ],
+      else: [{ $sequenceRef: 'process_schema' }]
     }
   },
   {
@@ -68,11 +57,11 @@ export const actionInputObjectPropertyValue = createAction('action-input-object-
   },
   {
     $id: 'process_data_object',
-    list_map: {
-      items: {
-        $ref: 'action_input_value'
-      },
-      actionId: 'action-input-object-property-data'
+    action_dispatch: {
+      id: 'action-input-data',
+      context: {
+        action_getContextValue: '$null'
+      }
     }
   },
   {
