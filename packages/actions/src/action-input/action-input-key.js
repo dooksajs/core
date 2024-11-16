@@ -1,17 +1,17 @@
 import createAction from '@dooksa/create-action'
 
-export const actionInputObjectPropertyName = createAction('action-input-object-property-name', [
+export default createAction('action-input-key', [
   {
-    $id: 'value',
+    $id: 'key',
     variable_getValue: {
-      query: 'action-input-title'
+      query: 'action-input-key'
     }
   },
   {
     action_ifElse: {
       if: [
         {
-          from: { $ref: 'value' },
+          from: { $ref: 'key' },
           op: '!!'
         }
       ],
@@ -24,7 +24,7 @@ export const actionInputObjectPropertyName = createAction('action-input-object-p
     data_setValue: {
       name: 'component/options',
       value: {
-        value: { $ref: 'value' }
+        value: { $ref: 'key' }
       },
       options: {
         id: { action_getContextValue: 'id' },

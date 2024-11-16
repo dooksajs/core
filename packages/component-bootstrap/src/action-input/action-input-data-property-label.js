@@ -30,7 +30,7 @@ export default createDiv({
         },
         {
           on: 'component/created',
-          actionId: 'action-input-object-property-name'
+          actionId: 'action-input-key'
         },
         {
           on: 'component/created',
@@ -38,7 +38,7 @@ export default createDiv({
         },
         {
           on: 'node/input',
-          actionId: 'action-input-update-object-property-name'
+          actionId: 'action-input-update-name'
         }
       ]
     })

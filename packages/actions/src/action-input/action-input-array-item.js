@@ -53,7 +53,7 @@ export const actionInputArrayItem = createAction('action-input-array-item', [
           value: { $ref: 'object_property_name' }
         },
         {
-          id: 'action-input-title',
+          id: 'action-input-key',
           value: { action_getPayloadValue: 'key' }
         }
       ]

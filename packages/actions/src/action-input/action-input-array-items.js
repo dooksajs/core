@@ -1,10 +1,9 @@
 import createAction from '@dooksa/create-action'
 
-export const actionInputArrayItems = createAction('action-input-array-items', [
+export default createAction('action-input-array-items', [
   {
     $id: 'data_item',
     variable_getValue: {
-      scope: { action_getContextValue: 'groupId' },
       query: 'action-input-value'
     }
   },

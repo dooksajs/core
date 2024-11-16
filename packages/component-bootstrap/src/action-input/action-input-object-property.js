@@ -21,7 +21,7 @@ export default createCard({
                   events: [
                     {
                       on: 'component/created',
-                      actionId: 'action-input-update-object-property-title'
+                      actionId: 'action-input-update-key'
                     }
                   ]
                 })

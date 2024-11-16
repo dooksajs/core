@@ -52,7 +52,7 @@ export const actionInputObjectProperty = createAction('action-input-object-prope
           value: { $ref: 'object_property_name' }
         },
         {
-          id: 'action-input-title',
+          id: 'action-input-key',
           value: { action_getPayloadValue: 'key' }
         }
       ]

@@ -1,6 +1,6 @@
 import createAction from '@dooksa/create-action'
 
-export const actionInputUpdateObjectPropertyName = createAction('action-input-update-object-property-name', [
+export default createAction('action-input-update-name', [
   {
     $id: 'new_property_name',
     action_getPayloadValue: 'target.value'
@@ -8,7 +8,7 @@ export const actionInputUpdateObjectPropertyName = createAction('action-input-up
   {
     $id: 'property_name',
     variable_getValue: {
-      query: 'action-input-title'
+      query: 'action-input-key'
     }
   },
   {
@@ -45,7 +45,7 @@ export const actionInputUpdateObjectPropertyName = createAction('action-input-up
     variable_setValue: {
       values: [
         {
-          id: 'action-input-title',
+          id: 'action-input-key',
           value: { $ref: 'new_property_name' }
         },
         {

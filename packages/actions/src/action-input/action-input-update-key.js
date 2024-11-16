@@ -1,9 +1,9 @@
 import createAction from '@dooksa/create-action'
 
-export const actionInputUpdateObjectPropertyTitle = createAction('action-input-update-object-property-title', [
+export default createAction('action-input-update-key', [
   {
     action_dispatch: {
-      id: 'action-input-object-property-name',
+      id: 'action-input-key',
       context: {
         action_getContextValue: '$null'
       }
@@ -13,7 +13,7 @@ export const actionInputUpdateObjectPropertyTitle = createAction('action-input-u
     data_addListener: {
       name: 'variable/values',
       id: { action_getContextValue: 'rootId' },
-      handler: 'action-input-object-property-name'
+      handler: 'action-input-key'
     }
   }
 ])

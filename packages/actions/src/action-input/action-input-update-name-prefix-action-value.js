@@ -8,6 +8,21 @@ export const actionInputUpdateNamePrefixActionValue = createAction('action-input
     }
   },
   {
+    action_ifElse: {
+      if: [
+        {
+          from: { $ref: 'root_id' },
+          op: '!!'
+        }
+      ],
+      then: [
+        { $sequenceRef: 'update_action_prefix_name' }
+      ],
+      else: []
+    }
+  },
+  {
+    $id: 'update_action_prefix_name',
     data_addListener: {
       name: 'variable/values',
       id: { $ref: 'root_id' },
