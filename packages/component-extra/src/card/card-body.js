@@ -10,16 +10,16 @@ export const cardBody = createComponent({
       value: 'card-body'
     }
   ]
-}, [displayMixin, gapMixin])
+}, [displayMixin, gapMixin, spacingMixin])
 
 /**
  * @import {ComponentExtend} from '@dooksa/create-component'
- * @import {DisplayMixin, GapMixin} from '@dooksa/component-mixins'
+ * @import {DisplayMixin, GapMixin, SpacingMixin} from '@dooksa/component-mixins'
  */
 
 /**
  * @typedef {Object} ExtendCardBodyOptionMixin
- * @property {DisplayMixin|GapMixin} options
+ * @property {DisplayMixin|GapMixin|SpacingMixin} options
  */
 
 /**
