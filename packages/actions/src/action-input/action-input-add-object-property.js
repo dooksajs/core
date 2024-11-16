@@ -25,6 +25,29 @@ export const actionInputAddObjectProperty = createAction('action-input-add-objec
       query: 'id'
     }
   },
+  { // set input values to "local scope"
+    variable_setValue: {
+      scope: { $ref: 'action_input_object_property_id' },
+      values: [
+        {
+          id: 'action-input-root-id',
+          value: { $ref: 'action_input_object_property_id' }
+        },
+        {
+          id: 'action-input-value',
+          value: ''
+        },
+        {
+          id: 'action-input-name',
+          value: ''
+        },
+        {
+          id: 'action-input-key',
+          value: ''
+        }
+      ]
+    }
+  },
   {
     data_setValue: {
       name: 'component/children',
