@@ -13,8 +13,9 @@ export const actionInputArrayItem = createAction('action-input-array-item', [
       name: '+',
       values: [
         { $ref: 'action_input_name' },
-        '.',
-        { action_getPayloadValue: 'key' }
+        '[',
+        { action_getPayloadValue: 'key' },
+        ']'
       ]
     }
   },
