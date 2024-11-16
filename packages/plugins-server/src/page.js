@@ -13,6 +13,10 @@ function hashSHA (item) {
 
 function create ({ request, response }) {
   const appString = dataGetValue({ name: 'page/app' }).item
+  const appSourceMap = dataGetValue({
+    name: 'page/sourcemap',
+    id: 'client-app.js.map'
+  })
 
   response.set('Content-Type', 'text/html')
 
@@ -26,6 +30,11 @@ function create ({ request, response }) {
 
   DEV: {
     csp = "script-src 'unsafe-inline'; style-src 'unsafe-inline';"
+  }
+
+  // include external source map
+  if (!appSourceMap.isEmpty) {
+    app += '//# sourceMappingURL=/_/sourcemap/client-app.js.map\n'
   }
 
   app += '})()'
@@ -48,6 +57,12 @@ const pageServer = createPlugin('page', {
     ...page.models,
     app: {
       type: 'string'
+    },
+    sourcemap: {
+      type: 'collection',
+      items: {
+        type: 'string'
+      }
     },
     css: {
       type: 'string'
@@ -93,6 +108,22 @@ const pageServer = createPlugin('page', {
           })
         }
       ]
+    })
+
+    httpSetRoute({
+      path: '/sourcemap/:filename',
+      handlers: [(request, response) => {
+        const sourcemap = dataGetValue({
+          name: 'page/sourcemap',
+          id: request.path_parameters.filename
+        })
+
+        if (sourcemap.isEmpty) {
+          return response.sendStatus(404)
+        }
+
+        response.send(sourcemap.item)
+      }]
     })
 
     httpSetRoute({
