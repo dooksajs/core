@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "test-unit": "pnpm --recursive test",
     "build-server": "node ./scripts/build-server.js",
     "build-client": "node ./scripts/build-client.js",
     "dev": "pnpm --filter playground run dev"
