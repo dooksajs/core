@@ -18,6 +18,7 @@
     "./server": "./src/server/index.js"
   },
   "dependencies": {
+    "@dooksa/create-component": "workspace:^",
     "@dooksa/create-action": "workspace:^",
     "@dooksa/create-plugin": "workspace:^",
     "@dooksa/utils": "workspace:^",

@@ -92,6 +92,9 @@ importers:
       '@dooksa/create-action':
         specifier: workspace:^
         version: link:../create-action
+      '@dooksa/create-component':
+        specifier: workspace:^
+        version: link:../create-component
       '@dooksa/create-plugin':
         specifier: workspace:^
         version: link:../create-plugin
