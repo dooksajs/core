@@ -1,5 +1,5 @@
 import appendPlugin from './append-plugin.js'
-import { data } from '@dooksa/plugins'
+import { data } from '@dooksa/plugins/client'
 import {
   $http,
   middleware,
@@ -11,7 +11,7 @@ import {
   page,
   theme,
   user
-} from '@dooksa/plugins-server'
+} from '@dooksa/plugins/server'
 
 /** @import {Plugin, ActiveAction} from '../../create-plugin/src/index.js' */
 

@@ -11,10 +11,8 @@
     "dev": "NODE_ENV=development node ./src/index.js"
   },
   "dependencies": {
-    "@dooksa/client": "workspace:^",
-    "@dooksa/plugins": "workspace:^",
-    "@dooksa/server": "workspace:^",
-    "@dooksa/plugins-server": "workspace:^"
+    "@dooksa/app": "workspace:^",
+    "@dooksa/plugins": "workspace:^"
   },
   "devDependencies": {
     "chalk": "^5.3.0",

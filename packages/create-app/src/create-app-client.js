@@ -1,4 +1,4 @@
-import { dataSetValue, lazyLoader } from '@dooksa/plugins'
+import { dataSetValue, lazyLoader } from '@dooksa/plugins/client'
 import appendPlugin from './append-plugin.js'
 
 function appendComponent (appComponents) {

@@ -1,4 +1,4 @@
-import app from '@dooksa/client'
+import app from '@dooksa/app/client'
 
 const eventSource = new window.EventSource('/_/esbuild')
 

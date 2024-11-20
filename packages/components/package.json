@@ -1,0 +1,33 @@
+{
+  "name": "@dooksa/components",
+  "version": "0.0.0",
+  "description": "Dooksa components",
+  "author": "Thomas David <tom@mightysmile.com>",
+  "repository": "git@github.com:dooksajs/dooksa.git",
+  "license": "AGPL-3.0-or-later",
+  "type": "module",
+  "imports": {
+    "#base": "./src/base/index.js",
+    "#base/types": "./src/base/types.js",
+    "#bootstrap": "./src/bootstrap/index.js",
+    "#bootstrap/types": "./src/bootstrap/types.js",
+    "#extra": "./src/extra/index.js",
+    "#extra/types": "./src/extra/types.js",
+    "#mixins": "./src/mixins/index.js",
+    "#mixins/types": "./src/mixins/types.js"
+  },
+  "exports": {
+    ".": "./src/index.js",
+    "./base": "./src/base/index.js",
+    "./base/types": "./src/base/types.js",
+    "./bootstrap": "./src/bootstrap/index.js",
+    "./bootstrap/types": "./src/bootstrap/types.js",
+    "./extra": "./src/extra/index.js",
+    "./extra/types": "./src/extra/types.js",
+    "./mixins": "./src/mixins/index.js",
+    "./mixins/types": "./src/mixins/types.js"
+  },
+  "dependencies": {
+    "@dooksa/create-component": "workspace:^"
+  }
+}
