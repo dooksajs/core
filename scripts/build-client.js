@@ -18,7 +18,7 @@ readdir(outdir, (err, files) => {
 })
 
 const result = await esbuild.build({
-  entryPoints: [path.resolve(rootDir, 'packages', 'app-client', 'src', 'index.js')],
+  entryPoints: [path.resolve(rootDir, 'packages', 'app', 'src', 'client.js')],
   bundle: true,
   treeShaking: true,
   splitting: true,

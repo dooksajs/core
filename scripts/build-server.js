@@ -18,13 +18,16 @@ readdir(outdir, (err, files) => {
 })
 
 const result = await esbuild.build({
-  entryPoints: [path.resolve(rootDir, 'packages', 'app-server', 'src', 'index.js')],
+  entryPoints: [path.resolve(rootDir, 'packages', 'app', 'src', 'server.js')],
   bundle: true,
   treeShaking: true,
   splitting: true,
   outdir,
   format: 'esm',
   platform: 'node',
+  loader: {
+    '.node': 'file'
+  },
   metafile: true,
   minify: true,
   dropLabels: ['DEV'],
