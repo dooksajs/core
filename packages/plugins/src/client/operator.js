@@ -119,9 +119,9 @@ function isNull (v) {
  * @returns {number}
  */
 function remainder (v) {
-  let result = 0
+  let result = v[0]
 
-  for (let i = 0; i < v.length; i++) {
+  for (let i = 1; i < v.length; i++) {
     result %= v[i]
   }
 
@@ -178,9 +178,9 @@ function decrement (v) {
  * @returns {number}
  */
 function negation (v) {
-  let result = 0
+  let result = v[0]
 
-  for (let i = 0; i < v.length; i++) {
+  for (let i = 1; i < v.length; i++) {
     result -= v[i]
   }
 
@@ -189,18 +189,13 @@ function negation (v) {
 /**
  * Plus operator
  * @private
- * @param {number[] & string[]} v
+ * @param {number[] | string[]} v
  * @returns {number | string}
  */
 function addition (v) {
-  /** @type {string | number} */
-  let result = ''
+  let result = v[0]
 
-  if (typeof v[0] === 'number') {
-    result = 0
-  }
-
-  for (let i = 0; i < v.length; i++) {
+  for (let i = 1; i < v.length; i++) {
     result += v[i]
   }
 
@@ -213,9 +208,9 @@ function addition (v) {
  * @returns {number}
  */
 function multiplication (v) {
-  let result = 0
+  let result = v[0]
 
-  for (let i = 0; i < v.length; i++) {
+  for (let i = 1; i < v.length; i++) {
     result *= v[i]
   }
 
