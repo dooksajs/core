@@ -2,7 +2,7 @@ import createPlugin from '@dooksa/create-plugin'
 
 /**
  * Two or one values to run an operator on
- * @typedef {(string[]|number[])} OperatorValues
+ * @typedef {(string | number | boolean | null)[]} OperatorValues
  * @example
  * [1, 2]
  * ['hello', 'world]
