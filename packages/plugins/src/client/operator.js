@@ -47,7 +47,7 @@ function equality (v) {
  * @returns {boolean}
  */
 function inequality (v) {
-  return v[0] != v[1]
+  return v[0] !== v[1]
 }
 /**
  * Greater than
