@@ -135,6 +135,15 @@ const icon = createPlugin('icon', {
                   // full icon id
                   let id = iconPrefix + ':' + iconName
 
+                  if (typeof data === 'number') {
+                    if (data === 404) {
+                      component.node.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="none" stroke="#77767b" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4m0 4.01l.01-.011M9 3H4v3m0 5v2m16-2v2M15 3h5v3M9 21H4v-3m11 3h5v-3"/></svg>'
+
+                      console.warn('DooksaWarning: could not find icon "' + id + '"')
+                      continue
+                    }
+                  }
+
                   // check if icon exists
                   if (!data.icons[iconName]) {
                     continue
