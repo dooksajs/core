@@ -27,7 +27,7 @@ function affixQuery (query, prefix, suffix) {
   return query
 }
 
-const variable = createPlugin('variable', {
+export const variable = createPlugin('variable', {
   metadata: {
     title: 'Variable',
     description: 'Management of variables',
@@ -100,7 +100,7 @@ const variable = createPlugin('variable', {
             const query = affixQuery(props.query, props.prefixId, props.suffixId)
             const value = getValue(values.item, query)
 
-            if (value) {
+            if (value != null) {
               return value
             }
           }
@@ -219,13 +219,9 @@ const variable = createPlugin('variable', {
   }
 })
 
-const variable_getValue = variable.actions.getValue
-const variable_setValue = variable.actions.setValue
-
-export {
-  variable,
-  variable_getValue,
-  variable_setValue
-}
+export const {
+  variableGetValue,
+  variableSetValue
+} = variable
 
 export default variable

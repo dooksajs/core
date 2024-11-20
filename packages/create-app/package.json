@@ -6,9 +6,13 @@
   "repository": "git@github.com:dooksajs/dooksa.git",
   "license": "AGPL-3.0-or-later",
   "type": "module",
-  "main": "src/index.js",
+  "exports": {
+    "./client": "./src/create-app-client.js",
+    "./server": "./src/create-app-server.js"
+  },
   "dependencies": {
     "@dooksa/utils": "workspace:^",
-    "@dooksa/plugins": "workspace:^"
+    "@dooksa/plugins": "workspace:^",
+    "@dooksa/plugins-server": "workspace:^"
   }
 }

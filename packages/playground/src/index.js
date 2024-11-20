@@ -4,7 +4,7 @@ import { dataSetValue } from '@dooksa/plugins'
 import esbuild from 'esbuild'
 import chokidar from 'chokidar'
 import logger from './logger.js'
-import { resolve, extname } from 'node:path'
+import { resolve, extname, parse } from 'node:path'
 
 app.usePlugin(development)
 
@@ -29,11 +29,11 @@ esbuild.context({
   bundle: true,
   outdir: devDirectory,
   format: 'esm',
-  sourcemap: 'inline',
+  sourcemap: 'external',
   write: false,
   minify: false,
   dropLabels: ['PROD'],
-  reserveProps: /__d__/,
+  reserveProps: /__ds/,
   plugins: [{
     name: 'rebuildClient',
     setup (build) {
@@ -51,8 +51,6 @@ esbuild.context({
 
         const timer = performance.now() - timerStart
 
-        logger('Client built in:', timer)
-
         if (result.outputFiles.length) {
           // set app script
           for (let i = 0; i < result.outputFiles.length; i++) {
@@ -62,8 +60,20 @@ esbuild.context({
             if (fileExtension === '.js') {
               dataSetValue({
                 name: 'page/app',
-                value: result.outputFiles[i].text
+                value: file.text
               })
+            } else if (fileExtension === '.map') {
+              const filename = parse(file.path)
+
+              if (filename.name === 'client-app.js') {
+                dataSetValue({
+                  name: 'page/sourcemap',
+                  value: file.text,
+                  options: {
+                    id: filename.base
+                  }
+                })
+              }
             }
           }
 
@@ -72,6 +82,8 @@ esbuild.context({
             name: 'development/rebuildClient',
             value: ++rebuildClientNum
           })
+
+          logger('Client built in:', timer)
         }
       })
     }

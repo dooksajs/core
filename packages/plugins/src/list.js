@@ -73,7 +73,7 @@ const mapKeyValue = {
   }
 }
 
-const list = createPlugin('list', {
+export const list = createPlugin('list', {
   metadata: {
     title: 'List',
     description: 'Manage a collection of data.',
@@ -310,19 +310,14 @@ const list = createPlugin('list', {
   }
 })
 
-const listFilter = list.actions.filter
-const listForEach = list.actions.forEach
-const listPush = list.actions.push
-const listSort = list.actions.sort
-const listSplice = list.actions.splice
-
-export {
-  list,
+export const {
   listFilter,
   listForEach,
   listPush,
   listSort,
-  listSplice
-}
+  listSplice,
+  listIndexOf,
+  listMap
+} = list
 
 export default list

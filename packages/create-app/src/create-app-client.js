@@ -81,7 +81,10 @@ function initialize (appSetup, appActions, appComponents, appDataModels, use) {
     options = {},
     lazy = {},
     loader
-  } = { loader: () => {} }) => {
+  } = {
+    loader: () => {
+    }
+  }) => {
     const actionWhenAvailable = callbackWhenAvailable({
       actions: appActions,
       lazy,
@@ -124,10 +127,10 @@ function initialize (appSetup, appActions, appComponents, appDataModels, use) {
 
     // setup database
     for (let i = 0; i < appSetup.length; i++) {
-      const setup = appSetup[i]
+      const plugin = appSetup[i]
 
-      if (setup.name === 'data') {
-        setup.initialize(appDataModels)
+      if (plugin.name === 'data') {
+        plugin.setup(appDataModels)
 
         // remove from setup queue
         appSetup.splice(i, 1)
@@ -137,7 +140,7 @@ function initialize (appSetup, appActions, appComponents, appDataModels, use) {
 
     // This is referring a global var
     // @ts-ignore
-    const data = __ds__
+    const data = __ds
 
     // set data
     for (let i = 0; i < data.item.length; i++) {
@@ -156,9 +159,9 @@ function initialize (appSetup, appActions, appComponents, appDataModels, use) {
 
     // setup plugins
     for (let i = 0; i < appSetup.length; i++) {
-      const setup = appSetup[i]
+      const plugin = appSetup[i]
 
-      setup.initialize(options[setup.name])
+      plugin.setup(options[plugin.name])
       appSetup.splice(i, 1)
       i--
     }
@@ -171,7 +174,7 @@ function initialize (appSetup, appActions, appComponents, appDataModels, use) {
  * Create Dooksa app
  * @param {Object} plugins
  */
-function createAppClient ({
+export default function createAppClient ({
   plugins = [],
   components = []
 } = {}) {
@@ -201,5 +204,3 @@ function createAppClient ({
     setup: initialize(appSetup, appActions, appComponents, appDataModels, usePlugin)
   }
 }
-
-export default createAppClient

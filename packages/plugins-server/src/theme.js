@@ -3,14 +3,14 @@ import { existsSync } from 'node:fs'
 import { dataSetValue } from '@dooksa/plugins'
 import compileSass from '@dooksa/theme'
 
-const theme = createPlugin('theme', {
+export const theme = createPlugin('theme', {
   models: {
     styles: {
       type: 'string'
     }
   },
-  actions: {
-    compileSass
+  methods: {
+    compile: compileSass
   },
   /**
    * @param {Object} param
@@ -25,14 +25,12 @@ const theme = createPlugin('theme', {
 
     const result = compileSass(path)
 
-    dataSetValue({ name: 'page/css', value: result.css })
+    dataSetValue({
+      name: 'page/css',
+      value: result.css
+    })
   }
 })
 
-const themeCompile = compileSass
-
-export {
-  themeCompile
-}
-
+export const { themeCompile } = theme
 export default theme

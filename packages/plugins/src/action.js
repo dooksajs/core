@@ -1,5 +1,5 @@
 import createPlugin from '@dooksa/create-plugin'
-import { fetchById } from './fetch.js'
+import { fetchGetById } from './fetch.js'
 import { dataGetValue } from './data.js'
 import { operatorCompare, operatorEval } from './operator.js'
 import { getValue } from './utils/getValue.js'
@@ -254,7 +254,7 @@ function ifElse (branch, callback, { context, payload, blockValues }) {
   return processSequence(branch.else, context, payload, blockValues, callback)
 }
 
-const action = createPlugin('action', {
+export const action = createPlugin('action', {
   models: {
     blocks: {
       type: 'collection',
@@ -321,12 +321,6 @@ const action = createPlugin('action', {
           relation: 'action/blockSequences'
         }
       }
-    },
-    templates: {
-      type: 'collection',
-      items: {
-        type: 'object'
-      }
     }
   },
   metadata: {
@@ -341,11 +335,35 @@ const action = createPlugin('action', {
         description: 'Execute an action',
         icon: 'mdi:play-box-multiple'
       },
+      parameters: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+            required: true
+          },
+          context: {
+            type: 'object',
+            properties: {
+              id: { type: 'string' },
+              rootId: { type: 'string' },
+              parentId: { type: 'string' },
+              groupId: { type: 'string' }
+            }
+          },
+          payload: {
+            type: 'any'
+          },
+          clearBlockValues: {
+            type: 'boolean'
+          }
+        }
+      },
       /**
        * @param {Object} param
        * @param {string} param.id
-       * @param {Object} param.context
-       * @param {Object} param.payload
+       * @param {Object} [param.context]
+       * @param {Object} [param.payload]
        * @param {boolean} [param.clearBlockValues]
        * @param {Object} [actionContext]
        * @param {Object} [actionContext.blockValues]
@@ -366,7 +384,7 @@ const action = createPlugin('action', {
 
           // attempt to fetch action from backend
           if (sequence.isEmpty) {
-            return fetchById({
+            return fetchGetById({
               collection: 'action/sequence',
               id: [id],
               expand: true
@@ -376,6 +394,7 @@ const action = createPlugin('action', {
                   return reject(new Error('No action found: ' + id))
                 }
 
+                // @ts-ignore
                 this.dispatch({
                   id,
                   context,
@@ -402,6 +421,17 @@ const action = createPlugin('action', {
         description: 'Get value from returned action block value',
         icon: 'mdi:variable-box'
       },
+      parameters: {
+        type: 'object',
+        properties: {
+          value: {
+            type: 'any'
+          },
+          query: {
+            type: 'string'
+          }
+        }
+      },
       /**
        * Get block value
        * @param {Object} props
@@ -420,6 +450,9 @@ const action = createPlugin('action', {
         description: 'Get value from current context values',
         icon: 'mdi:variable'
       },
+      parameters: {
+        type: 'string'
+      },
       /**
        * Get context value
        * @param {GetDataValue} props
@@ -435,6 +468,9 @@ const action = createPlugin('action', {
         description: 'Get data from current event payload',
         icon: 'mdi:input'
       },
+      parameters: {
+        type: 'string'
+      },
       /**
        * Get payload value
        * @param {GetDataValue} props
@@ -449,6 +485,42 @@ const action = createPlugin('action', {
         description: 'The if...else statement executes a action',
         icon: 'mdi:source-branch'
       },
+      parameters: {
+        type: 'object',
+        properties: {
+          if: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                from: {
+                  type: 'any',
+                  required: true
+                },
+                to: {
+                  type: 'any'
+                },
+                op: {
+                  type: 'string',
+                  required: true
+                }
+              }
+            }
+          },
+          then: {
+            type: 'array',
+            items: {
+              type: 'string'
+            }
+          },
+          else: {
+            type: 'array',
+            items: {
+              type: 'string'
+            }
+          }
+        }
+      },
       method: ifElse
     }
   },
@@ -457,11 +529,12 @@ const action = createPlugin('action', {
   }
 })
 
-const actionDispatch = action.actions.dispatch
-
-export {
-  action,
-  actionDispatch
-}
+export const {
+  actionDispatch,
+  actionGetBlockValue,
+  actionGetContextValue,
+  actionGetPayloadValue,
+  actionIfElse
+} = action
 
 export default action

@@ -1,7 +1,7 @@
 import createPlugin from '@dooksa/create-plugin'
 import { dataGetValue, routeCurrentId, dataSetValue } from './index.js'
 
-const page = createPlugin('page', {
+export const page = createPlugin('page', {
   metadata: {
     title: 'Page',
     description: 'Manage dooksa pages',
@@ -42,6 +42,11 @@ const page = createPlugin('page', {
   },
   actions: {
     save: {
+      metadata: {
+        title: 'Save page',
+        description: '',
+        icon: ''
+      },
       /**
        *
        * @param {Object} param
@@ -199,15 +204,10 @@ const page = createPlugin('page', {
   }
 })
 
-const pageAppendExpand = page.actions.appendExpand
-const pageGetById = page.actions.getById
-const pageSave = page.actions.save
-
-export {
-  page,
+export const {
   pageAppendExpand,
   pageGetById,
   pageSave
-}
+} = page
 
 export default page

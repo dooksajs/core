@@ -1,7 +1,7 @@
 import createPlugin from '@dooksa/create-plugin'
 import { dataSetValue } from './data.js'
 
-const metadata = createPlugin('metadata', {
+export const metadata = createPlugin('metadata', {
   metadata: {
     title: 'Metadata',
     description: 'Additional information about plugins and their actions',
@@ -41,26 +41,10 @@ const metadata = createPlugin('metadata', {
         }
       }
     },
-    actionParameters: {
+    parameters: {
       type: 'collection',
       items: {
-        type: 'array',
-        items: {
-          type: 'object',
-          properties: {
-            title: { type: 'string' },
-            items: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  id: { type: 'string' },
-                  title: { type: 'string' }
-                }
-              }
-            }
-          }
-        }
+        type: 'object'
       }
     }
   },
@@ -83,7 +67,5 @@ const metadata = createPlugin('metadata', {
     })
   }
 })
-
-export { metadata }
 
 export default metadata

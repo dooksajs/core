@@ -1,5 +1,5 @@
 import createPlugin from '@dooksa/create-plugin'
-import { dataGetValue } from './data.js'
+import { dataGetValue, dataSetValue } from './data.js'
 import { hash } from '@dooksa/utils'
 
 const pathHash = {}
@@ -36,7 +36,7 @@ function currentId () {
   return id
 }
 
-const route = createPlugin('route', {
+export const route = createPlugin('route', {
   metadata: {
     title: 'Route',
     description: 'Client side routing.',
@@ -60,8 +60,14 @@ const route = createPlugin('route', {
         if (to === from) {
           return
         }
-        const fromSections = dataGetValue({ name: 'page/items', id: from })
-        const toSections = dataGetValue({ name: 'page/items', id: to })
+        const fromSections = dataGetValue({
+          name: 'page/items',
+          id: from
+        })
+        const toSections = dataGetValue({
+          name: 'page/items',
+          id: to
+        })
 
         if (toSections.isEmpty) {
           // get data
@@ -92,7 +98,10 @@ const route = createPlugin('route', {
         }
 
         // update history
-        window.history.pushState({ to, from }, '', to)
+        window.history.pushState({
+          to,
+          from
+        }, '', to)
       }
     },
     currentPath: {
@@ -132,15 +141,10 @@ const route = createPlugin('route', {
   }
 })
 
-const routeCurrentId = route.actions.currentId
-const routeNavigate = route.actions.navigate
-const routeCurrentPath = route.actions.currentPath
-
-export {
-  route,
+export const {
   routeCurrentId,
   routeCurrentPath,
   routeNavigate
-}
+} = route
 
 export default route

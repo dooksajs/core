@@ -1,9 +1,9 @@
 import createPlugin from '@dooksa/create-plugin'
-import { event } from '@dooksa/plugins'
+import { event as eventClient } from '@dooksa/plugins'
 import { databaseSeed } from './database.js'
 
-export default createPlugin('event', {
-  models: { ...event.models },
+export const event = createPlugin('event', {
+  models: { ...eventClient.models },
   setup () {
     databaseSeed('event-listeners')
     databaseSeed('event-handlers')

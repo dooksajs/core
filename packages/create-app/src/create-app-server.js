@@ -1,4 +1,19 @@
 import appendPlugin from './append-plugin.js'
+import { data } from '@dooksa/plugins'
+import {
+  $http,
+  middleware,
+  action,
+  metadata,
+  database,
+  component,
+  event,
+  page,
+  theme,
+  user
+} from '@dooksa/plugins-server'
+
+/** @import {Plugin, ActiveAction} from '../../create-plugin/src/index.js' */
 
 function appendAction (appActionData) {
   return (action) => {
@@ -6,57 +21,51 @@ function appendAction (appActionData) {
   }
 }
 
-function initialize (appSetup, appActionData, appDataModels, appStartServer, appMetadata) {
+function initialize (appSetup, appActionData, appDataModels, appMetadata) {
   /**
    * Initialize server-side Dooksa!
    * @param {Object} param
    * @param {Object} [param.options={}]
    */
   return ({ options = {} }) => {
-    // setup database
-    for (let i = 0; i < appSetup.length; i++) {
-      const setup = appSetup[i]
-
-      if (setup.name === 'data') {
-        setup.initialize(appDataModels)
-
-        // remove from setup queue
-        appSetup.splice(i, 1)
-        break
-      }
-    }
-
+    options.data = appDataModels
     options.action = { actions: appActionData }
-    options.metadata = { plugins: appMetadata }
+    options.metadata = appMetadata
 
     // setup plugins
     for (let i = 0; i < appSetup.length; i++) {
-      const setup = appSetup[i]
+      const plugin = appSetup[i]
 
-      setup.initialize(options[setup.name])
+      plugin.setup(options[plugin.name])
       appSetup.splice(i, 1)
       i--
     }
 
     appSetup = []
 
-    return appStartServer(options.server)
+    return $http.httpStart(options.http)
   }
 }
 
 /**
  * Create Dooksa app
- * @param {Object} plugins
+ * @param {Object} data
+ * @param {Plugin[]} [data.serverPlugins=[]]
+ * @param {Plugin[]} [data.clientPlugins=[]]
+ * @param {ActiveAction[]} [data.actions=[]]
  */
-function createAppServer ({
-  plugins = [],
+export default function createAppServer ({
+  serverPlugins = [],
   clientPlugins = [],
   actions = []
 } = {}) {
   const appPlugins = []
   const appSetup = []
   const appActionData = []
-  const appMetadata = []
+  const appMetadata = {
+    plugins: [],
+    actions: []
+  }
   const appDataModels = {
     values: {},
     schema: [],
@@ -64,39 +73,51 @@ function createAppServer ({
   }
   const usePlugin = appendPlugin(appPlugins, appSetup, appDataModels)
   const useAction = appendAction(appActionData)
-  let appStartServer
 
-  for (let i = 0; i < plugins.length; i++) {
-    const plugin = plugins[i]
+  // add required server-side plugins
+  usePlugin(data)
+  usePlugin(middleware)
+  usePlugin($http)
+  usePlugin(metadata)
+  usePlugin(user)
+  usePlugin(database)
+  usePlugin(action)
+  usePlugin(component)
+  usePlugin(event)
+  usePlugin(page)
+  usePlugin(theme)
 
-    if (plugin.name === 'http') {
-      appStartServer = plugin.actions.start
-    }
+  // add additional server-side plugins
+  for (let i = 0; i < serverPlugins.length; i++) {
+    const plugin = serverPlugins[i]
 
     usePlugin(plugin)
   }
 
+  // add actions
   for (let i = 0; i < actions.length; i++) {
     useAction(actions[i])
   }
 
-
+  // plugins used on the client-side
   for (let i = 0; i < clientPlugins.length; i++) {
     const plugin = clientPlugins[i]
 
     if (plugin.metadata) {
-      appMetadata.push({
+      appMetadata.plugins.push({
         name: plugin.name,
         metadata: plugin.metadata
       })
+    }
+
+    if (plugin.actions) {
+      appMetadata.actions = appMetadata.actions.concat(plugin.actions)
     }
   }
 
   return {
     usePlugin,
     useAction,
-    setup: initialize(appSetup, appActionData, appDataModels, appStartServer, appMetadata)
+    setup: initialize(appSetup, appActionData, appDataModels, appMetadata)
   }
 }
-
-export default createAppServer

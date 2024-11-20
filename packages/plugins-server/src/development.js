@@ -3,7 +3,7 @@ import { httpSetRoute } from './http.js'
 import { dataAddListener, dataDeleteListener } from '@dooksa/plugins'
 import { generateId } from '@dooksa/utils'
 
-export default createPlugin('development', {
+export const development = createPlugin('development', {
   models: {
     rebuildClient: {
       type: 'number'

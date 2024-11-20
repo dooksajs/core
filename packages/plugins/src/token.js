@@ -71,7 +71,7 @@ function tokenUpdateText (process, item, insert, start, end, updateText) {
   updateText(process.value)
 }
 
-const token = createPlugin('token', {
+export const token = createPlugin('token', {
   metadata: {
     title: 'Token',
     description: 'Provides a placeholder variable',
@@ -92,27 +92,27 @@ const token = createPlugin('token', {
       return placeholder.default
     }
   },
-  actions: {
-    parseText: {
-      method (value) {
-        // return empty
-        if (value === '[empty]') {
-          return {
-            value: '',
-            token: false
-          }
-        }
-
-        const pattern = /\[(.+)\]/
-        const findToken = new RegExp(pattern, 'g')
-        const token = findToken.test(value)
-
+  methods: {
+    parseText (value) {
+      // return empty
+      if (value === '[empty]') {
         return {
-          value,
-          token
+          value: '',
+          token: false
         }
       }
-    },
+
+      const pattern = /\[(.+)\]/
+      const findToken = new RegExp(pattern, 'g')
+      const token = findToken.test(value)
+
+      return {
+        value,
+        token
+      }
+    }
+  },
+  actions: {
     textContent: {
       /**
        * Convert tokens to related string and update the element that the content is attached to
@@ -227,8 +227,5 @@ const token = createPlugin('token', {
   }
 })
 
-const tokenTextContent = token.actions.textContent
-
-export { token, tokenTextContent }
-
+export const { tokenTextContent } = token
 export default token

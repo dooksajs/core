@@ -1,10 +1,10 @@
 import createPlugin from '@dooksa/create-plugin'
-import { component } from '@dooksa/plugins'
+import { component as componentClient } from '@dooksa/plugins'
 import { databaseDeleteValue, databaseGetValue, databaseSeed } from './database.js'
 import { httpSetRoute } from './http.js'
 
-const componentServer = createPlugin('component', {
-  models: component.models,
+export const component = createPlugin('component', {
+  models: componentClient.models,
   setup () {
     databaseSeed('component-items')
     databaseSeed('component-children')
@@ -32,4 +32,4 @@ const componentServer = createPlugin('component', {
   }
 })
 
-export default componentServer
+export default component

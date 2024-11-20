@@ -1,6 +1,6 @@
 import createPlugin from '@dooksa/create-plugin'
 import { createAction, compileAction } from '@dooksa/create-action'
-import { action, dataSetValue } from '@dooksa/plugins'
+import { action as actionClient, dataSetValue } from '@dooksa/plugins'
 import { databaseSeed, databaseGetValue, databaseDeleteValue } from './database.js'
 import { httpSetRoute } from './http.js'
 
@@ -19,8 +19,8 @@ import { httpSetRoute } from './http.js'
  * @typedef {Request|ActionSequence} RequestAction
  */
 
-const serverAction = createPlugin('action', {
-  models: { ...action.models },
+export const action = createPlugin('action', {
+  models: { ...actionClient.models },
   methods: {
     /**
      * @param {RequestAction} request
@@ -405,4 +405,6 @@ const serverAction = createPlugin('action', {
   }
 })
 
-export default serverAction
+export const { actionParseSequence, actionSetAction } = action
+
+export default action

@@ -110,6 +110,9 @@ importers:
       '@dooksa/plugins':
         specifier: workspace:^
         version: link:../plugins
+      '@dooksa/plugins-server':
+        specifier: workspace:^
+        version: link:../plugins-server
       '@dooksa/utils':
         specifier: workspace:^
         version: link:../utils

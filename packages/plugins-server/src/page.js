@@ -1,6 +1,6 @@
 import createPlugin from '@dooksa/create-plugin'
 import { createHash } from 'node:crypto'
-import { page, pageGetById, dataGetValue, dataSetValue } from '@dooksa/plugins'
+import { page as pageClient, pageGetById, dataGetValue, dataSetValue } from '@dooksa/plugins'
 import { databaseSeed, databaseSetValue } from './database.js'
 import { httpSetRoute } from './http.js'
 import { hash } from '@dooksa/utils'
@@ -11,50 +11,9 @@ function hashSHA (item) {
   return hash.update(item, 'utf-8').digest('base64')
 }
 
-function create ({ request, response }) {
-  const appString = dataGetValue({ name: 'page/app' }).item
-  const appSourceMap = dataGetValue({
-    name: 'page/sourcemap',
-    id: 'client-app.js.map'
-  })
-
-  response.set('Content-Type', 'text/html')
-
-  const data = request.pageData ? JSON.stringify(request.pageData) : ''
-  let app = '(() => {const __ds =' + data + ';' + appString
-  let csp = ''
-
-  PROD: {
-    csp = "script-src 'sha256-" + hashSHA(app) + "';style-src 'unsafe-inline';"
-  }
-
-  DEV: {
-    csp = "script-src 'unsafe-inline'; style-src 'unsafe-inline';"
-  }
-
-  // include external source map
-  if (!appSourceMap.isEmpty) {
-    app += '//# sourceMappingURL=/_/sourcemap/client-app.js.map\n'
-  }
-
-  app += '})()'
-
-  const css = dataGetValue({ name: 'page/css' }).item || ''
-
-  response.set('Content-Security-Policy', csp)
-
-  response.status(200).html(
-    `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><link rel="icon" type="image/x-icon" href="/favicon.ico"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dooksa</title></head><body>
-      <div id="root"></div>
-      <script>${app}</script>
-      <style>${css}</style>
-    </body></html>`
-  )
-}
-
-const pageServer = createPlugin('page', {
+export const page = createPlugin('page', {
   models: {
-    ...page.models,
+    ...pageClient.models,
     app: {
       type: 'string'
     },
@@ -68,8 +27,47 @@ const pageServer = createPlugin('page', {
       type: 'string'
     }
   },
-  actions: {
-    create
+  methods: {
+    create ({ request, response }) {
+      const appString = dataGetValue({ name: 'page/app' }).item
+      const appSourceMap = dataGetValue({
+        name: 'page/sourcemap',
+        id: 'client-app.js.map'
+      })
+
+      response.set('Content-Type', 'text/html')
+
+      const data = request.pageData ? JSON.stringify(request.pageData) : ''
+      let app = '(() => {const __ds =' + data + ';' + appString
+      let csp = ''
+
+      PROD: {
+        csp = "script-src 'sha256-" + hashSHA(app) + "';style-src 'unsafe-inline';"
+      }
+
+      DEV: {
+        csp = "script-src 'unsafe-inline'; style-src 'unsafe-inline';"
+      }
+
+      // include external source map
+      if (!appSourceMap.isEmpty) {
+        app += '//# sourceMappingURL=/_/sourcemap/client-app.js.map\n'
+      }
+
+      app += '})()'
+
+      const css = dataGetValue({ name: 'page/css' }).item || ''
+
+      response.set('Content-Security-Policy', csp)
+
+      response.status(200).html(
+        `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><link rel="icon" type="image/x-icon" href="/favicon.ico"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dooksa</title></head><body>
+          <div id="root"></div>
+          <script>${app}</script>
+          <style>${css}</style>
+        </body></html>`
+      )
+    }
   },
   setup ({ app = '', css = '' } = {}) {
     databaseSeed('page-items')
@@ -102,7 +100,7 @@ const pageServer = createPlugin('page', {
           next()
         },
         (request, response) => {
-          create({
+          this.create({
             request,
             response
           })
@@ -151,10 +149,4 @@ const pageServer = createPlugin('page', {
   }
 })
 
-const pageCreate = pageServer.actions.create
-
-export {
-  pageCreate
-}
-
-export default pageServer
+export const { pageCreate } = page

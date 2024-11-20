@@ -1,51 +1,65 @@
 import createPlugin from '@dooksa/create-plugin'
-import { dataSetValue, metadata } from '@dooksa/plugins'
+import { dataSetValue, metadata as metadataClient } from '@dooksa/plugins'
 import { databaseSeed, databaseGetValue } from './database.js'
 import { httpSetRoute } from './http.js'
 
-export default createPlugin('metadata', {
+/**
+ * @import {PluginMetadata, ActiveAction } from '@dooksa/create-plugin'
+ */
+
+export const metadata = createPlugin('metadata', {
   models: {
-    ...metadata.models
+    ...metadataClient.models
   },
-  setup ({ plugins }) {
+  /**
+   * @param {Object} param
+   * @param {Object[]} param.plugins
+   * @param {string} param.plugins[].name
+   * @param {PluginMetadata} param.plugins[].metadata
+   * @param {ActiveAction[]} param.actions
+   */
+  setup ({ plugins, actions }) {
     databaseSeed('metadata-currentLanguage')
     databaseSeed('metadata-languages')
+    databaseSeed('metadata-plugins')
+    databaseSeed('metadata-actions')
+    databaseSeed('metadata-parameters')
 
     // set plugin metadata
     for (let i = 0; i < plugins.length; i++) {
       const plugin = plugins[i]
-      const metadata = plugin.metadata
 
       dataSetValue({
         name: 'metadata/plugins',
-        value: metadata.plugin,
+        value: plugin.metadata,
         options: {
           id: plugin.name
         }
       })
+    }
 
-      for (const key in metadata.actions) {
-        if (Object.hasOwnProperty.call(metadata.actions, key)) {
-          dataSetValue({
-            name: 'metadata/actions',
-            value: metadata.actions[key],
-            options: {
-              id: key
-            }
-          })
-        }
+    for (let i = 0; i < actions.length; i++) {
+      const action = actions[i]
+
+      for (let i = 0; i < action.metadata.length; i++) {
+        const metadata = Object.assign({}, action.metadata[i])
+        const id = metadata.method + '_' + metadata.id
+
+        dataSetValue({
+          name: 'metadata/actions',
+          value: metadata,
+          options: { id }
+        })
       }
 
-      for (const key in metadata.actionParameters) {
-        if (Object.hasOwnProperty.call(metadata.actionParameters, key)) {
-          dataSetValue({
-            name: 'metadata/actionParameters',
-            value: metadata.actionParameters[key],
-            options: {
-              id: key
-            }
-          })
-        }
+      if (action.parameters) {
+        dataSetValue({
+          name: 'metadata/parameters',
+          value: action.parameters,
+          options: {
+            id: action.name
+          }
+        })
       }
     }
 
@@ -72,10 +86,10 @@ export default createPlugin('metadata', {
     })
 
     httpSetRoute({
-      path: '/metadata/actions-parameters',
+      path: '/metadata/parameters',
       middleware: ['request/queryIsArray'],
       handlers: [
-        databaseGetValue(['metadata/actionParameters'])
+        databaseGetValue(['metadata/parameters'])
       ]
     })
   }

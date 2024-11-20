@@ -37,8 +37,8 @@ const handlers = {
   }
 }
 
-const middleware = createPlugin('middleware', {
-  actions: {
+export const middleware = createPlugin('middleware', {
+  methods: {
     /**
      * Get middleware
      * @param {string} name
@@ -66,9 +66,5 @@ const middleware = createPlugin('middleware', {
   }
 })
 
-const middlewareGet = middleware.actions.get
-const middlewareSet = middleware.actions.set
-
-export { middlewareGet, middlewareSet }
-
+export const { middlewareGet, middlewareSet } = middleware
 export default middleware

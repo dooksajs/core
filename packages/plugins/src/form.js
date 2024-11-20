@@ -13,7 +13,7 @@ import { dataGenerateId } from './data.js'
  * @property {FormData} [files.data]
  */
 
-const icon = createPlugin('form', {
+export const form = createPlugin('form', {
   metadata: {
     title: 'Form',
     description: 'Handle form data',
@@ -180,30 +180,43 @@ const icon = createPlugin('form', {
     }
   },
   actions: {
-    /**
-     * @param {object} form
-     * @param {HTMLFormControlsCollection} form.elements
-     * @param {FormData} form.data
-     * @param {'ordered'|'unordered'} form.sort
-     */
-    format ({ elements, data, sort }) {
-      if (!(elements instanceof HTMLFormControlsCollection)) {
-        throw new Error('Elements expected type of HTMLFormControlsCollection')
-      }
+    format: {
+      metadata: {
+        title: 'Format form',
+        description: '',
+        icon: ''
+      },
+      /**
+       * @param {object} form
+       * @param {HTMLFormControlsCollection} form.elements
+       * @param {FormData} form.data
+       * @param {'ordered'|'unordered'} form.sort
+       */
+      method ({ elements, data, sort }) {
+        if (!(elements instanceof HTMLFormControlsCollection)) {
+          throw new Error('Elements expected type of HTMLFormControlsCollection')
+        }
 
-      if (!(data instanceof FormData)) {
-        throw new Error('Form expected type of FormData')
-      }
+        if (!(data instanceof FormData)) {
+          throw new Error('Form expected type of FormData')
+        }
 
-      if (sort === 'ordered') {
-        return this.sortOrdered(elements, elements, data)
-      }
+        if (sort === 'ordered') {
+          return this.sortOrdered(elements, elements, data)
+        }
 
-      return this.sortUnordered(data)
+        return this.sortUnordered(data)
+      }
     }
   }
 })
 
-export { icon }
+export const {
+  formAttachFile,
+  formFormat,
+  formSortOrdered,
+  formSortUnordered
+} = form
 
-export default icon
+
+export default form

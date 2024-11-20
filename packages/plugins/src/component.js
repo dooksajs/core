@@ -4,12 +4,10 @@ import {
   dataGetValue,
   dataAddListener,
   dataSetValue,
-  dataDeleteListener,
   dataDeleteValue
 } from './data.js'
 import { eventEmit } from './event.js'
 import { componentOptions } from '@dooksa/create-component'
-import { removeAffix } from './utils/createDataValue.js'
 import { generateId } from '@dooksa/utils'
 
 /**
@@ -946,7 +944,7 @@ function updateChildren (id, parent, nextChildNodes) {
   }
 }
 
-const component = createPlugin('component', {
+export const component = createPlugin('component', {
   metadata: {
     title: 'Component',
     description: '',
@@ -1164,6 +1162,7 @@ const component = createPlugin('component', {
           })
 
           for (let i = 0; i < children.item.length; i++) {
+            // @ts-ignore
             this.remove({ id: children.item[i] }, context, false)
           }
         }
@@ -1449,13 +1448,9 @@ const component = createPlugin('component', {
   }
 })
 
-const componentRemove = component.actions.remove
-const componentRenderChildren = component.actions.renderChildren
-
-export {
-  component,
+export const {
   componentRemove,
   componentRenderChildren
-}
+} = component
 
 export default component

@@ -7,7 +7,7 @@ import createPlugin from '@dooksa/create-plugin'
  * @property {string} replacement - String that will replace what matches the pattern
  */
 
-const string = createPlugin('string', {
+export const string = createPlugin('string', {
   metadata: {
     title: 'String',
     description: 'Manipulate a sequence of characters.',
@@ -30,10 +30,5 @@ const string = createPlugin('string', {
   }
 })
 
-const stringReplace = string.actions.replace
-
-export {
-  stringReplace
-}
-
+export const { stringReplace } = string
 export default string

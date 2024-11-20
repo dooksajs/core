@@ -15,7 +15,7 @@ import { dataGetSchema } from './data.js'
  * @property {string} type - Data type
  */
 
-const editor = createPlugin('editor', {
+export const editor = createPlugin('editor', {
   metadata: {
     title: 'Editor',
     description: 'Utilities for managing components',
@@ -55,6 +55,7 @@ const editor = createPlugin('editor', {
           const schema = dataGetSchema(newSchemaName)
 
           if (schema) {
+            // @ts-ignore
             item.items = this.getSchema(newSchemaName)
           }
         }
@@ -68,35 +69,43 @@ const editor = createPlugin('editor', {
     }
   },
   actions: {
-    /**
-     * Useful data to display data components
-     * @param {string} name
-     * @returns {EditorDataSchema}
-     */
-    getSchema (name) {
-      const schema = dataGetSchema(name)
-      let result = {
-        type: schema.type
-      }
+    getSchema: {
+      metadata: {
+        title: 'Get data schema',
+        description: 'Useful data to display data components',
+        icon: 'vscode-icons:file-type-json-schema'
+      },
+      /**
+       * Useful data to display data components
+       * @param {string} name
+       * @returns {EditorDataSchema}
+       */
+      method (name) {
+        const schema = dataGetSchema(name)
+        let result = {
+          type: schema.type
+        }
 
-      if (schema.type === 'collection') {
-        result = this.getSchema(name + '/items')
-      } else if (schema.type === 'array') {
-        result.items = this.getSchema(name + '/items')
-      } else if (schema.type === 'object' && schema.properties) {
-        result.properties = this.schemaProperties(name + '/items', schema.properties)
-      }
+        if (schema.type === 'collection') {
+          // @ts-ignore
+          result = this.getSchema(name + '/items')
+        } else if (schema.type === 'array') {
+          // @ts-ignore
+          result.items = this.getSchema(name + '/items')
+        } else if (schema.type === 'object' && schema.properties) {
+          // @ts-ignore
+          result.properties = this.schemaProperties(name + '/items', schema.properties)
+        }
 
-      return result
+        return result
+      }
     }
   }
 })
 
-const editorGetSchema = editor.actions.getSchema
-
-export {
-  editor,
-  editorGetSchema
-}
+export const {
+  editorGetSchema,
+  editorSchemaProperties
+} = editor
 
 export default editor

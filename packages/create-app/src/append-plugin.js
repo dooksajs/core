@@ -1,15 +1,21 @@
 import { parseSchema } from '@dooksa/utils'
 
-export default function appendPlugin (appPlugins, appSetup, appDataModels, appActions) {
-  const use = (pluginData) => {
-    const plugin = pluginData.initialise()
+/**
+ * @import {Plugin} from '../../create-plugin/src/index.js'
+ */
 
+export default function appendPlugin (appPlugins, appSetup, appDataModels, appActions) {
+  /**
+   * @param {Plugin} plugin
+   */
+  const use = (plugin) => {
     // check if plugin exists
     if (appPlugins.includes(plugin)) {
       const setup = plugin.setup
-      // unshift setup
+
+      // remove setup
       if (setup) {
-        appSetup = appSetup.filter(item => item.initialize !== setup)
+        appSetup = appSetup.filter(item => item.setup !== setup)
       }
 
       return
@@ -17,18 +23,14 @@ export default function appendPlugin (appPlugins, appSetup, appDataModels, appAc
 
     // store plugin
     appPlugins.push(plugin)
-    const {
-      actions,
-      dependencies,
-      setup
-    } = plugin
-    const name = pluginData.name
-    const models = pluginData.models
+    const dependencies = plugin.dependencies
+    const name = plugin.name
+    const actions = plugin.actions
 
-    if (setup) {
+    if (plugin.setup) {
       appSetup.push({
         name,
-        initialize: setup
+        setup: plugin.setup
       })
     }
 
@@ -38,13 +40,19 @@ export default function appendPlugin (appPlugins, appSetup, appDataModels, appAc
       }
     }
 
-    // extract actions
+    // append actions
     if (appActions && actions) {
-      Object.assign(appActions, actions)
+      for (let i = 0; i < actions.length; i++) {
+        const action = actions[i]
+
+        appActions[action.name] = action.method
+      }
     }
 
     // extract data (need to parse and set default value)
-    if (models) {
+    if (plugin.models) {
+      const models = plugin.models
+
       for (const key in models) {
         if (Object.hasOwnProperty.call(models, key)) {
           const modelItem = models[key]

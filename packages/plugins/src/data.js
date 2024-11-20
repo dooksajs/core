@@ -1392,11 +1392,55 @@ function validateSchema (data, path, source) {
   }
 }
 
-const data = createPlugin('data', {
+export const data = createPlugin('data', {
   metadata: {
     title: 'Data',
     description: 'Dooksa state management system',
     icon: 'mdi:database'
+  },
+  methods: {
+    getSchema (name) {
+      return databaseSchema[name]
+    },
+    /**
+     * Set data without schema validation
+     * @param {Object} param
+     * @param {string} param.name
+     * @param {*} param.value
+     * @param {Object} [param.options]
+     * @param {string} param.options.id
+     * @returns {DataValue}
+     */
+    unsafeSetValue ({ name, value, options }) {
+      const result = createDataValue(name, options.id)
+
+      if (options) {
+        if (options.id == null) {
+          // update collection
+          database[name] = value
+
+          result.item = value
+        } else {
+          result.item = value._item || value
+
+          const data = database[name][options.id] || {}
+
+          database[name][options.id] = {
+            _item: value._item || value,
+            _metadata: value._metadata || data._metadata || {}
+          }
+        }
+      } else {
+        // update collection
+        database[name] = value
+
+        result.item = value
+      }
+
+      fireDataListeners(name, 'update', result)
+
+      return result
+    }
   },
   actions: {
     generateId: {
@@ -1523,47 +1567,6 @@ const data = createPlugin('data', {
         }
 
         return [result]
-      }
-    },
-    unsafeSetValue: {
-      /**
-       * Set data without schema validation
-       * @param {Object} param
-       * @param {string} param.name
-       * @param {*} param.value
-       * @param {Object} [param.options]
-       * @param {string} param.options.id
-       * @returns {DataValue}
-       */
-      method ({ name, value, options }) {
-        const result = createDataValue(name, options.id)
-
-        if (options) {
-          if (options.id == null) {
-            // update collection
-            database[name] = value
-
-            result.item = value
-          } else {
-            result.item = value._item || value
-
-            const data = database[name][options.id] || {}
-
-            database[name][options.id] = {
-              _item: value._item || value,
-              _metadata: value._metadata || data._metadata || {}
-            }
-          }
-        } else {
-          // update collection
-          database[name] = value
-
-          result.item = value
-        }
-
-        fireDataListeners(name, 'update', result)
-
-        return result
       }
     },
     addListener: {
@@ -1854,6 +1857,7 @@ const data = createPlugin('data', {
                 delete databaseRelationInUse[usedRelationName]
 
                 if (cascade) {
+                  // @ts-ignore
                   this.deleteValue({
                     name: splitName[0] + '/' + splitName[1],
                     id: splitName[2],
@@ -1889,11 +1893,6 @@ const data = createPlugin('data', {
           inUse: false,
           deleted: true
         }
-      }
-    },
-    getSchema: {
-      method (name) {
-        return databaseSchema[name]
       }
     },
     getValue: {
@@ -2071,6 +2070,7 @@ const data = createPlugin('data', {
     setValue: {
       metadata: [
         {
+          id: 'updateById',
           title: 'Update document by ID',
           description: 'Update a select document',
           icon: 'mdi:content-save-cog',
@@ -2236,27 +2236,16 @@ const data = createPlugin('data', {
   }
 })
 
-const dataGenerateId = data.actions.generateId
-const dataFind = data.actions.find
-const dataUnsafeSetValue = data.actions.unsafeSetValue
-const dataSetValue = data.actions.setValue
-const dataDeleteValue = data.actions.deleteValue
-const dataGetValue = data.actions.getValue
-const dataAddListener = data.actions.addListener
-const dataDeleteListener = data.actions.deleteListener
-const dataGetSchema = data.actions.getSchema
-
-export {
-  data,
+export const {
   dataAddListener,
   dataDeleteListener,
   dataDeleteValue,
   dataFind,
   dataGenerateId,
+  dataGetSchema,
   dataGetValue,
   dataSetValue,
-  dataUnsafeSetValue,
-  dataGetSchema
-}
+  dataUnsafeSetValue
+} = data
 
 export default data

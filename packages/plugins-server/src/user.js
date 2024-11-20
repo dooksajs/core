@@ -11,7 +11,7 @@ let cookieMaxAge = 43200
 let JWTAlgorithm = 'HS256'
 let JWTSecret = ''
 
-const user = createPlugin('user', {
+export const user = createPlugin('user', {
   models: {
     emails: {
       type: 'collection',
@@ -299,5 +299,3 @@ function sign ({ payload, expiresIn }) {
     expiresIn
   })
 }
-
-export default user

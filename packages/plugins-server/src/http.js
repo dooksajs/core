@@ -34,14 +34,15 @@ const routeTypes = {
 const routes = { all: [] }
 let apiPrefix = ''
 let cookieSecret = ''
+/** @type {HyperExpress.Server} */
 let app
 let server
 
-const $http = createPlugin('http', {
+export const $http = createPlugin('http', {
   models: {
     status: { type: 'string' }
   },
-  actions: {
+  methods: {
     /**
      * Add a route to the server
      * @param {Object} route
@@ -125,7 +126,7 @@ const $http = createPlugin('http', {
   setup ({
     cookieSecret = '',
     api = '/_',
-    publicPath
+    publicPath = ''
   } = {}) {
     DEV: {
       cookieSecret = 'Invalid cookie secret length; secret must be at 32 characters'
@@ -199,14 +200,10 @@ const $http = createPlugin('http', {
   }
 })
 
-const httpStart = $http.actions.start
-const httpStop = $http.actions.stop
-const httpSetRoute = $http.actions.setRoute
-
-export {
+export const {
+  httpSetRoute,
   httpStart,
-  httpStop,
-  httpSetRoute
-}
+  httpStop
+} = $http
 
 export default $http

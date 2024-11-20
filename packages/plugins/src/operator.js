@@ -10,7 +10,25 @@ import createPlugin from '@dooksa/create-plugin'
  */
 
 /**
- * @typedef {'=='|'!='|'>'|'>='|'<'|'<='|'!'|'%'|'++'|'--'|'-'|'+'|'*'|'**'|'!!'|'~'|'typeof'} Operator
+ * @typedef {'=='|
+ * '!='|
+ * '>'|
+ * '>='|
+ * '<'|
+ * '<='|
+ * '!'|
+ * '%'|
+ * '++'|
+ * '--'|
+ * '-'|
+ * '+'|
+ * '*'|
+ * '**'|
+ * '!!'|
+ * '~'|
+ * 'isNull'|
+ * 'notNull'|
+ * 'typeof'} Operator
  */
 
 /**
@@ -29,7 +47,7 @@ function equality (v) {
  * @returns {boolean}
  */
 function inequality (v) {
-  return v[0] !== v[1]
+  return v[0] != v[1]
 }
 /**
  * Greater than
@@ -75,6 +93,24 @@ function lessThanOrEqual (v) {
  */
 function logicalNot (v) {
   return !v[0]
+}
+/**
+ * not Null
+ * @private
+ * @param {OperatorValues} v
+ * @returns {boolean}
+ */
+function notNull (v) {
+  return v[0] != null
+}
+/**
+ * is Null
+ * @private
+ * @param {OperatorValues} v
+ * @returns {boolean}
+ */
+function isNull (v) {
+  return v[0] == null
 }
 /**
  * Remainder operator
@@ -247,9 +283,11 @@ operators['*'] = multiplication
 operators['**'] = exponentiation
 operators['!!'] = isBoolean
 operators['~'] = isLike
+operators['isNull'] = isNull
+operators['notNull'] = notNull
 operators['typeof'] = typeOf
 
-const operator = createPlugin('operator', {
+export const operator = createPlugin('operator', {
   metadata: {
     title: 'Operator',
     description: 'Common operators for Dooksa',
@@ -358,13 +396,9 @@ const operator = createPlugin('operator', {
   }
 })
 
-const operatorEval = operator.actions.eval
-const operatorCompare = operator.actions.compare
-
-export {
-  operator,
+export const {
   operatorEval,
   operatorCompare
-}
+} = operator
 
 export default operator

@@ -89,7 +89,7 @@ function deleteCache (id) {
   delete fetchRequestCache[id]
 }
 
-const $fetch = createPlugin('fetch', {
+export const $fetch = createPlugin('fetch', {
   metadata: {
     title: 'Fetch',
     description: 'Fetch data from the backend',
@@ -357,13 +357,9 @@ const $fetch = createPlugin('fetch', {
   }
 })
 
-const fetchAll = $fetch.actions.getAll
-const fetchById = $fetch.actions.getById
-
-export {
-  $fetch,
-  fetchAll,
-  fetchById
-}
+export const {
+  fetchGetAll,
+  fetchGetById
+} = $fetch
 
 export default $fetch

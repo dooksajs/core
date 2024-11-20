@@ -382,8 +382,8 @@ function stringToCondition (string) {
   return result
 }
 
-const database = createPlugin('database', {
-  actions: {
+export const database = createPlugin('database', {
+  methods: {
     getValue (collections) {
       return (request, response) => {
         let result = []
@@ -615,18 +615,12 @@ const database = createPlugin('database', {
   }
 })
 
-const databaseDeleteValue = database.actions.deleteValue
-const databaseGetValue = database.actions.getValue
-const databaseSeed = database.actions.seed
-const databaseSetValue = database.actions.setValue
-
-export {
-  database,
+export const {
   databaseSeed,
   databaseDeleteValue,
   databaseGetValue,
   databaseSetValue
-}
+} = database
 
 export default database
 

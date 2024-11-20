@@ -9,7 +9,7 @@ import { actionDispatch, dataGetValue } from './index.js'
  * @property {Object} [payload] - The action that runs on the event
  */
 
-const event = createPlugin('event', {
+export const event = createPlugin('event', {
   metadata: {
     title: 'Event',
     description: 'Event manager',
@@ -32,7 +32,7 @@ const event = createPlugin('event', {
       items: { type: 'array' }
     }
   },
-  actions: {
+  methods: {
     /**
      * Emit event
      * @param {EventEmit} param
@@ -63,10 +63,8 @@ const event = createPlugin('event', {
   }
 })
 
-const eventEmit = event.actions.emit
-
-export {
-  event, eventEmit
-}
+export const {
+  eventEmit
+} = event
 
 export default event
