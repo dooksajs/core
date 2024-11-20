@@ -1,10 +1,15 @@
 import path from 'path'
 import * as esbuild from 'esbuild'
-import { readdir, unlink } from 'fs'
+import { existsSync, mkdirSync, readdir, unlink } from 'fs'
 import { realpathSync } from 'node:fs'
 
 const rootDir = realpathSync(process.cwd())
-const outdir = path.resolve(rootDir, 'dist')
+const outdir = path.resolve(rootDir, 'dist', 'server')
+
+// create dist directory if doesn't exist
+if (!existsSync(outdir)) {
+  mkdirSync(outdir, { recursive: true })
+}
 
 // delete previous build
 readdir(outdir, (err, files) => {
