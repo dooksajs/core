@@ -1,4 +1,4 @@
-import { operatorEval } from '#client'
+import { operatorCompare, operatorEval } from '#client'
 import { describe, it } from 'node:test'
 import { strictEqual } from 'node:assert'
 
@@ -421,6 +421,125 @@ describe('Operator eval', function () {
       })
 
       strictEqual(result, true)
+    })
+  })
+})
+
+
+describe('Operator compare', function () {
+  describe('Logical compare', function () {
+    it('should return true if one of Logical OR operand is truthy', function () {
+      const result = operatorCompare([
+        {
+          value_1: true,
+          value_2: false,
+          op: '||'
+        },
+        {
+          value_1: true,
+          value_2: false,
+          op: '&&'
+        }
+      ])
+
+      strictEqual(result, true)
+    })
+
+    it('should return false if all operands is are falsy', function () {
+      const result = operatorCompare([
+        {
+          value_1: false,
+          value_2: false,
+          op: '||'
+        },
+        {
+          value_1: true,
+          value_2: false,
+          op: '&&'
+        }
+      ])
+
+      strictEqual(result, false)
+    })
+  })
+
+  describe('Logical AND', function () {
+    it('should return true if both operands are truthy', function () {
+      const result = operatorCompare([{
+        value_1: true,
+        value_2: true,
+        op: '&&'
+      }])
+
+      strictEqual(result, true)
+    })
+
+    it('should return false if one operand is falsy', function () {
+      const result = operatorCompare([{
+        value_1: true,
+        value_2: false,
+        op: '&&'
+      }])
+
+      strictEqual(result, false)
+    })
+
+    it('should return false if one operand is falsy of many', function () {
+      const result = operatorCompare([
+        {
+          value_1: true,
+          value_2: true,
+          op: '&&'
+        },
+        {
+          value_1: true,
+          value_2: false,
+          op: '&&'
+        }
+      ])
+
+      strictEqual(result, false)
+    })
+  })
+
+
+
+  describe('Logical OR', function () {
+    it('should return true if one operand is truthy', function () {
+      const result = operatorCompare([{
+        value_1: true,
+        value_2: false,
+        op: '||'
+      }])
+
+      strictEqual(result, true)
+    })
+
+    it('should return true if one operand is truthy of many', function () {
+      const result = operatorCompare([
+        {
+          value_1: true,
+          value_2: false,
+          op: '||'
+        },
+        {
+          value_1: false,
+          value_2: false,
+          op: '||'
+        }
+      ])
+
+      strictEqual(result, true)
+    })
+
+    it('should return false if both operands are falsy', function () {
+      const result = operatorCompare([{
+        value_1: false,
+        value_2: false,
+        op: '||'
+      }])
+
+      strictEqual(result, false)
     })
   })
 })
