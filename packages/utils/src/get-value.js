@@ -1,4 +1,3 @@
-
 /**
  * Get result value
  * @param {*} value
@@ -41,6 +40,4 @@ function getValueByString (value, query) {
   return result
 }
 
-export {
-  getValue
-}
+export default getValue

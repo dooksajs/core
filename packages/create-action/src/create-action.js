@@ -1,6 +1,6 @@
 import { hash } from '@dooksa/utils'
 import availableMethods from './available-methods.js'
-import parseAction from './parse-action.js'
+import { parseAction } from '@dooksa/utils/server'
 
 /**
  * @param {string} id

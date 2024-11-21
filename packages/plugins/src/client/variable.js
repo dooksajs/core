@@ -1,7 +1,6 @@
 import createPlugin from '@dooksa/create-plugin'
 import { dataGetValue, dataSetValue } from './data.js'
-import { generateId } from '@dooksa/utils'
-import { getValue } from '../utils/getValue.js'
+import { generateId, getValue } from '@dooksa/utils'
 
 /**
  * Add affix to query

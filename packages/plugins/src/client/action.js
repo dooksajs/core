@@ -2,7 +2,7 @@ import createPlugin from '@dooksa/create-plugin'
 import { fetchGetById } from './fetch.js'
 import { dataGetValue } from './data.js'
 import { operatorCompare, operatorEval } from './operator.js'
-import { getValue } from '../utils/getValue.js'
+import { getValue } from '@dooksa/utils'
 
 /**
  * @typedef {import('../../types.js').SetDataOptions} SetDataOptions
