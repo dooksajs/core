@@ -29,6 +29,23 @@ describe('Get value', function () {
 
       strictEqual(result, 'red')
     })
+
+    it('should return undefined if property is not found', function () {
+      const result = getValue(['red', 'green', 'blue'], '3')
+
+      strictEqual(result, undefined)
+    })
+
+
+    it('should return undefined if nested property is not found', function () {
+      const result = getValue({
+        color: {
+          is: 'red'
+        }
+      }, 'color.is.isnt.here')
+
+      strictEqual(result, undefined)
+    })
   })
 
   describe('Array', function () {
@@ -44,6 +61,30 @@ describe('Get value', function () {
       ], '0.2')
 
       strictEqual(result, 'blue')
+    })
+
+    it('should return undefined if property is not found', function () {
+      const result = getValue(['red', 'green', 'blue'], '3')
+
+      strictEqual(result, undefined)
+    })
+
+    it('should return undefined if nested property is not found', function () {
+      const result = getValue([
+        ['red', 'green', 'blue']
+      ], '0.2.red.blue.green')
+
+      strictEqual(result, undefined)
+    })
+  })
+
+  describe('Query multiple properties', function () {
+    it('should return an array with all the values"', function () {
+      const result = getValue(['red', 'green', 'blue'], ['0', '1', '2'])
+
+      strictEqual(result[0], 'red')
+      strictEqual(result[1], 'green')
+      strictEqual(result[2], 'blue')
     })
   })
 })

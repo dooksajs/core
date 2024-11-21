@@ -34,7 +34,6 @@ function getValueByString (value, query) {
     }
 
     result = result[key]
-
   }
 
   return result
