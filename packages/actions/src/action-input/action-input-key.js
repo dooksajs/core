@@ -12,7 +12,7 @@ export default createAction('action-input-key', [
       if: [
         {
           from: { $ref: 'key' },
-          op: '!!'
+          op: 'notNull'
         }
       ],
       then: [{ $sequenceRef: 'update_component_option' }],
