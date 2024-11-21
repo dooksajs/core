@@ -30,7 +30,7 @@ reports
 
 # Coverage reports
 coverage
-*.lcov
+lcov.info
 .nyc_output
 
 # VSCode
