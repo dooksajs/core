@@ -2,6 +2,17 @@ import createAction from '@dooksa/create-action'
 // action used to handle objects
 export const actionInputObjectProperties = createAction('action-input-object-properties', [
   {
+    variable_setValue: {
+      scope: { action_getContextValue: 'rootId' },
+      values: [
+        {
+          id: 'action-input-object-property',
+          value: { action_getContextValue: 'id' }
+        }
+      ]
+    }
+  },
+  {
     $id: 'data_item',
     variable_getValue: {
       query: 'action-input-value'
