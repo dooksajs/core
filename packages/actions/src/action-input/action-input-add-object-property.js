@@ -1,6 +1,6 @@
 import createAction from '@dooksa/create-action'
 
-export const actionInputAddObjectProperty = createAction('action-input-add-object-property', [
+export default createAction('action-input-add-object-property', [
   {
     $id: 'action_input_object_property_children',
     variable_getValue: {

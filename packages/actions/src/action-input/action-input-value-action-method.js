@@ -1,6 +1,6 @@
 import createAction from '@dooksa/create-action'
 
-export const actionInputValueActionMethod = createAction('action-input-value-action-method', [
+export default createAction('action-input-value-action-method', [
   {
     variable_getValue: {
       scope: { action_getContextValue: 'groupId' },

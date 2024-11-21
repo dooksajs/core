@@ -1,6 +1,6 @@
 import createAction from '@dooksa/create-action'
 
-export const actionInputDataObject = createAction('action-input-data-object', [
+export default createAction('action-input-data-object', [
   {
     data_setValue: {
       name: 'component/items',

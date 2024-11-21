@@ -1,6 +1,6 @@
 import createAction from '@dooksa/create-action'
 
-export const actionInputDataActionList = createAction('action-input-data-action-list', [
+export default createAction('action-input-data-action-list', [
   {
     action_ifElse: {
       if: [
