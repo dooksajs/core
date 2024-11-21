@@ -16,8 +16,8 @@
     "pnpm": ">=9"
   },
   "devDependencies": {
-    "@stylistic/eslint-plugin-js": "^2.9.0",
-    "@stylistic/eslint-plugin-plus": "^2.9.0",
+    "@stylistic/eslint-plugin-js": "^2.11.0",
+    "@stylistic/eslint-plugin-plus": "^2.11.0",
     "esbuild": "^0.24.0"
   }
 }
