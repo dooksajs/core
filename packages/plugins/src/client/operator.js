@@ -322,32 +322,41 @@ export const operator = createPlugin('operator', {
        * @param {*} values[].value_2 - Contains two values or more values which are compared
        * @param {'&&'|'||'} values[].op - Contains two values or more values which are compared
        * @example
-       * const andValues = ['1', '&&', 1]
+       * operatorCompare([{
+       *  value_1: '1',
+       *  value_2: '1',
+       *  op: '&&'
+       * }]) // true
        */
       method (values) {
-        let result = false
+        let OR = false
+        let AND = true
+        let hasAnd = false
 
         for (let i = 0; i < values.length; i++) {
           const item = values[i]
 
-          if (item.op === '&&') {
-            if ((item.value_1 && item.value_2)) {
-              result = true
-            } else {
-              break
-            }
+          if (item.op === '&&' && AND) {
+            AND = item.value_1 && item.value_2
+            hasAnd = true
           }
 
           if (item.op === '||') {
-            if ((item.value_1 || item.value_2)) {
-              result = true
-            } else {
-              break
+            if (item.value_1 || item.value_2) {
+              OR = true
             }
           }
         }
 
-        return result
+        if (OR) {
+          return true
+        }
+
+        if (hasAnd && AND) {
+          return true
+        }
+
+        return false
       }
     },
     eval: {
