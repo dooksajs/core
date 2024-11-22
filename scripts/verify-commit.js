@@ -1,5 +1,4 @@
-// @ts-check
-import pico from 'picocolors'
+import chalk from 'chalk'
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
 
@@ -11,17 +10,16 @@ const commitRE = /^(revert: )?(feat|fix|docs|style|refactor|perf|test|build|ci|c
 if (!commitRE.test(msg)) {
   console.log()
   console.error(
-    `  ${pico.white(pico.bgRed(' ERROR '))} ${pico.red(
+    `  ${chalk.white(chalk.bgRed(' ERROR '))} ${chalk.red(
       `invalid commit message format.`
     )}\n\n` +
-      pico.red(
+      chalk.red(
         `  Proper commit message format is required for automated changelog generation. Examples:\n\n`
       ) +
-      `    ${pico.green(`feature (compiler): Add 'comments' option`)}\n` +
-      `    ${pico.green(
-        `fix(v-model): handle events on blur (close #28)`
+      `    ${chalk.green(`feat(action): add 'comments' option`)}\n` +
+      `    ${chalk.green(`fix(operator): handle Array types (close #42)`
       )}\n\n` +
-      pico.red(`  See .github/commit-convention.md for more details.\n`)
+      chalk.red(`  See .github/commit-convention.md for more details.\n`)
   )
   process.exit(1)
 }
