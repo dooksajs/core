@@ -19,6 +19,7 @@ packages/*/LICENSE
 .temp
 .tmp
 .cache
+.eslintcache
 
 # Generated dirs
 dist

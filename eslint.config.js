@@ -106,5 +106,11 @@ export default [
       '@stylistic/js/no-multi-spaces': 'error',
       '@stylistic/js/no-confusing-arrow': 'error'
     }
+  },
+  {
+    ignores: [
+      '**/dist/',
+      '**/.history/'
+    ]
   }
 ]
