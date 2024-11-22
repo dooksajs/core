@@ -3,11 +3,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test-unit": "pnpm --recursive test-unit",
-    "test-coverage": "pnpm --recursive test-coverage",
-    "build-server": "node ./scripts/build-server.js",
     "build-client": "node ./scripts/build-client.js",
-    "dev": "pnpm --filter playground run dev"
+    "build-server": "node ./scripts/build-server.js",
+    "dev": "pnpm --filter playground run dev",
+    "postinstall": "simple-git-hooks",
+    "preinstall": "npx only-allow pnpm",
+    "test-coverage": "pnpm --recursive test-coverage",
+    "test-unit": "pnpm --recursive test-unit"
   },
   "simple-git-hooks": {
     "commit-msg": "node ./scripts/verify-commit.js"
