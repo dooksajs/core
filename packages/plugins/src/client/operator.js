@@ -144,7 +144,7 @@ function increment (v) {
 
     return num.toString()
   } else if (type != 'number') {
-    throw new Error('DooksaError: Increment operator expects a number but found "' + type + '"')
+    throw new Error('Increment operator expects a number but found "' + type + '"')
   }
 
   return ++num
@@ -166,7 +166,7 @@ function decrement (v) {
 
     return num.toString()
   } else if (type != 'number') {
-    throw new Error('DooksaError: Decrement operator expects a number but found "' + type + '"')
+    throw new Error('Decrement operator expects a number but found "' + type + '"')
   }
 
   return --num
@@ -387,7 +387,7 @@ export const operator = createPlugin('operator', {
        * Evaluate two values
        * @param {Object} eval - The Object containing the data to evaluate two values
        * @param {Operator} eval.name - Operator name
-       * @param {OperatorValues} eval.values - Contains two values to be evaluated
+       * @param {*[]} eval.values - Contains two values to be evaluated
        */
       method ({ name, values }) {
         if (operators[name]) {
