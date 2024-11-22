@@ -21,15 +21,13 @@ feat(action): add 'comments' option
 Appears under "Bug Fixes" header, `operator` subheader, with a link to issue #42:
 
 ```
-fix(operator): handle events on blur
-
-close #42
+fix(operator): use notNull operator close #42
 ```
 
 Appears under "Performance Improvements" header, and under "Breaking Changes" with the breaking change explanation:
 
 ```
-perf(core): improve vdom diffing by removing 'foo' option
+perf(component): improve appending children by removing 'foo' option
 
 BREAKING CHANGE: The 'foo' option has been removed.
 ```
@@ -86,7 +84,7 @@ Other prefixes are up to your discretion. Suggested prefixes are `docs`, `chore`
 
 ### Scope
 
-The scope could be anything specifying the place of the commit change. For example `core`, `operator`, `ssr`, `v-model`, `transition` etc...
+The scope could be anything specifying the place of the commit change. For example `core`, `operator`, `action`, `get-value` etc...
 
 ### Subject
 
