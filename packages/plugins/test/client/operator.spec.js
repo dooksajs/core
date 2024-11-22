@@ -1,8 +1,22 @@
 import { operatorCompare, operatorEval } from '#client'
 import { describe, it } from 'node:test'
-import { strictEqual } from 'node:assert'
+import { fail, ok, strictEqual } from 'node:assert'
 
 describe('Operator eval', function () {
+  it('should fail if operator is not found', function () {
+    try {
+      const result = operatorEval({
+        // @ts-ignore
+        name: 'doThis',
+        values: [1]
+      })
+      fail('Expected to throw an error')
+    } catch (error) {
+      strictEqual(error.message, 'No operator found: doThis')
+      ok(error instanceof Error)
+    }
+  })
+
   describe('Equality', function () {
     it('should return true if the operands are equal', function () {
       const result = operatorEval({
@@ -226,6 +240,20 @@ describe('Operator eval', function () {
 
       strictEqual(isNaN(result), true)
     })
+
+    it('should throw an error if value is not a number or string', function () {
+      try {
+        operatorEval({
+          name: '++',
+          values: [undefined]
+        })
+
+        fail('Expected error was now thrown')
+      } catch (error) {
+        strictEqual(error.message, 'Increment operator expects a number but found "undefined"')
+        ok(error instanceof Error)
+      }
+    })
   })
 
   describe('Decrement', function () {
@@ -263,6 +291,20 @@ describe('Operator eval', function () {
       })
 
       strictEqual(isNaN(result), true)
+    })
+
+    it('should throw an error if value is not a number or string', function () {
+      try {
+        operatorEval({
+          name: '--',
+          values: [undefined]
+        })
+
+        fail('Expected error was now thrown')
+      } catch (error) {
+        strictEqual(error.message, 'Decrement operator expects a number but found "undefined"')
+        ok(error instanceof Error)
+      }
     })
   })
 
@@ -423,8 +465,93 @@ describe('Operator eval', function () {
       strictEqual(result, true)
     })
   })
-})
 
+  describe('Includes', function () {
+    it('should return true when searching for an existing value', function () {
+      const result = operatorEval({
+        name: '~',
+        values: [
+          [1, 2, 3],
+          2
+        ]
+      })
+
+      strictEqual(result, true)
+    })
+  })
+
+  describe('Typeof', function () {
+    it('should return "string" when value is a string', function () {
+      const result = operatorEval({
+        name: 'typeof',
+        values: ['red']
+      })
+
+      strictEqual(result, 'string')
+    })
+
+    it('should return "number" when value is a number', function () {
+      const result = operatorEval({
+        name: 'typeof',
+        values: [1]
+      })
+
+      strictEqual(result, 'number')
+    })
+
+    it('should return "boolean" when value is a boolean', function () {
+      const result = operatorEval({
+        name: 'typeof',
+        values: [true]
+      })
+
+      strictEqual(result, 'boolean')
+    })
+
+    it('should return "array" when value is a Array', function () {
+      const result = operatorEval({
+        name: 'typeof',
+        values: [[true]]
+      })
+
+      strictEqual(result, 'array')
+    })
+
+    it('should return "object" when value is a Object', function () {
+      const result = operatorEval({
+        name: 'typeof',
+        values: [{ a: true }]
+      })
+
+      strictEqual(result, 'object')
+    })
+  })
+
+  describe('Nullish', function () {
+    it('should return true if value is not nullish', function () {
+      const result = operatorEval({
+        name: 'notNull',
+        values: ['red']
+      })
+
+      strictEqual(result, true)
+    })
+
+    it('should return true if value is nullish', function () {
+      const nullIsNull = operatorEval({
+        name: 'isNull',
+        values: [null]
+      })
+      const undefinedIsNull = operatorEval({
+        name: 'isNull',
+        values: [null]
+      })
+
+      strictEqual(nullIsNull, true)
+      strictEqual(undefinedIsNull, true)
+    })
+  })
+})
 
 describe('Operator compare', function () {
   describe('Logical compare', function () {
@@ -501,8 +628,6 @@ describe('Operator compare', function () {
       strictEqual(result, false)
     })
   })
-
-
 
   describe('Logical OR', function () {
     it('should return true if one operand is truthy', function () {
