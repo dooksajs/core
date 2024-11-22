@@ -42,7 +42,7 @@ describe('Get value', function () {
         color: {
           is: 'red'
         }
-      }, 'color.is.isnt.here')
+      }, 'color.is.not.here')
 
       strictEqual(result, undefined)
     })
@@ -72,7 +72,7 @@ describe('Get value', function () {
     it('should return undefined if nested property is not found', function () {
       const result = getValue([
         ['red', 'green', 'blue']
-      ], '0.2.red.blue.green')
+      ], '0.2.red.green.blue')
 
       strictEqual(result, undefined)
     })
