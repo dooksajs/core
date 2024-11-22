@@ -6,6 +6,8 @@
     "build-client": "node ./scripts/build-client.js",
     "build-server": "node ./scripts/build-server.js",
     "dev": "pnpm --filter playground run dev",
+    "format": "eslint --cache --fix .",
+    "lint": "eslint --cache .",
     "postinstall": "simple-git-hooks",
     "preinstall": "npx only-allow pnpm",
     "test-coverage": "pnpm --recursive test-coverage",
