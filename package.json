@@ -9,6 +9,9 @@
     "build-client": "node ./scripts/build-client.js",
     "dev": "pnpm --filter playground run dev"
   },
+  "simple-git-hooks": {
+    "commit-msg": "node ./scripts/verify-commit.js"
+  },
   "types": "./packages/types.js",
   "license": "AGPL-3.0-or-later",
   "engines": {
@@ -18,6 +21,7 @@
   "devDependencies": {
     "@stylistic/eslint-plugin-js": "^2.11.0",
     "@stylistic/eslint-plugin-plus": "^2.11.0",
-    "esbuild": "^0.24.0"
+    "esbuild": "^0.24.0",
+    "simple-git-hooks": "^2.11.1"
   }
 }
