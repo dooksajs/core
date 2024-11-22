@@ -1,4 +1,4 @@
-import { parseSchema } from '@dooksa/utils'
+import { parseSchema } from '@dooksa/utils/server'
 
 /**
  * @import {Plugin} from '../../create-plugin/src/index.js'

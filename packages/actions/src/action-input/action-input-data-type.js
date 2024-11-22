@@ -1,6 +1,6 @@
 import createAction from '@dooksa/create-action'
 
-export const actionInputDataType = createAction('action-input-data-type', [
+export default createAction('action-input-data-type', [
   // 0. get input type
   {
     $id: 'data_type',

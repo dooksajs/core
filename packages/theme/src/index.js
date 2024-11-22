@@ -1,6 +1,5 @@
-import { readdirSync, existsSync, writeFileSync } from 'node:fs'
+import { readdirSync, existsSync } from 'node:fs'
 import { resolve, extname } from 'node:path'
-import { tmpdir } from 'node:os'
 import { compileString } from 'sass'
 
 const themePath = import.meta.dirname

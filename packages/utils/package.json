@@ -6,9 +6,15 @@
   "repository": "git@github.com:dooksajs/dooksa.git",
   "license": "AGPL-3.0-or-later",
   "type": "module",
-  "main": "./src/index.js",
+  "scripts": {
+    "test-unit": "node --test",
+    "test-coverage": "node --test --experimental-test-coverage --test-reporter=lcov --test-reporter-destination=lcov.info"
+  },
+  "exports": {
+    ".": "./src/index.js",
+    "./server": "./src/server/index.js"
+  },
   "dependencies": {
-    "@pacote/xxhash": "^0.3.2",
-    "nanoid": "^5.0.7"
+    "@pacote/xxhash": "^0.3.2"
   }
 }

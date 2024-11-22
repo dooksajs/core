@@ -1,6 +1,6 @@
 import createAction from '@dooksa/create-action'
 
-export const actionInputNamePrefix = createAction('action-input-name-prefix', [
+export default createAction('action-input-name-prefix', [
   {
     data_setValue: {
       name: 'component/options',

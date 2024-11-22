@@ -1,6 +1,6 @@
 import createAction from '@dooksa/create-action'
 
-export const actionInputNamePrefixActionValue = createAction('action-input-name-prefix-action-value', [
+export default createAction('action-input-name-prefix-action-value', [
   {
     $id: 'input_name',
     variable_getValue: {

@@ -1,13 +1,12 @@
 import createPlugin from '@dooksa/create-plugin'
 import { operatorEval, listSplice, actionDispatch } from './index.js'
-import { DataSchemaException, DataValueException } from '../utils/Error.js'
-import { deepClone, generateId, isEnvServer } from '@dooksa/utils'
-import { cloneDataValue, createDataValue } from '../utils/createDataValue.js'
-import { getValue } from '../utils/getValue.js'
+import { DataSchemaException, DataValueException } from '../utils/error.js'
+import { deepClone, generateId, isEnvServer, getValue } from '@dooksa/utils'
+import { cloneDataValue, createDataValue } from '../utils/data-value.js'
 
 /**
  * @import {SetDataOptions, GetDataQuery, GetDataOption, DataSchema, DataWhere} from '../../../types.js'
- * @import {DataValue} from '../utils/createDataValue.js'
+ * @import {DataValue} from '../utils/data-value.js'
  */
 
 let database = {}

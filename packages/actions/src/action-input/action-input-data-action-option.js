@@ -1,6 +1,6 @@
 import createAction from '@dooksa/create-action'
 
-export const actionInputDataActionOption = createAction('action-input-data-action-option', [
+export default createAction('action-input-data-action-option', [
   {
     $id: 'option_component',
     data_setValue: {

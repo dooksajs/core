@@ -54,8 +54,7 @@
  */
 
 /**
- * @typedef {Object} IconRender
- * @property {Action|string} componentId
+ * @typedef {Action|string} IconRender
  */
 
 /**
@@ -163,6 +162,8 @@
  * '**'|
  * '!!'|
  * '~'|
+ * 'notNull'|
+ * 'isNull'|
  * 'typeof' } Operator
  */
 
@@ -313,7 +314,7 @@
  * @typedef {Object} ListMap
  * @property {Action} items
  * @property {Action|string} actionId
- * @property {ActionDispatchContext} [context]
+ * @property {Action|ActionDispatchContext} [context]
  */
 
 /**

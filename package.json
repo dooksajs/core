@@ -3,10 +3,16 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test-unit": "pnpm --recursive test-unit",
-    "build-server": "node ./scripts/build-server.js",
     "build-client": "node ./scripts/build-client.js",
-    "dev": "pnpm --filter playground run dev"
+    "build-server": "node ./scripts/build-server.js",
+    "dev": "pnpm --filter playground run dev",
+    "postinstall": "simple-git-hooks",
+    "preinstall": "npx only-allow pnpm",
+    "test-coverage": "pnpm --recursive test-coverage",
+    "test-unit": "pnpm --recursive test-unit"
+  },
+  "simple-git-hooks": {
+    "commit-msg": "node ./scripts/verify-commit.js"
   },
   "types": "./packages/types.js",
   "license": "AGPL-3.0-or-later",
@@ -15,8 +21,10 @@
     "pnpm": ">=9"
   },
   "devDependencies": {
-    "@stylistic/eslint-plugin-js": "^2.9.0",
-    "@stylistic/eslint-plugin-plus": "^2.9.0",
-    "esbuild": "^0.24.0"
+    "@stylistic/eslint-plugin-js": "^2.11.0",
+    "@stylistic/eslint-plugin-plus": "^2.11.0",
+    "chalk": "^5.3.0",
+    "esbuild": "^0.24.0",
+    "simple-git-hooks": "^2.11.1"
   }
 }
