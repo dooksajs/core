@@ -69,19 +69,19 @@ Other prefixes are up to your discretion. Suggested prefixes are `docs`, `chore`
 
 #### Prefixes
 
-`build` - Changes that affect the build system or external dependencies (example scopes)
-`chore` - Updating tasks with no production code change
-`ci` - Changes to our CI configuration files and scripts
-`docs` - Documentation only changes
-`feat` - A new feature
-`fix` - A bug fix
-`perf` - A change that improves performance
-`refactor` - A code change that neither fixes a bug nor adds a feature
-`revert` - Revert a commit
-`style` - Changes that do not affect the meaning of the code (white-space, formatting, removing semi-columns, etc)
-`test` - Adding missing tests or correcting existing tests
-`types` - JSDocs documentation
-`wip` - Code that is work-in-progress
+- `build`: Changes that affect the build system or external dependencies (example scopes)
+- `chore`: Updating tasks with no production code change
+- `ci`: Changes to our CI configuration files and scripts
+- `docs`: Documentation only changes
+- `feat`: A new feature
+- `fix`: A bug fix
+- `perf`: A change that improves performance
+- `refactor`: A code change that neither fixes a bug nor adds a feature
+- `revert`: Revert a commit
+- `style`: Changes that do not affect the meaning of the code (white-space, formatting, removing semi-columns, etc)
+- `test`: Adding missing tests or correcting existing tests
+- `types`: JSDocs documentation
+- `wip`: Code that is work-in-progress
 
 
 ### Scope
