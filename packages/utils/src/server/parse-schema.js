@@ -188,7 +188,10 @@ const parseSchema = {
         this.process(context, id, item.items, entries)
       }
 
-      const entry = { id, entry: item.entry }
+      const entry = {
+        id,
+        entry: item.entry
+      }
 
       entries.push(entry)
     }
