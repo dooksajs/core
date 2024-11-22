@@ -2,6 +2,13 @@
  * Get result value
  * @param {*} value
  * @param {string|string[]} [query] - Request to return a specific key value, dot notations are permitted
+ * @example
+ * getValue({
+ *  a: {
+ *      b: 'c'
+ *    }
+ *  }, 'a.b')
+ * // Expected output: 'c'
  */
 function getValue (value, query) {
   if (query == null) {
@@ -22,6 +29,12 @@ function getValue (value, query) {
   return getValueByString(value, query)
 }
 
+/**
+ * Get value by string
+ * @private
+ * @param {*} value
+ * @param {string} query - Request to return a specific key value, dot notations are permitted
+ */
 function getValueByString (value, query) {
   const keys = query.split('.')
   let result = value
@@ -29,6 +42,7 @@ function getValueByString (value, query) {
   for (let i = 0; i < keys.length; i++) {
     const key = keys[i]
 
+    // prevent access to "nullish" types
     if (result == null) {
       return
     }
