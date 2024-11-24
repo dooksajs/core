@@ -9,3 +9,5 @@ export const event = createPlugin('event', {
     databaseSeed('event-handlers')
   }
 })
+
+export default event

@@ -150,3 +150,4 @@ export const page = createPlugin('page', {
 })
 
 export const { pageCreate } = page
+export default page

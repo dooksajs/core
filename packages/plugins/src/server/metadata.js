@@ -94,3 +94,5 @@ export const metadata = createPlugin('metadata', {
     })
   }
 })
+
+export default metadata
