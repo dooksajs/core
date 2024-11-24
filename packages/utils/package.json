@@ -10,6 +10,9 @@
     "test-unit": "node --test",
     "test-coverage": "node --test --experimental-test-coverage --test-reporter=lcov --test-reporter-destination=lcov.info"
   },
+  "imports": {
+    "#server": "./src/server/index.js"
+  },
   "exports": {
     ".": "./src/index.js",
     "./server": "./src/server/index.js"
