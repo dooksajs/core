@@ -39,22 +39,22 @@ export * from './regex.js'
 export * from './lazy/index.js'
 
 export default [
-  regex,
   data,
-  variable,
-  editor,
-  action,
-  component,
-  $fetch,
   metadata,
+  $fetch,
+  operator,
+  action,
+  variable,
+  component,
+  regex,
+  editor,
   list,
   event,
-  page,
-  operator,
   token,
   icon,
   query,
   route,
   form,
-  string
+  string,
+  page
 ]

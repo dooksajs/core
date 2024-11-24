@@ -299,3 +299,5 @@ function sign ({ payload, expiresIn }) {
     expiresIn
   })
 }
+
+export default user

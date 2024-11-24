@@ -1,29 +1,14 @@
 import createPlugin from '@dooksa/create-plugin'
-import { dataSetValue } from '../client/index.js'
+import { dataAddListener, dataSetValue } from '../client/index.js'
 import { middlewareGet, middlewareSet } from './middleware.js'
 import helmet from 'helmet'
 import compression from 'compression'
 import HyperExpress from 'hyper-express'
+import { log } from '@dooksa/utils/server'
 
 /**
  * @import {Middleware} from './middleware.js'
  */
-
-function useRoutes () {
-  const apiRoutes = routes[apiPrefix]
-
-  for (let i = 0; i < apiRoutes.length; i++) {
-    const route = apiRoutes[i]
-
-    app[route.method](route.path, ...route.handlers)
-  }
-
-  for (let index = 0; index < routes.all.length; index++) {
-    const route = routes.all[index]
-
-    app[route.method](route.path, ...route.handlers)
-  }
-}
 
 const routeTypes = {
   get: true,
@@ -34,15 +19,46 @@ const routeTypes = {
 const routes = { all: [] }
 let apiPrefix = ''
 let cookieSecret = ''
-/** @type {HyperExpress.Server} */
-let app
-let server
 
 export const $http = createPlugin('http', {
   models: {
     status: { type: 'string' }
   },
+  data: {
+    app: () => ({})
+  },
   methods: {
+    useRoutes () {
+      const apiRoutes = routes[apiPrefix]
+
+      for (let i = 0; i < apiRoutes.length; i++) {
+        const route = apiRoutes[i]
+
+        this.app[route.method](route.path, ...route.handlers)
+      }
+
+      for (let index = 0; index < routes.all.length; index++) {
+        const route = routes.all[index]
+
+        this.app[route.method](route.path, ...route.handlers)
+      }
+    },
+    init (publicPath) {
+      this.app = new HyperExpress.Server()
+
+      if (process.env.NODE_ENV === 'production') {
+        // @ts-ignore
+        this.app.use(compression())
+        // @ts-ignore
+        this.app.use(helmet())
+      }
+
+
+      if (publicPath) {
+        /** https://github.com/kartikk221/hyper-express/blob/master/docs/LiveDirectory.md */
+        // app.use(express.static(publicPath))
+      }
+    },
     /**
      * Add a route to the server
      * @param {Object} route
@@ -102,25 +118,29 @@ export const $http = createPlugin('http', {
      * @param {string} [path='http://localhost']
      */
     start (port = 6362, path = 'http://localhost') {
-      useRoutes()
+      return new Promise((resolve, reject) => {
+        this.useRoutes()
 
-      server = app.listen(port, function () {
-        port = port || this.address().port
-        console.log('✨ Dooksa! ' + path + ':' + port)
-
-        dataSetValue({
-          name: 'http/status',
-          value: 'start'
-        })
+        this.app.listen(port)
+          .then(function (socket) {
+            resolve({
+              hostname: path,
+              port: port || this.address().port,
+              socket
+            })
+          })
+          .catch(error => reject(error))
       })
     },
     stop () {
-      server.close()
+      const isClosed = this.app.close()
 
-      dataSetValue({
-        name: 'http/status',
-        value: 'stop'
-      })
+      if (!isClosed) {
+        dataSetValue({
+          name: 'http/status',
+          value: 'stop-failed'
+        })
+      }
     }
   },
   setup ({
@@ -142,16 +162,10 @@ export const $http = createPlugin('http', {
 
     // prepare api route suffix
     routes[apiPrefix] = []
-
-    app = new HyperExpress.Server()
     cookieSecret = cookieSecret
 
-    if (process.env.NODE_ENV === 'production') {
-      // @ts-ignore
-      app.use(compression())
-      // @ts-ignore
-      app.use(helmet())
-    }
+    // initialise server
+    this.init(publicPath)
 
     // handle json requests
     middlewareSet({
@@ -193,9 +207,17 @@ export const $http = createPlugin('http', {
       }
     })
 
-    if (publicPath) {
-      /** https://github.com/kartikk221/hyper-express/blob/master/docs/LiveDirectory.md */
-      // app.use(express.static(publicPath))
+    DEV: {
+      dataAddListener({
+        name: 'http/status',
+        on: 'update',
+        handler: (data) => {
+          // stop server
+          if (data.item === 'stop') {
+            this.app.close()
+          }
+        }
+      })
     }
   }
 })

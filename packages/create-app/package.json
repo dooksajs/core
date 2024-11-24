@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "@dooksa/utils": "workspace:^",
-    "@dooksa/plugins": "workspace:^"
+    "@dooksa/plugins": "workspace:^",
+    "@dooksa/actions": "workspace:^",
+    "@dooksa/create-action": "workspace:^"
   }
 }

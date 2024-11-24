@@ -1,94 +1,43 @@
-import app from '@dooksa/app/server'
-import { development } from '@dooksa/plugins/server'
-import { dataSetValue } from '@dooksa/plugins/client'
-import esbuild from 'esbuild'
-import chokidar from 'chokidar'
-import logger from './logger.js'
-import { resolve, extname, parse } from 'node:path'
+import nodemon from 'nodemon'
+import { resolve } from 'node:path'
+import { log } from '@dooksa/utils/server'
 
-app.usePlugin(development)
+nodemon({
+  script: 'src/esbuild.js',
+  ext: 'js,json',
+  watch: [
+    resolve('../plugins/src/server'),
+    resolve('../actions/src')
+  ],
+  ignore: [
+    '.git',
+    'node_modules/**/node_modules',
+    '*.spec.js'
+  ]
+})
 
-// setup server
-app.setup({
-  options: {
-    database: {
-      storage: './app/.ds_snapshots/development'
-    }
+let restarting = false
+
+nodemon.on('start', function () {
+  log({ message: 'Starting development server...' })
+}).on('quit', function () {
+  console.log('')
+  log({
+    level: 'WARN',
+    message: 'Stop development server...'
+  })
+  process.exit()
+}).on('restart', function (files) {
+  // force restart on first file change
+  if (!restarting && files) {
+    restarting = true
+    nodemon.restart()
+    restarting = false
+
+    log({
+      level: 'WARN',
+      message: 'Restarting process due to file change',
+      context: files.toString()
+    })
   }
 })
-
-/**
- * @TODO Watch templates/css and server dir for changes
- */
-
-const devDirectory = resolve('./app')
-const appClientEntryPoint = resolve('./src/client-app.js')
-
-esbuild.context({
-  entryPoints: [appClientEntryPoint, resolve(devDirectory, 'assets', 'styles.css')],
-  bundle: true,
-  outdir: devDirectory,
-  format: 'esm',
-  sourcemap: 'external',
-  write: false,
-  minify: false,
-  dropLabels: ['PROD'],
-  reserveProps: /__ds/,
-  plugins: [{
-    name: 'rebuildClient',
-    setup (build) {
-      let timerStart
-      let rebuildClientNum = 0
-
-      build.onStart(() => {
-        timerStart = performance.now()
-      })
-
-      build.onEnd(result => {
-        if (result.errors.length) {
-          return { errors: result.errors }
-        }
-
-        const timer = performance.now() - timerStart
-
-        if (result.outputFiles.length) {
-          // set app script
-          for (let i = 0; i < result.outputFiles.length; i++) {
-            const file = result.outputFiles[i]
-            const fileExtension = extname(file.path)
-
-            if (fileExtension === '.js') {
-              dataSetValue({
-                name: 'page/app',
-                value: file.text
-              })
-            } else if (fileExtension === '.map') {
-              const filename = parse(file.path)
-
-              if (filename.name === 'client-app.js') {
-                dataSetValue({
-                  name: 'page/sourcemap',
-                  value: file.text,
-                  options: {
-                    id: filename.base
-                  }
-                })
-              }
-            }
-          }
-
-          // notify sse to reload
-          dataSetValue({
-            name: 'development/rebuildClient',
-            value: ++rebuildClientNum
-          })
-
-          logger('Client built in:', timer)
-        }
-      })
-    }
-  }]
-})
-  .then(ctx => {
-    ctx.watch()
-  })

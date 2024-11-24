@@ -1,12 +1,30 @@
+/**
+ * @typedef {Object} ActionBlock
+ * @property {string} [key]
+ * @property {string} [method]
+ * @property {string} [dataType]
+ * @property {string} [value]
+ * @property {string} [blockValue]
+ * @property {string[]} [blockValues]
+ */
 
 /**
- * @typedef {Object} Action
+ * @typedef {Object} Action - Compiled action from createAction
+ * @property {string} id
+ * @property {Object.<string, ActionBlock>} blocks
+ * @property {Object.<string, string[]>} blockSequences
+ * @property {string[]} sequences
+ * @property {string[]} dependencies
+ */
+
+/**
+ * @typedef {Object} ActionValue
  * @property {string} [$id]
  * @property {ActionDispatch} [action_dispatch]
  * @property {GetActionValue} [variable_getValue]
  * @property {GetBlockValue} [action_getBlockValue]
- * @property {Action|'id'|'groupId'|'parentId'|'rootId'|'$null'} [action_getContextValue]
- * @property {Action|string[]|string} [action_getPayloadValue]
+ * @property {ActionValue|'id'|'groupId'|'parentId'|'rootId'|'$null'} [action_getContextValue]
+ * @property {ActionValue|string[]|string} [action_getPayloadValue]
  * @property {EvalCondition} [action_ifElse]
  * @property {OperatorCompare[]} [action_ifElse]
  * @property {SetActionValue} [variable_setValue]
@@ -20,7 +38,7 @@
  * @property {'$null'} [data_generateId]
  * @property {DataGetValue} [data_getValue]
  * @property {DataSetValue} [data_setValue]
- * @property {string|Action} [editor_getSchema]
+ * @property {string|ActionValue} [editor_getSchema]
  * @property {FetchGetAll} [fetch_getAll]
  * @property {FetchGetById} [fetch_getById]
  * @property {IconRender} [icon_render]
@@ -42,46 +60,46 @@
 
 /**
  * @typedef {Object} StringReplace
- * @property {Action|string} value - Target string
- * @property {Action|string} pattern - Can be a string or regular expression
- * @property {Action|string} replacement - String that will replace what matches the pattern
+ * @property {ActionValue|string} value - Target string
+ * @property {ActionValue|string} pattern - Can be a string or regular expression
+ * @property {ActionValue|string} replacement - String that will replace what matches the pattern
  */
 
 /**
  * @typedef {Object} RegexPattern
- * @property {Action|string} pattern - The text of the regular expression. This can also be another RegExp object.
- * @property {Action|string} [flags] - If specified, flags is a string that contains the flags to add. Alternatively, if a RegExp object is supplied for the pattern, the flags string will replace any of that object's flags (and lastIndex will be reset to 0).
+ * @property {ActionValue|string} pattern - The text of the regular expression. This can also be another RegExp object.
+ * @property {ActionValue|string} [flags] - If specified, flags is a string that contains the flags to add. Alternatively, if a RegExp object is supplied for the pattern, the flags string will replace any of that object's flags (and lastIndex will be reset to 0).
  */
 
 /**
- * @typedef {Action|string} IconRender
+ * @typedef {ActionValue|string} IconRender
  */
 
 /**
  * @typedef {Object} ComponentRemove
- * @property {Action|string} id
+ * @property {ActionValue|string} id
  */
 
 /**
  * @typedef {Object} ComponentRenderChildren
- * @property {Action|string} id
- * @property {Action|Action[]|string[]} [items]
+ * @property {ActionValue|string} id
+ * @property {ActionValue|ActionValue[]|string[]} [items]
  */
 
 /**
  * @typedef {Object} ActionDispatchContext
- * @property {Action|string} [id]
- * @property {Action|string} [groupId]
- * @property {Action|string} [parentId]
- * @property {Action|string} [rootId]
- * @property {Action|Array<Action|string>} [components]
+ * @property {ActionValue|string} [id]
+ * @property {ActionValue|string} [groupId]
+ * @property {ActionValue|string} [parentId]
+ * @property {ActionValue|string} [rootId]
+ * @property {ActionValue|Array<ActionValue|string>} [components]
  */
 
 /**
  * @typedef {Object} ActionDispatch
- * @property {Action|string} id
- * @property {ActionDispatchContext|Action} [context]
- * @property {Action} [payload]
+ * @property {ActionValue|string} id
+ * @property {ActionDispatchContext|ActionValue} [context]
+ * @property {ActionValue} [payload]
  */
 
 /**
@@ -117,10 +135,10 @@
 
 /**
  * @typedef {Object} DataDeleteValue
- * @property {Action|DataCollectionName} name
- * @property {Action|string} id
- * @property {Action|boolean} [cascade]
- * @property {Action|boolean} [listeners]
+ * @property {ActionValue|DataCollectionName} name
+ * @property {ActionValue|string} id
+ * @property {ActionValue|boolean} [cascade]
+ * @property {ActionValue|boolean} [listeners]
  */
 
 /**
@@ -128,21 +146,21 @@
  * @typedef {Object} DataAddListener
  * @property {DataCollectionName} name - Collection name
  * @property {'update'|'delete'} [on='update'] - Fire handler on data event
- * @property {Action|string} [id] - Document Id
+ * @property {ActionValue|string} [id] - Document Id
  * @property {number} [priority]
  * @property {boolean} [force] - Force the event to fire
  * @property {boolean} [captureAll] - Fire action on all events
- * @property {Action|string} [handlerId=''] - Id of handler
- * @property {Action|string} handler
+ * @property {ActionValue|string} [handlerId=''] - Id of handler
+ * @property {ActionValue|string} handler
  */
 
 /**
  * Delete data listener
  * @typedef {Object} DataDeleteListener
  * @property {DataCollectionName} name - Collection name
- * @property {Action|string} [id] - Document Id
+ * @property {ActionValue|string} [id] - Document Id
  * @property {'update'|'delete'} [on='update'] - Fire handler on data event
- * @property {Action|string} handlerId - The reference handler Id that will be removed
+ * @property {ActionValue|string} handlerId - The reference handler Id that will be removed
  */
 
 /**
@@ -170,8 +188,8 @@
 /**
  * @typedef {Object} EvalConditionFrom
  * @property {Operator} op
- * @property {Action|string|number} from
- * @property {Action|string|number|boolean} [to]
+ * @property {ActionValue|string|number} from
+ * @property {ActionValue|string|number|boolean} [to]
  */
 
 /**
@@ -193,52 +211,52 @@
 
 /**
  * @typedef {Object} GetActionValue
- * @property {Action|string} [scope]
- * @property {Action|string} [prefixId]
- * @property {Action|string} [suffixId]
- * @property {Action|string[]|string} [query]
+ * @property {ActionValue|string} [scope]
+ * @property {ActionValue|string} [prefixId]
+ * @property {ActionValue|string} [suffixId]
+ * @property {ActionValue|string[]|string} [query]
  */
 
 /**
  * @typedef {Object} GetBlockValue
- * @property {Action|string} value
- * @property {Action|string[]|string} query
+ * @property {ActionValue|string} value
+ * @property {ActionValue|string[]|string} query
  */
 
 /**
  * @typedef {Object} DataGetValue
- * @property {Action|DataCollectionName} name
- * @property {Action|string} [id]
- * @property {Action|string} [prefixId]
- * @property {Action|string} [suffixId]
+ * @property {ActionValue|DataCollectionName} name
+ * @property {ActionValue|string} [id]
+ * @property {ActionValue|string} [prefixId]
+ * @property {ActionValue|string} [suffixId]
  * @property {Object} [options]
- * @property {Action|boolean} [options.expand]
- * @property {Object.<string,Action|boolean>} [options.expandExclude]
- * @property {Action|boolean} [options.expandClone]
- * @property {Action|string[]|string|number[]|number} [options.position]
- * @property {Action|boolean} [options.clone]
+ * @property {ActionValue|boolean} [options.expand]
+ * @property {Object.<string,ActionValue|boolean>} [options.expandExclude]
+ * @property {ActionValue|boolean} [options.expandClone]
+ * @property {ActionValue|string[]|string|number[]|number} [options.position]
+ * @property {ActionValue|boolean} [options.clone]
  */
 
 /**
- * @typedef {Object.<string,string|boolean|number|Action>} NestedData
+ * @typedef {Object.<string,string|boolean|number|ActionValue>} NestedData
  */
 
 /**
  * @typedef {Object} SetActionValue
- * @property {Action|string} [scope] - Action value ID
- * @property {Action|string} [groupId] - Action value group ID
- * @property {Action|string} [prefixId]
- * @property {Action|string} [suffixId]
+ * @property {ActionValue|string} [scope] - ActionValue value ID
+ * @property {ActionValue|string} [groupId] - ActionValue value group ID
+ * @property {ActionValue|string} [prefixId]
+ * @property {ActionValue|string} [suffixId]
  * @property {Object[]} values
- * @property {Action|string} values[].id
- * @property {Action|string} [values[].prefixId]
- * @property {Action|string} [values[].suffixId]
- * @property {Action[]|
+ * @property {ActionValue|string} values[].id
+ * @property {ActionValue|string} [values[].prefixId]
+ * @property {ActionValue|string} [values[].suffixId]
+ * @property {ActionValue[]|
  * string[]|
  * number[]|
  * boolean[]|
  * NestedData[]|
- * Action|
+ * ActionValue|
  * string|
  * number|
  * boolean|
@@ -247,127 +265,127 @@
 
 /**
  * @typedef {Object} DataSetValueOptions
- * @property {Action|string} id
+ * @property {ActionValue|string} id
  * @property {Object} [metadata] - Document metadata
- * @property {Action|boolean} [stopPropagation]
- * @property {Action|boolean} [merge]
- * @property {Action|boolean} [replace]
+ * @property {ActionValue|boolean} [stopPropagation]
+ * @property {ActionValue|boolean} [merge]
+ * @property {ActionValue|boolean} [replace]
  * @property {Object} [update]
- * @property {Action[]|string[]|number[]} [update.position]
+ * @property {ActionValue[]|string[]|number[]} [update.position]
  * @property {'push'|'pull'|'pop'|'shift'|'unshift'|'splice'} [update.method]
- * @property {Action|number} [update.startIndex] - Zero-based index at which to start changing the array
- * @property {Action|number} [update.deleteCount] - An integer indicating the number of elements in the array to remove from start
+ * @property {ActionValue|number} [update.startIndex] - Zero-based index at which to start changing the array
+ * @property {ActionValue|number} [update.deleteCount] - An integer indicating the number of elements in the array to remove from start
  */
 
 /**
  * @typedef {Object} DataSetValue
- * @property {Action|DataCollectionName} name
- * @property {Action|Action[]|string|number|boolean|NestedData} value
+ * @property {ActionValue|DataCollectionName} name
+ * @property {ActionValue|ActionValue[]|string|number|boolean|NestedData} value
  * @property {DataSetValueOptions} [options]
  */
 
 /**
  * @typedef {Object} DataFind
- * @property {Action|DataCollectionName} name
+ * @property {ActionValue|DataCollectionName} name
  * @property {Object[]} where
- * @property {Action|string} where[].name
+ * @property {ActionValue|string} where[].name
  * @property {Operator} where[].op
- * @property {Action|string|number} where[].value
+ * @property {ActionValue|string|number} where[].value
  * @property {Object[]} where[].and
- * @property {Action|string} where[].and[].name
+ * @property {ActionValue|string} where[].and[].name
  * @property {Operator} where[].and[].op
- * @property {Action|string|number} where[].and[].value
+ * @property {ActionValue|string|number} where[].and[].value
  * @property {Object[]} where[].or
- * @property {Action|string} where[].or[].name
+ * @property {ActionValue|string} where[].or[].name
  * @property {Operator} where[].or[].op
- * @property {Action|string|number} where[].or[].value
+ * @property {ActionValue|string|number} where[].or[].value
  */
 
 /**
  * @typedef {Object} FetchGetAll
- * @property {Action|string} collection
- * @property {Action|boolean} [expand]
- * @property {Action|number} [limit]
- * @property {Action|number} [page]
- * @property {Action|number} [perPage]
- * @property {Action|boolean} [sync]
- * @property {Action|string} [where]
+ * @property {ActionValue|string} collection
+ * @property {ActionValue|boolean} [expand]
+ * @property {ActionValue|number} [limit]
+ * @property {ActionValue|number} [page]
+ * @property {ActionValue|number} [perPage]
+ * @property {ActionValue|boolean} [sync]
+ * @property {ActionValue|string} [where]
  */
 
 /**
  * @typedef {Object} FetchGetById
- * @property {Action|string} collection
- * @property {Action|string[]} id
- * @property {Action|boolean} [expand]
- * @property {Action|boolean} [sync]
+ * @property {ActionValue|string} collection
+ * @property {ActionValue|string[]} id
+ * @property {ActionValue|boolean} [expand]
+ * @property {ActionValue|boolean} [sync]
  */
 
 /**
  * @typedef {Object} ListFilter
- * @property {Action|Action[]|string[]|number[]} items
+ * @property {ActionValue|ActionValue[]|string[]|number[]} items
  * @property {Object[]} options
- * @property {Action|string} options[].name
- * @property {Action|string|number|boolean} options[].value
+ * @property {ActionValue|string} options[].name
+ * @property {ActionValue|string|number|boolean} options[].value
  */
 
 /**
  * @typedef {Object} ListMap
- * @property {Action} items
- * @property {Action|string} actionId
- * @property {Action|ActionDispatchContext} [context]
+ * @property {ActionValue} items
+ * @property {ActionValue|string} actionId
+ * @property {ActionValue|ActionDispatchContext} [context]
  */
 
 /**
  * @typedef {Object} ListPush
- * @property {Action|Action[]|string[]|number[]} target
- * @property {Action|string|number} source
+ * @property {ActionValue|ActionValue[]|string[]|number[]} target
+ * @property {ActionValue|string|number} source
  */
 
 /**
  * @typedef {Object} ListIndexOf
- * @property {Action|Action[]|string[]|number[]} items
- * @property {Action|string|number} value
+ * @property {ActionValue|ActionValue[]|string[]|number[]} items
+ * @property {ActionValue|string|number} value
  */
 
 /**
  * @typedef {Object} ListSort
- * @property {Action|Action[]|string[]|number[]} items
+ * @property {ActionValue|ActionValue[]|string[]|number[]} items
  * @property {'ascending'|'descending'} type
  */
 
 /**
  * @typedef {Object} ListSplice
- * @property {Action|Action[]|string[]|number[]} target
- * @property {Action|string|number|boolean} source
- * @property {Action|number} [start]
- * @property {Action|number} [number]
+ * @property {ActionValue|ActionValue[]|string[]|number[]} target
+ * @property {ActionValue|string|number|boolean} source
+ * @property {ActionValue|number} [start]
+ * @property {ActionValue|number} [number]
  */
 
 /**
  * @typedef {Object} OperatorCompare
- * @property {Action|string|number|boolean} value_1
- * @property {Action|string|number|boolean} value_2
+ * @property {ActionValue|string|number|boolean} value_1
+ * @property {ActionValue|string|number|boolean} value_2
  * @property {Operator} op
  */
 
 /**
  * @typedef {Object} OperatorEval
- * @property {Action|Operator} name
- * @property {Array<Action|string|number>} values
+ * @property {ActionValue|Operator} name
+ * @property {Array<ActionValue|string|number>} values
  */
 
 /**
  * @typedef {Object} QueryFilter
- * @property {Action|string} id
- * @property {Action|string} componentId
+ * @property {ActionValue|string} id
+ * @property {ActionValue|string} componentId
  */
 
 /**
  * @typedef {Object} QueryFetch
- * @property {Action|string} id
+ * @property {ActionValue|string} id
  */
 
 /**
  * @typedef {Object} RouteNavigate
- * @property {Action|string} to
+ * @property {ActionValue|string} to
  */

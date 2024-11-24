@@ -4,6 +4,7 @@ import { writeFile } from 'fs/promises'
 import { resolve, join } from 'path'
 import { dataGetValue, dataSetValue, dataDeleteValue, dataFind } from '../client/index.js'
 import { generateId } from '@dooksa/utils'
+import { log } from '@dooksa/utils/server'
 
 /**
  * @typedef {import('../../../types.js').DataWhere} DataWhere
@@ -538,7 +539,10 @@ export const database = createPlugin('database', {
         snapshotLock[data.collection] = false
         snapshotError[data.collection] = false
 
-        console.log('Successfully loaded data collection:', data.collection)
+        log({
+          message: 'Loaded seed data',
+          context: data.collection
+        })
       })
     },
     /**

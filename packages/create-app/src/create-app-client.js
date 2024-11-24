@@ -1,4 +1,4 @@
-import { dataSetValue, lazyLoader } from '@dooksa/plugins/client'
+import defaultPlugins, { dataSetValue, lazyLoader } from '@dooksa/plugins/client'
 import appendPlugin from './append-plugin.js'
 
 function appendComponent (appComponents) {
@@ -175,7 +175,6 @@ function initialize (appSetup, appActions, appComponents, appDataModels, use) {
  * @param {Object} plugins
  */
 export default function createAppClient ({
-  plugins = [],
   components = []
 } = {}) {
   const appPlugins = []
@@ -194,8 +193,9 @@ export default function createAppClient ({
     useComponent(components[i])
   }
 
-  for (let i = 0; i < plugins.length; i++) {
-    usePlugin(plugins[i])
+  // use required client-side plugins
+  for (let i = 0; i < defaultPlugins.length; i++) {
+    usePlugin(defaultPlugins[i])
   }
 
   return {

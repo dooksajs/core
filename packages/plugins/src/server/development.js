@@ -5,10 +5,7 @@ import { generateId } from '@dooksa/utils'
 
 export const development = createPlugin('development', {
   models: {
-    rebuildClient: {
-      type: 'number'
-    },
-    rebuildServer: {
+    rebuild: {
       type: 'number'
     }
   },
@@ -35,21 +32,11 @@ export const development = createPlugin('development', {
 
         // emit client rebuild data
         dataAddListener({
-          name: 'development/rebuildClient',
+          name: 'development/rebuild',
           on: 'update',
           handlerId: id,
           handler: (data) => {
-            response.sse.send(id, 'rebuild-client', JSON.stringify(data))
-          }
-        })
-
-        // emit server rebuild data
-        dataAddListener({
-          name: 'development/rebuildServer',
-          on: 'update',
-          handlerId: id,
-          handler: (data) => {
-            response.sse.send(id, 'rebuild-server', JSON.stringify(data))
+            response.sse.send(id, 'rebuild', JSON.stringify(data))
           }
         })
 
@@ -57,16 +44,10 @@ export const development = createPlugin('development', {
         response.once('close', () => {
           // delete client/server rebuild data listeners
           dataDeleteListener({
-            name: 'development/rebuildClient',
+            name: 'development/rebuild',
             on: 'update',
             handlerId: id
           })
-          dataDeleteListener({
-            name: 'development/rebuildServer',
-            on: 'update',
-            handlerId: id
-          })
-
           // Delete the stream from our broadcast pool
           delete this.sse_streams[response.sse.id]
         })

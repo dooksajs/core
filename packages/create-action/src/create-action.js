@@ -3,8 +3,12 @@ import availableMethods from './available-methods.js'
 import { parseAction } from '@dooksa/utils/server'
 
 /**
+ * @import {ActionValue} from './types.js'
+ */
+
+/**
  * @param {string} id
- * @param {import('./index.js').Action[]} data
+ * @param {ActionValue[]} data
  * @param {string[]} [dependencies]
  * @param {Object.<string, boolean>} [methods] - Allowed actions
  */

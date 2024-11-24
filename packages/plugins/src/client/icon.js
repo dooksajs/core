@@ -1,13 +1,11 @@
 import createPlugin from '@dooksa/create-plugin'
-import {
-  dataGetValue, dataSetValue
-} from './data.js'
+import { dataGetValue, dataSetValue } from './data.js'
 
 let iconifyAPIUrl = 'https://api.iconify.design'
 const timeoutId = {}
 const iconQueue = {}
 
-const icon = createPlugin('icon', {
+export const icon = createPlugin('icon', {
   metadata: {
     title: 'Icon',
     description: 'Additional information about plugins and their actions',
@@ -190,5 +188,4 @@ const icon = createPlugin('icon', {
 })
 
 export const { iconRender } = icon
-
 export default icon
