@@ -11,8 +11,8 @@ Object.freeze(actionContext)
 /**
  * @typedef {Object} PluginMetadata
  * @property {string} title
- * @property {string} description
- * @property {string} icon
+ * @property {string} [description]
+ * @property {string} [icon]
  * @property {string} [component]
  */
 
@@ -20,8 +20,8 @@ Object.freeze(actionContext)
  * @typedef {Object} PluginMetadataUnique
  * @property {string} id,
  * @property {string} title
- * @property {string} description
- * @property {string} icon
+ * @property {string} [description]
+ * @property {string} [icon]
  * @property {string} [component]
  */
 
@@ -37,7 +37,7 @@ Object.freeze(actionContext)
  */
 
 /**
- * @typedef {number|string|boolean|MutationObserver} PluginDataTypes
+ * @typedef {number|string|boolean|Function|MutationObserver} PluginDataTypes
  * @typedef {Object.<string, PluginDataTypes|PluginDataTypes[]|Object.<string,PluginDataTypes>|Object.<string,PluginDataTypes>[]>} PluginData
  */
 
@@ -50,8 +50,10 @@ Object.freeze(actionContext)
 
 /**
  * @template This
- * @callback PluginActionMethod
+ * @callback PluginMethod
  * @this {This}
+ * @param {*} [param]
+ * @param {PluginActionContext} [context]
  */
 
 /**
@@ -73,6 +75,14 @@ Object.freeze(actionContext)
  */
 
 /**
+ * @template This
+ * @typedef {Object} PluginActionWithContext - Dooksa function
+ * @property {PluginMethod<This>} method
+ * @property {PluginMetadata|PluginMetadataUnique[]} metadata
+ * @property {PluginActionParameter} [parameters]
+ */
+
+/**
  * @typedef {Object} PluginAction - Dooksa function
  * @property {Function} method
  * @property {PluginMetadata|PluginMetadataUnique[]} metadata
@@ -80,36 +90,55 @@ Object.freeze(actionContext)
  */
 
 /**
- * @template {Object.<string, PluginAction>} Action
- * @typedef {{ [K in keyof Action]: Action[K]["method"] }} PluginActionMapper
+ * @template Context
+ * @template {Object.<string, PluginAction>} T
+ * @typedef {{ [K in keyof T]: RemappingContext<T[K]["method"], Context> }} PluginActionMapper
  */
+
+
+/**
+ * @template Context
+ * @template {Object.<string, Function>} T
+ * @typedef {{ [K in keyof T]: RemappingContext<T[K], Context> }} PluginMethodMapper
+ */
+
 
 /**
  * Namespaced actions
+ * @template Context
  * @template {string} Name
- * @template {Object.<string, PluginAction>} Action
- * @typedef {{ [K in keyof Action as `${Name}${Capitalize<string & K>}`]?: Action[K]["method"] }} PluginModuleAction
+ * @template {Object.<string, PluginAction>} A
+ * @typedef {{ [K in keyof A as `${Name}${Capitalize<string & K>}`]?: RemappingContext<A[K]["method"], Context> }} PluginModuleAction
  */
 
 /**
  * Namespaced plugin actions
+ * @template Context
  * @template {string} Name
  * @template {Object.<string, PluginAction>} Action
- * @typedef {{ [K in keyof Action as `${Name}_${string & K}`]?: Action[K]["method"] }} PluginSystemAction
+ * @typedef {{ [K in keyof Action as `${Name}_${string & K}`]?: RemappingContext<Action[K]["method"], Context>  } } PluginSystemAction
  */
 
 /**
  * Namespaced action methods
+ * @template Context
  * @template {string} Name
  * @template {Object.<string, Function>} Method
- * @typedef {{ [K in keyof Method as `${Name}${Capitalize<string & K>}`]?: Method[K] }} PluginModuleMethod
+ * @typedef {{ [K in keyof Method as `${Name}${Capitalize<string & K>}`]?: RemappingContext<Method[K], Context> }} PluginModuleMethod
  */
 
 /**
+ * @template T
+ * @template C
+ * @typedef {T extends (...args: infer Args) => infer Return ? (this: C, ...args: Args) => Return : never} RemappingContext
+ */
+
+/**
+ * @template Context
  * @template {string} Name
  * @template {Object.<string, PluginAction>} Action
  * @template {Object.<string, Function>} Method
- * @typedef {PluginModuleAction<Name, Action> & PluginModuleMethod<Name, Method>} PluginMethods
+ * @typedef {PluginModuleAction<Context, Name, Action> & PluginModuleMethod<Context, Name, Method>} PluginMethods
  */
 
 /**
@@ -124,9 +153,7 @@ Object.freeze(actionContext)
  * @property {string} name - Plugin name
  * @property {PluginMetadata} metadata
  * @property {Plugin[] | undefined} dependencies
- * @property {ActiveAction[]} actions
-
-
+ * @property {ActiveAction[] | undefined} actions
  * @property {Function | undefined} setup
  * @property {PluginModal | undefined} models
  */
@@ -155,16 +182,16 @@ function capitalize (string) {
  * @template {string} Name
  * @template {Object.<string, Function>} Method
  * @template {Object.<string, PluginAction>} Action
- * @template {PluginData} Data
+ * @template {Object.<string, *>} Data
  * @param {Name} name
  * @param {Object} plugin
  * @param {PluginModal} [plugin.models]
  * @param {Plugin[]} [plugin.dependencies]
  * @param {PluginMetadata} [plugin.metadata]
  * @param {Data} [plugin.data] - Private data that can be used within actions/setup
- * @param {Action} [plugin.actions]
- * @param {Method} [plugin.methods]
- * @param {PluginSetup<Method & PluginActionMapper<Action>>} [plugin.setup]
+ * @param {Action | Object.<string, PluginActionWithContext<Data & Method>>} [plugin.actions]
+ * @param {Method | Object.<string, PluginMethod<Data & Object.<string, Function>>>} [plugin.methods]
+ * @param {PluginSetup<PluginMethodMapper<Object, Method> & Data & PluginActionMapper<Object, Action>>} [plugin.setup]
  */
 export default function createPlugin (name, {
   dependencies,
@@ -190,7 +217,7 @@ export default function createPlugin (name, {
    */
   const _actions = []
   /**
-   * @type {PluginMethods<Name, Action, Method> & Plugin}
+   * @type {PluginMethods<Object, Name, Action, Method> & Plugin}
    */
   const result = {
     get name () {
@@ -227,8 +254,8 @@ export default function createPlugin (name, {
         const method = action.method.bind(context)
 
         context[key] = action.method
-        result[actionModuleName] = (params, context = actionContext) => {
-          return method(params, context)
+        result[actionModuleName] = (params) => {
+          return method(params, actionContext)
         }
 
         /** @type {PluginActionMetadata[]} */
@@ -294,7 +321,9 @@ function mergeContextProperties (data, context) {
       context[key] = element
 
       if (typeof element === 'function') {
-        result[key] = element.bind(context)
+        const data = element.bind(context)
+
+        result[key] = data()
       } else {
         result[key] = element
       }
