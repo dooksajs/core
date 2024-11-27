@@ -55,14 +55,14 @@ function callbackWhenAvailable ({ actions, lazy, loader, setup, options, use }) 
     for (let i = 0; i < setup.length; i++) {
       const instance = setup[i]
 
-      instance.initialize(options[instance.name])
+      instance.setup(options[instance.name])
       setup.splice(i)
     }
 
     if (typeof actions[methodName] === 'function') {
       return callback()
     } else {
-      throw new Error('No action exists by the name of: ' + name)
+      throw new Error('No action exists by the name of: ' + methodName)
     }
   }
 
