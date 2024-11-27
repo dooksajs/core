@@ -1,9 +1,12 @@
 import createPlugin from '@dooksa/create-plugin'
 import { createHash } from 'node:crypto'
-import { page as pageClient, pageGetById, dataGetValue, dataSetValue } from '../client/index.js'
+import { page as pageClient, pageGetItemsByPath, dataGetValue, dataSetValue } from '../client/index.js'
 import { databaseSeed, databaseSetValue } from './database.js'
 import { httpSetRoute } from './http.js'
-import { hash } from '@dooksa/utils'
+
+/**
+ * @import {DataValue} from '#types'
+ */
 
 function hashSHA (item) {
   const hash = createHash('sha256')
@@ -28,49 +31,49 @@ export const page = createPlugin('page', {
     }
   },
   methods: {
-    create ({ request, response }) {
+    /**
+     * Creates Dooksa app
+     * @param {DataValue[]} data
+     * @returns {{ script: string, csp: string }}
+     */
+    createApp (data = []) {
       const appString = dataGetValue({ name: 'page/app' }).item
-      const appSourceMap = dataGetValue({
-        name: 'page/sourcemap',
-        id: 'client-app.js.map'
-      })
-
-      response.set('Content-Type', 'text/html')
-
-      const data = request.pageData ? JSON.stringify(request.pageData) : ''
-      let app = '(() => {const __ds =' + data + ';' + appString
-      let csp = ''
-
-      PROD: {
-        csp = "script-src 'sha256-" + hashSHA(app) + "';style-src 'unsafe-inline';"
-      }
+      let script = '(() => {const __ds =' + JSON.stringify(data) + ';' + appString
 
       DEV: {
-        csp = "script-src 'unsafe-inline'; style-src 'unsafe-inline';"
+        script += '//# sourceMappingURL=/_/sourcemap/app-client.js.map\n'
       }
 
-      // include external source map
-      if (!appSourceMap.isEmpty) {
-        app += '//# sourceMappingURL=/_/sourcemap/client-app.js.map\n'
+      script += '})()'
+
+
+      return {
+        script,
+        csp: "script-src 'sha256-" + hashSHA(script) + "';"
+      }
+    },
+    /**
+     * Create Dooksa CSS
+     * @returns {{ css: string, csp: string }}
+     */
+    createCSS () {
+      const css = dataGetValue({ name: 'page/css' })
+
+      if (css.isEmpty) {
+        throw new Error('DooksaError: No CSS found')
       }
 
-      app += '})()'
-
-      const css = dataGetValue({ name: 'page/css' }).item || ''
-
-      response.set('Content-Security-Policy', csp)
-
-      response.status(200).html(
-        `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><link rel="icon" type="image/x-icon" href="/favicon.ico"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dooksa</title></head><body>
-          <div id="root"></div>
-          <script>${app}</script>
-          <style>${css}</style>
-        </body></html>`
-      )
+      return {
+        css: css.item,
+        csp: "style-src 'sha256-" + hashSHA(css.item) + "';"
+      }
     }
   },
   setup ({ app = '', css = '' } = {}) {
+    databaseSeed('page-paths')
+    databaseSeed('page-redirects')
     databaseSeed('page-items')
+
     dataSetValue({
       name: 'page/app',
       value: app
@@ -80,30 +83,38 @@ export const page = createPlugin('page', {
       value: css
     })
 
-    hash.init()
-
     httpSetRoute({
       path: '/*',
       suffix: '',
       handlers: [
-        (request, response, next) => {
-          // create hash
-          const id = '_' + hash.update(request.path) + '_'
-          const pageData = pageGetById(id)
+        (request, response) => {
+          const page = pageGetItemsByPath(request.path)
+          const style = this.createCSS()
+          const app = this.createApp(page.item)
 
-          if (pageData.isEmpty) {
-            return response.sendStatus(404)
+          response.set('Content-Type', 'text/html')
+          response.set('Content-Security-Policy', app.csp + style.csp)
+
+          if (!page.isEmpty) {
+            if (page.redirect) {
+              const status = !page.isTemporary ? 301 : 301
+
+              response.status(status)
+              response.set('Location', page.redirect)
+            } else {
+              response.status(200)
+            }
+          } else {
+            response.status(404)
           }
 
-          request.pageData = pageData
-
-          next()
-        },
-        (request, response) => {
-          this.create({
-            request,
-            response
-          })
+          response.html(
+            `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><link rel="icon" type="image/x-icon" href="/assets/favicon.ico"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dooksa</title></head><body>
+              <div id="root"></div>
+              <script>${app.script}</script>
+              <style>${style.css}</style>
+            </body></html>`
+          )
         }
       ]
     })
@@ -113,11 +124,11 @@ export const page = createPlugin('page', {
       handlers: [(request, response) => {
         const sourcemap = dataGetValue({
           name: 'page/sourcemap',
-          id: request.path_parameters.filename
+          id: request.params.filename
         })
 
         if (sourcemap.isEmpty) {
-          return response.sendStatus(404)
+          return response.status(404).send()
         }
 
         response.send(sourcemap.item)
@@ -149,5 +160,4 @@ export const page = createPlugin('page', {
   }
 })
 
-export const { pageCreate } = page
 export default page
