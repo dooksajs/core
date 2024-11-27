@@ -1,5 +1,7 @@
 import createPlugin from '@dooksa/create-plugin'
 import { dataGetValue, routeCurrentId, dataSetValue } from './index.js'
+import { hash } from '@dooksa/utils'
+import { createDataValue } from '#utils'
 
 /**
  * @import {DataValue} from '#types'
@@ -84,6 +86,114 @@ export const page = createPlugin('page', {
       }
     }
   },
+  methods: {
+    /**
+     * Get data and append
+     * @param {Object} param
+     * @param {string} param.collection,
+     * @param {string} param.id,
+     * @param {*} param.data
+     * @param {Object} [param.expandExclude]
+     * @param {boolean} [param.expand=true]
+     */
+    appendExpand ({ collection, id, data, expandExclude, expand = true }) {
+      const getData = dataGetValue({
+        name: collection,
+        id,
+        options: {
+          expand,
+          expandExclude
+        }
+      })
+
+      if (getData.isEmpty) {
+        return
+      }
+
+      data.push({
+        collection,
+        id: getData.id,
+        item: getData.item,
+        metadata: getData.metadata
+      })
+
+      if (getData.isExpandEmpty) {
+        return
+      }
+
+      for (let i = 0; i < getData.expand.length; i++) {
+        data.push(getData.expand[i])
+      }
+    },
+    /**
+     * @param {string} path - Path name without query parameters
+     */
+    pathToId (path) {
+      return '_' + hash.update(path) + '_'
+    },
+    /**
+     * @param {string} id - Page id
+     * @returns {PageGetItemsByPath}
+     */
+    getItemsById (id) {
+      const page = dataGetValue({
+        name: 'page/items',
+        id,
+        options: {
+          expand: true
+        }
+      })
+
+      if (page.isEmpty) {
+        return {
+          isEmpty: true
+        }
+      }
+
+      const pageDataValue = createDataValue('page/items', id)
+
+      pageDataValue.item = page.item
+      pageDataValue.metadata = page.metadata
+
+      const data = [pageDataValue]
+      const expandExclude = page.expandIncluded
+
+      for (let i = 0; i < page.expand.length; i++) {
+        const item = page.expand[i]
+
+        data.push(item)
+
+        if (item.collection === 'component/items') {
+          this.appendExpand({
+            collection: 'component/children',
+            id: item.id,
+            data,
+            expandExclude
+          })
+
+          for (let i = 0; i < data.length; i++) {
+            const child = data[i]
+
+            if (child.collection === 'component/items') {
+              if (child.id !== item.id) {
+                this.appendExpand({
+                  collection: 'component/children',
+                  id: child.id,
+                  data,
+                  expandExclude
+                })
+              }
+            }
+          }
+        }
+      }
+
+      return {
+        isEmpty: false,
+        item: data
+      }
+    }
+  },
   actions: {
     save: {
       metadata: {
@@ -98,7 +208,7 @@ export const page = createPlugin('page', {
        * @returns
        */
       method (id) {
-        const pageData = this.getById(id)
+        const pageData = this.getItemsById(id)
 
         if (pageData.isEmpty) {
           return
@@ -126,121 +236,96 @@ export const page = createPlugin('page', {
           .catch(e => console.log(e))
       }
     },
-    getById: {
-      method (id) {
-        const pageData = dataGetValue({
-          name: 'page/items',
-          id,
-          options: {
-            expand: true
-          }
+    getItemsByPath: {
+      metadata: {
+        title: 'Get page by path',
+        description: ''
+      },
+      /**
+       * @param {string} path
+       * @returns {PageGetItemsByPath}
+       */
+      method (path) {
+        const currentPathId = this.pathToId(path)
+
+        // get related items to path
+        const pathInfo = dataGetValue({
+          name: 'page/paths',
+          id: currentPathId
         })
 
-        if (pageData.isEmpty) {
+        if (pathInfo.isEmpty) {
+          const redirect = dataGetValue({
+            name: 'page/redirects',
+            id: currentPathId
+          })
+
+          if (!redirect.isEmpty) {
+            const { pageId, isTemporary } = redirect.item
+            const page = dataGetValue({
+              name: 'page/paths',
+              id: pageId
+            })
+
+            const result = this.getItemsById(pageId)
+
+            return Object.assign({
+              isTemporary,
+              redirect: page.item.name
+            }, result)
+          }
+
           return {
             isEmpty: true
           }
         }
 
-        const data = [{
-          collection: 'page/items',
-          id,
-          item: pageData.item,
-          metadata: pageData.metadata
-        }]
+        const pageItems = this.getItemsById(pathInfo.item.itemId)
 
-        const expandExclude = pageData.expandIncluded
-
-        for (let i = 0; i < pageData.expand.length; i++) {
-          const item = pageData.expand[i]
-
-          data.push(item)
-
-          if (item.collection === 'component/items') {
-            this.appendExpand({
-              collection: 'component/children',
-              id: item.id,
-              data,
-              expandExclude
-            })
-
-            for (let i = 0; i < data.length; i++) {
-              const child = data[i]
-
-              if (child.collection === 'component/items') {
-                if (child.id !== item.id) {
-                  this.appendExpand({
-                    collection: 'component/children',
-                    id: child.id,
-                    data,
-                    expandExclude
-                  })
-                }
-              }
-            }
-          }
+        if (pageItems.isEmpty) {
+          return pageItems
         }
 
-        return {
-          isEmpty: false,
-          item: data
-        }
-      }
-    },
-    appendExpand: {
-      /**
-       * Get data and append
-       * @param {Object} param
-       * @param {string} param.collection,
-       * @param {string} param.id,
-       * @param {*} param.data
-       * @param {Object} [param.expandExclude]
-       * @param {boolean} [param.expand=true]
-       */
-      method ({ collection, id, data, expandExclude, expand = true }) {
-        const getData = dataGetValue({
-          name: collection,
-          id,
-          options: {
-            expand,
-            expandExclude
-          }
-        })
+        pageItems.item.push(pathInfo)
 
-        if (getData.isEmpty) {
-          return
-        }
-
-        data.push({
-          collection,
-          id: getData.id,
-          item: getData.item,
-          metadata: getData.metadata
-        })
-
-        if (getData.isExpandEmpty) {
-          return
-        }
-
-        for (let i = 0; i < getData.expand.length; i++) {
-          data.push(getData.expand[i])
-        }
+        return pageItems
       }
     }
   },
   setup () {
-    const component = dataGetValue({
-      name: 'page/items',
+    // fetch current page
+    const pagePath = dataGetValue({
+      name: 'page/paths',
       id: routeCurrentId()
     })
 
-    if (component.isEmpty) {
+    /** @TODO 404 page */
+    if (pagePath.isEmpty) {
       return
     }
 
+    const pageItems = dataGetValue({
+      name: 'page/items',
+      id: pagePath.item.itemId,
+      options: {
+        expand: true
+      }
+    })
+
+    const components = []
+
+    for (let i = 0; i < pageItems.expand.length; i++) {
+      const component = dataSetValue({
+        name: 'component/items',
+        value: pageItems.expand[i].item
+      })
+      components.push(component.id)
+    }
+
+    // append components to page
     dataSetValue({
       name: 'component/children',
-      value: component.item,
+      value: components,
       options: {
         id: 'root'
       }
@@ -250,8 +335,10 @@ export const page = createPlugin('page', {
 
 export const {
   pageAppendExpand,
-  pageGetById,
-  pageSave
+  pageSave,
+  pagePathToId,
+  pageGetItemsById,
+  pageGetItemsByPath
 } = page
 
 export default page
