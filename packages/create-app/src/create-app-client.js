@@ -1,13 +1,40 @@
 import defaultPlugins, { dataSetValue, lazyLoader } from '@dooksa/plugins/client'
 import appendPlugin from './append-plugin.js'
+import {
+  base as defaultBaseComponents,
+  extra as defaultExtraComponents,
+  bootstrap as defaultBootstrapComponents
+} from '@dooksa/components'
 
-function appendComponent (appComponents) {
-  return (component) => {
-    if (appComponents[component.id]) {
-      throw new Error('Component already exists: ' + component.id)
+/**
+ * @import {AppPlugin} from './append-plugin.js'
+ * @import { Component } from '@dooksa/create-component'
+ */
+
+/**
+ * @typedef {Object} AppComponent
+ * @property {Function} use
+ * @property {Object.<string, Component>} items
+ */
+
+function appendComponent () {
+  /** @type {Object.<string, Component>} */
+  const components = {}
+
+  return {
+    /**
+     * @param {Component} component
+     */
+    use (component) {
+      if (components[component.id]) {
+        throw new Error('Component already exists: ' + component.id)
+      }
+
+      components[component.id] = component
+    },
+    get items () {
+      return components
     }
-
-    appComponents[component.id] = component
   }
 }
 
@@ -69,7 +96,11 @@ function callbackWhenAvailable ({ actions, lazy, loader, setup, options, use }) 
   }
 }
 
-function initialize (appSetup, appActions, appComponents, appDataModels, use) {
+/**
+ * @param {AppPlugin} appPlugins
+ * @param {AppComponent} appComponents
+ */
+function initialize (appPlugins, appComponents) {
   /**
    * Initialize dooksa!
    * @param {Object} param
@@ -86,13 +117,14 @@ function initialize (appSetup, appActions, appComponents, appDataModels, use) {
     }
   }) => {
     const actionWhenAvailable = callbackWhenAvailable({
-      actions: appActions,
+      actions: appPlugins.actions,
       lazy,
       loader,
-      setup: appSetup,
+      setup: appPlugins.setup,
       options,
-      use
+      use: appPlugins.use
     })
+    const appActions = appPlugins.actions
 
     options.action = {
       action: (name, params, context, callback = {}) => {
@@ -118,19 +150,26 @@ function initialize (appSetup, appActions, appComponents, appDataModels, use) {
       }
     }
 
+    const components = appComponents.items
+
     // setup view components
     options.component = {
       component: (id) => {
-        return appComponents[id]
+        if (components[id] == null) {
+          throw new Error('DooksaError: Could not found component "' + id + '"')
+        }
+
+        return components[id]
       }
     }
 
     // setup database
+    const appSetup = appPlugins.setup
     for (let i = 0; i < appSetup.length; i++) {
       const plugin = appSetup[i]
 
       if (plugin.name === 'data') {
-        plugin.setup(appDataModels)
+        plugin.setup(appPlugins.models)
 
         // remove from setup queue
         appSetup.splice(i, 1)
@@ -143,8 +182,8 @@ function initialize (appSetup, appActions, appComponents, appDataModels, use) {
     const data = __ds
 
     // set data
-    for (let i = 0; i < data.item.length; i++) {
-      const item = data.item[i]
+    for (let i = 0; i < data.length; i++) {
+      const item = data[i]
 
       // need to check if any data requires an async plugin
       dataSetValue({
@@ -166,41 +205,74 @@ function initialize (appSetup, appActions, appComponents, appDataModels, use) {
       i--
     }
 
-    appSetup = []
+    // clear setup queue
+    appPlugins.setup = []
   }
 }
 
 /**
  * Create Dooksa app
- * @param {Object} plugins
+ * @param {Object} options
+ * @param {Object.<string, Component>} [options.components={}]
+ * @param {boolean} [options.excludeExtraComponents]
+ * @param {boolean} [options.excludeBootstrapComponents]
  */
 export default function createAppClient ({
-  components = []
+  components = {},
+  excludeExtraComponents,
+  excludeBootstrapComponents
 } = {}) {
-  const appPlugins = []
-  const appSetup = []
-  const appActions = {}
-  const appComponents = []
-  const appDataModels = {
-    values: {},
-    schema: [],
-    names: []
-  }
-  const usePlugin = appendPlugin(appPlugins, appSetup, appDataModels, appActions)
-  const useComponent = appendComponent(appComponents)
+  const appPlugins = appendPlugin()
+  const appComponents = appendComponent()
 
-  for (let i = 0; i < components.length; i++) {
-    useComponent(components[i])
+  // add base components
+  for (let i = 0; i < defaultBaseComponents.length; i++) {
+    let component = defaultBaseComponents[i]
+
+    if (components[component.id]) {
+      component = components[component.id]
+    }
+
+    appComponents.use(component)
+  }
+
+  // add extra components
+  if (!excludeExtraComponents) {
+    for (let i = 0; i < defaultExtraComponents.length; i++) {
+      let component = defaultExtraComponents[i]
+
+      if (components[component.id]) {
+        component = components[component.id]
+      }
+
+      appComponents.use(component)
+    }
+  }
+
+  // add bootstrap components
+  if (!excludeBootstrapComponents) {
+    for (let i = 0; i < defaultBootstrapComponents.length; i++) {
+      let component = defaultBootstrapComponents[i]
+
+      if (components[component.id]) {
+        component = components[component.id]
+      }
+
+      appComponents.use(component)
+    }
   }
 
   // use required client-side plugins
   for (let i = 0; i < defaultPlugins.length; i++) {
-    usePlugin(defaultPlugins[i])
+    appPlugins.use(defaultPlugins[i])
   }
 
   return {
-    usePlugin,
-    useComponent,
-    setup: initialize(appSetup, appActions, appComponents, appDataModels, usePlugin)
+    usePlugin: appPlugins.use,
+    useComponent: appComponents.use,
+    setup: initialize(
+      appPlugins,
+      appComponents
+    )
   }
 }
