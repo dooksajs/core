@@ -29,6 +29,40 @@ export const page = createPlugin('page', {
         }
       }
     },
+    redirects: {
+      type: 'collection',
+      items: {
+        type: 'object',
+        required: ['temporary', 'name', 'pathId'],
+        properties: {
+          name: {
+            type: 'string'
+          },
+          pathId: {
+            type: 'string',
+            relation: 'page/paths'
+          },
+          isTemporary: {
+            type: 'boolean'
+          }
+        }
+      }
+    },
+    paths: {
+      type: 'collection',
+      items: {
+        type: 'object',
+        properties: {
+          name: {
+            type: 'string'
+          },
+          itemId: {
+            type: 'string',
+            relation: 'page/items'
+          }
+        }
+      }
+    },
     items: {
       type: 'collection',
       items: {
