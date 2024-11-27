@@ -27,6 +27,7 @@
     "compression": "^1.7.4",
     "helmet": "^8.0.0",
     "hyper-express": "^6.17.2",
+    "jsonwebtoken": "^9.0.2",
     "live-directory": "^3.0.3"
   }
 }
