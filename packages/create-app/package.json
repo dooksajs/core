@@ -14,6 +14,8 @@
     "@dooksa/utils": "workspace:^",
     "@dooksa/plugins": "workspace:^",
     "@dooksa/actions": "workspace:^",
-    "@dooksa/create-action": "workspace:^"
+    "@dooksa/create-action": "workspace:^",
+    "@dooksa/create-component": "workspace:^",
+    "@dooksa/components": "workspace:^"
   }
 }
