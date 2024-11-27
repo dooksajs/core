@@ -1,6 +1,16 @@
 import createPlugin from '@dooksa/create-plugin'
 import { dataGetValue, routeCurrentId, dataSetValue } from './index.js'
 
+/**
+ * @import {DataValue} from '#types'
+ * @typedef {Object} PageGetItemsByPath
+ * @property {boolean} isEmpty
+ * @property {string} [redirect]
+ * @property {boolean} [isTemporary]
+ * @property {string} [pageId]
+ * @property {DataValue[]} [item]
+ */
+
 export const page = createPlugin('page', {
   metadata: {
     title: 'Page',
