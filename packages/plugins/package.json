@@ -12,6 +12,7 @@
   },
   "imports": {
     "#client": "./src/client/index.js",
+    "#mock": "./mock/index.js",
     "#server": "./src/server/index.js",
     "#types": "./src/types.js",
     "#utils": "./src/utils/index.js"
