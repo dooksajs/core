@@ -30,21 +30,6 @@ importers:
         specifier: workspace:^
         version: link:../create-action
 
-  packages/app:
-    dependencies:
-      '@dooksa/actions':
-        specifier: workspace:^
-        version: link:../actions
-      '@dooksa/components':
-        specifier: workspace:^
-        version: link:../components
-      '@dooksa/create-app':
-        specifier: workspace:^
-        version: link:../create-app
-      '@dooksa/plugins':
-        specifier: workspace:^
-        version: link:../plugins
-
   packages/components:
     dependencies:
       '@dooksa/create-component':
@@ -62,9 +47,15 @@ importers:
       '@dooksa/actions':
         specifier: workspace:^
         version: link:../actions
+      '@dooksa/components':
+        specifier: workspace:^
+        version: link:../components
       '@dooksa/create-action':
         specifier: workspace:^
         version: link:../create-action
+      '@dooksa/create-component':
+        specifier: workspace:^
+        version: link:../create-component
       '@dooksa/plugins':
         specifier: workspace:^
         version: link:../plugins
@@ -85,9 +76,6 @@ importers:
       '@dooksa/actions':
         specifier: workspace:^
         version: link:../actions
-      '@dooksa/app':
-        specifier: workspace:^
-        version: link:../app
       '@dooksa/create-app':
         specifier: workspace:^
         version: link:../create-app
