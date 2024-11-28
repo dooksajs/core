@@ -8,6 +8,12 @@ import { resolve, extname, parse } from 'node:path'
 const server = createAppServer({
   database: {
     storage: './app/.ds_snapshots/development'
+  },
+  http: {
+    assets: {
+      directory: resolve('./app/assets'),
+      path: '/assets'
+    }
   }
 })
 

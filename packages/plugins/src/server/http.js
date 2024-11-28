@@ -1,13 +1,13 @@
 import createPlugin from '@dooksa/create-plugin'
-import { dataAddListener, dataSetValue } from '../client/index.js'
+import { dataSetValue } from '../client/index.js'
 import { middlewareGet, middlewareSet } from './middleware.js'
 import helmet from 'helmet'
 import compression from 'compression'
 import HyperExpress from 'hyper-express'
-import { log } from '@dooksa/utils/server'
+import LiveDirectory from 'live-directory'
 
 /**
- * @import {Middleware} from './middleware.js'
+ * @import {MiddlewareHandler} from 'hyper-express'
  */
 
 const routeTypes = {
@@ -25,7 +25,8 @@ export const $http = createPlugin('http', {
     status: { type: 'string' }
   },
   data: {
-    app: () => ({})
+    /** @type {HyperExpress.Server} */
+    app: null
   },
   methods: {
     useRoutes () {
@@ -43,7 +44,15 @@ export const $http = createPlugin('http', {
         this.app[route.method](route.path, ...route.handlers)
       }
     },
-    init (publicPath) {
+    /**
+     * Create server
+     * @param {Object} options
+     * @param {Object} [options.assets]
+     * @param {string} options.assets.directory - Local asset directory
+     * @param {string} options.assets.path - Public path name to assets
+     * @param {string[]} [options.assets.extensions] - Allowed file extensions
+     */
+    init ({ assets } = {}) {
       this.app = new HyperExpress.Server()
 
       if (process.env.NODE_ENV === 'production') {
@@ -53,10 +62,47 @@ export const $http = createPlugin('http', {
         this.app.use(helmet())
       }
 
+      /** {@link https://github.com/kartikk221/hyper-express/blob/master/docs/LiveDirectory.md} */
+      if (assets) {
+        const extensions = assets.extensions ?? ['css', 'ico', 'png', 'jpg', 'jpeg']
 
-      if (publicPath) {
-        /** https://github.com/kartikk221/hyper-express/blob/master/docs/LiveDirectory.md */
-        // app.use(express.static(publicPath))
+        // Create a LiveDirectory instance to virtualize directory with our assets
+        // Specify the "path" of the directory we want to consume using this instance as the first argument
+        const LiveAssets = new LiveDirectory(assets.directory, {
+          // Optional: Configure filters to ignore or include certain files, names, extensions etc etc.
+          filter: {
+            keep: { extensions },
+            ignore: (path) => {
+              // You can define a function to perform any kind of matching on the path of each file being considered by LiveDirectory
+              // For example, the below is a simple dot-file ignore match which will prevent any files starting with a dot from being loaded into live-directory
+              return path.startsWith('.')
+            }
+          }
+        })
+
+        // Create static serve route to serve frontend assets
+        this.app.get(assets.path + '/*', (request, response) => {
+          // Strip away '/assets' from the request path to get asset relative path
+          // Lookup LiveFile instance from our LiveDirectory instance.
+          const path = request.path.replace(assets.path, '')
+          const file = LiveAssets.get(path)
+
+          // Return a 404 if no asset/file exists on the derived path
+          if (file === undefined) return response.status(404).send()
+
+          const fileParts = file.path.split('.')
+          const extension = fileParts[fileParts.length - 1]
+
+          // Retrieve the file content and serve it depending on the type of content available for this file
+          const content = file.content
+          if (content instanceof Buffer) {
+            // Set appropriate mime-type and serve file content Buffer as response body (This means that the file content was cached in memory)
+            return response.type(extension).send(content)
+          } else {
+            // Set the type and stream the content as the response body (This means that the file content was NOT cached in memory)
+            return response.type(extension).stream(content)
+          }
+        })
       }
     },
     /**
@@ -66,7 +112,7 @@ export const $http = createPlugin('http', {
      * @param {string[]} [route.middleware] - List of middleware reference Ids
      * @param {'get'|'post'|'put'|'delete'} [route.method='get'] - HTTP method
      * @param {string} [route.suffix] - Path suffix
-     * @param {Middleware[]} route.handlers - List of callbacks
+     * @param {MiddlewareHandler[]} route.handlers - List of callbacks
      */
     setRoute ({
       path = '/',
@@ -114,10 +160,14 @@ export const $http = createPlugin('http', {
     },
     /**
      * Start the web server
-     * @param {number} [port=6362] - Port number for webserver @link https://gchq.github.io/CyberChef/#recipe=Fletcher-8_Checksum()To_Hex('None',0)&input=ZG9va3Nh
-     * @param {string} [path='http://localhost']
+     * @param {Object} options
+     * @param {number} [options.port=6362] - Port number for webserver {@link https://gchq.github.io/CyberChef/#recipe=Fletcher-8_Checksum()To_Hex('None',0)&input=ZG9va3Nh}
+     * @param {string} [options.path='http://localhost']
      */
-    start (port = 6362, path = 'http://localhost') {
+    start ({
+      port = 6362,
+      path = 'http://localhost'
+    }) {
       return new Promise((resolve, reject) => {
         this.useRoutes()
 
@@ -146,7 +196,7 @@ export const $http = createPlugin('http', {
   setup ({
     cookieSecret = '',
     api = '/_',
-    publicPath = ''
+    assets
   } = {}) {
     DEV: {
       cookieSecret = 'Invalid cookie secret length; secret must be at 32 characters'
@@ -165,7 +215,9 @@ export const $http = createPlugin('http', {
     cookieSecret = cookieSecret
 
     // initialise server
-    this.init(publicPath)
+    this.init({
+      assets
+    })
 
     // handle json requests
     middlewareSet({
@@ -206,19 +258,6 @@ export const $http = createPlugin('http', {
           })
       }
     })
-
-    DEV: {
-      dataAddListener({
-        name: 'http/status',
-        on: 'update',
-        handler: (data) => {
-          // stop server
-          if (data.item === 'stop') {
-            this.app.close()
-          }
-        }
-      })
-    }
   }
 })
 
