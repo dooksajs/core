@@ -7,11 +7,12 @@
   "license": "AGPL-3.0-or-later",
   "type": "module",
   "scripts": {
-    "test-unit": "node --test",
-    "test-coverage": "node --test --experimental-test-coverage --test-reporter=lcov --test-reporter-destination=lcov.info"
+    "test-unit": "node --experimental-test-module-mocks --test test/**/*.spec.js",
+    "test-coverage": "node --test --experimental-test-module-mocks --experimental-test-coverage --test-reporter=lcov --test-reporter-destination=lcov.info"
   },
   "imports": {
     "#client": "./src/client/index.js",
+    "#mock": "./mock/index.js",
     "#server": "./src/server/index.js",
     "#types": "./src/types.js",
     "#utils": "./src/utils/index.js"

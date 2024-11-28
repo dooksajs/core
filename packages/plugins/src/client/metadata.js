@@ -1,5 +1,5 @@
 import createPlugin from '@dooksa/create-plugin'
-import { dataSetValue } from './data.js'
+import { dataAddListener, dataGetValue, dataSetValue } from '#client'
 
 export const metadata = createPlugin('metadata', {
   metadata: {
@@ -9,6 +9,7 @@ export const metadata = createPlugin('metadata', {
   },
   models: {
     currentLanguage: { type: 'string' },
+    defaultLanguage: { type: 'string' },
     languages: {
       type: 'array',
       items: { type: 'string' }
@@ -50,13 +51,25 @@ export const metadata = createPlugin('metadata', {
   },
   /**
    * @param {Object} param
-   * @param {string} [param.currentLanguage='en']
-   * @param {string[]} [param.languages=['en']]
+   * @param {string} [param.defaultLanguage='en'] - Default system language
+   * @param {string[]} [param.languages=['en']] - List of available languages
    */
   setup ({
-    currentLanguage = 'en',
+    defaultLanguage = 'en',
     languages = ['en']
   } = {}) {
+    const params = new URLSearchParams(window.location.search)
+    const langParam = params.get('lang')
+    let currentLanguage = ''
+
+    if (langParam && languages.includes(langParam) && langParam !== defaultLanguage) {
+      currentLanguage = langParam
+    }
+
+    dataSetValue({
+      name: 'metadata/defaultLanguage',
+      value: defaultLanguage
+    })
     dataSetValue({
       name: 'metadata/currentLanguage',
       value: currentLanguage
@@ -64,6 +77,36 @@ export const metadata = createPlugin('metadata', {
     dataSetValue({
       name: 'metadata/languages',
       value: languages
+    })
+
+    dataAddListener({
+      name: 'metadata/currentLanguage',
+      on: 'update',
+      priority: 1,
+      handler (data) {
+        const defaultLanguage = dataGetValue({
+          name: 'metadata/defaultLanguage'
+        }).item
+        const languages = dataGetValue({
+          name: 'metadata/languages'
+        }).item
+        const lang = data.item
+
+        if (
+          lang === defaultLanguage ||
+          !languages.includes(lang)
+        ) {
+          // to prevent adding suffixes for default language data
+          // remove current language if it the same as default language
+          dataSetValue({
+            name: 'metadata/currentLanguage',
+            value: data.previous,
+            options: {
+              stopPropagation: true
+            }
+          })
+        }
+      }
     })
   }
 })
