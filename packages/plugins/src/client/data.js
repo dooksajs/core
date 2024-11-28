@@ -181,6 +181,7 @@ function getExpandedData (name, result, options) {
   const relations = databaseRelation[name + '/' + result.id]
 
   result.isExpandEmpty = !relations
+  result.expand = result.expand || []
 
   if (relations) {
     result.isExpandEmpty = false
@@ -1615,6 +1616,7 @@ export const data = createPlugin('data', {
        * @param {boolean} [param.captureAll] - Fire action on all events
        * @param {string} [param.handlerId=''] - Id of handler
        * @param {Function|string} param.handler
+       * @param {Object} [action]
        */
       method ({
         name,

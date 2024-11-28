@@ -13,8 +13,8 @@ import { deepClone } from '@dooksa/utils'
  * @property {string} collection
  * @property {boolean} isEmpty
  * @property {boolean} isExpandEmpty
- * @property {DataValue[]} expand
- * @property {Object.<string, (boolean|number)>} expandIncluded
+ * @property {DataValue[]} [expand]
+ * @property {Object.<string, (boolean|number)>} [expandIncluded]
  * @property {boolean} isAffixEmpty
  * @property {boolean} [isValid]
  * @property {*} [target]
@@ -35,8 +35,6 @@ function createDataValue (collection = '', id = '') {
     collection,
     isEmpty: true,
     isExpandEmpty: true,
-    expand: [],
-    expandIncluded: {},
     isAffixEmpty: true
   }
 }
