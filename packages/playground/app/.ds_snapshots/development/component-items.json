@@ -7,7 +7,7 @@
     "_componentOne_": {
       "id": "action-add-block",
       "isTemplate": true,
-      "groupId": "_componentOne_"
+      "groupId": "_groupOne_"
     }
   }
 }
