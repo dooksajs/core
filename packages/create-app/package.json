@@ -7,6 +7,8 @@
   "license": "AGPL-3.0-or-later",
   "type": "module",
   "exports": {
+    "./build/client": "./src/build/client.js",
+    "./build/serer": "./src/build/server.js",
     "./client": "./src/create-app-client.js",
     "./server": "./src/create-app-server.js"
   },
