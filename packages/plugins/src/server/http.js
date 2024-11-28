@@ -1,5 +1,5 @@
 import createPlugin from '@dooksa/create-plugin'
-import { dataAddListener, dataSetValue } from '../client/index.js'
+import { dataSetValue } from '../client/index.js'
 import { middlewareGet, middlewareSet } from './middleware.js'
 import helmet from 'helmet'
 import compression from 'compression'
@@ -7,7 +7,7 @@ import HyperExpress from 'hyper-express'
 import LiveDirectory from 'live-directory'
 
 /**
- * @import {Middleware} from './middleware.js'
+ * @import {MiddlewareHandler} from 'hyper-express'
  */
 
 const routeTypes = {
@@ -25,7 +25,8 @@ export const $http = createPlugin('http', {
     status: { type: 'string' }
   },
   data: {
-    app: () => ({})
+    /** @type {HyperExpress.Server} */
+    app: null
   },
   methods: {
     useRoutes () {
@@ -111,7 +112,7 @@ export const $http = createPlugin('http', {
      * @param {string[]} [route.middleware] - List of middleware reference Ids
      * @param {'get'|'post'|'put'|'delete'} [route.method='get'] - HTTP method
      * @param {string} [route.suffix] - Path suffix
-     * @param {Middleware[]} route.handlers - List of callbacks
+     * @param {MiddlewareHandler[]} route.handlers - List of callbacks
      */
     setRoute ({
       path = '/',
@@ -159,10 +160,14 @@ export const $http = createPlugin('http', {
     },
     /**
      * Start the web server
-     * @param {number} [port=6362] - Port number for webserver @link https://gchq.github.io/CyberChef/#recipe=Fletcher-8_Checksum()To_Hex('None',0)&input=ZG9va3Nh
-     * @param {string} [path='http://localhost']
+     * @param {Object} options
+     * @param {number} [options.port=6362] - Port number for webserver {@link https://gchq.github.io/CyberChef/#recipe=Fletcher-8_Checksum()To_Hex('None',0)&input=ZG9va3Nh}
+     * @param {string} [options.path='http://localhost']
      */
-    start (port = 6362, path = 'http://localhost') {
+    start ({
+      port = 6362,
+      path = 'http://localhost'
+    }) {
       return new Promise((resolve, reject) => {
         this.useRoutes()
 
@@ -191,7 +196,7 @@ export const $http = createPlugin('http', {
   setup ({
     cookieSecret = '',
     api = '/_',
-    publicPath = ''
+    assets
   } = {}) {
     DEV: {
       cookieSecret = 'Invalid cookie secret length; secret must be at 32 characters'
@@ -210,7 +215,9 @@ export const $http = createPlugin('http', {
     cookieSecret = cookieSecret
 
     // initialise server
-    this.init(publicPath)
+    this.init({
+      assets
+    })
 
     // handle json requests
     middlewareSet({
@@ -251,19 +258,6 @@ export const $http = createPlugin('http', {
           })
       }
     })
-
-    DEV: {
-      dataAddListener({
-        name: 'http/status',
-        on: 'update',
-        handler: (data) => {
-          // stop server
-          if (data.item === 'stop') {
-            this.app.close()
-          }
-        }
-      })
-    }
   }
 })
 
