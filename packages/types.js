@@ -7,6 +7,7 @@
  * @property {(Function|string)} [suffixId] - Collection suffix id
  * @property {(Function|string)} [prefixId] - Collection prefix id
  * @property {(Function|string)} [defaultId] - Default collection id
+ * @property {string[]} [required] - List of required properties that must exist and contain a value
  * @property {string} [relation] - Name of data collection the foreign key is related to
  * @property {boolean} [uniqueItems] - Ensure that each of the items in an array is unique
  */
@@ -17,6 +18,7 @@
  * @property {DataSchemaItem} [items]
  * @property {Object.<string, DataSchemaObject>} [properties] - The properties of an object
  * @property {Object.<string, DataSchemaObject>} [patternProperties] - The property name is equal regex pattern, e.g patternProperties: { '[0-9]': { } }
+ * @property {string[]} [required] - List of required properties that must exist and contain a value
  * @property {string} [relation] - Name of data collection the foreign key is related to
  * @property {boolean} [uniqueItems] - Ensure that each of the items in an array is unique
  */
