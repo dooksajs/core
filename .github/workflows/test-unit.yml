@@ -1,4 +1,4 @@
-name: Build
+name: Test:unit
 
 on:
   - push
@@ -27,8 +27,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Build client
-        run: pnpm run build-client
+      - name: Unit tests
+        run: pnpm run test-unit
 
-      - name: Build server
-        run: pnpm run build-server
