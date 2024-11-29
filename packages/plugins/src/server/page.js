@@ -67,6 +67,24 @@ export const page = createPlugin('page', {
         css: css.item,
         csp: "style-src 'sha256-" + hashSHA(css.item) + "';"
       }
+    },
+    /**
+     * Creates Dooksa app
+     * @param {DataValue[]} data
+     * @returns {{ html: string, csp: string }}
+     */
+    create (data){
+      const style = this.createCSS()
+      const app = this.createApp(data)
+
+      return {
+        html: `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><link rel="icon" type="image/x-icon" href="/assets/favicon.ico"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dooksa</title></head><body>
+            <div id="root"></div>
+            <script>${app.script}</script>
+            <style>${style.css}</style>
+          </body></html>`,
+        csp: app.csp + style.csp
+      }
     }
   },
   setup ({ app = '', css = '' } = {}) {
@@ -89,15 +107,13 @@ export const page = createPlugin('page', {
       handlers: [
         (request, response) => {
           const page = pageGetItemsByPath(request.path)
-          const style = this.createCSS()
-          const app = this.createApp(page.item)
+          const app = this.create(page.item)
 
-          response.set('Content-Type', 'text/html')
-          response.set('Content-Security-Policy', app.csp + style.csp)
+          response.set('Content-Security-Policy', app.csp)
 
           if (!page.isEmpty) {
             if (page.redirect) {
-              const status = !page.isTemporary ? 301 : 301
+              const status = !page.isTemporary ? 301 : 302
 
               response.status(status)
               response.set('Location', page.redirect)
@@ -108,13 +124,7 @@ export const page = createPlugin('page', {
             response.status(404)
           }
 
-          response.html(
-            `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><link rel="icon" type="image/x-icon" href="/assets/favicon.ico"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dooksa</title></head><body>
-              <div id="root"></div>
-              <script>${app.script}</script>
-              <style>${style.css}</style>
-            </body></html>`
-          )
+          response.html(app.html)
         }
       ]
     })
@@ -159,5 +169,9 @@ export const page = createPlugin('page', {
     })
   }
 })
+
+export const {
+  pageCreate
+} = page
 
 export default page
