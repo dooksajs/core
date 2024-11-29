@@ -231,7 +231,10 @@ function getExpandedData (name, result, options) {
 
       result.expandIncluded[relation] = result.expand.length
 
-      const expandedResult = createDataValue(name, value.id)
+      const expandedResult = createDataValue({
+        collection: name,
+        id: value.id
+      })
 
       expandedResult.item = !options.expandClone ? value.item : cloneDataValue(value)
       expandedResult.metadata = value.metadata
@@ -1412,7 +1415,10 @@ export const data = createPlugin('data', {
      * @returns {DataValue}
      */
     unsafeSetValue ({ name, value, options }) {
-      const result = createDataValue(name, options.id)
+      const result = createDataValue({
+        collection: name,
+        id: options.id
+      })
 
       if (options) {
         if (options.id == null) {
@@ -1515,7 +1521,10 @@ export const data = createPlugin('data', {
           valueLoop: for (const id in values) {
             if (Object.hasOwnProperty.call(values, id)) {
               const value = values[id]
-              const dataResult = createDataValue(name, id)
+              const dataResult = createDataValue({
+                collection: name,
+                id
+              })
               let isValid = true
 
               for (let i = 0; i < where.length; i++) {
@@ -1542,7 +1551,7 @@ export const data = createPlugin('data', {
           return valueItems
         }
 
-        const result = createDataValue(name)
+        const result = createDataValue({ collection: name })
         let isValid = true
 
         result.isEmpty = false
@@ -1878,7 +1887,10 @@ export const data = createPlugin('data', {
         }
 
         if (collection[id]) {
-          const result = createDataValue(name, id)
+          const result = createDataValue({
+            collection: name,
+            id
+          })
 
           result.item = collection[id]._item
           result.metadata = collection[id]._metadata
@@ -1950,7 +1962,10 @@ export const data = createPlugin('data', {
           throw new DataValueException('No such collection "' + name +"'")
         }
 
-        const result = createDataValue(name, id)
+        const result = createDataValue({
+          collection: name,
+          id
+        })
         const schema = databaseSchema[name]
 
         // return collection
@@ -2152,7 +2167,7 @@ export const data = createPlugin('data', {
           })
         }
 
-        let result = createDataValue(name)
+        let result = createDataValue({ collection: name })
         let target = database[name]
 
         if (target == null) {
@@ -2179,9 +2194,12 @@ export const data = createPlugin('data', {
         // set new value
         database[name] = result.target
 
-        const dataResult = createDataValue(name, result.id)
+        const dataResult = createDataValue({
+          collection: name,
+          id: result.id,
+          data: result.item
+        })
 
-        dataResult.item = result.item
         dataResult.isEmpty = false
         dataResult.previous = result.previous
         dataResult.metadata = result.metadata
