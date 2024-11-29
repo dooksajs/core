@@ -150,9 +150,12 @@ export const page = createPlugin('page', {
         }
       }
 
-      const pageDataValue = createDataValue('page/items', id)
+      const pageDataValue = createDataValue({
+        collection: 'page/items',
+        id,
+        data: page.item
+      })
 
-      pageDataValue.item = page.item
       pageDataValue.metadata = page.metadata
 
       const data = [pageDataValue]

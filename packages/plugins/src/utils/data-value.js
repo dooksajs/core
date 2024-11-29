@@ -25,18 +25,31 @@ import { deepClone } from '@dooksa/utils'
 
 /**
  * Data result
- * @param {string} [collection='']
- * @param {string} [id='']
+ * @param {Object} param
+ * @param {string} [param.collection='']
+ * @param {string} [param.id='']
+ * @param {*} [param.data]
  * @returns {DataValue}
  */
-function createDataValue (collection = '', id = '') {
-  return {
+function createDataValue ({
+  collection = '',
+  id = '',
+  data
+} = {}) {
+  const value = {
     id,
     collection,
     isEmpty: true,
     isExpandEmpty: true,
     isAffixEmpty: true
   }
+
+  if (data) {
+    value.isEmpty = false
+    value.item = data
+  }
+
+  return value
 }
 
 /**
