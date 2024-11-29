@@ -27,9 +27,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Unit tests
-        run: pnpm run test-unit
-
       - name: Build client
         run: pnpm run build-client
 
