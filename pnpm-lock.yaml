@@ -98,6 +98,9 @@ importers:
 
   packages/plugins:
     dependencies:
+      '@dooksa/components':
+        specifier: workspace:^
+        version: link:../components
       '@dooksa/create-action':
         specifier: workspace:^
         version: link:../create-action

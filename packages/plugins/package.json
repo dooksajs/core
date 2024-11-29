@@ -25,6 +25,7 @@
     "@dooksa/create-action": "workspace:^",
     "@dooksa/create-component": "workspace:^",
     "@dooksa/create-plugin": "workspace:^",
+    "@dooksa/components": "workspace:^",
     "@dooksa/theme": "workspace:^",
     "@dooksa/utils": "workspace:^",
     "compression": "^1.7.4",
