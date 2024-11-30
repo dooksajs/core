@@ -6,6 +6,11 @@
   "repository": "git@github.com:dooksajs/dooksa.git",
   "license": "AGPL-3.0-or-later",
   "type": "module",
+  "scripts": {
+    "test-e2e": "playwright test",
+    "test-e2e-report": "playwright show-report",
+    "test-e2e-ui": "playwright test --ui"
+  },
   "imports": {
     "#base": "./src/base/index.js",
     "#base/types": "./src/base/types.js",
@@ -29,5 +34,9 @@
   },
   "dependencies": {
     "@dooksa/create-component": "workspace:^"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0",
+    "@types/node": "^22.10.1"
   }
 }

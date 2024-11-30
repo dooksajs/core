@@ -67,11 +67,8 @@ Temporary Items
 .env
 .netlify
 
-# Cypress
-screenshots
-videos
-out.js
-snapshots.js
-.nyc_output
-coverage
-test-data.json
+# Playwright
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
