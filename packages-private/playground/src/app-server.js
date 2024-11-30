@@ -1,9 +1,8 @@
 import createApp from '@dooksa/create-app/server'
 import { development } from '@dooksa/plugins/server'
-import actions from '@dooksa/actions'
 
 export default function createAppServer (options) {
-  const app = createApp({ actions })
+  const app = createApp()
 
   app.usePlugin(development)
 
