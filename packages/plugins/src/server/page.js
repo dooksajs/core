@@ -41,7 +41,11 @@ export const page = createPlugin('page', {
       let script = '(() => {const __ds =' + JSON.stringify(data) + ';' + appString
 
       DEV: {
-        script += '//# sourceMappingURL=/_/sourcemap/app-client.js.map\n'
+        const sourcemap = dataGetValue({ name: 'page/sourcemap' })
+
+        if (!sourcemap.isEmpty) {
+          script += '//# sourceMappingURL=/_/sourcemap/app-client.js.map\n'
+        }
       }
 
       script += '})()'
