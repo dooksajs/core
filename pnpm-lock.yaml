@@ -24,6 +24,32 @@ importers:
         specifier: ^2.11.1
         version: 2.11.1
 
+
+  packages-private/playground:
+    dependencies:
+      '@dooksa/actions':
+        specifier: 'workspace:'
+        version: link:../../packages/actions
+      '@dooksa/create-app':
+        specifier: 'workspace:'
+        version: link:../../packages/create-app
+      '@dooksa/plugins':
+        specifier: 'workspace:'
+        version: link:../../packages/plugins
+      '@dooksa/utils':
+        specifier: 'workspace:'
+        version: link:../../packages/utils
+    devDependencies:
+      chalk:
+        specifier: ^5.3.0
+        version: 5.3.0
+      esbuild:
+        specifier: ^0.21.4
+        version: 0.21.4
+      nodemon:
+        specifier: ^3.1.7
+        version: 3.1.7
+
   packages/actions:
     dependencies:
       '@dooksa/create-action':
