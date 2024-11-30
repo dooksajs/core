@@ -1,0 +1,22 @@
+{
+  "name": "@dooksa/ci-runner",
+  "private": true,
+  "version": "0.0.0",
+  "author": "Thomas David <tom@mightysmile.com>",
+  "repository": "git@github.com:dooksajs/dooksa.git",
+  "license": "AGPL-3.0-or-later",
+  "type": "module",
+  "main": "./src/index.js",
+  "scripts": {
+    "start": "NODE_ENV=development node ./src/index.js"
+  },
+  "dependencies": {
+    "@dooksa/actions": "workspace:",
+    "@dooksa/create-app": "workspace:",
+    "@dooksa/utils": "workspace:",
+    "@dooksa/plugins": "workspace:"
+  },
+  "devDependencies": {
+    "esbuild": "^0.21.4"
+  }
+}
