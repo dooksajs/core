@@ -142,6 +142,7 @@ function processSequence (sequence, context, payload, blockValues = {}, callback
                 console.error(error)
               }
 
+              // @ts-ignore
               throw new Error('Broken action block', { cause: error })
             }
           })
