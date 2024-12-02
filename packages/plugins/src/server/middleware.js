@@ -1,10 +1,7 @@
 import createPlugin from '@dooksa/create-plugin'
 
 /**
- * @typedef {Function} Middleware
- * @param {Object} request
- * @param {Object} response
- * @param {Function} [next]
+ * @import {MiddlewareHandler} from 'hyper-express'
  */
 
 const handlers = {
@@ -42,7 +39,7 @@ export const middleware = createPlugin('middleware', {
     /**
      * Get middleware
      * @param {string} name
-     * @returns {Middleware}
+     * @returns {MiddlewareHandler}
      */
     get (name) {
       const handler = handlers[name]
@@ -55,10 +52,9 @@ export const middleware = createPlugin('middleware', {
     },
     /**
      * Set middleware
-     * @template {function} T
      * @param {Object} param
      * @param {string} param.name - Name of middleware
-     * @param {T} param.handler - Express middleware
+     * @param {MiddlewareHandler} param.handler - Express middleware
      */
     set ({ name, handler }) {
       handlers[name] = handler
