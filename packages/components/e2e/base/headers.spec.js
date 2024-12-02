@@ -25,9 +25,9 @@ test('has one h2 element', async ({ page, axeDisableRules }) => {
 test('has one h3 element', async ({ page, axeDisableRules }) => {
   await page.goto('/_/component/h3')
 
-  const oneH2Element = await page.getByRole('heading', { level: 3 }).count()
+  const oneH3Element = await page.getByRole('heading', { level: 3 }).count()
 
-  await expect(oneH2Element).toBe(1)
+  await expect(oneH3Element).toBe(1)
 
   // add axe rules
   axeDisableRules.push('empty-heading', 'page-has-heading-one')
@@ -36,9 +36,9 @@ test('has one h3 element', async ({ page, axeDisableRules }) => {
 test('has one h4 element', async ({ page, axeDisableRules }) => {
   await page.goto('/_/component/h4')
 
-  const oneH2Element = await page.getByRole('heading', { level: 4 }).count()
+  const oneH4Element = await page.getByRole('heading', { level: 4 }).count()
 
-  await expect(oneH2Element).toBe(1)
+  await expect(oneH4Element).toBe(1)
 
   // add axe rules
   axeDisableRules.push('empty-heading', 'page-has-heading-one')
@@ -47,9 +47,9 @@ test('has one h4 element', async ({ page, axeDisableRules }) => {
 test('has one h5 element', async ({ page, axeDisableRules }) => {
   await page.goto('/_/component/h5')
 
-  const oneH2Element = await page.getByRole('heading', { level: 5 }).count()
+  const oneH5Element = await page.getByRole('heading', { level: 5 }).count()
 
-  await expect(oneH2Element).toBe(1)
+  await expect(oneH5Element).toBe(1)
 
   // add axe rules
   axeDisableRules.push('empty-heading', 'page-has-heading-one')
@@ -58,9 +58,9 @@ test('has one h5 element', async ({ page, axeDisableRules }) => {
 test('has one h6 element', async ({ page, axeDisableRules }) => {
   await page.goto('/_/component/h6')
 
-  const oneH2Element = await page.getByRole('heading', { level: 6 }).count()
+  const oneH6Element = await page.getByRole('heading', { level: 6 }).count()
 
-  await expect(oneH2Element).toBe(1)
+  await expect(oneH6Element).toBe(1)
 
   // add axe rules
   axeDisableRules.push('empty-heading', 'page-has-heading-one')
