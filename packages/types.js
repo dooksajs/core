@@ -142,5 +142,3 @@
  * @property {string} [suffixId] - Data collection document suffix
  * @property {GetDataOption} [options] - Options
  */
-
-export default {}
