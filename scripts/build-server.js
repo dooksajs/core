@@ -26,7 +26,6 @@ const result = await esbuild.build({
   entryPoints: [path.resolve(rootDir, 'packages', 'create-app', 'src', 'build', 'server.js')],
   bundle: true,
   treeShaking: true,
-  splitting: true,
   outdir,
   format: 'esm',
   platform: 'node',
