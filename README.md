@@ -45,6 +45,10 @@ Contributions Welcome! You can contribute in the following ways.
 
 For more details, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
+## Contributors
+
+Thanks to [all contributors](https://github.com/dooksajs/core/graphs/contributors)!
+
 ## Author
 
 Thomas David <https://github.com/tjdav>
