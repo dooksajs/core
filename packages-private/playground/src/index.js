@@ -6,8 +6,8 @@ nodemon({
   script: 'src/esbuild.js',
   ext: 'js',
   watch: [
-    resolve('../plugins/src/server'),
-    resolve('../actions/src')
+    resolve('../../packages/plugins/src/server'),
+    resolve('../../packages/actions/src')
   ],
   ignore: [
     '.git',
