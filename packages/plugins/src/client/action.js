@@ -365,7 +365,12 @@ export const action = createPlugin('action', {
        * @param {Object} [actionContext]
        * @param {Object} [actionContext.blockValues]
        */
-      method ({ id, context, payload, clearBlockValues }, actionContext ) {
+      method ({
+        id,
+        context,
+        payload,
+        clearBlockValues
+      }, actionContext ) {
         if (clearBlockValues) {
           actionContext.blockValues = {}
         }
