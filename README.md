@@ -7,7 +7,7 @@
 
 ---
 
-Dooksa - _**"Look This" 👀👉** (a mix of english/french as my young bilingual daughter would say :)_ - is a lighten fast, open-source, zero-dependency, lightweight, low-code, general-purpose application framework.  
+Dooksa - _**"Look This" 👀👉** as my young bilingual daughter would say (a mix of English/French)_ - is a lighten fast, open-source, zero-dependency, lightweight, low-code, general-purpose application framework.  
 
 ## Getting Started
 
