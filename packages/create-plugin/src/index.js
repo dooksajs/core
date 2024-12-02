@@ -159,6 +159,13 @@ Object.freeze(actionContext)
  */
 
 /**
+ * @template {string} Name
+ * @template {Object.<string, PluginAction>} Action
+ * @template {Object.<string, Function> } Method
+ * @typedef {PluginMethods<Object, Name, Action, Method> & Plugin} PluginExport
+ */
+
+/**
  * @typedef {Object} ActiveAction
  * @property {string} name - Method name
  * @property {Function} method - Method
@@ -192,6 +199,7 @@ function capitalize (string) {
  * @param {Action | Object.<string, PluginActionWithContext<Data & Method>>} [plugin.actions]
  * @param {Method | Object.<string, PluginMethod<Data & Object.<string, Function>>>} [plugin.methods]
  * @param {PluginSetup<PluginMethodMapper<Object, Method> & Data & PluginActionMapper<Object, Action>>} [plugin.setup]
+ * @returns {PluginExport<Name, Action, Method>}
  */
 export default function createPlugin (name, {
   dependencies,
@@ -217,7 +225,7 @@ export default function createPlugin (name, {
    */
   const _actions = []
   /**
-   * @type {PluginMethods<Object, Name, Action, Method> & Plugin}
+   * @type {PluginExport<Name, Action, Method>}
    */
   const result = {
     get name () {
