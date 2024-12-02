@@ -3,44 +3,52 @@
 > [!WARNING]  
 > Please keep in mind that Dooksa is still under active development and full backward compatibility is not guaranteed before reaching v1.0.0. Dooksa is not yet recommended for production critical applications.
 
-> Attention. This repo is not for building a website. It is for those who want to improve Dooksa. A separate repo will be made available [Create Dooksa Placeholder](https://github.com/dooksajs/create-dooksa) with a suitable Dockerfile to deploy to the cloud service provider of your choice.
+> Attention. This repo is not for building a website. It is for those who want to improve Dooksa. A separate repo will be made available [Create Dooksa](https://github.com/dooksajs/create-dooksa)
 
-##Description
+---
 
-Dooksa
- 
-* Is a fast, open-source, super-lightweight, low-code, general-purpose application builder
-* Enables developers, webmasters and even the marketing team, to manage the content and presentation of their web assets
-* An application is built by editing sections of the application interface, adding content and actions as required
-* All this is done in a browser, with no need to open a text editor
-* At its heart, it is an extensible plugin-driven architecture
-* Provides a simple method to create custom plugins to meet specific application needs
-* Is a "full-stack" system where the app frontend and backend are developed in the same manner, with the same syntax, and with the same processes
-* Gives developers unrestricted freedom over their own application project, to modify as it fits their needs
-* Importantly, there are no abstractions dependent upon version upgrades. The frontend system has zero dependencies on node modules.
+Dooksa - _**"Look This" 👀👉** (a mix of english/french as my young bilingual daughter would say :)_ - is a lighten fast, open-source, zero-dependency, lightweight, low-code, general-purpose application framework.  
 
+## Getting Started
 
-If you want to create a Dooksa application, run the create Dooksa script (insert link) 
+Start the development server
 
-The complete create script does not yet exist. There is a playground, See below, to explore the working of core Dooksa.
+```bash
+pnpm run dev
+```
 
+> ℹ️ Fun fact, the port number is [Fletcher-8](https://gchq.github.io/CyberChef/#recipe=Fletcher-8_Checksum()To_Hex('None',0)&input=ZG9va3Nh) checksum of `dooksa` 
 
-## Getting Started with developing the core
+**Preview components:** [http://localhost:6362/_component/:id], replace the id with the component id found in [components](packages/components/src/)
 
-Clone this repo
-Experiment with this
+## Features
 
-pnpm --filter playground run dev
+- **Ultrafast** 🚀 - The interpreter is highly optimised to execute the low code instructions as fast as possible.
+- **Lightweight** 🪶 - The `dooksa client` preset is under 30kB. Dooksa has zero dependencies and uses only the Web Standard API.
+- **Extendable** 🔌 - The plugin system is easy to extend and **Isomorphic**, meaning there is only one plugin API for both client/server side 🥳
+- **Batteries Included** 🔋 - Dooksa is a complete client/server side framework, everything included, ready to deploy!
+- **Accessibility** ♿ - Components includes complete ARIA attribute support, and offers built-in keyboard navigation and screen reader compatibility out of the box.
 
-## Application Development
+## Documentation
 
-__[ To be created]__
+The documentation will be available on [dooksa.org](https://dooksa.org).
 
-## Dooksa Packages
+## Contributing
 
-__[ To be created]__
+Contributions Welcome! You can contribute in the following ways.
 
-## Dooksa Internals
+- Create an Issue - Propose a new feature. Report a bug.
+- Pull Request - Fix a bug and typo. Refactor the code.
+- Create third-party plugins.
+- Share - Share your thoughts on the Blog, Mastodon, and others.
+- Make your application - Please try to use Dooksa.
 
-__[ To be created]__
+For more details, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
+## Author
+
+Thomas David <https://github.com/tjdav>
+
+## License
+
+Distributed under the AGPL-3.0 License. See [LICENSE](LICENSE) for more information.
