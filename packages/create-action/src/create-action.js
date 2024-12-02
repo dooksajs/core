@@ -3,7 +3,7 @@ import availableMethods from './available-methods.js'
 import { parseAction } from '@dooksa/utils/server'
 
 /**
- * @import {ActionValue} from './types.js'
+ * @import {ActionValue, Action, ActionBlock} from './types.js'
  */
 
 /**
@@ -11,12 +11,15 @@ import { parseAction } from '@dooksa/utils/server'
  * @param {ActionValue[]} data
  * @param {string[]} [dependencies]
  * @param {Object.<string, boolean>} [methods] - Allowed actions
+ * @returns {Action}
  */
 function createAction (id, data, dependencies = [], methods = availableMethods) {
   const sequences = []
+  /** @type {Object.<string, string[]>} */
   const blockSequences = {}
   const blockIndexes = {}
   let sequenceRefs = []
+  /** @type {Object.<string, ActionBlock>} */
   let blocks = {}
 
   if (methods) {
@@ -64,6 +67,7 @@ function createAction (id, data, dependencies = [], methods = availableMethods) 
       // add ref block id
       block.blockValue = blockSequence[blockSequence.length - 1]
       // remove ref
+      // @ts-ignore
       delete block.$ref
     }
   }
@@ -80,6 +84,7 @@ function createAction (id, data, dependencies = [], methods = availableMethods) 
     // update ref value
     block.value = blockValue
     // delete unused property
+    //@ts-ignore
     delete block.$sequenceRef
   }
 
