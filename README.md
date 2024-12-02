@@ -19,7 +19,9 @@ pnpm run dev
 
 > ℹ️ Fun fact, the port number is [Fletcher-8](https://gchq.github.io/CyberChef/#recipe=Fletcher-8_Checksum()To_Hex('None',0)&input=ZG9va3Nh) checksum of `dooksa` 
 
-**Preview components:** [http://localhost:6362/_component/:id], replace the id with the component id found in [components](packages/components/src/)
+### Preview components
+
+http://localhost:6362/_component/:id replace the **:id** with the component id found in [components](packages/components/src/)
 
 ## Features
 
