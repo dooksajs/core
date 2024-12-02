@@ -36,6 +36,7 @@
     "@dooksa/create-component": "workspace:^"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.10.1",
     "@playwright/test": "^1.49.0",
     "@types/node": "^22.10.1"
   }
