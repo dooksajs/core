@@ -5,14 +5,11 @@ import { operatorCompare, operatorEval } from './operator.js'
 import { getValue } from '@dooksa/utils'
 
 /**
- * @typedef {import('../../types.js').SetDataOptions} SetDataOptions
- * @typedef {import('../../types.js').GetDataQuery} GetDataQuery
- * @typedef {import('../../types.js').DataSchema} DataSchema
- * @typedef {import('../../types.js').DataWhere} DataWhere
+ * @import {SetDataOptions, GetDataQuery, DataSchema, DataWhere} from '../../../types.js'
  */
 
 /**
- * @typedef {string|string[]} GetDataValue
+ * @typedef {string | string[]} GetValueByQuery - Request to return a specific key value, dot notations are permitted
  */
 
 const dataTypes = {
