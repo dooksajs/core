@@ -69,11 +69,11 @@ export const icon = createPlugin('icon', {
           const aliasIcon = dataGetValue({
             name: 'icon/aliases',
             id,
-            options: { extend: true }
+            options: { expand: true }
           })
 
           if (!aliasIcon.isExpandEmpty) {
-            node.innerHTML = aliasIcon.extend[0]
+            node.innerHTML = aliasIcon.expand[0].item
 
             return
           }
