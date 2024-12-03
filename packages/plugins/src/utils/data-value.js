@@ -11,11 +11,11 @@ import { deepClone } from '@dooksa/utils'
  * @typedef {Object} DataValue
  * @property {string} id
  * @property {string} collection
- * @property {boolean} isEmpty
- * @property {boolean} isExpandEmpty
+ * @property {boolean} [isEmpty]
+ * @property {boolean} [isExpandEmpty]
  * @property {DataValue[]} [expand]
  * @property {Object.<string, (boolean|number)>} [expandIncluded]
- * @property {boolean} isAffixEmpty
+ * @property {boolean} [isAffixEmpty]
  * @property {boolean} [isValid]
  * @property {*} [target]
  * @property {*} [item]
@@ -38,14 +38,10 @@ function createDataValue ({
 } = {}) {
   const value = {
     id,
-    collection,
-    isEmpty: true,
-    isExpandEmpty: true,
-    isAffixEmpty: true
+    collection
   }
 
   if (data) {
-    value.isEmpty = false
     value.item = data
   }
 
