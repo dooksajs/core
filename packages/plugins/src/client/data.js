@@ -1,5 +1,5 @@
 import createPlugin from '@dooksa/create-plugin'
-import { operatorEval, listSplice, actionDispatch } from './index.js'
+import { operatorEval, listSplice, actionDispatch } from '#client'
 import { DataSchemaException, DataValueException } from '../utils/error.js'
 import { deepClone, generateId, isEnvServer, getValue } from '@dooksa/utils'
 import { cloneDataValue, createDataValue } from '../utils/data-value.js'
@@ -184,7 +184,6 @@ function getExpandedData (name, result, options) {
   result.expand = result.expand || []
 
   if (relations) {
-    result.isExpandEmpty = false
     result.expandIncluded = options.expandExclude ?? {}
 
     for (let i = 0; i < relations.length; i++) {
@@ -1535,7 +1534,6 @@ export const data = createPlugin('data', {
                 }
               }
 
-              dataResult.isEmpty = false
               dataResult.item = value._item
               dataResult.metadata = value._metadata
               dataResult.previous = value._previous
@@ -1554,7 +1552,6 @@ export const data = createPlugin('data', {
         const result = createDataValue({ collection: name })
         let isValid = true
 
-        result.isEmpty = false
         result.item = values._item
         result.metadata = values._metadata
         result.previous = values._previous
@@ -1971,16 +1968,18 @@ export const data = createPlugin('data', {
         // return collection
         if (schema.type === 'collection') {
           if (!query.hasOwnProperty('id')) {
-            result.isEmpty = false
             result.item = collection
 
             return result
           } else if (id == null) {
+            result.isEmpty = true
             return result
           }
         }
 
         if (id != null) {
+          let isAffixEmpty = true
+
           // find document using custom affixes
           if (prefixId || suffixId) {
             let itemId
@@ -2003,8 +2002,7 @@ export const data = createPlugin('data', {
             const value = collection[itemId]
 
             if (value != null) {
-              result.isEmpty = false
-              result.isAffixEmpty = false
+              isAffixEmpty = false
               result.id = itemId
               result.item = value._item
               result.metadata = value._metadata || false
@@ -2015,7 +2013,7 @@ export const data = createPlugin('data', {
             }
           }
 
-          if (result.isAffixEmpty) {
+          if (isAffixEmpty) {
             let itemId = id
 
             // find document using default affixes
@@ -2039,8 +2037,6 @@ export const data = createPlugin('data', {
             const value = database[name][itemId]
 
             if (value != null) {
-              result.isEmpty = false
-              result.isAffixEmpty = false
               result.id = itemId
               result.item = value._item
               result.metadata = value._metadata || {}
@@ -2048,6 +2044,8 @@ export const data = createPlugin('data', {
               if (value._previous) {
                 result.previous = value._previous
               }
+            } else {
+              result.isAffixEmpty = true
             }
           }
         } else {
@@ -2055,10 +2053,14 @@ export const data = createPlugin('data', {
         }
 
         if (result.item == null) {
+          result.isEmpty = true
+
+          if (options && options.expand) {
+            result.isExpandEmpty = true
+          }
+
           return result
         }
-
-        result.isEmpty = false
 
         if (!options) {
           return result
@@ -2077,8 +2079,6 @@ export const data = createPlugin('data', {
         if (options.position) {
           result.item = getValue(result.item, options.position)
         }
-
-        // TODO: create copy (structuredClone) if options.clone is true
 
         return result
       }
@@ -2200,7 +2200,6 @@ export const data = createPlugin('data', {
           data: result.item
         })
 
-        dataResult.isEmpty = false
         dataResult.previous = result.previous
         dataResult.metadata = result.metadata
 
