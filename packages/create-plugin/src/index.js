@@ -193,6 +193,29 @@ export default function createPlugin (name, {
     setup = setup.bind(context)
   }
 
+  if (models) {
+    for (const key in models) {
+      if (Object.prototype.hasOwnProperty.call(models, key)) {
+        const model = models[key]
+
+        // bind context
+        if (typeof model.defaultId === 'function') {
+          model.defaultId = model.defaultId.bind(context)
+        }
+
+        // bind context
+        if (typeof model.prefixId === 'function') {
+          model.prefixId = model.prefixId.bind(context)
+        }
+
+        // bind context
+        if (typeof model.suffixId === 'function') {
+          model.suffixId = model.suffixId.bind(context)
+        }
+      }
+    }
+  }
+
   /**
    * Active actions
    * @type {ActiveAction[]}
