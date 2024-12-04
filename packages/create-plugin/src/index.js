@@ -103,6 +103,10 @@ Object.freeze(actionContext)
  */
 
 /**
+ * @typedef {PluginGetters & Object.<string, *>} Plugin
+ */
+
+/**
  * @template {string} Name
  * @template {PluginMethods} Methods
  * @template {PluginActions} Actions
