@@ -230,6 +230,10 @@ export default function createPlugin (name, {
     // map actions
     for (const key in actions) {
       if (Object.prototype.hasOwnProperty.call(actions, key)) {
+        if (context[key]) {
+          throw new Error(`Plugin [${key}]: Expected unique action name`)
+        }
+
         const action = actions[key]
         const actionModuleName = name + capitalize(key)
         const actionName = name + '_' + key
