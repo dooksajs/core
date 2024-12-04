@@ -30,28 +30,9 @@ Object.freeze(actionContext)
  */
 
 /**
- * @template This
- * @callback PluginSetup
- * @this {This}
- * @param {*} param
- */
-
-/**
- * @typedef {number|string|boolean|Function|MutationObserver} PluginDataTypes
- * @typedef {Object.<string, PluginDataTypes|PluginDataTypes[]|Object.<string,PluginDataTypes>|Object.<string,PluginDataTypes>[]>} PluginData
- */
-
-/**
- * @typedef {Object} PluginActionContext
- * @property {Object} [context]
- * @property {Object} [payload]
- * @property {Object} [blockValues]
- */
-
-/**
- * @template This
+ * @template Context
  * @callback PluginMethod
- * @this {This}
+ * @this {Context}
  * @param {*} [param]
  * @param {PluginActionContext} [context]
  */
@@ -75,14 +56,6 @@ Object.freeze(actionContext)
  */
 
 /**
- * @template This
- * @typedef {Object} PluginActionWithContext - Dooksa function
- * @property {PluginMethod<This>} method
- * @property {PluginMetadata|PluginMetadataUnique[]} metadata
- * @property {PluginActionParameter} [parameters]
- */
-
-/**
  * @typedef {Object} PluginAction - Dooksa function
  * @property {Function} method
  * @property {PluginMetadata|PluginMetadataUnique[]} metadata
@@ -90,79 +63,55 @@ Object.freeze(actionContext)
  */
 
 /**
- * @template Context
  * @template {Object.<string, PluginAction>} T
- * @typedef {{ [K in keyof T]: RemappingContext<T[K]["method"], Context> }} PluginActionMapper
+ * @typedef {{ [K in keyof T]: T[K]["method"] }} PluginActionMapper
  */
 
-
 /**
- * @template Context
  * @template {Object.<string, Function>} T
- * @typedef {{ [K in keyof T]: RemappingContext<T[K], Context> }} PluginMethodMapper
- */
-
-
-/**
- * Namespaced actions
- * @template Context
- * @template {string} Name
- * @template {Object.<string, PluginAction>} A
- * @typedef {{ [K in keyof A as `${Name}${Capitalize<string & K>}`]?: RemappingContext<A[K]["method"], Context> }} PluginModuleAction
+ * @typedef {{ [K in keyof T]: T[K] }} PluginMethodMapper
  */
 
 /**
- * Namespaced plugin actions
- * @template Context
+ * Action named exports
  * @template {string} Name
  * @template {Object.<string, PluginAction>} Action
- * @typedef {{ [K in keyof Action as `${Name}_${string & K}`]?: RemappingContext<Action[K]["method"], Context>  } } PluginSystemAction
+ * @typedef {{ [K in keyof Action as `${Name}${Capitalize<string & K>}`]: Action[K]["method"] }} PluginModuleAction
  */
 
 /**
- * Namespaced action methods
- * @template Context
+ * Method named exports
  * @template {string} Name
  * @template {Object.<string, Function>} Method
- * @typedef {{ [K in keyof Method as `${Name}${Capitalize<string & K>}`]?: RemappingContext<Method[K], Context> }} PluginModuleMethod
+ * @typedef {{ [K in keyof Method as `${Name}${Capitalize<string & K>}`]: Method[K] }} PluginModuleMethod
  */
 
 /**
- * @template T
- * @template C
- * @typedef {T extends (...args: infer Args) => infer Return ? (this: C, ...args: Args) => Return : never} RemappingContext
- */
-
-/**
- * @template Context
+ * Action for application
  * @template {string} Name
  * @template {Object.<string, PluginAction>} Action
- * @template {Object.<string, Function>} Method
- * @typedef {PluginModuleAction<Context, Name, Action> & PluginModuleMethod<Context, Name, Method>} PluginMethods
+ * @typedef {{ [K in keyof Action as `${Name}_${string & K}`]: Action[K]["method"]  } } PluginAppAction
  */
 
 /**
- * @typedef {Object} PluginActions
- * @property {Object} [methods]
- * @property {Object.<string, PluginMetadata>} [metadata]
- * @property {Object} [parameters]
- */
-
-/**
- * @typedef {Object} Plugin
+ * @typedef {Object} PluginGetters
  * @property {string} name - Plugin name
- * @property {PluginMetadata} metadata
- * @property {Plugin[] | undefined} dependencies
+ * @property {PluginMetadata | undefined} metadata
+ * @property {PluginGetters[] | undefined} dependencies
  * @property {ActiveAction[] | undefined} actions
- * @property {Function | undefined} setup
  * @property {PluginModal | undefined} models
  */
 
 /**
  * @template {string} Name
- * @template {Object.<string, PluginAction>} Action
- * @template {Object.<string, Function> } Method
- * @typedef {PluginMethods<Object, Name, Action, Method> & Plugin} PluginExport
+ * @template {PluginMethods} Methods
+ * @template {PluginActions} Actions
+ * @template {Function} Setup
+ * @typedef {PluginModuleMethod<Name, Methods> &
+ *  PluginModuleAction<Name, Actions> &
+ *  PluginGetters &
+ *  { setup: Setup }
+ * } PluginExport
  */
 
 /**
@@ -174,32 +123,52 @@ Object.freeze(actionContext)
  */
 
 /**
- * @typedef {PluginMetadataUnique & { plugin: string, method: string }} PluginActionMetadata
+ * @typedef {Object.<string, Function>} PluginMethods
  */
 
 /**
- * Uppercase first letter
- * @param {string} string
+ * @typedef {PluginMetadataUnique & { plugin: string, method: string }} PluginActionMetadata
+ * @typedef {Object.<string, PluginAction>} PluginActions
+ * @typedef {Object.<string, *>} PluginData
  */
-function capitalize (string) {
-  return string[0].toUpperCase() + string.slice(1)
-}
 
 /**
  * @template {string} Name
- * @template {Object.<string, Function>} Method
- * @template {Object.<string, PluginAction>} Action
- * @template {Object.<string, *>} Data
+ * @template {PluginData} Data
+ * @template {PluginMethods} Methods
+ * @template {PluginActions} Actions
+ * @template {Function} Setup
+ * @typedef {Object} PluginOptions
+ * @property {PluginGetters[]} [plugin.dependencies]
+ * @property {PluginModal} [plugin.models]
+ * @property {PluginMetadata} [plugin.metadata]
+ * @property {Data} [data]
+ * @property {Methods} [methods]
+ * @property {Actions} [actions]
+ * @property {Setup} [setup]
+ */
+
+/**
+ * @template {string} Name
+ * @template {PluginData} Data
+ * @template {PluginMethods} Methods
+ * @template {PluginActions} Actions
+ * @template {Function} Setup
  * @param {Name} name
- * @param {Object} plugin
- * @param {PluginModal} [plugin.models]
- * @param {Plugin[]} [plugin.dependencies]
- * @param {PluginMetadata} [plugin.metadata]
- * @param {Data} [plugin.data] - Private data that can be used within actions/setup
- * @param {Action | Object.<string, PluginActionWithContext<Data & Method>>} [plugin.actions]
- * @param {Method | Object.<string, PluginMethod<Data & Object.<string, Function>>>} [plugin.methods]
- * @param {PluginSetup<PluginMethodMapper<Object, Method> & Data & PluginActionMapper<Object, Action>>} [plugin.setup]
- * @returns {PluginExport<Name, Action, Method>}
+ * @param {PluginOptions<
+ *    Name,
+ *    Data,
+ *    Methods,
+ *    Actions,
+ *    Setup
+ *  > &
+ *  ThisType<
+ *    { name: Name } &
+ *    Data &
+ *    Methods &
+ *    PluginActionMapper<Actions>
+ *  >} plugin
+ * @returns {PluginExport<Name, Methods, Actions, Setup>}
  */
 export default function createPlugin (name, {
   dependencies,
@@ -212,6 +181,7 @@ export default function createPlugin (name, {
 }) {
   const context = Object.create(null)
 
+  // add plugin name to context
   context.name = name
 
   // bind context to setup
@@ -225,7 +195,7 @@ export default function createPlugin (name, {
    */
   const _actions = []
   /**
-   * @type {PluginExport<Name, Action, Method>}
+   * @type {PluginExport<Name, Methods, Actions, Setup>}
    */
   const result = {
     get name () {
@@ -340,3 +310,12 @@ function mergeContextProperties (data, context) {
 
   return result
 }
+
+/**
+ * Uppercase first letter
+ * @param {string} string
+ */
+function capitalize (string) {
+  return string[0].toUpperCase() + string.slice(1)
+}
+
