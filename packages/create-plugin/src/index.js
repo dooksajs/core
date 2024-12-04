@@ -278,12 +278,12 @@ export default function createPlugin (name, {
   // map methods to result
   for (const key in methods) {
     if (Object.prototype.hasOwnProperty.call(methods, key)) {
+      if (context[key]) {
+        throw new Error(`Plugin [${key}]: Expected unique method name`)
+      }
+
       const action = methods[key]
       const methodName = name + capitalize(key)
-
-      if (result.hasOwnProperty(methodName)) {
-        throw new Error(`Plugin [${name}]: Expected unique method name but found: ${methodName}`)
-      }
 
       context[key] = action
       result[methodName] = action.bind(context)
