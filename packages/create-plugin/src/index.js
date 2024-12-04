@@ -26,7 +26,7 @@ Object.freeze(actionContext)
  */
 
 /**
- * @typedef {Object.<string, DataSchema>} PluginModal
+ * @typedef {Object.<string, DataSchema>} PluginModel
  */
 
 /**
@@ -99,7 +99,7 @@ Object.freeze(actionContext)
  * @property {PluginMetadata | undefined} metadata
  * @property {PluginGetters[] | undefined} dependencies
  * @property {ActiveAction[] | undefined} actions
- * @property {PluginModal | undefined} models
+ * @property {PluginModel | undefined} models
  */
 
 /**
@@ -140,7 +140,7 @@ Object.freeze(actionContext)
  * @template {Function} Setup
  * @typedef {Object} PluginOptions
  * @property {PluginGetters[]} [plugin.dependencies]
- * @property {PluginModal} [plugin.models]
+ * @property {PluginModel} [plugin.models]
  * @property {PluginMetadata} [plugin.metadata]
  * @property {Data} [data]
  * @property {Methods} [methods]
