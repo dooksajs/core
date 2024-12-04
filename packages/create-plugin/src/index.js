@@ -223,7 +223,14 @@ export default function createPlugin (name, {
   }
 
   if (data) {
-    mergeContextProperties(data, context)
+    for (const key in data) {
+      if (Object.hasOwnProperty.call(data, key)) {
+        let item = data[key]
+
+        // set data context
+        context[key] = item
+      }
+    }
   }
 
   if (actions) {
@@ -297,28 +304,6 @@ export default function createPlugin (name, {
   return result
 }
 
-function mergeContextProperties (data, context) {
-  const result = {}
-
-  for (const key in data) {
-    if (Object.hasOwnProperty.call(data, key)) {
-      const element = data[key]
-
-      context[key] = element
-
-      if (typeof element === 'function') {
-        const data = element.bind(context)
-
-        result[key] = data()
-      } else {
-        result[key] = element
-      }
-    }
-  }
-
-  return result
-}
-
 /**
  * Uppercase first letter
  * @param {string} string
@@ -326,4 +311,3 @@ function mergeContextProperties (data, context) {
 function capitalize (string) {
   return string[0].toUpperCase() + string.slice(1)
 }
-
