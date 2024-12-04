@@ -193,6 +193,29 @@ export default function createPlugin (name, {
     setup = setup.bind(context)
   }
 
+  if (models) {
+    for (const key in models) {
+      if (Object.prototype.hasOwnProperty.call(models, key)) {
+        const model = models[key]
+
+        // bind context
+        if (typeof model.defaultId === 'function') {
+          model.defaultId = model.defaultId.bind(context)
+        }
+
+        // bind context
+        if (typeof model.prefixId === 'function') {
+          model.prefixId = model.prefixId.bind(context)
+        }
+
+        // bind context
+        if (typeof model.suffixId === 'function') {
+          model.suffixId = model.suffixId.bind(context)
+        }
+      }
+    }
+  }
+
   /**
    * Active actions
    * @type {ActiveAction[]}
@@ -223,13 +246,24 @@ export default function createPlugin (name, {
   }
 
   if (data) {
-    mergeContextProperties(data, context)
+    for (const key in data) {
+      if (Object.hasOwnProperty.call(data, key)) {
+        let item = data[key]
+
+        // set data context
+        context[key] = item
+      }
+    }
   }
 
   if (actions) {
     // map actions
     for (const key in actions) {
       if (Object.prototype.hasOwnProperty.call(actions, key)) {
+        if (context[key]) {
+          throw new Error(`Plugin [${key}]: Expected unique action name`)
+        }
+
         const action = actions[key]
         const actionModuleName = name + capitalize(key)
         const actionName = name + '_' + key
@@ -278,37 +312,15 @@ export default function createPlugin (name, {
   // map methods to result
   for (const key in methods) {
     if (Object.prototype.hasOwnProperty.call(methods, key)) {
+      if (context[key]) {
+        throw new Error(`Plugin [${key}]: Expected unique method name`)
+      }
+
       const action = methods[key]
       const methodName = name + capitalize(key)
 
-      if (result.hasOwnProperty(methodName)) {
-        throw new Error(`Plugin [${name}]: Expected unique method name but found: ${methodName}`)
-      }
-
       context[key] = action
       result[methodName] = action.bind(context)
-    }
-  }
-
-  return result
-}
-
-function mergeContextProperties (data, context) {
-  const result = {}
-
-  for (const key in data) {
-    if (Object.hasOwnProperty.call(data, key)) {
-      const element = data[key]
-
-      context[key] = element
-
-      if (typeof element === 'function') {
-        const data = element.bind(context)
-
-        result[key] = data()
-      } else {
-        result[key] = element
-      }
     }
   }
 
@@ -322,4 +334,3 @@ function mergeContextProperties (data, context) {
 function capitalize (string) {
   return string[0].toUpperCase() + string.slice(1)
 }
-
