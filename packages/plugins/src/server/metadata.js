@@ -8,8 +8,8 @@ import { httpSetRoute } from './http.js'
  */
 
 export const metadata = createPlugin('metadata', {
-  models: {
-    ...metadataClient.models
+  schema: {
+    ...metadataClient.schema
   },
   /**
    * @param {Object} param

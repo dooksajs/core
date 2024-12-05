@@ -43,7 +43,7 @@ export const query = createPlugin('query', {
     description: 'Filter and sort',
     icon: 'mdi:filter-variant'
   },
-  models: {
+  schema: {
     items: {
       type: 'collection',
       items: {

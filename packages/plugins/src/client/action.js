@@ -253,7 +253,7 @@ function ifElse (branch, callback, { context, payload, blockValues }) {
 }
 
 export const action = createPlugin('action', {
-  models: {
+  schema: {
     blocks: {
       type: 'collection',
       items: {

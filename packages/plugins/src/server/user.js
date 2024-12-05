@@ -12,7 +12,7 @@ let JWTAlgorithm = 'HS256'
 let JWTSecret = ''
 
 export const user = createPlugin('user', {
-  models: {
+  schema: {
     emails: {
       type: 'collection',
       items: {

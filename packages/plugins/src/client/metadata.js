@@ -7,7 +7,7 @@ export const metadata = createPlugin('metadata', {
     description: 'Additional information about plugins and their actions',
     icon: 'carbon:data-volume'
   },
-  models: {
+  schema: {
     currentLanguage: { type: 'string' },
     defaultLanguage: { type: 'string' },
     languages: {

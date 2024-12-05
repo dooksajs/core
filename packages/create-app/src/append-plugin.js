@@ -1,67 +1,12 @@
-import { parseSchema } from '@dooksa/utils/server'
-
 /**
- * @import {Plugin} from '../../create-plugin/src/index.js'
+ * @import {Plugin, PluginSchemaEntries} from '../../create-plugin/src/index.js'
+ * @import {AppPlugin, AppSetup} from '#types'
  */
 
 /**
  * @callback UsePlugin
  * @param {Plugin} plugin
  */
-
-/**
- * @typedef {Object} AppModel
- * @property {Object.<string, Object|string|number|boolean|Array>} values - Default values
- * @property {string[]} names - Collection schema name
- * @property {Object[]} schema - @TODO add docs to parseSchema.process
- */
-
-/**
- * @typedef {Object} AppPlugin
- * @property {UsePlugin} use
- * @property {Plugin[]} plugins
- * @property {AppModel} models
- * @property {Object.<string, Function>} actions
- * @property {AppSetup[]} setup
- */
-
-/**
- * @typedef {Object} AppSetup
- * @property {string} name - Plugin name
- * @property {Function} setup - Plugin setup method
- */
-
-/**
- * @param {'collection'|'object'|'array'|'string'|'number'|'boolean'} type
- */
-function dataValue (type) {
-  let value
-
-  switch (type) {
-    case 'collection':
-      value = {}
-      break
-    case 'object':
-      value = {}
-      break
-    case 'array':
-      value = []
-      break
-    case 'string':
-      value = ''
-      break
-    case 'number':
-      value = 0
-      break
-    case 'boolean':
-      value = true
-      break
-    default:
-      throw new Error('DooksaError: Unexpected data model "' + type + '"')
-  }
-
-  return value
-}
 
 /**
  * Append plugin
@@ -74,10 +19,10 @@ export default function appendPlugin () {
   let appSetup = []
   /** @type {Object.<string, Function>} */
   const appActions = {}
-  /** @type {AppModel} */
-  const appModels = {
+  /** @type {PluginSchemaEntries} */
+  const appSchema = {
     values: {},
-    schema: [],
+    items: [],
     names: []
   }
 
@@ -134,34 +79,18 @@ export default function appendPlugin () {
       }
 
       // extract data (need to parse and set default value)
-      if (plugin.models) {
-        const models = plugin.models
-
-        for (const key in models) {
-          if (Object.hasOwnProperty.call(models, key)) {
-            const modelItem = models[key]
-            const schemaType = modelItem.type
-
-            // data namespace
-            const collectionName = name + '/' + key
-            const isCollection = schemaType === 'collection'
-
-            appModels.values[collectionName] = dataValue(schemaType)
-            appModels.names.push(collectionName)
-            appModels.schema.push({
-              name: collectionName,
-              entries: parseSchema.process({}, collectionName, modelItem, [], true),
-              isCollection
-            })
-          }
-        }
+      if (plugin.$schema) {
+        const schema = plugin.$schema
+        appSchema.values = Object.assign(appSchema.values, schema.values)
+        appSchema.names = appSchema.names.concat(schema.names)
+        appSchema.items = appSchema.items.concat(schema.items)
       }
     },
     get plugins () {
       return appPlugins
     },
-    get models () {
-      return appModels
+    get schema () {
+      return appSchema
     },
     get actions () {
       return appActions

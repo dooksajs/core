@@ -11,7 +11,7 @@ export const icon = createPlugin('icon', {
     description: 'Additional information about plugins and their actions',
     icon: 'carbon:data-volume'
   },
-  models: {
+  schema: {
     items: {
       type: 'collection',
       items: { type: 'string' }

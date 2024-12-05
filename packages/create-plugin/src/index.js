@@ -1,4 +1,10 @@
-/** @import {DataSchema} from '../../types.js' */
+import { capitalize } from '@dooksa/utils'
+import createSchema from './create-schema.js'
+
+/**
+ * @import { DataSchema } from '../../types.js'
+ * @import { SchemaType, Schema } from './create-schema.js'
+ */
 
 const actionContext = {
   context: {},
@@ -26,7 +32,7 @@ Object.freeze(actionContext)
  */
 
 /**
- * @typedef {Object.<string, DataSchema>} PluginModel
+ * @typedef {Object.<string, DataSchema>} PluginSchema
  */
 
 /**
@@ -94,12 +100,23 @@ Object.freeze(actionContext)
  */
 
 /**
+ * @typedef {Object} PluginSchemaEntries
+ * @property {Object.<string, ({}|[]|number|string|boolean)>} values - Initial values
+ * @property {string[]} names - Name of collections
+ * @property {Object[]} items
+ * @property {string} items[].name
+ * @property {Schema[]} items[].entries
+ * @property {boolean} items[].isCollection
+ */
+
+/**
  * @typedef {Object} PluginGetters
  * @property {string} name - Plugin name
  * @property {PluginMetadata | undefined} metadata
  * @property {PluginGetters[] | undefined} dependencies
  * @property {ActiveAction[] | undefined} actions
- * @property {PluginModel | undefined} models
+ * @property {PluginSchema | undefined} schema - Schema for the data plugin
+ * @property {PluginSchemaEntries | undefined} $schema - Optimised schema for the data plugin
  */
 
 /**
@@ -144,7 +161,7 @@ Object.freeze(actionContext)
  * @template {Function} Setup
  * @typedef {Object} PluginOptions
  * @property {PluginGetters[]} [plugin.dependencies]
- * @property {PluginModel} [plugin.models]
+ * @property {PluginSchema} [plugin.schema]
  * @property {PluginMetadata} [plugin.metadata]
  * @property {Data} [data]
  * @property {Methods} [methods]
@@ -176,7 +193,7 @@ Object.freeze(actionContext)
  */
 export default function createPlugin (name, {
   dependencies,
-  models,
+  schema,
   metadata,
   data,
   actions,
@@ -184,6 +201,8 @@ export default function createPlugin (name, {
   setup
 }) {
   const context = Object.create(null)
+  /** @type {PluginSchemaEntries} */
+  let $schema
 
   // add plugin name to context
   context.name = name
@@ -193,25 +212,28 @@ export default function createPlugin (name, {
     setup = setup.bind(context)
   }
 
-  if (models) {
-    for (const key in models) {
-      if (Object.prototype.hasOwnProperty.call(models, key)) {
-        const model = models[key]
+  if (schema) {
+    $schema = {
+      values: {},
+      items: [],
+      names: []
+    }
 
-        // bind context
-        if (typeof model.defaultId === 'function') {
-          model.defaultId = model.defaultId.bind(context)
-        }
+    for (const key in schema) {
+      if (Object.hasOwnProperty.call(schema, key)) {
+        const item = schema[key]
+        const schemaType = item.type
 
-        // bind context
-        if (typeof model.prefixId === 'function') {
-          model.prefixId = model.prefixId.bind(context)
-        }
+        // data namespace
+        const collectionName = name + '/' + key
 
-        // bind context
-        if (typeof model.suffixId === 'function') {
-          model.suffixId = model.suffixId.bind(context)
-        }
+        $schema.values[collectionName] = dataValue(schemaType)
+        $schema.names.push(collectionName)
+        $schema.items.push({
+          name: collectionName,
+          entries: createSchema(context, item, collectionName),
+          isCollection: schemaType === 'collection'
+        })
       }
     }
   }
@@ -234,8 +256,11 @@ export default function createPlugin (name, {
     get metadata () {
       return metadata
     },
-    get models () {
-      return models
+    get schema () {
+      return schema
+    },
+    get $schema () {
+      return $schema
     },
     get actions () {
       return _actions
@@ -328,9 +353,33 @@ export default function createPlugin (name, {
 }
 
 /**
- * Uppercase first letter
- * @param {string} string
+ * @param {SchemaType} type
  */
-function capitalize (string) {
-  return string[0].toUpperCase() + string.slice(1)
+function dataValue (type) {
+  let value
+
+  switch (type) {
+    case 'collection':
+      value = {}
+      break
+    case 'object':
+      value = {}
+      break
+    case 'array':
+      value = []
+      break
+    case 'string':
+      value = ''
+      break
+    case 'number':
+      value = 0
+      break
+    case 'boolean':
+      value = true
+      break
+    default:
+      throw new Error('DooksaError: Unexpected data model "' + type + '"')
+  }
+
+  return value
 }

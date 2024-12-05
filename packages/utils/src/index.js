@@ -1,17 +1,19 @@
+import capitalize from './capitalise.js'
 import deepClone from './deep-clone.js'
-import hash from './hash.js'
 import generateId from './generate-id.js'
-import sortObject from './sort-object.js'
-import objectHash from './object-hash.js'
-import isEnvServer from './is-server.js'
 import getValue from './get-value.js'
+import hash from './hash.js'
+import isEnvServer from './is-server.js'
+import objectHash from './object-hash.js'
+import sortObject from './sort-object.js'
 
 export {
-  isEnvServer,
-  generateId,
-  hash,
-  objectHash,
+  capitalize,
   deepClone,
-  sortObject,
-  getValue
+  generateId,
+  getValue,
+  hash,
+  isEnvServer,
+  objectHash,
+  sortObject
 }

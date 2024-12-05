@@ -32,7 +32,7 @@ export const variable = createPlugin('variable', {
     description: 'Management of variables',
     icon: ''
   },
-  models: {
+  schema: {
     values: {
       type: 'collection',
       items: {
