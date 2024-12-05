@@ -20,7 +20,7 @@ import { httpSetRoute } from './http.js'
  */
 
 export const action = createPlugin('action', {
-  models: { ...actionClient.models },
+  schema: { ...actionClient.schema },
   methods: {
     /**
      * @param {RequestAction} request

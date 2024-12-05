@@ -950,7 +950,7 @@ export const component = createPlugin('component', {
     description: '',
     icon: 'mdi:widgets'
   },
-  models: {
+  schema: {
     nodes: {
       type: 'collection',
       items: { type: 'object' }

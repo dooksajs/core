@@ -15,7 +15,7 @@ export const event = createPlugin('event', {
     description: 'Event manager',
     icon: 'mdi:fire'
   },
-  models: {
+  schema: {
     listeners: {
       type: 'collection',
       items: {

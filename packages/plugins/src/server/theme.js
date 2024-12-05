@@ -4,7 +4,7 @@ import { dataSetValue } from '../client/index.js'
 import compileSass from '@dooksa/theme'
 
 export const theme = createPlugin('theme', {
-  models: {
+  schema: {
     styles: {
       type: 'string'
     }

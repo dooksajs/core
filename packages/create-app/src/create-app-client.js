@@ -7,7 +7,7 @@ import {
 } from '@dooksa/components'
 
 /**
- * @import {AppPlugin} from './append-plugin.js'
+ * @import { AppPlugin } from '#types'
  * @import { Component } from '@dooksa/create-component'
  */
 
@@ -169,7 +169,7 @@ function initialize (appPlugins, appComponents) {
       const plugin = appSetup[i]
 
       if (plugin.name === 'data') {
-        plugin.setup(appPlugins.models)
+        plugin.setup(appPlugins.schema)
 
         // remove from setup queue
         appSetup.splice(i, 1)

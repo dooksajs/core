@@ -6,7 +6,8 @@ import { cloneDataValue, createDataValue } from '../utils/data-value.js'
 
 /**
  * @import {SetDataOptions, GetDataQuery, GetDataOption, DataSchema, DataWhere} from '../../../types.js'
- * @import {DataValue} from '../utils/data-value.js'
+ * @import {DataValue} from '#types'
+ * @import {PluginSchemaEntries} from '@dooksa/create-plugin'
  */
 
 let database = {}
@@ -2212,27 +2213,29 @@ export const data = createPlugin('data', {
   },
   /**
    * Setup database
-   * @param {Object} model
+   * @param {PluginSchemaEntries} schema
    */
-  setup (model) {
+  setup (schema) {
     // set plugin collections
-    database = model.values
+    database = schema.values
     // store all collection names
     const collectionName = 'data/collections'
-    database[collectionName] = model.names.sort()
+    database[collectionName] = schema.names.sort()
     databaseSchema[collectionName] = {
       type: 'array',
       items: { type: 'string' }
     }
     // setup plugin schemas
-    for (let i = 0; i < model.schema.length; i++) {
-      const schema = model.schema[i]
-      const entries = schema.entries
-      const isCollection = schema.isCollection
-      const name = schema.name
+    for (let i = 0; i < schema.items.length; i++) {
+      const item = schema.items[i]
+      const entries = item.entries
+      const isCollection = item.isCollection
+      const name = item.name
 
       for (let i = 0; i < entries.length; i++) {
-        databaseSchema[entries[i].id] = entries[i].entry
+        const item = entries[i]
+
+        databaseSchema[item.id] = item.entry
       }
 
       // prepare listeners

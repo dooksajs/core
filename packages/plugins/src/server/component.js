@@ -6,7 +6,7 @@ import { pageCreate } from '#server'
 import { createDataValue } from '#utils'
 
 export const component = createPlugin('component', {
-  models: componentClient.models,
+  schema: componentClient.schema,
   /**
    * @param {Object} options
    * @param {import('@dooksa/create-component').Component[]} [options.components]

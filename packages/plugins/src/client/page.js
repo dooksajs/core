@@ -19,7 +19,7 @@ export const page = createPlugin('page', {
     description: 'Manage dooksa pages',
     icon: 'bi:layout-text-window'
   },
-  models: {
+  schema: {
     id: {
       type: 'collection',
       defaultId () {

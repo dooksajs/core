@@ -21,7 +21,7 @@ let apiPrefix = ''
 let cookieSecret = ''
 
 export const $http = createPlugin('http', {
-  models: {
+  schema: {
     status: { type: 'string' }
   },
   data: {

@@ -38,10 +38,10 @@ describe('Create plugin', function () {
     deepStrictEqual(plugin.setup(), 'hello!')
   })
 
-  it('should return the model', function () {
+  it('should return the schema', function () {
     const plugin = createPlugin('test', {
       metadata,
-      models: {
+      schema: {
         items: {
           type: 'collection',
           items: {
@@ -51,7 +51,7 @@ describe('Create plugin', function () {
       }
     })
 
-    deepStrictEqual(plugin.models, {
+    deepStrictEqual(plugin.schema, {
       items: {
         type: 'collection',
         items: {
@@ -92,11 +92,11 @@ describe('Create plugin', function () {
     })
   })
 
-  describe('Models', function () {
+  describe('Schema', function () {
     it('default id function contextual this should be bound to the plugins context', function () {
       const plugin = createPlugin('test', {
         metadata,
-        models: {
+        schema: {
           items: {
             defaultId () {
               return this.colour
@@ -113,13 +113,13 @@ describe('Create plugin', function () {
       })
 
       // @ts-ignore
-      deepStrictEqual(plugin.models.items.defaultId(), 'red')
+      strictEqual(plugin.$schema.items[0].entries[1].entry.id.default(), 'red')
     })
 
     it('prefix id function contextual this should be bound to the plugins context', function () {
       const plugin = createPlugin('test', {
         metadata,
-        models: {
+        schema: {
           items: {
             prefixId () {
               return this.colour
@@ -136,13 +136,13 @@ describe('Create plugin', function () {
       })
 
       // @ts-ignore
-      deepStrictEqual(plugin.models.items.prefixId(), 'red')
+      strictEqual(plugin.$schema.items[0].entries[1].entry.id.prefix(), 'red')
     })
 
     it('suffix id function contextual this should be bound to the plugins context', function () {
       const plugin = createPlugin('test', {
         metadata,
-        models: {
+        schema: {
           items: {
             suffixId () {
               return this.colour
@@ -159,7 +159,7 @@ describe('Create plugin', function () {
       })
 
       // @ts-ignore
-      deepStrictEqual(plugin.models.items.suffixId(), 'red')
+      strictEqual(plugin.$schema.items[0].entries[1].entry.id.suffix(), 'red')
     })
   })
 

@@ -15,8 +15,8 @@ function hashSHA (item) {
 }
 
 export const page = createPlugin('page', {
-  models: {
-    ...pageClient.models,
+  schema: {
+    ...pageClient.schema,
     app: {
       type: 'string'
     },
@@ -49,7 +49,6 @@ export const page = createPlugin('page', {
       }
 
       script += '})()'
-
 
       return {
         script,
@@ -111,7 +110,7 @@ export const page = createPlugin('page', {
       handlers: [
         (request, response) => {
           const page = pageGetItemsByPath(request.path)
-          const app = this.create(page.item)
+          const app = pageCreate(page.item)
 
           response.set('Content-Security-Policy', app.csp)
 

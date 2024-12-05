@@ -4,7 +4,7 @@ import { dataAddListener, dataDeleteListener } from '../client/index.js'
 import { generateId } from '@dooksa/utils'
 
 export const development = createPlugin('development', {
-  models: {
+  schema: {
     rebuild: {
       type: 'number'
     }

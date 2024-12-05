@@ -4,9 +4,9 @@ import defaultServerPlugins, { httpStart } from '@dooksa/plugins/server'
 import defaultActions from '@dooksa/actions'
 
 /**
- * @import {Plugin, PluginMetadata, ActiveAction} from '../../create-plugin/src/index.js'
- * @import {AppPlugin} from './append-plugin.js'
- * @import {Action} from '@dooksa/create-action/types'
+ * @import { Plugin, PluginMetadata, ActiveAction } from '../../create-plugin/src/index.js'
+ * @import { AppPlugin } from '#types'
+ * @import { Action } from '@dooksa/create-action/types'
  */
 
 /**
@@ -137,7 +137,7 @@ function initialize (serverPlugins, clientPlugins, actions) {
    * @param {Object} [param.options={}]
    */
   return ({ options = {} }) => {
-    options.data = serverPlugins.models
+    options.data = serverPlugins.schema
     options.action = { actions: actions.items }
     options.metadata = {
       plugins: clientPlugins.metadata,
