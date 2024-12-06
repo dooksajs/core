@@ -1,4 +1,4 @@
-import createPlugin from '@dooksa/create-plugin'
+import { createPlugin } from '@dooksa/create-plugin'
 import { httpSetRoute } from './http.js'
 import { dataAddListener, dataDeleteListener } from '../client/index.js'
 import { generateId } from '@dooksa/utils'

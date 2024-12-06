@@ -1,5 +1,5 @@
 /**
- * @import {Plugin, PluginSchemaEntries} from '../../create-plugin/src/index.js'
+ * @import {Plugin, PluginSchemaItem, PluginSchemaDefaults, PluginSchemaGetter} from '../../create-plugin/types.js'
  * @import {AppPlugin, AppSetup} from '#types'
  */
 
@@ -19,11 +19,11 @@ export default function appendPlugin () {
   let appSetup = []
   /** @type {Object.<string, Function>} */
   const appActions = {}
-  /** @type {PluginSchemaEntries} */
+  /** @type {PluginSchemaGetter} */
   const appSchema = {
-    values: {},
-    items: [],
-    names: []
+    $values: {},
+    $items: [],
+    $names: []
   }
 
   return {
@@ -79,11 +79,12 @@ export default function appendPlugin () {
       }
 
       // extract data (need to parse and set default value)
-      if (plugin.$schema) {
-        const schema = plugin.$schema
-        appSchema.values = Object.assign(appSchema.values, schema.values)
-        appSchema.names = appSchema.names.concat(schema.names)
-        appSchema.items = appSchema.items.concat(schema.items)
+      if (plugin.schema) {
+        const schema = plugin.schema
+
+        appSchema.$values = Object.assign(appSchema.$values, schema.$values)
+        appSchema.$names = appSchema.$names.concat(schema.$names)
+        appSchema.$items = appSchema.$items.concat(schema.$items)
       }
     },
     get plugins () {

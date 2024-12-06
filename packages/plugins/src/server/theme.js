@@ -1,4 +1,4 @@
-import createPlugin from '@dooksa/create-plugin'
+import { createPlugin } from '@dooksa/create-plugin'
 import { existsSync } from 'node:fs'
 import { dataSetValue } from '../client/index.js'
 import compileSass from '@dooksa/theme'

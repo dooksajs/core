@@ -1,4 +1,4 @@
-import createPlugin from '@dooksa/create-plugin'
+import { createPlugin, mapSchema } from '@dooksa/create-plugin'
 import { createAction, compileAction } from '@dooksa/create-action'
 import { action as actionClient, dataSetValue } from '../client/index.js'
 import { databaseSeed, databaseGetValue, databaseDeleteValue } from './database.js'
@@ -20,7 +20,7 @@ import { httpSetRoute } from './http.js'
  */
 
 export const action = createPlugin('action', {
-  schema: { ...actionClient.schema },
+  schema: { ...mapSchema(actionClient) },
   methods: {
     /**
      * @param {RequestAction} request

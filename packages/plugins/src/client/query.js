@@ -1,4 +1,4 @@
-import createPlugin from '@dooksa/create-plugin'
+import { createPlugin } from '@dooksa/create-plugin'
 import { listFilter, listSort, dataAddListener, dataSetValue, dataGetValue } from './index.js'
 
 /**

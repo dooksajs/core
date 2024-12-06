@@ -4,7 +4,7 @@ import defaultServerPlugins, { httpStart } from '@dooksa/plugins/server'
 import defaultActions from '@dooksa/actions'
 
 /**
- * @import { Plugin, PluginMetadata, ActiveAction } from '../../create-plugin/src/index.js'
+ * @import { Plugin, PluginMetadata, ActiveAction } from '../../create-plugin/types.js'
  * @import { AppPlugin } from '#types'
  * @import { Action } from '@dooksa/create-action/types'
  */

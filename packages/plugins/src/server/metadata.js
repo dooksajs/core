@@ -1,15 +1,15 @@
-import createPlugin from '@dooksa/create-plugin'
+import { createPlugin, mapSchema } from '@dooksa/create-plugin'
 import { dataSetValue, metadata as metadataClient } from '../client/index.js'
 import { databaseSeed, databaseGetValue } from './database.js'
 import { httpSetRoute } from './http.js'
 
 /**
- * @import {PluginMetadata, ActiveAction } from '@dooksa/create-plugin'
+ * @import {PluginMetadata, ActiveAction } from '@dooksa/create-plugin/types'
  */
 
 export const metadata = createPlugin('metadata', {
   schema: {
-    ...metadataClient.schema
+    ...mapSchema(metadataClient)
   },
   /**
    * @param {Object} param

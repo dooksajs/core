@@ -1,4 +1,4 @@
-import createPlugin from '@dooksa/create-plugin'
+import { createPlugin } from '@dooksa/create-plugin'
 import { dataGetValue, dataSetValue } from './data.js'
 import { hash } from '@dooksa/utils'
 

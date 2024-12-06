@@ -1,4 +1,4 @@
-import createPlugin from '@dooksa/create-plugin'
+import { createPlugin } from '@dooksa/create-plugin'
 import { dataSetValue } from '../client/index.js'
 import { middlewareGet, middlewareSet } from './middleware.js'
 import helmet from 'helmet'
