@@ -1,4 +1,4 @@
-import createPlugin from '@dooksa/create-plugin'
+import { createPlugin } from '@dooksa/create-plugin'
 import { dataGetValue, dataSetValue, dataAddListener } from './data.js'
 
 const fetchRequestQueue = {}

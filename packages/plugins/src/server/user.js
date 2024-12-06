@@ -1,4 +1,4 @@
-import createPlugin from '@dooksa/create-plugin'
+import { createPlugin } from '@dooksa/create-plugin'
 import { randomBytes, scryptSync, timingSafeEqual } from 'crypto'
 import jwt from 'jsonwebtoken'
 import { databaseDeleteValue, databaseSeed, databaseSetValue } from './database.js'

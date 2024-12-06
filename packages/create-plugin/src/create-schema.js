@@ -15,7 +15,7 @@
  * @param {string} id - The schema ID
  * @returns {Schema[]}
  */
-export default function createSchema (context, schema, id) {
+export function createSchema (context, schema, id) {
   const $schema = optimiseSchema(context, schema)
 
   /** @type {Schema[]} */

@@ -1,4 +1,4 @@
-import createPlugin from '@dooksa/create-plugin'
+import { createPlugin } from '@dooksa/create-plugin'
 import { dataAddListener, dataGetValue, dataSetValue } from '#client'
 
 export const metadata = createPlugin('metadata', {

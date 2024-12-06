@@ -1,13 +1,13 @@
-import createPlugin from '@dooksa/create-plugin'
+import { createPlugin } from '@dooksa/create-plugin'
 import { operatorEval, listSplice, actionDispatch } from '#client'
 import { DataSchemaException, DataValueException } from '../utils/error.js'
 import { deepClone, generateId, isEnvServer, getValue } from '@dooksa/utils'
 import { cloneDataValue, createDataValue } from '../utils/data-value.js'
 
 /**
- * @import {SetDataOptions, GetDataQuery, GetDataOption, DataSchema, DataWhere} from '../../../types.js'
+ * @import {SetDataOptions, GetDataQuery, GetDataOption, DataWhere} from '../../../types.js'
  * @import {DataValue} from '#types'
- * @import {PluginSchemaEntries} from '@dooksa/create-plugin'
+ * @import {PluginSchemaGetter} from '@dooksa/create-plugin/types'
  */
 
 let database = {}
@@ -2213,21 +2213,21 @@ export const data = createPlugin('data', {
   },
   /**
    * Setup database
-   * @param {PluginSchemaEntries} schema
+   * @param {PluginSchemaGetter} schema
    */
   setup (schema) {
     // set plugin collections
-    database = schema.values
+    database = schema.$values
     // store all collection names
     const collectionName = 'data/collections'
-    database[collectionName] = schema.names.sort()
+    database[collectionName] = schema.$names.sort()
     databaseSchema[collectionName] = {
       type: 'array',
       items: { type: 'string' }
     }
     // setup plugin schemas
-    for (let i = 0; i < schema.items.length; i++) {
-      const item = schema.items[i]
+    for (let i = 0; i < schema.$items.length; i++) {
+      const item = schema.$items[i]
       const entries = item.entries
       const isCollection = item.isCollection
       const name = item.name

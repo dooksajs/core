@@ -1,4 +1,4 @@
-import createPlugin from '@dooksa/create-plugin'
+import { createPlugin } from '@dooksa/create-plugin'
 import { dataGetValue, routeCurrentId, dataSetValue } from './index.js'
 import { hash } from '@dooksa/utils'
 import { createDataValue } from '#utils'
