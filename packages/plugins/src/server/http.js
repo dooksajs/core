@@ -10,6 +10,13 @@ import LiveDirectory from 'live-directory'
  * @import {MiddlewareHandler} from 'hyper-express'
  */
 
+/**
+ * @typedef {Object} AssetLocation
+ * @property {string} path - Public path name to assets
+ * @property {string[]} [extensions] - Allowed file extensions
+ * @property {string} directory - Local asset directory
+ */
+
 const routeTypes = {
   get: true,
   post: true,
@@ -47,10 +54,7 @@ export const $http = createPlugin('http', {
     /**
      * Create server
      * @param {Object} options
-     * @param {Object} [options.assets]
-     * @param {string} options.assets.directory - Local asset directory
-     * @param {string} options.assets.path - Public path name to assets
-     * @param {string[]} [options.assets.extensions] - Allowed file extensions
+     * @param {AssetLocation} [options.assets]
      */
     init ({ assets } = {}) {
       this.app = new HyperExpress.Server()
@@ -193,6 +197,12 @@ export const $http = createPlugin('http', {
       }
     }
   },
+  /**
+   * @param {Object} options
+   * @param {string} [options.cookieSecret]
+   * @param {string} [options.api='/_'] - REST API prefix path
+   * @param {AssetLocation} [options.assets]
+   */
   setup ({
     cookieSecret = '',
     api = '/_',
@@ -215,9 +225,7 @@ export const $http = createPlugin('http', {
     cookieSecret = cookieSecret
 
     // initialise server
-    this.init({
-      assets
-    })
+    this.init({ assets })
 
     // handle json requests
     middlewareSet({
