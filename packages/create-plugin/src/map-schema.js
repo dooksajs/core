@@ -26,10 +26,6 @@ export function mapSchema (plugin, names) {
         throw new Error('DooksaError: mapSchema could not find property name "'+ name +'"')
       }
 
-      if (typeof schema[name] !== 'object') {
-        throw new Error('DooksaError: mapSchema "'+ name +'" unexpected type "' + typeof schema[name] + '"')
-      }
-
       result[name] = Object.assign({}, schema[name])
     }
 
