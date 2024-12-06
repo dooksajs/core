@@ -6,7 +6,13 @@
   "repository": "git@github.com:dooksajs/dooksa.git",
   "license": "AGPL-3.0-or-later",
   "type": "module",
-  "main": "src/index.js",
+  "imports": {
+    "#types": "./types.js"
+  },
+  "exports": {
+    ".": "./src/index.js",
+    "./types": "./types.js"
+  },
   "scripts": {
     "test-unit": "node --test",
     "test-coverage": "node --test --experimental-test-coverage --test-reporter=lcov --test-reporter-destination=lcov.info"
