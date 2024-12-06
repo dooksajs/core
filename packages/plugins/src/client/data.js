@@ -1215,40 +1215,55 @@ function validateSchemaObject (data, path, source) {
 function validateSchemaObjectOption (path, data) {
   const schema = databaseSchema[path]
 
-  if (schema.options.additionalProperties) {
-    const patternProperties = schema.patternProperties || []
-    const additionalKeys = []
-
-    for (const key in data) {
-      if (Object.hasOwnProperty.call(data, key)) {
-        // check if key can exist
-        if (!schema.options.additionalProperties.includes(key)) {
-          additionalKeys.push(key)
+  if (schema.options.additionalProperties === false) {
+    if (!schema.patternProperties) {
+      for (const key in data) {
+        if (Object.hasOwnProperty.call(data, key)) {
+          // check if key is additional
+          if (!schema.options.allowedProperties[key]) {
+            throw new DataSchemaException({
+              schemaPath: path,
+              keyword: 'additionalProperties',
+              message: 'Additional properties are now allowed "' + key + '"'
+            })
+          }
         }
       }
-    }
+    } else {
+      const patternProperties = schema.patternProperties
+      const additionalKeys = []
 
-    // check patterned keys
-    for (let i = 0; i < patternProperties.length; i++) {
-      const property = patternProperties[i]
-      const regex = new RegExp(property.name)
-
-      for (let i = 0; i < additionalKeys.length; i++) {
-        const key = additionalKeys[i]
-
-        // remove additional key
-        if (regex.test(key)) {
-          additionalKeys.splice(i, 1)
+      for (const key in data) {
+        if (Object.hasOwnProperty.call(data, key)) {
+          // check if key is additional
+          if (!schema.options.allowedProperties[key]) {
+            additionalKeys.push(key)
+          }
         }
       }
-    }
 
-    if (additionalKeys.length) {
-      throw new DataSchemaException({
-        schemaPath: path,
-        keyword: 'additionalProperties',
-        message: 'Additional properties are now allowed ' + JSON.stringify(additionalKeys)
-      })
+      // check patterned keys
+      for (let i = 0; i < patternProperties.length; i++) {
+        const property = patternProperties[i]
+        const regex = new RegExp(property.name)
+
+        for (let i = 0; i < additionalKeys.length; i++) {
+          const key = additionalKeys[i]
+
+          // remove additional key
+          if (regex.test(key)) {
+            additionalKeys.splice(i, 1)
+          }
+        }
+      }
+
+      if (additionalKeys.length) {
+        throw new DataSchemaException({
+          schemaPath: path,
+          keyword: 'additionalProperties',
+          message: 'Additional properties are now allowed "' + JSON.stringify(additionalKeys) +'"'
+        })
+      }
     }
   }
 }

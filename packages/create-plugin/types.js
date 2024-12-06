@@ -183,12 +183,14 @@
  * @property {DataSchemaObject} [properties]
  * @property {DataSchemaObject} [patternProperties]
  * @property {boolean} [required]
+ * @property {boolean} [allowedProperties]
  */
 
 
 /**
  * @typedef {Object} SchemaObjectOptions
- * @property {boolean | string[]} [additionalProperties]
+ * @property {Object.<string, boolean>} [allowedProperties]
+ * @property {boolean} [additionalProperties]
  * @property {Function} [default]
  * @property {string[]} [required]
  * @property {boolean} [uniqueItems]

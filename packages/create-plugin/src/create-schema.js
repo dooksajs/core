@@ -118,7 +118,8 @@ function createSchemaEntry (context, item, name) {
   const entry = { type: item.type }
   /** @type {SchemaObjectOptions} */
   const options = {}
-  let additionalProperties
+  /** @type {Object.<string, boolean>} */
+  const additionalProperties = {}
   /** @type {SchemaCollectionDefaultId} */
   const id = {}
   let hasOptions = false
@@ -134,7 +135,11 @@ function createSchemaEntry (context, item, name) {
 
       // prepare additionalProperties
       if (key === 'properties') {
-        additionalProperties = Object.keys(value)
+        const keys = Object.keys(value)
+
+        for (let i = 0; i < keys.length; i++) {
+          additionalProperties[keys[i]] = true
+        }
       }
 
       // collect options
@@ -158,7 +163,7 @@ function createSchemaEntry (context, item, name) {
   if (hasOptions) {
     // add allowed properties
     if (options.additionalProperties === false) {
-      options.additionalProperties = additionalProperties
+      options.allowedProperties = additionalProperties
     }
 
     if (typeof options.default === 'function') {

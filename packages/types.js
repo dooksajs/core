@@ -10,6 +10,7 @@
  * @property {string[]} [required] - List of required properties that must exist and contain a value
  * @property {string} [relation] - Name of data collection the foreign key is related to
  * @property {boolean} [uniqueItems] - Ensure that each of the items in an array is unique
+ * @property {boolean} [additionalProperties] - Additional properties are allowed by default
  */
 
 /**
