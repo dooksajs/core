@@ -242,7 +242,7 @@ function dataValue (type) {
       value = true
       break
     default:
-      throw new Error('DooksaError: Unexpected data model "' + type + '"')
+      throw new Error('DooksaError: Unexpected data schema "' + type + '"')
   }
 
   return value
