@@ -236,8 +236,13 @@ function objectPropertySchema (context, id, properties = [], options, schema) {
       const $schema = optimiseSchema(context, property)
 
       objectSchema(context, id + '/' + name, $schema.entry, $schema.properties, $schema.patternProperties, $schema.entry.options, schema)
+
+      // remove nested schema properties
+      delete property.properties
+      delete property.patternProperties
     } else if (property.items) {
       createSchema(context, property, id + '/' + name, schema)
+      delete property.items
     }
 
     entryProperties.push(property)
