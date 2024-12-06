@@ -1,9 +1,12 @@
-/** @import {DataSchema, DataSchemaObject, DataSchemaItem} from '../../types.js' */
 
 /**
- * @typedef {Object} SchemaItem
- * @property {string} id
- * @property {SchemaEntry} entry
+ * @import { DataSchema, DataSchemaObject } from '../../types.js'
+ * @import {
+ *  Schema,
+ *  SchemaObjectProperty,
+ *  SchemaEntry,
+ *  SchemaObjectOptions,
+ *  SchemaCollectionDefaultId } from '#types'
  */
 
 /**
@@ -39,27 +42,6 @@ export default function createSchema (context, schema, id) {
 
   return entries
 }
-
-/**
- * @typedef {Object} Schema
- * @property {string} [id]
- * @property {SchemaEntry} entry
- * @property {DataSchemaItem} [items]
- * @property {Object.<string, DataSchemaObject>} [entryProperties]
- * @property {Object.<string, DataSchemaObject>} [entryPatternProperties]
- * @property {SchemaObjectProperty[]} [properties]
- * @property {SchemaObjectProperty[]} [patternProperties]
- */
-
-/**
- * @typedef {Object} SchemaObjectProperty
- * @property {string} name - Name of property
- * @property {'string' | 'number' | 'boolean' | 'object' | 'array'} type - Data type
- * @property {DataSchemaItem} [items]
- * @property {DataSchemaObject} [properties]
- * @property {DataSchemaObject} [patternProperties]
- * @property {boolean} [required]
- */
 
 /**
  * @private
@@ -121,36 +103,6 @@ function optimiseSchema (context, schema) {
 
   return result
 }
-
-/**
- * @typedef {Object} SchemaObjectOptions
- * @property {boolean | string[]} [additionalProperties]
- * @property {Function} [default]
- * @property {string[]} [required]
- * @property {boolean} [uniqueItems]
- * @property {string} [relation]
- */
-
-/**
- * @typedef {Object} SchemaCollectionDefaultId - Default collection ID
- * @property {Function | string} [default]
- * @property {Function | string} [prefix]
- * @property {Function | string} [suffix]
- */
-
-/**
- * @typedef {'string' | 'number' | 'boolean' | 'object' | 'array' | 'collection'} SchemaType
- */
-
-/**
- * @typedef {Object} SchemaEntry
- * @property {SchemaType} type
- * @property {string} [name]
- * @property {SchemaObjectOptions} [options]
- * @property {SchemaCollectionDefaultId} [id]
- * @property {SchemaObjectProperty[]} [properties]
- * @property {SchemaObjectProperty[]} [patternProperties]
- */
 
 /**
  * @private

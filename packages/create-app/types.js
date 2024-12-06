@@ -1,6 +1,6 @@
 
 /**
- * @import {Plugin, PluginSchemaEntries} from '../create-plugin/src/index.js'
+ * @import {Plugin, PluginSchemaGetter} from '../create-plugin/types.js'
  */
 
 /**
@@ -12,7 +12,7 @@
  * @typedef {Object} AppPlugin
  * @property {UsePlugin} use
  * @property {Plugin[]} plugins
- * @property {PluginSchemaEntries} schema
+ * @property {PluginSchemaGetter} schema
  * @property {Object.<string, Function>} actions
  * @property {AppSetup[]} setup
  */
