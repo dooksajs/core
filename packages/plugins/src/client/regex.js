@@ -30,7 +30,7 @@ export const regex = createPlugin('regex', {
 })
 
 export const{
-  regexReplace
+  regexPattern
 } = regex
 
 export default regex
