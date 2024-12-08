@@ -90,7 +90,7 @@
 /**
  * Method named exports
  * @template {string} Name
- * @template {Object.<string, Function>} Method
+ * @template {PluginMethods} Method
  * @typedef {{ [K in keyof Method as `${Name}${Capitalize<string & K>}`]: Method[K] }} PluginModuleMethod
  */
 
@@ -139,8 +139,8 @@
 */
 
 /**
-* @typedef {Object.<string, Function>} PluginMethods
-*/
+ * @typedef {Object.<string, Function>} PluginMethods
+ */
 
 /**
 * @typedef {PluginMetadataUnique & { plugin: string, method: string }} PluginActionMetadata
@@ -152,6 +152,7 @@
 * @template {string} Name
 * @template {PluginData} Data
 * @template {PluginMethods} Methods
+* @template {PluginMethods} PrivateMethods
 * @template {PluginActions} Actions
 * @template {Function} Setup
 * @typedef {Object} PluginOptions
@@ -160,6 +161,7 @@
 * @property {PluginMetadata} [plugin.metadata]
 * @property {Data} [data]
 * @property {Methods} [methods]
+* @property {PrivateMethods} [privateMethods]
 * @property {Actions} [actions]
 * @property {Setup} [setup]
 */
