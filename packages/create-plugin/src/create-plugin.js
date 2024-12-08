@@ -26,6 +26,7 @@ Object.freeze(actionContext)
  * @template {string} Name
  * @template {PluginData} Data
  * @template {PluginMethods} Methods
+ * @template {PluginMethods} PrivateMethods
  * @template {PluginActions} Actions
  * @template {Function} Setup
  * @param {Name} name
@@ -33,6 +34,7 @@ Object.freeze(actionContext)
  *    Name,
  *    Data,
  *    Methods,
+ *    PrivateMethods,
  *    Actions,
  *    Setup
  *  > &
@@ -40,6 +42,7 @@ Object.freeze(actionContext)
  *    { name: Name } &
  *    Data &
  *    Methods &
+ *    PrivateMethods &
  *    PluginActionMapper<Actions>
  *  >} plugin
  * @returns {PluginExport<Name, Methods, Actions, Setup>}
@@ -51,6 +54,7 @@ export function createPlugin (name, {
   data,
   actions,
   methods,
+  privateMethods,
   setup
 }) {
   const context = Object.create(null)
@@ -199,17 +203,36 @@ export function createPlugin (name, {
   }
 
   // map methods to result
-  for (const key in methods) {
-    if (Object.prototype.hasOwnProperty.call(methods, key)) {
-      if (context[key]) {
-        throw new Error(`Plugin [${key}]: Expected unique method name`)
+  if (methods) {
+    for (const key in methods) {
+      if (Object.prototype.hasOwnProperty.call(methods, key)) {
+        if (context[key]) {
+          throw new Error(`Plugin [${key}]: Expected unique method name`)
+        }
+
+        const method = methods[key].bind(context)
+        const methodName = name + capitalize(key)
+
+        // add method to context
+        context[key] = method
+
+        // add method to result
+        result[methodName] = method
       }
+    }
+  }
 
-      const action = methods[key]
-      const methodName = name + capitalize(key)
 
-      context[key] = action
-      result[methodName] = action.bind(context)
+  if (privateMethods) {
+    for (const key in privateMethods) {
+      if (Object.prototype.hasOwnProperty.call(privateMethods, key)) {
+        if (context[key]) {
+          throw new Error(`Plugin [${key}]: Expected unique private method name`)
+        }
+
+        // bind context to private methods
+        context[key] = methods[key].bind(context)
+      }
     }
   }
 
