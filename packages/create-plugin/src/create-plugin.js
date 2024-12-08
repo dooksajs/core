@@ -231,7 +231,7 @@ export function createPlugin (name, {
         }
 
         // bind context to private methods
-        context[key] = methods[key].bind(context)
+        context[key] = privateMethods[key].bind(context)
       }
     }
   }
