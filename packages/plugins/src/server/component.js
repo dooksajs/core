@@ -1,4 +1,4 @@
-import { createPlugin, mapSchema } from '@dooksa/create-plugin'
+import { createPlugin, mapState } from '@dooksa/create-plugin'
 import { component as componentClient, stateGenerateId, pagePathToId } from '#client'
 import { databaseDeleteValue, databaseGetValue, databaseSeed, httpSetRoute } from '#server'
 import { components as defaultComponents } from '@dooksa/components'
@@ -6,7 +6,7 @@ import { pageCreate } from '#server'
 import { createDataValue } from '#utils'
 
 export const component = createPlugin('component', {
-  schema: { ...mapSchema(componentClient) },
+  state: { ...mapState(componentClient) },
   /**
    * @param {Object} options
    * @param {import('@dooksa/create-component').Component[]} [options.components]

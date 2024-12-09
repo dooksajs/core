@@ -1,4 +1,4 @@
-import { createPlugin, mapSchema } from '@dooksa/create-plugin'
+import { createPlugin, mapState } from '@dooksa/create-plugin'
 import { createHash } from 'node:crypto'
 import { page as pageClient, pageGetItemsByPath, stateGetValue, stateSetValue } from '../client/index.js'
 import { databaseSeed, databaseSetValue } from './database.js'
@@ -15,19 +15,21 @@ function hashSHA (item) {
 }
 
 export const page = createPlugin('page', {
-  schema: {
-    ...mapSchema(pageClient),
-    app: {
-      type: 'string'
-    },
-    sourcemap: {
-      type: 'collection',
-      items: {
+  state: {
+    schema: {
+      app: {
         type: 'string'
-      }
-    },
-    css: {
-      type: 'string'
+      },
+      sourcemap: {
+        type: 'collection',
+        items: {
+          type: 'string'
+        }
+      },
+      css: {
+        type: 'string'
+      },
+      ...mapState(pageClient).schema
     }
   },
   methods: {

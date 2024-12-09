@@ -1,4 +1,4 @@
-import { createPlugin, mapSchema } from '@dooksa/create-plugin'
+import { createPlugin, mapState } from '@dooksa/create-plugin'
 import { stateSetValue, metadata as metadataClient } from '../client/index.js'
 import { databaseSeed, databaseGetValue } from './database.js'
 import { httpSetRoute } from './http.js'
@@ -8,8 +8,8 @@ import { httpSetRoute } from './http.js'
  */
 
 export const metadata = createPlugin('metadata', {
-  schema: {
-    ...mapSchema(metadataClient)
+  state: {
+    ...mapState(metadataClient)
   },
   /**
    * @param {Object} param

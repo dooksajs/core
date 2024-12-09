@@ -32,21 +32,23 @@ export const variable = createPlugin('variable', {
     description: 'Management of variables',
     icon: ''
   },
-  schema: {
-    values: {
-      type: 'collection',
-      items: {
-        type: 'object'
-      }
-    },
-    scopes: {
-      type: 'collection',
-      items: {
-        type: 'array',
+  state: {
+    schema: {
+      values: {
+        type: 'collection',
         items: {
-          type: 'string'
-        },
-        uniqueItems: true
+          type: 'object'
+        }
+      },
+      scopes: {
+        type: 'collection',
+        items: {
+          type: 'array',
+          items: {
+            type: 'string'
+          },
+          uniqueItems: true
+        }
       }
     }
   },

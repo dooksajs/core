@@ -43,58 +43,60 @@ export const query = createPlugin('query', {
     description: 'Filter and sort',
     icon: 'mdi:filter-variant'
   },
-  schema: {
-    items: {
-      type: 'collection',
+  state: {
+    schema: {
       items: {
-        type: 'array',
+        type: 'collection',
         items: {
-          type: 'object',
-          properties: {
-            contentId: {
-              type: 'string',
-              relation: 'content/items'
-            },
-            widgetId: {
-              type: 'string',
-              relation: 'widget/items'
-            },
-            content: {
-              type: 'array',
-              items: {
-                type: 'string'
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              contentId: {
+                type: 'string',
+                relation: 'content/items'
+              },
+              widgetId: {
+                type: 'string',
+                relation: 'widget/items'
+              },
+              content: {
+                type: 'array',
+                items: {
+                  type: 'string'
+                }
               }
             }
           }
         }
-      }
-    },
-    where: {
-      type: 'collection',
-      items: {
-        type: 'object',
-        properties: {
-          options: {
-            type: 'array'
-          },
-          id: {
-            type: 'string',
-            relation: 'query/items'
+      },
+      where: {
+        type: 'collection',
+        items: {
+          type: 'object',
+          properties: {
+            options: {
+              type: 'array'
+            },
+            id: {
+              type: 'string',
+              relation: 'query/items'
+            }
           }
         }
-      }
-    },
-    sort: {
-      type: 'collection',
-      items: {
-        type: 'object',
-        properties: {
-          options: {
-            type: 'string'
-          },
-          id: {
-            type: 'string',
-            relation: 'query/items'
+      },
+      sort: {
+        type: 'collection',
+        items: {
+          type: 'object',
+          properties: {
+            options: {
+              type: 'string'
+            },
+            id: {
+              type: 'string',
+              relation: 'query/items'
+            }
           }
         }
       }

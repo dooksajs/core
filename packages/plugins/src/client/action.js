@@ -253,70 +253,72 @@ function ifElse (branch, callback, { context, payload, blockValues }) {
 }
 
 export const action = createPlugin('action', {
-  schema: {
-    blocks: {
-      type: 'collection',
-      items: {
-        type: 'object',
-        properties: {
-          ifElse: {
-            type: 'boolean'
-          },
-          method: {
-            type: 'string'
-          },
-          dataType: {
-            type: 'string'
-          },
-          blockValue: {
-            type: 'string',
-            relation: 'action/blocks'
-          },
-          blockValues: {
-            type: 'array',
-            items: {
+  state: {
+    schema: {
+      blocks: {
+        type: 'collection',
+        items: {
+          type: 'object',
+          properties: {
+            ifElse: {
+              type: 'boolean'
+            },
+            method: {
+              type: 'string'
+            },
+            dataType: {
+              type: 'string'
+            },
+            blockValue: {
               type: 'string',
               relation: 'action/blocks'
+            },
+            blockValues: {
+              type: 'array',
+              items: {
+                type: 'string',
+                relation: 'action/blocks'
+              }
+            },
+            blockSequence: {
+              type: 'string',
+              relation: 'action/blockSequences'
+            },
+            key: {
+              type: 'string'
             }
-          },
-          blockSequence: {
-            type: 'string',
-            relation: 'action/blockSequences'
-          },
-          key: {
-            type: 'string'
           }
         }
-      }
-    },
-    blockSequences: {
-      type: 'collection',
-      items: {
-        type: 'array',
+      },
+      blockSequences: {
+        type: 'collection',
         items: {
-          type: 'string',
-          relation: 'action/blocks'
+          type: 'array',
+          items: {
+            type: 'string',
+            relation: 'action/blocks'
+          }
         }
-      }
-    },
-    dependencies: {
-      type: 'collection',
-      items: {
-        type: 'array',
+      },
+      dependencies: {
+        type: 'collection',
         items: {
-          type: 'string',
-          relation: 'action/items'
-        },
-        uniqueItems: true
-      }
-    },
-    sequences: {
-      type: 'collection',
-      items: {
-        type: 'array',
+          type: 'array',
+          items: {
+            type: 'string',
+            relation: 'action/items'
+          },
+          uniqueItems: true
+        }
+      },
+      sequences: {
+        type: 'collection',
         items: {
-          type: 'string',
-          relation: 'action/blockSequences'
+          type: 'array',
+          items: {
+            type: 'string',
+            relation: 'action/blockSequences'
+          }
         }
       }
     }
@@ -439,7 +441,7 @@ export const action = createPlugin('action', {
        * Get block value
        * @param {Object} props
        * @param {*} props.value
-       * @param {GetDataValue} props.query
+       * @param {GetValueByQuery} [props.query]
        */
       method (props) {
         if (props.value) {
@@ -458,11 +460,11 @@ export const action = createPlugin('action', {
       },
       /**
        * Get context value
-       * @param {GetDataValue} props
+       * @param {GetValueByQuery} query
        * @param {Object} ctx
        */
-      method (props, { context }) {
-        return getValue(context, props)
+      method (query, { context }) {
+        return getValue(context, query)
       }
     },
     getPayloadValue: {
@@ -476,10 +478,10 @@ export const action = createPlugin('action', {
       },
       /**
        * Get payload value
-       * @param {GetDataValue} props
+       * @param {GetValueByQuery} query
        */
-      method (props, { payload }) {
-        return getValue(payload, props)
+      method (query, { payload }) {
+        return getValue(payload, query)
       }
     },
     ifElse: {

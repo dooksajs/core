@@ -19,69 +19,71 @@ export const page = createPlugin('page', {
     description: 'Manage dooksa pages',
     icon: 'bi:layout-text-window'
   },
-  schema: {
-    id: {
-      type: 'collection',
-      defaultId () {
-        return routeCurrentId
-      },
-      suffixId () {
-        return stateGetValue({ name: 'metadata/currentLanguage' }).item
-      },
-      items: {
-        type: 'string'
-      }
-    },
-    events: {
-      type: 'collection',
-      items: {
-        type: 'array',
+  state: {
+    schema: {
+      id: {
+        type: 'collection',
+        defaultId () {
+          return routeCurrentId
+        },
+        suffixId () {
+          return stateGetValue({ name: 'metadata/currentLanguage' }).item
+        },
         items: {
           type: 'string'
         }
-      }
-    },
-    redirects: {
-      type: 'collection',
-      items: {
-        type: 'object',
-        required: ['temporary', 'name', 'pathId'],
-        properties: {
-          name: {
-            type: 'string'
-          },
-          pathId: {
-            type: 'string',
-            relation: 'page/paths'
-          },
-          isTemporary: {
-            type: 'boolean'
-          }
-        }
-      }
-    },
-    paths: {
-      type: 'collection',
-      items: {
-        type: 'object',
-        properties: {
-          name: {
-            type: 'string'
-          },
-          itemId: {
-            type: 'string',
-            relation: 'page/items'
-          }
-        }
-      }
-    },
-    items: {
-      type: 'collection',
-      items: {
-        type: 'array',
+      },
+      events: {
+        type: 'collection',
         items: {
-          type: 'string',
-          relation: 'component/items'
+          type: 'array',
+          items: {
+            type: 'string'
+          }
+        }
+      },
+      redirects: {
+        type: 'collection',
+        items: {
+          type: 'object',
+          required: ['temporary', 'name', 'pathId'],
+          properties: {
+            name: {
+              type: 'string'
+            },
+            pathId: {
+              type: 'string',
+              relation: 'page/paths'
+            },
+            isTemporary: {
+              type: 'boolean'
+            }
+          }
+        }
+      },
+      paths: {
+        type: 'collection',
+        items: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string'
+            },
+            itemId: {
+              type: 'string',
+              relation: 'page/items'
+            }
+          }
+        }
+      },
+      items: {
+        type: 'collection',
+        items: {
+          type: 'array',
+          items: {
+            type: 'string',
+            relation: 'component/items'
+          }
         }
       }
     }

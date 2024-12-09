@@ -122,14 +122,16 @@ export const route = createPlugin('route', {
       method: currentId
     }
   },
-  schema: {
-    sections: {
-      type: 'collection',
-      defaultId () {
-        return currentId()
-      },
-      items: {
-        type: 'object'
+  state: {
+    schema: {
+      sections: {
+        type: 'collection',
+        defaultId () {
+          return currentId()
+        },
+        items: {
+          type: 'object'
+        }
       }
     }
   },
