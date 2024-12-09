@@ -1,7 +1,6 @@
 import { createPlugin } from '@dooksa/create-plugin'
-import { stateGetValue } from './data.js'
+import { stateGetValue, eventEmit } from '#client'
 import { hash } from '@dooksa/utils'
-import { eventEmit } from './event.js'
 
 const pathHash = {}
 

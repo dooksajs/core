@@ -1,5 +1,5 @@
 import { createPlugin } from '@dooksa/create-plugin'
-import { stateGetValue } from './data.js'
+import { stateGetValue } from '#client'
 
 const tokenProcess = {}
 const tokenValues = {
