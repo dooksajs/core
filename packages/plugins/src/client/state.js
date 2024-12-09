@@ -7,7 +7,7 @@ import { createDataValue } from '../utils/data-value.js'
 /**
  * @import {SetDataOptions, GetDataQuery, GetDataOption, DataWhere} from '../../../types.js'
  * @import {DataValue} from '#types'
- * @import {PluginStateGetter} from '@dooksa/create-plugin/types'
+ * @import {PluginStateExport} from '@dooksa/create-plugin/types'
  */
 
 /**
@@ -2245,7 +2245,7 @@ export const state = createPlugin('state', {
   },
   /**
    * Setup database
-   * @param {PluginStateGetter} state
+   * @param {PluginStateExport} state
    */
   setup (state) {
     // set plugin default values

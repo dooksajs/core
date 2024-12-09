@@ -37,12 +37,19 @@
  */
 
 /**
- * @typedef {Object} PluginStateGetter
- * @property {PluginSchemaDefaults} values
- * @property {string[]} names
- * @property {PluginSchemaItem[]} items
+ * @typedef {Object} PluginStateDefaults
+ * @property {string} name - Name of state collection
+ * @property {*} value - Default value
+ */
+
+/**
+ * @typedef {Object} PluginStateExport
+ * @property {PluginSchemaDefaults} _values
+ * @property {string[]} _names
+ * @property {PluginSchemaItem[]} _items
  * @property {PluginSchema} schema - State schema
  * @property {Object} [defaults] - Default state values
+ * @property {PluginStateDefaults[]} [_defaults] - Default state values
  */
 
 /**
@@ -119,7 +126,7 @@
  * @property {PluginMetadata | undefined} metadata
  * @property {PluginGetters[] | undefined} dependencies
  * @property {ActiveAction[] | undefined} actions
- * @property {PluginStateGetter} state - Global state for the state plugin
+ * @property {PluginStateExport} state - Global state for the state plugin
  */
 
 /**

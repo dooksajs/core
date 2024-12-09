@@ -1,5 +1,5 @@
 /**
- * @import {Plugin, PluginSchemaItem, PluginSchemaDefaults, PluginStateGetter} from '../../create-plugin/types.js'
+ * @import {Plugin, PluginSchemaItem, PluginSchemaDefaults, PluginStateExport} from '../../create-plugin/types.js'
  * @import {AppPlugin, AppSetup} from '#types'
  */
 
@@ -19,7 +19,7 @@ export default function appendPlugin () {
   let appSetup = []
   /** @type {Object.<string, Function>} */
   const appActions = {}
-  /** @type {PluginStateGetter} */
+  /** @type {PluginStateExport} */
   const appState = {
     _defaults: [],
     _items: [],

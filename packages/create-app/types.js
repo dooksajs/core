@@ -1,6 +1,6 @@
 
 /**
- * @import {Plugin, PluginStateGetter} from '../create-plugin/types.js'
+ * @import {Plugin, PluginStateExport} from '../create-plugin/types.js'
  */
 
 /**
@@ -12,7 +12,7 @@
  * @typedef {Object} AppPlugin
  * @property {UsePlugin} use
  * @property {Plugin[]} plugins
- * @property {PluginStateGetter} state
+ * @property {PluginStateExport} state
  * @property {Object.<string, Function>} actions
  * @property {AppSetup[]} setup
  */
