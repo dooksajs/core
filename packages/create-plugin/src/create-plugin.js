@@ -72,37 +72,39 @@ export function createPlugin (name, {
 
     const defaults = state.defaults
     const schema = state.schema
-    const values = {}
-    const items = []
-    const names = []
+    const _defaults = []
+    const _values = {}
+    const _items = []
+    const _names = []
 
     Object.defineProperties(state, {
-      items: {
-        get () {
-          return items
-        }
+      _items: {
+        value: _items,
+        enumerable: false
       },
-      names: {
-        get () {
-          return names
-        }
+      _names: {
+        value: _names,
+        enumerable: false
       },
-      schema: {
-        get () {
-          return schema
-        }
+      _values: {
+        value: _values,
+        enumerable: false
       },
-      values: {
-        get () {
-          return values
-        }
-      },
-      defaults: {
-        get () {
-          return defaults
-        }
+      _defaults: {
+        value: _defaults,
+        enumerable: false
       }
     })
+
+    for (const key in defaults) {
+      if (Object.prototype.hasOwnProperty.call(defaults, key)) {
+        // @TODO could validate
+        _defaults.push({
+          name: name + '/' + key,
+          value: defaults[key]
+        })
+      }
+    }
 
     for (const key in schema) {
       if (Object.hasOwnProperty.call(schema, key)) {
@@ -111,15 +113,15 @@ export function createPlugin (name, {
         // data namespace
         const collectionName = name + '/' + key
 
-        values[collectionName] = dataValue(schemaType)
+        _values[collectionName] = dataValue(schemaType)
 
-        names.push(collectionName)
-        items.push({
+        _names.push(collectionName)
+        _items.push({
           entries: createSchema(context, item, collectionName),
           isCollection: schemaType === 'collection',
           name: collectionName
         })
-        values[collectionName] = dataValue(schemaType)
+        _values[collectionName] = dataValue(schemaType)
       }
     }
   }
@@ -132,26 +134,34 @@ export function createPlugin (name, {
   /**
    * @type {PluginExport<Name, Methods, Actions, Setup>}
    */
-  const result = {
-    get name () {
-      return name
+  const result = {}
+
+  Object.defineProperties(result, {
+    name: {
+      value: name,
+      enumerable: false
     },
-    get dependencies () {
-      return dependencies
+    dependencies: {
+      value: dependencies,
+      enumerable: false
     },
-    get metadata () {
-      return metadata
+    metadata: {
+      value: metadata,
+      enumerable: false
     },
-    get state () {
-      return state
+    state: {
+      value: state,
+      enumerable: false
     },
-    get actions () {
-      return _actions
+    actions: {
+      value: _actions,
+      enumerable: false
     },
-    get setup () {
-      return setup
+    setup: {
+      value: setup,
+      enumerable: false
     }
-  }
+  })
 
   if (data) {
     data = deepClone(data)
