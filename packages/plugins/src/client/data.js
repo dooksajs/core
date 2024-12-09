@@ -330,7 +330,7 @@ export const state = createPlugin('state', {
       for (const id in sources) {
         if (Object.hasOwnProperty.call(sources, id)) {
           const clone = newDataInstance(schemaType)
-          const source = deepClone(clone, sources[id], true)
+          const source = deepClone(sources[id], true)
           const target = {
             _item: source._item || source,
             _metadata: source._metadata || metadata || {}
@@ -1186,7 +1186,7 @@ export const state = createPlugin('state', {
               const name = item.collection + '/' + item.id
 
               if (options.expandClone) {
-                item.item = cloneDataValue(item.item)
+                item.item = deepClone(item.item)
               }
 
               result.expandIncluded[name] = result.expand.length
@@ -1201,7 +1201,7 @@ export const state = createPlugin('state', {
             id: value.id
           })
 
-          expandedResult.item = !options.expandClone ? value.item : cloneDataValue(value)
+          expandedResult.item = !options.expandClone ? value.item : deepClone(value)
           expandedResult.metadata = value.metadata
 
           result.expand.push(expandedResult)
@@ -1294,8 +1294,7 @@ export const state = createPlugin('state', {
       if (schemaType !== 'object' && schemaType !== 'array') {
         for (const id in sources) {
           if (Object.hasOwnProperty.call(sources, id)) {
-            const clone = newDataInstance(schema.type)
-            const source = deepClone(clone, sources[id], true)
+            const source = deepClone(sources[id], true)
             const target = {
               _item: source._item || source,
               _metadata: source._metadata || metadata
@@ -1326,35 +1325,41 @@ export const state = createPlugin('state', {
 
       for (const id in sources) {
         if (Object.hasOwnProperty.call(sources, id)) {
-          let source = sources[id]
-          let resultItem = newDataInstance(schemaType)
-          source = deepClone(newDataInstance(schemaType), source)
-          const resultMetadata = source._metadata || metadata
-          source = source._item || source
+          const source = sources[id]
 
+          // validate source
           this.validateDataType(path, source, schemaType)
+
+          // deep clone source
+          let resultItem = deepClone(source)
+          const resultMetadata = resultItem._metadata || metadata
+          // get source value
+          const item = resultItem._item || resultItem
 
           // set current merge root id
           data.id = id
 
+          // get target
           const target = data.target[id]
 
           // merge target and source objects
-          if (target && target._item instanceof Object) {
-            deepClone(resultItem, target)
-            resultItem = resultItem._item
-
-            if (Array.isArray(resultItem)) {
-              resultItem = source
+          if (target && typeof target._item === 'object') {
+            if (Array.isArray(item)) {
+              // replace array
+              resultItem = item
             } else {
-              for (const key in source) {
-                if (Object.hasOwnProperty.call(source, key)) {
-                  resultItem[key] = source[key]
+              resultItem = shallowCopy(target._item)
+
+              // merge object
+              for (const key in item) {
+                if (Object.hasOwnProperty.call(item, key)) {
+                  resultItem[key] = item[key]
                 }
               }
             }
           } else {
-            resultItem = source
+            // set new value
+            resultItem = item
           }
 
           if (schemaType === 'object') {
@@ -2099,7 +2104,7 @@ export const state = createPlugin('state', {
 
         // return a mutable item
         if (options.clone) {
-          result.item = cloneDataValue(result.item)
+          result.item = deepClone(result.item)
         }
 
         // return a value from position

@@ -1,7 +1,7 @@
 import { deepClone, objectHash } from '@dooksa/utils'
 
 function hashBlock (block, sourceBlock, targetBlock, collection) {
-  block = deepClone({}, block)
+  block = deepClone(block)
 
   if (block.blockValue) {
     const blockId = hashBlock(sourceBlock[block.blockValue], sourceBlock, targetBlock, collection)
@@ -47,7 +47,7 @@ function compileAction (action) {
           sequenceIndex: i,
           blockSequenceIndex: j,
           blockSequenceId: blockSequenceRefId,
-          block: deepClone({}, block)
+          block: deepClone(block)
         })
       } else {
         const id = hashBlock(block, action.blocks, blocks, collection)
@@ -71,7 +71,7 @@ function compileAction (action) {
 
     for (let i = 0; i < block.blockValues.length; i++) {
       const id = block.blockValues[i]
-      const parentBlock = deepClone({}, action.blocks[id])
+      const parentBlock = deepClone(action.blocks[id])
 
       if (parentBlock.key === 'if') {
         for (let i = 0; i < parentBlock.blockValues.length; i++) {
@@ -90,7 +90,7 @@ function compileAction (action) {
       }
 
       for (let i = 0; i < parentBlock.blockValues.length; i++) {
-        const block = deepClone({}, action.blocks[parentBlock.blockValues[i]])
+        const block = deepClone(action.blocks[parentBlock.blockValues[i]])
         const sourceBlockSequence = action.blockSequences[block.value]
         const targetBlockSequence = []
 
