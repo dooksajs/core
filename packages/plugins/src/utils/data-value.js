@@ -70,25 +70,7 @@ function removeAffix (id) {
   return noAffixId
 }
 
-
-/**
- * Deep copy result data
- * @returns {DataValue}
- */
-function cloneDataValue (data) {
-  if (Array.isArray(data)) {
-    return deepClone([], data)
-  }
-
-  if (typeof data === 'object' && data !== null) {
-    return deepClone({}, data)
-  }
-
-  return data
-}
-
 export {
   createDataValue,
-  cloneDataValue,
   removeAffix
 }
