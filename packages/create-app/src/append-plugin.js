@@ -1,5 +1,5 @@
 /**
- * @import {Plugin, PluginSchemaItem, PluginSchemaDefaults, PluginSchemaGetter} from '../../create-plugin/types.js'
+ * @import {Plugin, PluginSchemaItem, PluginSchemaDefaults, PluginStateGetter} from '../../create-plugin/types.js'
  * @import {AppPlugin, AppSetup} from '#types'
  */
 
@@ -19,11 +19,14 @@ export default function appendPlugin () {
   let appSetup = []
   /** @type {Object.<string, Function>} */
   const appActions = {}
-  /** @type {PluginSchemaGetter} */
-  const appSchema = {
-    values: {},
-    items: [],
-    names: []
+  /** @type {PluginStateGetter} */
+  const appState = {
+    _defaults: [],
+    _items: [],
+    _names: [],
+    _values: {},
+    defaults: [],
+    schema: {}
   }
 
   return {
@@ -80,18 +83,23 @@ export default function appendPlugin () {
 
       // extract data (need to parse and set default value)
       if (plugin.state) {
-        const schema = plugin.state
+        const state = plugin.state
 
-        appSchema.values = Object.assign(appSchema.values, schema.values)
-        appSchema.names = appSchema.names.concat(schema.names)
-        appSchema.items = appSchema.items.concat(schema.items)
+        appState._values = Object.assign(appState._values, state._values)
+        appState._names = appState._names.concat(state._names)
+        appState._items = appState._items.concat(state._items)
+
+        // append defaults
+        if (state._defaults.length) {
+          appState._defaults = appState._defaults.concat(state._defaults)
+        }
       }
     },
     get plugins () {
       return appPlugins
     },
-    get schema () {
-      return appSchema
+    get state () {
+      return appState
     },
     get actions () {
       return appActions
