@@ -2249,17 +2249,18 @@ export const state = createPlugin('state', {
    */
   setup (state) {
     // set plugin default values
-    this.values = state.values
+    this.values = state._values
     // store all collection names
     const collectionName = 'data/collections'
-    this.values[collectionName] = state.names.sort()
+    this.values[collectionName] = state._names.sort()
     this.schema[collectionName] = {
       items: { type: 'string' },
       type: 'array'
     }
+
     // setup plugin schemas
-    for (let i = 0; i < state.items.length; i++) {
-      const item = state.items[i]
+    for (let i = 0; i < state._items.length; i++) {
+      const item = state._items[i]
       const entries = item.entries
       const isCollection = item.isCollection
       const name = item.name
@@ -2287,6 +2288,11 @@ export const state = createPlugin('state', {
       // prepare collection handlers
       this.handlers.delete[name] = {}
       this.handlers.update[name] = {}
+    }
+
+    // set default values
+    for (let i = 0; i < state._defaults.length; i++) {
+      this.setValue(state._defaults[i])
     }
   }
 })
