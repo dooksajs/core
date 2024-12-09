@@ -137,7 +137,7 @@ function initialize (serverPlugins, clientPlugins, actions) {
    * @param {Object} [param.options={}]
    */
   return ({ options = {} }) => {
-    options.state = serverPlugins.schema
+    options.state = serverPlugins.state
     options.action = { actions: actions.items }
     options.metadata = {
       plugins: clientPlugins.metadata,

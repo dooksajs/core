@@ -169,7 +169,7 @@ function initialize (appPlugins, appComponents) {
       const plugin = appSetup[i]
 
       if (plugin.name === 'state') {
-        plugin.setup(appPlugins.schema)
+        plugin.setup(appPlugins.state)
 
         // remove from setup queue
         appSetup.splice(i, 1)
