@@ -15,21 +15,23 @@ export const event = createPlugin('event', {
     description: 'Event manager',
     icon: 'mdi:fire'
   },
-  schema: {
-    listeners: {
-      type: 'collection',
-      items: {
-        type: 'array',
+  state: {
+    schema: {
+      listeners: {
+        type: 'collection',
         items: {
-          type: 'string',
-          relation: 'action/items'
+          type: 'array',
+          items: {
+            type: 'string',
+            relation: 'action/items'
+          }
         }
+      },
+      handlers: {
+        type: 'collection',
+        uniqueItems: true,
+        items: { type: 'array' }
       }
-    },
-    handlers: {
-      type: 'collection',
-      uniqueItems: true,
-      items: { type: 'array' }
     }
   },
   methods: {

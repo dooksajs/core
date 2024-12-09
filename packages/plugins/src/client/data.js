@@ -7,7 +7,7 @@ import { createDataValue } from '../utils/data-value.js'
 /**
  * @import {SetDataOptions, GetDataQuery, GetDataOption, DataWhere} from '../../../types.js'
  * @import {DataValue} from '#types'
- * @import {PluginSchemaGetter} from '@dooksa/create-plugin/types'
+ * @import {PluginStateGetter} from '@dooksa/create-plugin/types'
  */
 
 /**
@@ -2244,21 +2244,21 @@ export const state = createPlugin('state', {
   },
   /**
    * Setup database
-   * @param {PluginSchemaGetter} schema
+   * @param {PluginStateGetter} state
    */
-  setup (schema) {
+  setup (state) {
     // set plugin default values
-    this.values = schema.$values
+    this.values = state.values
     // store all collection names
     const collectionName = 'data/collections'
-    this.values[collectionName] = schema.$names.sort()
+    this.values[collectionName] = state.names.sort()
     this.schema[collectionName] = {
       items: { type: 'string' },
       type: 'array'
     }
     // setup plugin schemas
-    for (let i = 0; i < schema.$items.length; i++) {
-      const item = schema.$items[i]
+    for (let i = 0; i < state.items.length; i++) {
+      const item = state.items[i]
       const entries = item.entries
       const isCollection = item.isCollection
       const name = item.name

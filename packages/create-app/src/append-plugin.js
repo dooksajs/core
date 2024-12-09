@@ -21,9 +21,9 @@ export default function appendPlugin () {
   const appActions = {}
   /** @type {PluginSchemaGetter} */
   const appSchema = {
-    $values: {},
-    $items: [],
-    $names: []
+    values: {},
+    items: [],
+    names: []
   }
 
   return {
@@ -79,12 +79,12 @@ export default function appendPlugin () {
       }
 
       // extract data (need to parse and set default value)
-      if (plugin.schema) {
-        const schema = plugin.schema
+      if (plugin.state) {
+        const schema = plugin.state
 
-        appSchema.$values = Object.assign(appSchema.$values, schema.$values)
-        appSchema.$names = appSchema.$names.concat(schema.$names)
-        appSchema.$items = appSchema.$items.concat(schema.$items)
+        appSchema.values = Object.assign(appSchema.values, schema.values)
+        appSchema.names = appSchema.names.concat(schema.names)
+        appSchema.items = appSchema.items.concat(schema.items)
       }
     },
     get plugins () {

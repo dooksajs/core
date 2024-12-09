@@ -4,9 +4,11 @@ import { stateAddListener, stateDeleteListener } from '../client/index.js'
 import { generateId } from '@dooksa/utils'
 
 export const development = createPlugin('development', {
-  schema: {
-    rebuild: {
-      type: 'number'
+  state: {
+    schema: {
+      rebuild: {
+        type: 'number'
+      }
     }
   },
   data: {

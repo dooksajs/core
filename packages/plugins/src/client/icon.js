@@ -11,16 +11,18 @@ export const icon = createPlugin('icon', {
     description: 'Additional information about plugins and their actions',
     icon: 'carbon:data-volume'
   },
-  schema: {
-    items: {
-      type: 'collection',
-      items: { type: 'string' }
-    },
-    aliases: {
-      type: 'collection',
+  state: {
+    schema: {
       items: {
-        type: 'string',
-        relation: 'icon/items'
+        type: 'collection',
+        items: { type: 'string' }
+      },
+      aliases: {
+        type: 'collection',
+        items: {
+          type: 'string',
+          relation: 'icon/items'
+        }
       }
     }
   },

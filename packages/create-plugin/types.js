@@ -20,6 +20,12 @@
  */
 
 /**
+ * @typedef {Object} PluginState
+ * @property {Object} [defaults]
+ * @property {PluginSchema} schema
+ */
+
+/**
  * @typedef {Object.<string, DataSchema>} PluginSchema
  */
 
@@ -31,10 +37,12 @@
  */
 
 /**
- * @typedef {Object} PluginSchemaGetter
- * @property {PluginSchemaDefaults} $values
- * @property {string[]} $names
- * @property {PluginSchemaItem[]} $items
+ * @typedef {Object} PluginStateGetter
+ * @property {PluginSchemaDefaults} values
+ * @property {string[]} names
+ * @property {PluginSchemaItem[]} items
+ * @property {PluginSchema} schema - State schema
+ * @property {Object} [defaults] - Default state values
  */
 
 /**
@@ -111,7 +119,7 @@
  * @property {PluginMetadata | undefined} metadata
  * @property {PluginGetters[] | undefined} dependencies
  * @property {ActiveAction[] | undefined} actions
- * @property {PluginSchema & PluginSchemaGetter | undefined} schema - Schema for the data plugin
+ * @property {PluginStateGetter} state - Global state for the state plugin
  */
 
 /**
@@ -157,7 +165,7 @@
 * @template {Function} Setup
 * @typedef {Object} PluginOptions
 * @property {PluginGetters[]} [plugin.dependencies]
-* @property {PluginSchema} [plugin.schema]
+* @property {PluginState} [plugin.state]
 * @property {PluginMetadata} [plugin.metadata]
 * @property {Data} [data]
 * @property {Methods} [methods]

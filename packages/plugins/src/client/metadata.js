@@ -7,45 +7,51 @@ export const metadata = createPlugin('metadata', {
     description: 'Additional information about plugins and their actions',
     icon: 'carbon:data-volume'
   },
-  schema: {
-    currentLanguage: { type: 'string' },
-    defaultLanguage: { type: 'string' },
-    languages: {
-      type: 'array',
-      items: { type: 'string' }
+  state: {
+    defaults: {
+      defaultLanguage: 'en',
+      languages: ['en']
     },
-    plugins: {
-      type: 'collection',
-      items: {
-        type: 'object',
-        properties: {
-          title: { type: 'string' },
-          description: { type: 'string' },
-          icon: { type: 'string' }
+    schema: {
+      currentLanguage: { type: 'string' },
+      defaultLanguage: { type: 'string' },
+      languages: {
+        type: 'array',
+        items: { type: 'string' }
+      },
+      plugins: {
+        type: 'collection',
+        items: {
+          type: 'object',
+          properties: {
+            title: { type: 'string' },
+            description: { type: 'string' },
+            icon: { type: 'string' }
+          }
         }
-      }
-    },
-    actions: {
-      type: 'collection',
-      items: {
-        type: 'object',
-        properties: {
-          plugin: {
-            type: 'string',
-            relation: 'metadata/plugins'
-          },
-          method: { type: 'string' },
-          title: { type: 'string' },
-          description: { type: 'string' },
-          icon: { type: 'string' },
-          component: { type: 'string' }
+      },
+      actions: {
+        type: 'collection',
+        items: {
+          type: 'object',
+          properties: {
+            plugin: {
+              type: 'string',
+              relation: 'metadata/plugins'
+            },
+            method: { type: 'string' },
+            title: { type: 'string' },
+            description: { type: 'string' },
+            icon: { type: 'string' },
+            component: { type: 'string' }
+          }
         }
-      }
-    },
-    parameters: {
-      type: 'collection',
-      items: {
-        type: 'object'
+      },
+      parameters: {
+        type: 'collection',
+        items: {
+          type: 'object'
+        }
       }
     }
   },

@@ -950,107 +950,109 @@ export const component = createPlugin('component', {
     description: '',
     icon: 'mdi:widgets'
   },
-  schema: {
-    nodes: {
-      type: 'collection',
-      items: { type: 'object' }
-    },
-    events: {
-      type: 'collection',
-      items: {
-        type: 'array',
+  state: {
+    schema: {
+      nodes: {
+        type: 'collection',
+        items: { type: 'object' }
+      },
+      events: {
+        type: 'collection',
         items: {
-          type: 'object',
-          properties: {
-            id: {
-              type: 'string',
-              relation: 'event/listeners'
-            },
-            on: { type: 'string' },
-            actionId: {
-              type: 'string',
-              relation: 'action/items'
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: {
+                type: 'string',
+                relation: 'event/listeners'
+              },
+              on: { type: 'string' },
+              actionId: {
+                type: 'string',
+                relation: 'action/items'
+              }
             }
           }
         }
-      }
-    },
-    items: {
-      type: 'collection',
+      },
       items: {
-        type: 'object',
-        properties: {
-          id: { type: 'string' },
-          hash: { type: 'string' },
-          isTemplate: { type: 'boolean' }
-        }
-      }
-    },
-    options: {
-      type: 'collection',
-      items: { type: 'object' }
-    },
-    properties: {
-      type: 'collection',
-      items: {
-        type: 'array',
+        type: 'collection',
         items: {
           type: 'object',
-          properties: { name: { type: 'string' } }
+          properties: {
+            id: { type: 'string' },
+            hash: { type: 'string' },
+            isTemplate: { type: 'boolean' }
+          }
         }
-      }
-    },
-    parents: {
-      type: 'collection',
-      items: {
-        type: 'string',
-        relation: 'component/items'
-      }
-    },
-    roots: {
-      type: 'collection',
-      items: {
-        type: 'string',
-        relation: 'component/items'
-      }
-    },
-    children: {
-      type: 'collection',
-      items: {
-        type: 'array',
+      },
+      options: {
+        type: 'collection',
+        items: { type: 'object' }
+      },
+      properties: {
+        type: 'collection',
+        items: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: { name: { type: 'string' } }
+          }
+        }
+      },
+      parents: {
+        type: 'collection',
         items: {
           type: 'string',
           relation: 'component/items'
         }
-      }
-    },
-    belongsToGroup: {
-      type: 'collection',
-      items: {
-        type: 'string',
-        relation: 'component/groups'
-      }
-    },
-    groups: {
-      type: 'collection',
-      items: {
-        type: 'array',
+      },
+      roots: {
+        type: 'collection',
         items: {
           type: 'string',
           relation: 'component/items'
-        },
-        uniqueItems: true
-      }
-    },
-    belongsToScopes: {
-      type: 'collection',
-      items: {
-        type: 'array',
+        }
+      },
+      children: {
+        type: 'collection',
+        items: {
+          type: 'array',
+          items: {
+            type: 'string',
+            relation: 'component/items'
+          }
+        }
+      },
+      belongsToGroup: {
+        type: 'collection',
         items: {
           type: 'string',
-          relation: 'action/scopes'
-        },
-        uniqueItems: true
+          relation: 'component/groups'
+        }
+      },
+      groups: {
+        type: 'collection',
+        items: {
+          type: 'array',
+          items: {
+            type: 'string',
+            relation: 'component/items'
+          },
+          uniqueItems: true
+        }
+      },
+      belongsToScopes: {
+        type: 'collection',
+        items: {
+          type: 'array',
+          items: {
+            type: 'string',
+            relation: 'action/scopes'
+          },
+          uniqueItems: true
+        }
       }
     }
   },

@@ -41,17 +41,19 @@ describe('Create plugin', function () {
   it('should return the schema', function () {
     const plugin = createPlugin('test', {
       metadata,
-      schema: {
-        items: {
-          type: 'collection',
+      state: {
+        schema: {
           items: {
-            type: 'string'
+            type: 'collection',
+            items: {
+              type: 'string'
+            }
           }
         }
       }
     })
 
-    deepStrictEqual(plugin.schema, {
+    deepStrictEqual(plugin.state.schema, {
       items: {
         type: 'collection',
         items: {
@@ -96,14 +98,16 @@ describe('Create plugin', function () {
     it('default id function contextual this should be bound to the plugins context', function () {
       const plugin = createPlugin('test', {
         metadata,
-        schema: {
-          items: {
-            defaultId () {
-              return this.colour
-            },
-            type: 'collection',
+        state: {
+          schema: {
             items: {
-              type: 'string'
+              defaultId () {
+                return this.colour
+              },
+              type: 'collection',
+              items: {
+                type: 'string'
+              }
             }
           }
         },
@@ -113,20 +117,22 @@ describe('Create plugin', function () {
       })
 
       // @ts-ignore
-      strictEqual(plugin.schema.$items[0].entries[1].entry.id.default(), 'red')
+      strictEqual(plugin.state.items[0].entries[1].entry.id.default(), 'red')
     })
 
     it('prefix id function contextual this should be bound to the plugins context', function () {
       const plugin = createPlugin('test', {
         metadata,
-        schema: {
-          items: {
-            prefixId () {
-              return this.colour
-            },
-            type: 'collection',
+        state: {
+          schema: {
             items: {
-              type: 'string'
+              prefixId () {
+                return this.colour
+              },
+              type: 'collection',
+              items: {
+                type: 'string'
+              }
             }
           }
         },
@@ -136,20 +142,22 @@ describe('Create plugin', function () {
       })
 
       // @ts-ignore
-      strictEqual(plugin.schema.$items[0].entries[1].entry.id.prefix(), 'red')
+      strictEqual(plugin.state.items[0].entries[1].entry.id.prefix(), 'red')
     })
 
     it('suffix id function contextual this should be bound to the plugins context', function () {
       const plugin = createPlugin('test', {
         metadata,
-        schema: {
-          items: {
-            suffixId () {
-              return this.colour
-            },
-            type: 'collection',
+        state: {
+          schema: {
             items: {
-              type: 'string'
+              suffixId () {
+                return this.colour
+              },
+              type: 'collection',
+              items: {
+                type: 'string'
+              }
             }
           }
         },
@@ -159,7 +167,7 @@ describe('Create plugin', function () {
       })
 
       // @ts-ignore
-      strictEqual(plugin.schema.$items[0].entries[1].entry.id.suffix(), 'red')
+      strictEqual(plugin.state.items[0].entries[1].entry.id.suffix(), 'red')
     })
   })
 

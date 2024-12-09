@@ -49,7 +49,7 @@ Object.freeze(actionContext)
  */
 export function createPlugin (name, {
   dependencies,
-  schema,
+  state,
   metadata,
   data,
   actions,
@@ -67,27 +67,39 @@ export function createPlugin (name, {
     setup = setup.bind(context)
   }
 
-  if (schema) {
-    schema = deepClone(schema)
+  if (state) {
+    state = deepClone(state)
 
+    const defaults = state.defaults
+    const schema = state.schema
     const values = {}
     const items = []
     const names = []
 
-    Object.defineProperties(schema, {
-      $values: {
-        get () {
-          return values
-        }
-      },
-      $items: {
+    Object.defineProperties(state, {
+      items: {
         get () {
           return items
         }
       },
-      $names: {
+      names: {
         get () {
           return names
+        }
+      },
+      schema: {
+        get () {
+          return schema
+        }
+      },
+      values: {
+        get () {
+          return values
+        }
+      },
+      defaults: {
+        get () {
+          return defaults
         }
       }
     })
@@ -96,17 +108,18 @@ export function createPlugin (name, {
       if (Object.hasOwnProperty.call(schema, key)) {
         const item = schema[key]
         const schemaType = item.type
-
         // data namespace
         const collectionName = name + '/' + key
 
         values[collectionName] = dataValue(schemaType)
+
         names.push(collectionName)
         items.push({
-          name: collectionName,
           entries: createSchema(context, item, collectionName),
-          isCollection: schemaType === 'collection'
+          isCollection: schemaType === 'collection',
+          name: collectionName
         })
+        values[collectionName] = dataValue(schemaType)
       }
     }
   }
@@ -129,8 +142,8 @@ export function createPlugin (name, {
     get metadata () {
       return metadata
     },
-    get schema () {
-      return schema
+    get state () {
+      return state
     },
     get actions () {
       return _actions
