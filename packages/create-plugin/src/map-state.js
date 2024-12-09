@@ -1,8 +1,6 @@
 /**
- * @import { Plugin, PluginState } from '#types'
+ * @import { Plugin, PluginState, PluginStateDefaults } from '#types'
  */
-
-import { deepClone } from '@dooksa/utils'
 
 /**
  * @param {Plugin} plugin
@@ -19,17 +17,16 @@ export function mapState (plugin, names) {
     throw new Error('DooksaError: mapState could not find state schema')
   }
 
+  /** @type {PluginState} */
+  const result = {
+    schema: {}
+  }
   const schema = plugin.state.schema
-  const stateDefaults = plugin.state.defaults || {}
+  const stateDefaults = plugin.state.defaults
 
   // map schema by name
   if (names) {
-    let hasDefaults = false
-    const defaults = {}
-    /** @type {PluginState} */
-    const result = {
-      schema: {}
-    }
+    let defaults = {}
 
     for (let i = 0; i < names.length; i++) {
       const name = names[i]
@@ -38,21 +35,26 @@ export function mapState (plugin, names) {
         throw new Error('DooksaError: mapState could not find property name "'+ name +'"')
       }
 
-      result.schema[name] = deepClone(schema[name])
+      result.schema[name] = schema[name]
 
-      if (stateDefaults[name]) {
-        hasDefaults = true
+      if (stateDefaults && stateDefaults[name]) {
         defaults[name] = stateDefaults[name]
       }
     }
 
-    if (hasDefaults) {
+    // set defaults
+    if (Object.getOwnPropertyNames(defaults).length) {
       result.defaults = defaults
     }
 
     return result
   }
 
-  // shallow copy schema
-  return deepClone(plugin.state)
+  result.schema = schema
+
+  if (stateDefaults) {
+    result.defaults = stateDefaults
+  }
+
+  return result
 }
