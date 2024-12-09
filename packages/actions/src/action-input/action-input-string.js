@@ -3,7 +3,7 @@ import createAction from '@dooksa/create-action'
 export default createAction('action-input-string', [
   {
     $id: 'action_input_data_string',
-    data_setValue: {
+    state_setValue: {
       name: 'component/items',
       value: {
         id: 'action-input-data-string',
@@ -19,7 +19,7 @@ export default createAction('action-input-string', [
     }
   },
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/children',
       value: { $ref: 'action_input_data_string_id' },
       options: {

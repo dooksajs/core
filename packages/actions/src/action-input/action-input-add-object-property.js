@@ -10,7 +10,7 @@ export default createAction('action-input-add-object-property', [
   },
   {
     $id: 'action_input_object_property',
-    data_setValue: {
+    state_setValue: {
       name: 'component/items',
       value: {
         id: 'action-input-object-property',
@@ -49,7 +49,7 @@ export default createAction('action-input-add-object-property', [
     }
   },
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/children',
       value: { $ref: 'action_input_object_property_id' },
       options: {

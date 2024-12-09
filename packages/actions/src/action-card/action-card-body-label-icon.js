@@ -2,7 +2,7 @@ import createAction from '@dooksa/create-action'
 
 export const actionCardBodyLabelIcon = createAction('action-card-body-label-icon', [
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/options',
       value: {
         icon: {

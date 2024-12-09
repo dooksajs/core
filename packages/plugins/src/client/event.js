@@ -1,5 +1,5 @@
 import { createPlugin } from '@dooksa/create-plugin'
-import { actionDispatch, dataGetValue } from './index.js'
+import { actionDispatch, stateGetValue } from './index.js'
 
 /**
  * @typedef {Object} EventEmit
@@ -38,7 +38,7 @@ export const event = createPlugin('event', {
      * @param {EventEmit} param
      */
     emit ({ name, id, context, payload }) {
-      const listeners = dataGetValue({
+      const listeners = stateGetValue({
         name: 'event/listeners',
         id,
         prefixId: name

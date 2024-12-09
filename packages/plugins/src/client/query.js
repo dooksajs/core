@@ -1,5 +1,5 @@
 import { createPlugin } from '@dooksa/create-plugin'
-import { listFilter, listSort, dataAddListener, dataSetValue, dataGetValue } from './index.js'
+import { listFilter, listSort, stateAddListener, stateSetValue, stateGetValue } from './index.js'
 
 /**
  * Fetch content values
@@ -12,7 +12,7 @@ function fetchValues (items) {
 
   for (let i = 0; i < items.length; i++) {
     const item = items[i]
-    const content = dataGetValue({
+    const content = stateGetValue({
       name: 'content/items',
       id: item.contentId
     })
@@ -109,7 +109,7 @@ export const query = createPlugin('query', {
        * @param {string} param.sectionId - Section to overwrite with query
        */
       method ({ id, sectionId }) {
-        dataSetValue({
+        stateSetValue({
           name: 'section/query',
           value: id,
           options: {
@@ -117,7 +117,7 @@ export const query = createPlugin('query', {
           }
         })
 
-        const mode = dataGetValue({
+        const mode = stateGetValue({
           name: 'section/mode',
           id: sectionId
         })
@@ -126,17 +126,17 @@ export const query = createPlugin('query', {
           sectionId = sectionId + mode.item
         }
 
-        dataAddListener({
+        stateAddListener({
           name: 'section/items',
           on: 'update',
           id: sectionId,
           priority: 1,
           handler: (result) => {
-            const where = dataGetValue({
+            const where = stateGetValue({
               name: 'query/where',
               id
             })
-            const sort = dataGetValue({
+            const sort = stateGetValue({
               name: 'query/sort',
               id
             })
@@ -149,7 +149,7 @@ export const query = createPlugin('query', {
             }
 
             if (!where.isEmpty) {
-              const queryData = dataGetValue({
+              const queryData = stateGetValue({
                 name: 'query/items',
                 id: where.item.id
               })
@@ -157,7 +157,7 @@ export const query = createPlugin('query', {
               if (queryData.isEmpty) {
                 console.error('where query should not be empty')
 
-                return dataSetValue({
+                return stateSetValue({
                   name: 'query/items',
                   value: [],
                   options: { id: where.item.id }
@@ -177,7 +177,7 @@ export const query = createPlugin('query', {
                 }
               }
 
-              dataSetValue({
+              stateSetValue({
                 name: 'query/items',
                 value: query,
                 options: {
@@ -187,7 +187,7 @@ export const query = createPlugin('query', {
             }
 
             if (!sort.isEmpty) {
-              const queryData = dataGetValue({
+              const queryData = stateGetValue({
                 name: 'query/items',
                 id: sort.item.id
               })
@@ -195,7 +195,7 @@ export const query = createPlugin('query', {
               if (queryData.isEmpty) {
                 console.error('sort query should not be empty')
 
-                return dataSetValue({
+                return stateSetValue({
                   name: 'query/items',
                   value: [],
                   options: {
@@ -217,7 +217,7 @@ export const query = createPlugin('query', {
                 }
               }
 
-              dataSetValue({
+              stateSetValue({
                 name: 'query/items',
                 value: query,
                 options: {
@@ -237,17 +237,17 @@ export const query = createPlugin('query', {
        * @returns {QueryValue[]}
        */
       method ({ id }) {
-        const where = dataGetValue({
+        const where = stateGetValue({
           name: 'query/where',
           id
         })
-        const sort = dataGetValue({
+        const sort = stateGetValue({
           name: 'query/sort',
           id
         })
 
         if (!where.isEmpty) {
-          const queryData = dataGetValue({
+          const queryData = stateGetValue({
             name: 'query/items',
             id: where.item.id
           })
@@ -260,7 +260,7 @@ export const query = createPlugin('query', {
           items = whereResults.items
 
           if (!sort.isEmpty) {
-            const queryData = dataGetValue({
+            const queryData = stateGetValue({
               name: 'query/items',
               id: sort.item.id
             })

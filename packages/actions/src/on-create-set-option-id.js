@@ -1,7 +1,7 @@
 import createAction from '@dooksa/create-action'
 
 export default createAction('on-create-set-option-id', [{
-  data_setValue: {
+  state_setValue: {
     name: 'component/options',
     value: {
       id: {

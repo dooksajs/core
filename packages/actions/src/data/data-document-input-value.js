@@ -2,7 +2,7 @@ import createAction from '@dooksa/create-action'
 
 export default createAction('data-document-input-value', [
   {
-    data_getValue: {
+    state_getValue: {
       name: {
         variable_getValue: {
           scope: { action_getContextValue: 'groupId' },
@@ -18,7 +18,7 @@ export default createAction('data-document-input-value', [
     }
   },
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/options',
       value: {
         value: {

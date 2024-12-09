@@ -2,7 +2,7 @@ import createAction from '@dooksa/create-action'
 
 export default createAction('select-edit-add-component', [
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/children',
       value: {
         variable_getValue: {

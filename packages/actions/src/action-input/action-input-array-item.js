@@ -21,7 +21,7 @@ export default createAction('action-input-array-item', [
   },
   {
     $id: 'action_input_array_item',
-    data_setValue: {
+    state_setValue: {
       name: 'component/items',
       value: {
         id: 'action-input-array-item',
@@ -60,7 +60,7 @@ export default createAction('action-input-array-item', [
     }
   },
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/children',
       value: { $ref: 'action_input_array_item_id' },
       options: {

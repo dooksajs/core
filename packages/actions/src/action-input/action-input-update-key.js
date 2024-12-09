@@ -10,7 +10,7 @@ export default createAction('action-input-update-key', [
     }
   },
   {
-    data_addListener: {
+    state_addListener: {
       name: 'variable/values',
       id: { action_getContextValue: 'rootId' },
       handler: 'action-input-key'

@@ -2,7 +2,7 @@ import { createPlugin } from '@dooksa/create-plugin'
 import { existsSync, rename, readFile } from 'node:fs'
 import { writeFile } from 'fs/promises'
 import { resolve, join } from 'path'
-import { dataGetValue, dataSetValue, dataDeleteValue, dataFind } from '../client/index.js'
+import { stateGetValue, stateSetValue, stateDeleteValue, stateFind } from '../client/index.js'
 import { generateId } from '@dooksa/utils'
 import { log } from '@dooksa/utils/server'
 
@@ -50,7 +50,7 @@ function setSnapshot (collection) {
   snapshotQueue[collection] = false
 
   const set = new Promise((resolve, reject) => {
-    const data = dataGetValue(collection)
+    const data = stateGetValue(collection)
 
     if (data.isEmpty) {
       snapshotError[collection] = new Error('Snapshot failed, no collection found: ' + collection)
@@ -409,7 +409,7 @@ export const database = createPlugin('database', {
               }
             }
 
-            const dataValues = dataFind(args)
+            const dataValues = stateFind(args)
 
             result = result.concat(dataValues)
 
@@ -432,7 +432,7 @@ export const database = createPlugin('database', {
               value.expand = []
             }
 
-            const data = dataGetValue(args)
+            const data = stateGetValue(args)
 
             if (data.isEmpty) {
               return response.status(404).send(`Document not found: ${collection} ${id}`)
@@ -447,7 +447,7 @@ export const database = createPlugin('database', {
             }
 
             if (where) {
-              const data = dataFind({
+              const data = stateFind({
                 name: collection,
                 where
               })
@@ -483,7 +483,7 @@ export const database = createPlugin('database', {
 
           for (let i = 0; i < request.query.id.length; i++) {
             const id = request.query.id[i]
-            const data = dataDeleteValue({
+            const data = stateDeleteValue({
               name: collection,
               id,
               cascade: request.query.cascade
@@ -526,7 +526,7 @@ export const database = createPlugin('database', {
         const data = JSON.parse(json)
 
         // set cache
-        dataSetValue({
+        stateSetValue({
           name: data.collection,
           value: data.item,
           options: {
@@ -573,7 +573,7 @@ export const database = createPlugin('database', {
           }
         }
 
-        const setData = dataSetValue({
+        const setData = stateSetValue({
           name: data.collection,
           value: data.item,
           options: {

@@ -39,7 +39,7 @@ export default createAction('select-edit-outer', [
     }
   },
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/children',
       value: {
         $ref: 2

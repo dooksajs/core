@@ -1,4 +1,4 @@
-import defaultPlugins, { dataSetValue, lazyLoader } from '@dooksa/plugins/client'
+import defaultPlugins, { stateSetValue, lazyLoader } from '@dooksa/plugins/client'
 import appendPlugin from './append-plugin.js'
 import {
   base as defaultBaseComponents,
@@ -168,7 +168,7 @@ function initialize (appPlugins, appComponents) {
     for (let i = 0; i < appSetup.length; i++) {
       const plugin = appSetup[i]
 
-      if (plugin.name === 'data') {
+      if (plugin.name === 'state') {
         plugin.setup(appPlugins.schema)
 
         // remove from setup queue
@@ -186,7 +186,7 @@ function initialize (appPlugins, appComponents) {
       const item = data[i]
 
       // need to check if any data requires an async plugin
-      dataSetValue({
+      stateSetValue({
         name: item.collection,
         value: item.item,
         options: {

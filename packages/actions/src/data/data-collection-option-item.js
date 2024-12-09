@@ -2,7 +2,7 @@ import createAction from '@dooksa/create-action'
 
 export const dataCollectionOptionItem = createAction('data-collection-option-item', [
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/items',
       value: {
         id: 'option-variable-value',
@@ -34,7 +34,7 @@ export const dataCollectionOptionItem = createAction('data-collection-option-ite
     }
   },
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/children',
       value: { $ref: 1 },
       options: {

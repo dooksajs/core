@@ -7,7 +7,7 @@ export const dataDocumentOption = createAction('data-document-option', [
       items: {
         action_getBlockValue: {
           value: {
-            data_getValue: {
+            state_getValue: {
               name: {
                 variable_getValue: {
                   scope: { action_getContextValue: 'groupId' },

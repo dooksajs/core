@@ -2,7 +2,7 @@ import createAction from '@dooksa/create-action'
 
 export const actionAddBlockListItem = createAction('action-add-block-list-item', [
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/items',
       value: {
         id: 'action-add-block-list-item',
@@ -30,7 +30,7 @@ export const actionAddBlockListItem = createAction('action-add-block-list-item',
     }
   },
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/children',
       value: { $ref: 1 },
       options: {

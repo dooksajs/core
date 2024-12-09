@@ -8,7 +8,7 @@ export default createAction('action-input-data-type', [
   },
   // 1. get the first component from root children
   {
-    data_getValue: {
+    state_getValue: {
       name: 'component/children',
       id: { action_getContextValue: 'rootId' },
       options: {
@@ -18,7 +18,7 @@ export default createAction('action-input-data-type', [
   },
   // 2. reset root children
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/children',
       value: {
         action_getBlockValue: {
@@ -55,7 +55,7 @@ export default createAction('action-input-data-type', [
   },
   // 5
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/items',
       value: {
         id: 'action-input-data-text-label',
@@ -65,7 +65,7 @@ export default createAction('action-input-data-type', [
   },
   // 6. add text component
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/items',
       value: {
         id: 'action-input-data-text',
@@ -75,7 +75,7 @@ export default createAction('action-input-data-type', [
   },
   // 7. append text component to current component
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/children',
       value: [
         {
@@ -113,7 +113,7 @@ export default createAction('action-input-data-type', [
   },
   // 9. add text component
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/items',
       value: {
         id: 'action-input-data-action-label',
@@ -123,7 +123,7 @@ export default createAction('action-input-data-type', [
   },
   // 10. add text component
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/items',
       value: {
         id: 'action-input-data-action',
@@ -133,7 +133,7 @@ export default createAction('action-input-data-type', [
   },
   // 11. append text component to current component
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/children',
       value: [
         {
@@ -175,7 +175,7 @@ export default createAction('action-input-data-type', [
   },
   // 13. add text component
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/items',
       value: {
         id: 'action-input-data-context-label',
@@ -185,7 +185,7 @@ export default createAction('action-input-data-type', [
   },
   // 14. add text component
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/items',
       value: {
         id: 'action-input-data-context',
@@ -195,7 +195,7 @@ export default createAction('action-input-data-type', [
   },
   // 15. append text component to current component
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/children',
       value: [
         {

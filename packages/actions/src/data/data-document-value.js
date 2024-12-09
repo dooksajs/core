@@ -10,7 +10,7 @@ export const dataDocumentValue = createAction('data-document-value', [
   },
   {
     $id: 'document_result',
-    data_getValue: {
+    state_getValue: {
       name: { $ref: 'collection_value' },
       id: { action_getPayloadValue: 'target.value' }
     }
@@ -93,7 +93,7 @@ export const dataDocumentValue = createAction('data-document-value', [
   },
   {
     $id: 'action_input_string',
-    data_setValue: {
+    state_setValue: {
       name: 'component/items',
       value: {
         id: 'action-input-string',
@@ -110,7 +110,7 @@ export const dataDocumentValue = createAction('data-document-value', [
   },
   {
     $id: 'append_action_input_string',
-    data_setValue: {
+    state_setValue: {
       name: 'component/children',
       value: { $ref: 'action_input_string_id' },
       options: {
@@ -149,7 +149,7 @@ export const dataDocumentValue = createAction('data-document-value', [
   },
   {
     $id: 'action_input_object',
-    data_setValue: {
+    state_setValue: {
       name: 'component/items',
       value: {
         id: 'action-input-object',
@@ -185,7 +185,7 @@ export const dataDocumentValue = createAction('data-document-value', [
   },
   {
     $id: 'component_children_action_input_object',
-    data_setValue: {
+    state_setValue: {
       name: 'component/children',
       value: {
         $ref: 'action_input_object_id'
@@ -224,7 +224,7 @@ export const dataDocumentValue = createAction('data-document-value', [
   },
   {
     $id: 'action_input_array_items',
-    data_setValue: {
+    state_setValue: {
       name: 'component/items',
       value: {
         id: 'action-input-array-items',
@@ -260,7 +260,7 @@ export const dataDocumentValue = createAction('data-document-value', [
   },
   {
     $id: 'component_children_action_input_array',
-    data_setValue: {
+    state_setValue: {
       name: 'component/children',
       value: {
         $ref: 'action_input_array_items_id'

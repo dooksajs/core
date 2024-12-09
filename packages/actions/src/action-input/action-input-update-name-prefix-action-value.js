@@ -23,7 +23,7 @@ export default createAction('action-input-update-name-prefix-action-value', [
   },
   {
     $id: 'update_action_prefix_name',
-    data_addListener: {
+    state_addListener: {
       name: 'variable/values',
       id: { $ref: 'root_id' },
       handler: 'action-input-name-prefix-action-value'

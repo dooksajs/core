@@ -10,7 +10,7 @@ export default createAction('data-document-set-fieldset', [
   },
   {
     $id: 'document_value',
-    data_getValue: {
+    state_getValue: {
       name: { $ref: 'collection_value' },
       id: { action_getPayloadValue: 'target.value' }
     }
@@ -35,7 +35,7 @@ export default createAction('data-document-set-fieldset', [
   },
   {
     $id: 'parent_component',
-    data_getValue: {
+    state_getValue: {
       name: 'component/parents',
       id: {
         action_getContextValue: 'parentId'
@@ -44,7 +44,7 @@ export default createAction('data-document-set-fieldset', [
   },
   {
     $id: 'component_action_label_value',
-    data_setValue: {
+    state_setValue: {
       name: 'component/items',
       value: {
         id: 'data-document-value-label',
@@ -68,7 +68,7 @@ export default createAction('data-document-set-fieldset', [
   },
   {
     $id: 'component_children_action_label_value',
-    data_setValue: {
+    state_setValue: {
       name: 'component/children',
       value: { $ref: 'component_action_label_value_id' },
       options: {
@@ -104,7 +104,7 @@ export default createAction('data-document-set-fieldset', [
   },
   {
     $id: 'action_input_data',
-    data_setValue: {
+    state_setValue: {
       name: 'component/items',
       value: {
         id: 'action-input-data-string',
@@ -132,7 +132,7 @@ export default createAction('data-document-set-fieldset', [
   },
   {
     $id: 'component_children_action_input_data',
-    data_setValue: {
+    state_setValue: {
       name: 'component/children',
       value: {
         action_getBlockValue: {

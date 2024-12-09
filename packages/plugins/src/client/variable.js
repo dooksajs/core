@@ -1,5 +1,5 @@
 import { createPlugin } from '@dooksa/create-plugin'
-import { dataGetValue, dataSetValue } from './data.js'
+import { stateGetValue, stateSetValue } from './data.js'
 import { generateId, getValue } from '@dooksa/utils'
 
 /**
@@ -68,7 +68,7 @@ export const variable = createPlugin('variable', {
       method (props, { context }) {
         if (props.scope) {
           // get variable from specific scope
-          const value = dataGetValue({
+          const value = stateGetValue({
             name: 'variable/values',
             id: props.scope
           })
@@ -83,14 +83,14 @@ export const variable = createPlugin('variable', {
         }
 
         // get scopes
-        const scopes = dataGetValue({
+        const scopes = stateGetValue({
           name: 'variable/scopes',
           id: context.rootId
         }).item
 
         for (let i = 0; i < scopes.length; i++) {
           // search for variable in scope
-          const values = dataGetValue({
+          const values = stateGetValue({
             name: 'variable/values',
             id: scopes[i]
           })
@@ -133,7 +133,7 @@ export const variable = createPlugin('variable', {
         }
 
         if (props.scope) {
-          dataSetValue({
+          stateSetValue({
             name: 'component/belongsToScopes',
             value: props.scope,
             options: {
@@ -144,7 +144,7 @@ export const variable = createPlugin('variable', {
             }
           })
 
-          return dataSetValue({
+          return stateSetValue({
             name: 'variable/values',
             value: newValues,
             options: {
@@ -153,7 +153,7 @@ export const variable = createPlugin('variable', {
             }
           })
         } else {
-          const scope = dataGetValue({
+          const scope = stateGetValue({
             name: 'variable/scopes',
             id: context.rootId
           }).item
@@ -161,7 +161,7 @@ export const variable = createPlugin('variable', {
           // assign values to matching variables in parent scope
           for (let i = 0; i < scope.length; i++) {
             const id = scope[i]
-            const values = dataGetValue({
+            const values = stateGetValue({
               name: 'variable/values',
               id
             })
@@ -184,7 +184,7 @@ export const variable = createPlugin('variable', {
               }
 
               if (hasValue) {
-                dataSetValue({
+                stateSetValue({
                   name: 'variable/values',
                   value,
                   options: {
@@ -203,7 +203,7 @@ export const variable = createPlugin('variable', {
 
           // assign value to current context
           if (newValueKeys.length) {
-            dataSetValue({
+            stateSetValue({
               name: 'variable/values',
               value: newValues,
               options: {

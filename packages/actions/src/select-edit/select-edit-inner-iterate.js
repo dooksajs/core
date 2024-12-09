@@ -32,7 +32,7 @@ export default createAction('select-edit-inner-iterate', [
     }
   },
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/items',
       value: {
         id: 'select-edit-inner',

@@ -1,5 +1,5 @@
 import createAppServer from './app-server.js'
-import { dataSetValue } from '@dooksa/plugins/client'
+import { stateSetValue } from '@dooksa/plugins/client'
 import esbuild from 'esbuild'
 import { log } from '@dooksa/utils/server'
 import { resolve, extname, parse } from 'node:path'
@@ -61,7 +61,7 @@ server
                 const fileExtension = extname(file.path)
 
                 if (fileExtension === '.js') {
-                  dataSetValue({
+                  stateSetValue({
                     name: 'page/app',
                     value: file.text
                   })
@@ -69,7 +69,7 @@ server
                   const filename = parse(file.path)
 
                   if (filename.name === 'app-client.js') {
-                    dataSetValue({
+                    stateSetValue({
                       name: 'page/sourcemap',
                       value: file.text,
                       options: {
@@ -81,7 +81,7 @@ server
               }
 
               // notify sse to reload
-              dataSetValue({
+              stateSetValue({
                 name: 'development/rebuild',
                 value: ++rebuild
               })

@@ -3,7 +3,7 @@ import createAction from '@dooksa/create-action'
 export default createAction('action-input-data-action-option', [
   {
     $id: 'option_component',
-    data_setValue: {
+    state_setValue: {
       name: 'component/items',
       value: {
         id: 'option-variable-value',
@@ -30,7 +30,7 @@ export default createAction('action-input-data-action-option', [
   {
     action_getBlockValue: {
       value: {
-        data_getValue: {
+        state_getValue: {
           name: 'metadata/actions',
           id: { $ref: 1 }
         }
@@ -84,7 +84,7 @@ export default createAction('action-input-data-action-option', [
     }
   },
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/children',
       value: { $ref: 6 },
       options: {

@@ -2,7 +2,7 @@ import createAction from '@dooksa/create-action'
 
 export const dataDocumentOptionItem = createAction('data-document-option-item', [
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/items',
       value: {
         id: 'option-variable-value',
@@ -34,7 +34,7 @@ export const dataDocumentOptionItem = createAction('data-document-option-item', 
     }
   },
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/options',
       value: {
         value: { action_getPayloadValue: 'key' }
@@ -43,7 +43,7 @@ export const dataDocumentOptionItem = createAction('data-document-option-item', 
     }
   },
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/children',
       value: { $ref: 1 },
       options: {

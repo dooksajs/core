@@ -39,7 +39,7 @@ export default createAction('select-edit-inner', [
     }
   },
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/children',
       value: {
         $ref: 2

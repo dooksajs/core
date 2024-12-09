@@ -1,5 +1,5 @@
 import appendPlugin from './append-plugin.js'
-import defaultClientPlugins, { data } from '@dooksa/plugins/client'
+import defaultClientPlugins, { state } from '@dooksa/plugins/client'
 import defaultServerPlugins, { httpStart } from '@dooksa/plugins/server'
 import defaultActions from '@dooksa/actions'
 
@@ -11,7 +11,7 @@ import defaultActions from '@dooksa/actions'
 
 /**
  * @typedef {Object} ServerPlugins
- * @property {Plugin} [data]
+ * @property {Plugin} [state]
  * @property {Plugin} [middleware]
  * @property {Plugin} [http]
  * @property {Plugin} [metadata]
@@ -26,7 +26,7 @@ import defaultActions from '@dooksa/actions'
 
 /**
  * @typedef {Object} ClientPlugins
- * @property {Plugin} [data]
+ * @property {Plugin} [state]
  * @property {Plugin} [metadata]
  * @property {Plugin} [fetch]
  * @property {Plugin} [operator]
@@ -137,7 +137,7 @@ function initialize (serverPlugins, clientPlugins, actions) {
    * @param {Object} [param.options={}]
    */
   return ({ options = {} }) => {
-    options.data = serverPlugins.schema
+    options.state = serverPlugins.schema
     options.action = { actions: actions.items }
     options.metadata = {
       plugins: clientPlugins.metadata,
@@ -177,7 +177,7 @@ export default function createAppServer ({
   const appActions = appendAction()
 
   // use data
-  appServerPlugins.use(data)
+  appServerPlugins.use(state)
 
   // use required server-side plugins
   for (let i = 0; i < defaultServerPlugins.length; i++) {

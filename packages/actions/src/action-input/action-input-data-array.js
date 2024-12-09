@@ -2,7 +2,7 @@ import createAction from '@dooksa/create-action'
 
 export default createAction('action-input-data-array', [
   // {
-  //   data_setValue: {
+  //   state_setValue: {
   //     name: 'component/items',
   //     value: {
   //       id: 'action-input-data-string',
@@ -28,7 +28,7 @@ export default createAction('action-input-data-array', [
   //   }
   // },
   // {
-  //   data_setValue: {
+  //   state_setValue: {
   //     name: 'component/children',
   //     value: {
   //       action_getBlockValue: {

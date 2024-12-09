@@ -8,13 +8,13 @@ export default createAction('action-input-value-action-method', [
     }
   },
   {
-    data_getValue: {
+    state_getValue: {
       id: { $ref: 0 },
       name: 'metadata/actions'
     }
   },
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/options',
       value: {
         value: {

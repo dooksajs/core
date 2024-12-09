@@ -9,13 +9,13 @@ export const actionAddBlockListItemTitle = createAction('action-add-block-list-i
     }
   },
   {
-    data_getValue: {
+    state_getValue: {
       id: { $ref: 0 },
       name: 'metadata/actions'
     }
   },
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/options',
       value: {
         value: {

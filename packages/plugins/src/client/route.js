@@ -1,6 +1,7 @@
 import { createPlugin } from '@dooksa/create-plugin'
-import { dataGetValue, dataSetValue } from './data.js'
+import { stateGetValue } from './data.js'
 import { hash } from '@dooksa/utils'
+import { eventEmit } from './event.js'
 
 const pathHash = {}
 
@@ -60,11 +61,11 @@ export const route = createPlugin('route', {
         if (to === from) {
           return
         }
-        const fromSections = dataGetValue({
+        const fromSections = stateGetValue({
           name: 'page/items',
           id: from
         })
-        const toSections = dataGetValue({
+        const toSections = stateGetValue({
           name: 'page/items',
           id: to
         })
@@ -121,7 +122,7 @@ export const route = createPlugin('route', {
       method: currentId
     }
   },
-  models: {
+  schema: {
     sections: {
       type: 'collection',
       defaultId () {
@@ -134,9 +135,15 @@ export const route = createPlugin('route', {
   },
   setup () {
     window.addEventListener('popstate', (event) => {
-      console.log(
-        `location: ${document.location}, state: ${JSON.stringify(event.state)}`
-      )
+      eventEmit({
+        name: 'route/history',
+        id: 'popstate',
+        context: {},
+        payload: {
+          location: window.location,
+          state: event.state
+        }
+      })
     })
   }
 })

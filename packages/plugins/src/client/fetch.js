@@ -1,5 +1,5 @@
 import { createPlugin } from '@dooksa/create-plugin'
-import { dataGetValue, dataSetValue, dataAddListener } from './data.js'
+import { stateGetValue, stateSetValue, stateAddListener } from './data.js'
 
 const fetchRequestQueue = {}
 const fetchRequestCache = {}
@@ -21,7 +21,7 @@ function getCache (id) {
 
   for (let i = 0; i < cache.data.length; i++) {
     const item = cache.data[i]
-    const data = dataGetValue({
+    const data = stateGetValue({
       name: item.collection,
       id: item.id,
       options: {
@@ -41,7 +41,7 @@ function setRequestData (data, id) {
   for (let i = 0; i < data.length; i++) {
     const dataItem = data[i]
 
-    dataSetValue({
+    stateSetValue({
       name: dataItem.collection,
       value: dataItem.item,
       options: {
@@ -54,7 +54,7 @@ function setRequestData (data, id) {
       for (let i = 0; i < dataItem.expand.length; i++) {
         const data = dataItem.expand[i]
 
-        dataSetValue({
+        stateSetValue({
           name: data.collection,
           value: data.item,
           options: {
@@ -71,7 +71,7 @@ function setRequestData (data, id) {
       expand: !!dataItem.expand
     })
 
-    dataAddListener({
+    stateAddListener({
       name: dataItem.collection,
       on: 'delete',
       id: dataItem.id,

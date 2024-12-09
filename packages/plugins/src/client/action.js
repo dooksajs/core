@@ -1,6 +1,6 @@
 import { createPlugin } from '@dooksa/create-plugin'
 import { fetchGetById } from './fetch.js'
-import { dataGetValue } from './data.js'
+import { stateGetValue } from './data.js'
 import { operatorCompare, operatorEval } from './operator.js'
 import { getValue } from '@dooksa/utils'
 
@@ -25,7 +25,7 @@ function getBlockValue (id, blockValues) {
   let value = blockValues[id]
 
   if (!blockValues.hasOwnProperty(id)) {
-    const blockData = dataGetValue({
+    const blockData = stateGetValue({
       name: 'action/blocks',
       id
     })
@@ -63,7 +63,7 @@ function getBlockValues (block, context, payload, blockValues) {
 
   for (let i = 0; i < blocks.length; i++) {
     const id = blocks[i]
-    const block = dataGetValue({
+    const block = stateGetValue({
       name: 'action/blocks',
       id
     })
@@ -95,14 +95,14 @@ function processSequence (sequence, context, payload, blockValues = {}, callback
 
   for (let i = 0; i < sequence.length; i++) {
     const blockSequenceId = sequence[i]
-    const blockSequence = dataGetValue({
+    const blockSequence = stateGetValue({
       name: 'action/blockSequences',
       id: blockSequenceId
     }).item
 
     for (let i = 0; i < blockSequence.length; i++) {
       const id = blockSequence[i]
-      const block = dataGetValue({
+      const block = stateGetValue({
         name: 'action/blocks',
         id
       })
@@ -377,7 +377,7 @@ export const action = createPlugin('action', {
         }
 
         return new Promise((resolve, reject) => {
-          const sequence = dataGetValue({
+          const sequence = stateGetValue({
             name: 'action/sequences',
             id,
             options: {

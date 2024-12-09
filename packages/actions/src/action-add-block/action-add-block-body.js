@@ -32,7 +32,7 @@ export const actionAddBlockBody = createAction('action-add-block-body', [
     }
   },
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/items',
       value: {
         id: 'action-add-block-body',
@@ -41,7 +41,7 @@ export const actionAddBlockBody = createAction('action-add-block-body', [
     }
   },
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/children',
       value: {
         action_getBlockValue: {

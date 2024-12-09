@@ -31,13 +31,13 @@
  * @property {number|string} [$ref]
  * @property {ComponentRemove} [component_remove]
  * @property {ComponentRenderChildren} [component_renderChildren]
- * @property {DataAddListener} [data_addListener]
- * @property {DataAddListener} [data_deleteListener]
- * @property {DataDeleteValue} [data_deleteValue]
- * @property {DataFind} [data_find]
- * @property {'$null'} [data_generateId]
- * @property {DataGetValue} [data_getValue]
- * @property {DataSetValue} [data_setValue]
+ * @property {StateAddListener} [state_addListener]
+ * @property {StateAddListener} [state_deleteListener]
+ * @property {StateDeleteValue} [state_deleteValue]
+ * @property {StateFind} [state_find]
+ * @property {'$null'} [state_generateId]
+ * @property {StateGetValue} [state_getValue]
+ * @property {StateSetValue} [state_setValue]
  * @property {string|ActionValue} [editor_getSchema]
  * @property {FetchGetAll} [fetch_getAll]
  * @property {FetchGetById} [fetch_getById]
@@ -134,7 +134,7 @@
  */
 
 /**
- * @typedef {Object} DataDeleteValue
+ * @typedef {Object} StateDeleteValue
  * @property {ActionValue|DataCollectionName} name
  * @property {ActionValue|string} id
  * @property {ActionValue|boolean} [cascade]
@@ -143,7 +143,7 @@
 
 /**
  * Add data listener
- * @typedef {Object} DataAddListener
+ * @typedef {Object} StateAddListener
  * @property {DataCollectionName} name - Collection name
  * @property {'update'|'delete'} [on='update'] - Fire handler on data event
  * @property {ActionValue|string} [id] - Document Id
@@ -156,7 +156,7 @@
 
 /**
  * Delete data listener
- * @typedef {Object} DataDeleteListener
+ * @typedef {Object} StateDeleteListener
  * @property {DataCollectionName} name - Collection name
  * @property {ActionValue|string} [id] - Document Id
  * @property {'update'|'delete'} [on='update'] - Fire handler on data event
@@ -224,7 +224,7 @@
  */
 
 /**
- * @typedef {Object} DataGetValue
+ * @typedef {Object} StateGetValue
  * @property {ActionValue|DataCollectionName} name
  * @property {ActionValue|string} [id]
  * @property {ActionValue|string} [prefixId]
@@ -264,7 +264,7 @@
  */
 
 /**
- * @typedef {Object} DataSetValueOptions
+ * @typedef {Object} StateSetValueOptions
  * @property {ActionValue|string} id
  * @property {Object} [metadata] - Document metadata
  * @property {ActionValue|boolean} [stopPropagation]
@@ -278,14 +278,14 @@
  */
 
 /**
- * @typedef {Object} DataSetValue
+ * @typedef {Object} StateSetValue
  * @property {ActionValue|DataCollectionName} name
  * @property {ActionValue|ActionValue[]|string|number|boolean|NestedData} value
- * @property {DataSetValueOptions} [options]
+ * @property {StateSetValueOptions} [options]
  */
 
 /**
- * @typedef {Object} DataFind
+ * @typedef {Object} StateFind
  * @property {ActionValue|DataCollectionName} name
  * @property {Object[]} where
  * @property {ActionValue|string} where[].name
