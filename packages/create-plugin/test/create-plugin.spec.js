@@ -117,7 +117,7 @@ describe('Create plugin', function () {
       })
 
       // @ts-ignore
-      strictEqual(plugin.state.items[0].entries[1].entry.id.default(), 'red')
+      strictEqual(plugin.state._items[0].entries[1].entry.id.default(), 'red')
     })
 
     it('prefix id function contextual this should be bound to the plugins context', function () {
@@ -142,7 +142,7 @@ describe('Create plugin', function () {
       })
 
       // @ts-ignore
-      strictEqual(plugin.state.items[0].entries[1].entry.id.prefix(), 'red')
+      strictEqual(plugin.state._items[0].entries[1].entry.id.prefix(), 'red')
     })
 
     it('suffix id function contextual this should be bound to the plugins context', function () {
@@ -167,7 +167,7 @@ describe('Create plugin', function () {
       })
 
       // @ts-ignore
-      strictEqual(plugin.state.items[0].entries[1].entry.id.suffix(), 'red')
+      strictEqual(plugin.state._items[0].entries[1].entry.id.suffix(), 'red')
     })
   })
 
