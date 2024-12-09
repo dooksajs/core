@@ -1,5 +1,5 @@
 import { createPlugin } from '@dooksa/create-plugin'
-import { stateGetValue, stateSetValue, stateAddListener } from './data.js'
+import { stateGetValue, stateSetValue, stateAddListener } from '#client'
 
 const fetchRequestQueue = {}
 const fetchRequestCache = {}
