@@ -1,5 +1,5 @@
 // @ts-nocheck
-import data from './data.js'
+import state from './state.js'
 import editor from './editor.js'
 import action from './action.js'
 import component from './component.js'
@@ -18,7 +18,7 @@ import variable from './variable.js'
 import string from './string.js'
 import regex from './regex.js'
 
-export * from './data.js'
+export * from './state.js'
 export * from './editor.js'
 export * from './action.js'
 export * from './component.js'
@@ -39,7 +39,7 @@ export * from './regex.js'
 export * from './lazy/index.js'
 
 export default [
-  data,
+  state,
   metadata,
   $fetch,
   operator,
