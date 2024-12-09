@@ -1,4 +1,4 @@
-import { capitalize } from '@dooksa/utils'
+import { capitalize, deepClone } from '@dooksa/utils'
 import { createSchema } from './create-schema.js'
 
 /**
@@ -68,6 +68,8 @@ export function createPlugin (name, {
   }
 
   if (schema) {
+    schema = deepClone(schema)
+
     const values = {}
     const items = []
     const names = []
@@ -139,18 +141,18 @@ export function createPlugin (name, {
   }
 
   if (data) {
+    data = deepClone(data)
+
     for (const key in data) {
       if (Object.hasOwnProperty.call(data, key)) {
-        let item = data[key]
-
         // set data context
-        context[key] = item
+        context[key] = data[key]
       }
     }
   }
 
+  // map actions
   if (actions) {
-    // map actions
     for (const key in actions) {
       if (Object.prototype.hasOwnProperty.call(actions, key)) {
         if (context[key]) {
@@ -162,7 +164,10 @@ export function createPlugin (name, {
         const actionName = name + '_' + key
         const method = action.method.bind(context)
 
-        context[key] = action.method
+        // bind context to method
+        context[key] = method
+
+        // mocks action call
         result[actionModuleName] = (params) => {
           return method(params, actionContext)
         }

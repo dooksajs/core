@@ -1,11 +1,11 @@
 /**
- * Simple deep clone - because JS can't have nice things {@link https://jsbench.me/gvlp19oy0u/2}
+ * Shallow copy
  * @template T
  * @param {T} data - Input data
  * @param {boolean} [freeze] - Deep freeze the cloned data
  * @returns {T}
  */
-function deepClone (data, freeze) {
+function shallowCopy (data, freeze) {
   if (typeof data !== 'object' || data === null) {
     return data
   }
@@ -16,7 +16,7 @@ function deepClone (data, freeze) {
     temp = new Array(data.length)
 
     for (let i = 0; i < data.length; i++) {
-      temp[i] = deepClone(data[i], freeze)
+      temp[i] = data[i]
     }
 
     // @ts-ignore
@@ -31,13 +31,13 @@ function deepClone (data, freeze) {
     for (key in data) {
       if (key === '__proto__') {
         Object.defineProperty(temp, key, {
-          value: deepClone(data[key], freeze),
+          value: data[key],
           configurable: true,
           enumerable: true,
           writable: true
         })
       } else {
-        temp[key] = deepClone(data[key], freeze)
+        temp[key] = data[key]
       }
     }
 
@@ -57,7 +57,7 @@ function deepClone (data, freeze) {
 
     for (key in data) {
       if (data.hasOwnProperty(key)) {
-        temp[key] = deepClone(data[key], freeze)
+        temp[key] = data[key]
       }
     }
 
@@ -86,4 +86,4 @@ function deepClone (data, freeze) {
   return data
 }
 
-export default deepClone
+export default shallowCopy
