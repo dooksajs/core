@@ -2080,18 +2080,19 @@ export const state = createPlugin('state', {
               result.isAffixEmpty = true
             }
           }
-        } else {
-          result.item = this.values[name]
-        }
 
-        if (result.item == null) {
-          result.isEmpty = true
+          // return empty value
+          if (result.item == null) {
+            result.isEmpty = true
 
-          if (options && options.expand) {
-            result.isExpandEmpty = true
+            if (options && options.expand) {
+              result.isExpandEmpty = true
+            }
+
+            return result
           }
-
-          return result
+        } else {
+          result.item = collection
         }
 
         if (!options) {
