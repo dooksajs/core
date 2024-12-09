@@ -7,7 +7,7 @@ import createPlugin from '@dooksa/create-plugin'
 
 /**
  * @typedef {Object} MockState
- * @property {state} state - State plugin
+ * @property {state} methods - State plugin
  * @property {Function} restore - Reset state
  */
 
@@ -44,7 +44,7 @@ export function mockState (plugins = []) {
         state.setup(_state)
 
         resolve({
-          state,
+          methods: state,
           restore () {
             // restore default state
             state.setup({
