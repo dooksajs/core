@@ -1,8 +1,8 @@
 import { createPlugin } from '@dooksa/create-plugin'
 import { operatorEval, listSplice, actionDispatch } from '#client'
 import { DataSchemaException, DataValueException } from '../utils/error.js'
-import { deepClone, generateId, isEnvServer, getValue } from '@dooksa/utils'
-import { cloneDataValue, createDataValue } from '../utils/data-value.js'
+import { deepClone, generateId, isEnvServer, getValue, shallowCopy } from '@dooksa/utils'
+import { createDataValue } from '../utils/data-value.js'
 
 /**
  * @import {SetDataOptions, GetDataQuery, GetDataOption, DataWhere} from '../../../types.js'
