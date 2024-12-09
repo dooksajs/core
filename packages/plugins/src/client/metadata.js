@@ -56,33 +56,48 @@ export const metadata = createPlugin('metadata', {
     }
   },
   /**
-   * @param {Object} param
-   * @param {string} [param.defaultLanguage='en'] - Default system language
-   * @param {string[]} [param.languages=['en']] - List of available languages
+   * @param {Object} [options]
+   * @param {string} [options.defaultLanguage] - Default system language
+   * @param {string[]} [options.languages] - List of available languages
    */
-  setup ({
-    defaultLanguage = 'en',
-    languages = ['en']
-  } = {}) {
+  setup (options) {
     const params = new URLSearchParams(window.location.search)
     const langParam = params.get('lang')
     let currentLanguage = ''
+    let languages
+    let defaultLanguage
+
+    // set language overwrites
+    if (options) {
+      languages = options.languages
+      defaultLanguage = options.defaultLanguage
+    }
+
+    if (!languages) {
+      languages = stateGetValue({ name: 'metadata/languages' }).item
+    } else {
+      stateSetValue({
+        name: 'metadata/languages',
+        value: languages
+      })
+    }
+
+    if (!defaultLanguage) {
+      defaultLanguage = stateGetValue({ name: 'metadata/defaultLanguage' }).item
+    } else {
+      stateSetValue({
+        name: 'metadata/defaultLanguage',
+        value: defaultLanguage
+      })
+    }
 
     if (langParam && languages.includes(langParam) && langParam !== defaultLanguage) {
       currentLanguage = langParam
     }
 
     stateSetValue({
-      name: 'metadata/defaultLanguage',
-      value: defaultLanguage
-    })
-    stateSetValue({
       name: 'metadata/currentLanguage',
       value: currentLanguage
-    })
-    stateSetValue({
-      name: 'metadata/languages',
-      value: languages
     })
 
     stateAddListener({
