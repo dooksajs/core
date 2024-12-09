@@ -1,6 +1,8 @@
 import { describe, it } from 'node:test'
 import { deepStrictEqual, strictEqual } from 'node:assert'
-import { mockWindowLocationSearch } from '#mock'
+import { mockWindowLocationSearch, mockPlugins, mockState } from '#mock'
+import { metadata } from '#client'
+const { name, state } = metadata
 
 let importCacheQuery = 0
 
@@ -8,33 +10,39 @@ describe('Metadata', function () {
   describe('Setup', function () {
     it('should successfully set default languages', async function (t) {
       const restoreWindow = mockWindowLocationSearch()
-      const database = {}
+      const stateMock = await mockState([{
+        name,
+        state
+      }])
 
-      // mock data plugin exports
-      const dataMock = t.mock.module('#client', {
-        namedExports: {
-          dataSetValue ({ name, value }) {
-            database[name] = value
-          },
-          dataAddListener () {
-            return
-          },
-          dataGetValue () {
-            return
-          }
-        }
+      const pluginMock = mockPlugins(t, {
+        stateSetValue: stateMock.methods.stateSetValue,
+        stateAddListener () {
+        },
+        stateGetValue: stateMock.methods.stateGetValue
       })
 
       const { metadata } = await import('../../src/client/metadata.js?' + importCacheQuery++)
 
       metadata.setup()
 
-      strictEqual(database['metadata/defaultLanguage'], 'en')
-      strictEqual(database['metadata/currentLanguage'], '')
-      deepStrictEqual(database['metadata/languages'], ['en'])
+      const defaultLanguage = stateMock.methods.stateGetValue({
+        name: 'metadata/defaultLanguage'
+      })
+      const currentLanguage = stateMock.methods.stateGetValue({
+        name: 'metadata/currentLanguage'
+      })
+      const languages = stateMock.methods.stateGetValue({
+        name: 'metadata/languages'
+      })
+
+      strictEqual(defaultLanguage.item, 'en')
+      strictEqual(currentLanguage.item, '')
+      deepStrictEqual(languages.item, ['en'])
 
       restoreWindow()
-      dataMock.restore()
+      pluginMock.restore()
+      stateMock.restore()
     })
 
     it('should successfully set current language', async function (t) {
@@ -44,13 +52,13 @@ describe('Metadata', function () {
       // mock data plugin exports
       const dataMock = t.mock.module('#client', {
         namedExports: {
-          dataSetValue ({ name, value }) {
+          stateSetValue ({ name, value }) {
             database[name] = value
           },
-          dataAddListener () {
+          stateAddListener () {
             return
           },
-          dataGetValue () {
+          stateGetValue () {
             return
           }
         }
@@ -83,7 +91,7 @@ describe('Metadata', function () {
      * @param {Object} database
      * @param {DatabaseListeners} databaseListeners
      */
-    function dataSetValue (database, databaseListeners) {
+    function stateSetValue (database, databaseListeners) {
       /**
        * @param {Object} param
        * @param {string} param.name
@@ -123,7 +131,7 @@ describe('Metadata', function () {
      * Mock add data listener
      * @param {DatabaseListeners} databaseListeners
      */
-    function dataAddListener (databaseListeners) {
+    function stateAddListener (databaseListeners) {
       return function ({
         name,
         on,
@@ -153,13 +161,13 @@ describe('Metadata', function () {
         update: {},
         delete: {}
       }
-      const mockDataSetValue = dataSetValue(database, databaseListeners)
+      const mockStateSetValue = stateSetValue(database, databaseListeners)
       // mock data plugin exports
       const dataMock = t.mock.module('#client', {
         namedExports: {
-          dataSetValue: mockDataSetValue,
-          dataAddListener: dataAddListener(databaseListeners),
-          dataGetValue ({ name }) {
+          stateSetValue: mockStateSetValue,
+          stateAddListener: stateAddListener(databaseListeners),
+          stateGetValue ({ name }) {
             return {
               item: database[name]
             }
@@ -173,7 +181,7 @@ describe('Metadata', function () {
         languages: ['en', 'fr']
       })
 
-      mockDataSetValue({
+      mockStateSetValue({
         name: 'metadata/currentLanguage',
         value: 'fr'
       })
@@ -193,13 +201,13 @@ describe('Metadata', function () {
         update: {},
         delete: {}
       }
-      const mockDataSetValue = dataSetValue(database, databaseListeners)
+      const mockStateSetValue = stateSetValue(database, databaseListeners)
       // mock data plugin exports
       const dataMock = t.mock.module('#client', {
         namedExports: {
-          dataSetValue: mockDataSetValue,
-          dataAddListener: dataAddListener(databaseListeners),
-          dataGetValue ({ name }) {
+          stateSetValue: mockStateSetValue,
+          stateAddListener: stateAddListener(databaseListeners),
+          stateGetValue ({ name }) {
             return {
               item: database[name]
             }
@@ -214,7 +222,7 @@ describe('Metadata', function () {
       })
 
       // change language
-      mockDataSetValue({
+      mockStateSetValue({
         name: 'metadata/currentLanguage',
         value: 'de'
       })
@@ -234,13 +242,13 @@ describe('Metadata', function () {
         update: {},
         delete: {}
       }
-      const mockDataSetValue = dataSetValue(database, databaseListeners)
+      const mockStateSetValue = stateSetValue(database, databaseListeners)
       // mock data plugin exports
       const dataMock = t.mock.module('#client', {
         namedExports: {
-          dataSetValue: mockDataSetValue,
-          dataAddListener: dataAddListener(databaseListeners),
-          dataGetValue ({ name }) {
+          stateSetValue: mockStateSetValue,
+          stateAddListener: stateAddListener(databaseListeners),
+          stateGetValue ({ name }) {
             return {
               item: database[name]
             }
@@ -255,7 +263,7 @@ describe('Metadata', function () {
       })
 
       // change language
-      mockDataSetValue({
+      mockStateSetValue({
         name: 'metadata/currentLanguage',
         value: 'en'
       })
