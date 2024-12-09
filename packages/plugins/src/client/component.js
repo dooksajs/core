@@ -1,14 +1,14 @@
 import { createPlugin } from '@dooksa/create-plugin'
+import { componentOptions } from '@dooksa/create-component'
+import { generateId } from '@dooksa/utils'
 import {
+  eventEmit,
   stateUnsafeSetValue,
   stateGetValue,
   stateAddListener,
   stateSetValue,
   stateDeleteValue
-} from './data.js'
-import { eventEmit } from './event.js'
-import { componentOptions } from '@dooksa/create-component'
-import { generateId } from '@dooksa/utils'
+} from '#client'
 
 /**
  * @typedef {import('@dooksa/create-component').Component} Component
