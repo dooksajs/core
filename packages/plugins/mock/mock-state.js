@@ -1,6 +1,6 @@
 /**
  * @import {state} from '../src/client/state.js'
- * @import {PluginStateGetter} from '@dooksa/create-plugin/types'
+ * @import {PluginState, PluginStateGetter} from '@dooksa/create-plugin/types'
  */
 
 import createPlugin from '@dooksa/create-plugin'
@@ -14,27 +14,40 @@ import createPlugin from '@dooksa/create-plugin'
 /**
  * @param {Object[]} [plugins=[]]
  * @param {string} plugins[].name - Name of plugin
- * @param {PluginStateGetter} plugins[].state - Plugin schema
+ * @param {PluginState & PluginStateGetter} plugins[].state - Plugin schema
  * @returns {Promise<MockState>}
  */
 export function mockState (plugins = []) {
   return new Promise((resolve, reject) => {
     /** @type {PluginStateGetter} */
     const _state = {
-      values: {},
-      items: [],
-      names: [],
+      _defaults: [],
+      _items: [],
+      _names: [],
+      _values: {},
+      defaults: [],
       schema: {}
     }
 
     // crate schema for state
     for (let i = 0; i < plugins.length; i++) {
-      const { name, state } = plugins[i]
-      const plugin = createPlugin(name, { state })
+      const pluginData = plugins[i]
+      let state = pluginData.state
 
-      _state.names = _state.names.concat(plugin.state.names)
-      _state.items = _state.items.concat(plugin.state.items)
-      _state.values = Object.assign(_state.values, plugin.state.values)
+      if (!state._values) {
+        const plugin = createPlugin(pluginData.name, { state: pluginData.state })
+
+        state = plugin.state
+      }
+
+      _state._names = _state._names.concat(state._names)
+      _state._items = _state._items.concat(state._items)
+      _state._values = Object.assign(_state._values, state._values)
+
+      // append defaults
+      if (state._defaults.length) {
+        _state._defaults = _state._defaults.concat(state._defaults)
+      }
     }
 
     // import state module
@@ -48,10 +61,12 @@ export function mockState (plugins = []) {
           restore () {
             // restore default state
             state.setup({
-              values: {},
-              items: [],
-              names: [],
-              schema: {}
+              _values: {},
+              _items: [],
+              _names: [],
+              schema: {},
+              defaults: [],
+              _defaults: []
             })
           }
         })
