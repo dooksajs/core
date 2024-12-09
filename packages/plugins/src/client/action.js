@@ -1,7 +1,5 @@
 import { createPlugin } from '@dooksa/create-plugin'
-import { fetchGetById } from './fetch.js'
-import { stateGetValue } from './data.js'
-import { operatorCompare, operatorEval } from './operator.js'
+import { stateGetValue, fetchGetById, operatorCompare, operatorEval } from '#client'
 import { getValue } from '@dooksa/utils'
 
 /**
