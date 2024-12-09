@@ -2,7 +2,7 @@ import { createPlugin } from '@dooksa/create-plugin'
 
 /**
  * @typedef {Object} RegexPattern
- * @property {string} pattern - The text of the regular expression. This can also be another RegExp object.
+ * @property {RegExp} pattern - The text of the regular expression. This can also be another RegExp object.
  * @property {string} flags - If specified, flags is a string that contains the flags to add. Alternatively, if a RegExp object is supplied for the pattern, the flags string will replace any of that object's flags (and lastIndex will be reset to 0).
  */
 
@@ -29,7 +29,7 @@ export const regex = createPlugin('regex', {
   }
 })
 
-export const{
+export const {
   regexPattern
 } = regex
 
