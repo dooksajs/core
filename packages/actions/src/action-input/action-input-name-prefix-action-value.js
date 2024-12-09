@@ -20,7 +20,7 @@ export default createAction('action-input-name-prefix-action-value', [
     }
   },
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/options',
       value: {
         name: { $ref: 'new_input_name' }

@@ -25,7 +25,7 @@ export default createAction('label-html-for', [
     }
   },
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/options',
       value: {
         for: {
@@ -54,7 +54,7 @@ export default createAction('label-html-for', [
     }
   },
   {
-    data_generateId: '$null'
+    state_generateId: '$null'
   },
   {
     variable_setValue: {
@@ -72,7 +72,7 @@ export default createAction('label-html-for', [
     }
   },
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/options',
       value: {
         for: {

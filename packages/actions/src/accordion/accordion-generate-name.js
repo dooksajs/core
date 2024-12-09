@@ -2,7 +2,7 @@ import createAction from '@dooksa/create-action'
 
 export default createAction('accordion-generate-name', [
   {
-    data_generateId: '$null'
+    state_generateId: '$null'
   },
   {
     variable_setValue: {

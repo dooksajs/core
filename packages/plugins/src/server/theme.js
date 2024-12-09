@@ -1,6 +1,6 @@
 import { createPlugin } from '@dooksa/create-plugin'
 import { existsSync } from 'node:fs'
-import { dataSetValue } from '../client/index.js'
+import { stateSetValue } from '../client/index.js'
 import compileSass from '@dooksa/theme'
 
 export const theme = createPlugin('theme', {
@@ -25,7 +25,7 @@ export const theme = createPlugin('theme', {
 
     const result = compileSass(path)
 
-    dataSetValue({
+    stateSetValue({
       name: 'page/css',
       value: result.css
     })

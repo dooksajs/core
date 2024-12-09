@@ -20,7 +20,7 @@ export const dataSetValueByIdUpdateFieldset = createAction('data-set-value-by-id
   },
   {
     $id: 'component_select_document',
-    data_setValue: {
+    state_setValue: {
       name: 'component/items',
       value: {
         id: 'data-select-document-by-id',
@@ -37,7 +37,7 @@ export const dataSetValueByIdUpdateFieldset = createAction('data-set-value-by-id
   },
   {
     $id: 'component_children_root_select_document',
-    data_setValue: {
+    state_setValue: {
       name: 'component/children',
       value: { $ref: 'component_select_document_id' },
       options: {

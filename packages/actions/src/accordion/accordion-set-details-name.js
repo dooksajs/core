@@ -10,7 +10,7 @@ export default createAction('accordion-set-details-name', [
     }
   },
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/options',
       value: {
         name: {

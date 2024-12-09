@@ -21,7 +21,7 @@ export default createAction('action-input-key', [
   },
   {
     $id: 'update_component_option',
-    data_setValue: {
+    state_setValue: {
       name: 'component/options',
       value: {
         value: { $ref: 'key' }

@@ -1,6 +1,6 @@
 import { createPlugin } from '@dooksa/create-plugin'
 import { httpSetRoute } from './http.js'
-import { dataAddListener, dataDeleteListener } from '../client/index.js'
+import { stateAddListener, stateDeleteListener } from '../client/index.js'
 import { generateId } from '@dooksa/utils'
 
 export const development = createPlugin('development', {
@@ -31,7 +31,7 @@ export const development = createPlugin('development', {
         this.sse_streams[id] = response.sse
 
         // emit client rebuild data
-        dataAddListener({
+        stateAddListener({
           name: 'development/rebuild',
           on: 'update',
           handlerId: id,
@@ -43,7 +43,7 @@ export const development = createPlugin('development', {
         // close the connection when the client disconnects
         response.once('close', () => {
           // delete client/server rebuild data listeners
-          dataDeleteListener({
+          stateDeleteListener({
             name: 'development/rebuild',
             on: 'update',
             handlerId: id

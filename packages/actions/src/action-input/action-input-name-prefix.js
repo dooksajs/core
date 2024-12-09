@@ -2,7 +2,7 @@ import createAction from '@dooksa/create-action'
 
 export default createAction('action-input-name-prefix', [
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/options',
       value: {
         name: {

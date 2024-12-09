@@ -1,6 +1,6 @@
 import { createPlugin, mapSchema } from '@dooksa/create-plugin'
 import { createAction, compileAction } from '@dooksa/create-action'
-import { action as actionClient, dataSetValue } from '../client/index.js'
+import { action as actionClient, stateSetValue } from '../client/index.js'
 import { databaseSeed, databaseGetValue, databaseDeleteValue } from './database.js'
 import { httpSetRoute } from './http.js'
 
@@ -268,7 +268,7 @@ export const action = createPlugin('action', {
     setAction (action) {
       const compiledAction = compileAction(action)
 
-      dataSetValue({
+      stateSetValue({
         name: 'action/sequences',
         value: compiledAction.sequences,
         options: {
@@ -276,7 +276,7 @@ export const action = createPlugin('action', {
         }
       })
 
-      dataSetValue({
+      stateSetValue({
         name: 'action/blocks',
         value: compiledAction.blocks,
         options: {
@@ -284,7 +284,7 @@ export const action = createPlugin('action', {
         }
       })
 
-      dataSetValue({
+      stateSetValue({
         name: 'action/blockSequences',
         value: compiledAction.blockSequences,
         options: {
@@ -293,7 +293,7 @@ export const action = createPlugin('action', {
       })
 
       for (let i = 0; i < action.dependencies.length; i++) {
-        dataSetValue({
+        stateSetValue({
           name: 'action/dependencies',
           value: action.dependencies[i],
           options: {
@@ -358,7 +358,7 @@ export const action = createPlugin('action', {
         (request, response) => {
           const id = request.body['action-name']
 
-          dataSetValue({
+          stateSetValue({
             name: 'action/templates',
             value: request.body,
             options: { id }

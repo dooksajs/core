@@ -2,7 +2,7 @@ import createAction from '@dooksa/create-action'
 
 export default createAction('select-edit-modal', [
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/items',
       value: {
         id: 'modal-section-edit',
@@ -39,7 +39,7 @@ export default createAction('select-edit-modal', [
     }
   },
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/children',
       value: {
         $ref: 1

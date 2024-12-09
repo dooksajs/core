@@ -30,7 +30,7 @@ export default createAction('select-edit-outer-iterate', [
     }
   },
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/items',
       value: {
         id: 'select-edit-outer',

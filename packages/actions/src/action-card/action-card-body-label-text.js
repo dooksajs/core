@@ -2,7 +2,7 @@ import createAction from '@dooksa/create-action'
 
 export const actionCardBodyLabelText = createAction('action-card-body-label-text', [
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/options',
       value: {
         value: {

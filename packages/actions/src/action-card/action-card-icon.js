@@ -8,13 +8,13 @@ export const actionCardIcon = createAction('action-card-icon', [
     }
   },
   {
-    data_getValue: {
+    state_getValue: {
       id: { $ref: 0 },
       name: 'metadata/actions'
     }
   },
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/options',
       value: {
         icon: {

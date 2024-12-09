@@ -2,7 +2,7 @@ import { createPlugin } from '@dooksa/create-plugin'
 import { randomBytes, scryptSync, timingSafeEqual } from 'crypto'
 import jwt from 'jsonwebtoken'
 import { databaseDeleteValue, databaseSeed, databaseSetValue } from './database.js'
-import { dataGetValue } from '../client/index.js'
+import { stateGetValue } from '../client/index.js'
 import { httpSetRoute } from './http.js'
 import { middlewareSet } from './middleware.js'
 import { generateId } from '@dooksa/utils'
@@ -183,7 +183,7 @@ function create (request, response) {
   const hash = hashPassword(request.body.password)
 
   // TODO: update snapshot
-  const email = dataGetValue({
+  const email = stateGetValue({
     name: 'user/emails',
     id: request.body.email
   })
@@ -244,7 +244,7 @@ function login (request, response) {
   //   where.username = data.username
   // }
 
-  const userId = dataGetValue({
+  const userId = stateGetValue({
     name: 'user/emails',
     id: data.email
   })
@@ -255,7 +255,7 @@ function login (request, response) {
     })
   }
 
-  const user = dataGetValue({
+  const user = stateGetValue({
     name: 'user/items',
     id: userId.item
   })

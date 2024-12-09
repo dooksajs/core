@@ -2,7 +2,7 @@ import createAction from '@dooksa/create-action'
 
 export const actionAddBlockCollapse = createAction('action-add-block-collapse', [
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/options',
       value: { open: false },
       options: {

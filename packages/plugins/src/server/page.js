@@ -1,6 +1,6 @@
 import { createPlugin, mapSchema } from '@dooksa/create-plugin'
 import { createHash } from 'node:crypto'
-import { page as pageClient, pageGetItemsByPath, dataGetValue, dataSetValue } from '../client/index.js'
+import { page as pageClient, pageGetItemsByPath, stateGetValue, stateSetValue } from '../client/index.js'
 import { databaseSeed, databaseSetValue } from './database.js'
 import { httpSetRoute } from './http.js'
 
@@ -37,11 +37,11 @@ export const page = createPlugin('page', {
      * @returns {{ script: string, csp: string }}
      */
     createApp (data = []) {
-      const appString = dataGetValue({ name: 'page/app' }).item
+      const appString = stateGetValue({ name: 'page/app' }).item
       let script = '(() => {const __ds =' + JSON.stringify(data) + ';' + appString
 
       DEV: {
-        const sourcemap = dataGetValue({ name: 'page/sourcemap' })
+        const sourcemap = stateGetValue({ name: 'page/sourcemap' })
 
         if (!sourcemap.isEmpty) {
           script += '//# sourceMappingURL=/_/sourcemap/app-client.js.map\n'
@@ -60,7 +60,7 @@ export const page = createPlugin('page', {
      * @returns {{ css: string, csp: string }}
      */
     createCSS () {
-      const css = dataGetValue({ name: 'page/css' })
+      const css = stateGetValue({ name: 'page/css' })
 
       if (css.isEmpty) {
         throw new Error('DooksaError: No CSS found')
@@ -95,11 +95,11 @@ export const page = createPlugin('page', {
     databaseSeed('page-redirects')
     databaseSeed('page-items')
 
-    dataSetValue({
+    stateSetValue({
       name: 'page/app',
       value: app
     })
-    dataSetValue({
+    stateSetValue({
       name: 'page/css',
       value: css
     })
@@ -135,7 +135,7 @@ export const page = createPlugin('page', {
     httpSetRoute({
       path: '/sourcemap/:filename',
       handlers: [(request, response) => {
-        const sourcemap = dataGetValue({
+        const sourcemap = stateGetValue({
           name: 'page/sourcemap',
           id: request.params.filename
         })

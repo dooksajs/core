@@ -1,5 +1,5 @@
 import { createPlugin } from '@dooksa/create-plugin'
-import { dataGenerateId } from './data.js'
+import { generateId } from '@dooksa/utils'
 
 /**
  * @typedef {Object} FormOrderedValue - Ordered form values
@@ -37,7 +37,7 @@ export const form = createPlugin('form', {
       }
 
       // create unique id for file
-      const id = dataGenerateId()
+      const id = generateId()
       // set file
       files.data.set(id, value)
 

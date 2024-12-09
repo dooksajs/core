@@ -10,7 +10,7 @@ export default createAction('action-input-object-property-data', [
   },
   {
     $id: 'action_input_data_property_label',
-    data_setValue: {
+    state_setValue: {
       name: 'component/items',
       value: {
         id: 'action-input-data-property-label',
@@ -27,7 +27,7 @@ export default createAction('action-input-object-property-data', [
   },
   {
     $id: 'component_children_action_input_data_property_label',
-    data_setValue: {
+    state_setValue: {
       name: 'component/children',
       value: {
         $ref: 'action_input_data_property_label_id'
@@ -64,7 +64,7 @@ export default createAction('action-input-object-property-data', [
   },
   {
     $id: 'action_input_data_string',
-    data_setValue: {
+    state_setValue: {
       name: 'component/items',
       value: {
         id: 'action-input-data-string',
@@ -81,7 +81,7 @@ export default createAction('action-input-object-property-data', [
   },
   {
     $id: 'append_action_input_data_string',
-    data_setValue: {
+    state_setValue: {
       name: 'component/children',
       value: {
         $ref: 'action_input_data_string_id'
@@ -127,7 +127,7 @@ export default createAction('action-input-object-property-data', [
   },
   {
     $id: 'action_input_object_properties',
-    data_setValue: {
+    state_setValue: {
       name: 'component/items',
       value: {
         id: 'action-input-object-properties',
@@ -185,7 +185,7 @@ export default createAction('action-input-object-property-data', [
   },
   {
     $id: 'append_action_input_object_properties',
-    data_setValue: {
+    state_setValue: {
       name: 'component/children',
       value: {
         $ref: 'action_input_object_properties_id'

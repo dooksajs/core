@@ -6,7 +6,7 @@ export const dataCollectionOption = createAction('data-collection-option', [
       actionId: 'data-collection-option-item',
       items: {
         action_getBlockValue: {
-          value: { data_getValue: { name: 'data/collections' } },
+          value: { state_getValue: { name: 'data/collections' } },
           query: 'item'
         }
       }

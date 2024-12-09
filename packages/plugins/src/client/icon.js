@@ -1,5 +1,5 @@
 import { createPlugin } from '@dooksa/create-plugin'
-import { dataGetValue, dataSetValue } from './data.js'
+import { stateGetValue, stateSetValue } from './data.js'
 
 let iconifyAPIUrl = 'https://api.iconify.design'
 const timeoutId = {}
@@ -39,7 +39,7 @@ export const icon = createPlugin('icon', {
        * @param {string} componentId
        */
       method (componentId) {
-        const component = dataGetValue({
+        const component = stateGetValue({
           name: 'component/nodes',
           id: componentId
         })
@@ -55,7 +55,7 @@ export const icon = createPlugin('icon', {
           return
         }
         const id = node.dataset.icon
-        const icon = dataGetValue({
+        const icon = stateGetValue({
           name: 'icon/items',
           id
         })
@@ -66,7 +66,7 @@ export const icon = createPlugin('icon', {
 
           return
         } else {
-          const aliasIcon = dataGetValue({
+          const aliasIcon = stateGetValue({
             name: 'icon/aliases',
             id,
             options: { expand: true }
@@ -151,7 +151,7 @@ export const icon = createPlugin('icon', {
                     ${data.icons[iconName].body}
                   </svg>`
 
-                  dataSetValue({
+                  stateSetValue({
                     name: 'icon/items',
                     value,
                     options: { id }
@@ -159,7 +159,7 @@ export const icon = createPlugin('icon', {
 
                   if (isAlias) {
                     // store icon alias
-                    dataSetValue({
+                    stateSetValue({
                       name: 'icon/aliases',
                       value: id,
                       options: {

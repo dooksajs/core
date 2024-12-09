@@ -1,5 +1,5 @@
 import { createPlugin } from '@dooksa/create-plugin'
-import { dataGetValue, routeCurrentId, dataSetValue } from './index.js'
+import { stateGetValue, routeCurrentId, stateSetValue } from './index.js'
 import { hash } from '@dooksa/utils'
 import { createDataValue } from '#utils'
 
@@ -26,7 +26,7 @@ export const page = createPlugin('page', {
         return routeCurrentId
       },
       suffixId () {
-        return dataGetValue({ name: 'metadata/currentLanguage' }).item
+        return stateGetValue({ name: 'metadata/currentLanguage' }).item
       },
       items: {
         type: 'string'
@@ -97,7 +97,7 @@ export const page = createPlugin('page', {
      * @param {boolean} [param.expand=true]
      */
     appendExpand ({ collection, id, data, expandExclude, expand = true }) {
-      const getData = dataGetValue({
+      const getData = stateGetValue({
         name: collection,
         id,
         options: {
@@ -136,7 +136,7 @@ export const page = createPlugin('page', {
      * @returns {PageGetItemsByPath}
      */
     getItemsById (id) {
-      const page = dataGetValue({
+      const page = stateGetValue({
         name: 'page/items',
         id,
         options: {
@@ -252,20 +252,20 @@ export const page = createPlugin('page', {
         const currentPathId = this.pathToId(path)
 
         // get related items to path
-        const pathInfo = dataGetValue({
+        const pathInfo = stateGetValue({
           name: 'page/paths',
           id: currentPathId
         })
 
         if (pathInfo.isEmpty) {
-          const redirect = dataGetValue({
+          const redirect = stateGetValue({
             name: 'page/redirects',
             id: currentPathId
           })
 
           if (!redirect.isEmpty) {
             const { pageId, isTemporary } = redirect.item
-            const page = dataGetValue({
+            const page = stateGetValue({
               name: 'page/paths',
               id: pageId
             })
@@ -297,7 +297,7 @@ export const page = createPlugin('page', {
   },
   setup () {
     // fetch current page
-    const pagePath = dataGetValue({
+    const pagePath = stateGetValue({
       name: 'page/paths',
       id: routeCurrentId()
     })
@@ -307,7 +307,7 @@ export const page = createPlugin('page', {
       return
     }
 
-    const pageItems = dataGetValue({
+    const pageItems = stateGetValue({
       name: 'page/items',
       id: pagePath.item.itemId,
       options: {
@@ -318,7 +318,7 @@ export const page = createPlugin('page', {
     const components = []
 
     for (let i = 0; i < pageItems.expand.length; i++) {
-      const component = dataSetValue({
+      const component = stateSetValue({
         name: 'component/items',
         value: pageItems.expand[i].item
       })
@@ -326,7 +326,7 @@ export const page = createPlugin('page', {
     }
 
     // append components to page
-    dataSetValue({
+    stateSetValue({
       name: 'component/children',
       value: components,
       options: {

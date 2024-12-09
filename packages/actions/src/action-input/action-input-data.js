@@ -52,7 +52,7 @@ export default createAction('action-input-data', [
   },
   {
     $id: 'data_item_string',
-    data_setValue: {
+    state_setValue: {
       name: 'component/items',
       value: {
         id: 'action-input-data-string',
@@ -69,7 +69,7 @@ export default createAction('action-input-data', [
   },
   {
     $id: 'append_data_item_string',
-    data_setValue: {
+    state_setValue: {
       name: 'component/children',
       value: { $ref: 'data_item_string_id' },
       options: {

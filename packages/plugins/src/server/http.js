@@ -1,5 +1,5 @@
 import { createPlugin } from '@dooksa/create-plugin'
-import { dataSetValue } from '../client/index.js'
+import { stateSetValue } from '../client/index.js'
 import { middlewareGet, middlewareSet } from './middleware.js'
 import helmet from 'helmet'
 import compression from 'compression'
@@ -190,7 +190,7 @@ export const $http = createPlugin('http', {
       const isClosed = this.app.close()
 
       if (!isClosed) {
-        dataSetValue({
+        stateSetValue({
           name: 'http/status',
           value: 'stop-failed'
         })

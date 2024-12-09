@@ -8,13 +8,13 @@ export const actionCardPluginIcon = createAction('action-card-plugin-icon', [
     }
   },
   {
-    data_getValue: {
+    state_getValue: {
       id: { $ref: 0 },
       name: 'metadata/actions'
     }
   },
   {
-    data_getValue: {
+    state_getValue: {
       id: {
         action_getBlockValue: {
           query: 'item.plugin',
@@ -25,7 +25,7 @@ export const actionCardPluginIcon = createAction('action-card-plugin-icon', [
     }
   },
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/options',
       value: {
         icon: {

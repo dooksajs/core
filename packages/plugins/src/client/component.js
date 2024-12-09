@@ -1,10 +1,10 @@
 import { createPlugin } from '@dooksa/create-plugin'
 import {
-  dataUnsafeSetValue,
-  dataGetValue,
-  dataAddListener,
-  dataSetValue,
-  dataDeleteValue
+  stateUnsafeSetValue,
+  stateGetValue,
+  stateAddListener,
+  stateSetValue,
+  stateDeleteValue
 } from './data.js'
 import { eventEmit } from './event.js'
 import { componentOptions } from '@dooksa/create-component'
@@ -119,13 +119,13 @@ function createNode (id, item) {
   }
 
   node.__dooksaId__ = id
-  dataUnsafeSetValue({
+  stateUnsafeSetValue({
     name: 'component/nodes',
     value: node,
     options: { id }
   })
 
-  const properties = dataGetValue({
+  const properties = stateGetValue({
     name: 'component/properties',
     id
   }).item || template.properties
@@ -133,7 +133,7 @@ function createNode (id, item) {
   if (!properties) {
     setProperties(node, properties)
 
-    dataAddListener({
+    stateAddListener({
       name: 'component/properties',
       on: 'update',
       id,
@@ -144,14 +144,14 @@ function createNode (id, item) {
   }
 
   if (template.options) {
-    dataAddListener({
+    stateAddListener({
       name: 'component/options',
       on: 'update',
       id,
       handler: (options) => {
         const properties = componentOptions(options.item, template.options, template.properties)
 
-        dataSetValue({
+        stateSetValue({
           name: 'component/properties',
           value: properties,
           options: { id }
@@ -160,24 +160,24 @@ function createNode (id, item) {
     })
   }
 
-  const children = dataGetValue({
+  const children = stateGetValue({
     name: 'component/children',
     id,
     options: { expand: true }
   })
-  const rootId = dataGetValue({
+  const rootId = stateGetValue({
     name: 'component/roots',
     id
   }).item
-  const groupId = dataGetValue({
+  const groupId = stateGetValue({
     name: 'component/belongsToGroup',
     id
   }).item
-  const parentId = dataGetValue({
+  const parentId = stateGetValue({
     name: 'component/parents',
     id
   }).item
-  const event = dataGetValue({
+  const event = stateGetValue({
     name: 'component/events',
     id
   })
@@ -202,7 +202,7 @@ function createNode (id, item) {
       const {
         on, actionId
       } = events[i]
-      const eventData = dataSetValue({
+      const eventData = stateSetValue({
         name: 'event/listeners',
         value: actionId,
         options: {
@@ -217,7 +217,7 @@ function createNode (id, item) {
         hasBeforeCreateEvent = true
       }
 
-      dataSetValue({
+      stateSetValue({
         name: 'component/events',
         value: eventData.id,
         options: {
@@ -410,7 +410,7 @@ function nodeEvent (eventType, eventValue, node, on, id, context) {
   }
 
   // handle removal
-  dataAddListener({
+  stateAddListener({
     name: 'event/handlers',
     on: 'delete',
     id,
@@ -420,7 +420,7 @@ function nodeEvent (eventType, eventValue, node, on, id, context) {
   })
 
   // store handler
-  dataUnsafeSetValue({
+  stateUnsafeSetValue({
     name: 'event/handlers',
     value: handler,
     options: { id }
@@ -455,7 +455,7 @@ function createTemplate ({
   const properties = Object.create(null)
   let node
   let parentGroupId
-  const parentGroup = dataGetValue({
+  const parentGroup = stateGetValue({
     name: 'component/belongsToGroup',
     id: parentId
   })
@@ -475,13 +475,13 @@ function createTemplate ({
     // this instance is the root node
     rootId = id
 
-    const parentRootId = dataGetValue({
+    const parentRootId = stateGetValue({
       name: 'component/roots',
       id: parentId
     })
 
     if (!parentRootId.isEmpty) {
-      const parentRootScope = dataGetValue({
+      const parentRootScope = stateGetValue({
         name: 'variable/scopes',
         id: parentRootId.item,
         options: {
@@ -501,7 +501,7 @@ function createTemplate ({
         scope.unshift(id)
 
         // set new group scope
-        dataSetValue({
+        stateSetValue({
           name: 'variable/scopes',
           value: scope,
           options: {
@@ -512,7 +512,7 @@ function createTemplate ({
       }
     } else {
       // set new group scope
-      dataSetValue({
+      stateSetValue({
         name: 'variable/scopes',
         value: [id, groupId],
         options: {
@@ -549,31 +549,31 @@ function createTemplate ({
 
   // store node
   node.__dooksaId__ = id
-  dataUnsafeSetValue({
+  stateUnsafeSetValue({
     name: 'component/nodes',
     value: node,
     options
   })
 
   // set core component values
-  dataSetValue({
+  stateSetValue({
     name: 'component/roots',
     value: rootId,
     options
   })
-  dataSetValue({
+  stateSetValue({
     name: 'component/parents',
     value: parentId,
     options
   })
-  dataSetValue({
+  stateSetValue({
     name: 'component/items',
     value: component,
     options
   })
 
   // set group
-  dataSetValue({
+  stateSetValue({
     name: 'component/groups',
     value: id,
     options: {
@@ -581,7 +581,7 @@ function createTemplate ({
       update: { method: 'push' }
     }
   })
-  dataSetValue({
+  stateSetValue({
     name: 'component/belongsToGroup',
     value: groupId,
     options
@@ -603,7 +603,7 @@ function createTemplate ({
 
   if (template.options) {
     // Update element attributes
-    dataAddListener({
+    stateAddListener({
       name: 'component/properties',
       on: 'update',
       id,
@@ -620,14 +620,14 @@ function createTemplate ({
         template.properties
       )
 
-      dataSetValue({
+      stateSetValue({
         name: 'component/properties',
         value: properties,
         options
       })
     }
 
-    const options = dataGetValue({
+    const options = stateGetValue({
       name: 'component/options',
       id
     })
@@ -638,7 +638,7 @@ function createTemplate ({
     }
 
     // Update component options/properties
-    dataAddListener({
+    stateAddListener({
       name: 'component/options',
       on: 'update',
       id,
@@ -666,7 +666,7 @@ function createTemplate ({
         on,
         actionId
       } = events[i]
-      const eventData = dataSetValue({
+      const eventData = stateSetValue({
         name: 'event/listeners',
         value: actionId,
         options: {
@@ -681,7 +681,7 @@ function createTemplate ({
         hasBeforeCreateEvent = true
       }
 
-      dataSetValue({
+      stateSetValue({
         name: 'component/events',
         value: eventData.id,
         options: {
@@ -761,7 +761,7 @@ function createChildNodes (node, components, parentId, parentRootId, parentGroup
       id,
       item
     } = components[i]
-    let childNode = dataGetValue({
+    let childNode = stateGetValue({
       name: 'component/nodes',
       id
     })
@@ -849,7 +849,7 @@ function appendChildNodes (id, node, childNodes) {
   }
 
   // set children component ids to parent
-  dataSetValue({
+  stateSetValue({
     name: 'component/children',
     value,
     options: {
@@ -886,7 +886,7 @@ function updateChildren (id, parent, nextChildNodes) {
       // node was inserted
       const prevComponentId = prevNode.__dooksaId__
       const nextComponentId = nextNode.__dooksaId__
-      const prevNodeBelongsTo = dataGetValue({
+      const prevNodeBelongsTo = stateGetValue({
         name: 'component/parents',
         id: prevComponentId
       })
@@ -1093,11 +1093,11 @@ export const component = createPlugin('component', {
       method ({
         id, stopPropagation = false
       }, context, isHead = true) {
-        const parentId = dataGetValue({
+        const parentId = stateGetValue({
           name: 'component/parents',
           id
         }).item
-        const parentChildren = dataGetValue({
+        const parentChildren = stateGetValue({
           name: 'component/children',
           id: parentId
         })
@@ -1116,12 +1116,12 @@ export const component = createPlugin('component', {
           }
 
           if (!children.length) {
-            dataDeleteValue({
+            stateDeleteValue({
               name: 'component/children',
               id: parentId
             })
           } else if (children.length !== parentChildren.item.length) {
-            dataSetValue({
+            stateSetValue({
               name: 'component/children',
               value: children,
               options: {
@@ -1132,7 +1132,7 @@ export const component = createPlugin('component', {
           }
         }
 
-        const events = dataGetValue({
+        const events = stateGetValue({
           name: 'component/events',
           id
         })
@@ -1142,20 +1142,20 @@ export const component = createPlugin('component', {
           for (let i = 0; i < events.item.length; i++) {
             const event = events.item[i]
 
-            dataDeleteValue({
+            stateDeleteValue({
               name: 'event/handlers',
               id: event.id
             })
           }
         }
 
-        const children = dataGetValue({
+        const children = stateGetValue({
           name: 'component/children',
           id
         })
 
         if (!children.isEmpty) {
-          dataDeleteValue({
+          stateDeleteValue({
             name: 'component/children',
             id,
             stopPropagation: true
@@ -1168,11 +1168,11 @@ export const component = createPlugin('component', {
         }
 
         // remove component from group
-        const componentGroupId = dataGetValue({
+        const componentGroupId = stateGetValue({
           name: 'component/belongsToGroup',
           id
         }).item
-        const componentGroup = dataSetValue({
+        const componentGroup = stateSetValue({
           name: 'component/groups',
           value: id,
           options: {
@@ -1184,33 +1184,33 @@ export const component = createPlugin('component', {
         // clean up action variables
         if (!componentGroup.item.length) {
           // delete group block variables
-          dataDeleteValue({
+          stateDeleteValue({
             name: 'variable/values',
             id: componentGroupId
           })
 
           // delete value group
-          dataDeleteValue({
+          stateDeleteValue({
             name: 'variable/scopes',
             id: componentGroupId
           })
         }
 
         // delete variable scopes
-        dataDeleteValue({
+        stateDeleteValue({
           name: 'variable/scopes',
           id
         })
 
         // delete local variables
-        dataDeleteValue({
+        stateDeleteValue({
           name: 'variable/values',
           id
         })
 
 
         // delete component defined scopes
-        const scopes = dataGetValue({
+        const scopes = stateGetValue({
           name: 'component/belongsToScopes',
           id
         })
@@ -1218,7 +1218,7 @@ export const component = createPlugin('component', {
         if (!scopes.isEmpty) {
           for (let i = 0; i < scopes.item.length; i++) {
             const scopeId = scopes.item[i]
-            const group = dataGetValue({
+            const group = stateGetValue({
               name: 'component/groups',
               id: scopeId
             })
@@ -1226,7 +1226,7 @@ export const component = createPlugin('component', {
             // check if scope belongs to an existing group
             if (group.isEmpty || (!group.isEmpty && !group.item.length)) {
               // delete values in scope
-              dataDeleteValue({
+              stateDeleteValue({
                 name: 'variable/values',
                 id: scopeId
               })
@@ -1234,23 +1234,23 @@ export const component = createPlugin('component', {
           }
         }
 
-        dataDeleteValue({
+        stateDeleteValue({
           name: 'component/belongsToGroup',
           id
         })
-        dataDeleteValue({
+        stateDeleteValue({
           name: 'component/nodes',
           id
         })
-        dataDeleteValue({
+        stateDeleteValue({
           name: 'component/parents',
           id
         })
-        dataDeleteValue({
+        stateDeleteValue({
           name: 'component/roots',
           id
         })
-        dataDeleteValue({
+        stateDeleteValue({
           name: 'component/items',
           id
         })
@@ -1296,13 +1296,13 @@ export const component = createPlugin('component', {
         items
       }) {
         if (!items) {
-          items = dataGetValue({
+          items = stateGetValue({
             name: 'component/children',
             id
           }).item
         }
 
-        const node = dataGetValue({
+        const node = stateGetValue({
           name: 'component/nodes',
           id
         }).item
@@ -1311,7 +1311,7 @@ export const component = createPlugin('component', {
 
         for (let i = 0; i < items.length; i++) {
           const childId = items[i]
-          const node = dataGetValue({
+          const node = stateGetValue({
             name: 'component/nodes',
             id: childId
           })
@@ -1322,7 +1322,7 @@ export const component = createPlugin('component', {
             continue
           }
 
-          const item = dataGetValue({
+          const item = stateGetValue({
             name: 'component/items',
             id: childId
           }).item
@@ -1374,7 +1374,7 @@ export const component = createPlugin('component', {
       }
     })
 
-    dataUnsafeSetValue({
+    stateUnsafeSetValue({
       name: 'component/nodes',
       value: document.body,
       options: { id: 'body' }
@@ -1382,7 +1382,7 @@ export const component = createPlugin('component', {
 
     $component = component
 
-    const rootItem = dataGetValue({
+    const rootItem = stateGetValue({
       name: 'component/items',
       id: 'root'
     })
@@ -1401,7 +1401,7 @@ export const component = createPlugin('component', {
     // @ts-ignore
     rootEl.replaceWith(element.item)
 
-    dataAddListener({
+    stateAddListener({
       name: 'component/children',
       on: 'delete',
       captureAll: true,
@@ -1412,7 +1412,7 @@ export const component = createPlugin('component', {
       }
     })
 
-    dataAddListener({
+    stateAddListener({
       name: 'component/children',
       on: 'update',
       captureAll: true,

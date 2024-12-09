@@ -3,7 +3,7 @@ import createAction from '@dooksa/create-action'
 export const actionAddBlockInsertAction = createAction('action-add-block-insert-action', [
   {
     $id: 'new_group_id',
-    data_generateId: '$null'
+    state_generateId: '$null'
   },
   // get selected metadata
   {
@@ -37,7 +37,7 @@ export const actionAddBlockInsertAction = createAction('action-add-block-insert-
   // create new action card
   {
     $id: 'action_card',
-    data_setValue: {
+    state_setValue: {
       name: 'component/items',
       value: {
         id: 'action-card',
@@ -80,7 +80,7 @@ export const actionAddBlockInsertAction = createAction('action-add-block-insert-
   // get list of children of parent component
   {
     $id: 'component_parent',
-    data_getValue: {
+    state_getValue: {
       name: 'component/children',
       id: { $ref: 'component_parent_id' }
     }
@@ -112,7 +112,7 @@ export const actionAddBlockInsertAction = createAction('action-add-block-insert-
   },
   // insert action card
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/children',
       value: { $ref: 'action_card_id' },
       options: {

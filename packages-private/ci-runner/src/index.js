@@ -1,5 +1,5 @@
 import createAppServer from './app-server.js'
-import { dataSetValue } from '@dooksa/plugins/client'
+import { stateSetValue } from '@dooksa/plugins/client'
 import esbuild from 'esbuild'
 import { log } from '@dooksa/utils/server'
 import { resolve, extname } from 'node:path'
@@ -46,7 +46,7 @@ server
                 const fileExtension = extname(file.path)
 
                 if (fileExtension === '.js') {
-                  dataSetValue({
+                  stateSetValue({
                     name: 'page/app',
                     value: file.text
                   })

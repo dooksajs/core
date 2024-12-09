@@ -1,5 +1,5 @@
 import { createPlugin } from '@dooksa/create-plugin'
-import { dataGetSchema } from './data.js'
+import { stateGetSchema } from '#client'
 
 /**
  * @typedef {Object} EditorDataSchemaObject
@@ -37,7 +37,7 @@ export const editor = createPlugin('editor', {
 
         if (type === 'object') {
           const newSchemaName = schemaName + '/' + name
-          const schema = dataGetSchema(newSchemaName)
+          const schema = stateGetSchema(newSchemaName)
 
           if (schema) {
             item.properties = []
@@ -52,7 +52,7 @@ export const editor = createPlugin('editor', {
           }
         } else if (type === 'array') {
           const newSchemaName = schemaName + '/items'
-          const schema = dataGetSchema(newSchemaName)
+          const schema = stateGetSchema(newSchemaName)
 
           if (schema) {
             // @ts-ignore
@@ -81,7 +81,7 @@ export const editor = createPlugin('editor', {
        * @returns {EditorDataSchema}
        */
       method (name) {
-        const schema = dataGetSchema(name)
+        const schema = stateGetSchema(name)
         let result = {
           type: schema.type
         }

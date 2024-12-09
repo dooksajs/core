@@ -1,5 +1,5 @@
 import { createPlugin } from '@dooksa/create-plugin'
-import { operatorEval, listSplice, actionDispatch, list } from '#client'
+import { operatorEval, listSplice, actionDispatch } from '#client'
 import { DataSchemaException, DataValueException } from '../utils/error.js'
 import { deepClone, generateId, isEnvServer, getValue } from '@dooksa/utils'
 import { cloneDataValue, createDataValue } from '../utils/data-value.js'
@@ -80,7 +80,7 @@ function newDataInstance (type) {
   }
 }
 
-export const data = createPlugin('data', {
+export const state = createPlugin('state', {
   metadata: {
     description: 'Dooksa state management system',
     icon: 'mdi:database',
@@ -129,7 +129,7 @@ export const data = createPlugin('data', {
      * @returns {string}
      */
     createCollectionId (name, option) {
-      const schema = dataGetSchema(name)
+      const schema = this.getSchema(name)
       const id = option.id || ''
       let prefix = option.prefixId ?? ''
       let suffix = option.suffixId ?? ''
@@ -172,7 +172,7 @@ export const data = createPlugin('data', {
      * @returns {Object}
      */
     createDefaultCollectionId (name, option = {}) {
-      const schema = dataGetSchema(name)
+      const schema = this.getSchema(name)
       let prefix = option.prefixId ?? ''
       let suffix = option.suffixId ?? ''
 
@@ -323,7 +323,7 @@ export const data = createPlugin('data', {
      */
     replaceCollectionItems (data, path, sources, metadata) {
       const schemaPath = path + '/items'
-      const schema = dataGetSchema(schemaPath)
+      const schema = this.getSchema(schemaPath)
       const schemaType = schema.type
 
       // set values
@@ -366,7 +366,7 @@ export const data = createPlugin('data', {
         target,
         collection
       }
-      const schema = dataGetSchema(collection)
+      const schema = this.getSchema(collection)
       let isValid = true
 
       if (options) {
@@ -414,7 +414,7 @@ export const data = createPlugin('data', {
         // validate source
         this.validateSchema(data, schemaPath, source)
 
-        const schema = dataGetSchema(schemaPath)
+        const schema = this.getSchema(schemaPath)
         /** @todo validate *any* until schema supports multi type schema */
         const type = schema ? schema.type : 'object'
         const target = this.createTarget(type, source._metadata)
@@ -431,7 +431,7 @@ export const data = createPlugin('data', {
       } else {
         this.validateSchema(data, collection, source)
 
-        const schema = dataGetSchema(collection)
+        const schema = this.getSchema(collection)
         /** @todo validate *any* until schema supports multi type schema */
         const type = schema ? schema.type : 'object'
         const target = this.createTarget(type, source._metadata)
@@ -614,7 +614,7 @@ export const data = createPlugin('data', {
       })
     },
     validateSchemaArray (data, path, source) {
-      const schema = dataGetSchema(path)
+      const schema = this.getSchema(path)
 
       if (schema.options) {
         this.validateSchemaArrayOption(path, source)
@@ -624,7 +624,7 @@ export const data = createPlugin('data', {
       this.validateDataType(schema, source, schema.type)
 
       const schemaName = path + '/items'
-      const schemaItems = dataGetSchema(schemaName)
+      const schemaItems = this.getSchema(schemaName)
 
       // no validation
       if (!schemaItems) {
@@ -659,14 +659,14 @@ export const data = createPlugin('data', {
       }
     },
     validateSchemaArrayOption (path, source) {
-      const schema = dataGetSchema(path)
+      const schema = this.getSchema(path)
 
       if (schema.options.uniqueItems) {
         arrayIsUnique(path, source)
       }
     },
     validateSchemaObject (data, path, source) {
-      const schema = dataGetSchema(path)
+      const schema = this.getSchema(path)
 
       // no validation
       if (!schema.properties && !schema.patternProperties) {
@@ -691,7 +691,7 @@ export const data = createPlugin('data', {
       }
     },
     validateSchemaObjectOption (path, data) {
-      const schema = dataGetSchema(path)
+      const schema = this.getSchema(path)
 
       if (schema.options.additionalProperties === false) {
         if (!schema.patternProperties) {
@@ -782,7 +782,7 @@ export const data = createPlugin('data', {
               }
             } else {
               const schemaName = path + '/' + property.name
-              const schema = dataGetSchema(schemaName)
+              const schema = this.getSchema(schemaName)
 
               if (schema) {
                 const schemaType = schema.type
@@ -837,7 +837,7 @@ export const data = createPlugin('data', {
             }
           } else {
             const schemaName = path + '/' + property.name
-            const schema = dataGetSchema(schemaName)
+            const schema = this.getSchema(schemaName)
 
             if (schema) {
               const schemaType = schema.type
@@ -863,7 +863,7 @@ export const data = createPlugin('data', {
       }
     },
     validateSchema (data, path, source) {
-      const schema = dataGetSchema(path)
+      const schema = this.getSchema(path)
 
       /** @todo validate *any* until schema supports multi type schema */
       if (!schema) {
@@ -1031,7 +1031,7 @@ export const data = createPlugin('data', {
         }
 
         const schemaPathItem = schemaPath + '/items'
-        const schemaItem = dataGetSchema(schemaPath)
+        const schemaItem = this.getSchema(schemaPath)
         const updateMethod = options.update.method
         let relation
 
@@ -1066,7 +1066,7 @@ export const data = createPlugin('data', {
         }
 
         // check schema options of array
-        const schema = dataGetSchema(schemaPath)
+        const schema = this.getSchema(schemaPath)
 
         // ISSUE: containsDuplicates expects an array
         if (schema && schema.options) {
@@ -2286,15 +2286,15 @@ export const data = createPlugin('data', {
 })
 
 export const {
-  dataAddListener,
-  dataDeleteListener,
-  dataDeleteValue,
-  dataFind,
-  dataGenerateId,
-  dataGetSchema,
-  dataGetValue,
-  dataSetValue,
-  dataUnsafeSetValue
-} = data
+  stateAddListener,
+  stateDeleteListener,
+  stateDeleteValue,
+  stateFind,
+  stateGenerateId,
+  stateGetSchema,
+  stateGetValue,
+  stateSetValue,
+  stateUnsafeSetValue
+} = state
 
-export default data
+export default state

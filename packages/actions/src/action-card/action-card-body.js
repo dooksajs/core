@@ -8,7 +8,7 @@ export const actionCardBody = createAction('action-card-body', [
     }
   },
   {
-    data_getValue: {
+    state_getValue: {
       id: { $ref: 0 },
       name: 'metadata/actions'
     }
@@ -33,7 +33,7 @@ export const actionCardBody = createAction('action-card-body', [
     }
   },
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/items',
       value: {
         id: { $ref: 2 },
@@ -42,7 +42,7 @@ export const actionCardBody = createAction('action-card-body', [
     }
   },
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/children',
       value: {
         action_getBlockValue: {

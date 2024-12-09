@@ -21,7 +21,7 @@ export default createAction('input-id', [
     }
   },
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/options',
       value: { id: { $ref: 0 } },
       options: {
@@ -41,7 +41,7 @@ export default createAction('input-id', [
       ]
     }
   },
-  { data_generateId: '$null' },
+  { state_generateId: '$null' },
   {
     variable_setValue: {
       scope: { action_getContextValue: 'groupId' },
@@ -54,7 +54,7 @@ export default createAction('input-id', [
     }
   },
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/options',
       value: { id: { $ref: 4 } },
       options: {

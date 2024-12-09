@@ -67,7 +67,7 @@ export default createAction('action-input-object-property-schema', [
   },
   {
     $id: 'action_input_data_value',
-    data_setValue: {
+    state_setValue: {
       name: 'component/items',
       value: {
         id: 'action-input-data-string',
@@ -77,7 +77,7 @@ export default createAction('action-input-object-property-schema', [
   },
   {
     $id: 'component_children_action_input_data_value',
-    data_setValue: {
+    state_setValue: {
       name: 'component/children',
       value: {
         action_getBlockValue: {

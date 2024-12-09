@@ -1,5 +1,5 @@
 import { createPlugin, mapSchema } from '@dooksa/create-plugin'
-import { dataSetValue, metadata as metadataClient } from '../client/index.js'
+import { stateSetValue, metadata as metadataClient } from '../client/index.js'
 import { databaseSeed, databaseGetValue } from './database.js'
 import { httpSetRoute } from './http.js'
 
@@ -29,7 +29,7 @@ export const metadata = createPlugin('metadata', {
     for (let i = 0; i < plugins.length; i++) {
       const plugin = plugins[i]
 
-      dataSetValue({
+      stateSetValue({
         name: 'metadata/plugins',
         value: plugin.metadata,
         options: {
@@ -45,7 +45,7 @@ export const metadata = createPlugin('metadata', {
         const metadata = Object.assign({}, action.metadata[i])
         const id = metadata.method + '_' + metadata.id
 
-        dataSetValue({
+        stateSetValue({
           name: 'metadata/actions',
           value: metadata,
           options: { id }
@@ -53,7 +53,7 @@ export const metadata = createPlugin('metadata', {
       }
 
       if (action.parameters) {
-        dataSetValue({
+        stateSetValue({
           name: 'metadata/parameters',
           value: action.parameters,
           options: {

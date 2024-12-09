@@ -2,7 +2,7 @@ import createAction from '@dooksa/create-action'
 
 export default createAction('on-create-change-image', [
   {
-    data_setValue: {
+    state_setValue: {
       name: 'content/items',
       value: {
         src: 'https://picsum.photos/1024/768',

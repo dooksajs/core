@@ -10,7 +10,7 @@ export default createAction('edit-img', [
     }
   },
   { // set image component
-    data_setValue: {
+    state_setValue: {
       name: 'component/items',
       value: {
         id: 'img',
@@ -28,7 +28,7 @@ export default createAction('edit-img', [
     }
   },
   { // add image
-    data_setValue: {
+    state_setValue: {
       name: 'component/children',
       value: {
         $ref: 2
@@ -44,7 +44,7 @@ export default createAction('edit-img', [
     }
   },
   { // update image content
-    data_setValue: {
+    state_setValue: {
       name: 'content/items',
       value: {
         action_getDataValue: {
@@ -67,7 +67,7 @@ export default createAction('edit-img', [
     }
   },
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/items',
       value: {
         id: 'input-file',
@@ -85,7 +85,7 @@ export default createAction('edit-img', [
     }
   },
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/items',
       value: {
         id: 'label',
@@ -122,7 +122,7 @@ export default createAction('edit-img', [
     }
   },
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/children',
       value: [
         {

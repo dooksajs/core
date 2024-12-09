@@ -1,5 +1,5 @@
 import { createPlugin, mapSchema } from '@dooksa/create-plugin'
-import { component as componentClient, dataGenerateId, pagePathToId } from '#client'
+import { component as componentClient, stateGenerateId, pagePathToId } from '#client'
 import { databaseDeleteValue, databaseGetValue, databaseSeed, httpSetRoute } from '#server'
 import { components as defaultComponents } from '@dooksa/components'
 import { pageCreate } from '#server'
@@ -53,7 +53,7 @@ export const component = createPlugin('component', {
           }
 
           const pageId = pagePathToId(request.path)
-          const componentItemId = dataGenerateId()
+          const componentItemId = stateGenerateId()
           const page = pageCreate([
             // create component data
             createDataValue({

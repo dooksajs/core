@@ -1,5 +1,5 @@
 import { createPlugin } from '@dooksa/create-plugin'
-import { dataAddListener, dataGetValue, dataSetValue } from '#client'
+import { stateAddListener, stateGetValue, stateSetValue } from '#client'
 
 export const metadata = createPlugin('metadata', {
   metadata: {
@@ -66,28 +66,28 @@ export const metadata = createPlugin('metadata', {
       currentLanguage = langParam
     }
 
-    dataSetValue({
+    stateSetValue({
       name: 'metadata/defaultLanguage',
       value: defaultLanguage
     })
-    dataSetValue({
+    stateSetValue({
       name: 'metadata/currentLanguage',
       value: currentLanguage
     })
-    dataSetValue({
+    stateSetValue({
       name: 'metadata/languages',
       value: languages
     })
 
-    dataAddListener({
+    stateAddListener({
       name: 'metadata/currentLanguage',
       on: 'update',
       priority: 1,
       handler (data) {
-        const defaultLanguage = dataGetValue({
+        const defaultLanguage = stateGetValue({
           name: 'metadata/defaultLanguage'
         }).item
-        const languages = dataGetValue({
+        const languages = stateGetValue({
           name: 'metadata/languages'
         }).item
         const lang = data.item
@@ -98,7 +98,7 @@ export const metadata = createPlugin('metadata', {
         ) {
           // to prevent adding suffixes for default language data
           // remove current language if it the same as default language
-          dataSetValue({
+          stateSetValue({
             name: 'metadata/currentLanguage',
             value: data.previous,
             options: {

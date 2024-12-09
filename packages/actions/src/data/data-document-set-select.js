@@ -13,7 +13,7 @@ export const dataDocumentSetSelect = createAction('data-document-set-select', [
   },
   {
     $id: 'component_document_select',
-    data_setValue: {
+    state_setValue: {
       name: 'component/items',
       value: {
         id: 'data-document-select',
@@ -51,7 +51,7 @@ export const dataDocumentSetSelect = createAction('data-document-set-select', [
     }
   },
   {
-    data_setValue: {
+    state_setValue: {
       name: 'component/children',
       value: { $ref: 'component_document_select_id' },
       options: {
