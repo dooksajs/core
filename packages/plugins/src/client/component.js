@@ -118,7 +118,12 @@ function createNode (id, item) {
     node = document.createElement(template.tag)
   }
 
-  node.__dooksaId__ = id
+  // append dooksa id to node
+  Object.defineProperty(node, '__dooksaId__', {
+    value: id,
+    enumerable: false
+  })
+
   stateUnsafeSetValue({
     name: 'component/nodes',
     value: node,
@@ -547,8 +552,12 @@ function createTemplate ({
     node = document.createElement(template.tag)
   }
 
-  // store node
-  node.__dooksaId__ = id
+  // append dooksa id to node
+  Object.defineProperty(node, '__dooksaId__', {
+    value: id,
+    enumerable: false
+  })
+
   stateUnsafeSetValue({
     name: 'component/nodes',
     value: node,
