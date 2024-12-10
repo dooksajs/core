@@ -12,7 +12,7 @@ import { createDataValue } from '../utils/data-value.js'
 
 /**
  * @typedef {Object} DataListenerHandler
- * @property {boolean} force
+ * @property {boolean} [force]
  * @property {number} [priority]
  * @property {Function} value
  */
