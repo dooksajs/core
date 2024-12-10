@@ -23,7 +23,7 @@ export const details = createComponent({
 
 /**
  * @import {ComponentExtend, ComponentEventOn} from '@dooksa/create-component'
- * @import {NameMixin, ShadowMixin, FocusRingMixin} from '@dooksa/components/mixins'
+ * @import {NameMixin, ShadowMixin, FocusRingMixin, EventTypeMouseMixin} from '#mixins'
  */
 
 /**
@@ -38,7 +38,7 @@ export const details = createComponent({
 
 /**
  * @typedef {Object} ExtendDetailsEvent
- * @property {'node/toggle'|ComponentEventOn} on
+ * @property {'node/toggle'|EventTypeMouseMixin|ComponentEventOn} on
  * @property {string} actionId
  */
 
