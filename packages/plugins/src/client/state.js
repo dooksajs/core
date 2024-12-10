@@ -1699,12 +1699,14 @@ export const state = createPlugin('state', {
         }
 
         const handlers = this.getHandler(name, on)
+        const item = { value: handler }
+
+        if (force) {
+          item.force = force
+        }
 
         if (captureAll) {
-          listeners.all.push({
-            force,
-            value: handler
-          })
+          listeners.all.push(item)
 
           handlers[handlerId] = handler
 
@@ -1715,23 +1717,18 @@ export const state = createPlugin('state', {
           handlerId = id + handlerId
         }
 
-        // add listener
-        if (!isNaN(priority)) {
-          listeners.items.push({
-            force,
-            value: handler
-          })
+        if (isNaN(priority)) {
+          // add listener item
+          listeners.items.push(item)
           handlers[handlerId] = handler
-
 
           return handlerId
         }
 
-        listeners.priority.push({
-          force,
-          priority,
-          value: handler
-        })
+        item.priority = priority
+
+        // add priority listener
+        listeners.priority.push(item)
 
         // sort by acceding order
         listeners.priority.sort((a, b) => a.priority - b.priority)
