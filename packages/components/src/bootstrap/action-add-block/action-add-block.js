@@ -15,6 +15,10 @@ const actionDetailItem = createAccordionItem({
       actionId: 'action-add-block-set-context'
     },
     {
+      on: 'node/mouseenter',
+      actionId: 'action-add-block-fetch-actions'
+    },
+    {
       on: 'node/toggle',
       actionId: 'action-add-block-body'
     }

@@ -49,15 +49,16 @@ import {
   actionCardBodyLabelText
 } from './action-card/index.js'
 import {
-  actionAddBlockSetContext,
-  actionAddBlockCollapse,
-  actionAddBlockInsertAction,
   actionAddBlockBody,
+  actionAddBlockCollapse,
+  actionAddBlockExpand,
   actionAddBlockFetchActions,
+  actionAddBlockInsertAction,
   actionAddBlockListItem,
   actionAddBlockListItemDescription,
   actionAddBlockListItemIcon,
-  actionAddBlockListItemTitle
+  actionAddBlockListItemTitle,
+  actionAddBlockSetContext
 } from './action-add-block/index.js'
 import {
   dataCollectionLabel,
@@ -116,6 +117,7 @@ export default [
   actionCardBodyLabelText,
   actionAddBlockSetContext,
   actionAddBlockCollapse,
+  actionAddBlockExpand,
   actionAddBlockInsertAction,
   actionAddBlockBody,
   actionAddBlockFetchActions,

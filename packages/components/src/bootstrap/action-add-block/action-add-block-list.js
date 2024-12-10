@@ -5,7 +5,7 @@ export default createListGroupAction({
   events: [
     {
       on: 'component/created',
-      actionId: 'action-add-block-fetch-actions'
+      actionId: 'action-add-block-expand'
     }
   ]
 })
