@@ -6,16 +6,10 @@
 import createPlugin from '@dooksa/create-plugin'
 
 /**
- * @typedef {Object} MockState
- * @property {state} methods - State plugin
- * @property {Function} restore - Reset state
- */
-
-/**
  * @param {Object[]} [plugins=[]]
  * @param {string} plugins[].name - Name of plugin
- * @param {PluginState & PluginStateExport} plugins[].state - Plugin schema
- * @returns {Promise<MockState>}
+ * @param {PluginState | PluginStateExport} plugins[].state - Plugin schema
+ * @returns {Promise<typeof state>}
  */
 export function mockState (plugins = []) {
   return new Promise((resolve, reject) => {
