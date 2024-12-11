@@ -1454,12 +1454,12 @@ export const state = createPlugin('state', {
       let stopPropagation = false
 
       if (options) {
-        if (options.id == null) {
-          // update collection
-          this.values[name] = value
+        if (options.hasOwnProperty('id')) {
+          if (options.id == null) {
+            throw new DataValueException('UnsafeSetValue unexpected id type found "' + options.id +'"')
+          }
 
-          result.item = value
-        } else {
+          result.id = options.id
           result.item = value._item || value
 
           const data = this.values[name][options.id] || {}
@@ -1468,6 +1468,11 @@ export const state = createPlugin('state', {
             _item: value._item || value,
             _metadata: value._metadata || data._metadata || {}
           }
+        } else {
+          // update collection
+          this.values[name] = value
+
+          result.item = value
         }
 
         stopPropagation = options.stopPropagation
