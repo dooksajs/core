@@ -6,8 +6,14 @@ import { createDataValue } from '../utils/data-value.js'
 
 /**
  * @import {SetDataOptions, GetDataQuery, GetDataOption, DataWhere} from '../../../types.js'
- * @import {DataValue} from '#types'
+ * @import {DataValue, DataMetadata, DataTarget} from '../utils/data-value.js'
  * @import {PluginStateExport} from '@dooksa/create-plugin/types'
+ */
+
+/**
+ * @typedef {Object} DataDeleteValueResult
+ * @property {boolean} inUse - Indicates if data value is in use
+ * @property {boolean} deleted - Indicate if data was deleted
  */
 
 /**
@@ -1845,7 +1851,7 @@ export const state = createPlugin('state', {
        * @param {boolean} [param.cascade] - Delete related data
        * @param {boolean} [param.listeners] - Delete related listeners
        * @param {boolean} [param.stopPropagation] - Prevent further event phases
-       * @returns {Object}
+       * @returns {DataDeleteValueResult}
        */
       method ({
         name,
