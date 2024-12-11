@@ -1,5 +1,5 @@
 import { createPlugin } from '@dooksa/create-plugin'
-import { listFilter, listSort, stateAddListener, stateSetValue, stateGetValue } from './index.js'
+import { listFilter, listSort, stateAddListener, stateSetValue, stateGetValue } from '#client'
 
 /**
  * Fetch content values
