@@ -1444,9 +1444,9 @@ export const state = createPlugin('state', {
      * @param {string} param.name
      * @param {*} param.value
      * @param {Object} [param.options]
-     * @param {string} param.options.id
+     * @param {string} [param.options.id]
      * @param {boolean} [param.options.stopPropagation]
-     * @returns {DataValue}
+     * @returns {DataValue<*>}
      */
     unsafeSetValue ({ name, value, options }) {
       const result = createDataValue({
