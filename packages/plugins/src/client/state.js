@@ -230,7 +230,7 @@ export const state = createPlugin('state', {
     /**
      * Filter data result based on condition
      * @private
-     * @param {DataValue} data
+     * @param {DataValue<*>} data
      * @param {DataWhere} where
      * @returns {boolean}
      */
@@ -288,7 +288,7 @@ export const state = createPlugin('state', {
     /**
      * Process where condition
      * @private
-     * @param {DataValue} data - Data result
+     * @param {DataValue<*>} data - Data result
      * @param {DataWhere} condition - Where condition
      * @returns {Boolean}
      */
