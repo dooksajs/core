@@ -28,7 +28,7 @@ export function mockState (plugins = []) {
       const pluginData = plugins[i]
       let state = pluginData.state
 
-      if (!state._values) {
+      if (!state.hasOwnProperty('_values')) {
         const plugin = createPlugin(pluginData.name, { state: pluginData.state })
 
         state = plugin.state
