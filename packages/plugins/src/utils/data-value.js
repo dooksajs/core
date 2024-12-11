@@ -1,35 +1,52 @@
 import { deepClone } from '@dooksa/utils'
 
 /**
+ * Represents metadata associated with a data entity
  * @typedef {Object} DataMetadata
- * @property {number} createdAt
- * @property {number} updatedAt
- * @property {number} userId
+ * @property {number} createdAt - Timestamp indicating when the data was initially created (Unix timestamp in milliseconds)
+ * @property {number} updatedAt - Timestamp of the most recent update to the data (Unix timestamp in milliseconds)
+ * @property {number} [userId] - Unique identifier of the user who created or last modified the data
  */
 
 /**
+ * @template Data
  * @typedef {Object} DataValue
  * @property {string} id
  * @property {string} collection
  * @property {boolean} [isEmpty]
  * @property {boolean} [isExpandEmpty]
- * @property {DataValue[]} [expand]
+ * @property {DataValue<Data>[]} [expand]
  * @property {Object.<string, (boolean|number)>} [expandIncluded]
  * @property {boolean} [isAffixEmpty]
  * @property {boolean} [isValid]
- * @property {*} [target]
- * @property {*} [item]
- * @property {*} [previous]
+ * @property {Object.<string, DataTarget<Data>> & DataTarget<Data>} [target]
+ * @property {Data} [item]
+ * @property {Data} [previous]
  * @property {DataMetadata} [metadata]
  */
 
 /**
+ * @template Data
+ * @typedef {Object} DataTarget
+ * @property {Data} _item
+ * @property {DataMetadata} _metadata
+ * @property {DataPreviousTarget} [_previous]
+ */
+
+/**
+ * @typedef {Object} DataPreviousTarget
+ * @property {*} _item
+ * @property {DataMetadata} _metadata
+ */
+
+/**
  * Data result
+ * @template Data
  * @param {Object} param
  * @param {string} [param.collection='']
  * @param {string} [param.id='']
- * @param {*} [param.data]
- * @returns {DataValue}
+ * @param {Data} [param.data]
+ * @returns {DataValue<Data>}
  */
 function createDataValue ({
   collection = '',
