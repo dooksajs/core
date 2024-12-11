@@ -50,20 +50,7 @@ export function mockState (plugins = []) {
         // setup state
         state.setup(_state)
 
-        resolve({
-          methods: state,
-          restore () {
-            // restore default state
-            state.setup({
-              _values: {},
-              _items: [],
-              _names: [],
-              schema: {},
-              defaults: [],
-              _defaults: []
-            })
-          }
-        })
+        resolve(state)
       })
       .catch(error => reject(error))
   })
