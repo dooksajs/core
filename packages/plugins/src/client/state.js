@@ -1449,10 +1449,7 @@ export const state = createPlugin('state', {
      * @returns {DataValue<*>}
      */
     unsafeSetValue ({ name, value, options }) {
-      const result = createDataValue({
-        collection: name,
-        id: options.id
-      })
+      const result = createDataValue({ collection: name })
 
       let stopPropagation = false
 
