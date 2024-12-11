@@ -1,17 +1,37 @@
 /**
  * Mock window.location.search
+ * @param {import('node:test').TestContext} context
  * @param {string} [search=''] - Search query
- * @returns {Function} - delete window object
  */
-export function mockWindowLocationSearch (search = '') {
+export function mockWindowLocationSearch (context, search = '') {
+  const originalWindow = global.window
   // Create a mock for window.location.search
-  global.window = {
-    // @ts-ignore
-    location: { search }
-  }
+  //@ts-ignore
+  global.window = { location: {} }
 
-  // delete window object
+  Object.defineProperty(global.window.location, 'search', {
+    get () {
+      return search
+    },
+    set (value) {
+      search = value
+    },
+    configurable: true
+  })
+
+  // mock the search getter
+  context.mock.method(global.window.location, 'search', {
+    getter: true
+  })
+
+  /**
+   * Restore window object
+   */
   return () => {
-    delete global.window
+    if (!originalWindow) {
+      delete global.window
+    } else {
+      global.window = originalWindow
+    }
   }
 }
