@@ -1,5 +1,5 @@
 /**
- * @import {state} from '../src/client/state.js'
+ * @import {state} from '#client'
  * @import {PluginState, PluginStateExport} from '@dooksa/create-plugin/types'
  */
 
