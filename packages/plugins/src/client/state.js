@@ -1146,7 +1146,7 @@ export const state = createPlugin('state', {
     /**
      * Fetch related data
      * @param {string} name - Name of data collection
-     * @param {DataValue} result - Data result
+     * @param {DataValue<*>} result - Data result
      * @param {GetDataOption} [options]
      */
     getExpandedData (name, result, options) {
@@ -1251,7 +1251,7 @@ export const state = createPlugin('state', {
      * @private
      * @param {string} name - Collection name
      * @param {'update'|'delete'} on - Event name
-     * @param {DataValue} item - Value that is being set
+     * @param {DataValue<*>} item - Value that is being set
      * @param {boolean} [stopPropagation] - Prevents further propagation of the update event
      */
     dispatchEvent (name, on, item, stopPropagation) {
@@ -1541,6 +1541,7 @@ export const state = createPlugin('state', {
        * @param {string} param.name - Name of collection
        * @param {DataWhere[]} [param.where]
        * @param {GetDataOption} [param.options]
+       * @returns {DataValue<*>[]}
        */
       method ({
         name,
@@ -1664,6 +1665,7 @@ export const state = createPlugin('state', {
        * @param {string} [param.handlerId=''] - Id of handler
        * @param {Function|string} param.handler
        * @param {Object} [action]
+       * @returns {string} - handler instance ID
        */
       method ({
         name,
@@ -1986,7 +1988,7 @@ export const state = createPlugin('state', {
       /**
        * Get data value
        * @param {GetDataQuery} query
-       * @returns {DataValue}
+       * @returns {DataValue<*>}
        */
       method (query) {
         const { name, id, prefixId, suffixId, options } = query
@@ -2184,7 +2186,7 @@ export const state = createPlugin('state', {
        * @param {string} param.name - Name of collection
        * @param {*} param.value - Data to be set
        * @param {SetDataOptions} [param.options] - Set data options
-       * @returns {DataValue}
+       * @returns {DataValue<*>}
        */
       method ({ name, value, options }) {
         const schema = this.getSchema(name)
