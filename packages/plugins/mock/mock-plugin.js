@@ -188,15 +188,14 @@ export function mockPlugin (context, {
                 const result = {
                   modules
                 }
-                const stateMethods = state.methods
 
-                for (const key in stateMethods) {
+                for (const key in state) {
                   if (
-                    Object.prototype.hasOwnProperty.call(stateMethods, key) &&
-                    typeof stateMethods[key] === 'function'
+                    Object.prototype.hasOwnProperty.call(state, key) &&
+                    typeof state[key] === 'function'
                   ) {
                     // create state mocks
-                    const mockMethod = context.mock.method(stateMethods, key)
+                    const mockMethod = context.mock.method(state, key)
 
                     // add state methods to named exports
                     namedExports[key] = mockMethod
@@ -213,7 +212,6 @@ export function mockPlugin (context, {
                     result.plugin = plugin
                     result.restore = () => {
                       mockContext.restore()
-                      state.restore()
                     }
 
                     resolve(result)
