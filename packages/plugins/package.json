@@ -18,8 +18,8 @@
     "#utils": "./src/utils/index.js"
   },
   "exports": {
-    "./client": "./src/index.js",
-    "./server": "./src/index.js"
+    "./client": "./src/client.js",
+    "./server": "./src/server.js"
   },
   "dependencies": {
     "@dooksa/create-action": "workspace:^",
