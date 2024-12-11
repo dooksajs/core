@@ -121,7 +121,7 @@ export const metadata = createPlugin('metadata', {
           // remove current language if it the same as default language
           stateSetValue({
             name: 'metadata/currentLanguage',
-            value: data.previous,
+            value: data.previous || '',
             options: {
               stopPropagation: true
             }
