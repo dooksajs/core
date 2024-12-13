@@ -376,19 +376,21 @@ export const state = createPlugin('state', {
         isValid = dataOptions.isValid
 
         if (dataOptions.complete) {
+          let value = data.target
           const result = {
             isValid,
-            target: data.target
+            target: value
           }
 
           if (data.id) {
-            const value = data.target[data.id]
+            value = data.target[data.id]
 
             result.id = data.id
-            result.item = value._item
-            result.previous = value._previous
-            result.metadata = value._metadata
           }
+
+          result.item = value._item
+          result.previous = value._previous
+          result.metadata = this.setMetadata(value._metadata, options.metadata)
 
           return result
         }
@@ -399,11 +401,13 @@ export const state = createPlugin('state', {
         target: data.target
       }
 
-      if (data.id) {
+      if (data.id && data.target[data.id]) {
+        const target = data.target[data.id]
+
         result.id = data.id
-        result.item = data.target[data.id]._item
-        result.previous = data.target[data.id]._previous
-        result.metadata = data.target[data.id]._metadata
+        result.item = target._item
+        result.previous = target._previous
+        result.metadata = this.setMetadata(target._metadata, options.metadata)
       } else if (schema.type === 'collection') {
         const schemaPath = collection + '/items'
         // create document id
@@ -441,10 +445,13 @@ export const state = createPlugin('state', {
 
         data.target = target
 
-        result.target = target._item
+        result.target = target
         result.item = target._item
-        result.previous = target._previous
         result.metadata = target._metadata
+
+        if (target._previous) {
+          result.previous = target._previous
+        }
       }
       return result
     },
