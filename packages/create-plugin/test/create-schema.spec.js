@@ -102,7 +102,7 @@ describe('Create schema', function () {
           ])
         })
 
-        it('should handle required properties', function () {
+        it('should handle additionalProperties properties', function () {
           const schema = createSchema({}, {
             type: 'object',
             properties: {
