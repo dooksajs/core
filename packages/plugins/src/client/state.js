@@ -1421,13 +1421,13 @@ export const state = createPlugin('state', {
      * @param {DataMetadata} metadata
      */
     mergeCollectionItems (data, path, sources, metadata) {
-      const schema = this.getSchema(path)
-      const schemaType = schema.type
+      let schema = this.getSchema(path)
+      let schemaType = schema.type
 
-      // validate root source
-      this.validateDataType(data, path, sources, schemaType)
 
       if (schemaType !== 'object' && schemaType !== 'array') {
+        this.validateDataType(data, path, sources, schemaType)
+
         return this.mergeCollectionPrimitiveItems(data, path, sources, metadata)
       }
 
@@ -1435,6 +1435,8 @@ export const state = createPlugin('state', {
         if (Object.hasOwnProperty.call(sources, id)) {
           const source = sources[id]
 
+          // validate result source
+          this.validateDataType(data, path, source, schemaType)
           // deep clone source
           let resultItem = deepClone(source)
           const resultMetadata = resultItem._metadata || metadata
