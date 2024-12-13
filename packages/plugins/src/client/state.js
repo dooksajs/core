@@ -935,16 +935,38 @@ export const state = createPlugin('state', {
 
       // store previous state
       if (previousTarget) {
-        const result = this.createTarget(schema.type, options.metadata, previousTarget)
+        // previous state that was set
+        if (previousTarget._item) {
+          const result = this.createTarget(schema.type, options.metadata, previousTarget)
 
-        previousTarget._previous = {
-          _item: previousTarget._item,
-          _metadata: previousTarget._metadata
+          previousTarget._previous = {
+            _item: previousTarget._item,
+            _metadata: previousTarget._metadata
+          }
+
+          previousTarget._metadata = result._metadata
+        } else {
+          // handle new instance
+          const newDataInstance = this.createTarget(schema.type, options.metadata)
+          const newDataPreviousInstance = this.createTarget(schema.type, options.metadata)
+
+          // set previous value
+          newDataPreviousInstance._item = previousTarget
+          newDataInstance._previous = newDataPreviousInstance
+
+          data.target = newDataInstance
         }
-
-        previousTarget._metadata = result._metadata
       } else {
-        data.target[data.id] = this.createTarget(schema.type, options.metadata)
+        const newDataInstance = this.createTarget(schema.type, options.metadata)
+
+        newDataInstance._item = source
+
+        // add new data
+        if (isCollection) {
+          data.target[data.id] = newDataInstance
+        } else {
+          data.target = newDataInstance
+        }
       }
 
       // insert new data
