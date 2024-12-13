@@ -2226,8 +2226,8 @@ export const state = createPlugin('state', {
           return result
         }
 
-        // freeze new item
-        if (typeof result.item === 'object') {
+        // freeze non collection objects
+        if (schema.type !== 'collection' && typeof result.item === 'object') {
           Object.freeze(result.item)
         }
 
