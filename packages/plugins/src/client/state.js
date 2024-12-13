@@ -927,10 +927,10 @@ export const state = createPlugin('state', {
         }
       }
 
-      let previousTarget = data.originalTarget
+      let previousTarget = data.target
 
       if (isCollection) {
-        previousTarget = data.originalTarget[data.id]
+        previousTarget = data.target[data.id]
       }
 
       // store previous state
