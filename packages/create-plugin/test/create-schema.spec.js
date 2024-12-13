@@ -1,5 +1,5 @@
 import { describe, it } from 'node:test'
-import { deepStrictEqual, strictEqual } from 'node:assert'
+import { deepStrictEqual } from 'node:assert'
 import { createSchema } from '../src/index.js'
 
 describe('Create schema', function () {
@@ -375,6 +375,7 @@ describe('Create schema', function () {
             type: 'object',
             properties: {
               any: {
+                type: 'object',
                 patternProperties: {
                   '[0-9]': {
                     type: 'number'
@@ -382,8 +383,7 @@ describe('Create schema', function () {
                   '[a-zA-Z]': {
                     type: 'string'
                   }
-                },
-                type: 'object'
+                }
               }
             }
           }, 'test/pattern')
@@ -411,6 +411,67 @@ describe('Create schema', function () {
                 properties: [
                   {
                     name: 'any',
+                    type: 'object'
+                  }
+                ],
+                type: 'object'
+              }
+            }
+          ])
+        })
+
+        it('should process properties and patterned properties', function () {
+          const schema = createSchema({}, {
+            type: 'object',
+            properties: {
+              person: {
+                type: 'object',
+                properties: {
+                  name: {
+                    type: 'string'
+                  }
+                },
+                patternProperties: {
+                  '[0-9]': {
+                    type: 'number'
+                  },
+                  '[a-zA-Z]': {
+                    type: 'string'
+                  }
+                }
+              }
+            }
+          }, 'test/pattern')
+
+          deepStrictEqual(schema, [
+            {
+              id: 'test/pattern/person',
+              entry: {
+                properties: [
+                  {
+                    name: 'name',
+                    type: 'string'
+                  }
+                ],
+                patternProperties: [
+                  {
+                    name: '[0-9]',
+                    type: 'number'
+                  },
+                  {
+                    name: '[a-zA-Z]',
+                    type: 'string'
+                  }
+                ],
+                type: 'object'
+              }
+            },
+            {
+              id: 'test/pattern',
+              entry: {
+                properties: [
+                  {
+                    name: 'person',
                     type: 'object'
                   }
                 ],
