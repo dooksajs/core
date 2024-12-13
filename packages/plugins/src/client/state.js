@@ -639,7 +639,13 @@ export const state = createPlugin('state', {
       }
 
       // check if source is an array
-      this.validateDataType(schema, source, schema.type)
+      if (!Array.isArray(source)) {
+        throw new DataSchemaException({
+          schemaPath: path,
+          keyword: 'type',
+          message: 'Unexpected type, expected "array" but got "'+ typeof source +'"'
+        })
+      }
 
       const schemaName = path + '/items'
       const schemaItems = this.getSchema(schemaName)
@@ -648,8 +654,6 @@ export const state = createPlugin('state', {
       if (!schemaItems) {
         return
       }
-
-      const schemaType = schemaItems.type
 
       // freeze array
       Object.freeze(source)
