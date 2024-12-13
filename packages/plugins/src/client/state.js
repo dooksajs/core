@@ -865,28 +865,33 @@ export const state = createPlugin('state', {
         })
       }
 
-      let schemaPath = data.collection + '/items'
-      const schema = this.getSchema(schemaPath)
+      let schemaPath = data.collection
+      let schema = this.getSchema(data.collection)
+      let isCollection = schema.type === 'collection'
+
+      if (
+        schema.type === 'array' ||
+        isCollection
+      ) {
+        schemaPath = data.collection + '/items'
+        schema = this.getSchema(schemaPath)
+      }
 
       // process document id
-      if (options.id) {
+      if (options.id && isCollection) {
         const id = this.createCollectionId(data.collection, options)
 
         data.id = id
 
         if (options.merge) {
-          const collection = Object.create(null)
-          collection[id] = source
-          this.mergeCollectionItems(data, schemaPath, collection, options.metadata)
+          this.mergeCollectionItems(data, schemaPath, { id: source }, options.metadata)
 
           return {
             complete: true,
             isValid: true
           }
         } else if (options.replace) {
-          const collection = Object.create(null)
-          collection[id] = source
-          this.replaceCollectionItems(data, data.collection, collection, options.metadata)
+          this.replaceCollectionItems(data, data.collection, { id: source }, options.metadata)
 
           return {
             complete: true,
@@ -895,7 +900,11 @@ export const state = createPlugin('state', {
         }
       } else {
         if (options.merge) {
-          this.mergeCollectionItems(data, schemaPath, source, options.metadata)
+          if (isCollection) {
+            this.mergeCollectionItems(data, schemaPath, source, options.metadata)
+          } else {
+            this.mergeItems(data, schemaPath, source, options.metadata)
+          }
 
           return {
             complete: true,
@@ -910,13 +919,19 @@ export const state = createPlugin('state', {
           }
         }
 
-        // create new id
-        const collection = this.createDefaultCollectionId(data.collection, options)
+        if (isCollection) {
+          // create new id
+          const collection = this.createDefaultCollectionId(data.collection, options)
 
-        data.id = collection.id
+          data.id = collection.id
+        }
       }
 
-      const previousTarget = data.target[data.id]
+      let previousTarget = data.originalTarget
+
+      if (isCollection) {
+        previousTarget = data.originalTarget[data.id]
+      }
 
       // store previous state
       if (previousTarget) {
@@ -1253,54 +1268,145 @@ export const state = createPlugin('state', {
     },
     /**
      * Validate and collection items
-     * @param {*} data
-     * @param {*} path
-     * @param {*} sources
-     * @param {*} metadata
-     * @returns
+     * @template {Object.<string, DataTarget<*>> & DataTarget<*>} Data
+     * @param {DataValue<Data>} data
+     * @param {string} path - Schema path
+     * @param {Data} sources
+     * @param {DataMetadata} metadata
      */
-    mergeCollectionItems (data, path, sources, metadata) {
+    mergeCollectionPrimitiveItems (data, path, sources, metadata) {
+      const schema = this.getSchema(path)
+
+      for (const id in sources) {
+        if (Object.hasOwnProperty.call(sources, id)) {
+          const source = deepClone(sources[id], true)
+          const result = {
+            _item: source._item || source,
+            _metadata: source._metadata || metadata
+          }
+
+          if (
+            schema.options &&
+            schema.options.relation &&
+            typeof result._item === 'string'
+          ) {
+            this.addRelation(data.collection, id, schema.options.relation, result._item)
+          }
+
+          // store old values
+          const previousData = data.target[id]
+
+          if (previousData) {
+            result._previous = {
+              _item: previousData._item,
+              _metadata: previousData._metadata
+            }
+          }
+
+          data.target[id] = result
+        }
+      }
+
+    },
+    mergeItems (data, path, sources, metadata) {
       const schema = this.getSchema(path)
       const schemaType = schema.type
 
-      if (schemaType !== 'object' && schemaType !== 'array') {
-        for (const id in sources) {
-          if (Object.hasOwnProperty.call(sources, id)) {
-            const source = deepClone(sources[id], true)
-            const target = {
-              _item: source._item || source,
-              _metadata: source._metadata || metadata
-            }
+      if (schemaType !== 'object') {
+        this.validateDataType(data, path, sources, schemaType)
 
-            this.validateDataType(path, target._item, schemaType)
+        const target = data.target
 
-            if (schema.options && schema.options.relation) {
-              this.addRelation(data.collection, id, schema.options.relation, target._item)
-            }
-
-            // store old values
-            const previousData = data.target[id]
-
-            if (previousData) {
-              target._previous = {
-                _item: previousData._item,
-                _metadata: previousData._metadata
-              }
-            }
-
-            data.target[id] = target
-          }
+        if (target) {
+          // backup previous value
+          target._previous = target._item
+          target._item = deepClone(sources, true)
+        } else {
+          // create new target
+          data.target = this.createTarget(schemaType, metadata)
+          data.target._item = deepClone(sources, true)
         }
 
         return
       }
 
+      const hasTarget = Boolean(data.target && data.target._item)
+      let targetItem
+
+      if (hasTarget) {
+        targetItem = shallowCopy(data.target._item)
+      } else {
+        targetItem = {}
+      }
+
+      for (const id in sources) {
+        if (Object.hasOwnProperty.call(sources, id)) {
+          // deep freeze clone
+          const source = deepClone(sources[id], true)
+
+          // get target
+          const targetValue = targetItem[id]
+
+          // merge target and source objects
+          if (typeof targetValue === 'object' && !Array.isArray(source)) {
+            // unfreeze target
+            const result = shallowCopy(targetValue)
+
+            // merge object
+            for (const key in source) {
+              if (Object.hasOwnProperty.call(source, key)) {
+                result[key] = source[key]
+              }
+            }
+
+            // add new item value
+            targetItem[id] = result
+          } else {
+            targetItem[id] = source
+          }
+        }
+      }
+
+      /**
+       * @TODO the schema properties need to be split into named paths to allow validation per property
+       * Currently, only complete objects are validated, hence the need to validate after the merge
+       */
+      // validate result source
+      this.validateDataType(data, path, targetItem, schemaType)
+
+      if (hasTarget) {
+        // store previous data
+        data.target._previous = {
+          _item: data.target._item,
+          _metadata: data.target._metadata
+        }
+      }
+
+      // set object source
+      data.target._item = targetItem
+    },
+    /**
+     * Validate and collection items
+     * @template {Object.<string, DataTarget<*>> & DataTarget<*>} Data
+     * @param {DataValue<Data>} data
+     * @param {string} path - Schema path
+     * @param {Data} sources
+     * @param {DataMetadata} metadata
+     */
+    mergeCollectionItems (data, path, sources, metadata) {
+      const schema = this.getSchema(path)
+      const schemaType = schema.type
+
+      // validate root source
+      this.validateDataType(data, path, sources, schemaType)
+
+      if (schemaType !== 'object' && schemaType !== 'array') {
+        return this.mergeCollectionPrimitiveItems(data, path, sources, metadata)
+      }
+
       for (const id in sources) {
         if (Object.hasOwnProperty.call(sources, id)) {
           const source = sources[id]
-
-          // validate source
-          this.validateDataType(path, source, schemaType)
 
           // deep clone source
           let resultItem = deepClone(source)
@@ -1315,12 +1421,13 @@ export const state = createPlugin('state', {
           const target = data.target[id]
 
           // merge target and source objects
-          if (target && typeof target._item === 'object') {
+          if (typeof target === 'object') {
             if (Array.isArray(item)) {
               // replace array
               resultItem = item
             } else {
-              resultItem = shallowCopy(target._item)
+              // unfreeze target
+              resultItem = shallowCopy(target)
 
               // merge object
               for (const key in item) {
@@ -1334,27 +1441,19 @@ export const state = createPlugin('state', {
             resultItem = item
           }
 
-          if (schemaType === 'object') {
-            this.validateSchemaObject(data, path, resultItem)
-          } else {
-            this.validateSchemaArray(data, path, resultItem)
-          }
-
           // add new item value
           const result = this.createTarget(schema.type, resultMetadata)
-
-          result._item = resultItem
-
-          // store old values
           const previousData = data.target[id]
 
           if (previousData) {
+            // store previous data
             result._previous = {
               _item: previousData._item,
               _metadata: previousData._metadata
             }
           }
 
+          result._item = resultItem
           data.target[id] = result
         }
       }
