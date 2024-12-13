@@ -11,7 +11,7 @@ import { deepClone } from '@dooksa/utils'
 /**
  * @template Data
  * @typedef {Object} DataValue
- * @property {string} id
+ * @property {string} [id]
  * @property {string} collection
  * @property {boolean} [isEmpty]
  * @property {boolean} [isExpandEmpty]
@@ -44,25 +44,38 @@ import { deepClone } from '@dooksa/utils'
  * @template Data
  * @param {Object} param
  * @param {string} [param.collection='']
- * @param {string} [param.id='']
- * @param {Data} [param.data]
+ * @param {string} [param.id]
+ * @param {Data} [param.value]
  * @returns {DataValue<Data>}
  */
 function createDataValue ({
   collection = '',
-  id = '',
-  data
+  id,
+  value
 } = {}) {
-  const value = {
-    id,
-    collection
+  const result = { collection }
+
+  if (typeof id === 'string') {
+    result.id = id
   }
 
-  if (data) {
-    value.item = data
+  if (value) {
+    if (value._item != null) {
+      result.item = value._item
+
+      if (value._metadata) {
+        result.metadata = value._metadata
+      }
+
+      if (value._previous) {
+        result.previous = value._previous
+      }
+    } else {
+      result.item = value
+    }
   }
 
-  return value
+  return result
 }
 
 /**

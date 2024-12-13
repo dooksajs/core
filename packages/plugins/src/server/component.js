@@ -59,7 +59,7 @@ export const component = createPlugin('component', {
             createDataValue({
               collection: 'component/items',
               id: componentItemId,
-              data: {
+              value: {
                 id,
                 isTemplate: true
               }
@@ -68,7 +68,7 @@ export const component = createPlugin('component', {
             createDataValue({
               collection: 'page/paths',
               id: pageId,
-              data: {
+              value: {
                 name: request.path,
                 itemId: pageId
               }
@@ -77,7 +77,7 @@ export const component = createPlugin('component', {
             createDataValue({
               collection: 'page/items',
               id: pageId,
-              data: [componentItemId]
+              value: [componentItemId]
             })
           ])
 

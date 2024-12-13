@@ -973,8 +973,12 @@ export const state = createPlugin('state', {
       if (!options.update) {
         this.validateSchema(data, schemaPath, source)
 
-        // add new data entry
-        data.target[data.id]._item = source
+        // add new data
+        if (isCollection) {
+          data.target[data.id]._item = source
+        } else {
+          data.target._item = source
+        }
 
         return {
           complete: true,
@@ -1207,11 +1211,12 @@ export const state = createPlugin('state', {
 
           const expandedResult = createDataValue({
             collection: name,
-            id: value.id
+            id: value.id,
+            value: {
+              _item: !options.expandClone ? value.item : deepClone(value),
+              _metadata: value.metadata
+            }
           })
-
-          expandedResult.item = !options.expandClone ? value.item : deepClone(value)
-          expandedResult.metadata = value.metadata
 
           result.expand.push(expandedResult)
         }
@@ -1704,7 +1709,8 @@ export const state = createPlugin('state', {
               const value = values[id]
               const dataResult = createDataValue({
                 collection: name,
-                id
+                id,
+                value
               })
               let isValid = true
 
@@ -1715,10 +1721,6 @@ export const state = createPlugin('state', {
                   continue valueLoop
                 }
               }
-
-              dataResult.item = value._item
-              dataResult.metadata = value._metadata
-              dataResult.previous = value._previous
 
               if (options.expand) {
                 this.getExpandedData(name, dataResult, options)
@@ -1731,12 +1733,11 @@ export const state = createPlugin('state', {
           return valueItems
         }
 
-        const result = createDataValue({ collection: name })
+        const result = createDataValue({
+          collection: name,
+          value: values
+        })
         let isValid = true
-
-        result.item = values._item
-        result.metadata = values._metadata
-        result.previous = values._previous
 
         for (let i = 0; i < where.length; i++) {
           isValid = this.filterData(result, where[i])
@@ -2065,11 +2066,9 @@ export const state = createPlugin('state', {
         if (collection[id]) {
           const result = createDataValue({
             collection: name,
-            id
+            id,
+            value: collection[id]
           })
-
-          result.item = collection[id]._item
-          result.metadata = collection[id]._metadata
 
           if (!stopPropagation) {
             this.dispatchEvent(name, 'delete', result)
@@ -2138,23 +2137,36 @@ export const state = createPlugin('state', {
           throw new DataValueException('No such collection "' + name +"'")
         }
 
-        const result = createDataValue({
-          collection: name,
-          id
-        })
         const schema = this.getSchema(name)
 
         // return collection
         if (schema.type === 'collection') {
           if (!query.hasOwnProperty('id')) {
-            result.item = collection
+            /** @type {Object.<string, DataValue<*>>} */
+            const result = {}
+
+            for (const id in collection) {
+              if (Object.prototype.hasOwnProperty.call(collection, id)) {
+                result[id] = createDataValue({
+                  collection: name,
+                  id,
+                  value: collection[id]
+                })
+              }
+            }
 
             return result
           } else if (id == null) {
+            const result = createDataValue({
+              collection: name,
+              id
+            })
             result.isEmpty = true
             return result
           }
         }
+
+        let result = createDataValue({ collection: name })
 
         if (id != null) {
           let isAffixEmpty = true
@@ -2182,13 +2194,11 @@ export const state = createPlugin('state', {
 
             if (value != null) {
               isAffixEmpty = false
-              result.id = itemId
-              result.item = value._item
-              result.metadata = value._metadata || false
-
-              if (value._previous) {
-                result.previous = value._previous
-              }
+              result = createDataValue({
+                collection: name,
+                id,
+                value
+              })
             }
           }
 
@@ -2216,13 +2226,11 @@ export const state = createPlugin('state', {
             const value = this.values[name][itemId]
 
             if (value != null) {
-              result.id = itemId
-              result.item = value._item
-              result.metadata = value._metadata || {}
-
-              if (value._previous) {
-                result.previous = value._previous
-              }
+              result = createDataValue({
+                collection: name,
+                id,
+                value
+              })
             } else {
               result.isAffixEmpty = true
             }
@@ -2239,7 +2247,10 @@ export const state = createPlugin('state', {
             return result
           }
         } else {
-          result.item = collection
+          result = createDataValue({
+            collection: name,
+            value: collection
+          })
         }
 
         if (!options) {
@@ -2347,17 +2358,9 @@ export const state = createPlugin('state', {
           })
         }
 
-        let result = createDataValue({ collection: name })
-        let target = this.values[name]
-
-        if (target == null) {
-          // set default value
-          target = newDataInstance(schema.type)
-        }
-
-        result = this.setData(
+        const result = this.setData(
           name,
-          target,
+          this.values[name],
           value._item || value,
           options
         )
@@ -2377,7 +2380,7 @@ export const state = createPlugin('state', {
         const dataResult = createDataValue({
           collection: name,
           id: result.id,
-          data: result.item
+          value: result.item
         })
 
         dataResult.previous = result.previous
