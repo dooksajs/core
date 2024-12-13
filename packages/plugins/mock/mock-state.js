@@ -9,7 +9,7 @@ import createPlugin from '@dooksa/create-plugin'
  * @param {Object[]} [plugins=[]]
  * @param {string} plugins[].name - Name of plugin
  * @param {PluginState | PluginStateExport} plugins[].state - Plugin schema
- * @returns {Promise<typeof state>}
+ * @returns {Promise<state>}
  */
 export function mockState (plugins = []) {
   return new Promise((resolve, reject) => {
