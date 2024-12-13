@@ -1494,6 +1494,30 @@ export const state = createPlugin('state', {
           delete this.relationsInUse[usedName]
         }
       }
+    },
+    createCollectionItem (collection, data, id) {
+      const item = {
+        _item: data._item || data,
+        _metadata: data._metadata || {}
+      }
+      let previousData = collection
+
+      if (id) {
+        previousData = collection[id]
+      }
+
+      if (previousData && previousData._item) {
+        item._previous = {
+          _item: previousData._item,
+          _metadata: previousData._metadata
+        }
+
+        if (!item._metadata) {
+          item._metadata = previousData._metadata
+        }
+      }
+
+      return item
     }
   },
   methods: {
@@ -1510,45 +1534,73 @@ export const state = createPlugin('state', {
      * @param {*} param.value
      * @param {Object} [param.options]
      * @param {string} [param.options.id]
+     * @param {boolean} [param.options.replace] - replace target collection
      * @param {boolean} [param.options.stopPropagation]
-     * @returns {DataValue<*>}
      */
-    unsafeSetValue ({ name, value, options }) {
-      const result = createDataValue({ collection: name })
+    unsafeSetValue ({ name, value, options = {} }) {
+      const collection = this.values[name]
 
-      let stopPropagation = false
+      if (options.hasOwnProperty('id')) {
+        const id = options.id
 
-      if (options) {
-        if (options.hasOwnProperty('id')) {
-          if (options.id == null) {
-            throw new DataValueException('UnsafeSetValue unexpected id type found "' + options.id +'"')
-          }
-
-          result.id = options.id
-          result.item = value._item || value
-
-          const data = this.values[name][options.id] || {}
-
-          this.values[name][options.id] = {
-            _item: value._item || value,
-            _metadata: value._metadata || data._metadata || {}
-          }
-        } else {
-          // update collection
-          this.values[name] = value
-
-          result.item = value
+        if (id == null) {
+          throw new DataValueException('UnsafeSetValue unexpected id type found "' + options.id +'"')
         }
+        const item = this.createCollectionItem(collection, value, id)
+        const result = createDataValue({
+          collection: name,
+          value: item,
+          id
+        })
+        // set new data
+        collection[id] = item
 
-        stopPropagation = options.stopPropagation
-      } else {
-        // update collection
-        this.values[name] = value
+        this.dispatchEvent(name, 'update', result, options.stopPropagation)
 
-        result.item = value
+        return result
       }
 
-      this.dispatchEvent(name, 'update', result, stopPropagation)
+      // update entire collection
+      const schema = this.getSchema(name)
+
+      if (schema.type === 'collection') {
+        const results = []
+        let replacement = collection
+
+        if (options.replace) {
+          replacement = {}
+        }
+
+        for (const id in value) {
+          if (Object.prototype.hasOwnProperty.call(value, id)) {
+            const item = this.createCollectionItem(collection, value[id], id)
+            // set new value
+            replacement[id] = item
+
+            const result = createDataValue({
+              collection: name,
+              id,
+              value: item
+            })
+            results.push(result)
+            this.dispatchEvent(name, 'update', result, options.stopPropagation)
+          }
+        }
+        // update collection
+        this.values[name] = replacement
+
+        return results
+      }
+
+      const item = this.createCollectionItem(collection, value)
+      const result = createDataValue({
+        collection: name,
+        value: item
+      })
+
+      // update collection
+      this.values[name] = item
+      this.dispatchEvent(name, 'update', result, options.stopPropagation)
 
       return result
     }
