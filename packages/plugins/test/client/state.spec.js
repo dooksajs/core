@@ -175,4 +175,52 @@ describe('State', function () {
       }
     })
   })
+
+  describe('SetValue', function () {
+    it('should fail if no schema is found', async function () {
+      const state = await mockState([{
+        name: 'test',
+        state: {
+          schema: {
+            items: {
+              type: 'string'
+            }
+          }
+        }
+      }])
+
+      try {
+        state.stateSetValue({
+          name: 'schema/notFound',
+          value: 123
+        })
+      } catch (error) {
+        strictEqual(error.message, 'Schema not found')
+      }
+    })
+
+    it('should fail if no value is provided', async function () {
+      const state = await mockState([{
+        name: 'test',
+        state: {
+          schema: {
+            items: {
+              type: 'string'
+            }
+          }
+        }
+      }])
+
+      try {
+        state.stateSetValue({
+          name: 'test/items',
+          value: null
+        })
+      } catch (error) {
+        strictEqual(error.schemaPath, 'test/items')
+        strictEqual(error.message, 'Source was undefined')
+      }
+    })
+
+  })
 })
