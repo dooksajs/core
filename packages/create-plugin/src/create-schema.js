@@ -50,9 +50,7 @@ export function createSchema (context, schema, id) {
  * @returns {Schema}
  */
 function optimiseSchema (context, schema) {
-  const result = {
-    entry: createSchemaEntry(context, schema)
-  }
+  const result = { entry: createSchemaEntry(context, schema) }
 
   if (schema.properties || schema.patternProperties) {
     result.properties = []
@@ -65,12 +63,17 @@ function optimiseSchema (context, schema) {
         const property = schema.patternProperties[key]
         const hasProperties = entryHasProperties(property)
 
-        if (hasProperties) {
-          result.patternProperties.push({
+        if (hasProperties.length) {
+          const prop = {
             name: key,
-            type: property.type,
-            [hasProperties]: property[hasProperties]
-          })
+            type: property.type
+          }
+          for (let i = 0; i < hasProperties.length; i++) {
+            const name = hasProperties[i]
+            prop[name] = property[name]
+          }
+
+          result.patternProperties.push(prop)
         } else {
           const entry = createSchemaEntry(context, property, key)
 
@@ -84,12 +87,17 @@ function optimiseSchema (context, schema) {
         const property = schema.properties[key]
         const hasProperties = entryHasProperties(property)
 
-        if (hasProperties) {
-          result.properties.push({
+        if (hasProperties.length) {
+          const prop = {
             name: key,
-            type: property.type,
-            [hasProperties]: property[hasProperties]
-          })
+            type: property.type
+          }
+          for (let i = 0; i < hasProperties.length; i++) {
+            const name = hasProperties[i]
+            prop[name] = property[name]
+          }
+
+          result.properties.push(prop)
         } else {
           const entry = createSchemaEntry(context, property, key)
 
@@ -254,18 +262,22 @@ function objectPropertySchema (context, id, properties = [], options, schema) {
 /**
  * @private
  * @param {DataSchemaObject} entry
- * @returns {'items' | 'properties' | 'patternProperties' | undefined}
+ * @returns {('properties' | 'patternProperties' | string)[]}
  */
 function entryHasProperties (entry) {
   if (entry.items) {
-    return 'items'
+    return ['items']
   }
 
+  const result = []
+
   if (entry.properties) {
-    return 'properties'
+    result.push('properties')
   }
 
   if (entry.patternProperties) {
-    return 'patternProperties'
+    result.push('patternProperties')
   }
+
+  return result
 }
