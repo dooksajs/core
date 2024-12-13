@@ -150,7 +150,7 @@ describe('State', function () {
       strictEqual(mockHandler.mock.callCount(), 0)
     })
 
-    it('should fail with an undefined option id property', async function (t) {
+    it('should fail with an undefined option id property', async function () {
       const state = await mockState([{
         name: 'test',
         state: {
