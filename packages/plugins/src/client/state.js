@@ -884,14 +884,14 @@ export const state = createPlugin('state', {
         data.id = id
 
         if (options.merge) {
-          this.mergeCollectionItems(data, schemaPath, { id: source }, options.metadata)
+          this.mergeCollectionItems(data, schemaPath, { [id]: source }, options.metadata)
 
           return {
             complete: true,
             isValid: true
           }
         } else if (options.replace) {
-          this.replaceCollectionItems(data, data.collection, { id: source }, options.metadata)
+          this.replaceCollectionItems(data, data.collection, { [id]: source }, options.metadata)
 
           return {
             complete: true,
