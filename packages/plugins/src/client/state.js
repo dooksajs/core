@@ -1238,7 +1238,7 @@ export const state = createPlugin('state', {
       }
 
       const items = this.listeners[on].items[name]
-      const priority = this.listeners[on].items[name]
+      const priority = this.listeners[on].priority[name]
 
       if (id) {
         return {
