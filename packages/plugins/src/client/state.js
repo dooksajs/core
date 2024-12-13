@@ -681,7 +681,7 @@ export const state = createPlugin('state', {
 
       // no validation
       if (!schema.properties && !schema.patternProperties) {
-        return
+        return true
       }
 
       if (schema.options) {
@@ -691,14 +691,8 @@ export const state = createPlugin('state', {
       // freeze object
       Object.freeze(source)
 
-      const propertiesChecked = {}
-
-      if (schema.properties) {
-        this.validateSchemaObjectProperties(data, schema.properties, propertiesChecked, source, path)
-      }
-
-      if (schema.patternProperties) {
-        this.validateSchemaObjectPatternProperties(data, schema.patternProperties, propertiesChecked, source, path)
+      if (schema.properties || schema.patternProperties) {
+        this.validateSchemaObjectProperties(data, schema.properties, schema.patternProperties, source, path)
       }
     },
     validateSchemaObjectOption (path, data) {
@@ -756,120 +750,94 @@ export const state = createPlugin('state', {
         }
       }
     },
-    validateSchemaObjectPatternProperties (
-      data,
-      properties,
-      propertiesChecked,
-      source,
-      path
-    ) {
-      for (let i = 0; i < properties.length; i++) {
-        const property = properties[i]
+    validateSchemaObjectProperty (data, property, name, source, path) {
+      const options = property.options || {}
+      const value = source[name]
 
-        for (const key in source) {
-          if (Object.hasOwnProperty.call(source, key)) {
-            if (propertiesChecked[key]) {
-              continue
-            }
-
-            const regex = new RegExp(property.name)
-
-            if (!regex.test(key)) {
-              throw new DataSchemaException({
-                schemaPath: path,
-                keyword: 'patternProperty',
-                message: 'Invalid property: ' + key
-              })
-            }
-
-            const sourceItem = source[key]
-
-            if (sourceItem == null && property.default) {
-              // add default value
-              if (typeof property.default === 'function') {
-                source[key] = property.default()
-              } else {
-                source[key] = property.default
-              }
-            } else {
-              const schemaName = path + '/' + property.name
-              const schema = this.getSchema(schemaName)
-
-              if (schema) {
-                const schemaType = schema.type
-
-                this.validateDataType(schemaName, sourceItem, schemaType)
-
-                if (schemaType === 'object') {
-                  this.validateSchemaObject(data, schemaName, sourceItem)
-                } else {
-                  this.validateSchemaArray(data, schemaName, sourceItem)
-                }
-              } else {
-                const propertyOptions = property.options || {}
-
-                if (propertyOptions.relation) {
-                  this.addRelation(data.collection, data.id, propertyOptions.relation, sourceItem)
-                }
-              }
-            }
-
-            this.validateDataType(path, sourceItem, property.type)
+      if (value == null) {
+        if (!options.default) {
+          return
+        } else {
+          // add default value
+          if (typeof options.default === 'function') {
+            source[name] = options.default()
+          } else {
+            source[name] = deepClone(options.default, true)
           }
+
+          return
         }
       }
+
+      let schemaName = path + '/' + property.name
+      const schema = this.getSchema(schemaName)
+      let schemaType = property.type
+
+      if (!schema) {
+        schemaName = path
+      } else {
+        schemaType = schema.type
+      }
+
+      this.validateDataType(data, schemaName, value, schemaType)
+
+      if (options.relation) {
+        this.addRelation(data.collection, data.id, options.relation, value)
+      }
     },
-    validateSchemaObjectProperties (data, properties, propertiesChecked, source, path) {
+    validateSchemaObjectProperties (data, properties = [], patternProperties = [], source, path) {
+      const checkedProperties = {}
+
       for (let i = 0; i < properties.length; i++) {
         const property = properties[i]
-        const propertyOptions = property.options || {}
-        const value = source[property.name]
+        const name = property.name
 
         // check if field is required
-        if (propertyOptions.required && value == null) {
+        if (source[name] == null && property.required) {
           throw new DataSchemaException({
             schemaPath: path,
             keyword: 'required',
-            message: 'Invalid data (' + path + '): required property missing: "' + property.name + '"'
+            message: 'Invalid data (' + path + '): required property missing: "' + name + '"'
           })
         }
 
-        if (value == null && !propertyOptions.default) {
-          propertiesChecked[property.name] = true
-        } else {
-          const sourceItem = source[property.name]
+        this.validateSchemaObjectProperty(
+          data,
+          property,
+          name,
+          source,
+          path
+        )
 
-          if (value == null && propertyOptions.default) {
-            // add default value
-            if (typeof propertyOptions.default === 'function') {
-              source[property.name] = propertyOptions.default()
-            } else {
-              source[property.name] = propertyOptions.default
+        checkedProperties[name] = true
+      }
+
+      for (let i = 0; i < patternProperties.length; i++) {
+        const property = patternProperties[i]
+        const patternedProperty = new RegExp(property.name)
+
+        for (const name in source) {
+          if (Object.prototype.hasOwnProperty.call(source, name)) {
+            if (checkedProperties[name]) {
+              continue
             }
-          } else {
-            const schemaName = path + '/' + property.name
-            const schema = this.getSchema(schemaName)
 
-            if (schema) {
-              const schemaType = schema.type
-
-              this.validateDataType(schemaName, sourceItem, schemaType)
-
-              if (schemaType === 'object') {
-                this.validateSchemaObject(data, schemaName, sourceItem)
-              } else {
-                this.validateSchemaArray(data, schemaName, sourceItem)
-              }
-            } else {
-              if (propertyOptions.relation) {
-                this.addRelation(data.collection, data.id, propertyOptions.relation, value)
-              }
+            if (!patternedProperty.test(name)) {
+              throw new DataSchemaException({
+                schemaPath: path,
+                keyword: 'patternProperty',
+                message: 'Invalid property: ' + name
+              })
             }
+
+            this.validateSchemaObjectProperty(
+              data,
+              property,
+              name,
+              source,
+              path
+            )
           }
-
-          this.validateDataType(path, sourceItem, property.type)
-
-          propertiesChecked[property.name] = true
         }
       }
     },
