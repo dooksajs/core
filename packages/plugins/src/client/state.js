@@ -343,14 +343,9 @@ export const state = createPlugin('state', {
           }
 
           // validate current value
-          this.validateDataType(schemaPath, target._item, schemaType)
+          this.validateDataType(data, schemaPath, target._item, schemaType)
 
-          // validate object source values
-          if (schemaType === 'object') {
-            this.validateSchemaObject(data, schemaPath, target._item)
-          } else if (schemaType === 'array') {
-            this.validateSchemaArray(data, schemaPath, target._item)
-          } else if (schema.options && schema.options.relation) {
+          if (schema.options && schema.options.relation) {
             this.addRelation(data.collection, id, schema.options.relation, target._item)
           }
 
@@ -580,12 +575,20 @@ export const state = createPlugin('state', {
     /**
      * Check data type
      * @private
+     * @param {*} data - Schema path
      * @param {string} path - Schema path
      * @param {*} value - value to be checked
      * @param {string} type - Expected data type
-     * @returns {boolean}
      */
-    validateDataType (path, value, type) {
+    validateDataType (data, path, value, type) {
+      if (type === 'object') {
+        this.validateSchemaObject(data, path, value)
+        return true
+      } else if (type === 'array') {
+        this.validateSchemaArray(data, path, value)
+        return true
+      }
+
       if (value == null) {
         throw new DataSchemaException({
           schemaPath: path,
@@ -645,23 +648,12 @@ export const state = createPlugin('state', {
       for (let i = 0; i < source.length; i++) {
         const item = source[i]
 
-        if (schemaType === 'object') {
-          this.validateSchemaObject(data, schemaName, item)
-        } else if (schemaType === 'array') {
-          this.validateSchemaArray(data, schemaName, item)
-        } else {
-          // set relation for array of strings
-          if (schemaItems.options && schemaItems.options.relation) {
-            this.addRelation(data.collection, data.id, schemaItems.options.relation, item)
-          }
-
-          this.validateDataType(schemaName, item, schemaItems.type)
-
-          // freeze array item
-          if (typeof item === 'object') {
-            Object.freeze(item)
-          }
+        // set relation for array of strings
+        if (schemaItems.options && schemaItems.options.relation) {
+          this.addRelation(data.collection, data.id, schemaItems.options.relation, item)
         }
+
+        this.validateDataType(data, schemaName, item, schemaItems.type)
       }
     },
     validateSchemaArrayOption (path, source) {
@@ -871,23 +863,16 @@ export const state = createPlugin('state', {
     validateSchema (data, path, source) {
       const schema = this.getSchema(path)
 
-      /** @todo validate *any* until schema supports multi type schema */
+      /** @TODO validate *any* until schema supports multi type schema */
       if (!schema) {
         return
       }
-      const schemaType = schema.type
 
-      if (schemaType === 'object') {
-        this.validateSchemaObject(data, path, source)
-      } else if (schemaType === 'array') {
-        this.validateSchemaArray(data, path, source)
-      } else {
-        // type check
-        this.validateDataType(path, source, schema.type)
+      // type check
+      this.validateDataType(data, path, source, schema.type)
 
-        if (schema.options && schema.options.relation) {
-          this.addRelation(data.collection, data.id, schema.options.relation, source)
-        }
+      if (schema.options && schema.options.relation) {
+        this.addRelation(data.collection, data.id, schema.options.relation, source)
       }
     },
     setDataOptions (data, source, options) {
