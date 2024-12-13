@@ -7,7 +7,7 @@ import { createDataValue } from '../utils/data-value.js'
 /**
  * @import {SetDataOptions, GetDataQuery, GetDataOption, DataWhere} from '../../../types.js'
  * @import {DataValue, DataMetadata, DataTarget} from '../utils/data-value.js'
- * @import {PluginStateExport} from '@dooksa/create-plugin/types'
+ * @import {PluginStateExport, SchemaEntry} from '@dooksa/create-plugin/types'
  */
 
 /**
@@ -1523,6 +1523,7 @@ export const state = createPlugin('state', {
   methods: {
     /**
      * @param path - Schema path name
+     * @returns {SchemaEntry}
      */
     getSchema (path) {
       return this.schema[path]
