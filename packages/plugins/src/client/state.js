@@ -1437,32 +1437,23 @@ export const state = createPlugin('state', {
 
           // validate result source
           this.validateDataType(data, path, source, schemaType)
+          // get target
+          const target = data.target[id]
           // deep clone source
           let resultItem = deepClone(source)
-          const resultMetadata = resultItem._metadata || metadata
+          const resultMetadata = resultItem._metadata || metadata || target?._metadata
           // get source value
           const item = resultItem._item || resultItem
 
-          // set current merge root id
-          data.id = id
-
-          // get target
-          const target = data.target[id]
-
           // merge target and source objects
-          if (typeof target === 'object') {
-            if (Array.isArray(item)) {
-              // replace array
-              resultItem = item
-            } else {
-              // unfreeze target
-              resultItem = shallowCopy(target)
+          if (typeof target === 'object' && !Array.isArray(item)) {
+            // unfreeze target
+            resultItem = shallowCopy(target)
 
-              // merge object
-              for (const key in item) {
-                if (Object.hasOwnProperty.call(item, key)) {
-                  resultItem[key] = item[key]
-                }
+            // merge object
+            for (const key in item) {
+              if (Object.hasOwnProperty.call(item, key)) {
+                resultItem[key] = item[key]
               }
             }
           } else {
