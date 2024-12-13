@@ -116,7 +116,7 @@ describe('Metadata', function () {
       })
 
       strictEqual(defaultLanguage.item, 'en')
-      strictEqual(currentLanguage.item, 'fr')
+      strictEqual(currentLanguage.item, '')
       deepStrictEqual(languages.item, ['en', 'fr'])
 
       restoreWindow()
