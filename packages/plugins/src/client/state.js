@@ -616,10 +616,12 @@ export const state = createPlugin('state', {
         })
       }
 
-      // need a better method of determining the data type
-      const dataType = value.constructor.name.toLowerCase()
+      /**
+       * @TODO extend type checker for more types
+       */
+      const dataType = typeof value
 
-      if (dataType === type) {
+      if (typeof value === type) {
         return true
       }
 
