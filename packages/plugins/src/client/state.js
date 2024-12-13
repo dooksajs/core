@@ -1745,14 +1745,14 @@ export const state = createPlugin('state', {
           if (!isValid) {
             result.isEmpty = true
 
-            return result
+            return [result]
           }
         }
 
         if (!isValid) {
           result.isEmpty = true
 
-          return result
+          return [result]
         }
 
         return [result]
