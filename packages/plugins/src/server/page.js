@@ -83,11 +83,7 @@ export const page = createPlugin('page', {
       const app = this.createApp(data)
 
       return {
-        html: `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><link rel="icon" type="image/x-icon" href="/assets/favicon.ico"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dooksa</title></head><body>
-            <div id="root"></div>
-            <script>${app.script}</script>
-            <style>${style.css}</style>
-          </body></html>`,
+        html: `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><link rel="icon" type="image/x-icon" href="/assets/favicon.ico"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dooksa</title></head><body><div id="root"></div><script>${app.script}</script><style>${style.css}</style></body></html>`,
         csp: app.csp + style.csp
       }
     }
