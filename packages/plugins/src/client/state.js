@@ -1435,7 +1435,8 @@ export const state = createPlugin('state', {
       for (const id in sources) {
         if (Object.hasOwnProperty.call(sources, id)) {
           const source = sources[id]
-
+          // set collection id for relation validation
+          data.id = id
           // validate result source
           this.validateDataType(data, path, source, schemaType)
           // get target
