@@ -847,5 +847,80 @@ describe('State', function () {
         })
       })
     })
+
+    describe('Collection', function () {
+      it('should set new item', async function () {
+        const state = await mockState([{
+          name: 'test',
+          state: {
+            schema: {
+              items: {
+                type: 'collection',
+                items: {
+                  type: 'array',
+                  items: {
+                    type: 'string'
+                  }
+                }
+              }
+            }
+          }
+        }])
+
+        const result = state.stateSetValue({
+          name: 'test/items',
+          value: ['world']
+        })
+
+        deepStrictEqual(
+          state.stateGetValue({
+            name: 'test/items',
+            id: result.id
+          }).item,
+          ['world']
+        )
+      })
+
+      it('should update item', async function () {
+        const state = await mockState([{
+          name: 'test',
+          state: {
+            schema: {
+              items: {
+                type: 'collection',
+                items: {
+                  type: 'array',
+                  items: {
+                    type: 'string'
+                  }
+                }
+              }
+            }
+          }
+        }])
+
+        const result = state.stateSetValue({
+          name: 'test/items',
+          value: ['hello']
+        })
+
+        state.stateSetValue({
+          name: 'test/items',
+          value: ['world'],
+          options: {
+            id: result.id,
+            merge: true
+          }
+        })
+
+        deepStrictEqual(
+          state.stateGetValue({
+            name: 'test/items',
+            id: result.id
+          }).item,
+          ['world']
+        )
+      })
+    })
   })
 })
