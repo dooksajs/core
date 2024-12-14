@@ -632,7 +632,7 @@ function createTemplate ({
       stateSetValue({
         name: 'component/properties',
         value: properties,
-        options
+        options: { id }
       })
     }
 
