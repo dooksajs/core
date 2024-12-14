@@ -1450,7 +1450,7 @@ export const state = createPlugin('state', {
           // merge target and source objects
           if (typeof target === 'object' && !Array.isArray(item)) {
             // unfreeze target
-            resultItem = shallowCopy(target)
+            resultItem = shallowCopy(target._item)
 
             // merge object
             for (const key in item) {
