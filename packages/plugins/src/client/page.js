@@ -266,13 +266,13 @@ export const page = createPlugin('page', {
           })
 
           if (!redirect.isEmpty) {
-            const { pageId, isTemporary } = redirect.item
+            const { pathId, isTemporary } = redirect.item
             const page = stateGetValue({
               name: 'page/paths',
-              id: pageId
+              id: pathId
             })
 
-            const result = this.getItemsById(pageId)
+            const result = this.getItemsById(pathId)
 
             return Object.assign({
               isTemporary,
