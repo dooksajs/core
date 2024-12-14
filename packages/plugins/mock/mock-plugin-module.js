@@ -22,7 +22,7 @@
  */
 export function mockPluginModule (context, name, platform = 'client') {
   return new Promise((resolve, reject) => {
-    import(`../src/${platform}/${name}.js?${crypto.randomUUID()}`)
+    import(`../src/${platform}/${name}.js?${crypto.randomUUID().substring(30)}`)
       .then(({ default: plugin }) => {
         const methodNames = Object.keys(plugin)
 

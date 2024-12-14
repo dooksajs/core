@@ -45,7 +45,7 @@ export function mockState (plugins = []) {
     }
 
     // import state module
-    import('../src/client/state.js?' + crypto.randomUUID())
+    import('../src/client/state.js?' + crypto.randomUUID().substring(30))
       .then(({ state }) => {
         // setup state
         state.setup(_state)
