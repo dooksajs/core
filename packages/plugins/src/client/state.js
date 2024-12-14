@@ -856,6 +856,124 @@ export const state = createPlugin('state', {
         this.addRelation(data.collection, data.id, schema.options.relation, source)
       }
     },
+    setDataUpdateOptions (data, schemaPath, source, options) {
+      let target = data.target
+
+      // set target to data collection
+      if (data.id) {
+        target = target[data.id]
+      }
+
+      let targetItem = target._item
+
+      // update target position
+      if (options.position) {
+        const length = options.position.length - 1
+        const lastKey = options.position[length]
+        let path = schemaPath
+
+        for (let i = 0; i < length; i++) {
+          const key = options.update.position[i]
+          path = path + '/' + key
+
+          if (!targetItem[key]) {
+            throw new DataValueException('Update position does not exist' + options.position)
+          }
+
+          targetItem = targetItem[key]
+        }
+
+        // insert data
+        if (!options.method) {
+          this.validateSchema(data, path, source)
+
+          targetItem[lastKey] = source
+
+          return {
+            complete: true,
+            isValid: true
+          }
+        } else {
+          // make a copy for update method
+          if (Array.isArray(targetItem[lastKey])) {
+            targetItem = targetItem[lastKey].slice()
+          } else {
+            throw new DataValueException('Update position and update method expected an array')
+          }
+        }
+
+        schemaPath = path
+      }
+
+      if (options.method) {
+        if (!Array.isArray(targetItem)) {
+          throw new DataSchemaException({
+            schemaPath,
+            keyword: 'updateMethod',
+            message: 'Expected target to be an array but found ' + typeof targetItem
+          })
+        }
+
+        // Clone array if position was not changed
+        if (options.position == null) {
+          if (data.id) {
+            data.target[data.id]._item = target._item.slice()
+            targetItem = data.target[data.id]._item
+          } else {
+            data.target._item = target._item.slice()
+            targetItem = data.target._item
+          }
+        }
+
+        const schemaItem = this.getSchema(schemaPath)
+        let relation
+
+        if (schemaItem && schemaItem.options && schemaItem.options.relation) {
+          relation = {
+            target: data.collection,
+            id: data.id,
+            source: schemaItem.options.relation
+          }
+        }
+
+        // update target array
+        const result = this.updateArray(targetItem, source, options, relation)
+
+        if (!result.isValid) {
+          return result
+        }
+
+        // check schema options of array
+        const schema = this.getSchema(schemaPath)
+
+        // ISSUE: containsDuplicates expects an array
+        if (schema && schema.options) {
+          // if (schema.options.uniqueItems) {
+          //   // @TODO this is too slow, perhaps use a hash table or use a Map
+          //   const hasDuplicates = arrayHasDuplicates(targetItem)
+
+          //   if (hasDuplicates) {
+          //     // restore target
+          //     target._item = target._previous._item
+
+          //     return {
+          //       complete: true,
+          //       isValid: false
+          //     }
+          //   }
+          // }
+
+          if (schema.options.relation) {
+            this.addRelation(data.collection, data.id, schema.options.relation, source)
+          }
+
+          return {
+            complete: true,
+            isValid: true
+          }
+        }
+      }
+    },
     setDataOptions (data, source, options) {
       if (Object.hasOwnProperty.call(options, 'id') && options.id == null) {
         throw new DataSchemaException({
@@ -959,8 +1077,6 @@ export const state = createPlugin('state', {
       } else {
         const newDataInstance = this.createTarget(schema.type, options.metadata)
 
-        newDataInstance._item = source
-
         // add new data
         if (isCollection) {
           data.target[data.id] = newDataInstance
@@ -973,11 +1089,17 @@ export const state = createPlugin('state', {
       if (!options.update) {
         this.validateSchema(data, schemaPath, source)
 
-        // add new data
-        if (isCollection) {
-          data.target[data.id]._item = source
+        if (schema.type === 'array') {
+          this.setDataUpdateOptions(data, schemaPath, source, {
+            method: 'push'
+          })
         } else {
-          data.target._item = source
+          // add new data
+          if (isCollection) {
+            data.target[data.id]._item = source
+          } else {
+            data.target._item = source
+          }
         }
 
         return {
@@ -986,128 +1108,7 @@ export const state = createPlugin('state', {
         }
       }
 
-      const target = data.target[data.id]
-      let targetItem = target._item
-
-      // update target position
-      if (options.update.position) {
-        const length = options.update.position.length - 1
-        const lastKey = options.update.position[length]
-        let path = schemaPath
-
-        for (let i = 0; i < length; i++) {
-          const key = options.update.position[i]
-          path = path + '/' + key
-
-          if (!targetItem[key]) {
-            throw new DataValueException('Update position does not exist' + options.update.position)
-          }
-
-          targetItem = targetItem[key]
-        }
-
-        // insert data
-        if (!options.update.method) {
-          this.validateSchema(data, path, source)
-
-          targetItem[lastKey] = source
-
-          return {
-            complete: true,
-            isValid: true
-          }
-        } else {
-          // make a copy for update method
-          if (Array.isArray(targetItem[lastKey])) {
-            targetItem = targetItem[lastKey].slice()
-          } else {
-            throw new DataValueException('Update position and update method expected an array')
-          }
-        }
-
-        schemaPath = path
-      }
-
-      if (options.update.method) {
-        if (!Array.isArray(targetItem)) {
-          throw new DataSchemaException({
-            schemaPath,
-            keyword: 'updateMethod',
-            message: 'Expected target to be an array but found ' + typeof targetItem
-          })
-        }
-
-        // Clone array if position was not changed
-        if (options.update.position == null) {
-          data.target[data.id]._item = target._item.slice()
-          targetItem = data.target[data.id]._item
-        }
-
-        const schemaPathItem = schemaPath + '/items'
-        const schemaItem = this.getSchema(schemaPath)
-        const updateMethod = options.update.method
-        let relation
-
-        // validate source
-        if (schemaItem) {
-          if (schemaItem.options && schemaItem.options.relation) {
-            relation = {
-              target: data.collection,
-              id: data.id,
-              source: schemaItem.options.relation
-            }
-          }
-
-          if (updateMethod === 'push' || updateMethod === 'unshift') {
-            if (Array.isArray(source)) {
-              for (let i = 0; i < source.length; i++) {
-                const item = source[i]
-
-                this.validateSchema(data, schemaPathItem, item)
-              }
-            } else {
-              this.validateSchema(data, schemaPathItem, source)
-            }
-          }
-        }
-
-        // update target array
-        const result = this.updateArray(targetItem, source, options.update, relation)
-
-        if (!result.isValid) {
-          return result
-        }
-
-        // check schema options of array
-        const schema = this.getSchema(schemaPath)
-
-        // ISSUE: containsDuplicates expects an array
-        if (schema && schema.options) {
-          // if (schema.options.uniqueItems) {
-          //   // @TODO this is too slow, perhaps use a hash table or use a Map
-          //   const hasDuplicates = arrayHasDuplicates(targetItem)
-
-          //   if (hasDuplicates) {
-          //     // restore target
-          //     target._item = target._previous._item
-
-          //     return {
-          //       complete: true,
-          //       isValid: false
-          //     }
-          //   }
-          // }
-
-          if (schema.options.relation) {
-            this.addRelation(data.collection, data.id, schema.options.relation, source)
-          }
-
-          return {
-            complete: true,
-            isValid: true
-          }
-        }
-      }
+      this.setDataUpdateOptions(data, schemaPath, source, options.update)
 
       return { isValid: true }
     },
