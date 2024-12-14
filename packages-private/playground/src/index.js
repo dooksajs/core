@@ -26,9 +26,8 @@ nodemon
     console.log('all it quits')
     log({
       level: 'WARN',
-      message: 'Stop development server...'
+      message: 'Press CTRL+C again to quit.'
     })
-    process.exit()
   })
   .on('restart', function (files) {
     // force restart on first file change
