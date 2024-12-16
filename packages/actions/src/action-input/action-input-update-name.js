@@ -23,7 +23,7 @@ export default createAction('action-input-update-name', [
       name: '+',
       values: [
         { $ref: 'property_name' },
-        '+$'
+        '$'
       ]
     }
   },
