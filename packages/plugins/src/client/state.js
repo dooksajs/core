@@ -2137,17 +2137,27 @@ export const state = createPlugin('state', {
         // return collection
         if (schema.type === 'collection') {
           if (!query.hasOwnProperty('id')) {
-            /** @type {Object.<string, DataValue<*>>} */
-            const result = {}
+            const value = []
+            /** @type {DataValue<*>} */
+            const result = createDataValue({
+              collection: name,
+              id,
+              value
+            })
 
             for (const id in collection) {
               if (Object.prototype.hasOwnProperty.call(collection, id)) {
-                result[id] = createDataValue({
+                value.push(createDataValue({
                   collection: name,
                   id,
                   value: collection[id]
-                })
+                }))
               }
+            }
+
+            if (!value.length) {
+              // no documents found
+              result.isEmpty = true
             }
 
             return result
