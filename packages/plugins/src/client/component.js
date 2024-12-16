@@ -1161,29 +1161,33 @@ export const component = createPlugin('component', {
         const componentGroupId = stateGetValue({
           name: 'component/belongsToGroup',
           id
-        }).item
-        const componentGroup = stateSetValue({
-          name: 'component/groups',
-          value: id,
-          options: {
-            id: componentGroupId,
-            update: { method: 'pull' }
-          }
         })
 
-        // clean up action variables
-        if (!componentGroup.item.length) {
-          // delete group block variables
-          stateDeleteValue({
-            name: 'variable/values',
-            id: componentGroupId
+        if (!componentGroupId.isEmpty) {
+          const id = componentGroupId.item
+          const componentGroup = stateSetValue({
+            name: 'component/groups',
+            value: id,
+            options: {
+              id,
+              update: { method: 'pull' }
+            }
           })
 
-          // delete value group
-          stateDeleteValue({
-            name: 'variable/scopes',
-            id: componentGroupId
-          })
+          // clean up action variables
+          if (!componentGroup.item.length) {
+            // delete group block variables
+            stateDeleteValue({
+              name: 'variable/values',
+              id
+            })
+
+            // delete value group
+            stateDeleteValue({
+              name: 'variable/scopes',
+              id
+            })
+          }
         }
 
         // delete variable scopes
