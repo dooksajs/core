@@ -23,12 +23,12 @@ export const dataDocumentOptionItem = createAction('data-document-option-item', 
         {
           id: 'option-text',
           prefixId: { $ref: 1 },
-          value: { action_getPayloadValue: 'key' }
+          value: { action_getPayloadValue: 'value.id' }
         },
         {
           id: 'option-value',
           prefixId: { $ref: 1 },
-          value: { action_getPayloadValue: 'key' }
+          value: { action_getPayloadValue: 'value.id' }
         }
       ]
     }
@@ -37,7 +37,7 @@ export const dataDocumentOptionItem = createAction('data-document-option-item', 
     state_setValue: {
       name: 'component/options',
       value: {
-        value: { action_getPayloadValue: 'key' }
+        value: { action_getPayloadValue: 'value.id' }
       },
       options: { id: { $ref: 1 } }
     }
