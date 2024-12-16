@@ -8,6 +8,7 @@ import {
   stateSetValue,
   stateDeleteValue
 } from '#client'
+import { generateId } from '@dooksa/utils'
 
 /**
  * @import {Component, ComponentEvent, ComponentInstance} from '@dooksa/create-component'
@@ -145,13 +146,9 @@ export const component = createPlugin('component', {
   data: {
     component: null,
     attributeObserverCallbacks: {},
-    attributeObserver: null,
-    id: 0
+    attributeObserver: null
   },
   privateMethods: {
-    generateId () {
-      return '_' + this.id++ + '_'
-    },
     objectHasSetter (object, property, result = { hasSetter: false }) {
       const descriptor = Object.getOwnPropertyDescriptor(object, property)
 
@@ -544,7 +541,7 @@ export const component = createPlugin('component', {
      * @param {string} [param.groupId]
      */
     createTemplate ({
-      id = this.generateId(),
+      id = generateId(),
       template,
       parentId,
       rootId,
