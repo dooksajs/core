@@ -144,11 +144,23 @@ export const component = createPlugin('component', {
     }
   },
   data: {
-    component: null,
+    /** @type {Object.<string, Component>} */
+    components: {},
     attributeObserverCallbacks: {},
     attributeObserver: null
   },
   privateMethods: {
+    /**
+     * @param {string} id - Component ID
+     * @returns {Component}
+     */
+    getById (id) {
+      if (this.components[id] == null) {
+        throw new Error('DooksaError: Could not found component "' + id + '"')
+      }
+
+      return this.components[id]
+    },
     objectHasSetter (object, property, result = { hasSetter: false }) {
       const descriptor = Object.getOwnPropertyDescriptor(object, property)
 
@@ -204,7 +216,7 @@ export const component = createPlugin('component', {
       })
     },
     createNode (id, item) {
-      const template = this.$component(item.id)
+      const template = this.getById(item.id)
       let node
 
       if (!template.isLoaded) {
@@ -881,7 +893,7 @@ export const component = createPlugin('component', {
 
           childNode = this.createTemplate({
             id,
-            template: this.$component(item.id),
+            template: this.getById(item.id),
             parentId,
             rootId,
             groupId
@@ -1324,7 +1336,7 @@ export const component = createPlugin('component', {
           if (item.isTemplate) {
             const result = this.createTemplate({
               id: childId,
-              template: this.$component(item.id),
+              template: this.getById(item.id),
               parentId: id,
               groupId: item.groupId
             })
@@ -1346,8 +1358,14 @@ export const component = createPlugin('component', {
       }
     }
   },
+  /**
+   * @param {Object} options
+   * @param {string} options.rootId - Root element ID used to mount Dooksa
+   * @param {Object.<string, Component>} options.components - Fetch component function
+   */
   setup ({
-    rootId = 'root', component
+    rootId = 'root',
+    components
   }) {
     const rootEl = document.getElementById(rootId)
 
@@ -1374,7 +1392,8 @@ export const component = createPlugin('component', {
       options: { id: 'body' }
     })
 
-    this.$component = component
+    // set available components
+    this.components = components
 
     const rootItem = stateGetValue({
       name: 'component/items',
@@ -1387,7 +1406,7 @@ export const component = createPlugin('component', {
     } else {
       element = this.createTemplate({
         id: 'root',
-        template: this.$component('div'),
+        template: this.getById('div'),
         parentId: 'root'
       })
     }

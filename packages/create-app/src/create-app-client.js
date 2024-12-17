@@ -150,17 +150,9 @@ function initialize (appPlugins, appComponents) {
       }
     }
 
-    const components = appComponents.items
-
     // setup view components
     options.component = {
-      component: (id) => {
-        if (components[id] == null) {
-          throw new Error('DooksaError: Could not found component "' + id + '"')
-        }
-
-        return components[id]
-      }
+      components: appComponents.items
     }
 
     // setup database
