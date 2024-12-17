@@ -223,7 +223,7 @@ export const component = createPlugin('component', {
         return this.lazyLoad({
           id,
           item
-        }, template, createNode)
+        }, template, this.createNode)
       }
 
       // Custom element constructor
