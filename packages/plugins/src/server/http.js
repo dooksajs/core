@@ -28,8 +28,10 @@ let apiPrefix = ''
 let cookieSecret = ''
 
 export const $http = createPlugin('http', {
-  schema: {
-    status: { type: 'string' }
+  state: {
+    schema: {
+      status: { type: 'string' }
+    }
   },
   data: {
     /** @type {HyperExpress.Server} */
