@@ -348,7 +348,7 @@ export const component = createPlugin('component', {
           })
 
           if (eventTypes[on] && !hasEvent[on]) {
-            const [eventType, eventValue] = on.split('/')
+            const [eventType, eventValue] = on.split('/', 2)
 
             if (eventType === 'node' || eventType === 'observeProperty' || eventType === 'observeAttribute') {
               hasEvent[on] = true
@@ -807,7 +807,7 @@ export const component = createPlugin('component', {
           })
 
           if (eventTypes[on] && !hasEvent[on]) {
-            const [eventType, eventValue] = on.split('/')
+            const [eventType, eventValue] = on.split('/', 2)
 
             if (eventType === 'node' || eventType === 'observeProperty' || eventType === 'observeAttribute') {
               hasEvent[on] = true
