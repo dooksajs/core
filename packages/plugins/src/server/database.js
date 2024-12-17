@@ -8,6 +8,7 @@ import { log } from '@dooksa/utils/server'
 
 /**
  * @typedef {import('../../../types.js').DataWhere} DataWhere
+ * @import {Request, Response} from 'hyper-express'
  */
 
 const snapshotLock = {}
@@ -386,6 +387,10 @@ function stringToCondition (string) {
 export const database = createPlugin('database', {
   methods: {
     getValue (collections) {
+      /**
+       * @param {Request} request
+       * @param {Response} response
+       */
       return (request, response) => {
         let result = []
         let where
@@ -470,11 +475,14 @@ export const database = createPlugin('database', {
         //     const sort = sortBy[i]
         //   }
         // }
-
         response.status(200).json(result)
       }
     },
     deleteValue (collections) {
+      /**
+       * @param {Request} request
+       * @param {Response} response
+       */
       return (request, response) => {
         let result = 0
 
