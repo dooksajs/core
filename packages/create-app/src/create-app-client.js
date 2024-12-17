@@ -75,7 +75,7 @@ function callbackWhenAvailable ({ actions, lazy, loader, setup, options, use }) 
       return callback()
     }
 
-    const pluginName = name.split('_')[0]
+    const pluginName = name.split('_', 1)[0]
     const fileName = lazy[pluginName]
 
     // load custom plugins
