@@ -141,8 +141,9 @@ export const state = createPlugin('state', {
       let suffix = option.suffixId ?? ''
 
       if (id) {
-        const affixId = id.split('_')
+        const affixId = id.split('_', 3)
 
+        // check if ID has both affixes
         if (affixId.length === 3 && (affixId[0].length || affixId[2].length)) {
           return id
         }
@@ -1176,9 +1177,14 @@ export const state = createPlugin('state', {
 
           result.expandIncluded[relation] = true
 
-          const item = relation.split('/')
+          const item = relation.split('/', 3)
+
+          if (item.length !== 3) {
+            throw new Error('DooksaError: Unexpected relation name "' + relation + '"')
+          }
+
           const name = item[0] + '/' + item[1]
-          const id = item.splice(2).join('/')
+          const id = item[2]
           const value = this.getValue({
             name,
             id,
@@ -2034,7 +2040,7 @@ export const state = createPlugin('state', {
 
               // clear up data if not in use
               if (!this.relationsInUse[usedRelationName].length) {
-                const splitName = usedRelationName.split('/')
+                const splitName = usedRelationName.split('/', 2)
 
                 delete this.relationsInUse[usedRelationName]
 
