@@ -1,5 +1,3 @@
-import { deepClone } from '@dooksa/utils'
-
 /**
  * Represents metadata associated with a data entity
  * @typedef {Object} DataMetadata
@@ -88,7 +86,7 @@ function removeAffix (id) {
     return ''
   }
 
-  const splitString = id.split('_')
+  const splitString = id.split('_', 3)
   let noAffixId = ''
 
   if (splitString.length === 3) {
