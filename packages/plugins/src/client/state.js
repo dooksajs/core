@@ -30,6 +30,12 @@ import { createDataValue } from '../utils/data-value.js'
  * @property {DataListenerHandler[] | undefined} priority - Handlers that will emit before "all" or "items" handlers
  */
 
+/**
+ * Determines if an array contains duplicate values.
+ *
+ * @param {Array} array - The array to check for duplicates.
+ * @returns {boolean} - Returns true if there are duplicates, otherwise false.
+ */
 function arrayHasDuplicates (array) {
   for (let i = 0; i < array.length; i++) {
     const value = array[i]
