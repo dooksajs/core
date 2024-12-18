@@ -12,9 +12,13 @@ export const development = createPlugin('development', {
     }
   },
   data: {
+    init: 0,
     sse_streams: {}
   },
   setup () {
+    // init booting
+    this.init = 1
+
     // sse rebuild notification
     httpSetRoute({
       path: '/esbuild',
@@ -31,6 +35,14 @@ export const development = createPlugin('development', {
         // assign a unique identifier to this stream and store it in our broadcast pool
         response.sse.id = id
         this.sse_streams[id] = response.sse
+
+        if (this.init === 1) {
+          // init complete
+          this.init = 2
+
+          // ping on restart
+          response.sse.send(id, 'rebuild', 'start')
+        }
 
         // emit client rebuild data
         stateAddListener({
