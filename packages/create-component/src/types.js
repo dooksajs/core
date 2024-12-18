@@ -120,7 +120,7 @@
 /**
  * Event definition for a component
  * @typedef {Object} ComponentEvent
- * @property {ComponentEventOn | string} on - Event type
+ * @property {ComponentEventOn} on - Event type
  * @property {string} actionId - Unique identifier for the event action.
  */
 
