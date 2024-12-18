@@ -18,7 +18,7 @@ export const actionCardTitle = createAction('action-card-title', [
       name: 'component/options',
       value: {
         value: {
-          action_getBlockValue: {
+          action_getValue: {
             query: 'item.title',
             value: { $ref: 1 }
           }

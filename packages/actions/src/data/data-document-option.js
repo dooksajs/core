@@ -5,7 +5,7 @@ export const dataDocumentOption = createAction('data-document-option', [
     list_map: {
       actionId: 'data-document-option-item',
       items: {
-        action_getBlockValue: {
+        action_getValue: {
           value: {
             state_getValue: {
               name: {

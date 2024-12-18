@@ -21,8 +21,8 @@
  * @typedef {Object} ActionValue
  * @property {string} [$id]
  * @property {ActionDispatch} [action_dispatch]
- * @property {GetActionValue} [variable_getValue]
- * @property {GetBlockValue} [action_getBlockValue]
+ * @property {GetVariableValue} [variable_getValue]
+ * @property {GetActionValue} [action_getValue]
  * @property {ActionValue|'id'|'groupId'|'parentId'|'rootId'|'$null'} [action_getContextValue]
  * @property {ActionValue|string[]|string} [action_getPayloadValue]
  * @property {EvalCondition} [action_ifElse]
@@ -210,7 +210,7 @@
  */
 
 /**
- * @typedef {Object} GetActionValue
+ * @typedef {Object} GetVariableValue
  * @property {ActionValue|string} [scope]
  * @property {ActionValue|string} [prefixId]
  * @property {ActionValue|string} [suffixId]
@@ -218,7 +218,7 @@
  */
 
 /**
- * @typedef {Object} GetBlockValue
+ * @typedef {Object} GetActionValue
  * @property {ActionValue|string} value
  * @property {ActionValue|string[]|string} query
  */

@@ -17,7 +17,7 @@ export default createAction('action-input-object-property-schema', [
   },
   {
     $id: 'schema_type',
-    action_getBlockValue: {
+    action_getValue: {
       value: { $id: 'schema' },
       query: 'type'
     }
@@ -80,7 +80,7 @@ export default createAction('action-input-object-property-schema', [
     state_setValue: {
       name: 'component/children',
       value: {
-        action_getBlockValue: {
+        action_getValue: {
           value: { $ref: 'action_input_data_value' },
           query: 'id'
         }

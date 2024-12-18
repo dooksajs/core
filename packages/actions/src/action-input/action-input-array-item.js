@@ -31,7 +31,7 @@ export default createAction('action-input-array-item', [
   },
   {
     $id: 'action_input_array_item_id',
-    action_getBlockValue: {
+    action_getValue: {
       value: { $ref: 'action_input_array_item' },
       query: 'id'
     }

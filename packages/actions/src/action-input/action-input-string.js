@@ -13,7 +13,7 @@ export default createAction('action-input-string', [
   },
   {
     $id: 'action_input_data_string_id',
-    action_getBlockValue: {
+    action_getValue: {
       value: { $ref: 'action_input_data_string' },
       query: 'id'
     }

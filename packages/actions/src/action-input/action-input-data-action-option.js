@@ -13,7 +13,7 @@ export default createAction('action-input-data-action-option', [
   },
   {
     $id: 'variable_action_metadata',
-    action_getBlockValue: {
+    action_getValue: {
       value: { action_getPayloadValue: 'value' },
       query: 'metadata'
     }
@@ -28,7 +28,7 @@ export default createAction('action-input-data-action-option', [
     }
   },
   {
-    action_getBlockValue: {
+    action_getValue: {
       value: {
         state_getValue: {
           name: 'metadata/actions',
@@ -40,7 +40,7 @@ export default createAction('action-input-data-action-option', [
   },
   {
     $id: 'variable_action_id',
-    action_getBlockValue: {
+    action_getValue: {
       value: { action_getPayloadValue: 'value' },
       query: 'id'
     }
@@ -61,7 +61,7 @@ export default createAction('action-input-data-action-option', [
   },
   {
     $id: 'option_component_id',
-    action_getBlockValue: {
+    action_getValue: {
       value: { $ref: 0 },
       query: 'id'
     }

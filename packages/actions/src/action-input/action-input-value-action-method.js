@@ -18,7 +18,7 @@ export default createAction('action-input-value-action-method', [
       name: 'component/options',
       value: {
         value: {
-          action_getBlockValue: {
+          action_getValue: {
             query: 'id',
             value: { $ref: 1 }
           }

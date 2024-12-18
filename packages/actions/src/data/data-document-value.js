@@ -17,7 +17,7 @@ export const dataDocumentValue = createAction('data-document-value', [
   },
   {
     $id: 'document_item',
-    action_getBlockValue: {
+    action_getValue: {
       value: { $ref: 'document_result' },
       query: 'item'
     }
@@ -103,7 +103,7 @@ export const dataDocumentValue = createAction('data-document-value', [
   },
   {
     $id: 'action_input_string_id',
-    action_getBlockValue: {
+    action_getValue: {
       value: { $ref: 'action_input_string' },
       query: 'id'
     }
@@ -159,14 +159,14 @@ export const dataDocumentValue = createAction('data-document-value', [
   },
   {
     $id: 'action_input_object_id',
-    action_getBlockValue: {
+    action_getValue: {
       value: { $ref: 'action_input_object' },
       query: 'id'
     }
   },
   {
     $id: 'schema_properties',
-    action_getBlockValue: {
+    action_getValue: {
       value: { $ref: 'schema' },
       query: 'properties'
     }
@@ -234,14 +234,14 @@ export const dataDocumentValue = createAction('data-document-value', [
   },
   {
     $id: 'action_input_array_items_id',
-    action_getBlockValue: {
+    action_getValue: {
       value: { $ref: 'action_input_array_items' },
       query: 'id'
     }
   },
   {
     $id: 'schema_items',
-    action_getBlockValue: {
+    action_getValue: {
       value: { $ref: 'schema' },
       query: 'items'
     }

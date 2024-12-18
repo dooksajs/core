@@ -14,7 +14,7 @@ export default createAction('select-edit-modal-items', [
       if: [
         {
           from: {
-            action_getBlockValue: {
+            action_getValue: {
               value: {
                 action_getDataValue: {
                   name: 'component/items',

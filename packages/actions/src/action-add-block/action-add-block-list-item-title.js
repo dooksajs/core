@@ -19,7 +19,7 @@ export const actionAddBlockListItemTitle = createAction('action-add-block-list-i
       name: 'component/options',
       value: {
         value: {
-          action_getBlockValue: {
+          action_getValue: {
             query: 'item.title',
             value: { $ref: 1 }
           }

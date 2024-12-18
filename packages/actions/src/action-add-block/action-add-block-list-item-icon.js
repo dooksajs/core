@@ -19,7 +19,7 @@ export const actionAddBlockListItemIcon = createAction('action-add-block-list-it
       name: 'component/options',
       value: {
         icon: {
-          action_getBlockValue: {
+          action_getValue: {
             query: 'item.icon',
             value: { $ref: 1 }
           }

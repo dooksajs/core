@@ -11,7 +11,7 @@ export const dataDocumentOptionItem = createAction('data-document-option-item', 
     }
   },
   {
-    action_getBlockValue: {
+    action_getValue: {
       value: { $ref: 0 },
       query: 'id'
     }

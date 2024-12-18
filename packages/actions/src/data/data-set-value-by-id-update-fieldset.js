@@ -30,7 +30,7 @@ export const dataSetValueByIdUpdateFieldset = createAction('data-set-value-by-id
   },
   {
     $id: 'component_select_document_id',
-    action_getBlockValue: {
+    action_getValue: {
       value: { $ref: 1 },
       query: 'id'
     }

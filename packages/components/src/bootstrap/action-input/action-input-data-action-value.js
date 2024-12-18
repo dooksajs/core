@@ -5,7 +5,7 @@ import {
 export default createSelect({
   metadata: { id: 'action-input-data-action-value' },
   options: {
-    name: '.action_getBlockValue.value.$ref'
+    name: '.action_getValue.value.$ref'
   },
   events: [
     {

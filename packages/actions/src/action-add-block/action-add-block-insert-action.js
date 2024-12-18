@@ -48,7 +48,7 @@ export const actionAddBlockInsertAction = createAction('action-add-block-insert-
   },
   {
     $id: 'action_card_id',
-    action_getBlockValue: {
+    action_getValue: {
       value: { $ref: 'action_card' },
       query: 'id'
     }
@@ -90,7 +90,7 @@ export const actionAddBlockInsertAction = createAction('action-add-block-insert-
     $id: 'component_index',
     list_indexOf: {
       items: {
-        action_getBlockValue: {
+        action_getValue: {
           value: { $ref: 'component_parent' },
           query: 'item'
         }

@@ -15,7 +15,7 @@ export default createAction('action-input-data-action-options', [
   {
     list_map: {
       items: {
-        action_getBlockValue: {
+        action_getValue: {
           value: { $ref: 'action_sequence' },
           query: 'item'
         }
@@ -39,7 +39,7 @@ export default createAction('action-input-data-action-options', [
       if: [
         {
           from: {
-            action_getBlockValue: {
+            action_getValue: {
               value: { $ref: 1 },
               query: 'length'
             }
@@ -72,7 +72,7 @@ export default createAction('action-input-data-action-options', [
     }
   },
   {
-    action_getBlockValue: {
+    action_getValue: {
       value: { $ref: 5 },
       query: 'id'
     }

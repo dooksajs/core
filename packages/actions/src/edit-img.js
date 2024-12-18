@@ -20,7 +20,7 @@ export default createAction('edit-img', [
     }
   },
   { // component id
-    action_getBlockValue: {
+    action_getValue: {
       value: {
         $ref: 1
       },
@@ -77,7 +77,7 @@ export default createAction('edit-img', [
     }
   },
   {
-    action_getBlockValue: {
+    action_getValue: {
       value: {
         $ref: 5
       },
@@ -95,7 +95,7 @@ export default createAction('edit-img', [
     }
   },
   {
-    action_getBlockValue: {
+    action_getValue: {
       value: {
         $ref: 7
       },

@@ -18,7 +18,7 @@ export const actionCardIcon = createAction('action-card-icon', [
       name: 'component/options',
       value: {
         icon: {
-          action_getBlockValue: {
+          action_getValue: {
             query: 'item.icon',
             value: { $ref: 1 }
           }

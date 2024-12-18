@@ -19,7 +19,7 @@ export const actionAddBlockListItemDescription = createAction('action-add-block-
       name: 'component/options',
       value: {
         value: {
-          action_getBlockValue: {
+          action_getValue: {
             query: 'item.description',
             value: { $ref: 1 }
           }

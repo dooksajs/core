@@ -18,7 +18,7 @@ export const actionCardDescription = createAction('action-card-description', [
       name: 'component/options',
       value: {
         value: {
-          action_getBlockValue: {
+          action_getValue: {
             query: 'item.description',
             value: { $ref: 1 }
           }

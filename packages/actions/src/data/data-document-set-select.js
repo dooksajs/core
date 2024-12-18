@@ -23,7 +23,7 @@ export const dataDocumentSetSelect = createAction('data-document-set-select', [
   },
   {
     $id: 'component_document_select_id',
-    action_getBlockValue: {
+    action_getValue: {
       value: { $ref: 'component_document_select' },
       query: 'id'
     }

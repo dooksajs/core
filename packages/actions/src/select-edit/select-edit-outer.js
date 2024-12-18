@@ -14,7 +14,7 @@ export default createAction('select-edit-outer', [
       if: [{
         op: '>',
         from: {
-          action_getBlockValue: {
+          action_getValue: {
             value: {
               $ref: 0
             },

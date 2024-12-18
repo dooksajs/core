@@ -31,7 +31,7 @@ export default createAction('action-input-data-object', [
   //   state_setValue: {
   //     name: 'component/children',
   //     value: {
-  //       action_getBlockValue: {
+  //       action_getValue: {
   //         value: { $ref: 3 },
   //         query: 'id'
   //       }

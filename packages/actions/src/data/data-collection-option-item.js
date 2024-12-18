@@ -11,7 +11,7 @@ export const dataCollectionOptionItem = createAction('data-collection-option-ite
     }
   },
   {
-    action_getBlockValue: {
+    action_getValue: {
       value: { $ref: 0 },
       query: 'id'
     }

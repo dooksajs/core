@@ -22,7 +22,7 @@ export default createAction('data-document-input-value', [
       name: 'component/options',
       value: {
         value: {
-          action_getBlockValue: {
+          action_getValue: {
             value: {
               $ref: 0
             },

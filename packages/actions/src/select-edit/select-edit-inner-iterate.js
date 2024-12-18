@@ -17,7 +17,7 @@ export default createAction('select-edit-inner-iterate', [
         {
           op: '!=',
           from: {
-            action_getBlockValue: {
+            action_getValue: {
               value: {
                 $ref: 0
               },
@@ -41,7 +41,7 @@ export default createAction('select-edit-inner-iterate', [
     }
   },
   {
-    action_getBlockValue: {
+    action_getValue: {
       value: {
         $ref: 2
       },

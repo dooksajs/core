@@ -44,7 +44,7 @@ export const actionAddBlockBody = createAction('action-add-block-body', [
     state_setValue: {
       name: 'component/children',
       value: {
-        action_getBlockValue: {
+        action_getValue: {
           value: { $ref: 3 },
           query: 'id'
         }

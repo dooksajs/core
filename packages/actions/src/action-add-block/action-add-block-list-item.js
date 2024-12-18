@@ -12,7 +12,7 @@ export const actionAddBlockListItem = createAction('action-add-block-list-item',
     }
   },
   {
-    action_getBlockValue: {
+    action_getValue: {
       query: 'id',
       value: { $ref: 0 }
     }

@@ -1,6 +1,6 @@
 const availableMethods = {
   action_dispatch: true,
-  action_getBlockValue: true,
+  action_getValue: true,
   action_getContextValue: true,
   action_getPayloadValue: true,
   variable_getValue: true,

@@ -20,7 +20,7 @@ export default createAction('action-input-add-object-property', [
   },
   {
     $id: 'action_input_object_property_id',
-    action_getBlockValue: {
+    action_getValue: {
       value: { $ref: 'action_input_object_property' },
       query: 'id'
     }

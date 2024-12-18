@@ -17,7 +17,7 @@ export default createAction('data-document-set-fieldset', [
   },
   {
     $id: 'document_item',
-    action_getBlockValue: {
+    action_getValue: {
       value: { $ref: 'document_value' },
       query: 'item'
     }
@@ -28,7 +28,7 @@ export default createAction('data-document-set-fieldset', [
   },
   {
     $id: 'schema_type',
-    action_getBlockValue: {
+    action_getValue: {
       value: { $ref: 'schema' },
       query: 'type'
     }
@@ -54,14 +54,14 @@ export default createAction('data-document-set-fieldset', [
   },
   {
     $id: 'parent_component_id',
-    action_getBlockValue: {
+    action_getValue: {
       value: { $ref: 'parent_component' },
       query: 'item'
     }
   },
   {
     $id: 'component_action_label_value_id',
-    action_getBlockValue: {
+    action_getValue: {
       value: { $ref: 'component_action_label_value' },
       query: 'id'
     }
@@ -135,7 +135,7 @@ export default createAction('data-document-set-fieldset', [
     state_setValue: {
       name: 'component/children',
       value: {
-        action_getBlockValue: {
+        action_getValue: {
           value: { $ref: 'action_input_data' },
           query: 'id'
         }
@@ -185,7 +185,7 @@ export default createAction('data-document-set-fieldset', [
   },
   {
     $id: 'object_properties',
-    action_getBlockValue: {
+    action_getValue: {
       value: { $ref: 'document_item' },
       query: 'properties'
     }

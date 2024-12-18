@@ -14,7 +14,7 @@ export const actionCardBody = createAction('action-card-body', [
     }
   },
   {
-    action_getBlockValue: {
+    action_getValue: {
       query: 'item.component',
       value: { $ref: 1 }
     }
@@ -45,7 +45,7 @@ export const actionCardBody = createAction('action-card-body', [
     state_setValue: {
       name: 'component/children',
       value: {
-        action_getBlockValue: {
+        action_getValue: {
           query: 'id',
           value: { $ref: 4 }
         }

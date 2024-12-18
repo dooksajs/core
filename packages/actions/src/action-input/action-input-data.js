@@ -62,7 +62,7 @@ export default createAction('action-input-data', [
   },
   {
     $id: 'data_item_string_id',
-    action_getBlockValue: {
+    action_getValue: {
       value: { $ref: 'data_item_string' },
       query: 'id'
     }

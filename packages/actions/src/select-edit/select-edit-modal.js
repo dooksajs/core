@@ -11,7 +11,7 @@ export default createAction('select-edit-modal', [
     }
   },
   {
-    action_getBlockValue: {
+    action_getValue: {
       value: {
         $ref: 0
       },

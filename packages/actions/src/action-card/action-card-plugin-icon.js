@@ -16,7 +16,7 @@ export const actionCardPluginIcon = createAction('action-card-plugin-icon', [
   {
     state_getValue: {
       id: {
-        action_getBlockValue: {
+        action_getValue: {
           query: 'item.plugin',
           value: { $ref: 1 }
         }
@@ -29,7 +29,7 @@ export const actionCardPluginIcon = createAction('action-card-plugin-icon', [
       name: 'component/options',
       value: {
         icon: {
-          action_getBlockValue: {
+          action_getValue: {
             query: 'item.icon',
             value: { $ref: 2 }
           }

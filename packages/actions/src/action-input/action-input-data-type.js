@@ -21,7 +21,7 @@ export default createAction('action-input-data-type', [
     state_setValue: {
       name: 'component/children',
       value: {
-        action_getBlockValue: {
+        action_getValue: {
           value: { $ref: 1 },
           query: 'item'
         }
@@ -34,7 +34,7 @@ export default createAction('action-input-data-type', [
   },
   // 3. second column component Id
   {
-    action_getBlockValue: {
+    action_getValue: {
       value: { $ref: 1 },
       query: 'item.1'
     }
@@ -79,13 +79,13 @@ export default createAction('action-input-data-type', [
       name: 'component/children',
       value: [
         {
-          action_getBlockValue: {
+          action_getValue: {
             value: { $ref: 5 },
             query: 'id'
           }
         },
         {
-          action_getBlockValue: {
+          action_getValue: {
             value: { $ref: 6 },
             query: 'id'
           }
@@ -137,13 +137,13 @@ export default createAction('action-input-data-type', [
       name: 'component/children',
       value: [
         {
-          action_getBlockValue: {
+          action_getValue: {
             value: { $ref: 9 },
             query: 'id'
           }
         },
         {
-          action_getBlockValue: {
+          action_getValue: {
             value: { $ref: 10 },
             query: 'id'
           }
@@ -199,13 +199,13 @@ export default createAction('action-input-data-type', [
       name: 'component/children',
       value: [
         {
-          action_getBlockValue: {
+          action_getValue: {
             value: { $ref: 13 },
             query: 'id'
           }
         },
         {
-          action_getBlockValue: {
+          action_getValue: {
             value: { $ref: 14 },
             query: 'id'
           }

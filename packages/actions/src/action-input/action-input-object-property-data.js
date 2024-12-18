@@ -20,7 +20,7 @@ export default createAction('action-input-object-property-data', [
   },
   {
     $id: 'action_input_data_property_label_id',
-    action_getBlockValue: {
+    action_getValue: {
       value: { $ref: 'action_input_data_property_label' },
       query: 'id'
     }
@@ -74,7 +74,7 @@ export default createAction('action-input-object-property-data', [
   },
   {
     $id: 'action_input_data_string_id',
-    action_getBlockValue: {
+    action_getValue: {
       value: { $ref: 'action_input_data_string' },
       query: 'id'
     }
@@ -137,7 +137,7 @@ export default createAction('action-input-object-property-data', [
   },
   {
     $id: 'action_input_object_properties_id',
-    action_getBlockValue: {
+    action_getValue: {
       value: { $ref: 'action_input_object_properties' },
       query: 'id'
     }
