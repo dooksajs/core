@@ -41,7 +41,7 @@
  * @typedef {Object} ComponentExtend
  * @property {ComponentProperty[]} [properties] - Properties to modify the component.
  * @property {ComponentMixinMetadata} [metadata] - Metadata for mixins applied to the component.
- * @property {ComponentEvent[]} [events] - Events to add or override.
+ * @property {ComponentEvent[] | Object.<string, *>[]} [events] - Events to add or override.
  * @property {boolean} [clearDefaultEvents] - Clear default events when extending the component.
  * @property {Object.<string, *>} [options] - Options for customizing the component.
  * @property {Array<Component|ComponentInstance>} [children] - Child components to include in the component.
