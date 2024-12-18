@@ -39,6 +39,11 @@ export const label = createComponent({
       value: 'form-label',
       toggle: true
     },
+    formCheck: {
+      name: 'className',
+      value: 'form-check-label',
+      replace: true
+    },
     for: {
       name: 'htmlFor',
       replace: true
@@ -53,13 +58,9 @@ export const label = createComponent({
 
 /**
  * @typedef {Object} ExtendLabelOption
- * @property {string} [placeholder]
- * @property {boolean} [disabled]
- * @property {boolean} [readonly]
- * @property {boolean} [required]
- * @property {string} [id]
- * @property {string} [for]
- * @property {string} [formLabel]
+ * @property {string} [for] - The for attribute associates a label with a form control.
+ * @property {boolean} [formLabel] - Add base styles for a an associated form control input
+ * @property {boolean} [formCheck] - Add label styles for an associated checkbox input
  */
 
 /**
