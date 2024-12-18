@@ -51,7 +51,7 @@ export const development = createPlugin('development', {
             handlerId: id
           })
           // Delete the stream from our broadcast pool
-          delete this.sse_streams[response.sse.id]
+          delete this.sse_streams[id]
         })
       }]
     })
