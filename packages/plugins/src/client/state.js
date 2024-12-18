@@ -2137,7 +2137,7 @@ export const state = createPlugin('state', {
       /**
        * Get data value
        * @param {GetDataQuery} query
-       * @returns {DataValue<*>}
+       * @returns {DataValue<*> | Object.<string, DataValue<*>>}
        */
       method (query) {
         const { name, id, prefixId, suffixId, options } = query
