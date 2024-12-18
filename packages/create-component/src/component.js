@@ -3,12 +3,24 @@
  */
 
 /**
-* @param {ComponentData & ComponentDataValues} data
-* @param {Object[]} [mixins]
-* @param {ComponentMixinMetadata} mixins[].metadata
-* @param {ComponentDataValues} mixins[].data
-* @returns {Component}
-*/
+ * Create Dooksa component
+ * @param {ComponentData & ComponentDataValues} data - Data for the component.
+ * @param {Object[]} [mixins] - Optional mixins to extend the component with.
+ * @param {ComponentMixinMetadata} mixins[].metadata - Metadata for the mixin.
+ * @param {ComponentDataValues} mixins[].data - Data for the mixin.
+ * @returns {Component} The created component object.
+ * @example
+ * const inputCheckbox = createComponent({
+ *   id: 'input-checkbox',
+ *   tag: 'input',
+ *   properties: [
+ *     {
+ *       name: 'type',
+ *       value: 'checkbox'
+ *     }
+ *   ]
+ * })
+ */
 function createComponent (data, mixins = []) {
   /**
   * @type {Component}
@@ -61,6 +73,11 @@ function createComponent (data, mixins = []) {
   return result
 }
 
+/**
+ * In-place merge properties from components.
+ * @param {Component} target - The target component to receive the merged properties
+ * @param {Component & ComponentDataValues} source - The component containing the properties to merge.
+ */
 function mergeProperties (target, source) {
   for (const key in source) {
     if (Object.hasOwnProperty.call(source, key)) {
@@ -78,16 +95,14 @@ function mergeProperties (target, source) {
       }
     }
   }
-
-  return target
 }
 
 /**
- * Convert component options to properties
- * @param {ComponentOption} options
- * @param {ComponentOption} templateOptions
- * @param {ComponentProperty[]} properties
- * @returns {ComponentProperty[]}
+ * Convert component options to properties.
+ * @param {ComponentOption} options - Component options object.
+ * @param {ComponentOption} templateOptions - Template options for the component.
+ * @param {ComponentProperty[]} properties - Existing list of component properties.
+ * @returns {ComponentProperty[]} Updated list of component properties.
  */
 function componentOptions (options, templateOptions, properties = []) {
   let replacedPropertyValue = ''
@@ -184,10 +199,11 @@ function componentOptions (options, templateOptions, properties = []) {
 }
 
 /**
-* Create a modified component
-* @param {Component} component
-* @param {ComponentExtend} extend
-*/
+ * Extend a component with additional data and options.
+ * @param {Component} component - Base component object to extend.
+ * @param {ComponentExtend} extend - Configuration for extending the component.
+ * @returns {Component} The extended component object.
+ */
 function extendComponent (component, extend) {
   const result = Object.assign({}, component)
   let properties = component.properties || []
