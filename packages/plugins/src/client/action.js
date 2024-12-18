@@ -20,237 +20,6 @@ let $action = (name, param, context, callback) => {
 // current action in progress
 let $actionId = ''
 
-function getBlockValue (id, blockValues) {
-  let value = blockValues[id]
-
-  if (!blockValues.hasOwnProperty(id)) {
-    const blockData = stateGetValue({
-      name: 'action/blocks',
-      id
-    })
-
-    if (blockData.isEmpty) {
-      throw new Error('Action: block could not be found: ' + id)
-    }
-
-    value = blockData.item
-  }
-
-  return value
-}
-
-function getBlockValueByKey (block, context, payload, blockValues) {
-  if (block.hasOwnProperty('blockValues')) {
-    return getBlockValues(block, context, payload, blockValues)
-  }
-
-  const result = {
-    key: block.key,
-    value: block.value
-  }
-
-  if (block.hasOwnProperty('blockValue')) {
-    result.value = getBlockValue(block.blockValue, blockValues)
-  }
-
-  return result
-}
-
-function getBlockValues (block, context, payload, blockValues) {
-  let value = dataTypes[block.dataType]()
-  const blocks = block.blockValues
-
-  for (let i = 0; i < blocks.length; i++) {
-    const id = blocks[i]
-    const block = stateGetValue({
-      name: 'action/blocks',
-      id
-    })
-
-    if (block.isEmpty) {
-      throw new Error('Action: block could not be found: ' + id)
-    }
-
-    const result = getBlockValueByKey(block.item, context, payload, blockValues)
-
-    if (result.key) {
-      value[result.key] = result.value
-    } else {
-      value = result.value
-    }
-
-    blockValues[id] = value
-  }
-
-  return {
-    key: block.key,
-    value
-  }
-}
-
-function processSequence (sequence, context, payload, blockValues = {}, callback, startProcess) {
-  const blockProcess = []
-  let blockProcessIndex = 0
-
-  for (let i = 0; i < sequence.length; i++) {
-    const blockSequenceId = sequence[i]
-    const blockSequence = stateGetValue({
-      name: 'action/blockSequences',
-      id: blockSequenceId
-    }).item
-
-    for (let i = 0; i < blockSequence.length; i++) {
-      const id = blockSequence[i]
-      const block = stateGetValue({
-        name: 'action/blocks',
-        id
-      })
-
-      if (block.isEmpty) {
-        throw new Error('Action: block could not be found: ' + id )
-      }
-
-      const item = block.item
-
-      // prepare block method
-      if (item.method) {
-        blockProcess.push(() => {
-          const blockResult = getBlockValueByKey(block.item, context, payload, blockValues)
-
-          $action(item.method, blockResult.value, {
-            context,
-            payload,
-            blockValues
-          }, {
-            onSuccess: (result => {
-              const nextProcess = blockProcess[++blockProcessIndex]
-              blockValues[id] = result
-
-              if (nextProcess) {
-                return nextProcess()
-              }
-
-              callback()
-            }),
-            onError: (error) => {
-              /**
-               * @TODO Console error
-               * Until browser support cause @link https://caniuse.com/mdn-javascript_builtins_error_cause_displayed_in_console
-               */
-              if (navigator.userAgent.indexOf('Firefox') === -1) {
-                console.error(error)
-              }
-
-              // @ts-ignore
-              throw new Error('Broken action block', { cause: error })
-            }
-          })
-        })
-      } else if (item.ifElse) {
-        blockProcess.push(() => {
-          const blockResult = getBlockValueByKey(block.item, context, payload, blockValues)
-          const processItems = ifElse(blockResult.value, callback, {
-            context,
-            payload,
-            blockValues
-          })
-
-          // append new process items
-          for (let index = 0; index < processItems.length; index++) {
-            blockProcess.push(processItems[index])
-          }
-
-          const nextProcess = blockProcess[++blockProcessIndex]
-
-          if (nextProcess) {
-            return nextProcess()
-          }
-
-          callback()
-        })
-      }
-    }
-  }
-
-  const nextProcess = blockProcess[blockProcessIndex]
-
-  if (startProcess && typeof nextProcess === 'function') {
-    nextProcess()
-  }
-
-  return blockProcess
-}
-
-/**
- * Conditional statement to evaluate a condition and execute different blocks of code based on the result.
- * @param {Object} props
- * @param {Object} props.branch - The branch object containing the conditions and corresponding actions.
- * @param {Object[]} props.branch.if - An list of condition evaluate.
- * @param {'=='|'!='|'>'|'>='|'<'|'<='|'!'|'%'|'++'|'--'|'-'|'+'|'*'|'**'|'!!'|'~'} props.branch.if[].op - The operator for the condition (e.g., '==', '>', '<').
- * @param {string|number} props.branch.if[].from - The left-hand side value of the comparison.
- * @param {string|number} props.branch.if[].to - The right-hand side value of the comparison.
- * @param {'&&'|'||'} props.branch.if[].andOr - The logical operator to combine multiple conditions. Valid operators include '&&' (AND) and '||' (OR).
- * @param {number[]} props.branch.then - An list of block sequences to be executed if the condition is true.
- * @param {number[]} props.branch.else - An list of block sequences to be executed if the condition is false.
- * @param {ActionDispatchContext} props.context - The action context in which the action is being performed.
- * @param {*} props.payload - Any additional data required for the action.
- * @param {Object.<string, *>} props.blockValues - Values associated with the current scope.
- */
-function ifElse (branch, callback, { context, payload, blockValues }) {
-  let isTruthy = false
-
-  if (branch.if.length > 1) {
-    const compareValues = []
-    /**
-     * @type {Object}
-     * @property {*} value_1
-     * @property {*} value_2
-     * @property {'&&'|'||'} op
-     */
-    let compareItem = {}
-
-    for (let i = 0; i < branch.if.length; i++) {
-      const item = branch.if[i]
-      if (item.andOr) {
-        compareItem.op = item.andOr
-        continue
-      }
-
-      const value = operatorEval({
-        name: item.op,
-        values: [item.from, item.to]
-      })
-
-      if (!compareItem.hasOwnProperty('value_1')) {
-        compareItem.value_1 = value
-      } else {
-        if (!compareItem.op) {
-          throw new Error('Condition expects an operator')
-        }
-
-        compareItem.value_2 = value
-        compareValues.push(compareItem)
-        compareItem = {}
-      }
-    }
-
-    isTruthy = operatorCompare(compareValues)
-  } else {
-    const item = branch.if[0]
-
-    isTruthy = operatorEval({
-      name: item.op,
-      values: [item.from, item.to]
-    })
-  }
-
-  if (isTruthy) {
-    return processSequence(branch.then, context, payload, blockValues, callback)
-  }
-
-  return processSequence(branch.else, context, payload, blockValues, callback)
-}
-
 export const action = createPlugin('action', {
   state: {
     schema: {
@@ -326,6 +95,165 @@ export const action = createPlugin('action', {
     title: 'Action',
     description: 'Dooksa runtime interpreter',
     icon: 'mdi:code-braces-box'
+  },
+  privateMethods: {
+    getBlockValue (id, blockValues) {
+      let value = blockValues[id]
+
+      if (!blockValues.hasOwnProperty(id)) {
+        const blockData = stateGetValue({
+          name: 'action/blocks',
+          id
+        })
+
+        if (blockData.isEmpty) {
+          throw new Error('Action: block could not be found: ' + id)
+        }
+
+        value = blockData.item
+      }
+
+      return value
+    },
+    getBlockValueByKey (block, context, payload, blockValues) {
+      if (block.hasOwnProperty('blockValues')) {
+        return this.getBlockValues(block, context, payload, blockValues)
+      }
+
+      const result = {
+        key: block.key,
+        value: block.value
+      }
+
+      if (block.hasOwnProperty('blockValue')) {
+        result.value = this.getBlockValue(block.blockValue, blockValues)
+      }
+
+      return result
+    },
+    getBlockValues (block, context, payload, blockValues) {
+      let value = dataTypes[block.dataType]()
+      const blocks = block.blockValues
+
+      for (let i = 0; i < blocks.length; i++) {
+        const id = blocks[i]
+        const block = stateGetValue({
+          name: 'action/blocks',
+          id
+        })
+
+        if (block.isEmpty) {
+          throw new Error('Action: block could not be found: ' + id)
+        }
+
+        const result = this.getBlockValueByKey(block.item, context, payload, blockValues)
+
+        if (result.key) {
+          value[result.key] = result.value
+        } else {
+          value = result.value
+        }
+
+        blockValues[id] = value
+      }
+
+      return {
+        key: block.key,
+        value
+      }
+    },
+    processSequence (sequence, context, payload, blockValues = {}, callback, startProcess) {
+      const blockProcess = []
+      let blockProcessIndex = 0
+
+      for (let i = 0; i < sequence.length; i++) {
+        const blockSequenceId = sequence[i]
+        const blockSequence = stateGetValue({
+          name: 'action/blockSequences',
+          id: blockSequenceId
+        }).item
+
+        for (let i = 0; i < blockSequence.length; i++) {
+          const id = blockSequence[i]
+          const block = stateGetValue({
+            name: 'action/blocks',
+            id
+          })
+
+          if (block.isEmpty) {
+            throw new Error('Action: block could not be found: ' + id )
+          }
+
+          const item = block.item
+
+          // prepare block method
+          if (item.method) {
+            blockProcess.push(() => {
+              const blockResult = this.getBlockValueByKey(block.item, context, payload, blockValues)
+
+              $action(item.method, blockResult.value, {
+                context,
+                payload,
+                blockValues
+              }, {
+                onSuccess: (result => {
+                  const nextProcess = blockProcess[++blockProcessIndex]
+                  blockValues[id] = result
+
+                  if (nextProcess) {
+                    return nextProcess()
+                  }
+
+                  callback()
+                }),
+                onError: (error) => {
+                  /**
+                   * @TODO Console error
+                   * Until browser support cause @link https://caniuse.com/mdn-javascript_builtins_error_cause_displayed_in_console
+                   */
+                  if (navigator.userAgent.indexOf('Firefox') === -1) {
+                    console.error(error)
+                  }
+
+                  // @ts-ignore
+                  throw new Error('Broken action block', { cause: error })
+                }
+              })
+            })
+          } else if (item.ifElse) {
+            blockProcess.push(() => {
+              const blockResult = this.getBlockValueByKey(block.item, context, payload, blockValues)
+              const processItems = this.ifElse(blockResult.value, callback, {
+                context,
+                payload,
+                blockValues
+              })
+
+              // append new process items
+              for (let index = 0; index < processItems.length; index++) {
+                blockProcess.push(processItems[index])
+              }
+
+              const nextProcess = blockProcess[++blockProcessIndex]
+
+              if (nextProcess) {
+                return nextProcess()
+              }
+
+              callback()
+            })
+          }
+        }
+      }
+
+      const nextProcess = blockProcess[blockProcessIndex]
+
+      if (startProcess && typeof nextProcess === 'function') {
+        nextProcess()
+      }
+
+      return blockProcess
+    }
   },
   actions: {
     dispatch: {
@@ -412,14 +340,14 @@ export const action = createPlugin('action', {
 
           try {
             DEV: $actionId = id
-            processSequence(sequence.item, context, payload, actionContext.blockValues, resolve, true)
+            this.processSequence(sequence.item, context, payload, actionContext.blockValues, resolve, true)
           } catch (error) {
             reject(error)
           }
         })
       }
     },
-    getBlockValue: {
+    getValue: {
       metadata: {
         title: 'Get action block value',
         description: 'Get value from returned action block value',
@@ -525,7 +453,75 @@ export const action = createPlugin('action', {
           }
         }
       },
-      method: ifElse
+      /**
+       * Conditional statement to evaluate a condition and execute different blocks of code based on the result.
+       * @param {Object} props
+       * @param {Object} props.branch - The branch object containing the conditions and corresponding actions.
+       * @param {Object[]} props.branch.if - An list of condition evaluate.
+       * @param {'=='|'!='|'>'|'>='|'<'|'<='|'!'|'%'|'++'|'--'|'-'|'+'|'*'|'**'|'!!'|'~'} props.branch.if[].op - The operator for the condition (e.g., '==', '>', '<').
+       * @param {string|number} props.branch.if[].from - The left-hand side value of the comparison.
+       * @param {string|number} props.branch.if[].to - The right-hand side value of the comparison.
+       * @param {'&&'|'||'} props.branch.if[].andOr - The logical operator to combine multiple conditions. Valid operators include '&&' (AND) and '||' (OR).
+       * @param {number[]} props.branch.then - An list of block sequences to be executed if the condition is true.
+       * @param {number[]} props.branch.else - An list of block sequences to be executed if the condition is false.
+       * @param {ActionDispatchContext} props.context - The action context in which the action is being performed.
+       * @param {*} props.payload - Any additional data required for the action.
+       * @param {Object.<string, *>} props.blockValues - Values associated with the current scope.
+       */
+      method (branch, callback, { context, payload, blockValues }) {
+        let isTruthy = false
+
+        if (branch.if.length > 1) {
+          const compareValues = []
+          /**
+           * @type {Object}
+           * @property {*} value_1
+           * @property {*} value_2
+           * @property {'&&'|'||'} op
+           */
+          let compareItem = {}
+
+          for (let i = 0; i < branch.if.length; i++) {
+            const item = branch.if[i]
+            if (item.andOr) {
+              compareItem.op = item.andOr
+              continue
+            }
+
+            const value = operatorEval({
+              name: item.op,
+              values: [item.from, item.to]
+            })
+
+            if (!compareItem.hasOwnProperty('value_1')) {
+              compareItem.value_1 = value
+            } else {
+              if (!compareItem.op) {
+                throw new Error('Condition expects an operator')
+              }
+
+              compareItem.value_2 = value
+              compareValues.push(compareItem)
+              compareItem = {}
+            }
+          }
+
+          isTruthy = operatorCompare(compareValues)
+        } else {
+          const item = branch.if[0]
+
+          isTruthy = operatorEval({
+            name: item.op,
+            values: [item.from, item.to]
+          })
+        }
+
+        if (isTruthy) {
+          return this.processSequence(branch.then, context, payload, blockValues, callback)
+        }
+
+        return this.processSequence(branch.else, context, payload, blockValues, callback)
+      }
     }
   },
   setup ({ action }) {
@@ -535,7 +531,7 @@ export const action = createPlugin('action', {
 
 export const {
   actionDispatch,
-  actionGetBlockValue,
+  actionGetValue,
   actionGetContextValue,
   actionGetPayloadValue,
   actionIfElse
