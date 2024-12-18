@@ -462,6 +462,12 @@ export const state = createPlugin('state', {
       }
       return result
     },
+    /**
+     * Set DataMetadata to target.
+     * @param {DataMetadata|Object} [item={}] - The item to set metadata for.
+     * @param {Object} [options={}] - Additional metadata options.
+     * @returns {DataMetadata}
+     */
     setMetadata (item = {}, options) {
       if (options) {
         // append additional metadata
