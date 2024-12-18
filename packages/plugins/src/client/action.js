@@ -182,19 +182,19 @@ function processSequence (sequence, context, payload, blockValues = {}, callback
 }
 
 /**
- * Conditional statement
+ * Conditional statement to evaluate a condition and execute different blocks of code based on the result.
  * @param {Object} props
- * @param {Object} props.branch
- * @param {Object[]} props.branch.if
- * @param {'=='|'!='|'>'|'>='|'<'|'<='|'!'|'%'|'++'|'--'|'-'|'+'|'*'|'**'|'!!'|'~'} props.branch.if[].op
- * @param {string|number} props.branch.if[].from
- * @param {string|number} props.branch.if[].to
- * @param {'&&'|'||'} props.branch.if[].andOr
- * @param {number[]} props.branch.then
- * @param {number[]} props.branch.else
- * @param {*} props.context
- * @param {*} props.payload
- * @param {*} props.blockValues
+ * @param {Object} props.branch - The branch object containing the conditions and corresponding actions.
+ * @param {Object[]} props.branch.if - An list of condition evaluate.
+ * @param {'=='|'!='|'>'|'>='|'<'|'<='|'!'|'%'|'++'|'--'|'-'|'+'|'*'|'**'|'!!'|'~'} props.branch.if[].op - The operator for the condition (e.g., '==', '>', '<').
+ * @param {string|number} props.branch.if[].from - The left-hand side value of the comparison.
+ * @param {string|number} props.branch.if[].to - The right-hand side value of the comparison.
+ * @param {'&&'|'||'} props.branch.if[].andOr - The logical operator to combine multiple conditions. Valid operators include '&&' (AND) and '||' (OR).
+ * @param {number[]} props.branch.then - An list of block sequences to be executed if the condition is true.
+ * @param {number[]} props.branch.else - An list of block sequences to be executed if the condition is false.
+ * @param {ActionDispatchContext} props.context - The action context in which the action is being performed.
+ * @param {*} props.payload - Any additional data required for the action.
+ * @param {Object.<string, *>} props.blockValues - Values associated with the current scope.
  */
 function ifElse (branch, callback, { context, payload, blockValues }) {
   let isTruthy = false
