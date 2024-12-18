@@ -1541,13 +1541,15 @@ export const state = createPlugin('state', {
         previousData = collection[id]
       }
 
-      if (previousData && previousData._item) {
+      // store current _item value to previous
+      if (typeof previousData === 'object' && previousData.hasOwnProperty('_item')) {
         item._previous = {
           _item: previousData._item,
           _metadata: previousData._metadata
         }
 
-        if (!item._metadata) {
+        // assign previous metadata if missing from incoming data
+        if (!item._metadata && previousData._metadata) {
           item._metadata = previousData._metadata
         }
       }
