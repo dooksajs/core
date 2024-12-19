@@ -7,7 +7,7 @@ export default createDiv({
   children: [actionCardBodyLabelRequired, dataCollectionSelect],
   events: [
     {
-      on: 'component/beforeCreate',
+      on: 'component/beforeChildren',
       actionId: 'data-collection-label'
     }
   ]

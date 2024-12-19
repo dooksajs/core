@@ -101,11 +101,11 @@ export default createCardBody({
   },
   events: [
     {
-      on: 'component/beforeCreate',
+      on: 'component/beforeChildren',
       actionId: 'data-document-select-method-label'
     },
     {
-      on: 'component/beforeCreate',
+      on: 'component/beforeChildren',
       actionId: 'variable-context-id'
     }
   ]

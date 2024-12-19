@@ -11,7 +11,7 @@ const actionDetailItem = createAccordionItem({
   },
   events: [
     {
-      on: 'component/beforeCreate',
+      on: 'component/beforeChildren',
       actionId: 'action-add-block-set-context'
     },
     {

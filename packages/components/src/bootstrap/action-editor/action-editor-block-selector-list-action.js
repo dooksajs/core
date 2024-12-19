@@ -6,7 +6,7 @@ import {
 const headerText = createText({
   events: [
     {
-      on: 'component/beforeCreate',
+      on: 'component/beforeChildren',
       actionId: 'action-editor-list-group-button-title'
     }
   ]
@@ -19,7 +19,7 @@ const header = createCardTitle({
 const text = createText({
   events: [
     {
-      on: 'component/beforeCreate',
+      on: 'component/beforeChildren',
       actionId: 'action-editor-list-group-button-description'
     }
   ]
@@ -42,7 +42,7 @@ const textColumn = createDiv({
 const icon = createIcon({
   events: [
     {
-      on: 'component/beforeCreate',
+      on: 'component/beforeChildren',
       actionId: 'action-editor-list-group-button-icon'
     }
   ]

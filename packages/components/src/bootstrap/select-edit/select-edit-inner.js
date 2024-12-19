@@ -72,7 +72,7 @@ const selectEditInner = createDiv({
   },
   events: [
     {
-      on: 'component/beforeCreate',
+      on: 'component/beforeChildren',
       actionId: 'select-edit-add-component'
     }
   ]

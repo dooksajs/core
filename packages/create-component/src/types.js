@@ -110,7 +110,7 @@
 
 /**
  * Base event listener types
- * @typedef {'component/beforeCreate'|
+ * @typedef {'component/beforeChildren'|
  * 'component/created'|
  * 'component/mounted'|
  * 'component/childrenAfterUpdate'|

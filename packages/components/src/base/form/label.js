@@ -12,7 +12,7 @@ const labelText = createText({
   options: { value: 'Label' },
   events: [
     {
-      on: 'component/beforeCreate',
+      on: 'component/beforeChildren',
       actionId: 'on-create-label-text'
     }
   ]

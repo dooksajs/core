@@ -95,7 +95,7 @@ const formContainer = createDiv({
     }]
   },
   events: [{
-    on: 'component/beforeCreate',
+    on: 'component/beforeChildren',
     actionId: 'action-editor-add-button-condition'
   },
   {

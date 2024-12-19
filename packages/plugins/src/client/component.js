@@ -334,7 +334,7 @@ export const component = createPlugin('component', {
 
           if (on === 'component/created') {
             hasCreatedEvent = true
-          } else if (on === 'component/beforeCreate') {
+          } else if (on === 'component/beforeChildren') {
             hasBeforeCreateEvent = true
           }
 
@@ -361,7 +361,7 @@ export const component = createPlugin('component', {
         // fire beforeCreate event
         if (hasBeforeCreateEvent) {
           beforeCreateResult = eventEmit({
-            name: 'component/beforeCreate',
+            name: 'component/beforeChildren',
             id,
             context
           })
@@ -793,7 +793,7 @@ export const component = createPlugin('component', {
 
           if (on === 'component/created') {
             hasCreatedEvent = true
-          } else if (on === 'component/beforeCreate') {
+          } else if (on === 'component/beforeChildren') {
             hasBeforeCreateEvent = true
           }
 
@@ -820,13 +820,14 @@ export const component = createPlugin('component', {
         // fire beforeCreate event
         if (hasBeforeCreateEvent) {
           beforeCreateResult = eventEmit({
-            name: 'component/beforeCreate',
+            name: 'component/beforeChildren',
             id,
             context,
             payload: node
           })
         }
       }
+
 
       if (template.children) {
         // wait for created events before creating children
@@ -1438,24 +1439,27 @@ export const component = createPlugin('component', {
           payload: data.item
         }
 
-        eventEmit(options)
+        const beforeUpdateEvents = eventEmit(options)
 
-        const render = this.renderChildren({
-          id,
-          items: data.item
-        })
+        Promise.all(beforeUpdateEvents)
+          .then(() => {
+            const render = this.renderChildren({
+              id,
+              items: data.item
+            })
 
-        if (render instanceof Promise) {
-          render.then(() => {
-            options.name = 'component/childrenAfterUpdate'
+            if (render instanceof Promise) {
+              render.then(() => {
+                options.name = 'component/childrenAfterUpdate'
 
-            eventEmit(options)
+                eventEmit(options)
+              })
+            } else {
+              options.name = 'component/childrenAfterUpdate'
+
+              eventEmit(options)
+            }
           })
-        } else {
-          options.name = 'component/childrenAfterUpdate'
-
-          eventEmit(options)
-        }
       }
     })
   }

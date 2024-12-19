@@ -63,7 +63,7 @@ const selectEditOuter = createDiv({
   options: { position: 'relative' },
   events: [
     {
-      on: 'component/beforeCreate',
+      on: 'component/beforeChildren',
       actionId: 'select-edit-add-component'
     }
   ]

@@ -21,7 +21,7 @@ export const accordion = createComponent({
   },
   events: [
     {
-      on: 'component/beforeCreate',
+      on: 'component/beforeChildren',
       actionId: 'accordion-generate-name'
     }
   ]
