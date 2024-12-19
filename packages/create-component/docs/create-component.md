@@ -23,7 +23,7 @@ const myComponent = createComponent(createComponentData)
 
 The returned `myComponent` object contains all necessary information and metadata for your custom Dooksa component.
 
-## 4. Component Options and Properties
+## 3. Component Options and Properties
 
 Customize your components using options and properties defined in the `options` and `properties` fields of the component data object.
 
@@ -95,7 +95,7 @@ createComponentData.properties = [
 ]
 ```
 
-## 5. Component Events
+## 4. Component Events
 
 Add custom events to your components using the `events` field
 
@@ -133,19 +133,34 @@ createComponentData.eventTypes = {
   'node/click': true
 }
 ```
+## 5. Load custom web components
+
+In the `component` function, you can create or fetch your custom web component
+
+```javascript
+createComponentData.component = () => {
+  class PopupInfo extends HTMLElement {
+    constructor() {
+      super();
+    }
+    // Element functionality written in here
+  }
+
+  customElements.define("popup-info", PopupInfo);
+}
+```
+Here is an example of dynamically load a web component
+
+```javascript
+createComponentData.component = import('iconify-icon')
+```
 
 ## 6. Component Initialization Function
 
-In the `initialize` function, you can set up your custom web component, add event listeners, or perform any other required setup tasks.
+In the `initialize` function, you can set up your custom component, add event listeners, or perform any other required setup tasks.
 
 ```javascript
 createComponentData.initialize = (context, emit) => {
-  const popupInfoExists = customElements.get('popup-info')
-  
-  if (!popupInfoExists) {
-    // define custom
-    customElements.define("popup-info", PopupInfo);
-  }
   // Add content to the component using context and emit custom events
   const popupInfo = document.createElement('popup-info')
   popupInfo.setAttribute('data-text', 'My Component')
@@ -165,7 +180,7 @@ createComponentData.initialize = (context, emit) => {
 }
 ```
 
-## 3. Extending Components with Mixins
+## 7. Extending Components with Mixins
 
 Mixins allow you to extend existing components by merging their properties, events, styles, and options into the new component.
 
