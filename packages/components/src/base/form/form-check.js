@@ -1,3 +1,4 @@
+import { spacingMixin } from '#mixins'
 import { createComponent, extendComponent } from '@dooksa/create-component'
 
 export const formCheck = createComponent({
@@ -23,17 +24,12 @@ export const formCheck = createComponent({
       name: 'className',
       value: 'form-check-reverse'
     }
-  },
-  events: [
-    {
-      on: 'component/created',
-      actionId: 'create-id-for-input-label'
-    }
-  ]
-})
+  }
+}, [spacingMixin])
 
 /**
  * @import {ComponentExtend} from '@dooksa/create-component'
+ * @import {SpacingMixin} from '#mixins'
  */
 
 /**
@@ -45,7 +41,7 @@ export const formCheck = createComponent({
 
 /**
  * @typedef {Object} ExtendFormCheckOptionMixin
- * @property {ExtendFormCheckOption} options
+ * @property {ExtendFormCheckOption | SpacingMixin} options
  */
 
 /**
