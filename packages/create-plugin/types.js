@@ -12,7 +12,7 @@
 
 /**
  * @typedef {Object} DsPluginMetadataUnique
- * @property {string} id,
+ * @property {string} id
  * @property {string} title
  * @property {string} [description]
  * @property {string} [icon]
