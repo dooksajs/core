@@ -380,6 +380,16 @@ export const component = createPlugin('component', {
                 rootId,
                 groupId
               )
+
+              // fire created event
+              if (hasCreatedEvent) {
+                eventEmit({
+                  name: 'component/created',
+                  id,
+                  context,
+                  payload: node
+                })
+              }
             })
         } else {
           this.createChildNodes(
@@ -389,17 +399,29 @@ export const component = createPlugin('component', {
             rootId,
             groupId
           )
-        }
-      }
 
-      // fire created event
-      if (hasCreatedEvent) {
-        eventEmit({
-          name: 'component/created',
-          id,
-          context,
-          payload: node
-        })
+          // fire created event
+          if (hasCreatedEvent) {
+            eventEmit({
+              name: 'component/created',
+              id,
+              context,
+              payload: node
+            })
+          }
+        }
+      } else {
+
+        // fire created event
+        if (hasCreatedEvent) {
+          eventEmit({
+            name: 'component/created',
+            id,
+            context,
+            payload: node
+          })
+        }
+
       }
 
       return {
@@ -824,7 +846,7 @@ export const component = createPlugin('component', {
           }
         }
 
-        // fire beforeCreate event
+        // fire beforeChildren event
         if (hasBeforeCreateEvent) {
           beforeCreateResult = eventEmit({
             name: 'component/beforeChildren',
@@ -848,6 +870,15 @@ export const component = createPlugin('component', {
                 rootId,
                 groupId
               )
+
+              if (hasCreatedEvent) {
+                eventEmit({
+                  name: 'component/created',
+                  id,
+                  context,
+                  payload: node
+                })
+              }
             })
         } else {
           this.createTemplateChildNodes(
@@ -857,11 +888,17 @@ export const component = createPlugin('component', {
             rootId,
             groupId
           )
-        }
-      }
 
-      // fire created event
-      if (hasCreatedEvent) {
+          if (hasCreatedEvent) {
+            eventEmit({
+              name: 'component/created',
+              id,
+              context,
+              payload: node
+            })
+          }
+        }
+      } else if (hasCreatedEvent) {
         eventEmit({
           name: 'component/created',
           id,
