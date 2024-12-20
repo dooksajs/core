@@ -4,52 +4,52 @@ import defaultServerPlugins, { httpStart } from '@dooksa/plugins/server'
 import defaultActions from '@dooksa/actions'
 
 /**
- * @import { Plugin, PluginMetadata, ActiveAction } from '../../create-plugin/types.js'
+ * @import { DsPlugin, DsPluginMetadata, ActiveAction } from '../../create-plugin/types.js'
  * @import { AppPlugin } from '#types'
  * @import { Action } from '@dooksa/create-action/types'
  */
 
 /**
  * @typedef {Object} ServerPlugins
- * @property {Plugin} [state]
- * @property {Plugin} [middleware]
- * @property {Plugin} [http]
- * @property {Plugin} [metadata]
- * @property {Plugin} [user]
- * @property {Plugin} [database]
- * @property {Plugin} [action]
- * @property {Plugin} [component]
- * @property {Plugin} [event]
- * @property {Plugin} [page]
- * @property {Plugin} [theme]
+ * @property {DsPlugin} [state]
+ * @property {DsPlugin} [middleware]
+ * @property {DsPlugin} [http]
+ * @property {DsPlugin} [metadata]
+ * @property {DsPlugin} [user]
+ * @property {DsPlugin} [database]
+ * @property {DsPlugin} [action]
+ * @property {DsPlugin} [component]
+ * @property {DsPlugin} [event]
+ * @property {DsPlugin} [page]
+ * @property {DsPlugin} [theme]
  */
 
 /**
  * @typedef {Object} ClientPlugins
- * @property {Plugin} [state]
- * @property {Plugin} [metadata]
- * @property {Plugin} [fetch]
- * @property {Plugin} [operator]
- * @property {Plugin} [action]
- * @property {Plugin} [variable]
- * @property {Plugin} [component]
- * @property {Plugin} [regex]
- * @property {Plugin} [editor]
- * @property {Plugin} [list]
- * @property {Plugin} [event]
- * @property {Plugin} [token]
- * @property {Plugin} [icon]
- * @property {Plugin} [query]
- * @property {Plugin} [route]
- * @property {Plugin} [form]
- * @property {Plugin} [string]
- * @property {Plugin} [page]
+ * @property {DsPlugin} [state]
+ * @property {DsPlugin} [metadata]
+ * @property {DsPlugin} [fetch]
+ * @property {DsPlugin} [operator]
+ * @property {DsPlugin} [action]
+ * @property {DsPlugin} [variable]
+ * @property {DsPlugin} [component]
+ * @property {DsPlugin} [regex]
+ * @property {DsPlugin} [editor]
+ * @property {DsPlugin} [list]
+ * @property {DsPlugin} [event]
+ * @property {DsPlugin} [token]
+ * @property {DsPlugin} [icon]
+ * @property {DsPlugin} [query]
+ * @property {DsPlugin} [route]
+ * @property {DsPlugin} [form]
+ * @property {DsPlugin} [string]
+ * @property {DsPlugin} [page]
  */
 
 /**
  * @typedef {Object} AppClientPlugin
  * @property {Function} use
- * @property {{ name: string, metadata: PluginMetadata }[]} metadata
+ * @property {{ name: string, metadata: DsPluginMetadata }[]} metadata
  * @property {ActiveAction[]} actions
  */
 
@@ -95,7 +95,7 @@ function appendClientPlugin () {
   return {
     /**
      * Use client side plugin
-     * @param {Plugin} plugin
+     * @param {DsPlugin} plugin
      */
     use (plugin) {
       if (plugin.metadata) {

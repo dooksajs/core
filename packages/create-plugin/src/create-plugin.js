@@ -3,14 +3,14 @@ import { createSchema } from './create-schema.js'
 
 /**
  * @import {
- *  PluginData,
- *  PluginMethods,
- *  PluginActions,
- *  PluginOptions,
- *  PluginActionMapper,
- *  PluginExport,
+ *  DsPluginData,
+ *  DsPluginMethods,
+ *  DsPluginActions,
+ *  DsPluginOptions,
+ *  DsPluginActionMapper,
+ *  DsPluginExport,
+ *  DsPluginActionMetadata,
  *  ActiveAction,
- *  PluginActionMetadata,
  *  SchemaType } from '#types'
  */
 
@@ -24,13 +24,13 @@ Object.freeze(actionContext)
 
 /**
  * @template {string} Name
- * @template {PluginData} Data
- * @template {PluginMethods} Methods
- * @template {PluginMethods} PrivateMethods
- * @template {PluginActions} Actions
+ * @template {DsPluginData} Data
+ * @template {DsPluginMethods} Methods
+ * @template {DsPluginMethods} PrivateMethods
+ * @template {DsPluginActions} Actions
  * @template {Function} Setup
  * @param {Name} name
- * @param {PluginOptions<
+ * @param {DsPluginOptions<
  *    Name,
  *    Data,
  *    Methods,
@@ -43,9 +43,9 @@ Object.freeze(actionContext)
  *    Data &
  *    Methods &
  *    PrivateMethods &
- *    PluginActionMapper<Actions>
+ *    DsPluginActionMapper<Actions>
  *  >} plugin
- * @returns {PluginExport<Name, Methods, Actions, Setup>}
+ * @returns {DsPluginExport<Name, Methods, Actions, Setup>}
  */
 export function createPlugin (name, {
   dependencies,
@@ -132,7 +132,7 @@ export function createPlugin (name, {
    */
   const _actions = []
   /**
-   * @type {PluginExport<Name, Methods, Actions, Setup>}
+   * @type {DsPluginExport<Name, Methods, Actions, Setup>}
    */
   const result = {}
 
@@ -195,7 +195,7 @@ export function createPlugin (name, {
           return method(params, actionContext)
         }
 
-        /** @type {PluginActionMetadata[]} */
+        /** @type {DsPluginActionMetadata[]} */
         const metadata = []
 
         if (Array.isArray(action.metadata)) {

@@ -4,7 +4,7 @@ import { databaseSeed, databaseGetValue } from './database.js'
 import { httpSetRoute } from './http.js'
 
 /**
- * @import {PluginMetadata, ActiveAction } from '@dooksa/create-plugin/types'
+ * @import {DsPluginMetadata, ActiveAction } from '@dooksa/create-plugin/types'
  */
 
 export const metadata = createPlugin('metadata', {
@@ -15,7 +15,7 @@ export const metadata = createPlugin('metadata', {
    * @param {Object} param
    * @param {Object[]} param.plugins
    * @param {string} param.plugins[].name
-   * @param {PluginMetadata} param.plugins[].metadata
+   * @param {DsPluginMetadata} param.plugins[].metadata
    * @param {ActiveAction[]} param.actions
    */
   setup ({ plugins, actions }) {

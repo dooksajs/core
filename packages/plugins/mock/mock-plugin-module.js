@@ -1,6 +1,6 @@
 /**
  * @import {TestContext} from 'node:test'
- * @import {Plugin} from '@dooksa/create-plugin/types'
+ * @import {DsPlugin} from '@dooksa/create-plugin/types'
  * @import {MockClientPluginMap} from './mock-plugin.js'
  */
 

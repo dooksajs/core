@@ -3,7 +3,7 @@
  */
 
 /**
- * @typedef {Object} PluginMetadata
+ * @typedef {Object} DsPluginMetadata
  * @property {string} title
  * @property {string} [description]
  * @property {string} [icon]
@@ -11,7 +11,7 @@
  */
 
 /**
- * @typedef {Object} PluginMetadataUnique
+ * @typedef {Object} DsPluginMetadataUnique
  * @property {string} id,
  * @property {string} title
  * @property {string} [description]
@@ -20,160 +20,152 @@
  */
 
 /**
- * @typedef {Object} PluginState
+ * @typedef {Object} DsPluginState
  * @property {Object} [defaults]
- * @property {PluginSchema} schema
+ * @property {DsPluginSchema} schema
  */
 
 /**
- * @typedef {Object.<string, DataSchema>} PluginSchema
+ * @typedef {Object.<string, DataSchema>} DsPluginSchema
  */
 
 /**
- * @typedef {Object} PluginSchemaItem
+ * @typedef {Object} DsPluginSchemaItem
  * @property {string} name
  * @property {Schema[]} entries
  * @property {boolean} isCollection
  */
 
 /**
- * @typedef {Object} PluginStateDefaults
+ * @typedef {Object} DsPluginStateDefaults
  * @property {string} name - Name of state collection
  * @property {*} value - Default value
  */
 
 /**
- * @typedef {Object} PluginStateExport
- * @property {PluginSchemaDefaults} _values
+ * @typedef {Object} DsPluginStateExport
+ * @property {DsPluginSchemaDefaults} _values
  * @property {string[]} _names
- * @property {PluginSchemaItem[]} _items
- * @property {PluginSchema} schema - State schema
+ * @property {DsPluginSchemaItem[]} _items
+ * @property {DsPluginSchema} schema - State schema
  * @property {Object} [defaults] - Default state values
- * @property {PluginStateDefaults[]} [_defaults] - Default state values
+ * @property {DsPluginStateDefaults[]} [_defaults] - Default state values
  */
 
 /**
- * @template Context
- * @callback PluginMethod
- * @this {Context}
- * @param {*} [param]
- * @param {PluginActionContext} [context]
- */
-
-/**
- * @typedef {Object} PluginActionParameter
+ * @typedef {Object} DsPluginActionParameter
  * @property {'string'|'number'|'array'|'object'|'boolean'} [type]
- * @property {Object.<string, PluginActionParameterItem>} [properties]
- * @property {PluginActionParameterItem} [items]
+ * @property {Object.<string, DsPluginActionParameterItem>} [properties]
+ * @property {DsPluginActionParameterItem} [items]
  */
 
 /**
- * @typedef {Object} PluginActionParameterItem
+ * @typedef {Object} DsPluginActionParameterItem
  * @property {string} [title]
  * @property {'string'|'number'|'array'|'object'|'boolean'|'any'|'primitives'} type
  * @property {string} [group]
- * @property {Object.<string, PluginActionParameterItem>} [properties]
- * @property {PluginActionParameterItem} [items]
+ * @property {Object.<string, DsPluginActionParameterItem>} [properties]
+ * @property {DsPluginActionParameterItem} [items]
  * @property {boolean} [required]
  * @property {number} [maxItems]
  */
 
 /**
- * @typedef {Object} PluginAction - Dooksa function
+ * @typedef {Object} DsPluginAction - Dooksa function
  * @property {Function} method
- * @property {PluginMetadata|PluginMetadataUnique[]} metadata
- * @property {PluginActionParameter} [parameters]
+ * @property {DsPluginMetadata|DsPluginMetadataUnique[]} metadata
+ * @property {DsPluginActionParameter} [parameters]
  */
 
 /**
- * @template {Object.<string, PluginAction>} T
- * @typedef {{ [K in keyof T]: T[K]["method"] }} PluginActionMapper
+ * @template {Object.<string, DsPluginAction>} T
+ * @typedef {{ [K in keyof T]: T[K]["method"] }} DsPluginActionMapper
  */
 
 /**
  * @template {Object.<string, Function>} T
- * @typedef {{ [K in keyof T]: T[K] }} PluginMethodMapper
+ * @typedef {{ [K in keyof T]: T[K] }} DsPluginMethodMapper
  */
 
 /**
  * Action named exports
  * @template {string} Name
- * @template {Object.<string, PluginAction>} Action
- * @typedef {{ [K in keyof Action as `${Name}${Capitalize<string & K>}`]: Action[K]["method"] }} PluginModuleAction
+ * @template {Object.<string, DsPluginAction>} Action
+ * @typedef {{ [K in keyof Action as `${Name}${Capitalize<string & K>}`]: Action[K]["method"] }} DsPluginModuleAction
  */
 
 /**
  * Method named exports
  * @template {string} Name
- * @template {PluginMethods} Method
- * @typedef {{ [K in keyof Method as `${Name}${Capitalize<string & K>}`]: Method[K] }} PluginModuleMethod
+ * @template {DsPluginMethods} Method
+ * @typedef {{ [K in keyof Method as `${Name}${Capitalize<string & K>}`]: Method[K] }} DsPluginModuleMethod
  */
 
 /**
  * Action for application
  * @template {string} Name
- * @template {Object.<string, PluginAction>} Action
- * @typedef {{ [K in keyof Action as `${Name}_${string & K}`]: Action[K]["method"]  } } PluginAppAction
+ * @template {Object.<string, DsPluginAction>} Action
+ * @typedef {{ [K in keyof Action as `${Name}_${string & K}`]: Action[K]["method"]  } } DsPluginAppAction
  */
 
 /**
- * @typedef {Object.<string, ({}|[]|number|string|boolean)>} PluginSchemaDefaults - Initial values
+ * @typedef {Object.<string, ({}|[]|number|string|boolean)>} DsPluginSchemaDefaults - Initial values
  */
 
 /**
- * @typedef {Object} PluginGetters
- * @property {string} name - Plugin name
- * @property {PluginMetadata | undefined} metadata
- * @property {PluginGetters[] | undefined} dependencies
+ * @typedef {Object} DsPluginGetters
+ * @property {string} name - DsPlugin name
+ * @property {DsPluginMetadata | undefined} metadata
+ * @property {DsPluginGetters[] | undefined} dependencies
  * @property {ActiveAction[] | undefined} actions
- * @property {PluginStateExport} state - Global state for the state plugin
+ * @property {DsPluginStateExport} state - Global state for the state DsPlugin
  */
 
 /**
- * @typedef {PluginGetters & Object.<string, *>} Plugin
+ * @typedef {DsPluginGetters & Object.<string, *>} DsPlugin
  */
 
 /**
  * @template {string} Name
- * @template {PluginMethods} Methods
- * @template {PluginActions} Actions
+ * @template {DsPluginMethods} Methods
+ * @template {DsPluginActions} Actions
  * @template {Function} Setup
- * @typedef {PluginModuleMethod<Name, Methods> &
-*  PluginModuleAction<Name, Actions> &
-*  PluginGetters &
+ * @typedef {DsPluginModuleMethod<Name, Methods> &
+*  DsPluginModuleAction<Name, Actions> &
+*  DsPluginGetters &
 *  { setup: Setup }
-* } PluginExport
+* } DsPluginExport
 */
 
 /**
 * @typedef {Object} ActiveAction
 * @property {string} name - Method name
 * @property {Function} method - Method
-* @property {PluginActionParameter} [parameters]
-* @property {PluginActionMetadata[]} metadata
+* @property {DsPluginActionParameter} [parameters]
+* @property {DsPluginActionMetadata[]} metadata
 */
 
 /**
- * @typedef {Object.<string, Function>} PluginMethods
+ * @typedef {Object.<string, Function>} DsPluginMethods
  */
 
 /**
-* @typedef {PluginMetadataUnique & { plugin: string, method: string }} PluginActionMetadata
-* @typedef {Object.<string, PluginAction>} PluginActions
-* @typedef {Object.<string, *>} PluginData
+* @typedef {DsPluginMetadataUnique & { DsPlugin: string, method: string }} DsPluginActionMetadata
+* @typedef {Object.<string, DsPluginAction>} DsPluginActions
+* @typedef {Object.<string, *>} DsPluginData
 */
 
 /**
 * @template {string} Name
-* @template {PluginData} Data
-* @template {PluginMethods} Methods
-* @template {PluginMethods} PrivateMethods
-* @template {PluginActions} Actions
+* @template {DsPluginData} Data
+* @template {DsPluginMethods} Methods
+* @template {DsPluginMethods} PrivateMethods
+* @template {DsPluginActions} Actions
 * @template {Function} Setup
-* @typedef {Object} PluginOptions
-* @property {PluginGetters[]} [plugin.dependencies]
-* @property {PluginState} [plugin.state]
-* @property {PluginMetadata} [plugin.metadata]
+* @typedef {Object} DsPluginOptions
+* @property {DsPluginGetters[]} [DsPlugin.dependencies]
+* @property {DsPluginState} [DsPlugin.state]
+* @property {DsPluginMetadata} [DsPlugin.metadata]
 * @property {Data} [data]
 * @property {Methods} [methods]
 * @property {PrivateMethods} [privateMethods]

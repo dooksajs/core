@@ -1,11 +1,11 @@
 /**
- * @import { Plugin, PluginState, PluginStateDefaults } from '#types'
+ * @import { DsPlugin, DsPluginState } from '#types'
  */
 
 /**
- * @param {Plugin} plugin
+ * @param {DsPlugin} plugin
  * @param {string[]} [names]
- * @returns {PluginState}
+ * @returns {DsPluginState}
  */
 export function mapState (plugin, names) {
   if (typeof plugin !== 'object') {
@@ -17,7 +17,7 @@ export function mapState (plugin, names) {
     throw new Error('DooksaError: mapState could not find state schema')
   }
 
-  /** @type {PluginState} */
+  /** @type {DsPluginState} */
   const result = {
     schema: {}
   }

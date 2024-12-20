@@ -1,6 +1,6 @@
 /**
  * @import {state} from '#client'
- * @import {PluginState, PluginStateExport} from '@dooksa/create-plugin/types'
+ * @import {DsPluginState, DsPluginStateExport} from '@dooksa/create-plugin/types'
  */
 
 import createPlugin from '@dooksa/create-plugin'
@@ -8,12 +8,12 @@ import createPlugin from '@dooksa/create-plugin'
 /**
  * @param {Object[]} [plugins=[]]
  * @param {string} plugins[].name - Name of plugin
- * @param {PluginState | PluginStateExport} plugins[].state - Plugin schema
+ * @param {DsPluginState | DsPluginStateExport} plugins[].state - Plugin schema
  * @returns {Promise<state>}
  */
 export function mockState (plugins = []) {
   return new Promise((resolve, reject) => {
-    /** @type {PluginStateExport} */
+    /** @type {DsPluginStateExport} */
     const _state = {
       _defaults: [],
       _items: [],

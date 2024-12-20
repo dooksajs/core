@@ -1,11 +1,11 @@
 /**
- * @import {Plugin, PluginSchemaItem, PluginSchemaDefaults, PluginStateExport} from '../../create-plugin/types.js'
+ * @import {DsPlugin, DsPluginStateExport} from '../../create-plugin/types.js'
  * @import {AppPlugin, AppSetup} from '#types'
  */
 
 /**
  * @callback UsePlugin
- * @param {Plugin} plugin
+ * @param {DsPlugin} plugin
  */
 
 /**
@@ -13,13 +13,13 @@
  * @returns  {AppPlugin}
  */
 export default function appendPlugin () {
-  /** @type {Plugin[]} */
+  /** @type {DsPlugin[]} */
   const appPlugins = []
   /** @type {AppSetup[]} */
   let appSetup = []
   /** @type {Object.<string, Function>} */
   const appActions = {}
-  /** @type {PluginStateExport} */
+  /** @type {DsPluginStateExport} */
   const appState = {
     _defaults: [],
     _items: [],
@@ -31,7 +31,7 @@ export default function appendPlugin () {
 
   return {
     /**
-     * @param {Plugin} plugin
+     * @param {DsPlugin} plugin
      */
     use (plugin) {
     // check if plugin exists
