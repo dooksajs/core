@@ -22,18 +22,6 @@ export const inputCheckbox = createComponent({
       value: 'form-check-input'
     }
   ],
-  content: [
-    {
-      name: 'checked',
-      nodePropertyName: 'checked'
-    }
-  ],
-  events: [
-    {
-      on: 'component/created',
-      actionId: 'label-id'
-    }
-  ],
   eventTypes: { 'observeProperty/checked': true }
 }, [idMixin, inputAllMixin, inputCheckboxMixin, ariaExpandedMixin, ariaControlsMixin, eventTypeMouseMixin, eventTypeElementChangeMixin])
 
