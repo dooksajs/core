@@ -776,17 +776,19 @@ export const component = createPlugin('component', {
         const events = template.events
         const eventTypes = template.eventTypes || {}
         const hasEvent = {}
+        const eventAppended = {}
 
         for (let i = 0; i < events.length; i++) {
           const {
             on,
             actionId
           } = events[i]
+          const eventId = on + id
           const eventData = stateSetValue({
             name: 'event/listeners',
             value: actionId,
             options: {
-              id: on + id,
+              id: eventId,
               update: { method: 'push' }
             }
           })
@@ -797,14 +799,19 @@ export const component = createPlugin('component', {
             hasBeforeCreateEvent = true
           }
 
-          stateSetValue({
-            name: 'component/events',
-            value: eventData.id,
-            options: {
-              id,
-              update: { method: 'push' }
-            }
-          })
+          if (!eventAppended[eventId]) {
+            stateSetValue({
+              name: 'component/events',
+              value: eventData.id,
+              options: {
+                id,
+                update: { method: 'push' }
+              }
+            })
+          }
+
+          // mark event as used
+          eventAppended[eventId] = true
 
           if (eventTypes[on] && !hasEvent[on]) {
             const [eventType, eventValue] = on.split('/', 2)
