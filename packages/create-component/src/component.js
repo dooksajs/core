@@ -10,15 +10,66 @@
  * @param {ComponentDataValues} mixins[].data - Data for the mixin.
  * @returns {Component} The created component object.
  * @example
- * const inputCheckbox = createComponent({
- *   id: 'input-checkbox',
- *   tag: 'input',
- *   properties: [
- *     {
- *       name: 'type',
- *       value: 'checkbox'
+ * const form = createComponent({
+ *   id: 'form',
+ *   tag: 'form',
+ *   initialize (context, emit) {
+ *     const form = document.createElement('form')
+ *     // let dooksa handle the form submit
+ *     form.addEventListener('submit', (e) => {
+ *       e.preventDefault()
+ *       e.stopPropagation()
+ *
+ *       emit({
+ *         name: 'form/submit',
+ *         id: context.id,
+ *         context,
+ *         payload: new FormData(form)
+ *       })
+ *     }, false)
+ *
+ *     return form
+ *   },
+ *   options: {
+ *     autocapitalize: {
+ *       name: 'autocapitalize',
+ *       values: {
+ *         none: 'none',
+ *         sentences: 'sentences',
+ *         words: 'words',
+ *         characters: 'characters'
+ *       }
+ *     },
+ *     autocomplete: {
+ *       name: 'autocomplete',
+ *       values: {
+ *         on: 'on',
+ *         off: 'off'
+ *       }
+ *     },
+ *     wasValidated: {
+ *       name: 'className',
+ *       value: 'was-validated',
+ *       toggle: true
+ *     },
+ *     name: { name: 'name' },
+ *     rel: {
+ *       name: 'rel',
+ *       values: {
+ *         external: 'external',
+ *         noFollow: 'nofollow',
+ *         opener: 'opener',
+ *         noOpener: 'nonopener',
+ *         noReferrer: 'noreferrer',
+ *         help: 'help',
+ *         prev: 'prev',
+ *         next: 'next',
+ *         search: 'search',
+ *         license: 'license'
+ *       }
  *     }
- *   ]
+ *   },
+ *   eventTypes: { 'form/submit': true }
  * })
  */
 function createComponent (data, mixins = []) {
@@ -201,10 +252,10 @@ function componentOptions (options, templateOptions, properties = []) {
 /**
  * Extend a component with additional data and options.
  * @param {Component} component - Base component object to extend.
- * @param {ComponentExtend} extend - Configuration for extending the component.
+ * @param {ComponentExtend} [extend={}] - Configuration for extending the component.
  * @returns {Component} The extended component object.
  */
-function extendComponent (component, extend) {
+function extendComponent (component, extend = {}) {
   const result = Object.assign({}, component)
   let properties = component.properties || []
 
