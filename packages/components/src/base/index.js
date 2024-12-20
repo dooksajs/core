@@ -19,6 +19,7 @@ import { createInputCheckboxButton, inputCheckboxButton } from './form/input-che
 import { createInputColor, inputColor } from './form/input-color.js'
 import { createInputFile, inputFile } from './form/input-file.js'
 import { createInputHidden, inputHidden } from './form/input-hidden.js'
+import { createInputRadio, inputRadio } from './form/input-radio.js'
 import { createInputText, inputText } from './form/input-text.js'
 import { createLabel, label } from './form/label.js'
 import { createLegend, legend } from './form/legend.js'
@@ -29,7 +30,6 @@ import { createSmall, small } from './content/small.js'
 import { createSpan, span } from './generic/span.js'
 import { createSummary, summary } from './interactive/summary.js'
 import { createText, text } from './content/text.js'
-
 export * from './types.js'
 
 export {
@@ -54,6 +54,7 @@ export {
   createInputColor,
   createInputFile,
   createInputHidden,
+  createInputRadio,
   createInputText,
   createLabel,
   createLegend,
@@ -88,6 +89,7 @@ export default [
   inputColor,
   inputFile,
   inputHidden,
+  inputRadio,
   inputText,
   label,
   legend,
