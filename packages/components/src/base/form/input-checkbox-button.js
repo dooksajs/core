@@ -31,12 +31,6 @@ export const inputCheckboxButton = createComponent({
       nodePropertyName: 'checked'
     }
   ],
-  events: [
-    {
-      on: 'component/created',
-      actionId: 'label-id'
-    }
-  ],
   eventTypes: { 'observeProperty/checked': true }
 }, [
   idMixin,
