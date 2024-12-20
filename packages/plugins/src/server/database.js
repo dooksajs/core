@@ -7,7 +7,7 @@ import { generateId } from '@dooksa/utils'
 import { log } from '@dooksa/utils/server'
 
 /**
- * @typedef {import('../../../types.js').DataWhere} DataWhere
+ * @import {DataWhere} from '../../../types.js'
  * @import {Request, Response} from 'hyper-express'
  */
 
