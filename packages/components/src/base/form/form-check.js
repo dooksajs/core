@@ -1,29 +1,9 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
-import { createLabel } from './label.js'
-import { createInputCheckbox } from './input-checkbox.js'
-
-const inputCheckbox = createInputCheckbox({
-  events: [
-    {
-      on: 'component/created',
-      actionId: 'input-label-id'
-    }
-  ]
-})
-
-const label = createLabel({
-  events: [
-    {
-      on: 'component/created',
-      actionId: 'input-label-id'
-    }
-  ]
-})
 
 export const formCheck = createComponent({
   id: 'form-check',
   tag: 'div',
-  children: [inputCheckbox, label],
+  children: [],
   properties: [
     {
       name: 'className',
