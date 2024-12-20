@@ -242,15 +242,10 @@
  */
 
 /**
- * @typedef {Object} SetActionValue
- * @property {ActionValue|string} [scope] - ActionValue value ID
- * @property {ActionValue|string} [groupId] - ActionValue value group ID
+ * @typedef {Object} SetActionValueValues
+ * @property {ActionValue|string} id
  * @property {ActionValue|string} [prefixId]
  * @property {ActionValue|string} [suffixId]
- * @property {Object[]} values
- * @property {ActionValue|string} values[].id
- * @property {ActionValue|string} [values[].prefixId]
- * @property {ActionValue|string} [values[].suffixId]
  * @property {ActionValue[]|
  * string[]|
  * number[]|
@@ -260,7 +255,16 @@
  * string|
  * number|
  * boolean|
- * NestedData} values[].value
+ * NestedData} value
+ */
+
+/**
+ * @typedef {Object} SetActionValue
+ * @property {ActionValue|string} [scope] - ActionValue value ID
+ * @property {ActionValue|string} [groupId] - ActionValue value group ID
+ * @property {ActionValue|string} [prefixId]
+ * @property {ActionValue|string} [suffixId]
+ * @property {SetActionValueValues[]} values
  */
 
 /**
