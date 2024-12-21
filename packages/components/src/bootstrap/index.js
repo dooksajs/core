@@ -21,7 +21,10 @@ import dataDocumentValueText from './data/data-document-value-text.js'
 import dataSelectDocumentById from './data/data-select-document-by-id.js'
 
 // form
-import optionVariableValue from './form/option-variable-value.js'
+import {
+  optionVariableValue,
+  labelRequiredStar
+} from './form/index.js'
 import actionCardBodyLabel from './action-card/action-card-body-label.js'
 import actionCardBodyLabelRequired from './action-card/action-card-body-label-required.js'
 import actionCardBodyLabelTextRequired from './action-card/action-card-body-label-text-required.js'
