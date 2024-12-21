@@ -9,6 +9,7 @@ import actionInputDataPropertyLabel from './action-input-data-property-label.js'
 import actionInputDataString from './action-input-data-string.js'
 import actionInputDataText from './action-input-data-text.js'
 import actionInputDataTextLabel from './action-input-data-text-label.js'
+import actionInputMethodName from './action-input-method-name.js'
 import actionInputObject from './action-input-object.js'
 import actionInputObjectProperties from './action-input-object-properties.js'
 import actionInputObjectProperty from './action-input-object-property.js'
@@ -26,6 +27,7 @@ export {
   actionInputDataString,
   actionInputDataText,
   actionInputDataTextLabel,
+  actionInputMethodName,
   actionInputObject,
   actionInputObjectProperties,
   actionInputObjectProperty,
