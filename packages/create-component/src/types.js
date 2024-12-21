@@ -149,14 +149,18 @@
  */
 
 /**
- * Initialize a template with components and events
- * @callback TemplateInitialize
- * @param {Object} component - Component data to initialize.
- * @param {string} component.id - Component ID.
- * @param {string} [component.parentId] - Parent component ID if extending.
- * @param {string} [component.rootId] - Root template ID.
- * @param {string} [component.groupId] - Group template ID.
- * @param {Component} [component.template] - Template component data.
+ * @typedef {Object} ComponentContext
+ * @property {string} id - Component ID.
+ * @property {string} [parentId] - Parent component ID if extending.
+ * @property {string} [rootId] - Root template ID.
+ * @property {string} [groupId] - Group template ID.
+ * @property {Component} [template] - Template component data.
+ */
+
+/**
+ * Initialize component and events
+ * @callback ComponentInitializeCallback
+ * @param {ComponentContext} context - Component context
  * @param {EventEmitCallback} emit - Callback function for emitting events.
  */
 
@@ -165,7 +169,7 @@
  * @typedef {Object} ComponentData
  * @property {string} id - Unique identifier for the component.
  * @property {Function} [component] - Lazy load component function.
- * @property {TemplateInitialize} [initialize] - Constructor function to create a component instance.
+ * @property {ComponentInitializeCallback} [initialize] - Add event listeners, or perform any other required setup tasks..
  * @property {string} tag - Element tag name.
  */
 
@@ -185,3 +189,5 @@
  * @property {string} name - The key name to match the possible values.
  * @property {string} [separator] - Separator within an infix item.
  */
+
+export default {}
