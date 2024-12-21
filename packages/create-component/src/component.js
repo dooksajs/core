@@ -15,11 +15,32 @@
  *   tag: 'form',
  *   initialize (context, emit) {
  *     const form = document.createElement('form')
- *     // let dooksa handle the form submit
- *     form.addEventListener('submit', (e) => {
- *       e.preventDefault()
- *       e.stopPropagation()
+ *     // handle the form submit
+ *     form.addEventListener('submit', (event) => {
+ *       // check if form is valid
+ *       if (!form.checkValidity()) {
+ *         // emit invalid
+ *         emit({
+ *           name: 'form/invalid',
+ *           id: context.id,
+ *           context,
+ *           payload: new FormData(form)
+ *         })
+ *       } else {
+ *         // emit valid
+ *         emit({
+ *           name: 'form/valid',
+ *           id: context.id,
+ *           context,
+ *           payload: new FormData(form)
+ *         })
+ *       }
  *
+ *       // prevent defaults
+ *       event.preventDefault()
+ *       event.stopPropagation()
+ *
+ *       // emit form submit
  *       emit({
  *         name: 'form/submit',
  *         id: context.id,
@@ -27,8 +48,6 @@
  *         payload: new FormData(form)
  *       })
  *     }, false)
- *
- *     return form
  *   },
  *   options: {
  *     autocapitalize: {
@@ -69,7 +88,11 @@
  *       }
  *     }
  *   },
- *   eventTypes: { 'form/submit': true }
+ *   eventTypes: {
+ *     'form/invalid': true,
+ *     'form/valid': true,
+ *     'form/submit': true
+ *   }
  * })
  */
 function createComponent (data, mixins = []) {
