@@ -33,13 +33,13 @@ export const accordion = createComponent({
 
 /**
  * @typedef {Object} ExtendAccordionOption
- * @property {Object} options
+ * @property {Object} [options]
  * @property {boolean} [options.flush]
  * @property {boolean} [options.hover]
  */
 
 /**
- * @typedef {ComponentExtend|ExtendAccordionOption} ExtendAccordion
+ * @typedef {ComponentExtend & ExtendAccordionOption} ExtendAccordion
  */
 
 /**
