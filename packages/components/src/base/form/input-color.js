@@ -26,20 +26,7 @@ export const inputColor = createComponent({
       name: 'className',
       value: 'form-control form-control-color'
     }
-  ],
-  content: [
-    {
-      name: 'value',
-      nodePropertyName: 'value'
-    },
-    {
-      name: 'title',
-      nodePropertyName: 'value'
-    }
-  ],
-  options: {
-    title: { name: 'title' }
-  }
+  ]
 }, [idMixin, formControlMixin, inputAllMixin, eventTypeElementChangeMixin])
 
 /**
