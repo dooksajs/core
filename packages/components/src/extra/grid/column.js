@@ -74,11 +74,11 @@ export const column = createComponent({
 
 /**
  * @typedef {Object} ExtendColumnOptionMixin
- * @property {ExtendColumnOption|SpacingMixin|GapMixin} options
+ * @property {ExtendColumnOption | SpacingMixin | GapMixin} [options]
  */
 
 /**
- * @typedef {ComponentExtend|ExtendColumnOptionMixin} ExtendColumn
+ * @typedef {ComponentExtend & ExtendColumnOptionMixin} ExtendColumn
  */
 
 /**

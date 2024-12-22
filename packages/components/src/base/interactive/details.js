@@ -33,12 +33,12 @@ export const details = createComponent({
 
 /**
  * @typedef {Object} ExtendDetailsOptionMixin
- * @property {ExtendDetailsOption|NameMixin|ShadowMixin|FocusRingMixin} options
+ * @property {ExtendDetailsOption | NameMixin | ShadowMixin | FocusRingMixin} [options]
  */
 
 /**
  * @typedef {Object} ExtendDetailsEvent
- * @property {'node/toggle'|EventTypeMouseMixin|ComponentEventOn} on
+ * @property {'node/toggle' | EventTypeMouseMixin | ComponentEventOn} on
  * @property {string} actionId
  */
 
@@ -48,7 +48,7 @@ export const details = createComponent({
  */
 
 /**
- * @typedef {ComponentExtend|ExtendDetailsOptionMixin|ExtendDetailsEventMixin} ExtendDetails
+ * @typedef {ComponentExtend & ExtendDetailsOptionMixin | ExtendDetailsEventMixin} ExtendDetails
  */
 
 /**

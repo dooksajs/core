@@ -54,11 +54,11 @@ export const icon = createComponent({
 
 /**
  * @typedef {Object} ExtendIconOptionMixin
- * @property {SpacingMixin|ExtendIconOption} options
+ * @property {SpacingMixin|ExtendIconOption} [options]
  */
 
 /**
- * @typedef {ComponentExtend|ExtendIconOptionMixin} ExtendIcon
+ * @typedef {ComponentExtend & ExtendIconOptionMixin} ExtendIcon
  */
 
 /**

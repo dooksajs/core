@@ -90,17 +90,17 @@ export const modal = createComponent({
 }, [ariaLabelMixin])
 
 /**
- * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('@dooksa/component-mixins/src/aria/aria-label.js').AriaLabelMixin} AriaLabelMixin
+ * @import {ComponentExtend} from '@dooksa/create-component'
+ * @import {AriaLabelMixin} from '#mixins'
  */
 
 /**
  * @typedef {Object} ExtendModalOptions
- * @property {AriaLabelMixin} options
+ * @property {AriaLabelMixin} [options]
  */
 
 /**
- * @param {ComponentExtend|ExtendModalOptions} options
+ * @param {ComponentExtend & ExtendModalOptions} options
  */
 export const createModal = function (options) {
   return extendComponent(modal, options)

@@ -22,11 +22,20 @@ export const legend = createComponent({
 
 /**
  * @typedef {Object} ExtendLegendOptionMixin
- * @property {ExtendLegendOption|IdMixin|SpacingMixin|BorderMixin|RoundedMixin|DisplayMixin|FloatMixin|SizingMixin|FontMixin} options
+ * @property {ExtendLegendOption
+ *  | IdMixin
+ *  | SpacingMixin
+ *  | BorderMixin
+ *  | RoundedMixin
+ *  | DisplayMixin
+ *  | FloatMixin
+ *  | SizingMixin
+ *  | FontMixin
+ * } [options]
  */
 
 /**
- * @typedef {ComponentExtend|ExtendLegendOptionMixin} ExtendLegend
+ * @typedef {ComponentExtend & ExtendLegendOptionMixin} ExtendLegend
  */
 
 /**

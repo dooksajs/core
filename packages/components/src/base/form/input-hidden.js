@@ -22,11 +22,11 @@ export const inputHidden = createComponent({
 
 /**
  * @typedef {Object} ExtendInputHiddenOptionMixin
- * @property {IdMixin|InputAllMixin} options
+ * @property {IdMixin | InputAllMixin} [options]
  */
 
 /**
- * @typedef {ComponentExtend|ExtendInputHiddenOptionMixin} ExtendInputHidden
+ * @typedef {ComponentExtend & ExtendInputHiddenOptionMixin} ExtendInputHidden
  */
 
 /**

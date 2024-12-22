@@ -21,11 +21,11 @@ export const accordionBody = createComponent({
 
 /**
  * @typedef {Object} ExtendAccordionBodyOption
- * @property {BorderMixin} options
+ * @property {BorderMixin} [options]
  */
 
 /**
- * @typedef {ComponentExtend|ExtendAccordionBodyOption} ExtendAccordionBody
+ * @typedef {ComponentExtend & ExtendAccordionBodyOption} ExtendAccordionBody
  */
 
 /**

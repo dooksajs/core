@@ -17,12 +17,12 @@ export const text = createComponent({
 
 /**
  * @typedef {Object} ExtendTextOption
- * @property {Object} options
- * @property {string} [options.value] - Text
+ * @property {Object} [options]
+ * @property {string} options.value - Text
  */
 
 /**
- * @typedef {ComponentExtend|ExtendTextOption} ExtendText
+ * @typedef {ComponentExtend & ExtendTextOption} ExtendText
  */
 
 /**

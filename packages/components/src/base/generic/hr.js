@@ -15,11 +15,11 @@ export const hr = createComponent({
 
 /**
  * @typedef {Object} ExtendHrOptionMixin
- * @property {FlexMixin|SpacingMixin|DisplayMixin} options
+ * @property {FlexMixin | SpacingMixin | DisplayMixin} [options]
  */
 
 /**
- * @typedef {ComponentExtend|ExtendHrOptionMixin} ExtendHr
+ * @typedef {ComponentExtend & ExtendHrOptionMixin} ExtendHr
  */
 
 /**

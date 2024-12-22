@@ -26,9 +26,8 @@ export const nav = createComponent({
 }, [flexMixin, roleTablistMixin])
 
 /**
- * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('@dooksa/component-mixins/src/styles/flex.js').FlexMixin} FlexMixin
- * @typedef {import('@dooksa/component-mixins/src/aria-role/tablist.js').RoleTablistMixin} RoleTablistMixin
+ * @import {ComponentExtend} from '@dooksa/create-component'
+ * @import {FlexMixin, RoleTablistMixin} from '#mixins'
  */
 
 /**
@@ -38,11 +37,11 @@ export const nav = createComponent({
 
 /**
  * @typedef {Object} ComponentExtendNavOption
- * @property {ComponentExtendNav|FlexMixin|RoleTablistMixin} options
+ * @property {ComponentExtendNav | FlexMixin | RoleTablistMixin} [options]
  */
 
 /**
- * @param {ComponentExtend|ComponentExtendNavOption} options
+ * @param {ComponentExtend & ComponentExtendNavOption} options
  */
 export const createNav = function (options) {
   return extendComponent(nav, options)

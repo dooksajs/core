@@ -41,12 +41,18 @@ export const inputText = createComponent({
 
 /**
  * @typedef {Object} ExtendInputTextOptionMixin
- * @property {ExtendInputTextOption|IdMixin|FormControlMixin|InputAllMixin|InputTextMixin|AriaLabelMixin} options
+ * @property {ExtendInputTextOption |
+ *   IdMixin |
+ *   FormControlMixin |
+ *   InputAllMixin |
+ *   InputTextMixin |
+ *   AriaLabelMixin
+ * } [options]
  */
 
 /**
  * @typedef {Object} ExtendInputTextEvent
- * @property {EventTypeElementChangeMixin|ComponentEventOn} on
+ * @property {EventTypeElementChangeMixin | ComponentEventOn} on
  * @property {string} actionId
  */
 
@@ -56,7 +62,10 @@ export const inputText = createComponent({
  */
 
 /**
- * @typedef {ComponentExtend|ExtendInputTextEventMixin|ExtendInputTextOptionMixin} ExtendInputText
+ * @typedef {ComponentExtend
+ *   & ExtendInputTextOptionMixin
+ *   | ExtendInputTextEventMixin
+ * } ExtendInputText
  */
 
 /**

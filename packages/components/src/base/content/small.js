@@ -16,11 +16,11 @@ export const small = createComponent({
 
 /**
  * @typedef {Object} ExtendSmallOptionMixin
- * @property {TextMixin|SpacingMixin|ColorMixin|TextColorMixin} options
+ * @property {TextMixin | SpacingMixin | ColorMixin | TextColorMixin} [options]
  */
 
 /**
- * @typedef {ComponentExtend|ExtendSmallOptionMixin} ExtendSmall
+ * @typedef {ComponentExtend & ExtendSmallOptionMixin} ExtendSmall
  */
 
 /**

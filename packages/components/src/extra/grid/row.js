@@ -106,11 +106,11 @@ export const row = createComponent({
 
 /**
  * @typedef {Object} ExtendRowOptionMixin
- * @property {ExtendRowOption} options
+ * @property {ExtendRowOption} [options]
  */
 
 /**
- * @typedef {ComponentExtend|ExtendRowOptionMixin} ExtendRow
+ * @typedef {ComponentExtend & ExtendRowOptionMixin} ExtendRow
  */
 
 /**

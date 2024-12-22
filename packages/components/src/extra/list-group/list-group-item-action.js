@@ -30,7 +30,7 @@ export const listGroupItemAction = createComponent({
 
 /**
  * @import {ComponentExtend} from '@dooksa/create-component'
- * @import {AriaCurrentMixin, FlexMixin, DisplayMixin, GapMixin} from '@dooksa/components/mixins'
+ * @import {AriaCurrentMixin, FlexMixin, DisplayMixin, GapMixin} from '#mixins'
  * @import {ExtendListGroupOptions} from './list-group-options.js'
  */
 
@@ -41,16 +41,17 @@ export const listGroupItemAction = createComponent({
 
 /**
  * @typedef {Object} ExtendListGroupItemAction
- * @property {ExtendListGroupItemActionOption|
- * ExtendListGroupOptions|
- * DisplayMixin|
- * FlexMixin|
- * AriaCurrentMixin|
- * GapMixin} options
+ * @property {ExtendListGroupItemActionOption
+ *   | ExtendListGroupOptions
+ *   | DisplayMixin
+ *   | FlexMixin
+ *   | AriaCurrentMixin
+ *   | GapMixin
+ * } [options]
  */
 
 /**
- * @param {ComponentExtend|ExtendListGroupItemAction} options
+ * @param {ComponentExtend & ExtendListGroupItemAction} options
  */
 export const createListGroupItemAction = function (options) {
   return extendComponent(listGroupItemAction, options)

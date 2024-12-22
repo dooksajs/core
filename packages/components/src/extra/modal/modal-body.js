@@ -16,20 +16,17 @@ export const modalBody = createComponent({
 }, [displayMixin, flexMixin, spacingMixin, gapMixin])
 
 /**
- * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('../../mixins/styles/display.js').DisplayMixin} DisplayMixin
- * @typedef {import('../../mixins/styles/spacing.js').SpacingMixin} SpacingMixin
- * @typedef {import('../../mixins/styles/gap.js').GapMixin} GapMixin
- * @typedef {import('../../mixins/styles/flex.js').FlexMixin} FlexMixin
+ * @import {ComponentExtend} from '@dooksa/create-component'
+ * @import {DisplayMixin, SpacingMixin, GapMixin, FlexMixin} from '#mixins'
  */
 
 /**
  * @typedef {Object} ExtendModalBody
- * @property {DisplayMixin|SpacingMixin|GapMixin|FlexMixin} options
+ * @property {DisplayMixin | SpacingMixin | GapMixin | FlexMixin} [options]
  */
 
 /**
- * @param {ComponentExtend|ExtendModalBody} options
+ * @param {ComponentExtend & ExtendModalBody} options
  */
 export const createModalBody = function (options) {
   return extendComponent(modalBody, options)

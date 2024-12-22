@@ -39,45 +39,48 @@ export const div = createComponent({
 ])
 
 /**
- * @import {FlexMixin,
- * BackgroundMixin,
- * PositionMixin,
- * SpacingMixin,
- * ZIndexMixin,
- * InsetMixin,
- * TransformTranslateMixin,
- * ButtonMixin,
- * DisplayMixin,
- * ShadowMixin,
- * RoundedMixin,
- * FontMixin,
- * BorderMixin,
- * GapMixin,
- * ContainerMixin} from '@dooksa/components/mixins'
+ * @import {
+ *   FlexMixin,
+ *   BackgroundMixin,
+ *   PositionMixin,
+ *   SpacingMixin,
+ *   ZIndexMixin,
+ *   InsetMixin,
+ *   TransformTranslateMixin,
+ *   ButtonMixin,
+ *   DisplayMixin,
+ *   ShadowMixin,
+ *   RoundedMixin,
+ *   FontMixin,
+ *   BorderMixin,
+ *   GapMixin,
+ *   ContainerMixin
+ * } from '@dooksa/components/mixins'
  * @import {ComponentExtend} from '@dooksa/create-component'
  */
 
 /**
  * @typedef {Object} ExtendDivOptions
- * @property {FontMixin|
- * RoundedMixin|
- * ShadowMixin|
- * BackgroundMixin|
- * FlexMixin|
- * PositionMixin|
- * SpacingMixin|
- * ZIndexMixin|
- * InsetMixin|
- * TransformTranslateMixin|
- * ButtonMixin|
- * DisplayMixin|
- * BorderMixin|
- * GapMixin|
- * ContainerMixin} options
+ * @property {FontMixin
+ *   | RoundedMixin
+ *   | ShadowMixin
+ *   | BackgroundMixin
+ *   | FlexMixin
+ *   | PositionMixin
+ *   | SpacingMixin
+ *   | ZIndexMixin
+ *   | InsetMixin
+ *   | TransformTranslateMixin
+ *   | ButtonMixin
+ *   | DisplayMixin
+ *   | BorderMixin
+ *   | GapMixin
+ *   | ContainerMixin
+ * } [options]
  */
 
 /**
- * @typedef {ComponentExtend|ExtendDivOptions} ExtendDiv
+ * @typedef {ComponentExtend & ExtendDivOptions} ExtendDiv
  */
 
 /**

@@ -33,23 +33,23 @@ export const button = createComponent({
 }, [buttonMixin, eventTypeMouseMixin, spacingMixin, roundedMixin])
 
 /**
- * @import {ComponentExtend} from '@dooksa/create-component'
+ * @import {ComponentExtend, ComponentEventOn} from '@dooksa/create-component'
  * @import {ButtonMixin, EventTypeMouseMixin, SpacingMixin, RoundedMixin} from '@dooksa/components/mixins'
  */
 
 /**
  * @typedef {Object} ExtendButtonOption
- * @property {'submit'|'reset'|'button'} [type]
+ * @property {'submit' | 'reset' | 'button'} [type]
  */
 
 /**
  * @typedef {Object} ExtendButtonOptionMixin
- * @property {ButtonMixin|ExtendButtonOption|SpacingMixin|RoundedMixin} options
+ * @property {ButtonMixin | ExtendButtonOption | SpacingMixin | RoundedMixin} [options]
  */
 
 /**
  * @typedef {Object} ExtendButtonEvent
- * @property {EventTypeMouseMixin} on
+ * @property {EventTypeMouseMixin | ComponentEventOn} on
  * @property {string} actionId
  */
 
@@ -59,7 +59,7 @@ export const button = createComponent({
  */
 
 /**
- * @typedef {ComponentExtend|ExtendButtonEventMixin|ExtendButtonOptionMixin} ExtendButton
+ * @typedef {ComponentExtend & ExtendButtonOptionMixin | ExtendButtonEventMixin } ExtendButton
  */
 
 /**

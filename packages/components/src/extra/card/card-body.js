@@ -19,11 +19,11 @@ export const cardBody = createComponent({
 
 /**
  * @typedef {Object} ExtendCardBodyOptionMixin
- * @property {DisplayMixin|GapMixin|SpacingMixin} options
+ * @property {DisplayMixin | GapMixin | SpacingMixin} [options]
  */
 
 /**
- * @typedef {ComponentExtend|ExtendCardBodyOptionMixin} ExtendCarBody
+ * @typedef {ComponentExtend & ExtendCardBodyOptionMixin} ExtendCarBody
  */
 
 /**

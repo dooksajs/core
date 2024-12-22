@@ -13,11 +13,11 @@ export const paragraph = createComponent({
 
 /**
  * @typedef {Object} ExtendParagraphOptionMixin
- * @property {SpacingMixin|TextMixin|HeadingMixin} options
+ * @property {SpacingMixin | TextMixin | HeadingMixin} [options]
  */
 
 /**
- * @typedef {ComponentExtend|ExtendParagraphOptionMixin} ExtendParagraph
+ * @typedef {ComponentExtend & ExtendParagraphOptionMixin} ExtendParagraph
  */
 
 /**

@@ -38,11 +38,11 @@ export const option = createComponent({
 
 /**
  * @typedef {Object} ExtendOptionOptionMixin
- * @property {ExtendOptionOption} options
+ * @property {ExtendOptionOption} [options]
  */
 
 /**
- * @typedef {ComponentExtend|ExtendOptionOptionMixin} ExtendOption
+ * @typedef {ComponentExtend & ExtendOptionOptionMixin} ExtendOption
  */
 
 /**

@@ -25,11 +25,16 @@ const span = createComponent({
 
 /**
  * @typedef {Object} ExtendSpanMixin
- * @property {FlexMixin|SpacingMixin|DisplayMixin|TextColorMixin|ColorMixin} options
+ * @property {FlexMixin
+ *   | SpacingMixin
+ *   | DisplayMixin
+ *   | TextColorMixin
+ *   | ColorMixin
+ * } [options]
  */
 
 /**
- * @typedef {ComponentExtend|ExtendSpanMixin} ExtendSpan
+ * @typedef {ComponentExtend & ExtendSpanMixin} ExtendSpan
  */
 
 /**

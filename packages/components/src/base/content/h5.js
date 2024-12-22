@@ -15,11 +15,11 @@ export const h5 = createComponent({
 
 /**
  * @typedef {Object} ExtendH5OptionMixin
- * @property {FlexMixin|SpacingMixin|DisplayMixin} options
+ * @property {FlexMixin | SpacingMixin | DisplayMixin} [options]
  */
 
 /**
- * @typedef {ComponentExtend|ExtendH5OptionMixin} ExtendH5
+ * @typedef {ComponentExtend & ExtendH5OptionMixin} ExtendH5
  */
 
 /**

@@ -52,7 +52,7 @@ export const label = createComponent({
 }, [idMixin, textMixin, buttonMixin, ariaLabelMixin, eventTypeMouseMixin])
 
 /**
- * @import {IdMixin, EventTypeMouseMixin, TextMixin, ButtonMixin, AriaLabelMixin} from '@dooksa/components/mixins'
+ * @import {IdMixin, FontMixin, EventTypeMouseMixin, TextMixin, ButtonMixin, AriaLabelMixin} from '@dooksa/components/mixins'
  * @import  {ComponentExtend} from '@dooksa/create-component'
  */
 
@@ -65,7 +65,13 @@ export const label = createComponent({
 
 /**
  * @typedef {Object} ExtendLabelOptionMixin
- * @property {ExtendLabelOption|IdMixin|TextMixin|ButtonMixin|AriaLabelMixin} options
+ * @property {ExtendLabelOption |
+ *   IdMixin |
+ *   TextMixin |
+ *   ButtonMixin |
+ *   FontMixin |
+ *   AriaLabelMixin
+ * } [options]
  */
 
 /**
@@ -80,7 +86,7 @@ export const label = createComponent({
  */
 
 /**
- * @typedef {ComponentExtend|ExtendLabelEventMixin|ExtendLabelOptionMixin} ExtendLabel
+ * @typedef {ComponentExtend & ExtendLabelOptionMixin | ExtendLabelEventMixin} ExtendLabel
  */
 
 /**

@@ -37,12 +37,22 @@ export const inputRadio = createComponent({
 
 /**
  * @typedef {Object} ExtendInputTextOptionMixin
- * @property {ExtendInputTextOption | IdMixin | InputCheckboxMixin | InputAllMixin | AriaExpandedMixin | AriaControlsMixin} options
+ * @property {ExtendInputTextOption
+ *   | IdMixin
+ *   | InputCheckboxMixin
+ *   | InputAllMixin
+ *   | AriaExpandedMixin
+ *   | AriaControlsMixin
+ * } [options]
  */
 
 /**
  * @typedef {Object} ExtendInputRadioEvent
- * @property {'observeProperty/checked' | EventTypeMouseMixin | EventTypeElementChangeMixin} on
+ * @property {'observeProperty/checked'
+ *   | EventTypeMouseMixin
+ *   | EventTypeElementChangeMixin
+ *   | ComponentEventOn
+ * } on
  * @property {string} actionId
  */
 
@@ -52,7 +62,10 @@ export const inputRadio = createComponent({
  */
 
 /**
- * @typedef {ComponentExtend | ExtendInputRadioEventMixin | ExtendInputTextOptionMixin} ExtendInputRadio
+ * @typedef {ComponentExtend
+ *   & ExtendInputTextOptionMixin
+ *   | ExtendInputRadioEventMixin
+ * } ExtendInputRadio
  */
 
 /**

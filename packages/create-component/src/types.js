@@ -43,7 +43,6 @@
  * @property {ComponentMixinMetadata} [metadata] - Metadata for mixins applied to the component.
  * @property {ComponentEvent[] | Object.<string, *>[]} [events] - Events to add or override.
  * @property {boolean} [clearDefaultEvents] - Clear default events when extending the component.
- * @property {Object.<string, *>} [options] - Options for customizing the component.
  * @property {Array<Component|ComponentInstance>} [children] - Child components to include in the component.
  */
 
@@ -189,5 +188,3 @@
  * @property {string} name - The key name to match the possible values.
  * @property {string} [separator] - Separator within an infix item.
  */
-
-export default {}

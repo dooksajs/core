@@ -29,11 +29,11 @@ export const cardHeader = createComponent({
 
 /**
  * @typedef {Object} ExtendCardHeaderOptionMixin
- * @property {DisplayMixin|FlexMixin|PositionMixin|ColorMixin} options
+ * @property {DisplayMixin | FlexMixin | PositionMixin | ColorMixin} [options]
  */
 
 /**
- * @typedef {ComponentExtend|ExtendCardHeaderOptionMixin} ExtendCardHeader
+ * @typedef {ComponentExtend & ExtendCardHeaderOptionMixin} ExtendCardHeader
  */
 
 /**

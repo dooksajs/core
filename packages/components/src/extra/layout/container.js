@@ -15,19 +15,17 @@ export const container = createComponent({
 }, [backgroundMixin, spacingMixin, positionMixin])
 
 /**
- * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('../mixins/styles/background.js').BackgroundMixin} BackgroundMixin
- * @typedef {import('../mixins/styles/spacing.js').SpacingMixin} SpacingMixin
- * @typedef {import('../mixins/styles/position.js').PositionMixin} PositionMixin
+ * @import {ComponentExtend} from '@dooksa/create-component'
+ * @import {BackgroundMixin, SpacingMixin, PositionMixin} from '@dooksa/components/mixins'
  */
 
 /**
  * @typedef {Object} ComponentExtendContainer
- * @property {BackgroundMixin|SpacingMixin|PositionMixin} options
+ * @property {BackgroundMixin | SpacingMixin | PositionMixin} [options]
  */
 
 /**
- * @param {ComponentExtend|ComponentExtendContainer} options
+ * @param {ComponentExtend & ComponentExtendContainer} options
  */
 export const createContainer = function (options) {
   extendComponent(container, options)

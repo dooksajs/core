@@ -18,17 +18,17 @@ export const modalContent = createComponent({
 }, [shadowMixin])
 
 /**
- * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('@dooksa/component-mixins/src/styles/shadow.js').ShadowMixin} ShadowMixin
+ * @import {ComponentExtend} from '@dooksa/create-component'
+ * @import {ShadowMixin} from '#mixins'
  */
 
 /**
  * @typedef {Object} ExtendModalContent
- * @property {ShadowMixin} options
+ * @property {ShadowMixin} [options]
  */
 
 /**
- * @param {ComponentExtend|ExtendModalContent} options
+ * @param {ComponentExtend & ExtendModalContent} options
  */
 export const createModalContent = function (options) {
   return extendComponent(modalContent, options)

@@ -19,8 +19,8 @@ export const navItem = createComponent({
 }, [flexMixin])
 
 /**
- * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('@dooksa/component-mixins/src/styles/flex.js').FlexMixin} FlexMixin
+ * @import {ComponentExtend} from '@dooksa/create-component'
+ * @import {FlexMixin} from '#mixins'
  */
 
 /**
@@ -30,11 +30,11 @@ export const navItem = createComponent({
 
 /**
  * @typedef {Object} ComponentExtendNavItemOption
- * @property {ComponentExtendNavItem|FlexMixin} options
+ * @property {ComponentExtendNavItem | FlexMixin} [options]
  */
 
 /**
- * @param {ComponentExtend|ComponentExtendNavItemOption} options
+ * @param {ComponentExtend & ComponentExtendNavItemOption} options
  */
 export const createNavItem = function (options) {
   return extendComponent(navItem, options)

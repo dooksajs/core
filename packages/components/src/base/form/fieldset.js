@@ -39,11 +39,18 @@ export const fieldset = createComponent({
 
 /**
  * @typedef {Object} ExtendFieldsetOptionMixin
- * @property {ExtendFieldsetOption|IdMixin|SpacingMixin|BorderMixin|RoundedMixin|DisplayMixin|GapMixin} options
+ * @property {ExtendFieldsetOption
+ *   | IdMixin
+ *   | SpacingMixin
+ *   | BorderMixin
+ *   | RoundedMixin
+ *   | DisplayMixin
+ *   | GapMixin
+ * } [options]
  */
 
 /**
- * @typedef {ComponentExtend|ExtendFieldsetOptionMixin} ExtendFieldset
+ * @typedef {ComponentExtend & ExtendFieldsetOptionMixin} ExtendFieldset
  */
 
 /**

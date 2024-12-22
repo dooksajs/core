@@ -41,11 +41,11 @@ export const formCheck = createComponent({
 
 /**
  * @typedef {Object} ExtendFormCheckOptionMixin
- * @property {ExtendFormCheckOption | SpacingMixin} options
+ * @property {ExtendFormCheckOption | SpacingMixin} [options]
  */
 
 /**
- * @typedef {ComponentExtend|ExtendFormCheckOptionMixin} ExtendFormCheck
+ * @typedef {ComponentExtend & ExtendFormCheckOptionMixin} ExtendFormCheck
  */
 
 /**

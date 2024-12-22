@@ -32,7 +32,7 @@ export const inputFile = createComponent({
 
 /**
  * @import {IdMixin, InputAllMixin, FormControlMixin, InputFileMixin, EventTypeElementChangeMixin, EventTypeElementCancelMixin } from '@dooksa/components/mixins'
- * @import {ComponentExtend} from '@dooksa/create-component'
+ * @import {ComponentExtend, ComponentEventOn} from '@dooksa/create-component'
  */
 
 /**
@@ -42,12 +42,20 @@ export const inputFile = createComponent({
 
 /**
  * @typedef {Object} ExtendInputFileOptionMixin
- * @property {ExtendInputFileOption|FormControlMixin|InputAllMixin|InputFileMixin|IdMixin} options
+ * @property {ExtendInputFileOption
+ *   | FormControlMixin
+ *   | InputAllMixin
+ *   | InputFileMixin
+ *   | IdMixin
+ * } [options]
  */
 
 /**
  * @typedef {Object} ExtendInputFileEvent
- * @property {EventTypeElementChangeMixin|EventTypeElementCancelMixin} on
+ * @property {EventTypeElementChangeMixin
+ *   | EventTypeElementCancelMixin
+ *   | ComponentEventOn
+ * } on
  * @property {string} actionId
  */
 
@@ -57,7 +65,10 @@ export const inputFile = createComponent({
  */
 
 /**
- * @typedef {ComponentExtend|ExtendInputFileEventMixin|ExtendInputFileOptionMixin} ExtendInputFile
+ * @typedef {ComponentExtend
+ *   & ExtendInputFileOptionMixin
+ *   | ExtendInputFileEventMixin
+ * } ExtendInputFile
  */
 
 /**

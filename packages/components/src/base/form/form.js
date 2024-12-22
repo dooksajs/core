@@ -63,7 +63,7 @@ export const form = createComponent({
 })
 
 /**
- * @import {ComponentExtend} from '@dooksa/create-component'
+ * @import {ComponentExtend, ComponentEventOn} from '@dooksa/create-component'
  */
 
 /**
@@ -77,12 +77,16 @@ export const form = createComponent({
 
 /**
  * @typedef {Object} ExtendFormMixin
- * @property {ExtendFormOption} options
+ * @property {ExtendFormOption} [options]
  */
 
 /**
  * @typedef {Object} ExtendFormEvent
- * @property {'node/submit'} on
+ * @property {'form/submit'
+ *   | 'form/valid'
+ *   | 'form/invalid'
+ *   | ComponentEventOn
+ * } on
  * @property {string} actionId
  */
 
@@ -92,7 +96,10 @@ export const form = createComponent({
  */
 
 /**
- * @typedef {ComponentExtend|ExtendFormEventMixin|ExtendFormMixin} ExtendForm
+ * @typedef {ComponentExtend
+ *   &  ExtendFormMixin
+ *   | ExtendFormEventMixin
+ * } ExtendForm
  */
 
 /**

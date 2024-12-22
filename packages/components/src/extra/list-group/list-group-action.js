@@ -16,17 +16,17 @@ export const listGroupAction = createComponent({
 
 /**
  * @import {ComponentExtend} from '@dooksa/create-component'
- * @import {AriaDisabledMixin} from '@dooksa/components/mixins'
+ * @import {AriaDisabledMixin} from '#mixins'
  * @import {ExtendListGroupOptions} from './list-group-options.js'
  */
 
 /**
  * @typedef {Object} ExtendListGroup
- * @property {AriaDisabledMixin|ExtendListGroupOptions} options
+ * @property {AriaDisabledMixin | ExtendListGroupOptions} [options]
  */
 
 /**
- * @param {ComponentExtend|ExtendListGroup} options
+ * @param {ComponentExtend & ExtendListGroup} options
  */
 export const createListGroupAction = function (options) {
   return extendComponent(listGroupAction, options)

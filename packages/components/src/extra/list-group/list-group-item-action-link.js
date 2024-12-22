@@ -24,12 +24,9 @@ export const listGroupItemActionLink = createComponent({
 }, [ariaDisabledMixin, ariaCurrentMixin, ariaDisabledMixin, displayMixin, flexMixin])
 
 /**
- * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('../../mixins/aria/aria-current.js').AriaCurrentMixin} AriaCurrentMixin
- * @typedef {import('../../mixins/aria/aria-disabled.js').AriaDisabledMixin} AriaDisabledMixin
- * @typedef {import('../../mixins/styles/flex.js').FlexMixin} FlexMixin
- * @typedef {import('../../mixins/styles/display.js').DisplayMixin} DisplayMixin
- * @typedef {import('./list-group-options.js').ExtendListGroupOptions} ExtendListGroupOptions
+ * @import {ComponentExtend} from '@dooksa/create-component'
+ * @import {AriaCurrentMixin, AriaDisabledMixin, FlexMixin, DisplayMixin} from '#mixins'
+ * @import {ExtendListGroupOptions} from './list-group-options.js'
  */
 
 /**
@@ -39,16 +36,17 @@ export const listGroupItemActionLink = createComponent({
 
 /**
  * @typedef {Object} ExtendListGroupItemAction
- * @property {ExtendListGroupItemActionOption|
- * AriaDisabledMixin|
- * ExtendListGroupOptions|
- * DisplayMixin|
- * FlexMixin|
- * AriaCurrentMixin} options
+ * @property {ExtendListGroupItemActionOption
+ *   | AriaDisabledMixin
+ *   | ExtendListGroupOptions
+ *   | DisplayMixin
+ *   | FlexMixin
+ *   | AriaCurrentMixin
+ * } [options]
  */
 
 /**
- * @param {ComponentExtend|ExtendListGroupItemAction} options
+ * @param {ComponentExtend & ExtendListGroupItemAction} options
  */
 export const createListGroupItemActionLink = function (options) {
   return extendComponent(listGroupItemActionLink, options)

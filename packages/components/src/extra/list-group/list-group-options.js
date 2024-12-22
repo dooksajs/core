@@ -1,5 +1,5 @@
 /**
- * @typedef {import('@dooksa/create-component').BreakpointAlwaysXXL} BreakpointAlwaysXXL
+ * @import {BreakpointAlwaysXXL} from '@dooksa/create-component'
  */
 
 /**

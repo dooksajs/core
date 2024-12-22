@@ -35,7 +35,7 @@ export const modalDialog = createComponent({
 })
 
 /**
- * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
+ * @import {ComponentExtend} from '@dooksa/create-component'
  */
 
 /**
@@ -46,11 +46,11 @@ export const modalDialog = createComponent({
 
 /**
  * @typedef {Object} ExtendModalDialogOptions
- * @property {ModalOptions} options
+ * @property {ModalOptions} [options]
  */
 
 /**
- * @param {ComponentExtend|ExtendModalDialogOptions} options
+ * @param {ComponentExtend & ExtendModalDialogOptions} options
  */
 export const createModalDialog = function (options) {
   return extendComponent(modalDialog, options)

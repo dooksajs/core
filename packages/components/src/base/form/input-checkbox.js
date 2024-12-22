@@ -37,12 +37,21 @@ export const inputCheckbox = createComponent({
 
 /**
  * @typedef {Object} ExtendInputTextOptionMixin
- * @property {ExtendInputTextOption | IdMixin | InputCheckboxMixin | InputAllMixin | AriaExpandedMixin | AriaControlsMixin} options
+ * @property {ExtendInputTextOption
+ *   | IdMixin
+ *   | InputCheckboxMixin
+ *   | InputAllMixin
+ *   | AriaExpandedMixin
+ *   | AriaControlsMixin
+ * } [options]
  */
 
 /**
  * @typedef {Object} ExtendInputCheckboxEvent
- * @property {'observeProperty/checked' | EventTypeMouseMixin | EventTypeElementChangeMixin} on
+ * @property {'observeProperty/checked'
+ *   | EventTypeMouseMixin
+ *   | EventTypeElementChangeMixin
+ * } on
  * @property {string} actionId
  */
 
@@ -52,7 +61,10 @@ export const inputCheckbox = createComponent({
  */
 
 /**
- * @typedef {ComponentExtend | ExtendInputCheckboxEventMixin | ExtendInputTextOptionMixin} ExtendInputCheckbox
+ * @typedef {ComponentExtend
+ *   & ExtendInputTextOptionMixin
+ *   | ExtendInputCheckboxEventMixin
+ * } ExtendInputCheckbox
  */
 
 /**

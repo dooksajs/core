@@ -46,7 +46,7 @@ export const cardImg = createComponent({
 })
 
 /**
- * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
+ * @import {ComponentExtend} from '@dooksa/create-component'
  */
 
 /**
@@ -57,11 +57,11 @@ export const cardImg = createComponent({
 
 /**
  * @typedef {Object} ComponentExtendCardImg
- * @property {ComponentExtendCardImgOptions} options
+ * @property {ComponentExtendCardImgOptions} [options]
  */
 
 /**
- * @param {ComponentExtend|ComponentExtendCardImg} options
+ * @param {ComponentExtend & ComponentExtendCardImg} options
  */
 export const createCardImg = function (options) {
   return extendComponent(cardImg, options)

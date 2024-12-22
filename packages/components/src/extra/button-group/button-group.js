@@ -62,17 +62,17 @@ export const buttonGroup = createComponent({
 }, [ariaLabelMixin])
 
 /**
- * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('../../mixins/aria/aria-label.js').AriaLabelMixin} AriaLabelMixin
+ * @import {ComponentExtend} from '@dooksa/create-component'
+ * @import {AriaLabelMixin} from '#mixins'
  */
 
 /**
  * @typedef {Object} ButtonGroupExtend
- * @property {AriaLabelMixin} options
+ * @property {AriaLabelMixin} [options]
  */
 
 /**
- * @param {ComponentExtend|ButtonGroupExtend} options
+ * @param {ComponentExtend & ButtonGroupExtend} options
  */
 export const createButtonGroup = function (options) {
   return extendComponent(buttonGroup, options)

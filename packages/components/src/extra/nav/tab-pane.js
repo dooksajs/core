@@ -35,7 +35,7 @@ export const tabPane = createComponent({
 }, [idMixin, flexMixin])
 
 /**
- * @import {FlexMixin, IdMixin} from '@dooksa/components/mixins'
+ * @import {FlexMixin, IdMixin} from '#mixins'
  * @import {ComponentExtend} from '@dooksa/create-component'
  */
 
@@ -48,11 +48,11 @@ export const tabPane = createComponent({
 
 /**
  * @typedef {Object} ComponentExtendTabPaneOption
- * @property {ComponentExtendTabPane|FlexMixin|IdMixin} options
+ * @property {ComponentExtendTabPane | FlexMixin | IdMixin} [options]
  */
 
 /**
- * @param {ComponentExtend|ComponentExtendTabPaneOption} options
+ * @param {ComponentExtend & ComponentExtendTabPaneOption} options
  */
 export const createTabPane = function (options) {
   return extendComponent(tabPane, options)

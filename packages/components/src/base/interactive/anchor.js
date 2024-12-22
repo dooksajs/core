@@ -26,28 +26,28 @@ export const anchor = createComponent({
 }, [buttonMixin, positionMixin, eventTypeMouseMixin])
 
 /**
- * @import {ComponentExtend} from '@dooksa/create-component'
+ * @import {ComponentExtend, ComponentEventOn} from '@dooksa/create-component'
  * @import {ButtonMixin, PositionMixin, EventTypeMouseMixin} from '@dooksa/components/mixins'
  */
 
 /**
  * @typedef {Object} ExtendAnchorOptionMixin
- * @property {ButtonMixin|PositionMixin} options
+ * @property {ButtonMixin | PositionMixin} [options]
  */
 
 /**
  * @typedef {Object} ExtendAnchorEvent
- * @property {EventTypeMouseMixin} on
+ * @property {EventTypeMouseMixin | ComponentEventOn} on
  * @property {string} actionId
  */
 
 /**
  * @typedef {Object} ExtendEventMixin
- * @property {ExtendAnchorEvent[]} events
+ * @property {ExtendAnchorEvent[]} [events]
  */
 
 /**
- * @typedef {ComponentExtend|ExtendAnchorOptionMixin|ExtendEventMixin} ExtendAnchor
+ * @typedef {ComponentExtend & ExtendAnchorOptionMixin | ExtendEventMixin} ExtendAnchor
  */
 
 /**

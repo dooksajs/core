@@ -53,12 +53,21 @@ export const inputCheckboxButton = createComponent({
 
 /**
  * @typedef {Object} ExtendInputCheckboxButtonMixin
- * @property {ExtendInputCheckboxButtonOption|IdMixin|InputCheckboxMixin|InputAllMixin|AriaExpandedMixin|AriaControlsMixin} options
+ * @property {ExtendInputCheckboxButtonOption
+ *   | IdMixin
+ *   | InputCheckboxMixin
+ *   | InputAllMixin
+ *   | AriaExpandedMixin
+ *   | AriaControlsMixin
+ * } [options]
  */
 
 /**
  * @typedef {Object} ExtendInputCheckboxButtonEvent
- * @property {'observeProperty/checked'|EventTypeElementChangeMixin|ComponentEventOn} on
+ * @property {'observeProperty/checked'
+ *   | EventTypeElementChangeMixin
+ *   | ComponentEventOn
+ * } on
  * @property {string} actionId
  */
 
@@ -68,7 +77,10 @@ export const inputCheckboxButton = createComponent({
  */
 
 /**
- * @typedef {ComponentExtend|ExtendInputCheckboxButtonEventMixin|ExtendInputCheckboxButtonMixin} ExtendInputCheckboxButton
+ * @typedef {ComponentExtend
+ *   & ExtendInputCheckboxButtonMixin
+ *   | ExtendInputCheckboxButtonEventMixin
+ * } ExtendInputCheckboxButton
  */
 
 /**

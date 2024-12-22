@@ -35,11 +35,11 @@ export const img = createComponent({
 
 /**
  * @typedef {Object} ExtendImgOptionMixin
- * @property {SpacingMixin} options
+ * @property {SpacingMixin} [options]
  */
 
 /**
- * @typedef {ComponentExtend|ExtendImgOptionMixin} ExtendImg
+ * @typedef {ComponentExtend & ExtendImgOptionMixin} ExtendImg
  */
 
 /**

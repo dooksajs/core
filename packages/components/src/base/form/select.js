@@ -60,12 +60,12 @@ export const select = createComponent({
 
 /**
  * @typedef {Object} ExtendSelectOptionMixin
- * @property {ExtendSelectOption|AriaLabelMixin|InputAllMixin|IdMixin} [options]
+ * @property {ExtendSelectOption | AriaLabelMixin | InputAllMixin | IdMixin} [options]
  */
 
 /**
  * @typedef {Object} ExtendSelectEvent
- * @property {EventTypeElementChangeMixin|ComponentEventOn} on
+ * @property {EventTypeElementChangeMixin | ComponentEventOn} on
  * @property {string} actionId
  */
 
@@ -75,7 +75,7 @@ export const select = createComponent({
  */
 
 /**
- * @typedef {ComponentExtend|ExtendSelectOptionMixin|ExtendSelectEventMixin} ExtendSelect
+ * @typedef {ComponentExtend & ExtendSelectOptionMixin | ExtendSelectEventMixin} ExtendSelect
  */
 
 /**

@@ -35,27 +35,24 @@ export const navLinkButton = createComponent({
 }, [ariaCurrentMixin, ariaSelectedMixin])
 
 /**
- * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('../../mixins/styles/flex.js').FlexMixin} FlexMixin
- * @typedef {import('../../mixins/aria/aria-current.js').AriaCurrentMixin} AriaCurrentMixin
- * @typedef {import('../../mixins/aria/aria-selected.js').AriaSelectedMixin} AriaSelectedMixin
+ * @import {ComponentExtend} from '@dooksa/create-component'
+ * @import {FlexMixin, AriaCurrentMixin, AriaSelectedMixin} from '#mixins'
  */
 
 /**
  * @typedef {Object} ComponentExtendNavLink
- * @property {Object} options
- * @property {string} [options.ariaControls] - The component which this button controls
- * @property {boolean} [options.tab] - Indicates if component is a tab
+ * @property {string} [ariaControls] - The component which this button controls
+ * @property {boolean} [tab] - Indicates if component is a tab
  * @property {boolean} [options.active] - Indicates if component an active tab
  */
 
 /**
  * @typedef {Object} ComponentExtendNavLinkOption
- * @property {ComponentExtendNavLink|FlexMixin|AriaCurrentMixin|AriaSelectedMixin} options
+ * @property {ComponentExtendNavLink | FlexMixin | AriaCurrentMixin | AriaSelectedMixin} options
  */
 
 /**
- * @param {ComponentExtend|ComponentExtendNavLinkOption} options
+ * @param {ComponentExtend & ComponentExtendNavLinkOption} options
  */
 export const createNavLinkButton = function (options) {
   return extendComponent(navLinkButton, options)

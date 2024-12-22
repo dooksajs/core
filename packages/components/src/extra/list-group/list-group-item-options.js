@@ -1,12 +1,12 @@
 /**
- * @typedef {import('@dooksa/create-component').BreakpointAlwaysXXL} BreakpointAlwaysXXL
+ * @import {Color} from '@dooksa/create-component'
  */
 
 /**
  * @typedef {Object} ExtendListGroupOptions
  * @property {boolean} [active]
  * @property {boolean} [disabled]
- * @property {import('@dooksa/create-component').Color} [variants]
+ * @property {Color} [variants]
  */
 
 export default {

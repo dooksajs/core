@@ -17,7 +17,7 @@ export const code = createComponent({
  */
 
 /**
- * @typedef {ComponentExtend|ExtendCodeOptionMixin} ExtendCode
+ * @typedef {ComponentExtend & ExtendCodeOptionMixin} ExtendCode
  */
 
 /**

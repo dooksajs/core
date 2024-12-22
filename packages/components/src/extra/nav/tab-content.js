@@ -13,20 +13,17 @@ export const tabContent = createComponent({
 }, [flexMixin, borderMixin, roundedMixin, spacingMixin])
 
 /**
- * @typedef {import('@dooksa/create-component').ComponentExtend} ComponentExtend
- * @typedef {import('@dooksa/component-mixins/src/styles/flex.js').FlexMixin} FlexMixin
- * @typedef {import('@dooksa/component-mixins/src/styles/border.js').BorderMixin} BorderMixin
- * @typedef {import('@dooksa/component-mixins/src/styles/rounded.js').RoundedMixin} RoundedMixin
- * @typedef {import('@dooksa/component-mixins/src/styles/spacing.js').SpacingMixin} SpacingMixin
+ * @import {ComponentExtend} from '@dooksa/create-component'
+ * @import {FlexMixin, BorderMixin, RoundedMixin, SpacingMixin} from '#mixins'
  */
 
 /**
  * @typedef {Object} ComponentExtendTabContentOption
- * @property {BorderMixin|FlexMixin|RoundedMixin|SpacingMixin} options
+ * @property {BorderMixin | FlexMixin | RoundedMixin | SpacingMixin} [options]
  */
 
 /**
- * @param {ComponentExtend|ComponentExtendTabContentOption} options
+ * @param {ComponentExtend & ComponentExtendTabContentOption} options
  */
 export const createTabContent = function (options) {
   return extendComponent(tabContent, options)
