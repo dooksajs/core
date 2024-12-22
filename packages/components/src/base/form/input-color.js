@@ -42,7 +42,11 @@ export const inputColor = createComponent({
 
 /**
  * @typedef {Object} ExtendInputColorOptionMixin
- * @property {ExtendInputColorOption|IdMixin|FormControlMixin|InputAllMixin} options
+ * @property {ExtendInputColorOption
+ *   | IdMixin
+ *   | FormControlMixin
+ *   | InputAllMixin
+ * } [options]
  */
 
 /**
@@ -57,7 +61,10 @@ export const inputColor = createComponent({
  */
 
 /**
- * @typedef {ComponentExtend|ExtendInputColorEventMixin|ExtendInputColorOptionMixin} ExtendInputColor
+ * @typedef {ComponentExtend
+ *   & ExtendInputColorOptionMixin
+ *   | ExtendInputColorEventMixin
+ * } ExtendInputColor
  */
 
 /**
