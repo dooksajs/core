@@ -24,14 +24,7 @@ export const inputCheckboxButton = createComponent({
       name: 'autocomplete',
       value: 'off'
     }
-  ],
-  content: [
-    {
-      name: 'checked',
-      nodePropertyName: 'checked'
-    }
-  ],
-  eventTypes: { 'observeProperty/checked': true }
+  ]
 }, [
   idMixin,
   inputAllMixin,
