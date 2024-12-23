@@ -233,7 +233,7 @@
  * @property {ActionValue|boolean} [options.expand]
  * @property {Object.<string,ActionValue|boolean>} [options.expandExclude]
  * @property {ActionValue|boolean} [options.expandClone]
- * @property {ActionValue|string[]|string|number[]|number} [options.position]
+ * @property {ActionValue|string[]|string} [options.position]
  * @property {ActionValue|boolean} [options.clone]
  */
 
