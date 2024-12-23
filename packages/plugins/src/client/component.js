@@ -441,17 +441,20 @@ export const component = createPlugin('component', {
       if (elementPrototype.hasOwnProperty(property)) {
         const descriptor = Object.getOwnPropertyDescriptor(elementPrototype, property)
 
-        Object.defineProperty(element, property, {
-          get: function () {
-            return descriptor.get.apply(this, arguments)
-          },
-          set: function () {
-            descriptor.set.apply(this, arguments)
-            const newValue = this[property]
-            callback(newValue)
-            return newValue
-          }
-        })
+        if (descriptor.get && descriptor.set) {
+          // inject setter observer
+          Object.defineProperty(element, property, {
+            get: function () {
+              return descriptor.get.apply(this, arguments)
+            },
+            set: function () {
+              descriptor.set.apply(this, arguments)
+              const newValue = this[property]
+              callback(newValue)
+              return newValue
+            }
+          })
+        }
       }
     },
     /**
