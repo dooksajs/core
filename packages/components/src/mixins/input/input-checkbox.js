@@ -2,7 +2,11 @@ import { createMixin } from '@dooksa/create-component'
 
 /**
  * @typedef {Object} InputCheckboxMixin
- * @property {'true' | 'false'} [checked] - Input is required
+ * @property {boolean} [checked] - Input is checked
+ */
+
+/**
+ * @typedef {'observeProperty/checked'} InputCheckboxEventTypesMixin
  */
 
 export default createMixin({
@@ -12,12 +16,11 @@ export default createMixin({
   data: {
     options: {
       checked: {
-        name: 'checked',
-        values: {
-          true: true,
-          false: false
-        }
+        name: 'checked'
       }
+    },
+    eventTypes: {
+      'observeProperty/checked': true
     }
   }
 })

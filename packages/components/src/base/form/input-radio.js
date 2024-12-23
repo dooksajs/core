@@ -21,8 +21,7 @@ export const inputRadio = createComponent({
       name: 'className',
       value: 'form-check-input'
     }
-  ],
-  eventTypes: { 'observeProperty/checked': true }
+  ]
 }, [idMixin, inputAllMixin, inputCheckboxMixin, ariaExpandedMixin, ariaControlsMixin, eventTypeMouseMixin, eventTypeElementChangeMixin])
 
 /**
