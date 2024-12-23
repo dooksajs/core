@@ -1032,10 +1032,11 @@ export const component = createPlugin('component', {
         let nextNode = nextChildNodes[i]
         const prevNode = prevChildNodes[i]
 
-        // exit if we've reached the end of nextNodes
-        if (nextNode) {
+        if (nextNode && nextNode.item) {
+          // set next node item
           nextNode = nextNode.item
         } else {
+          // exit if we've reached the end of nextNodes
           break
         }
 
