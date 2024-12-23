@@ -4,7 +4,8 @@ import {
   eventTypeMouseMixin,
   textMixin,
   ariaLabelMixin,
-  idMixin
+  idMixin,
+  fontMixin
 } from '@dooksa/components/mixins'
 import { createText } from '../content/text.js'
 
@@ -49,7 +50,7 @@ export const label = createComponent({
       replace: true
     }
   }
-}, [idMixin, textMixin, buttonMixin, ariaLabelMixin, eventTypeMouseMixin])
+}, [idMixin, fontMixin, textMixin, buttonMixin, ariaLabelMixin, eventTypeMouseMixin])
 
 /**
  * @import {IdMixin, FontMixin, EventTypeMouseMixin, TextMixin, ButtonMixin, AriaLabelMixin} from '@dooksa/components/mixins'
