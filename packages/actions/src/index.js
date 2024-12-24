@@ -75,7 +75,20 @@ import {
   iconRender
 } from './icon/index.js'
 
+import {
+  stateSelectCollectionFieldset,
+  stateSelectCollection,
+  stateSelectCollectionOnChecked,
+  stateSelectCollectionOption,
+  stateSelectCollectionOptions
+} from './state/index.js'
+
 export default [
+  stateSelectCollectionOnChecked,
+  stateSelectCollectionOption,
+  stateSelectCollectionOptions,
+  stateSelectCollectionFieldset,
+  stateSelectCollection,
   accordionGenerateName,
   accordionSetDetailsName,
   inputId,
