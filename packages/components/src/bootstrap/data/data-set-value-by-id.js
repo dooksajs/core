@@ -1,33 +1,19 @@
 import { createCardBody } from '@dooksa/components/extra'
 import {
   createDiv,
-  createInputHidden,
   createOption,
   createSelect,
   createText
 } from '@dooksa/components/base'
 import actionCardBodyLabelRequired from '../action-card/action-card-body-label-required.js'
+import actionInputMethodName from '../action-input/action-input-method-name.js'
 
 export default createCardBody({
   metadata: { id: 'data-set-value-by-id' },
   children: [
     createDiv({
       children: [
-        createInputHidden({
-          options: {
-            name: 'action-method'
-          },
-          events: [
-            {
-              on: 'component/created',
-              actionId: 'action-input-name-prefix'
-            },
-            {
-              on: 'component/created',
-              actionId: 'action-input-value-action-method'
-            }
-          ]
-        }),
+        actionInputMethodName,
         actionCardBodyLabelRequired,
         createDiv({
           children: [
