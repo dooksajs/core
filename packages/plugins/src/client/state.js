@@ -481,6 +481,7 @@ export const state = createPlugin('state', {
       }
 
       if (isEnvServer()) {
+        /** @TODO need to store nano time */
         const timestamp = Date.now()
 
         if (!item.userId && options && options.userId) {
@@ -1668,7 +1669,8 @@ export const state = createPlugin('state', {
       metadata: {
         title: 'Find document',
         description: 'Search for instances from a collection',
-        icon: 'mdi:search'
+        icon: 'mdi:search',
+        component: 'state-find'
       },
       parameters: {
         type: 'object',
