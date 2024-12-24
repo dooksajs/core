@@ -1539,7 +1539,7 @@ export const state = createPlugin('state', {
      * Creates a collection item based on the given data and optional ID.
      * @param {Object.<string, DataTarget<*>> | DataTarget<*>} collection - The collection to create the item in.
      * @param {object} data - The data to use for the new item.
-     * @param {string} id - Optional ID for the new item within the collection.
+     * @param {string} [id] - Optional ID for the new item within the collection.
      * @returns {DataTarget<*>} The created item object.
      */
     createCollectionItem (collection, data, id) {
