@@ -185,6 +185,11 @@ function componentOptions (options, templateOptions, properties = []) {
   for (const key in options) {
     if (Object.hasOwnProperty.call(options, key)) {
       const templateOption = templateOptions[key]
+
+      if (templateOption == null) {
+        throw new Error('DooksaError: could not find component option "' + key + '"')
+      }
+
       const propertyName = templateOption.name
 
       // Check if property value has already been replaced
@@ -194,10 +199,6 @@ function componentOptions (options, templateOptions, properties = []) {
 
       const item = options[key]
       let newPropertyValue = item
-
-      if (!templateOption) {
-        throw new Error('Component option does not exist "' + item +'"')
-      }
 
       if (templateOption.value) {
         const newValue = templateOption.value
