@@ -13,7 +13,7 @@ export const code = createComponent({
 
 /**
  * @typedef {Object} ExtendCodeOptionMixin
- * @property {SpacingMixin} options
+ * @property {SpacingMixin} [options]
  */
 
 /**
