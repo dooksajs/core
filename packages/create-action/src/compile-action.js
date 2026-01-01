@@ -1,5 +1,30 @@
+/** @import { ActionBlock } from './types.js' **/
+
 import { deepClone, objectHash } from '@dooksa/utils'
 
+/**
+ * @typedef {Object} CompileBlock
+ * @property {string} [key]
+ * @property {string} [method]
+ * @property {string} [dataType]
+ * @property {string} [value]
+ * @property {string} [blockValue]
+ * @property {string[]} [blockValues]
+ * @property {boolean} [ifElse]
+ * @property {string} [blockSequence]
+ */
+
+/**
+ * Recursively hashes a block and its nested block references, building a collection
+ * of unique hashed blocks. This function handles both single blockValue and multiple
+ * blockValues properties, recursively processing nested blocks and updating references.
+ *
+ * @param {CompileBlock} block - The block object to hash
+ * @param {Object.<string, CompileBlock>} sourceBlock - Source blocks collection to look up nested references
+ * @param {Object.<string, CompileBlock>} targetBlock - Target blocks collection to store hashed blocks
+ * @param {Object.<string, string>} collection - Collection mapping original block IDs to their hashed IDs
+ * @returns {string} The hashed block ID
+ */
 function hashBlock (block, sourceBlock, targetBlock, collection) {
   block = deepClone(block)
 
@@ -25,6 +50,17 @@ function hashBlock (block, sourceBlock, targetBlock, collection) {
   return blockId
 }
 
+/**
+ * Compiles an action by processing its sequences, blocks, and handling if-else logic.
+ * This function transforms an action into a compiled format with hashed block IDs,
+ * optimized sequences, and processed conditional blocks.
+ *
+ * @param {Object} action - The source action object containing sequences, blocks, and blockSequences
+ * @param {string[]} action.sequences - Array of block sequence reference IDs
+ * @param {Object.<string, CompileBlock>} action.blocks - Collection of block objects
+ * @param {Object.<string, string[]>} action.blockSequences - Collection of block sequences
+ * @returns {{sequenceId: string, blocks: Object.<string, CompileBlock>, blockSequences: Object.<string, string[]>, sequences: string[]}} Compiled action result containing hashed sequence ID, compiled blocks, block sequences, and sequence IDs
+ */
 function compileAction (action) {
   const collection = Object.create(null)
   const blocks = Object.create(null)
