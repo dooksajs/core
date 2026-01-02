@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
     "checkJs": true,
-    "module": "NodeNext"
+    "module": "NodeNext",
+    "target": "ES2020",
+    "moduleResolution": "nodenext"
   },
   "exclude": [
     "dist",
