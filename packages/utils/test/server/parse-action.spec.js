@@ -1,5 +1,5 @@
 import { describe, it } from 'node:test'
-import { strictEqual, deepStrictEqual, notStrictEqual } from 'node:assert'
+import { strictEqual } from 'node:assert'
 import parseAction from '../../src/server/parse-action.js'
 
 describe('parseAction', function () {
@@ -15,8 +15,11 @@ describe('parseAction', function () {
       }
 
       const methods = { action_dispatch: true }
-      const uuid = { prefix: 'abc123', increment: 0 }
-
+      const uuid = {
+        prefix: 'abc123',
+        increment: 0
+      }
+      // @ts-ignore
       const result = parseAction(data, methods, uuid)
 
       strictEqual(result.id, undefined)
@@ -37,7 +40,10 @@ describe('parseAction', function () {
       }
 
       const methods = { action_dispatch: true }
-      const uuid = { prefix: 'test', increment: 0 }
+      const uuid = {
+        prefix: 'test',
+        increment: 0
+      }
 
       const result = parseAction(data, methods, uuid)
 
@@ -58,7 +64,10 @@ describe('parseAction', function () {
       }
 
       const methods = { action_dispatch: true }
-      const uuid = { prefix: 'test', increment: 0 }
+      const uuid = {
+        prefix: 'test',
+        increment: 0
+      }
 
       const result = parseAction(data, methods, uuid)
 
@@ -82,7 +91,10 @@ describe('parseAction', function () {
       }
 
       const methods = { action_dispatch: true }
-      const uuid = { prefix: 'xyz', increment: 0 }
+      const uuid = {
+        prefix: 'xyz',
+        increment: 0
+      }
 
       const result = parseAction(data, methods, uuid)
 
@@ -106,8 +118,11 @@ describe('parseAction', function () {
       }
 
       const methods = { action_dispatch: true }
-      const uuid = { prefix: 'ref', increment: 0 }
-
+      const uuid = {
+        prefix: 'ref',
+        increment: 0
+      }
+      // @ts-ignore
       const result = parseAction(data, methods, uuid)
 
       strictEqual(result.$refs.length, 1)
@@ -118,15 +133,22 @@ describe('parseAction', function () {
     it('should handle $sequenceRef in action_ifElse', function () {
       const data = {
         action_ifElse: {
-          if: [{ op: '==', from: 'value', to: 'active' }],
+          if: [{
+            op: '==',
+            from: 'value',
+            to: 'active'
+          }],
           then: [{ $sequenceRef: 0 }],
           else: [{ $sequenceRef: 1 }]
         }
       }
 
       const methods = { action_ifElse: true }
-      const uuid = { prefix: 'seq', increment: 0 }
-
+      const uuid = {
+        prefix: 'seq',
+        increment: 0
+      }
+      // @ts-ignore
       const result = parseAction(data, methods, uuid)
 
       strictEqual(result.$sequenceRefs.length, 2)
@@ -147,9 +169,15 @@ describe('parseAction', function () {
         }
       }
 
-      const methods = { action_dispatch: true, state_setValue: true }
-      const uuid = { prefix: 'mth', increment: 0 }
-
+      const methods = {
+        action_dispatch: true,
+        state_setValue: true
+      }
+      const uuid = {
+        prefix: 'mth',
+        increment: 0
+      }
+      // @ts-ignore
       const result = parseAction(data, methods, uuid)
 
       strictEqual(result.blockSequences.length, 2)
@@ -169,8 +197,11 @@ describe('parseAction', function () {
       }
 
       const methods = { action_ifElse: true }
-      const uuid = { prefix: 'ife', increment: 0 }
-
+      const uuid = {
+        prefix: 'ife',
+        increment: 0
+      }
+      // @ts-ignore
       const result = parseAction(data, methods, uuid)
 
       strictEqual(result.blockSequences.length, 1)
@@ -186,9 +217,15 @@ describe('parseAction', function () {
         state_setValue: { name: 'test' }
       }
 
-      const methods = { action_dispatch: true, state_setValue: true }
-      const uuid = { prefix: 'mix', increment: 0 }
-
+      const methods = {
+        action_dispatch: true,
+        state_setValue: true
+      }
+      const uuid = {
+        prefix: 'mix',
+        increment: 0
+      }
+      // @ts-ignore
       const result = parseAction(data, methods, uuid)
 
       strictEqual(result.blockSequences.length, 2)
@@ -221,12 +258,14 @@ describe('parseAction', function () {
       }
 
       const methods = { action_dispatch: true }
-      const uuid = { prefix: 'arr', increment: 0 }
-
+      const uuid = {
+        prefix: 'arr',
+        increment: 0
+      }
+      // @ts-ignore
       const result = parseAction(data, methods, uuid)
 
-      const arrayBlockId = Object.keys(result.blocks).find(id =>
-        result.blocks[id].dataType === 'array'
+      const arrayBlockId = Object.keys(result.blocks).find(id => result.blocks[id].dataType === 'array'
       )
       strictEqual(arrayBlockId !== undefined, true)
       strictEqual(result.blocks[arrayBlockId].blockValues.length, 3)
@@ -243,12 +282,14 @@ describe('parseAction', function () {
       }
 
       const methods = { action_dispatch: true }
-      const uuid = { prefix: 'obj', increment: 0 }
-
+      const uuid = {
+        prefix: 'obj',
+        increment: 0
+      }
+      // @ts-ignore
       const result = parseAction(data, methods, uuid)
 
-      const objectBlockId = Object.keys(result.blocks).find(id =>
-        result.blocks[id].dataType === 'object'
+      const objectBlockId = Object.keys(result.blocks).find(id => result.blocks[id].dataType === 'object'
       )
       strictEqual(objectBlockId !== undefined, true)
       strictEqual(result.blocks[objectBlockId].blockValues.length, 2)
@@ -265,13 +306,18 @@ describe('parseAction', function () {
         }
       }
 
-      const methods = { action_dispatch: true, state_setValue: true }
-      const uuid = { prefix: 'nest', increment: 0 }
-
+      const methods = {
+        action_dispatch: true,
+        state_setValue: true
+      }
+      const uuid = {
+        prefix: 'nest',
+        increment: 0
+      }
+      // @ts-ignore
       const result = parseAction(data, methods, uuid)
 
-      const blockValueId = Object.keys(result.blocks).find(id =>
-        result.blocks[id].blockValue !== undefined
+      const blockValueId = Object.keys(result.blocks).find(id => result.blocks[id].blockValue !== undefined
       )
       strictEqual(blockValueId !== undefined, true)
       strictEqual(typeof result.blocks[blockValueId].blockValue, 'string')
@@ -290,8 +336,11 @@ describe('parseAction', function () {
       }
 
       const methods = { action_dispatch: true }
-      const uuid = { prefix: 'hier', increment: 0 }
-
+      const uuid = {
+        prefix: 'hier',
+        increment: 0
+      }
+      // @ts-ignore
       const result = parseAction(data, methods, uuid)
 
       const rootBlock = result.blocks[result.blockSequences[0]]
@@ -317,15 +366,16 @@ describe('parseAction', function () {
       }
 
       const methods = { action_dispatch: true }
-      const uuid = { prefix: 'empty', increment: 0 }
-
+      const uuid = {
+        prefix: 'empty',
+        increment: 0
+      }
+      // @ts-ignore
       const result = parseAction(data, methods, uuid)
 
-      const objBlockId = Object.keys(result.blocks).find(id =>
-        result.blocks[id].key === 'emptyObj'
+      const objBlockId = Object.keys(result.blocks).find(id => result.blocks[id].key === 'emptyObj'
       )
-      const arrBlockId = Object.keys(result.blocks).find(id =>
-        result.blocks[id].key === 'emptyArr'
+      const arrBlockId = Object.keys(result.blocks).find(id => result.blocks[id].key === 'emptyArr'
       )
 
       strictEqual(result.blocks[objBlockId].dataType, 'object')
@@ -349,8 +399,11 @@ describe('parseAction', function () {
       }
 
       const methods = { action_dispatch: true }
-      const uuid = { prefix: 'ref', increment: 0 }
-
+      const uuid = {
+        prefix: 'ref',
+        increment: 0
+      }
+      // @ts-ignore
       const result = parseAction(data, methods, uuid)
 
       strictEqual(result.$refs.length, 1)
@@ -370,8 +423,11 @@ describe('parseAction', function () {
       }
 
       const methods = { action_ifElse: true }
-      const uuid = { prefix: 'seq', increment: 0 }
-
+      const uuid = {
+        prefix: 'seq',
+        increment: 0
+      }
+      // @ts-ignore
       const result = parseAction(data, methods, uuid)
 
       strictEqual(result.$sequenceRefs.length, 2)
@@ -387,9 +443,15 @@ describe('parseAction', function () {
         state_setValue: { name: 'test' }
       }
 
-      const methods = { action_dispatch: true, state_setValue: true }
-      const uuid = { prefix: 'unique', increment: 0 }
-
+      const methods = {
+        action_dispatch: true,
+        state_setValue: true
+      }
+      const uuid = {
+        prefix: 'unique',
+        increment: 0
+      }
+      // @ts-ignore
       const result = parseAction(data, methods, uuid)
 
       const blockIds = Object.keys(result.blocks)
@@ -410,7 +472,10 @@ describe('parseAction', function () {
       }
 
       const methods = { action_dispatch: true }
-      const uuid = { prefix: 'inc', increment: 5 }
+      const uuid = {
+        prefix: 'inc',
+        increment: 5
+      }
 
       const result = parseAction(data, methods, uuid)
 
@@ -431,7 +496,10 @@ describe('parseAction', function () {
       }
 
       const methods = { action_dispatch: true }
-      const uuid = { prefix: 'shared', increment: 0 }
+      const uuid = {
+        prefix: 'shared',
+        increment: 0
+      }
 
       const result1 = parseAction(data1, methods, uuid)
       const result2 = parseAction(data2, methods, uuid)
@@ -453,9 +521,15 @@ describe('parseAction', function () {
         state_setValue: { name: 'second' }
       }
 
-      const methods = { action_dispatch: true, state_setValue: true }
-      const uuid = { prefix: 'seq', increment: 0 }
-
+      const methods = {
+        action_dispatch: true,
+        state_setValue: true
+      }
+      const uuid = {
+        prefix: 'seq',
+        increment: 0
+      }
+      // @ts-ignore
       const result = parseAction(data, methods, uuid)
 
       strictEqual(result.blockSequences.length, 2)
@@ -470,9 +544,15 @@ describe('parseAction', function () {
         state_setValue: { name: 'test' }
       }
 
-      const methods = { action_dispatch: true, state_setValue: true }
-      const uuid = { prefix: 'seq', increment: 0 }
-
+      const methods = {
+        action_dispatch: true,
+        state_setValue: true
+      }
+      const uuid = {
+        prefix: 'seq',
+        increment: 0
+      }
+      // @ts-ignore
       const result = parseAction(data, methods, uuid)
 
       strictEqual(result.blockSequences.length, 2)
@@ -495,8 +575,14 @@ describe('parseAction', function () {
         }
       }
 
-      const methods = { action_dispatch: true, state_setValue: true }
-      const uuid = { prefix: 'nest', increment: 0 }
+      const methods = {
+        action_dispatch: true,
+        state_setValue: true
+      }
+      const uuid = {
+        prefix: 'nest',
+        increment: 0
+      }
 
       const result = parseAction(data, methods, uuid)
 
@@ -530,15 +616,17 @@ describe('parseAction', function () {
       }
 
       const methods = { action_dispatch: true }
-      const uuid = { prefix: 'deep', increment: 0 }
-
+      const uuid = {
+        prefix: 'deep',
+        increment: 0
+      }
+      // @ts-ignore
       const result = parseAction(data, methods, uuid)
 
       const blockCount = Object.keys(result.blocks).length
       strictEqual(blockCount > 4, true)
 
-      const deepValueBlock = Object.values(result.blocks).find(block =>
-        block.value === 'deep'
+      const deepValueBlock = Object.values(result.blocks).find(block => block.value === 'deep'
       )
       strictEqual(deepValueBlock !== undefined, true)
       strictEqual(deepValueBlock.key, 'value')
@@ -554,9 +642,15 @@ describe('parseAction', function () {
         }
       }
 
-      const methods = { action_dispatch: true, state_setValue: true }
-      const uuid = { prefix: 'arr', increment: 0 }
-
+      const methods = {
+        action_dispatch: true,
+        state_setValue: true
+      }
+      const uuid = {
+        prefix: 'arr',
+        increment: 0
+      }
+      // @ts-ignore
       const result = parseAction(data, methods, uuid)
 
       strictEqual(result.blockSequences.length, 3)
@@ -592,9 +686,15 @@ describe('parseAction', function () {
         }
       }
 
-      const methods = { action_dispatch: true, state_setValue: true }
-      const uuid = { prefix: 'complex', increment: 0 }
-
+      const methods = {
+        action_dispatch: true,
+        state_setValue: true
+      }
+      const uuid = {
+        prefix: 'complex',
+        increment: 0
+      }
+      // @ts-ignore
       const result = parseAction(data, methods, uuid)
 
       strictEqual(result.id, 'complex-action')
@@ -611,7 +711,10 @@ describe('parseAction', function () {
     it('should handle empty data object', function () {
       const data = {}
       const methods = { action_dispatch: true }
-      const uuid = { prefix: 'empty', increment: 0 }
+      const uuid = {
+        prefix: 'empty',
+        increment: 0
+      }
 
       const result = parseAction(data, methods, uuid)
 
@@ -625,8 +728,11 @@ describe('parseAction', function () {
     it('should handle data with only $id', function () {
       const data = { $id: 'only-id' }
       const methods = {}
-      const uuid = { prefix: 'id', increment: 0 }
-
+      const uuid = {
+        prefix: 'id',
+        increment: 0
+      }
+      // @ts-ignore
       const result = parseAction(data, methods, uuid)
 
       strictEqual(result.id, 'only-id')
@@ -643,8 +749,11 @@ describe('parseAction', function () {
       }
 
       const methods = { action_dispatch: true }
-      const uuid = { prefix: 'ref', increment: 0 }
-
+      const uuid = {
+        prefix: 'ref',
+        increment: 0
+      }
+      // @ts-ignore
       const result = parseAction(data, methods, uuid)
 
       strictEqual(result.id, 'ref-action')
@@ -659,8 +768,11 @@ describe('parseAction', function () {
       }
 
       const methods = {}
-      const uuid = { prefix: 'nomatch', increment: 0 }
-
+      const uuid = {
+        prefix: 'nomatch',
+        increment: 0
+      }
+      // @ts-ignore
       const result = parseAction(data, methods, uuid)
 
       strictEqual(result.blockSequences.length, 0)
@@ -687,19 +799,20 @@ describe('parseAction', function () {
       }
 
       const methods = { action_dispatch: true }
-      const uuid = { prefix: 'nestid', increment: 0 }
+      const uuid = {
+        prefix: 'nestid',
+        increment: 0
+      }
 
       const result = parseAction(data, methods, uuid)
 
-      const nestedBlockId = Object.keys(result.blocks).find(id =>
-        result.blocks[id].key === 'nested'
+      const nestedBlockId = Object.keys(result.blocks).find(id => result.blocks[id].key === 'nested'
       )
       const nestedBlock = result.blocks[nestedBlockId]
 
       strictEqual(nestedBlock.blockValues.length, 2)
 
-      const dollarIdBlockId = nestedBlock.blockValues.find(id =>
-        result.blocks[id].key === '$id'
+      const dollarIdBlockId = nestedBlock.blockValues.find(id => result.blocks[id].key === '$id'
       )
       strictEqual(dollarIdBlockId !== undefined, true)
       strictEqual(result.blocks[dollarIdBlockId].value, 'nested-id')
@@ -713,8 +826,11 @@ describe('parseAction', function () {
       }
 
       const methods = { action_dispatch: true }
-      const uuid = { prefix: 'nullarr', increment: 0 }
-
+      const uuid = {
+        prefix: 'nullarr',
+        increment: 0
+      }
+      // @ts-ignore
       const result = parseAction(data, methods, uuid)
 
       const arrayBlock = Object.values(result.blocks).find(b => b.dataType === 'array')
@@ -733,7 +849,10 @@ describe('parseAction', function () {
       }
 
       const methods = { action_dispatch: true }
-      const uuid = { prefix: 'nullobj', increment: 0 }
+      const uuid = {
+        prefix: 'nullobj',
+        increment: 0
+      }
 
       const result = parseAction(data, methods, uuid)
 
@@ -765,8 +884,11 @@ describe('parseAction', function () {
       }
 
       const methods = { action_dispatch: true }
-      const uuid = { prefix: 'deepref', increment: 0 }
-
+      const uuid = {
+        prefix: 'deepref',
+        increment: 0
+      }
+      // @ts-ignore
       const result = parseAction(data, methods, uuid)
 
       strictEqual(result.$refs.length, 1)
@@ -785,8 +907,11 @@ describe('parseAction', function () {
       }
 
       const methods = { action_dispatch: true }
-      const uuid = { prefix: 'seqarr', increment: 0 }
-
+      const uuid = {
+        prefix: 'seqarr',
+        increment: 0
+      }
+      // @ts-ignore
       const result = parseAction(data, methods, uuid)
 
       strictEqual(result.$sequenceRefs.length, 2)
@@ -803,8 +928,11 @@ describe('parseAction', function () {
       }
 
       const methods = { action_dispatch: true }
-      const uuid = { prefix: 'mixed', increment: 0 }
-
+      const uuid = {
+        prefix: 'mixed',
+        increment: 0
+      }
+      // @ts-ignore
       const result = parseAction(data, methods, uuid)
 
       strictEqual(result.$refs.length, 1)
@@ -817,9 +945,17 @@ describe('parseAction', function () {
       const data = {
         action_ifElse: {
           if: [
-            { op: '==', from: 'value', to: 'active' },
+            {
+              op: '==',
+              from: 'value',
+              to: 'active'
+            },
             { andOr: '&&' },
-            { op: '!=', from: 'status', to: 'disabled' }
+            {
+              op: '!=',
+              from: 'status',
+              to: 'disabled'
+            }
           ],
           then: [{ $sequenceRef: 0 }],
           else: [{ $sequenceRef: 1 }]
@@ -827,8 +963,11 @@ describe('parseAction', function () {
       }
 
       const methods = { action_ifElse: true }
-      const uuid = { prefix: 'ifelse', increment: 0 }
-
+      const uuid = {
+        prefix: 'ifelse',
+        increment: 0
+      }
+      // @ts-ignore
       const result = parseAction(data, methods, uuid)
 
       strictEqual(result.blockSequences.length, 1)
@@ -850,8 +989,11 @@ describe('parseAction', function () {
       }
 
       const methods = { action_dispatch: true }
-      const uuid = { prefix: 'large', increment: 0 }
-
+      const uuid = {
+        prefix: 'large',
+        increment: 0
+      }
+      // @ts-ignore
       const result = parseAction(data, methods, uuid)
 
       const blockCount = Object.keys(result.blocks).length
@@ -871,7 +1013,10 @@ describe('parseAction', function () {
       }
 
       const methods = { action_dispatch: true }
-      const uuid = { prefix: 'unicode', increment: 0 }
+      const uuid = {
+        prefix: 'unicode',
+        increment: 0
+      }
 
       const result = parseAction(data, methods, uuid)
 
@@ -896,8 +1041,11 @@ describe('parseAction', function () {
       }
 
       const methods = { action_dispatch: true }
-      const uuid = { prefix: 'boolnum', increment: 0 }
-
+      const uuid = {
+        prefix: 'boolnum',
+        increment: 0
+      }
+      // @ts-ignore
       const result = parseAction(data, methods, uuid)
 
       const dispatchBlock = result.blocks[result.blockSequences[0]]
@@ -926,7 +1074,10 @@ describe('parseAction', function () {
       }
 
       const methods = { action_dispatch: true }
-      const uuid = { prefix: 'undef', increment: 0 }
+      const uuid = {
+        prefix: 'undef',
+        increment: 0
+      }
 
       const result = parseAction(data, methods, uuid)
 
@@ -946,7 +1097,10 @@ describe('parseAction', function () {
       }
 
       const methods = { action_dispatch: true }
-      const uuid = { prefix: 'emptystr', increment: 0 }
+      const uuid = {
+        prefix: 'emptystr',
+        increment: 0
+      }
 
       const result = parseAction(data, methods, uuid)
 
@@ -967,8 +1121,11 @@ describe('parseAction', function () {
       }
 
       const methods = { action_dispatch: true }
-      const uuid = { prefix: 'single', increment: 0 }
-
+      const uuid = {
+        prefix: 'single',
+        increment: 0
+      }
+      // @ts-ignore
       const result = parseAction(data, methods, uuid)
 
       const singleBlock = Object.values(result.blocks).find(b => b.key === 'single')
@@ -988,8 +1145,11 @@ describe('parseAction', function () {
       }
 
       const methods = { action_dispatch: true }
-      const uuid = { prefix: 'matrix', increment: 0 }
-
+      const uuid = {
+        prefix: 'matrix',
+        increment: 0
+      }
+      // @ts-ignore
       const result = parseAction(data, methods, uuid)
 
       const arrayBlocks = Object.values(result.blocks).filter(b => b.dataType === 'array')
@@ -1005,8 +1165,11 @@ describe('parseAction', function () {
       }
 
       const methods = { action_dispatch: true }
-      const uuid = { prefix: 'samekeys', increment: 0 }
-
+      const uuid = {
+        prefix: 'samekeys',
+        increment: 0
+      }
+      // @ts-ignore
       const result = parseAction(data, methods, uuid)
 
       const obj1Block = Object.values(result.blocks).find(b => b.key === 'obj1')
@@ -1034,7 +1197,10 @@ describe('parseAction', function () {
       }
 
       const methods = { action_dispatch: true }
-      const uuid = { prefix: 'state', increment: 0 }
+      const uuid = {
+        prefix: 'state',
+        increment: 0
+      }
 
       const result1 = parseAction(data1, methods, uuid)
       const result2 = parseAction(data2, methods, uuid)
@@ -1057,14 +1223,21 @@ describe('parseAction', function () {
           payload: {
             fields: ['email', 'password'],
             rules: {
-              email: { required: true, format: 'email' },
+              email: {
+                required: true,
+                format: 'email'
+              },
               password: { minLength: 8 }
             }
           }
         },
         action_ifElse: {
           if: [
-            { op: '==', from: 'validationResult', to: 'pass' }
+            {
+              op: '==',
+              from: 'validationResult',
+              to: 'pass'
+            }
           ],
           then: [
             { $sequenceRef: 0 }
@@ -1086,8 +1259,11 @@ describe('parseAction', function () {
         action_ifElse: true,
         state_setValue: true
       }
-      const uuid = { prefix: 'real', increment: 0 }
-
+      const uuid = {
+        prefix: 'real',
+        increment: 0
+      }
+      // @ts-ignore
       const result = parseAction(data, methods, uuid)
 
       strictEqual(result.id, 'user-registration')
