@@ -80,9 +80,9 @@ function createDataValue ({
 }
 
 /**
- * Id without affixes
- * @param {string} id - The id without affixes
- * @returns {string}
+ * Removes affixes from an ID string
+ * @param {string} id - The ID string that may contain affixes (format: prefix_id_suffix)
+ * @returns {string} The ID without affixes, or the original ID if it doesn't match the affix pattern
  */
 function removeAffix (id) {
   if (!id) {
