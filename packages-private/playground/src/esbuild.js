@@ -35,6 +35,7 @@ server
       sourcemap: 'external',
       write: false,
       minify: false,
+      target: ['es2020'],
       dropLabels: ['PROD'],
       reserveProps: /__ds/,
       plugins: [{
