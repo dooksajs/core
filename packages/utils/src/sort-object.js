@@ -74,7 +74,7 @@ function sortArray (array) {
  */
 function sortObjectProperties (obj) {
   const result = {}
-  
+
   // Get both string keys and symbol keys
   const keys = Object.keys(obj)
   const symbolKeys = Object.getOwnPropertySymbols(obj)
