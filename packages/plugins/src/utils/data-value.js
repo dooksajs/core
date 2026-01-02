@@ -56,12 +56,13 @@ function createDataValue ({
 } = {}) {
   const result = { collection }
 
-  if (typeof id === 'string') {
+  if (typeof id === 'string' && id !== '') {
     result.id = id
   }
 
   if (value) {
-    if (value._item != null) {
+    // Check if value is a DataTarget-like object
+    if (value && typeof value === 'object' && '_item' in value && value._item != null) {
       result.item = value._item
 
       if (value._metadata) {
@@ -72,6 +73,7 @@ function createDataValue ({
         result.previous = value._previous
       }
     } else {
+      // Raw data value
       result.item = value
     }
   }
@@ -90,15 +92,16 @@ function removeAffix (id) {
   }
 
   const splitString = id.split('_', 3)
-  let noAffixId = ''
 
-  if (splitString.length === 3) {
-    noAffixId = '_' + splitString[1] + '_'
-  } else {
-    noAffixId = id
+  // If we have exactly 3 parts (prefix, id, suffix), return everything between first and last underscore
+  if (splitString.length === 3 && splitString[1] !== '') {
+    const firstUnderscore = id.indexOf('_')
+    const lastUnderscore = id.lastIndexOf('_')
+    return id.substring(firstUnderscore, lastUnderscore + 1)
   }
 
-  return noAffixId
+  // Otherwise return the original ID
+  return id
 }
 
 export {
