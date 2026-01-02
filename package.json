@@ -8,6 +8,7 @@
     "dev": "pnpm --filter playground run dev",
     "format": "eslint --cache --fix .",
     "lint": "eslint --cache .",
+    "docs": "typedoc",
     "postinstall": "simple-git-hooks",
     "preinstall": "npx only-allow pnpm",
     "test-coverage": "pnpm --recursive test-coverage",
@@ -26,8 +27,8 @@
     "pnpm": ">=9"
   },
   "devDependencies": {
-    "@stylistic/eslint-plugin-js": "^2.11.0",
-    "@stylistic/eslint-plugin-plus": "^2.11.0",
+    "@stylistic/eslint-plugin": "^5.6.1",
+    "@types/node": "^22.10.1",
     "chalk": "^5.3.0",
     "esbuild": "^0.24.0",
     "simple-git-hooks": "^2.11.1"

@@ -1,14 +1,12 @@
-import stylisticJs from '@stylistic/eslint-plugin-js'
-import stylisticPlus from '@stylistic/eslint-plugin-plus'
+import stylisticJs from '@stylistic/eslint-plugin'
 
 export default [
   {
     plugins: {
-      '@stylistic/js': stylisticJs,
-      '@stylistic/plus': stylisticPlus
+      '@stylistic/js': stylisticJs
     },
     rules: {
-      '@stylistic/plus/curly-newline': ['error', 'always'],
+      '@stylistic/js/curly-newline': ['error', 'always'],
       '@stylistic/js/indent': [
         'error', 2, {
           SwitchCase: 1,
@@ -63,7 +61,7 @@ export default [
       '@stylistic/js/quotes': [
         'error', 'single', {
           avoidEscape: true,
-          allowTemplateLiterals: true
+          allowTemplateLiterals: 'always'
         }
       ],
       '@stylistic/js/comma-dangle': ['error', 'never'],
@@ -110,7 +108,8 @@ export default [
   {
     ignores: [
       '**/dist/',
-      '**/.history/'
+      '**/.history/',
+      '**/playwright-report/'
     ]
   }
 ]
