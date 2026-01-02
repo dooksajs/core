@@ -1,12 +1,11 @@
 import { describe, it, beforeEach } from 'node:test'
-import { deepStrictEqual, notStrictEqual, strictEqual } from 'node:assert'
+import { deepStrictEqual, strictEqual } from 'node:assert'
 import { mockState } from '#mock'
 
 describe('State', function () {
-  /** @type {import('../../src/client/state.js').state} */
-  let state
-
   describe('Setup', function () {
+    /** @type {import('../../src/client/state.js').state} */
+    let state
     beforeEach(async function () {
       state = await mockState([{
         name: 'test',
@@ -920,6 +919,372 @@ describe('State', function () {
           }).item,
           ['world']
         )
+      })
+
+      describe('Relations', function () {
+        it('should get related items', async function () {
+          const state = await mockState([{
+            name: 'test',
+            state: {
+              schema: {
+                items: {
+                  type: 'collection',
+                  items: {
+                    type: 'string',
+                    relation: 'test/relatedItems'
+                  }
+                },
+                relatedItems: {
+                  type: 'collection',
+                  items: {
+                    type: 'array',
+                    items: {
+                      type: 'string'
+                    }
+                  }
+                }
+              }
+            }
+          }])
+
+          // create foreign key
+          const foreignItem = state.stateSetValue({
+            name: 'test/relatedItems',
+            value: ['hello']
+          })
+
+          // set foreign key
+          const primaryItem = state.stateSetValue({
+            name: 'test/items',
+            value: foreignItem.id
+          })
+
+          const item = state.stateGetValue({
+            name: 'test/items',
+            id: primaryItem.id,
+            options: {
+              expand: true
+            }
+          })
+
+          deepStrictEqual(
+            item.expand[0].item,
+            ['hello']
+          )
+        })
+
+        it('should get deep related items', async function () {
+          const state = await mockState([{
+            name: 'test',
+            state: {
+              schema: {
+                items: {
+                  type: 'collection',
+                  items: {
+                    type: 'string',
+                    relation: 'test/secondItems'
+                  }
+                },
+                secondItems: {
+                  type: 'collection',
+                  items: {
+                    type: 'string',
+                    relation: 'test/thirdItems'
+                  }
+                },
+                thirdItems: {
+                  type: 'collection',
+                  items: {
+                    type: 'array',
+                    items: {
+                      type: 'string'
+                    }
+                  }
+                }
+              }
+            }
+          }])
+
+          // create foreign key
+          const thirdItems = state.stateSetValue({
+            name: 'test/thirdItems',
+            value: ['hello']
+          })
+
+          // set foreign key
+          const secondItem = state.stateSetValue({
+            name: 'test/secondItems',
+            value: thirdItems.id
+          })
+
+          const primaryItem = state.stateSetValue({
+            name: 'test/items',
+            value: secondItem.id
+          })
+
+          const item = state.stateGetValue({
+            name: 'test/items',
+            id: primaryItem.id,
+            options: {
+              expand: true
+            }
+          })
+
+          deepStrictEqual(
+            item.expand[0].item,
+            ['hello']
+          )
+        })
+
+        it('should get an array of related items', async function () {
+          const state = await mockState([{
+            name: 'test',
+            state: {
+              schema: {
+                items: {
+                  type: 'collection',
+                  items: {
+                    type: 'array',
+                    items: {
+                      type: 'string',
+                      relation: 'test/relatedItems'
+                    }
+                  }
+                },
+                relatedItems: {
+                  type: 'collection',
+                  items: {
+                    type: 'array',
+                    items: {
+                      type: 'string'
+                    }
+                  }
+                }
+              }
+            }
+          }])
+
+          // create foreign key
+          const foreignItemOne = state.stateSetValue({
+            name: 'test/relatedItems',
+            value: ['hello', 'world', 'one']
+          })
+          const foreignItemTwo = state.stateSetValue({
+            name: 'test/relatedItems',
+            value: ['hello', 'world', 'two']
+          })
+
+          // set foreign key
+          const primaryItem = state.stateSetValue({
+            name: 'test/items',
+            value: [foreignItemOne.id, foreignItemTwo.id]
+          })
+
+          const item = state.stateGetValue({
+            name: 'test/items',
+            id: primaryItem.id,
+            options: {
+              expand: true
+            }
+          })
+
+          deepStrictEqual(
+            item.expand[0].item,
+            ['hello', 'world', 'one']
+          )
+          deepStrictEqual(
+            item.expand[1].item,
+            ['hello', 'world', 'two']
+          )
+        })
+
+        it('should get an array of deep related items', async function () {
+          const state = await mockState([{
+            name: 'test',
+            state: {
+              schema: {
+                items: {
+                  type: 'collection',
+                  items: {
+                    type: 'array',
+                    items: {
+                      type: 'string',
+                      relation: 'test/secondItems'
+                    }
+                  }
+                },
+                secondItems: {
+                  type: 'collection',
+                  items: {
+                    type: 'array',
+                    items: {
+                      type: 'string',
+                      relation: 'test/thirdItems'
+                    }
+                  }
+                },
+                thirdItems: {
+                  type: 'collection',
+                  items: {
+                    type: 'array',
+                    items: {
+                      type: 'string'
+                    }
+                  }
+                }
+              }
+            }
+          }])
+
+          const thirdItemOne = state.stateSetValue({
+            name: 'test/thirdItems',
+            value: ['hello', 'b2']
+          })
+
+          const thirdItemTwo = state.stateSetValue({
+            name: 'test/thirdItems',
+            value: ['hello', 'b1']
+          })
+
+          const secondItem = state.stateSetValue({
+            name: 'test/secondItems',
+            value: [thirdItemOne.id, thirdItemTwo.id]
+          })
+
+          const primaryItem = state.stateSetValue({
+            name: 'test/items',
+            value: [secondItem.id]
+          })
+
+          const item = state.stateGetValue({
+            name: 'test/items',
+            id: primaryItem.id,
+            options: {
+              expand: true
+            }
+          })
+
+          deepStrictEqual(
+            item.expand[0].item,
+            ['hello', 'b2']
+          )
+          deepStrictEqual(
+            item.expand[1].item,
+            ['hello', 'b1']
+          )
+          deepStrictEqual(
+            item.expand[2].item,
+            [thirdItemOne.id, thirdItemTwo.id]
+          )
+        })
+
+        it('should merge an existing relation document', async function () {
+          const state = await mockState([{
+            name: 'test',
+            state: {
+              schema: {
+                items: {
+                  type: 'collection',
+                  items: {
+                    type: 'string',
+                    relation: 'test/relatedItems'
+                  }
+                },
+                relatedItems: {
+                  type: 'collection',
+                  items: {
+                    type: 'array',
+                    items: {
+                      type: 'string'
+                    }
+                  }
+                }
+              }
+            }
+          }])
+
+          const foreignItem = state.stateSetValue({
+            name: 'test/relatedItems',
+            value: ['hello']
+          })
+
+          // merge option
+          state.stateSetValue({
+            name: 'test/relatedItems',
+            value: ['hello2'],
+            options: {
+              id: foreignItem.id,
+              merge: true
+            }
+          })
+
+          const primaryItem = state.stateSetValue({
+            name: 'test/items',
+            value: foreignItem.id
+          })
+
+          const item = state.stateGetValue({
+            name: 'test/items',
+            id: primaryItem.id,
+            options: {
+              expand: true
+            }
+          })
+
+          deepStrictEqual(
+            item.expand[0].item,
+            ['hello2']
+          )
+        })
+
+        it('should add document with a reference to its own collection', async function () {
+          const state = await mockState([{
+            name: 'test',
+            state: {
+              schema: {
+                items: {
+                  type: 'collection',
+                  items: {
+                    type: 'array',
+                    items: {
+                      type: 'string',
+                      relation: 'test/items'
+                    }
+                  }
+                }
+              }
+            }
+          }])
+
+          state.stateSetValue({
+            name: 'test/items',
+            value: ['b2'],
+            options: {
+              id: 'b1'
+            }
+          })
+
+          state.stateSetValue({
+            name: 'test/items',
+            value: { b2: ['b1'] },
+            options: {
+              merge: true
+            }
+          })
+
+          const item = state.stateGetValue({
+            name: 'test/items',
+            id: 'b1',
+            options: {
+              expand: true
+            }
+          })
+
+          deepStrictEqual(
+            item.expand[0].item,
+            ['b2']
+          )
+        })
       })
     })
   })
