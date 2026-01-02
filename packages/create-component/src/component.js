@@ -1,13 +1,17 @@
 /**
- * @import {ComponentData, ComponentDataValues, ComponentMixinMetadata, Component, ComponentOption, ComponentProperty, ComponentExtend} from './types.js
+ * @import {ComponentData, ComponentDataValues, ComponentMixinMetadata, Component, ComponentOption, ComponentProperty, ComponentExtend} from '#types'
+ */
+
+/**
+ * @typedef {Object} CreateComponentMixin
+ * @property {ComponentMixinMetadata} metadata - Metadata for the mixin.
+ * @property {ComponentDataValues} data - Data for the mixin.
  */
 
 /**
  * Create Dooksa component
- * @param {ComponentData & ComponentDataValues} data - Data for the component.
- * @param {Object[]} [mixins] - Optional mixins to extend the component with.
- * @param {ComponentMixinMetadata} mixins[].metadata - Metadata for the mixin.
- * @param {ComponentDataValues} mixins[].data - Data for the mixin.
+ * @param {ComponentData | ComponentDataValues} data - Data for the component.
+ * @param {CreateComponentMixin[]} [mixins] - Optional mixins to extend the component with.
  * @returns {Component} The created component object.
  * @example
  * const form = createComponent({
