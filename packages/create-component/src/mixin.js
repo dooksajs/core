@@ -1,5 +1,5 @@
 /**
- * @import {ComponentMixinMetadata, ComponentDataValues, Infix, InfixItem} from './types.js'
+ * @import {ComponentMixinMetadata, ComponentDataValues, Infix, InfixItem} from '#types'
  */
 
 /**
@@ -81,7 +81,7 @@ export function computedInfixValue ({
 */
 export default function createMixin (mixin) {
   if (mixin.data && mixin.data.options) {
-    const options =mixin.data.options
+    const options = mixin.data.options
     for (const key in options) {
       if (Object.prototype.hasOwnProperty.call(options, key)) {
         const option = options[key]
