@@ -119,9 +119,9 @@ export const state = createPlugin('state', {
   },
   privateMethods: {
     /**
-     * Create affix
-     * @param {Function|string} affix
-     * @returns {string}
+     * Creates an affix string from a function or string value.
+     * @param {Function|string} affix - The affix value or function to generate it
+     * @returns {string} The generated affix string
      */
     createAffix (affix) {
       if (typeof affix === 'function') {
@@ -131,10 +131,13 @@ export const state = createPlugin('state', {
       return affix || ''
     },
     /**
-     * Create collection id
+     * Creates a collection ID with optional prefix and suffix.
      * @param {string} name - Name of collection
-     * @param {*} option
-     * @returns {string}
+     * @param {Object} option - Options for ID generation
+     * @param {string} [option.id] - Custom ID to use
+     * @param {string} [option.prefixId] - Prefix to add to the ID
+     * @param {string} [option.suffixId] - Suffix to add to the ID
+     * @returns {string} The generated collection ID
      */
     createCollectionId (name, option) {
       const schema = this.getSchema(name)
@@ -218,6 +221,14 @@ export const state = createPlugin('state', {
         noAffixId: id
       }
     },
+    /**
+     * Creates a data target object with metadata.
+     * @template T
+     * @param {string} type - The data type for the target item
+     * @param {Object} metadata - Metadata to set on the target
+     * @param {DataTarget<T>} [target] - Optional existing target to update
+     * @returns {DataTarget<T>} The created or updated target object
+     */
     createTarget (type, metadata, target) {
       if (target == null) {
         target = {
@@ -323,12 +334,11 @@ export const state = createPlugin('state', {
       })
     },
     /**
-     * Validate and collection items
-     * @param {*} data
-     * @param {*} path
-     * @param {*} sources
-     * @param {*} metadata
-     * @returns
+     * Replaces collection items with new data.
+     * @param {Object} data - The data object containing target and collection info
+     * @param {string} path - Schema path for the collection
+     * @param {Object} sources - Object containing items to replace with
+     * @param {Object} metadata - Metadata to apply to new items
      */
     replaceCollectionItems (data, path, sources, metadata) {
       const schemaPath = path + '/items'
@@ -493,6 +503,20 @@ export const state = createPlugin('state', {
 
       return item
     },
+    /**
+     * Updates an array with various operations (push, pull, pop, shift, unshift, splice).
+     * @param {Array} target - The target array to update
+     * @param {Array|*} source - Source data for the operation
+     * @param {Object} options - Update options
+     * @param {string} options.method - The operation method
+     * @param {number} [options.startIndex] - Start index for splice
+     * @param {number} [options.deleteCount] - Number of items to delete for splice
+     * @param {Object} [relation] - Relation information
+     * @param {string} relation.target - Target collection
+     * @param {string} relation.id - Target ID
+     * @param {string} relation.source - Source collection
+     * @returns {Object} Result with isValid and isComplete flags
+     */
     updateArray (target, source, options, relation) {
       const result = {
         isValid: true,
@@ -580,6 +604,11 @@ export const state = createPlugin('state', {
 
       return result
     },
+    /**
+     * Freezes newly added array items to make them immutable.
+     * @param {Array} items - The array containing items to freeze
+     * @param {number} length - Number of items from the end to freeze
+     */
     updateArrayItemFreeze (items, length) {
       for (let i = items.length - length; i < items.length; i++) {
         const item = items[i]
@@ -1143,9 +1172,11 @@ export const state = createPlugin('state', {
       }
     },
     /**
+     * Retrieves a handler for a specific collection and event.
      * @param {string} name - Collection name
-     * @param {'update' | 'delete'} on - Event trigger
-     * @param {string} [id] - Handler ID
+     * @param {'update'|'delete'} on - Event trigger
+     * @param {string} [id] - Optional handler ID to get specific handler
+     * @returns {Object|Function} The handler object or specific handler function
      */
     getHandler (name, on, id) {
       const handler = this.handlers[on][name]
@@ -1157,10 +1188,10 @@ export const state = createPlugin('state', {
       return handler
     },
     /**
-     * Fetch related data
+     * Fetches and expands related data for a result.
      * @param {string} name - Name of data collection
-     * @param {DataValue<*>} result - Data result
-     * @param {GetDataOption} [options]
+     * @param {DataValue<*>} result - Data result to expand
+     * @param {GetDataOption} [options] - Options for data expansion
      */
     getExpandedData (name, result, options) {
       const relations = this.relations[name + '/' + result.id]
@@ -1563,21 +1594,23 @@ export const state = createPlugin('state', {
   },
   methods: {
     /**
-     * @param path - Schema path name
-     * @returns {SchemaEntry}
+     * Retrieves a schema entry by path.
+     * @param {string} path - The schema path to retrieve
+     * @returns {SchemaEntry} The schema entry for the given path
      */
     getSchema (path) {
       return this.schema[path]
     },
     /**
-     * Set data without schema validation
-     * @param {Object} param
-     * @param {string} param.name
-     * @param {*} param.value
-     * @param {Object} [param.options]
-     * @param {string} [param.options.id]
-     * @param {boolean} [param.options.replace] - replace target collection
-     * @param {boolean} [param.options.stopPropagation]
+     * Sets data without schema validation.
+     * @param {Object} param - Parameters object
+     * @param {string} param.name - Name of the collection
+     * @param {*} param.value - Data value to set
+     * @param {Object} [param.options] - Additional options
+     * @param {string} [param.options.id] - Optional ID for the data
+     * @param {boolean} [param.options.replace] - Whether to replace the target collection
+     * @param {boolean} [param.options.stopPropagation] - Whether to stop event propagation
+     * @returns {DataValue|DataValue[]} The created data value(s)
      */
     unsafeSetValue ({ name, value, options = {} }) {
       const collection = this.values[name]
@@ -1654,6 +1687,10 @@ export const state = createPlugin('state', {
         description: 'Create a unique ID',
         icon: 'mdi:identifier'
       },
+      /**
+       * Generates a unique identifier.
+       * @returns {string} A unique ID string
+       */
       method: generateId
     },
     find: {
@@ -1696,12 +1733,12 @@ export const state = createPlugin('state', {
         }
       },
       /**
-       * Retrieve all entities from collection
-       * @param {Object} param
-       * @param {string} param.name - Name of collection
-       * @param {DataWhere[]} [param.where]
-       * @param {GetDataOption} [param.options]
-       * @returns {DataValue<*>[]}
+       * Retrieves all entities from a collection with optional filtering.
+       * @param {Object} param - Parameters object
+       * @param {string} param.name - Name of collection to search
+       * @param {DataWhere[]} [param.where] - Filter conditions
+       * @param {GetDataOption} [param.options] - Additional options for retrieval
+       * @returns {DataValue<*>[]} Array of matching data values
        */
       method ({
         name,
@@ -1810,18 +1847,18 @@ export const state = createPlugin('state', {
         }
       },
       /**
-       * Add data listener
-       * @param {Object} param
+       * Adds a listener to a data collection event.
+       * @param {Object} param - Parameters object
        * @param {string} param.name - Collection name
        * @param {'update'|'delete'} [param.on='update'] - Data event name
        * @param {string} [param.id] - Data collection Id
-       * @param {number} [param.priority]
-       * @param {boolean} [param.force] - Force the event to fire
+       * @param {number} [param.priority] - Priority for the listener
+       * @param {boolean} [param.force] - Force the event to fire even if propagation is stopped
        * @param {boolean} [param.captureAll] - Fire action on all events
-       * @param {string} [param.handlerId=''] - Id of handler
-       * @param {Function|string} param.handler
-       * @param {Object} [action]
-       * @returns {string} - handler instance ID
+       * @param {string} [param.handlerId=''] - ID of handler
+       * @param {Function|string} param.handler - Handler function or action ID
+       * @param {Object} [action] - Action context
+       * @returns {string} Handler instance ID
        */
       method ({
         name,
@@ -1932,12 +1969,12 @@ export const state = createPlugin('state', {
         }
       },
       /**
-       * Delete data listeners
-       * @param {Object} item
-       * @param {string} item.name - Data collection name
-       * @param {string} [item.id] - Data collection Id
-       * @param {'update'|'delete'} [item.on='update'] - Data event name
-       * @param {string} item.handlerId - The reference handler Id that will be removed
+       * Removes a listener from a data collection event.
+       * @param {Object} param - Parameters object
+       * @param {string} param.name - Data collection name
+       * @param {string} [param.id] - Data collection Id
+       * @param {'update'|'delete'} [param.on='update'] - Data event name
+       * @param {string} param.handlerId - The reference handler ID to remove
        */
       method ({
         name,
@@ -2004,14 +2041,14 @@ export const state = createPlugin('state', {
         }
       },
       /**
-       * Delete data value
-       * @param {Object} param
+       * Deletes a data value from the state.
+       * @param {Object} param - Parameters object
        * @param {string} param.name - Collection name
-       * @param {string} param.id - Document id
-       * @param {boolean} [param.cascade] - Delete related data
-       * @param {boolean} [param.listeners] - Delete related listeners
-       * @param {boolean} [param.stopPropagation] - Prevent further event phases
-       * @returns {DataDeleteValueResult}
+       * @param {string} param.id - Document ID to delete
+       * @param {boolean} [param.cascade] - Whether to delete related data
+       * @param {boolean} [param.listeners] - Whether to delete related listeners
+       * @param {boolean} [param.stopPropagation] - Whether to stop event propagation
+       * @returns {DataDeleteValueResult} Result indicating if data was deleted or is in use
        */
       method ({
         name,
@@ -2140,9 +2177,18 @@ export const state = createPlugin('state', {
         }
       },
       /**
-       * Get data value
-       * @param {GetDataQuery} query
-       * @returns {DataValue<*> | Object.<string, DataValue<*>>}
+       * Retrieves data values from the state with optional filtering and expansion.
+       * @param {Object} query - Query parameters
+       * @param {string} query.name - Name of the collection
+       * @param {string} [query.id] - Optional document ID
+       * @param {string} [query.prefixId] - Whether to use prefix for ID
+       * @param {string} [query.suffixId] - Whether to use suffix for ID
+       * @param {Object} [query.options] - Additional options
+       * @param {boolean} [query.options.expand] - Whether to expand related data
+       * @param {boolean} [query.options.expandClone] - Whether to clone expanded data
+       * @param {boolean} [query.options.clone] - Whether to clone the result
+       * @param {string} [query.options.position] - Position path to extract specific value
+       * @returns {DataValue<*> | Object.<string, DataValue<*>>} The retrieved data value(s)
        */
       method (query) {
         const { name, id, prefixId, suffixId, options } = query
@@ -2357,12 +2403,12 @@ export const state = createPlugin('state', {
         }
       },
       /**
-       * Set data value
-       * @param {Object} param
+       * Sets a data value in the state with schema validation.
+       * @param {Object} param - Parameters object
        * @param {string} param.name - Name of collection
        * @param {*} param.value - Data to be set
        * @param {SetDataOptions} [param.options] - Set data options
-       * @returns {DataValue<*>}
+       * @returns {DataValue<*>} The created data value
        */
       method ({ name, value, options }) {
         const schema = this.getSchema(name)
@@ -2419,8 +2465,8 @@ export const state = createPlugin('state', {
     }
   },
   /**
-   * Setup database
-   * @param {DsPluginStateExport} state
+   * Sets up the state plugin with initial data and schemas.
+   * @param {DsPluginStateExport} state - The state export containing values, schemas, and defaults
    */
   setup (state) {
     // set plugin default values
