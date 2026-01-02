@@ -471,43 +471,54 @@ export const action = createPlugin('action', {
       method (branch, callback, { context, payload, blockValues }) {
         let isTruthy = false
 
+        // handle multiple conditions joined by '&&' or '||'
         if (branch.if.length > 1) {
           const compareValues = []
           /**
+           * Stores a single condition pair to be evaluated
            * @type {Object}
-           * @property {*} value_1
-           * @property {*} value_2
-           * @property {'&&'|'||'} op
+           * @property {*} value_1 - the result of evaluating the first operand
+           * @property {*} value_2 - the result of evaluating the second operand (only after an operator is defined)
+           * @property {'&&'|'||'} op - logical operator ('&&' or '||') used to combine conditions
            */
           let compareItem = {}
 
           for (let i = 0; i < branch.if.length; i++) {
             const item = branch.if[i]
+
+            // if the current condition has a logical operator, store it for combining later.
             if (item.andOr) {
               compareItem.op = item.andOr
               continue
             }
 
+            // evaluate the comparison using the provided operator and operands.
             const value = operatorEval({
               name: item.op,
               values: [item.from, item.to]
             })
 
+            // initialise first operand for a new condition pair.
             if (!compareItem.hasOwnProperty('value_1')) {
               compareItem.value_1 = value
             } else {
+              // if we already have a value_1 and an operator is defined, complete the condition pair.
               if (!compareItem.op) {
                 throw new Error('Condition expects an operator')
               }
 
               compareItem.value_2 = value
               compareValues.push(compareItem)
+
+              // reset for next condition.
               compareItem = {}
             }
           }
 
+          // evaluate all grouped conditions using logical operators (e.g., AND or OR between groups)
           isTruthy = operatorCompare(compareValues)
         } else {
+          // handle single condition: evaluate directly without grouping
           const item = branch.if[0]
 
           isTruthy = operatorEval({
@@ -516,10 +527,12 @@ export const action = createPlugin('action', {
           })
         }
 
+        // if the condition evaluates to true, execute the 'then' block sequence
         if (isTruthy) {
           return this.processSequence(branch.then, context, payload, blockValues, callback)
         }
 
+        // otherwise, execute the 'else' block sequence
         return this.processSequence(branch.else, context, payload, blockValues, callback)
       }
     }
