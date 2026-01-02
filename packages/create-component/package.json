@@ -7,6 +7,15 @@
   "license": "AGPL-3.0-or-later",
   "type": "module",
   "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./types": "./src/types.js"
+  },
+  "imports": {
+    "#component": "./src/component.js",
+    "#mixin": "./src/mixin.js",
+    "#types": "./src/types.js"
+  },
   "dependencies": {
     "@dooksa/utils": "workspace:^"
   }
