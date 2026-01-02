@@ -7,44 +7,47 @@
  */
 
 /**
+ * Represents a data value with optional metadata and expansion capabilities
  * @template Data
  * @typedef {Object} DataValue
- * @property {string} [id]
- * @property {string} collection
- * @property {boolean} [isEmpty]
- * @property {boolean} [isExpandEmpty]
- * @property {DataValue<Data>[]} [expand]
- * @property {Object.<string, (boolean|number)>} [expandIncluded]
- * @property {boolean} [isAffixEmpty]
- * @property {boolean} [isValid]
- * @property {Object.<string, DataTarget<Data>> & DataTarget<Data>} [target]
- * @property {Data} [item]
- * @property {Data} [previous]
- * @property {DataMetadata} [metadata]
+ * @property {string} [id] - The unique identifier for the data value
+ * @property {string} collection - The collection name this data belongs to
+ * @property {boolean} [isEmpty] - Flag indicating if the data value is empty
+ * @property {boolean} [isExpandEmpty] - Flag indicating if expanded data is empty
+ * @property {DataValue<Data>[]} [expand] - Array of expanded data values
+ * @property {Object.<string, (boolean|number)>} [expandIncluded] - Object indicating which fields are included in expansion
+ * @property {boolean} [isAffixEmpty] - Flag indicating if affixes are empty
+ * @property {boolean} [isValid] - Flag indicating if the data value is valid
+ * @property {Object.<string, DataTarget<Data>> & DataTarget<Data>} [target] - Target data with expandable references
+ * @property {Data} [item] - The actual data item
+ * @property {Data} [previous] - Previous version of the data item
+ * @property {DataMetadata} [metadata] - Metadata associated with the data
  */
 
 /**
+ * Represents a data target containing the actual data item and its metadata
  * @template Data
  * @typedef {Object} DataTarget
- * @property {Data} _item
- * @property {DataMetadata} _metadata
- * @property {DataPreviousTarget} [_previous]
+ * @property {Data} _item - The actual data item
+ * @property {DataMetadata} _metadata - Metadata associated with the data item
+ * @property {DataPreviousTarget} [_previous] - Previous version of the data target
  */
 
 /**
+ * Represents a previous version of a data target
  * @typedef {Object} DataPreviousTarget
- * @property {*} _item
- * @property {DataMetadata} _metadata
+ * @property {*} _item - The previous data item
+ * @property {DataMetadata} _metadata - Metadata from the previous version
  */
 
 /**
- * Data result
+ * Creates a DataValue object from the provided parameters
  * @template Data
- * @param {Object} param
- * @param {string} [param.collection='']
- * @param {string} [param.id]
- * @param {Data} [param.value]
- * @returns {DataValue<Data>}
+ * @param {Object} param - The parameters for creating the data value
+ * @param {string} [param.collection=''] - The collection name for the data
+ * @param {string} [param.id] - The unique identifier for the data
+ * @param {Data|DataTarget<Data>} [param.value] - The data value, either raw data or a DataTarget object containing _item, _metadata, and optionally _previous
+ * @returns {DataValue<Data>} A DataValue object containing the collection, id (if provided), item, and optionally metadata and previous values
  */
 function createDataValue ({
   collection = '',
