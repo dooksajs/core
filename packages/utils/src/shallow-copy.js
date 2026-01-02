@@ -2,7 +2,7 @@
  * Shallow copy
  * @template T
  * @param {T} data - Input data
- * @param {boolean} [freeze] - Deep freeze the cloned data
+ * @param {boolean} [freeze] - Freeze the shallow cloned data
  * @returns {T}
  */
 function shallowCopy (data, freeze) {
@@ -19,6 +19,10 @@ function shallowCopy (data, freeze) {
       temp[i] = data[i]
     }
 
+    if (freeze) {
+      // @ts-ignore
+      return Object.freeze(temp)
+    }
     // @ts-ignore
     return temp
   }
@@ -29,14 +33,7 @@ function shallowCopy (data, freeze) {
     temp = new Object()
 
     for (key in data) {
-      if (key === '__proto__') {
-        Object.defineProperty(temp, key, {
-          value: data[key],
-          configurable: true,
-          enumerable: true,
-          writable: true
-        })
-      } else {
+      if (data.hasOwnProperty(key) && key !== '__proto__') {
         temp[key] = data[key]
       }
     }
@@ -56,7 +53,7 @@ function shallowCopy (data, freeze) {
     temp = new data.constructor()
 
     for (key in data) {
-      if (data.hasOwnProperty(key)) {
+      if (data.hasOwnProperty(key) && key !== '__proto__') {
         temp[key] = data[key]
       }
     }
@@ -71,7 +68,13 @@ function shallowCopy (data, freeze) {
 
   if (dataType === '[object Date]') {
     // @ts-ignore
-    return new Date(+data)
+    temp = new Date(+data)
+    if (freeze) {
+      // @ts-ignore
+      return Object.freeze(temp)
+    }
+    // @ts-ignore
+    return temp
   }
 
   if (dataType === '[object RegExp]') {
@@ -79,6 +82,33 @@ function shallowCopy (data, freeze) {
     temp = new RegExp(data.source, data.flags)
     // @ts-ignore
     temp.lastIndex = data.lastIndex
+    if (freeze) {
+      // @ts-ignore
+      return Object.freeze(temp)
+    }
+    // @ts-ignore
+    return temp
+  }
+
+  // Handle Error objects and other special objects
+  if (
+    dataType === '[object Error]' ||
+    (dataType === '[object Object]' && typeof data.constructor === 'function' && data.constructor !== Object)
+  ) {
+    // @ts-ignore
+    temp = new data.constructor(data.message)
+
+    // Copy enumerable properties
+    for (key in data) {
+      if (data.hasOwnProperty(key) && key !== '__proto__' && key !== 'message') {
+        temp[key] = data[key]
+      }
+    }
+
+    if (freeze) {
+      // @ts-ignore
+      return Object.freeze(temp)
+    }
     // @ts-ignore
     return temp
   }
