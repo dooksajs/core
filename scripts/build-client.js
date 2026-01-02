@@ -32,6 +32,7 @@ const result = await esbuild.build({
   platform: 'browser',
   metafile: true,
   minify: true,
+  target: ['es2020'],
   dropLabels: ['DEV'],
   reserveProps: /__ds/
 })

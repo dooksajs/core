@@ -33,6 +33,7 @@ const result = await esbuild.build({
     '.node': 'file'
   },
   metafile: true,
+  target: ['es2020'],
   minify: true,
   dropLabels: ['DEV'],
   reserveProps: /__d/
