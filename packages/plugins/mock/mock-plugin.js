@@ -84,15 +84,42 @@ import { mockState } from './mock-state.js'
  */
 
 /**
+ * Validates plugin parameters
+ * @param {Object} param
+ * @param {string} param.name - Name of plugin
+ * @param {'client' | 'server'} [param.platform='client'] - Platform
+ * @param {string[]} [param.modules=[]] - List of plugins to mock
+ * @param {Object.<string, Function>} [param.namedExports={}] - Named exports
+ * @throws {Error} If required parameters are invalid
+ */
+function validateParams ({ name, platform, modules, namedExports }) {
+  if (!name || typeof name !== 'string') {
+    throw new Error('Invalid plugin name: expected non-empty string')
+  }
+
+  if (platform !== 'client' && platform !== 'server') {
+    throw new Error('Invalid platform: expected "client" or "server"')
+  }
+
+  if (!Array.isArray(modules)) {
+    throw new Error('Invalid modules: expected array')
+  }
+
+  if (typeof namedExports !== 'object' || namedExports === null) {
+    throw new Error('Invalid namedExports: expected object')
+  }
+}
+
+/**
  * Mock a dooksa plugin
  * @template {keyof MockClientPluginMap} Name
  * @template {keyof MockClientPluginMap} Plugin
- * @param {TestContext} context - TextContext constructor
+ * @param {TestContext} context - TestContext constructor
  * @param {Object} param
  * @param {Name} param.name - Name of plugin
  * @param {'client' | 'server'} [param.platform='client'] - Platform the plugin is intended to run on
- * @param {Plugin[]} [param.modules=[]] - List of plugins to the mock.
- * @param {Object.<string, Function>} [param.namedExports={}] - List of plugins to the mock.
+ * @param {Plugin[]} [param.modules=[]] - List of plugins to mock
+ * @param {Object.<string, Function>} [param.namedExports={}] - Named exports to mock
  * @returns {Promise<MockPlugin<Name, Plugin> & MockStateMethods>}
  * @example
  * // create mock fn
@@ -120,107 +147,123 @@ import { mockState } from './mock-state.js'
  *
  * strictEqual(actionDispatch.mock.callCount(), 1)
  */
-export function mockPlugin (context, {
-  name,
-  platform = 'client',
-  modules = [],
-  namedExports = {}
-}) {
-  return new Promise((resolve, reject) => {
-    const pluginName = name
-    const imports = []
+export async function mockPlugin (
+  context,
+  {
+    name,
+    platform = 'client',
+    modules = [],
+    namedExports = {}
+  }
+) {
+  // Validate parameters
+  validateParams({
+    name,
+    platform,
+    modules,
+    namedExports
+  })
 
-    // import plugin
-    imports.push(import(`../src/${platform}/${pluginName}.js`))
+  const restoreCallbacks = []
+  /** @type {Partial<MockPlugin<Name, Plugin> & MockStateMethods> & { restore: () => void }} */
+  const result = {
+    modules: /** @type {MockClientPluginMapper<Plugin>} */ ({}),
+    restore: () => {
+      // Execute all restore callbacks in reverse order
+      for (let i = restoreCallbacks.length - 1; i >= 0; i--) {
+        try {
+          restoreCallbacks[i]()
+        } catch (error) {
+          console.warn('Error during mock restoration:', error)
+        }
+      }
+    }
+  }
 
-    // import named exports
-    for (let i = 0; i < modules.length; i++) {
-      const plugin = modules[i]
+  try {
+    // Import the main plugin
+    const pluginPath = `../src/${platform}/${name}.js`
+    const mainPlugin = await import(pluginPath)
 
-      imports.push(import(`../src/${platform}/${plugin}.js`))
+    // Import and mock additional modules
+    const moduleMocks = await Promise.all(
+      modules.map(async (moduleName) => {
+        try {
+          const mockResult = await mockPluginModule(context, moduleName, platform)
+
+          // Add to named exports
+          for (const methodName of mockResult.methodNames) {
+            namedExports[methodName] = mockResult.plugin[methodName]
+          }
+
+          return mockResult
+        } catch (error) {
+          throw new Error(`Failed to mock module "${moduleName}": ${error.message}`)
+        }
+      })
+    )
+
+    // Build modules result object
+    for (const mockResult of moduleMocks) {
+      result.modules[mockResult.name] = mockResult.plugin
     }
 
-    // resolve imports
-    Promise.all(imports)
-      .then(result => {
-        const plugins = []
+    // Prepare state schema from all plugins
+    const plugins = []
+    const allImports = [mainPlugin, ...moduleMocks.map(m => ({ default: m.plugin }))]
 
-        // prepare state schema
-        for (let index = 0; index < result.length; index++) {
-          const plugin = result[index].default
+    for (const { default: plugin } of allImports) {
+      if (plugin?.state) {
+        plugins.push(plugin)
+      }
+    }
 
-          if (plugin.state) {
-            plugins.push(plugin)
-          }
-        }
+    // Mock state
+    const state = await mockState(plugins)
 
-        const mockPluginImports = []
+    // Create state method mocks and add to result
+    const stateMethods = [
+      'stateAddListener',
+      'stateDeleteListener',
+      'stateDeleteValue',
+      'stateFind',
+      'stateGenerateId',
+      'stateGetSchema',
+      'stateGetValue',
+      'stateSetValue',
+      'stateUnsafeSetValue'
+    ]
 
-        // mock named export plugins
-        for (let i = 0; i < modules.length; i++) {
-          mockPluginImports.push(
-            mockPluginModule(context, modules[i], platform)
-          )
-        }
+    for (const methodName of stateMethods) {
+      if (typeof state[methodName] === 'function') {
+        const mockMethod = context.mock.method(state, methodName)
+        namedExports[methodName] = mockMethod
+        result[methodName] = mockMethod
 
-        // append mock plugins to named exports
-        Promise.all(mockPluginImports)
-          .then(results => {
-            /** @type {MockClientPluginMapper<Plugin>} */
-            const modules = {}
+        // Track for restoration
+        restoreCallbacks.push(() => {
+          // Mock methods are automatically restored by node:test
+        })
+      }
+    }
 
-            for (let i = 0; i < results.length; i++) {
-              const result = results[i]
+    // Mock plugin module context
+    const mockContext = mockPluginModuleContext(context, namedExports, platform)
+    restoreCallbacks.push(() => mockContext.restore())
 
-              modules[result.name] = result.plugin
+    // Mock the main plugin
+    const { plugin } = await mockPluginModule(context, name, platform)
+    result.plugin = plugin
 
-              for (let i = 0; i < result.methodNames.length; i++) {
-                const name = result.methodNames[i]
+    return /** @type {MockPlugin<Name, Plugin> & MockStateMethods} */ (result)
+  } catch (error) {
+    // Clean up any partial mocks on error
+    try {
+      result.restore()
+    } catch (cleanupError) {
+      console.warn('Error during cleanup after failure:', cleanupError)
+    }
 
-                // append mock plugins to named exports
-                namedExports[name] = result.plugin[name]
-              }
-            }
-
-            mockState(plugins)
-              .then(state => {
-                /** @type {MockPlugin<Name, Plugin>} */
-                const result = {
-                  modules
-                }
-
-                for (const key in state) {
-                  if (
-                    Object.prototype.hasOwnProperty.call(state, key) &&
-                    typeof state[key] === 'function'
-                  ) {
-                    // create state mocks
-                    const mockMethod = context.mock.method(state, key)
-
-                    // add state methods to named exports
-                    namedExports[key] = mockMethod
-                    result[key] = mockMethod
-                  }
-                }
-
-                // mock plugin module context
-                const mockContext = mockPluginModuleContext(context, namedExports, platform)
-
-                // mock plugin
-                mockPluginModule(context, pluginName, platform)
-                  .then(({ plugin }) => {
-                    result.plugin = plugin
-                    result.restore = () => {
-                      mockContext.restore()
-                    }
-
-                    resolve(result)
-                  })
-                  .catch(error => reject(error))
-              })
-              .catch(error => reject(error))
-          })
-      })
-      .catch(error => reject(error))
-  })
+    throw new Error(`Failed to mock plugin "${name}": ${error.message}`)
+  }
 }
