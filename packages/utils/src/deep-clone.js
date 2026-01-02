@@ -19,6 +19,10 @@ function deepClone (data, freeze) {
       temp[i] = deepClone(data[i], freeze)
     }
 
+    if (freeze) {
+      // @ts-ignore
+      return Object.freeze(temp)
+    }
     // @ts-ignore
     return temp
   }
@@ -29,15 +33,13 @@ function deepClone (data, freeze) {
     temp = new Object()
 
     for (key in data) {
-      if (key === '__proto__') {
-        Object.defineProperty(temp, key, {
-          value: deepClone(data[key], freeze),
-          configurable: true,
-          enumerable: true,
-          writable: true
-        })
-      } else {
-        temp[key] = deepClone(data[key], freeze)
+      if (data.hasOwnProperty(key)) {
+        if (key === '__proto__') {
+          // Skip __proto__ to prevent prototype pollution
+          continue
+        } else {
+          temp[key] = deepClone(data[key], freeze)
+        }
       }
     }
 
@@ -56,7 +58,7 @@ function deepClone (data, freeze) {
     temp = new data.constructor()
 
     for (key in data) {
-      if (data.hasOwnProperty(key)) {
+      if (data.hasOwnProperty(key) && key !== '__proto__') {
         temp[key] = deepClone(data[key], freeze)
       }
     }
