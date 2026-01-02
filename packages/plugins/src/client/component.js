@@ -860,7 +860,6 @@ export const component = createPlugin('component', {
         }
       }
 
-
       if (template.children) {
         // wait for created events before creating children
         if (hasBeforeCreateEvent) {
@@ -924,6 +923,7 @@ export const component = createPlugin('component', {
           id,
           item
         } = components[i]
+
         let childNode = stateGetValue({
           name: 'component/nodes',
           id
@@ -1040,9 +1040,12 @@ export const component = createPlugin('component', {
           break
         }
 
+        let isMounted = false
+
         // replace previous node
         if (!prevNode) {
           parent.appendChild(nextNode)
+          isMounted = true
         } else if (nextNode !== prevNode) {
           // node was inserted
           const prevComponentId = prevNode.__dooksaId__
@@ -1074,6 +1077,20 @@ export const component = createPlugin('component', {
 
           // replace prev node with next
           prevNode.replaceWith(nextNode)
+          isMounted = true
+        }
+
+        if (isMounted) {
+          const nodeId = nextNode.__dooksaId__
+          // emit mounted after node and data have been appended to parent node
+          eventEmit({
+            name: 'component/mounted',
+            id: nodeId,
+            context: {
+              id: nodeId,
+              parentId: id
+            }
+          })
         }
       }
 
