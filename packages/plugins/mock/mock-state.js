@@ -34,23 +34,45 @@ export function mockState (plugins = []) {
         state = plugin.state
       }
 
-      _state._names = _state._names.concat(state._names)
-      _state._items = _state._items.concat(state._items)
-      _state._values = Object.assign(_state._values, state._values)
+      // Type guard to ensure state has the required properties
+      if (state.hasOwnProperty('_values') && '_names' in state && '_items' in state && '_values' in state && '_defaults' in state) {
+        _state._names = _state._names.concat(state._names)
+        _state._items = _state._items.concat(state._items)
+        _state._values = Object.assign(_state._values, state._values)
 
-      // append defaults
-      if (state._defaults.length) {
-        _state._defaults = _state._defaults.concat(state._defaults)
+        // append defaults
+        if (state._defaults.length) {
+          _state._defaults = _state._defaults.concat(state._defaults)
+        }
       }
     }
 
     // import state module
     import('../src/client/state.js?' + crypto.randomUUID().substring(30))
-      .then(({ state }) => {
+      .then((stateModule) => {
+        const { state } = stateModule
+
         // setup state
         state.setup(_state)
 
-        resolve(state)
+        // Create wrapper with direct method access for compatibility
+        const mockStateInstance = {
+          // Direct access to state methods
+          setValue: stateModule.stateSetValue,
+          getValue: stateModule.stateGetValue,
+          addListener: stateModule.stateAddListener,
+          deleteListener: stateModule.stateDeleteListener,
+          deleteValue: stateModule.stateDeleteValue,
+          find: stateModule.stateFind,
+          generateId: stateModule.stateGenerateId,
+          getSchema: stateModule.stateGetSchema,
+          unsafeSetValue: stateModule.stateUnsafeSetValue,
+
+          // Also expose the full state module
+          ...state
+        }
+
+        resolve(mockStateInstance)
       })
       .catch(error => reject(error))
   })
