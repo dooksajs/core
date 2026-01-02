@@ -1,331 +1,734 @@
 import { log } from '#server'
 import { describe, it, mock } from 'node:test'
-import { deepEqual, deepStrictEqual, equal, strictEqual } from 'node:assert'
+import { strictEqual, throws } from 'node:assert'
 
-const reAnsi = new RegExp(/\u001b\[.*?m(?!\\)/g)
+// ANSI color code patterns for verification
+const ANSI_CODES = {
+  grey: /\u001b\[90m/,
+  yellow: /\u001b\[33m/,
+  yellowBright: /\u001b\[93m/,
+  red: /\u001b\[31m/,
+  redBright: /\u001b\[91m/,
+  white: /\u001b\[37m/,
+  green: /\u001b\[32m/,
+  blue: /\u001b\[34m/,
+  reset: /\u001b\[0m/
+}
 
 /**
- * Log result
- * @param {string} string
+ * Extract timestamp components from log output
  */
-function logResult (string) {
-  const logMessage = string.replace(reAnsi, '')
+function parseTimestamp (logOutput) {
+  const timestampMatch = logOutput.match(/(\d{2}):(\d{2}):(\d{2})\.(\d{3})/)
+  if (!timestampMatch) return null
 
   return {
-    createdAt: getDateFromHours(logMessage.substring(0, 11)),
-    message: logMessage.substring(13)
+    hours: timestampMatch[1],
+    minutes: timestampMatch[2],
+    seconds: timestampMatch[3],
+    milliseconds: timestampMatch[4]
   }
 }
 
-function getDateFromHours (time) {
-  const now = new Date()
+/**
+ * Extract message content (without ANSI codes and timestamp)
+ */
+function extractMessage (logOutput) {
+  // Remove timestamp
+  let content = logOutput.replace(/\d{2}:\d{2}:\d{2}\.\d{3} /, '')
 
-  time = time.split(':')
+  // Remove ANSI codes
+  content = content.replace(/\u001b\[\d+m/g, '')
 
-  return new Date(now.getFullYear(), now.getMonth(), now.getDate(), ...time)
+  // Remove reset codes
+  content = content.replace(/\u001b\[0m/g, '')
+
+  return content.trim()
 }
 
 /**
- * create console spy
+ * Create console spy that captures raw output
  */
 function createConsoleSpy () {
-  const logs = []
-
-  // store original console methods
   const originalLog = console.log
+  const capturedLogs = []
 
-  // replace console methods with spies
-  console.log = mock.fn(function () {
-    const strings = []
-
-    for (let i = 0; i < arguments.length; i++) {
-      const argument = arguments[i]
-
-      // split color ansi values
-      if (typeof argument === 'string') {
-        strings.push(logResult(argument))
-      }
-    }
-
-    logs.push(strings)
+  console.log = mock.fn(function (...args) {
+    capturedLogs.push(args.join(' '))
   })
 
-  // return cleanup function and captured outputs
   return {
     restore: () => {
       console.log = originalLog
     },
-    getLogs: () => logs
+    getLogs: () => capturedLogs
   }
 }
-describe('Log', function () {
-  describe('INFO level', function () {
-    it('should log message', function () {
-      const spy = createConsoleSpy()
 
-      log({
-        message: 'Hello world!'
+describe('Logger', function () {
+
+  describe('Parameter Validation', function () {
+
+    it('should throw error when message is missing', function () {
+      throws(() => {
+        // @ts-ignore
+        log({})
+      }, {
+        message: 'Invalid message parameter: message must be a non-empty string'
       })
-
-      const logs = spy.getLogs()
-
-      // check how many arguments the console received
-      strictEqual(logs[0].length, 1)
-
-      const logResult = logs[0][0]
-
-      strictEqual(logResult.createdAt instanceof Date, true)
-      strictEqual(logResult.message, 'Info: Hello world!')
-
-      spy.restore()
     })
 
-    it('should log message with context', function () {
-      const spy = createConsoleSpy()
-
-      log({
-        message: 'Hello world!',
-        context: 'Party time!'
+    it('should throw error when message is empty string', function () {
+      throws(() => {
+        log({ message: '' })
+      }, {
+        message: 'Invalid message parameter: message must be a non-empty string'
       })
-
-      const logs = spy.getLogs()
-
-      // check how many arguments the console received
-      strictEqual(logs[0].length, 1)
-
-      const logResult = logs[0][0]
-
-      strictEqual(logResult.createdAt instanceof Date, true)
-      strictEqual(logResult.message, 'Info: Hello world! [Party time!]')
-
-      spy.restore()
     })
 
-    it('should log message with duration', function () {
-      const spy = createConsoleSpy()
-      const now = performance.now()
-
-      log({
-        message: 'Hello world!',
-        duration: now
+    it('should throw error when message is not a string', function () {
+      throws(() => {
+        // @ts-ignore
+        log({ message: 123 })
+      }, {
+        message: 'Invalid message parameter: message must be a non-empty string'
       })
 
-      const logs = spy.getLogs()
+      throws(() => {
+        log({ message: null })
+      }, {
+        message: 'Invalid message parameter: message must be a non-empty string'
+      })
 
-      // check how many arguments the console received
-      strictEqual(logs[0].length, 1)
+      throws(() => {
+        log({ message: undefined })
+      }, {
+        message: 'Invalid message parameter: message must be a non-empty string'
+      })
 
-      const logResult = logs[0][0]
-
-      strictEqual(logResult.createdAt instanceof Date, true)
-      strictEqual(logResult.message, `Info: Hello world! (${Math.floor(now)} ms)`)
-
-      spy.restore()
+      throws(() => {
+        // @ts-ignore
+        log({ message: {} })
+      }, {
+        message: 'Invalid message parameter: message must be a non-empty string'
+      })
     })
 
-    it('should log message with context and duration', function () {
-      const spy = createConsoleSpy()
-      const now = performance.now()
-
-      log({
-        message: 'Hello world!',
-        context: 'Party time!',
-        duration: now
+    it('should throw error for invalid level', function () {
+      throws(() => {
+        log({
+          message: 'test',
+          // @ts-ignore
+          level: 'INVALID'
+        })
+      }, {
+        message: 'Invalid level parameter: must be one of INFO, WARN, ERROR'
       })
 
-      const logs = spy.getLogs()
-
-      // check how many arguments the console received
-      strictEqual(logs[0].length, 1)
-
-      const logResult = logs[0][0]
-
-      strictEqual(logResult.createdAt instanceof Date, true)
-      strictEqual(logResult.message, `Info: Hello world! [Party time!] (${Math.floor(now)} ms)`)
-
-      spy.restore()
-    })
-  })
-
-  describe('WARNING level', function () {
-    it('should log message', function () {
-      const spy = createConsoleSpy()
-
-      log({
-        level: 'WARN',
-        message: 'Hello world!'
+      throws(() => {
+        log({
+          message: 'test',
+          // @ts-ignore
+          level: 'debug'
+        })
+      }, {
+        message: 'Invalid level parameter: must be one of INFO, WARN, ERROR'
       })
-
-      const logs = spy.getLogs()
-
-      // check how many arguments the console received
-      strictEqual(logs[0].length, 1)
-
-      const logResult = logs[0][0]
-
-      strictEqual(logResult.createdAt instanceof Date, true)
-      strictEqual(logResult.message, 'Warning: Hello world!')
-
-      spy.restore()
     })
 
-    it('should log message with context', function () {
+    it('should accept valid levels', function () {
       const spy = createConsoleSpy()
 
+      // Should not throw
       log({
-        level: 'WARN',
-        message: 'Hello world!',
-        context: 'Party time!'
+        message: 'test',
+        level: 'INFO'
       })
-
-      const logs = spy.getLogs()
-
-      // check how many arguments the console received
-      strictEqual(logs[0].length, 1)
-
-      const logResult = logs[0][0]
-
-      strictEqual(logResult.createdAt instanceof Date, true)
-      strictEqual(logResult.message, 'Warning: Hello world! [Party time!]')
-
-      spy.restore()
-    })
-
-    it('should log message with duration', function () {
-      const spy = createConsoleSpy()
-      const now = performance.now()
-
       log({
-        level: 'WARN',
-        message: 'Hello world!',
-        duration: now
+        message: 'test',
+        level: 'WARN'
       })
-
-      const logs = spy.getLogs()
-
-      // check how many arguments the console received
-      strictEqual(logs[0].length, 1)
-
-      const logResult = logs[0][0]
-
-      strictEqual(logResult.createdAt instanceof Date, true)
-      strictEqual(logResult.message, `Warning: Hello world! (${Math.floor(now)} ms)`)
-
-      spy.restore()
-    })
-
-    it('should log message with context and duration', function () {
-      const spy = createConsoleSpy()
-      const now = performance.now()
-
       log({
-        level: 'WARN',
-        message: 'Hello world!',
-        context: 'Party time!',
-        duration: now
+        message: 'test',
+        level: 'ERROR'
       })
-
-      const logs = spy.getLogs()
-
-      // check how many arguments the console received
-      strictEqual(logs[0].length, 1)
-
-      const logResult = logs[0][0]
-
-      strictEqual(logResult.createdAt instanceof Date, true)
-      strictEqual(logResult.message, `Warning: Hello world! [Party time!] (${Math.floor(now)} ms)`)
 
       spy.restore()
     })
   })
 
-  describe('ERROR level', function () {
-    it('should log message', function () {
+  describe('Timestamp Formatting', function () {
+
+    it('should format timestamp with leading zeros', function () {
       const spy = createConsoleSpy()
 
-      log({
-        level: 'ERROR',
-        message: 'Hello world!'
-      })
+      // Mock Date to get predictable values
+      const mockDate = new Date('2024-01-01T01:02:03.045')
+      const originalDate = Date
+      // @ts-ignore
+      Date = function () {
+        return mockDate
+      }
+      // @ts-ignore
+      Date.now = () => mockDate.getTime()
+
+      log({ message: 'test' })
 
       const logs = spy.getLogs()
+      const timestamp = parseTimestamp(logs[0])
 
-      // check how many arguments the console received
-      strictEqual(logs[0].length, 1)
+      strictEqual(timestamp.hours, '01')
+      strictEqual(timestamp.minutes, '02')
+      strictEqual(timestamp.seconds, '03')
+      strictEqual(timestamp.milliseconds, '045')
 
-      const logResult = logs[0][0]
+      // @ts-ignore
+      Date = originalDate
+      spy.restore()
+    })
 
-      strictEqual(logResult.createdAt instanceof Date, true)
-      strictEqual(logResult.message, 'Error: Hello world!')
+    it('should handle midnight (00:00:00.000)', function () {
+      const spy = createConsoleSpy()
+
+      const mockDate = new Date('2024-01-01T00:00:00.000')
+      const originalDate = Date
+      // @ts-ignore
+      Date = function () {
+        return mockDate
+      }
+      // @ts-ignore
+      Date.now = () => mockDate.getTime()
+
+      log({ message: 'test' })
+
+      const logs = spy.getLogs()
+      const timestamp = parseTimestamp(logs[0])
+
+      strictEqual(timestamp.hours, '00')
+      strictEqual(timestamp.minutes, '00')
+      strictEqual(timestamp.seconds, '00')
+      strictEqual(timestamp.milliseconds, '000')
+
+      // @ts-ignore
+      Date = originalDate
+      spy.restore()
+    })
+
+    it('should handle single digit milliseconds with padding', function () {
+      const spy = createConsoleSpy()
+
+      const mockDate = new Date('2024-01-01T12:34:56.007')
+      const originalDate = Date
+      // @ts-ignore
+      Date = function () {
+        return mockDate
+      }
+      // @ts-ignore
+      Date.now = () => mockDate.getTime()
+
+      log({ message: 'test' })
+
+      const logs = spy.getLogs()
+      const timestamp = parseTimestamp(logs[0])
+
+      strictEqual(timestamp.milliseconds, '007')
+
+      // @ts-ignore
+      Date = originalDate
+      spy.restore()
+    })
+  })
+
+  describe('INFO Level', function () {
+
+    it('should log basic message', function () {
+      const spy = createConsoleSpy()
+
+      log({ message: 'Hello world!' })
+
+      const logs = spy.getLogs()
+      strictEqual(logs.length, 1)
+
+      const content = extractMessage(logs[0])
+      strictEqual(content, 'Info: Hello world!')
 
       spy.restore()
     })
 
-    it('should log message with context', function () {
+    it('should include context when provided', function () {
       const spy = createConsoleSpy()
 
       log({
-        level: 'ERROR',
         message: 'Hello world!',
-        context: 'Party time!'
+        context: 'App'
       })
 
       const logs = spy.getLogs()
-
-      // check how many arguments the console received
-      strictEqual(logs[0].length, 1)
-
-      const logResult = logs[0][0]
-
-      strictEqual(logResult.createdAt instanceof Date, true)
-      strictEqual(logResult.message, 'Error: Hello world! [Party time!]')
+      const content = extractMessage(logs[0])
+      strictEqual(content, 'Info: Hello world! [App]')
 
       spy.restore()
     })
 
-    it('should log message with duration', function () {
+    it('should include duration when provided', function () {
       const spy = createConsoleSpy()
-      const now = performance.now()
 
       log({
-        level: 'ERROR',
         message: 'Hello world!',
-        duration: now
+        duration: 123.456
       })
 
       const logs = spy.getLogs()
-
-      // check how many arguments the console received
-      strictEqual(logs[0].length, 1)
-
-      const logResult = logs[0][0]
-
-      strictEqual(logResult.createdAt instanceof Date, true)
-      strictEqual(logResult.message, `Error: Hello world! (${Math.floor(now)} ms)`)
+      const content = extractMessage(logs[0])
+      strictEqual(content, 'Info: Hello world! (123 ms)')
 
       spy.restore()
     })
 
-    it('should log message with context and duration', function () {
+    it('should include both context and duration', function () {
       const spy = createConsoleSpy()
-      const now = performance.now()
 
       log({
-        level: 'ERROR',
         message: 'Hello world!',
-        context: 'Party time!',
-        duration: now
+        context: 'App',
+        duration: 456.789
       })
 
       const logs = spy.getLogs()
+      const content = extractMessage(logs[0])
+      strictEqual(content, 'Info: Hello world! [App] (456 ms)')
 
-      // check how many arguments the console received
-      strictEqual(logs[0].length, 1)
+      spy.restore()
+    })
 
-      const logResult = logs[0][0]
+    it('should handle duration of 0', function () {
+      const spy = createConsoleSpy()
 
-      strictEqual(logResult.createdAt instanceof Date, true)
-      strictEqual(logResult.message, `Error: Hello world! [Party time!] (${Math.floor(now)} ms)`)
+      log({
+        message: 'Hello world!',
+        duration: 0
+      })
+
+      const logs = spy.getLogs()
+      const content = extractMessage(logs[0])
+      strictEqual(content, 'Info: Hello world! (0 ms)')
+
+      spy.restore()
+    })
+
+    it('should handle negative duration', function () {
+      const spy = createConsoleSpy()
+
+      log({
+        message: 'Hello world!',
+        duration: -50
+      })
+
+      const logs = spy.getLogs()
+      const content = extractMessage(logs[0])
+      strictEqual(content, 'Info: Hello world! (-50 ms)')
+
+      spy.restore()
+    })
+
+    it('should handle very large duration', function () {
+      const spy = createConsoleSpy()
+
+      log({
+        message: 'Hello world!',
+        duration: 999999.999
+      })
+
+      const logs = spy.getLogs()
+      const content = extractMessage(logs[0])
+      strictEqual(content, 'Info: Hello world! (999999 ms)')
+
+      spy.restore()
+    })
+
+    it('should handle string duration', function () {
+      const spy = createConsoleSpy()
+
+      log({
+        message: 'Hello world!',
+        // @ts-ignore
+        duration: '123.456'
+      })
+
+      const logs = spy.getLogs()
+      const content = extractMessage(logs[0])
+      strictEqual(content, 'Info: Hello world! (123 ms)')
+
+      spy.restore()
+    })
+
+    it('should ignore invalid duration', function () {
+      const spy = createConsoleSpy()
+
+      log({
+        message: 'Hello world!',
+        // @ts-ignore
+        duration: 'invalid'
+      })
+
+      const logs = spy.getLogs()
+      const content = extractMessage(logs[0])
+      strictEqual(content, 'Info: Hello world!')
+
+      spy.restore()
+    })
+  })
+
+  describe('WARN Level', function () {
+
+    it('should log basic warning message', function () {
+      const spy = createConsoleSpy()
+
+      log({
+        level: 'WARN',
+        message: 'Something is wrong'
+      })
+
+      const logs = spy.getLogs()
+      const content = extractMessage(logs[0])
+      strictEqual(content, 'Warning: Something is wrong')
+
+      spy.restore()
+    })
+
+    it('should include context and duration', function () {
+      const spy = createConsoleSpy()
+
+      log({
+        level: 'WARN',
+        message: 'Something is wrong',
+        context: 'Validation',
+        duration: 200
+      })
+
+      const logs = spy.getLogs()
+      const content = extractMessage(logs[0])
+      strictEqual(content, 'Warning: Something is wrong [Validation] (200 ms)')
+
+      spy.restore()
+    })
+  })
+
+  describe('ERROR Level', function () {
+
+    it('should log basic error message', function () {
+      const spy = createConsoleSpy()
+
+      log({
+        level: 'ERROR',
+        message: 'Critical failure'
+      })
+
+      const logs = spy.getLogs()
+      const content = extractMessage(logs[0])
+      strictEqual(content, 'Error: Critical failure')
+
+      spy.restore()
+    })
+
+    it('should include context and duration', function () {
+      const spy = createConsoleSpy()
+
+      log({
+        level: 'ERROR',
+        message: 'Critical failure',
+        context: 'Database',
+        duration: 1000
+      })
+
+      const logs = spy.getLogs()
+      const content = extractMessage(logs[0])
+      strictEqual(content, 'Error: Critical failure [Database] (1000 ms)')
+
+      spy.restore()
+    })
+  })
+
+  describe('Edge Cases', function () {
+
+    it('should handle empty context string', function () {
+      const spy = createConsoleSpy()
+
+      log({
+        message: 'test',
+        context: ''
+      })
+
+      const logs = spy.getLogs()
+      const content = extractMessage(logs[0])
+      strictEqual(content, 'Info: test')
+
+      spy.restore()
+    })
+
+    it('should handle whitespace-only context', function () {
+      const spy = createConsoleSpy()
+
+      log({
+        message: 'test',
+        context: '   '
+      })
+
+      const logs = spy.getLogs()
+      const content = extractMessage(logs[0])
+      strictEqual(content, 'Info: test')
+
+      spy.restore()
+    })
+
+    it('should handle null context', function () {
+      const spy = createConsoleSpy()
+
+      log({
+        message: 'test',
+        context: null
+      })
+
+      const logs = spy.getLogs()
+      const content = extractMessage(logs[0])
+      strictEqual(content, 'Info: test')
+
+      spy.restore()
+    })
+
+    it('should handle undefined context', function () {
+      const spy = createConsoleSpy()
+
+      log({
+        message: 'test',
+        context: undefined
+      })
+
+      const logs = spy.getLogs()
+      const content = extractMessage(logs[0])
+      strictEqual(content, 'Info: test')
+
+      spy.restore()
+    })
+
+    it('should handle null duration', function () {
+      const spy = createConsoleSpy()
+
+      log({
+        message: 'test',
+        duration: null
+      })
+
+      const logs = spy.getLogs()
+      const content = extractMessage(logs[0])
+      strictEqual(content, 'Info: test')
+
+      spy.restore()
+    })
+
+    it('should handle undefined duration', function () {
+      const spy = createConsoleSpy()
+
+      log({
+        message: 'test',
+        duration: undefined
+      })
+
+      const logs = spy.getLogs()
+      const content = extractMessage(logs[0])
+      strictEqual(content, 'Info: test')
+
+      spy.restore()
+    })
+
+    it('should handle special characters in message', function () {
+      const spy = createConsoleSpy()
+
+      log({ message: 'Test with [brackets] and {braces}' })
+
+      const logs = spy.getLogs()
+      const content = extractMessage(logs[0])
+      strictEqual(content, 'Info: Test with [brackets] and {braces}')
+
+      spy.restore()
+    })
+
+    it('should handle special characters in context', function () {
+      const spy = createConsoleSpy()
+
+      log({
+        message: 'test',
+        context: 'Special: @#$%^&*()'
+      })
+
+      const logs = spy.getLogs()
+      const content = extractMessage(logs[0])
+      strictEqual(content, 'Info: test [Special: @#$%^&*()]')
+
+      spy.restore()
+    })
+
+    it('should handle very long message', function () {
+      const spy = createConsoleSpy()
+
+      const longMessage = 'A'.repeat(1000)
+      log({ message: longMessage })
+
+      const logs = spy.getLogs()
+      const content = extractMessage(logs[0])
+      strictEqual(content, `Info: ${longMessage}`)
+
+      spy.restore()
+    })
+
+    it('should handle very long context', function () {
+      const spy = createConsoleSpy()
+
+      const longContext = 'B'.repeat(500)
+      log({
+        message: 'test',
+        context: longContext
+      })
+
+      const logs = spy.getLogs()
+      const content = extractMessage(logs[0])
+      strictEqual(content, `Info: test [${longContext}]`)
+
+      spy.restore()
+    })
+  })
+
+  describe('Color Output', function () {
+
+    it('should apply grey color to timestamp', function () {
+      const spy = createConsoleSpy()
+
+      log({ message: 'test' })
+
+      const logs = spy.getLogs()
+      strictEqual(ANSI_CODES.grey.test(logs[0]), true)
+
+      spy.restore()
+    })
+
+    it('should apply white and green for INFO level', function () {
+      const spy = createConsoleSpy()
+
+      log({ message: 'test' })
+
+      const logs = spy.getLogs()
+      strictEqual(ANSI_CODES.white.test(logs[0]), true)
+      strictEqual(ANSI_CODES.green.test(logs[0]), true)
+
+      spy.restore()
+    })
+
+    it('should apply yellowBright and yellow for WARN level', function () {
+      const spy = createConsoleSpy()
+
+      log({
+        level: 'WARN',
+        message: 'test'
+      })
+
+      const logs = spy.getLogs()
+      strictEqual(ANSI_CODES.yellowBright.test(logs[0]), true)
+      strictEqual(ANSI_CODES.yellow.test(logs[0]), true)
+
+      spy.restore()
+    })
+
+    it('should apply redBright and red for ERROR level', function () {
+      const spy = createConsoleSpy()
+
+      log({
+        level: 'ERROR',
+        message: 'test'
+      })
+
+      const logs = spy.getLogs()
+      strictEqual(ANSI_CODES.redBright.test(logs[0]), true)
+      strictEqual(ANSI_CODES.red.test(logs[0]), true)
+
+      spy.restore()
+    })
+
+    it('should apply yellow to context', function () {
+      const spy = createConsoleSpy()
+
+      log({
+        message: 'test',
+        context: 'context'
+      })
+
+      const logs = spy.getLogs()
+      strictEqual(ANSI_CODES.yellow.test(logs[0]), true)
+
+      spy.restore()
+    })
+
+    it('should apply blue to duration', function () {
+      const spy = createConsoleSpy()
+
+      log({
+        message: 'test',
+        duration: 100
+      })
+
+      const logs = spy.getLogs()
+      strictEqual(ANSI_CODES.blue.test(logs[0]), true)
+
+      spy.restore()
+    })
+
+    it('should include color reset codes', function () {
+      const spy = createConsoleSpy()
+
+      log({ message: 'test' })
+
+      const logs = spy.getLogs()
+      // Chalk uses \u001b[39m to reset colors (not \u001b[0m)
+      const hasColorReset = /\u001b\[39m/.test(logs[0])
+      strictEqual(hasColorReset, true)
+
+      spy.restore()
+    })
+  })
+
+  describe('Default Parameter Behavior', function () {
+
+    it('should use INFO as default level', function () {
+      const spy = createConsoleSpy()
+
+      log({ message: 'test' })
+
+      const logs = spy.getLogs()
+      const content = extractMessage(logs[0])
+      strictEqual(content, 'Info: test')
+
+      spy.restore()
+    })
+
+    it('should not include context by default', function () {
+      const spy = createConsoleSpy()
+
+      log({ message: 'test' })
+
+      const logs = spy.getLogs()
+      const content = extractMessage(logs[0])
+      strictEqual(content.includes('['), false)
+
+      spy.restore()
+    })
+
+    it('should not include duration by default', function () {
+      const spy = createConsoleSpy()
+
+      log({ message: 'test' })
+
+      const logs = spy.getLogs()
+      const content = extractMessage(logs[0])
+      strictEqual(content.includes('('), false)
 
       spy.restore()
     })
