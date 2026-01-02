@@ -11,8 +11,19 @@ function log ({
   level = 'INFO',
   message,
   context,
-  duration = 0
+  duration
 }) {
+  // Validate required parameters
+  if (!message || typeof message !== 'string') {
+    throw new Error('Invalid message parameter: message must be a non-empty string')
+  }
+
+  // Validate level parameter
+  const validLevels = ['INFO', 'WARN', 'ERROR']
+  if (!validLevels.includes(level)) {
+    throw new Error(`Invalid level parameter: must be one of ${validLevels.join(', ')}`)
+  }
+
   const now = new Date()
   const hours = now.getHours().toString().padStart(2, '0')
   const minutes = now.getMinutes().toString().padStart(2, '0')
@@ -35,12 +46,15 @@ function log ({
       break
   }
 
-  if (context) {
+  if (context && typeof context === 'string' && context.trim()) {
     sayMessage += ' [' + chalk.yellow(`${context}`) + ']'
   }
 
-  if (duration) {
-    sayMessage = sayMessage + ' (' + chalk.blue(Math.floor(duration) + ' ms)')
+  if (duration !== undefined && duration !== null) {
+    const durationNum = Number(duration)
+    if (!isNaN(durationNum)) {
+      sayMessage = sayMessage + ' (' + chalk.blue(Math.floor(durationNum) + ' ms)')
+    }
   }
 
   console.log(sayMessage)
