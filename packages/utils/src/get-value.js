@@ -26,6 +26,11 @@ function getValue (value, query) {
     return result
   }
 
+  // Handle non-string queries
+  if (typeof query !== 'string') {
+    return undefined
+  }
+
   return getValueByString(value, query)
 }
 
