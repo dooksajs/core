@@ -58,11 +58,7 @@ function arrayIsUnique (name, source) {
   const hasDuplicates = arrayHasDuplicates(source)
 
   if (hasDuplicates) {
-    throw new DataSchemaException({
-      schemaPath: name,
-      keyword: 'uniqueItems',
-      message: 'Type error: expected a unique item'
-    })
+    throw DataSchemaException.uniqueItems(name)
   }
 }
 
@@ -611,11 +607,7 @@ export const state = createPlugin('state', {
       }
 
       if (value == null) {
-        throw new DataSchemaException({
-          schemaPath: path,
-          keyword: 'type',
-          message: 'Unexpected type, expected "' + type + '" but got "undefined"'
-        })
+        throw DataSchemaException.typeMismatch(path, type, value)
       }
 
       if (type === 'node') {
@@ -626,7 +618,10 @@ export const state = createPlugin('state', {
         throw new DataSchemaException({
           schemaPath: path,
           keyword: 'type',
-          message: 'Unexpected type, expected a node'
+          message: 'Unexpected type, expected a node',
+          code: 'TYPE_MISMATCH',
+          expected: 'node',
+          actual: typeof value
         })
       }
 
@@ -639,11 +634,7 @@ export const state = createPlugin('state', {
         return true
       }
 
-      throw new DataSchemaException({
-        schemaPath: path,
-        keyword: 'type',
-        message: 'Unexpected type, expected "' + type + '" but got "' + dataType + '"'
-      })
+      throw DataSchemaException.typeMismatch(path, type, value)
     },
     validateSchemaArray (data, path, source) {
       const schema = this.getSchema(path)
@@ -891,7 +882,7 @@ export const state = createPlugin('state', {
           path = path + '/' + key
 
           if (!targetItem[key]) {
-            throw new DataValueException('Update position does not exist' + options.position)
+            throw DataValueException.updatePositionNotFound(options.position.join('.'))
           }
 
           targetItem = targetItem[key]
@@ -912,7 +903,7 @@ export const state = createPlugin('state', {
           if (Array.isArray(targetItem[lastKey])) {
             targetItem = targetItem[lastKey].slice()
           } else {
-            throw new DataValueException('Update position and update method expected an array')
+            throw DataValueException.arrayExpected()
           }
         }
 
@@ -1595,7 +1586,7 @@ export const state = createPlugin('state', {
         const id = options.id
 
         if (id == null) {
-          throw new DataValueException('UnsafeSetValue unexpected id type found "' + options.id +'"')
+          throw DataValueException.unsafeSetValueInvalidId(options.id)
         }
         const item = this.createCollectionItem(collection, value, id)
         const result = createDataValue({
@@ -1720,7 +1711,7 @@ export const state = createPlugin('state', {
         const values = this.values[name]
 
         if (values == null) {
-          throw new DataValueException('No collection found: ' + name)
+          throw DataValueException.collectionNotFound(name)
         }
 
         const schema = this.getSchema(name)
@@ -2158,7 +2149,7 @@ export const state = createPlugin('state', {
         const collection = this.values[name]
 
         if (collection == null) {
-          throw new DataValueException('No such collection "' + name +"'")
+          throw DataValueException.noSuchCollection(name)
         }
 
         const schema = this.getSchema(name)
