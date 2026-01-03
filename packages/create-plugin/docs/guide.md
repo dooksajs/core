@@ -102,10 +102,10 @@ const myPlugin = createPlugin('myPlugin', {
   // 2. Dependencies - Other plugins needed
   dependencies: [otherPlugin],
   
-  // 3. State - Data management
+  // 3. State - Global data management
   state: { defaults: {}, schema: {} },
   
-  // 4. Data - Initial values
+  // 4. Data - Initial values (configuration)
   data: { config: {} },
   
   // 5. Methods - Public API
@@ -122,64 +122,187 @@ const myPlugin = createPlugin('myPlugin', {
 })
 ```
 
-### 2. State Management
+### 2. State Management - Global Data Only
 
-State is the heart of your plugin. It's where data lives.
+**Important**: The `state` property is designed **exclusively for global state** - data that needs to be accessible across multiple plugins or components in your application.
 
-#### Basic State
+#### ✅ Correct: State for Global Data
 
 ```javascript
 state: {
   defaults: {
-    user: null,
-    items: []
+    // Global user session (accessible by auth, permissions, UI plugins)
+    currentUser: null,
+    
+    // Global app settings (accessible by theme, layout plugins)
+    settings: {
+      theme: 'light',
+      language: 'en'
+    },
+    
+    // Global cache (accessible by performance monitoring plugins)
+    cacheStats: {
+      hits: 0,
+      misses: 0
+    }
   },
   schema: {
-    user: { type: 'object' },
-    items: { type: 'array' }
+    currentUser: { type: 'object' },
+    settings: { type: 'object' },
+    cacheStats: { type: 'object' }
   }
 }
 ```
 
-#### Schema Validation
+#### ❌ Incorrect: State for Private Data
 
 ```javascript
+// DON'T DO THIS
 state: {
-  schema: {
-    profile: {
-      type: 'object',
-      properties: {
-        name: { type: 'string', required: true },
-        age: { type: 'number' },
-        email: { type: 'string' }
-      }
+  defaults: {
+    // Private internal state - not needed globally
+    requestQueue: new Map(),
+    cacheStore: new Map(),
+    rateLimitCounters: new Map(),
+    internalConfig: {},
+    tempData: []
+  }
+}
+```
+
+#### ✅ Correct: Private Data in Module Scope
+
+```javascript
+// Private module-level variables (not in state)
+const requestQueue = new Map()
+const cacheStore = new Map()
+const rateLimitCounters = new Map()
+
+const myPlugin = createPlugin('myPlugin', {
+  // State only for global data
+  state: {
+    defaults: {
+      // Only data that other plugins might need
+      stats: { totalRequests: 0 }
     },
-    settings: {
-      type: 'object',
-      patternProperties: {
-        '^theme_': { type: 'string' }
-      },
-      additionalProperties: false
+    schema: {
+      stats: { type: 'object' }
+    }
+  },
+  
+  // Configuration in data property
+  data: {
+    config: {
+      timeout: 5000,
+      retryAttempts: 3
+    }
+  },
+  
+  // Private methods for internal logic
+  privateMethods: {
+    // Use module-level variables internally
+    addToQueue(id, request) {
+      requestQueue.set(id, request)
+    },
+    
+    getFromQueue(id) {
+      return requestQueue.get(id)
+    }
+  },
+  
+  // Public methods for user API
+  methods: {
+    getStats() {
+      // Can access global state
+      return this.stats
     }
   }
-}
+})
 ```
 
-#### Collection State
+### 3. When to Use Each Property
+
+| Property | Purpose | Example | Global? |
+|----------|---------|---------|---------|
+| `state` | Data accessible by other plugins | `currentUser`, `appSettings` | ✅ Yes |
+| `data` | Configuration and initial values | `apiUrl`, `timeout` | ❌ No |
+| `privateMethods` | Internal logic | `validateEmail()`, `generateId()` | ❌ No |
+| `module variables` | Private state | `requestQueue`, `cacheStore` | ❌ No |
+
+### 4. State vs Data Comparison
 
 ```javascript
+// State - Global, reactive, accessible by other plugins
 state: {
-  schema: {
-    users: { type: 'collection' }
+  defaults: {
+    userSession: null,  // Auth plugin needs this
+    permissions: []     // Access control needs this
   }
 }
 
-// Usage
-this.users['user123'] = { name: 'John' }
-this.users['user456'] = { name: 'Jane' }
+// Data - Configuration, not reactive, private
+data: {
+  apiBase: '/api',      // Only fetch plugin needs this
+  timeout: 5000         // Only fetch plugin needs this
+}
+
+// Private variables - Completely internal
+const cache = new Map() // Only this plugin uses this
 ```
 
-### 3. Methods vs Actions
+### 5. Best Practices
+
+```javascript
+// ✅ Good: State for shared data
+state: {
+  defaults: {
+    currentUser: null,
+    appTheme: 'light'
+  }
+}
+
+// ✅ Good: Data for configuration
+data: {
+  config: {
+    retryAttempts: 3,
+    cacheTTL: 300000
+  }
+}
+
+// ✅ Good: Module variables for private state
+const pendingRequests = new Map()
+
+// ❌ Bad: State for private data
+state: {
+  defaults: {
+    internalQueue: [],  // Should be module variable
+    tempCache: {}       // Should be module variable
+  }
+}
+
+// ❌ Bad: Data for shared state
+data: {
+  currentUser: null    // Should be in state
+}
+```
+
+### 6. Performance Considerations
+
+**State**:
+- Triggers reactivity system
+- Can be observed by other plugins
+- Uses more memory
+- Slower to update
+
+**Data/Module Variables**:
+- No reactivity overhead
+- Private to plugin
+- Faster access
+- Lower memory usage
+
+**Rule of Thumb**: If other plugins don't need to watch or react to the data, don't put it in state.
+
+### 7. Methods vs Actions
 
 **Methods** are public functions exposed on the plugin object:
 
@@ -232,7 +355,7 @@ plugin.myPluginCreateUser({ name: 'John', email: 'john@example.com' })
 - Use **actions** for complex operations with validation and metadata
 - Use **actions** when you need to expose functionality to other systems
 
-### 4. Private Methods
+### 8. Private Methods
 
 Private methods are internal functions not exposed publicly:
 
@@ -267,7 +390,7 @@ methods: {
 }
 ```
 
-### 5. Context Binding
+### 9. Context Binding
 
 All functions share the same context (`this`):
 

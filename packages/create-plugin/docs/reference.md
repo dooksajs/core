@@ -85,20 +85,31 @@ setup() {
 ### State Management
 
 #### `state` (Object)
-Manages plugin state with schema validation and default values.
+Manages **global state** - data that needs to be accessible across multiple plugins.
+
+**Important**: Only use state for data that other plugins might need to access or react to. For private plugin data, use:
+- Module-level variables (for internal state)
+- Data property (for configuration)
+- Private methods (for internal logic)
 
 ```javascript
+// ✅ Correct: State for global data
 state: {
   defaults: {
-    counter: 0,
-    items: []
+    currentUser: null,  // Needed by auth, UI, permissions plugins
+    appSettings: {}     // Needed by theme, layout plugins
   },
   schema: {
-    counter: { type: 'number' },
-    items: { 
-      type: 'array',
-      items: { type: 'string' }
-    }
+    currentUser: { type: 'object' },
+    appSettings: { type: 'object' }
+  }
+}
+
+// ❌ Incorrect: State for private data
+state: {
+  defaults: {
+    requestQueue: [],   // Should be module variable
+    cacheStore: {}      // Should be module variable
   }
 }
 ```
@@ -151,6 +162,23 @@ data: {
 
 Data is deep-cloned and accessible via `this` in methods and actions.
 
+**When to use data vs state:**
+- **Data**: Configuration, static values, private to plugin
+- **State**: Dynamic values, shared across plugins, reactive
+
+```javascript
+// ✅ Good
+data: {
+  apiBase: '/api',      // Configuration, private
+  timeout: 5000         // Configuration, private
+}
+
+// ❌ Bad
+data: {
+  currentUser: null    // Should be in state (shared)
+}
+```
+
 ### Methods
 
 #### `methods` (Object)
@@ -187,6 +215,7 @@ privateMethods: {
 - Not exposed on result object
 - Can call other private methods
 - Access to all context data
+- Can use module-level variables
 
 ### Actions
 
@@ -286,11 +315,11 @@ const userPlugin = createPlugin('user', {
   // Dependencies
   dependencies: [authPlugin, databasePlugin],
 
-  // State management
+  // State management - GLOBAL ONLY
   state: {
     defaults: {
-      currentUser: null,
-      users: {}
+      currentUser: null,  // Global: auth, permissions, UI need this
+      users: {}           // Global: other plugins might query this
     },
     schema: {
       currentUser: { 
@@ -305,7 +334,7 @@ const userPlugin = createPlugin('user', {
     }
   },
 
-  // Initial data
+  // Initial data - PRIVATE CONFIGURATION
   data: {
     apiEndpoint: '/api/users',
     timeout: 5000
@@ -503,7 +532,29 @@ state: {
 }
 ```
 
-### 3. Action Design
+### 3. State vs Data vs Module Variables
+
+```javascript
+// ✅ State: Global, reactive, shared
+state: {
+  defaults: {
+    currentUser: null,  // Other plugins need this
+    appSettings: {}     // Other plugins need this
+  }
+}
+
+// ✅ Data: Configuration, private
+data: {
+  apiBase: '/api',      // Only this plugin needs this
+  timeout: 5000         // Only this plugin needs this
+}
+
+// ✅ Module variables: Completely private
+const requestQueue = new Map()  // Only this plugin uses this
+const cacheStore = new Map()    // Only this plugin uses this
+```
+
+### 4. Action Design
 
 ```javascript
 // ✅ Good: Clear metadata, parameter validation
@@ -538,7 +589,7 @@ actions: {
 }
 ```
 
-### 4. Private vs Public Methods
+### 5. Private vs Public Methods
 
 ```javascript
 // ✅ Good: Clear separation
@@ -558,7 +609,7 @@ methods: {
 }
 ```
 
-### 5. Error Handling
+### 6. Error Handling
 
 ```javascript
 // ✅ Good: Specific error handling
@@ -587,7 +638,7 @@ actions: {
 }
 ```
 
-### 6. Async Operations
+### 7. Async Operations
 
 ```javascript
 // ✅ Good: Proper async/await
@@ -612,7 +663,7 @@ actions: {
 }
 ```
 
-### 7. Dependencies
+### 8. Dependencies
 
 ```javascript
 // ✅ Good: Explicit dependencies
@@ -634,6 +685,42 @@ methods: {
     return window.plugins.database.get('users', id)
   }
 }
+```
+
+### 9. Module Variables for Private State
+
+```javascript
+// ✅ Good: Module variables for internal state
+const requestQueue = new Map()
+const cacheStore = new Map()
+const rateLimitCounters = new Map()
+
+const myPlugin = createPlugin('myPlugin', {
+  // State only for global data
+  state: {
+    defaults: {
+      stats: { totalRequests: 0 }  // Global
+    }
+  },
+  
+  // Private methods using module variables
+  privateMethods: {
+    addToQueue(id, request) {
+      requestQueue.set(id, request)  // Uses module variable
+    },
+    
+    getFromQueue(id) {
+      return requestQueue.get(id)    // Uses module variable
+    }
+  },
+  
+  // Public methods
+  methods: {
+    getStats() {
+      return this.stats              // Accesses global state
+    }
+  }
+})
 ```
 
 ## Type Definitions
