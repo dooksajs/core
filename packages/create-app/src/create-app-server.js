@@ -5,78 +5,59 @@ import defaultActions from '@dooksa/actions'
 
 /**
  * @import { DsPlugin, DsPluginMetadata, ActiveAction } from '../../create-plugin/types.js'
- * @import { AppPlugin } from '#types'
- * @import { Action } from '@dooksa/create-action/types'
+ * @import { AppPlugin, AppClientPlugin, AppAction, ServerPlugins, ClientPlugins } from '#types'
+ * @import { Action } from '@dooksa/create-action'
  */
 
 /**
- * @typedef {Object} ServerPlugins
- * @property {DsPlugin} [state]
- * @property {DsPlugin} [middleware]
- * @property {DsPlugin} [http]
- * @property {DsPlugin} [metadata]
- * @property {DsPlugin} [user]
- * @property {DsPlugin} [database]
- * @property {DsPlugin} [action]
- * @property {DsPlugin} [component]
- * @property {DsPlugin} [event]
- * @property {DsPlugin} [page]
- * @property {DsPlugin} [theme]
- */
-
-/**
- * @typedef {Object} ClientPlugins
- * @property {DsPlugin} [state]
- * @property {DsPlugin} [metadata]
- * @property {DsPlugin} [fetch]
- * @property {DsPlugin} [operator]
- * @property {DsPlugin} [action]
- * @property {DsPlugin} [variable]
- * @property {DsPlugin} [component]
- * @property {DsPlugin} [regex]
- * @property {DsPlugin} [editor]
- * @property {DsPlugin} [list]
- * @property {DsPlugin} [event]
- * @property {DsPlugin} [token]
- * @property {DsPlugin} [icon]
- * @property {DsPlugin} [query]
- * @property {DsPlugin} [route]
- * @property {DsPlugin} [form]
- * @property {DsPlugin} [string]
- * @property {DsPlugin} [page]
- */
-
-/**
- * @typedef {Object} AppClientPlugin
- * @property {Function} use
- * @property {{ name: string, metadata: DsPluginMetadata }[]} metadata
- * @property {ActiveAction[]} actions
- */
-
-/**
- * @typedef {Object} AppAction
- * @property {Function} use
- * @property {Action[]} items
- */
-
-/**
- * Append actions
- * @returns {AppAction}
+ * Creates a reusable action collection manager.
+ *
+ * This helper function provides a simple interface for collecting and retrieving
+ * action definitions during application setup.
+ *
+ * @returns {AppAction} Action manager with use method and items getter
+ * @example
+ * // Create action manager
+ * const actionManager = appendAction()
+ *
+ * // Add actions
+ * actionManager.use(loginAction)
+ * actionManager.use(logoutAction)
+ *
+ * // Get all actions
+ * const allActions = actionManager.items
+ * console.log(`Collected ${allActions.length} actions`)
  */
 function appendAction () {
+  /** @type {Action[]} */
   const actions = []
 
   return {
     /**
-     * Use action
-     * @param {Action} action
+     * Adds an action to the collection.
+     * @param {Action} action - Action definition to add
+     * @example
+     * actionManager.use({
+     *   id: 'user-login',
+     *   name: 'login',
+     *   method: (params, context) => {
+     *     // Login logic implementation
+     *     return { success: true }
+     *   }
+     * })
      */
     use (action) {
       actions.push(action)
     },
+
     /**
-     * List of compiled actions
-     * @returns {Action[]}
+     * Gets all collected actions.
+     * @returns {Action[]} Array of action definitions
+     * @example
+     * const actions = actionManager.items
+     * actions.forEach(action => {
+     *   console.log(`Action: ${action.name}`)
+     * })
      */
     get items () {
       return actions
@@ -85,17 +66,40 @@ function appendAction () {
 }
 
 /**
- * Append client plugins
- * @returns {AppClientPlugin}
+ * Creates a client plugin collection manager.
+ *
+ * This helper function manages client-side plugins, collecting their metadata
+ * and actions for the application.
+ *
+ * @returns {AppClientPlugin} Client plugin manager with use method and getters
+ * @example
+ * // Create client plugin manager
+ * const clientPluginManager = appendClientPlugin()
+ *
+ * // Add plugins
+ * clientPluginManager.use(authPlugin)
+ * clientPluginManager.use(fetchPlugin)
+ *
+ * // Access collected data
+ * console.log(clientPluginManager.metadata)
+ * console.log(clientPluginManager.actions)
  */
 function appendClientPlugin () {
+  /** @type {any[]} */
   let actions = []
+  /** @type {Array<{name: string, metadata: DsPluginMetadata}>} */
   const metadata = []
 
   return {
     /**
-     * Use client side plugin
-     * @param {DsPlugin} plugin
+     * Adds a client plugin to the collection.
+     * @param {DsPlugin} plugin - Client plugin instance
+     * @example
+     * clientPluginManager.use({
+     *   name: 'auth',
+     *   metadata: { version: '1.0.0' },
+     *   actions: [loginAction, logoutAction]
+     * })
      */
     use (plugin) {
       if (plugin.metadata) {
@@ -109,14 +113,26 @@ function appendClientPlugin () {
         actions = actions.concat(plugin.actions)
       }
     },
+
     /**
-     * Collection of client plugin metadata
+     * Gets collected plugin metadata.
+     * @returns {Array<{name: string, metadata: DsPluginMetadata}>} Plugin metadata array
+     * @example
+     * const metadata = clientPluginManager.metadata
+     * metadata.forEach(({ name, metadata }) => {
+     *   console.log(`${name}: v${metadata.version}`)
+     * })
      */
     get metadata () {
       return metadata
     },
+
     /**
-     * Collection of client plugin actions
+     * Gets collected plugin actions.
+     * @returns {Action[]} Array of actions from all plugins
+     * @example
+     * const actions = clientPluginManager.actions
+     * console.log(`Total actions: ${actions.length}`)
      */
     get actions () {
       return actions
@@ -125,16 +141,40 @@ function appendClientPlugin () {
 }
 
 /**
- * Initialize Dooksa!
- * @param {AppPlugin} serverPlugins
- * @param {AppClientPlugin} clientPlugins
- * @param {AppAction} actions
+ * Initializes the Dooksa application with all configured plugins and data.
+ *
+ * This function sets up the application by:
+ * - Configuring state, actions, and metadata
+ * - Executing plugin setup functions
+ * - Starting the HTTP server
+ *
+ * @param {AppPlugin} serverPlugins - Server-side plugin manager
+ * @param {AppClientPlugin} clientPlugins - Client-side plugin manager
+ * @param {AppAction} actions - Action collection manager
+ * @returns {Function} Initialization function that starts the application
+ * @example
+ * // Initialize with managers
+ * const init = initialize(serverPluginManager, clientPluginManager, actionManager)
+ *
+ * // Start the application
+ * const httpServer = init({ options: { port: 3000 } })
  */
 function initialize (serverPlugins, clientPlugins, actions) {
   /**
-   * Initialize server-side Dooksa!
-   * @param {Object} param
-   * @param {Object} [param.options={}]
+   * Starts the Dooksa server application.
+   *
+   * @param {Object} param - Initialization parameters
+   * @param {Object} [param.options={}] - Application configuration options
+   * @returns {Object} HTTP server instance
+   * @example
+   * // Start with custom options
+   * const server = init({
+   *   options: {
+   *     port: 8080,
+   *     host: 'localhost',
+   *     cors: { origin: '*' }
+   *   }
+   * })
    */
   return ({ options = {} }) => {
     options.state = serverPlugins.state
@@ -161,11 +201,44 @@ function initialize (serverPlugins, clientPlugins, actions) {
 }
 
 /**
- * Create Dooksa app
- * @param {Object} data
- * @param {ServerPlugins} [data.serverPlugins={}] - Overwrite core server plugins
- * @param {ClientPlugins} [data.clientPlugins={}] - Overwrite core client plugins
- * @param {Object.<string, Action>} [data.actions={}] - Overwrite core client plugins
+ * Creates and configures a Dooksa server application.
+ *
+ * This is the main entry point for creating server-side Dooksa applications.
+ * It sets up plugin management, action collection, and component registration
+ * with sensible defaults and customization options.
+ *
+ * @param {Object} options - Application configuration options
+ * @param {ClientPlugins} [options.clientPlugins={}] - Override default client plugins
+ * @param {ServerPlugins} [options.serverPlugins={}] - Override default server plugins
+ * @param {Object.<string, Action>} [options.actions={}] - Override default actions
+ * @returns {Object} Server application instance with methods to extend and setup
+ * @example
+ * // Create server app with defaults
+ * const app = createAppServer()
+ *
+ * @example
+ * // Create server app with custom plugins
+ * const app = createAppServer({
+ *   serverPlugins: {
+ *     http: customHttpPlugin,
+ *     database: customDbPlugin
+ *   },
+ *   clientPlugins: {
+ *     fetch: customFetchPlugin
+ *   },
+ *   actions: {
+ *     'custom-action': customAction
+ *   }
+ * })
+ *
+ * @example
+ * // Extend and setup the app
+ * app.usePlugin(myPlugin)
+ * app.useClientPlugin(myClientPlugin)
+ * app.useAction(myAction)
+ *
+ * // Initialize and start
+ * const server = app.setup({ options: { port: 3000 } })
  */
 export default function createAppServer ({
   clientPlugins = {},
