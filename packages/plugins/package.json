@@ -8,8 +8,9 @@
   "type": "module",
   "scripts": {
     "test-unit": "node --experimental-test-module-mocks --test test/**/*.spec.js",
-    "test-coverage": "node --test --experimental-test-module-mocks --experimental-test-coverage --test-reporter=lcov --test-reporter-destination=lcov.info"
-  },
+    "test-coverage-lcov": "node --test --experimental-test-module-mocks --experimental-test-coverage --test-reporter=lcov --test-reporter-destination=lcov.info",
+    "test-coverage-report": "node --test --experimental-test-module-mocks --experimental-test-coverage"
+},
   "imports": {
     "#client": "./src/client/index.js",
     "#server": "./src/server/index.js",
