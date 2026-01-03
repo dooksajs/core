@@ -7,23 +7,44 @@ import {
 } from '@dooksa/components'
 
 /**
- * @import { AppPlugin } from '#types'
+ * @import { AppPlugin, AppComponent } from '#types'
  * @import { Component } from '@dooksa/create-component'
  */
 
 /**
- * @typedef {Object} AppComponent
- * @property {Function} use
- * @property {Object.<string, Component>} items
+ * Creates a component collection manager.
+ *
+ * This helper function manages UI components, providing a registry for
+ * component definitions and preventing duplicate component IDs.
+ *
+ * @returns {AppComponent} Component manager with use method and items getter
+ * @example
+ * // Create component manager
+ * const componentManager = appendComponent()
+ *
+ * // Add components
+ * componentManager.use(buttonComponent)
+ * componentManager.use(formComponent)
+ *
+ * // Access components
+ * const allComponents = componentManager.items
+ * console.log(`Registered ${Object.keys(allComponents).length} components`)
  */
-
 function appendComponent () {
   /** @type {Object.<string, Component>} */
   const components = {}
 
   return {
     /**
-     * @param {Component} component
+     * Adds a component to the collection.
+     * @param {Component} component - Component definition to add
+     * @throws {Error} If component with same ID already exists
+     * @example
+     * componentManager.use({
+     *   id: 'button',
+     *   name: 'Button',
+     *   options: { variants: ['primary', 'secondary'] }
+     * })
      */
     use (component) {
       if (components[component.id]) {
@@ -32,6 +53,17 @@ function appendComponent () {
 
       components[component.id] = component
     },
+
+    /**
+     * Gets all registered components.
+     * @returns {Object.<string, Component>} Map of component IDs to definitions
+     * @example
+     * const components = componentManager.items
+     * const button = components['button']
+     * if (button) {
+     *   console.log(`Button component: ${button.name}`)
+     * }
+     */
     get items () {
       return components
     }
@@ -39,14 +71,35 @@ function appendComponent () {
 }
 
 /**
- * Find and load plugin used by the @see action function
- * @param {Object} app - App
- * @param {Object} app.actions
- * @param {Object} app.lazy
- * @param {Function} app.loader
- * @param {Object[]} app.setup
- * @param {Object} app.options
- * @param {Function} app.use
+ * Creates a callback system for lazy-loading plugins when actions are needed.
+ *
+ * This function provides a mechanism to dynamically load plugins only when
+ * their actions are first requested, improving initial load performance.
+ *
+ * @param {Object} app - Application context
+ * @param {Object} app.actions - Registered action methods
+ * @param {Object} app.lazy - Lazy plugin definitions
+ * @param {Function} app.loader - Plugin loader function
+ * @param {Object[]} app.setup - Setup queue
+ * @param {Object} app.options - Application options
+ * @param {Function} app.use - Plugin registration function
+ * @returns {Function} Callback function that loads plugins when actions are needed
+ * @example
+ * // Create callback for lazy loading
+ * const actionCallback = callbackWhenAvailable({
+ *   actions: app.actions,
+ *   lazy: app.lazy,
+ *   loader: app.loader,
+ *   setup: app.setup,
+ *   options: app.options,
+ *   use: app.use
+ * })
+ *
+ * // Use callback to ensure plugin is loaded before action
+ * actionCallback('auth_login', () => {
+ *   // Action is now available
+ *   app.actions.auth_login(params, context)
+ * })
  */
 function callbackWhenAvailable ({ actions, lazy, loader, setup, options, use }) {
   const setupPlugin = (plugin, methodName, callback) => {
@@ -67,8 +120,16 @@ function callbackWhenAvailable ({ actions, lazy, loader, setup, options, use }) 
   }
 
   /**
-   * @param {string} name - Name of method
-   * @param {function} callback - Callback used to run after loading the requested plugin
+   * Callback function that loads plugins when actions are needed.
+   *
+   * @param {string} name - Name of the action method to ensure is available
+   * @param {function} callback - Function to execute after plugin is loaded
+   * @returns {any} Result of the callback function
+   * @example
+   * // Ensure auth plugin is loaded before calling login
+   * actionCallback('auth_login', () => {
+   *   return app.actions.auth_login(credentials)
+   * })
    */
   return (name, callback) => {
     if (typeof actions[name] === 'function') {
@@ -97,16 +158,45 @@ function callbackWhenAvailable ({ actions, lazy, loader, setup, options, use }) 
 }
 
 /**
- * @param {AppPlugin} appPlugins
- * @param {AppComponent} appComponents
+ * Initializes the Dooksa client application with all configured plugins and components.
+ *
+ * This function sets up the client application by:
+ * - Configuring action execution with lazy loading
+ * - Setting up component registry
+ * - Processing initial data from global scope
+ * - Executing plugin setup functions
+ *
+ * @param {AppPlugin} appPlugins - Plugin manager
+ * @param {AppComponent} appComponents - Component manager
+ * @returns {Function} Initialization function that starts the client application
+ * @example
+ * // Initialize with managers
+ * const init = initialize(pluginManager, componentManager)
+ *
+ * // Start the application
+ * init({
+ *   options: { /* config *\/ },
+ *   lazy: { 'auth': './plugins/auth.js' },
+ *   loader: (file) => import(file)
+ * })
  */
 function initialize (appPlugins, appComponents) {
   /**
-   * Initialize dooksa!
-   * @param {Object} param
-   * @param {Object} [param.options={}]
-   * @param {Object} [param.lazy={}]
-   * @param {Function} param.loader
+   * Starts the Dooksa client application.
+   *
+   * @param {Object} param - Initialization parameters
+   * @param {Object} [param.options={}] - Application configuration options
+   * @param {Object} [param.lazy={}] - Lazy plugin definitions
+   * @param {Function} [param.loader] - Plugin loader function
+   * @example
+   * // Start with lazy loading
+   * init({
+   *   options: { port: 3000 },
+   *   lazy: {
+   *     'payment': './plugins/payment.js'
+   *   },
+   *   loader: (fileName) => import(fileName)
+   * })
    */
   return ({
     options = {},
@@ -203,11 +293,48 @@ function initialize (appPlugins, appComponents) {
 }
 
 /**
- * Create Dooksa app
- * @param {Object} options
- * @param {Object.<string, Component>} [options.components={}]
- * @param {boolean} [options.excludeExtraComponents]
- * @param {boolean} [options.excludeBootstrapComponents]
+ * Creates and configures a Dooksa client application.
+ *
+ * This is the main entry point for creating client-side Dooksa applications.
+ * It sets up plugin management, component registration, and provides options
+ * for customizing which components are included.
+ *
+ * @param {Object} options - Application configuration options
+ * @param {Object.<string, Component>} [options.components={}] - Override or add custom components
+ * @param {boolean} [options.excludeExtraComponents=false] - Exclude extra components to reduce bundle size
+ * @param {boolean} [options.excludeBootstrapComponents=false] - Exclude bootstrap components
+ * @returns {Object} Client application instance with methods to extend and setup
+ * @example
+ * // Create client app with defaults
+ * const app = createAppClient()
+ *
+ * @example
+ * // Create app with custom components
+ * const app = createAppClient({
+ *   components: {
+ *     'custom-button': customButtonComponent,
+ *     'custom-form': customFormComponent
+ *   }
+ * })
+ *
+ * @example
+ * // Create minimal app (exclude extra and bootstrap components)
+ * const app = createAppClient({
+ *   excludeExtraComponents: true,
+ *   excludeBootstrapComponents: true
+ * })
+ *
+ * @example
+ * // Extend and setup the app
+ * app.usePlugin(myPlugin)
+ * app.useComponent(myComponent)
+ *
+ * // Initialize
+ * app.setup({
+ *   options: { /* config *\/ },
+ *   lazy: { 'payment': './plugins/payment.js' },
+ *   loader: (file) => import(file)
+ * })
  */
 export default function createAppClient ({
   components = {},
