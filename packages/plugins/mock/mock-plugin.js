@@ -182,7 +182,7 @@ export async function mockPlugin (
 
   try {
     // Import the main plugin
-    const pluginPath = `../src/${platform}/${name}.js`
+    const pluginPath = `../src/${platform}/${name}.js?seed=${crypto.randomUUID()}`
     const mainPlugin = await import(pluginPath)
 
     // Import and mock additional modules
