@@ -8,7 +8,8 @@
   "type": "module",
   "scripts": {
     "test-unit": "node --test",
-    "test-coverage": "node --test --experimental-test-coverage --test-reporter=lcov --test-reporter-destination=lcov.info"
+    "test-coverage-lcov": "node --test --experimental-test-coverage --test-reporter=lcov --test-reporter-destination=lcov.info",
+    "test-coverage-report": "node --test --experimental-test-coverage"
   },
   "imports": {
     "#server": "./src/server/index.js"
