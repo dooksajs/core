@@ -1,68 +1,142 @@
 import { test, expect } from '../fixtures/component.js'
 
-test('has one h1 element', async ({ page, axeDisableRules }) => {
-  await page.goto('/_/component/h1')
+// Test configuration for all heading levels
+const headingTestCases = [
+  {
+    level: 1,
+    url: '/_/component/h1',
+    rules: ['empty-heading'],
+    description: 'h1 heading'
+  },
+  {
+    level: 2,
+    url: '/_/component/h2',
+    rules: ['empty-heading', 'page-has-heading-one'],
+    description: 'h2 heading'
+  },
+  {
+    level: 3,
+    url: '/_/component/h3',
+    rules: ['empty-heading', 'page-has-heading-one'],
+    description: 'h3 heading'
+  },
+  {
+    level: 4,
+    url: '/_/component/h4',
+    rules: ['empty-heading', 'page-has-heading-one'],
+    description: 'h4 heading'
+  },
+  {
+    level: 5,
+    url: '/_/component/h5',
+    rules: ['empty-heading', 'page-has-heading-one'],
+    description: 'h5 heading'
+  },
+  {
+    level: 6,
+    url: '/_/component/h6',
+    rules: ['empty-heading', 'page-has-heading-one'],
+    description: 'h6 heading'
+  }
+]
 
-  const oneH1Element = await page.getByRole('heading', { level: 1 }).count()
+/**
+ * Helper function to validate heading count
+ */
+async function validateHeadingCount (page, level) {
+  const heading = page.getByRole('heading', { level })
+  const count = await heading.count()
 
-  await expect(oneH1Element).toBe(1)
+  return count
+}
 
-  // add axe rules
+// Parameterized tests for basic heading validation
+headingTestCases.forEach(({ level, url, rules, description }) => {
+  test(`has exactly one ${description}`, async ({ page, axeDisableRules }) => {
+    await page.goto(url)
+
+    // Verify page loaded successfully
+    await expect(page).toHaveURL(url)
+
+    // Validate heading count
+    const count = await validateHeadingCount(page, level)
+    expect(count).toBe(1)
+
+    // Add accessibility rules
+    axeDisableRules.push(...rules)
+  })
+})
+
+// Additional validation: verify heading elements exist and are proper HTML elements
+headingTestCases.forEach(({ level, url, description }) => {
+  test(`${description} has proper HTML structure`, async ({ page, axeDisableRules }) => {
+    await page.goto(url)
+
+    const heading = page.getByRole('heading', { level })
+
+    // Verify heading element exists
+    await expect(heading).toHaveCount(1)
+
+    // Verify it's the correct HTML element
+    const tagName = await heading.evaluate(el => el.tagName.toLowerCase())
+    expect(tagName).toBe(`h${level}`)
+
+    // Add appropriate rules based on level
+    if (level === 1) {
+      axeDisableRules.push('empty-heading')
+    } else {
+      axeDisableRules.push('empty-heading', 'page-has-heading-one')
+    }
+  })
+})
+
+// Test that all heading levels work consistently
+test('all heading levels maintain consistent structure', async ({ page, axeDisableRules }) => {
+  const results = []
+
+  for (const { level, url } of headingTestCases) {
+    await page.goto(url)
+
+    const heading = page.getByRole('heading', { level })
+    const count = await heading.count()
+    const tagName = await heading.evaluate(el => el.tagName.toLowerCase())
+
+    results.push({
+      level,
+      count,
+      tagName,
+      expectedTag: `h${level}`,
+      passed: count === 1 && tagName === `h${level}`
+    })
+  }
+
+  // Verify all headings passed
+  results.forEach((result) => {
+    expect(result.passed).toBe(true)
+  })
+
+  // Add appropriate rules (using h1 as reference)
   axeDisableRules.push('empty-heading')
 })
 
-test('has one h2 element', async ({ page, axeDisableRules }) => {
-  await page.goto('/_/component/h2')
+// Test accessibility rules are properly configured
+headingTestCases.forEach(({ level, url, rules, description }) => {
+  test(`${description} accessibility rules are correct`, async ({ page, axeDisableRules }) => {
+    await page.goto(url)
 
-  const oneH2Element = await page.getByRole('heading', { level: 2 }).count()
+    // Verify the correct rules are being applied
+    const testRules = []
 
-  await expect(oneH2Element).toBe(1)
+    if (level === 1) {
+      testRules.push('empty-heading')
+    } else {
+      testRules.push('empty-heading', 'page-has-heading-one')
+    }
 
-  // add axe rules
-  axeDisableRules.push('empty-heading', 'page-has-heading-one')
+    // Verify rules match expected
+    expect(rules).toEqual(testRules)
+
+    // Add the rules to the fixture
+    axeDisableRules.push(...rules)
+  })
 })
-
-test('has one h3 element', async ({ page, axeDisableRules }) => {
-  await page.goto('/_/component/h3')
-
-  const oneH3Element = await page.getByRole('heading', { level: 3 }).count()
-
-  await expect(oneH3Element).toBe(1)
-
-  // add axe rules
-  axeDisableRules.push('empty-heading', 'page-has-heading-one')
-})
-
-test('has one h4 element', async ({ page, axeDisableRules }) => {
-  await page.goto('/_/component/h4')
-
-  const oneH4Element = await page.getByRole('heading', { level: 4 }).count()
-
-  await expect(oneH4Element).toBe(1)
-
-  // add axe rules
-  axeDisableRules.push('empty-heading', 'page-has-heading-one')
-})
-
-test('has one h5 element', async ({ page, axeDisableRules }) => {
-  await page.goto('/_/component/h5')
-
-  const oneH5Element = await page.getByRole('heading', { level: 5 }).count()
-
-  await expect(oneH5Element).toBe(1)
-
-  // add axe rules
-  axeDisableRules.push('empty-heading', 'page-has-heading-one')
-})
-
-test('has one h6 element', async ({ page, axeDisableRules }) => {
-  await page.goto('/_/component/h6')
-
-  const oneH6Element = await page.getByRole('heading', { level: 6 }).count()
-
-  await expect(oneH6Element).toBe(1)
-
-  // add axe rules
-  axeDisableRules.push('empty-heading', 'page-has-heading-one')
-})
-
