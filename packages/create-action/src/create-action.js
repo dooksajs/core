@@ -3,15 +3,83 @@ import availableMethods from './available-methods.js'
 import { parseAction } from '@dooksa/utils/server'
 
 /**
- * @import {ActionValue, Action, ActionBlock} from './types.js'
+ * @import {ActionValue, Action, ActionBlock, ParseOptions} from '../types/index.js'
  */
 
 /**
- * @param {string} id
- * @param {ActionValue[]} data
- * @param {string[]} [dependencies]
- * @param {Object.<string, boolean>} [methods] - Allowed actions
- * @returns {Action}
+ * Creates a compiled action from raw action data.
+ *
+ * This function orchestrates the entire action compilation process by:
+ * 1. Processing each action item through parseAction to convert to block format
+ * 2. Managing block sequences and execution order
+ * 3. Resolving references ($ref and $sequenceRef) between blocks
+ * 4. Generating unique block IDs using hash-based prefixes
+ *
+ * ## Process Flow
+ *
+ * 1. **Input**: Array of action data objects
+ * 2. **Parsing**: Each item is parsed into blocks with unique IDs
+ * 3. **Reference Resolution**: $ref and $sequenceRef are resolved to actual block IDs
+ * 4. **Output**: Compiled action with blocks, sequences, and dependencies
+ *
+ * ## Reference Resolution
+ *
+ * - **$ref**: Resolves to specific block IDs within the compiled action
+ * - **$sequenceRef**: Resolves to sequence IDs (block sequences)
+ * - References can use numeric indices or named action IDs
+ *
+ * @param {string} id - Unique identifier for the action. Used as the root action ID
+ * @param {ActionValue[]} data - Array of action data objects to compile.
+ *                              Each object can contain methods, nested data, and references
+ * @param {string[]} [dependencies=[]] - Array of plugin or action dependencies required by this action.
+ *                                      Used for dependency management and loading order
+ * @param {Object.<string, boolean>} [methods=availableMethods] - Object mapping of allowed action method names to true.
+ *                                                               Restricts which methods can be used in the action
+ *
+ * @returns {Action} Compiled action object containing:
+ *   - `id`: The action identifier
+ *   - `blocks`: Object mapping block IDs to block definitions
+ *   - `blockSequences`: Object mapping sequence IDs to arrays of block IDs
+ *   - `sequences`: Array of sequence IDs in execution order
+ *   - `dependencies`: Array of required dependencies
+ *
+ * @example
+ * // Create a simple action with dispatch
+ * const action = createAction('my-action', [
+ *   {
+ *     action_dispatch: {
+ *       id: 'component-123',
+ *       payload: { value: 'Hello' }
+ *     }
+ *   }
+ * ], [], { action_dispatch: true })
+ *
+ * @example
+ * // Create action with references
+ * const action = createAction('ref-action', [
+ *   {
+ *     $id: 'step1',
+ *     action_dispatch: { id: 'comp1' }
+ *   },
+ *   {
+ *     state_setValue: {
+ *       name: 'test',
+ *       value: { $ref: 'step1' }
+ *     }
+ *   }
+ * ], [], { action_dispatch: true, state_setValue: true })
+ *
+ * @example
+ * // Create action with dependencies
+ * const action = createAction('complex-action', [
+ *   {
+ *     action_ifElse: {
+ *       if: [{ op: '==', from: 'status', to: 'active' }],
+ *       then: [{ $sequenceRef: 0 }],
+ *       else: [{ $sequenceRef: 1 }]
+ *     }
+ *   }
+ * ], ['plugin-a', 'plugin-b'], { action_ifElse: true })
  */
 function createAction (id, data, dependencies = [], methods = availableMethods) {
   const sequences = []
