@@ -1,0 +1,40 @@
+{
+  "name": "@dooksa/test",
+  "version": "0.0.0",
+  "description": "Testing utilities and mocks for Dooksa packages",
+  "author": "Thomas David <tom@mightysmile.com>",
+  "repository": "git@github.com:dooksajs/dooksa.git",
+  "license": "AGPL-3.0-or-later",
+  "type": "module",
+  "main": "src/index.js",
+  "types": "types/index.d.ts",
+  "exports": {
+    ".": "./src/index.js",
+    "./plugins": "./src/plugins/index.js",
+    "./utils": "./src/utils/index.js",
+    "./assertions": "./src/assertions/index.js",
+    "./factories": "./src/factories/index.js"
+  },
+  "imports": {
+    "#client": "@dooksa/plugins/client",
+    "#server": "@dooksa/plugins/server"
+  },
+  "scripts": {
+    "test": "node --test --experimental-test-module-mocks test/**/*.test.js",
+    "test:watch": "node --test --experimental-test-module-mocks --watch test/**/*.test.js"
+  },
+  "devDependencies": {
+    "@dooksa/create-action": "workspace:^",
+    "@dooksa/create-plugin": "workspace:^",
+    "@dooksa/plugins": "workspace:^",
+    "@dooksa/utils": "workspace:^",
+    "jsdom": "^27.4.0"
+  },
+  "keywords": [
+    "test",
+    "testing",
+    "mocks",
+    "fixtures",
+    "dooksa"
+  ]
+}
