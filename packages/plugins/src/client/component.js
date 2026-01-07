@@ -963,6 +963,7 @@ export const component = createPlugin('component', {
             groupId = item.groupId
           }
 
+          // @ts-ignore
           childNode = this.createTemplate({
             id,
             template: this.getById(item.id),
@@ -1092,6 +1093,7 @@ export const component = createPlugin('component', {
           isMounted = true
         } else if (nextNode !== prevNode) {
           // node was inserted
+          // @ts-ignore
           const prevComponentId = prevNode.__dooksaId__
           const nextComponentId = nextNode.__dooksaId__
           const prevNodeBelongsTo = stateGetValue({
@@ -1142,6 +1144,7 @@ export const component = createPlugin('component', {
       if (prevChildNodes.length > nextChildNodes.length) {
         for (let i = nextChildNodes.length; i < prevChildNodes.length; i++) {
           const node = prevChildNodes[i]
+          // @ts-ignore
           const componentId = node.__dooksaId__
 
           if (removeNodes[componentId] === undefined) {
@@ -1513,7 +1516,7 @@ export const component = createPlugin('component', {
     })
     let element
 
-    if (!rootItem.isEmpty) {
+    if (!rootItem.isEmpty && typeof rootItem.id === 'string') {
       element = this.createNode(rootItem.id, rootItem.item)
     } else {
       element = this.createTemplate({
