@@ -4,7 +4,7 @@ import { getValue } from '@dooksa/utils'
 
 /**
  * @import {SetDataOptions, GetDataQuery, DataSchema, DataWhere} from '../../../types.js'
- * @import {ActionDispatchContext} from '@dooksa/create-action'
+ * @import {ActionDispatchContext, ActionBlock} from '@dooksa/create-action'
  */
 
 /**
@@ -16,6 +16,7 @@ const dataTypes = {
   array: () => ([])
 }
 let $action = (name, param, context, callback) => {
+  throw new Error('Action: $action method was not defined during setup')
 }
 // current action in progress
 let $actionId = ''
@@ -162,86 +163,157 @@ export const action = createPlugin('action', {
         value
       }
     },
+    /**
+     * Processes a sequence of action block sequences, executing blocks in order
+     * and managing asynchronous execution flow.
+     *
+     * @param {string[]} sequence - Array of block sequence IDs to process. Each sequence ID
+     *   references a collection of block IDs that will be executed in order.
+     * @param {ActionDispatchContext} context - Current action execution context containing
+     *   id, rootId, parentId, and groupId information.
+     * @param {Object} payload - Data payload passed to action methods for processing.
+     * @param {Object} [blockValues={}] - Accumulated values from previously executed blocks.
+     *   Used to cache and share values between blocks during execution.
+     * @param {Function} [callback] - Completion callback called when all blocks are processed.
+     *   Receives the final result of the action execution.
+     * @param {boolean} [startProcess=false] - Whether to immediately start execution.
+     *   If false, returns prepared functions for manual execution.
+     * @returns {Function[]} Array of prepared block execution functions that can be
+     *   executed sequentially.
+     * @throws {Error} When block sequences cannot be found in state.
+     * @throws {Error} When individual blocks within sequences cannot be found.
+     * @throws {Error} When action method execution fails (via onError handler).
+     * @throws {Error} When block value retrieval fails.
+     */
     processSequence (sequence, context, payload, blockValues = {}, callback, startProcess) {
       const blockProcess = []
       let blockProcessIndex = 0
 
+      // Validate sequence input
+      if (!Array.isArray(sequence)) {
+        throw new Error(`Action: sequence must be an array, received ${typeof sequence}`)
+      }
+
       for (let i = 0; i < sequence.length; i++) {
         const blockSequenceId = sequence[i]
-        const blockSequence = stateGetValue({
+
+        // Get block sequence with proper empty checking
+        const blockSequenceResult = stateGetValue({
           name: 'action/blockSequences',
           id: blockSequenceId
-        }).item
+        })
 
-        for (let i = 0; i < blockSequence.length; i++) {
-          const id = blockSequence[i]
-          const block = stateGetValue({
+        if (blockSequenceResult.isEmpty) {
+          throw new Error(`Action: block sequence could not be found: ${blockSequenceId} (sequence index: ${i})`)
+        }
+
+        const blockSequence = blockSequenceResult.item
+
+        for (let j = 0; j < blockSequence.length; j++) {
+          const id = blockSequence[j]
+
+          // Get block with proper empty checking
+          const blockResult = stateGetValue({
             name: 'action/blocks',
             id
           })
 
-          if (block.isEmpty) {
-            throw new Error('Action: block could not be found: ' + id )
+          if (blockResult.isEmpty) {
+            throw new Error(`Action: block could not be found: ${id} (sequence: ${blockSequenceId}, position: ${j})`)
           }
 
-          const item = block.item
+          const block = blockResult.item
 
           // prepare block method
-          if (item.method) {
+          if (block.method) {
             blockProcess.push(() => {
-              const blockResult = this.getBlockValueByKey(block.item, context, payload, blockValues)
+              try {
+                const blockResult = this.getBlockValueByKey(block, context, payload, blockValues)
 
-              $action(item.method, blockResult.value, {
-                context,
-                payload,
-                blockValues
-              }, {
-                onSuccess: (result => {
-                  const nextProcess = blockProcess[++blockProcessIndex]
-                  blockValues[id] = result
+                $action(block.method, blockResult.value, {
+                  context,
+                  payload,
+                  blockValues
+                }, {
+                  onSuccess: (result => {
+                    const nextProcess = blockProcess[++blockProcessIndex]
+                    blockValues[id] = result
 
-                  if (nextProcess) {
-                    return nextProcess()
+                    if (nextProcess) {
+                      return nextProcess()
+                    }
+
+                    callback()
+                  }),
+                  onError: (error) => {
+                    /**
+                     * @TODO Console error
+                     * Until browser support cause @link https://caniuse.com/mdn-javascript_builtins_error_cause_displayed_in_console
+                     */
+                    if (navigator.userAgent.indexOf('Firefox') === -1) {
+                      // console.error(error)
+                    }
+
+                    // Enhance error with context
+                    const enhancedError = new Error(`Action method '${block.method}' failed for block '${id}': ${error.message}`)
+                    // @ts-ignore
+                    enhancedError.cause = error
+                    // @ts-ignore
+                    enhancedError.blockId = id
+                    // @ts-ignore
+                    enhancedError.method = block.method
+                    throw enhancedError
                   }
+                })
+              } catch (error) {
+                // Catch synchronous errors from getBlockValueByKey
+                const enhancedError = new Error(`Action block preparation failed for '${id}': ${error.message}`)
+                // @ts-ignore
+                enhancedError.cause = error
+                // @ts-ignore
+                enhancedError.blockId = id
+                throw enhancedError
+              }
+            })
+          } else if (block.ifElse) {
+            blockProcess.push(() => {
+              try {
+                const blockResult = this.getBlockValueByKey(block, context, payload, blockValues)
+                const processItems = this.ifElse(blockResult.value, callback, {
+                  context,
+                  payload,
+                  blockValues
+                })
 
-                  callback()
-                }),
-                onError: (error) => {
-                  /**
-                   * @TODO Console error
-                   * Until browser support cause @link https://caniuse.com/mdn-javascript_builtins_error_cause_displayed_in_console
-                   */
-                  if (navigator.userAgent.indexOf('Firefox') === -1) {
-                    console.error(error)
-                  }
-
-                  // @ts-ignore
-                  throw new Error('Broken action block', { cause: error })
+                // append new process items
+                for (let index = 0; index < processItems.length; index++) {
+                  blockProcess.push(processItems[index])
                 }
-              })
+
+                const nextProcess = blockProcess[++blockProcessIndex]
+
+                if (nextProcess) {
+                  return nextProcess()
+                }
+
+                callback()
+              } catch (error) {
+                // Enhance error with context
+                const enhancedError = new Error(`Action ifElse condition failed for block '${id}': ${error.message}`)
+                // @ts-ignore
+                enhancedError.cause = error
+                // @ts-ignore
+                enhancedError.blockId = id
+                throw enhancedError
+              }
             })
-          } else if (item.ifElse) {
-            blockProcess.push(() => {
-              const blockResult = this.getBlockValueByKey(block.item, context, payload, blockValues)
-              const processItems = this.ifElse(blockResult.value, callback, {
-                context,
-                payload,
-                blockValues
-              })
+          } else {
+            // Warn about blocks with no recognized action type
+            console.warn(`Action: block ${id} has no recognized action type (no method or ifElse)`)
 
-              // append new process items
-              for (let index = 0; index < processItems.length; index++) {
-                blockProcess.push(processItems[index])
-              }
-
-              const nextProcess = blockProcess[++blockProcessIndex]
-
-              if (nextProcess) {
-                return nextProcess()
-              }
-
+            if (typeof callback === 'function') {
               callback()
-            })
+            }
           }
         }
       }
