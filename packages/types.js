@@ -143,3 +143,158 @@
  * @property {string} [suffixId] - Data collection document suffix
  * @property {GetDataOption} [options] - Options
  */
+
+/**
+ * @typedef {string | string[]} GetValueByQuery - Request to return a specific key value, dot notations are permitted
+ */
+
+/**
+ * @typedef {Object} ComponentItem
+ * @property {string} [id] - Component item id
+ * @property {string} [rootId] - Root component item id
+ * @property {string} [parentId] - Parent component item id
+ * @property {string} [groupId] - Component group id
+ * @property {Object} [component] - Component instance
+ * @property {Object} [template] - Component template
+ * @property {Node} [node] - Component node
+ * @property {Object[]} [events] - Component events
+ * @property {ComponentItem[]} [children]
+ */
+
+/**
+ * @typedef {Object} EditorDataSchemaObject
+ * @property {boolean} isPatterned - Is property name a regex pattern
+ * @property {string} name - Name of property
+ * @property {string} type - Data type
+ * @property {EditorDataSchemaObject[]} [properties] - Object properties
+ * @property {EditorDataSchema} [items] - Array items
+ */
+
+/**
+ * @typedef {Object} EditorDataSchema
+ * @property {EditorDataSchema} [items]
+ * @property {EditorDataSchemaObject[]} [properties]
+ * @property {string} type - Data type
+ */
+
+/**
+ * @typedef {Object} EventEmit
+ * @property {string} name - Name of the event to emit
+ * @property {string} id - Event listener reference item ID
+ * @property {Object} [context] - Context object containing data available to action handlers
+ * @property {Object} [payload] - Data payload to pass to event handlers
+ */
+
+/**
+ * @typedef {Object} FormOrderedValue - Represents an ordered form field value
+ * @property {string} name - The name of the form field
+ * @property {string} [value] - The value of the field (for non-nested fields)
+ * @property {FormOrderedValue[]} [values] - Array of nested values (for fieldsets or multi-value fields)
+ */
+
+/**
+ * @typedef {Object} FormFiles - Container for file attachments
+ * @property {FormData} [files.data] - FormData object containing file attachments
+ */
+
+/**
+ * @typedef {Object} IconQueueItem - Queue item for batch icon fetching
+ * @property {string[]} icons - Array of icon IDs to fetch
+ * @property {Object.<string, IconComponentData>} components - Components waiting for icons
+ */
+
+/**
+ * @typedef {Object} IconData - Icon data from Iconify API
+ * @property {Object} [icons] - Object containing icon data
+ * @property {Object} [aliases] - Object containing icon aliases
+ * @property {number} [icons.iconName.body] - SVG body content for an icon
+ * @property {Object} [aliases.aliasName] - Alias definition with parent property
+ */
+
+/**
+ * @typedef {Object} IconComponentData - Component data stored in icon queue
+ * @property {Node} node - The DOM node to render the icon into
+ * @property {string} iconId - The icon ID (without prefix)
+ */
+
+/**
+ * @typedef {Object} IconStateSchema - Schema for icon state
+ * @property {Object} items - Collection of cached icon SVG strings
+ * @property {Object} aliases - Collection of icon aliases mapping to original icons
+ */
+
+/**
+ * @typedef {Object} RegexPattern
+ * @property {RegExp} pattern - The text of the regular expression. This can also be another RegExp object.
+ * @property {string} flags - If specified, flags is a string that contains the flags to add. Alternatively, if a RegExp object is supplied for the pattern, the flags string will replace any of that object's flags (and lastIndex will be reset to 0).
+ */
+
+/**
+ * @typedef {Object} StringReplace
+ * @property {string} value - Target string
+ * @property {string} pattern - Can be a string or regular expression
+ * @property {string} replacement - String that will replace what matches the pattern
+ */
+
+/**
+ * @typedef {Object} PageGetItemsByPath
+ * @property {boolean} isEmpty
+ * @property {string} [redirect]
+ * @property {boolean} [isTemporary]
+ * @property {string} [pageId]
+ * @property {Object[]} [item]
+ */
+
+/**
+ * @typedef {Object} VariableGetValue
+ * @property {string} [scope] - Variable scope
+ * @property {string} [prefixId] - ID prefix
+ * @property {string} [suffixId] - ID suffix
+ * @property {string} query - Query string
+ */
+
+/**
+ * @typedef {Object} VariableSetValue
+ * @property {string} [scope] - Variable scope
+ * @property {Array} values - Values to set
+ */
+
+/**
+ * @typedef {Object} ActionDispatchContext
+ * @property {string} id - Action context ID
+ * @property {string} [rootId] - Root context ID
+ * @property {string} [parentId] - Parent context ID
+ * @property {string} [groupId] - Group context ID
+ */
+
+/**
+ * @typedef {Object} ActionBlock
+ * @property {string} [method] - Action method name
+ * @property {string} [key] - Block key
+ * @property {string} [blockValue] - Block value reference
+ * @property {string[]} [blockValues] - Multiple block value references
+ * @property {string} [blockSequence] - Block sequence reference
+ * @property {string} [dataType] - Data type
+ * @property {boolean} [ifElse] - If else flag
+ * @property {*} [value] - Direct value
+ */
+
+/**
+ * @typedef {Object} DataDeleteValueResult
+ * @property {boolean} inUse - Indicates if data value is in use
+ * @property {boolean} deleted - Indicate if data was deleted
+ */
+
+/**
+ * @typedef {Object} DataListenerHandler
+ * @property {boolean} [force]
+ * @property {number} [priority]
+ * @property {Function} value
+ */
+
+/**
+ * @typedef {Object} DataListenerCollection
+ * @property {DataListenerHandler[]} all - Handlers that will fire on data instances
+ * @property {DataListenerHandler[] | undefined} items - Handlers related to an specific data instance
+ * @property {DataListenerHandler[] | undefined} priority - Handlers that will emit before "all" or "items" handlers
+ */

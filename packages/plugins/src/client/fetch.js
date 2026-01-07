@@ -6,6 +6,11 @@ const fetchRequestCache = {}
 let fetchRequestCacheExpire = 300000
 let _hostname = '/_/'
 
+/**
+ * Retrieve cached data for a given request ID
+ * @param {string} id - The cache key/path for the request
+ * @returns {Promise|Array|undefined} - Returns cached promise, data array, or undefined if not cached
+ */
 function getCache (id) {
   const cache = fetchRequestCache[id]
 
@@ -35,6 +40,11 @@ function getCache (id) {
   return result
 }
 
+/**
+ * Store fetched data in state and set up cache
+ * @param {Array} data - Array of data items to store
+ * @param {string} id - Cache key/path for the request
+ */
 function setRequestData (data, id) {
   const requestCache = []
 
@@ -85,6 +95,10 @@ function setRequestData (data, id) {
   }
 }
 
+/**
+ * Delete cached data for a given request ID
+ * @param {string} id - The cache key/path to delete
+ */
 function deleteCache (id) {
   delete fetchRequestCache[id]
 }
@@ -150,15 +164,16 @@ export const $fetch = createPlugin('fetch', {
         }
       },
       /**
-       * Get a list of documents
-       * @param {Object} param
-       * @param {string} param.collection - Name of the records' collection.
-       * @param {boolean} [param.expand] - Fetch related documents.
-       * @param {number} [param.page] - The page (aka. offset) of the paginated list (default to 1).
-       * @param {number} [param.perPage] - The max returned records per page (default to 25).
-       * @param {number} [param.limit] - The max returned records per page (default to 25).
-       * @param {string} [param.where] -
-       * @param {boolean} [param.sync] - Sync data with local database
+       * Get a list of documents from a collection with optional filtering and pagination
+       * @param {Object} param - Parameters for fetching documents
+       * @param {string} param.collection - Name of the records' collection
+       * @param {boolean} [param.expand=false] - Whether to fetch related documents
+       * @param {number} [param.page=1] - The page number (offset) for paginated results
+       * @param {number} [param.perPage=25] - Maximum number of records returned per page
+       * @param {number} [param.limit] - Maximum total number of records to return (overrides perPage)
+       * @param {string} [param.where] - Filter condition for the query
+       * @param {boolean} [param.sync=true] - Whether to sync fetched data with local database state
+       * @returns {Promise<Array|boolean>} - Promise resolving to array of documents or false on error
        */
       method ({ collection, page, perPage, limit, where, expand, sync = true }) {
         const and = '&'
@@ -284,12 +299,13 @@ export const $fetch = createPlugin('fetch', {
         }
       },
       /**
-       * Get value by id
-       * @param {Object} param
-       * @param {string} param.collection - Name of the records' collection.
-       * @param {string[]|string} param.id - Document id
-       * @param {boolean} [param.expand] - Fetch related documents.
-       * @param {boolean} [param.sync] - Sync data with local database
+       * Get one or more documents by their ID(s) from a collection
+       * @param {Object} param - Parameters for fetching documents by ID
+       * @param {string} param.collection - Name of the records' collection
+       * @param {string[]|string} param.id - Single document ID or array of IDs
+       * @param {boolean} [param.expand=false] - Whether to fetch related documents
+       * @param {boolean} [param.sync=true] - Whether to sync fetched data with local database state
+       * @returns {Promise<Object>} - Promise resolving to fetched document(s) or empty object if not found
        */
       method ({ collection, id, expand, sync = true }) {
         if (!Array.isArray(id)) {
@@ -349,8 +365,9 @@ export const $fetch = createPlugin('fetch', {
     }
   },
   /**
-   * @param {Object} param
-   * @param {string} [param.hostname='']
+   * Setup the fetch plugin configuration
+   * @param {Object} param - Setup parameters
+   * @param {string} [param.hostname=''] - Base hostname/URL for API requests (will be prepended to '/_/')
    */
   setup ({ hostname = '' } = {}) {
     _hostname = hostname + _hostname

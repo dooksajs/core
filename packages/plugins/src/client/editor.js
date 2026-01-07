@@ -2,24 +2,14 @@ import { createPlugin } from '@dooksa/create-plugin'
 import { stateGetSchema } from '#client'
 
 /**
- * @typedef {Object} EditorDataSchemaObject
- * @property {boolean} isPatterned - Is property name a regex pattern
- * @property {string} name - Name of property
- * @property {string} type - Data type
- * @property {EditorDataSchemaObject[]} [properties] - Object properties
- * @property {EditorDataSchema} [items] - Array items
- *
- * @typedef {Object} EditorDataSchema
- * @property {EditorDataSchema} [items]
- * @property {EditorDataSchemaObject[]} [properties]
- * @property {string} type - Data type
+ * @import {EditorDataSchema, EditorDataSchemaObject} from '../../../types.js'
  */
 
 export const editor = createPlugin('editor', {
   metadata: {
     title: 'Editor',
     description: 'Utilities for managing components',
-    icon: ''
+    icon: 'mdi:code-json'
   },
   methods: {
     schemaProperties (schemaName, properties, isPatterned = false) {

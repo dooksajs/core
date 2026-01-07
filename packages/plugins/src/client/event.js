@@ -2,11 +2,7 @@ import { createPlugin } from '@dooksa/create-plugin'
 import { actionDispatch, stateGetValue } from '#client'
 
 /**
- * @typedef {Object} EventEmit
- * @property {string} name - Name of event
- * @property {string} id - Event id is the listener reference item
- * @property {Object} [context] - The action that runs on the event
- * @property {Object} [payload] - The action that runs on the event
+ * @import {EventEmit} from '../../../types.js'
  */
 
 export const event = createPlugin('event', {
@@ -36,8 +32,13 @@ export const event = createPlugin('event', {
   },
   methods: {
     /**
-     * Emit event
-     * @param {EventEmit} param
+     * Emit an event and trigger all registered listeners
+     * @param {Object} param - Event emission parameters
+     * @param {string} param.name - Name of the event to emit
+     * @param {string} param.id - Event listener reference item ID
+     * @param {Object} [param.context] - Context object containing data available to action handlers
+     * @param {Object} [param.payload] - Data payload to pass to event handlers
+     * @returns {Promise[]} Array of promises from action dispatches for all event listeners
      */
     emit ({ name, id, context, payload }) {
       const listeners = stateGetValue({

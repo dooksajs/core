@@ -1,14 +1,33 @@
 import { createPlugin } from '@dooksa/create-plugin'
 import { stateGetValue, stateSetValue } from '#client'
 
+/**
+ * @import {Component} from '@dooksa/create-component'
+ * @import {IconQueueItem, IconData, IconComponentData, IconStateSchema} from '../../../types.js'
+ */
+
+/**
+ * Iconify API base URL
+ * @type {string}
+ */
 let iconifyAPIUrl = 'https://api.iconify.design'
+
+/**
+ * Timeout IDs for batch icon fetching (keyed by icon prefix)
+ * @type {Object.<string, number>}
+ */
 const timeoutId = {}
+
+/**
+ * Queue of icons waiting to be fetched (keyed by icon prefix)
+ * @type {Object.<string, IconQueueItem>}
+ */
 const iconQueue = {}
 
 export const icon = createPlugin('icon', {
   metadata: {
     title: 'Icon',
-    description: 'Additional information about plugins and their actions',
+    description: 'Icon management plugin for rendering icons from Iconify API with caching and batch fetching',
     icon: 'carbon:data-volume'
   },
   state: {
@@ -30,15 +49,24 @@ export const icon = createPlugin('icon', {
     render: {
       metadata: {
         title: 'Render icon',
-        description: '',
-        icon: ''
+        description: 'Fetch and render an icon from Iconify API with caching support',
+        icon: 'mdi:icon'
       },
       parameters: {
         type: 'string'
       },
       /**
-       * Render icon
-       * @param {string} componentId
+       * Render an icon for a component by fetching it from Iconify API or using cached data
+       * @param {string} componentId - The ID of the component that needs an icon rendered
+       * @throws {Error} - Throws error if component doesn't exist
+       * @description
+       * This method handles the complete icon rendering workflow:
+       * 1. Checks if component exists
+       * 2. Looks for icon data in cache (icon/items)
+       * 3. Checks for icon aliases (icon/aliases)
+       * 4. Queues icon for batch fetching if not cached
+       * 5. Fetches from Iconify API and caches results
+       * 6. Renders SVG icon with fade-in animation
        */
       method (componentId) {
         const component = stateGetValue({

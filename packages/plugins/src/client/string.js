@@ -1,10 +1,7 @@
 import { createPlugin } from '@dooksa/create-plugin'
 
 /**
- * @typedef {Object} StringReplace
- * @property {string} value - Target string
- * @property {string} pattern - Can be a string or regular expression
- * @property {string} replacement - String that will replace what matches the pattern
+ * @import {StringReplace} from '../../../types.js'
  */
 
 export const string = createPlugin('string', {

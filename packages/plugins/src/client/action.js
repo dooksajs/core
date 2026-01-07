@@ -3,12 +3,8 @@ import { stateGetValue, fetchGetById, operatorCompare, operatorEval } from '#cli
 import { getValue } from '@dooksa/utils'
 
 /**
- * @import {SetDataOptions, GetDataQuery, DataSchema, DataWhere} from '../../../types.js'
+ * @import {SetDataOptions, GetDataQuery, DataSchema, DataWhere, GetValueByQuery} from '../../../types.js'
  * @import {ActionDispatchContext, ActionBlock} from '@dooksa/create-action'
- */
-
-/**
- * @typedef {string | string[]} GetValueByQuery - Request to return a specific key value, dot notations are permitted
  */
 
 const dataTypes = {
@@ -504,7 +500,7 @@ export const action = createPlugin('action', {
        * @param {Object} [param.context] - Execution context containing id, rootId, parentId, groupId
        * @param {Object} [param.payload] - Data payload to pass to action methods
        * @param {boolean} [param.clearBlockValues] - Whether to clear cached block values before execution
-       * @param {Object} actionContext - Internal execution context
+       * @param {Object} [actionContext={}] - Internal execution context
        * @param {Object} [actionContext.blockValues] - Cache of previously executed block values
        * @returns {Promise<any>} Promise that resolves with the result of the action execution
        * @throws {Error} When action sequence cannot be found or execution fails

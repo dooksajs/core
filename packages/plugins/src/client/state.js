@@ -5,29 +5,9 @@ import { deepClone, generateId, isEnvServer, getValue, shallowCopy } from '@dook
 import { createDataValue } from '../utils/data-value.js'
 
 /**
- * @import {SetDataOptions, GetDataQuery, GetDataOption, DataWhere} from '../../../types.js'
+ * @import {SetDataOptions, GetDataQuery, GetDataOption, DataWhere, DataDeleteValueResult, DataListenerHandler, DataListenerCollection} from '../../../types.js'
  * @import {DataValue, DataMetadata, DataTarget} from '../utils/data-value.js'
  * @import {DsPluginStateExport, SchemaEntry} from '@dooksa/create-plugin/types'
- */
-
-/**
- * @typedef {Object} DataDeleteValueResult
- * @property {boolean} inUse - Indicates if data value is in use
- * @property {boolean} deleted - Indicate if data was deleted
- */
-
-/**
- * @typedef {Object} DataListenerHandler
- * @property {boolean} [force]
- * @property {number} [priority]
- * @property {Function} value
- */
-
-/**
- * @typedef {Object} DataListenerCollection
- * @property {DataListenerHandler[]} all - Handlers that will fire on data instances
- * @property {DataListenerHandler[] | undefined} items - Handlers related to an specific data instance
- * @property {DataListenerHandler[] | undefined} priority - Handlers that will emit before "all" or "items" handlers
  */
 
 /**

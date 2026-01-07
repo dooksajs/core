@@ -12,19 +12,7 @@ import { generateId } from '@dooksa/utils'
 
 /**
  * @import {Component, ComponentEvent, ComponentInstance} from '@dooksa/create-component'
- */
-
-/**
- * @typedef {Object} ComponentItem
- * @property {string} [id] - Component item id
- * @property {string} [rootId] - Root component item id
- * @property {string} [parentId] - Parent component item id
- * @property {string} [groupId] - Component group id
- * @property {ComponentInstance} [component]
- * @property {Component} [template]
- * @property {Node} [node] - Component node
- * @property {ComponentEvent[]} [events]
- * @property {ComponentItem[]} [children]
+ * @import {ComponentItem} from '../../../types.js'
  */
 
 /**
@@ -34,7 +22,7 @@ import { generateId } from '@dooksa/utils'
 export const component = createPlugin('component', {
   metadata: {
     title: 'Component',
-    description: '',
+    description: 'Component management and rendering system',
     icon: 'mdi:widgets'
   },
   state: {

@@ -3,7 +3,12 @@ import { stateGetValue, stateSetValue } from '#client'
 import { generateId, getValue } from '@dooksa/utils'
 
 /**
+ * @import {VariableGetValue, VariableSetValue} from '../../../types.js'
+ */
+
+/**
  * Add affix to query
+ * @private
  * @param {string} query
  * @param {string} prefix
  * @param {string} suffix
@@ -30,7 +35,7 @@ export const variable = createPlugin('variable', {
   metadata: {
     title: 'Variable',
     description: 'Management of variables',
-    icon: ''
+    icon: 'mdi:variable-box'
   },
   state: {
     schema: {

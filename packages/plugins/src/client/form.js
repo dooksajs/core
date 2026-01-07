@@ -2,15 +2,7 @@ import { createPlugin } from '@dooksa/create-plugin'
 import { generateId } from '@dooksa/utils'
 
 /**
- * @typedef {Object} FormOrderedValue - Ordered form values
- * @property {string} name
- * @property {string} [value]
- * @property {FormOrderedValue[]} [values]
- */
-
-/**
- * @typedef {Object} FormFiles - FormData of files
- * @property {FormData} [files.data]
+ * @import {FormOrderedValue, FormFiles} from '../../../types.js'
  */
 
 export const form = createPlugin('form', {
@@ -21,10 +13,10 @@ export const form = createPlugin('form', {
   },
   methods: {
     /**
-     * Attach File to FormData
-     * @param {File} value
-     * @param {FormFiles} files
-     * @returns {string}
+     * Attach a file to the FormData object
+     * @param {File} value - The file object to attach
+     * @param {FormFiles} files - The files object containing FormData
+     * @returns {string|undefined} - Returns a unique ID for the file, or undefined if file is empty
      */
     attachFile (value, files) {
       // skip empty files
@@ -44,16 +36,18 @@ export const form = createPlugin('form', {
       return id
     },
     /**
-     * @param {HTMLCollection|HTMLFormControlsCollection} children
-     * @param {HTMLFormControlsCollection} elements
-     * @param {FormData} data - FormData from form
-     * @param {Object} [process={used: {}, disabled: false }]
-     * @param {Object.<string, Element>} process.used - Avoid processing duplicated elements
-     * @param {boolean} process.disabled - Ignore all child inputs under a disabled fieldset
-     * @param {FormOrderedValue[]} [values] - Ordered form values
-     * @param {Object} [files] - List of files
-     * @param {FormData} [files.data]
-     * @param {boolean} [isHead=true]
+     * Recursively sort form elements into ordered values, handling fieldsets and file attachments
+     * @param {HTMLCollection|HTMLFormControlsCollection} children - Collection of form elements to process
+     * @param {HTMLFormControlsCollection} elements - All form elements collection for lookup
+     * @param {FormData} data - FormData object containing form values
+     * @param {Object} [process={used: {}, disabled: false }] - Processing state to track used elements and disabled status
+     * @param {Object.<string, Element>} process.used - Object tracking already processed element names
+     * @param {boolean} process.disabled - Flag indicating if current fieldset is disabled
+     * @param {FormOrderedValue[]} [values=[]] - Accumulator for ordered form values
+     * @param {Object} [files={}] - Object to store file attachments
+     * @param {FormData} [files.data] - FormData for file storage
+     * @param {boolean} [isHead=true] - Flag indicating if this is the top-level call
+     * @returns {Object|undefined} - Returns object with values and files (if files present), or undefined for nested calls
      */
     sortOrdered (
       children,
@@ -144,8 +138,10 @@ export const form = createPlugin('form', {
       }
     },
     /**
-     * Sort FormData
-     * @param {FormData} data
+     * Sort FormData into values and files (unordered)
+     * @param {FormData} data - FormData object containing form values and files
+     * @returns {Object} - Object containing values and files properties with the structure:
+     * { values: Object.<string, string>, files: FormData } or { values: Object.<string, string> }
      */
     sortUnordered (data) {
       const result = {
@@ -183,14 +179,16 @@ export const form = createPlugin('form', {
     format: {
       metadata: {
         title: 'Format form',
-        description: '',
-        icon: ''
+        description: 'Format form data into ordered or unordered structure with file support',
+        icon: 'mdi:form-select'
       },
       /**
-       * @param {object} form
-       * @param {HTMLFormControlsCollection} form.elements
-       * @param {FormData} form.data
-       * @param {'ordered'|'unordered'} form.sort
+       * Format form data into ordered or unordered structure
+       * @param {Object} form - Form data object
+       * @param {HTMLFormControlsCollection} form.elements - Collection of form elements
+       * @param {FormData} form.data - FormData object containing form values
+       * @param {'ordered'|'unordered'} form.sort - Sorting method: 'ordered' preserves fieldset structure, 'unordered' creates flat object
+       * @returns {Object} - Formatted form data with values and optional files
        */
       method ({ elements, data, sort }) {
         if (!(elements instanceof HTMLFormControlsCollection)) {

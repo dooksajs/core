@@ -4,13 +4,7 @@ import { hash } from '@dooksa/utils'
 import { createDataValue } from '#utils'
 
 /**
- * @import {DataValue} from '#types'
- * @typedef {Object} PageGetItemsByPath
- * @property {boolean} isEmpty
- * @property {string} [redirect]
- * @property {boolean} [isTemporary]
- * @property {string} [pageId]
- * @property {DataValue[]} [item]
+ * @import {PageGetItemsByPath} from '../../../types.js'
  */
 
 export const page = createPlugin('page', {
@@ -203,8 +197,8 @@ export const page = createPlugin('page', {
     save: {
       metadata: {
         title: 'Save page',
-        description: '',
-        icon: ''
+        description: 'Save page data to the server',
+        icon: 'mdi:content-save'
       },
       /**
        *
@@ -244,7 +238,8 @@ export const page = createPlugin('page', {
     getItemsByPath: {
       metadata: {
         title: 'Get page by path',
-        description: ''
+        description: 'Retrieve page items by path with redirect support',
+        icon: 'mdi:file-find'
       },
       /**
        * @param {string} path
