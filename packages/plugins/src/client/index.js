@@ -17,6 +17,7 @@ import variable from './variable.js'
 import string from './string.js'
 import regex from './regex.js'
 
+export * from './lazy/index.js'
 export * from './state.js'
 export * from './editor.js'
 export * from './action.js'
