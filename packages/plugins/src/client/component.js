@@ -161,6 +161,13 @@ export const component = createPlugin('component', {
 
       return this.components[id]
     },
+    /**
+     * Checks if an object or its prototypes has a setter for a given property
+     * @param {Object} object - The object to check
+     * @param {string} property - The property name to check for a setter
+     * @param {Object} [result={hasSetter: false}] - Internal result object to track setter existence
+     * @returns {boolean} - True if the object has a setter for the property
+     */
     objectHasSetter (object, property, result = { hasSetter: false }) {
       const descriptor = Object.getOwnPropertyDescriptor(object, property)
 
@@ -179,9 +186,11 @@ export const component = createPlugin('component', {
       return result.hasSetter
     },
     /**
-     * Set properties to element
-     * @param {HTMLElement} element - view node id
-     * @param {Object[]} properties
+     * Set properties and attributes on a DOM element
+     * @param {HTMLElement} element - The DOM element to set properties on
+     * @param {Object[]} properties - Array of property objects with name and value
+     * @param {string} properties[].name - Property or attribute name
+     * @param {*} properties[].value - Property or attribute value
      * @private
      */
     setProperties (element, properties = []) {
@@ -198,11 +207,12 @@ export const component = createPlugin('component', {
       }
     },
     /**
+     * Lazy load a component template and execute a callback with the loaded item
      * @template T
-     * @param {T} item
-     * @param {Object} template
-     * @param {function} cb
-     * @returns {Promise<T>}
+     * @param {T} item - The item to pass to the callback after loading
+     * @param {Object} template - The template object containing the component loader function
+     * @param {function} cb - Callback function to execute with the loaded item
+     * @returns {Promise<T>} - Promise that resolves with the callback result
      */
     lazyLoad (item, template, cb) {
       return new Promise((resolve, reject) => {
@@ -215,6 +225,15 @@ export const component = createPlugin('component', {
           .catch(error => reject(error))
       })
     },
+    /**
+     * Create a DOM node from a component item
+     * @param {string} id - The component instance ID
+     * @param {Object} item - The component item containing template reference
+     * @param {string} item.id - The template component ID
+     * @param {boolean} [item.isTemplate] - Whether this is a template component
+     * @param {string} [item.groupId] - Optional group ID for the component
+     * @returns {{id: string, item: Node}} - Object containing the component ID and created DOM node
+     */
     createNode (id, item) {
       const template = this.getById(item.id)
       let node
@@ -495,6 +514,15 @@ export const component = createPlugin('component', {
         attributeOldValue: true
       })
     },
+    /**
+     * Set up event listeners for DOM nodes
+     * @param {string} eventType - Type of event: 'node', 'observeProperty', or 'observeAttribute'
+     * @param {string} eventValue - The event name or property/attribute to observe
+     * @param {HTMLElement} node - The DOM node to attach events to
+     * @param {string} on - The full event name (e.g., 'node/click')
+     * @param {string} id - Component instance ID
+     * @param {Object} context - Context object with id, rootId, parentId, groupId
+     */
     nodeEvent (eventType, eventValue, node, on, id, context) {
       const handler = (payload) => {
         // fire node events
@@ -571,7 +599,7 @@ export const component = createPlugin('component', {
     /**
      * Create node from template
      * @param {Object} param
-     * @param {string} [param.id],
+     * @param {string} [param.id]
      * @param {Component} param.template
      * @param {string} param.parentId
      * @param {string} [param.rootId]
@@ -914,6 +942,14 @@ export const component = createPlugin('component', {
         item: node
       }
     },
+    /**
+     * Create child nodes from component items and append them to parent node
+     * @param {Node} node - Parent DOM node
+     * @param {Array} components - Array of component items to create
+     * @param {string} parentId - Parent component ID
+     * @param {string} parentRootId - Root component ID for the parent
+     * @param {string} parentGroupId - Group ID for the parent components
+     */
     createChildNodes (node, components, parentId, parentRootId, parentGroupId) {
       let childIsLazy = false
       let childNodes = []
@@ -969,6 +1005,14 @@ export const component = createPlugin('component', {
         }
       }
     },
+    /**
+     * Create child nodes from template children and append them to parent node
+     * @param {Node} node - Parent DOM node
+     * @param {Array} children - Array of template child components
+     * @param {string} id - Parent component ID
+     * @param {string} rootId - Root component ID
+     * @param {string} groupId - Group ID for the components
+     */
     createTemplateChildNodes (node, children, id, rootId, groupId) {
       const childNodes = []
       let childIsLazy = false
@@ -998,6 +1042,12 @@ export const component = createPlugin('component', {
         this.appendChildNodes(id, node, childNodes)
       }
     },
+    /**
+     * Append child nodes to parent and store their IDs in state
+     * @param {string} id - Parent component ID
+     * @param {Node} node - Parent DOM node
+     * @param {Array} childNodes - Array of child node objects containing id and item properties
+     */
     appendChildNodes (id, node, childNodes) {
       const value = []
 
@@ -1019,6 +1069,12 @@ export const component = createPlugin('component', {
         }
       })
     },
+    /**
+     * Update child nodes by comparing previous and next child nodes
+     * @param {string} id - Parent component ID
+     * @param {Node} parent - Parent DOM node
+     * @param {Array} nextChildNodes - Array of next child node objects
+     */
     updateChildren (id, parent, nextChildNodes) {
       const prevChildNodes = parent.childNodes
       const removeNodes = {}
@@ -1151,12 +1207,12 @@ export const component = createPlugin('component', {
         }
       },
       /**
-       * Remove component
-       * @param {Object} param
-       * @param {string} param.id
-       * @param {boolean} [param.stopPropagation=false]
-       * @param {Object} [context]
-       * @param {boolean} [isHead=true]
+       * Remove component and its dependencies
+       * @param {Object} param - Parameters for removing component
+       * @param {string} param.id - Component ID to remove
+       * @param {boolean} [param.stopPropagation=false] - Prevent further event propagation
+       * @param {Object} [context] - Context object for the action
+       * @param {boolean} [isHead=true] - Whether this is the head of the removal chain (internal use)
        */
       method ({
         id, stopPropagation = false
@@ -1359,9 +1415,10 @@ export const component = createPlugin('component', {
       },
       /**
        * Render children components
-       * @param {Object} param
+       * @param {Object} param - Parameters for rendering children
        * @param {string} param.id - Parent component ID
-       * @param {string[]} [param.items] - List of child component ID's
+       * @param {string[]} [param.items] - List of child component IDs to render. If not provided, uses existing children from state
+       * @returns {Promise|void} - Returns a promise if children are lazy-loaded, otherwise void
        */
       method ({
         id,
@@ -1425,9 +1482,10 @@ export const component = createPlugin('component', {
     }
   },
   /**
-   * @param {Object} options
-   * @param {string} options.rootId - Root element ID used to mount Dooksa
-   * @param {Object.<string, Component>} options.components - Fetch component function
+   * Setup the component plugin and mount the root component
+   * @param {Object} options - Setup options
+   * @param {string} [options.rootId='root'] - Root element ID used to mount Dooksa
+   * @param {Object.<string, Component>} options.components - Component registry object containing all available components
    */
   setup ({
     rootId = 'root',
