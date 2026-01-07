@@ -10,7 +10,7 @@
     "test-unit": "node --experimental-test-module-mocks --test test/**/*.spec.js",
     "test-coverage-lcov": "node --test --experimental-test-module-mocks --experimental-test-coverage --test-reporter=lcov --test-reporter-destination=lcov.info",
     "test-coverage-report": "node --test --experimental-test-module-mocks --experimental-test-coverage"
-},
+  },
   "imports": {
     "#client": "./src/client/index.js",
     "#server": "./src/server/index.js",
@@ -19,7 +19,7 @@
     "#utils": "./src/utils/index.js"
   },
   "exports": {
-    "./client": "./src/client.js",
+    "./client": "./src/client/index.js",
     "./server": "./src/server.js"
   },
   "dependencies": {
