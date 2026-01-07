@@ -27,42 +27,6 @@ import { listFilter, listSort, stateAddListener, stateSetValue, stateGetValue } 
  */
 
 /**
- * Fetches content values for query items by navigating through content property paths.
- * @private
- * @param {QueryItem[]} items - Array of query items containing content references
- * @returns {QueryValue[]} Array of extracted values with widget associations
- */
-function fetchValues (items) {
-  const result = []
-
-  for (let i = 0; i < items.length; i++) {
-    const item = items[i]
-    const content = stateGetValue({
-      name: 'content/items',
-      id: item.contentId
-    })
-    let contentValue = content.item.values
-
-    for (let i = 0; i < item.content.length; i++) {
-      const property = item.content[i]
-
-      if (content.item.tokens[property]) {
-        // process token value
-      }
-
-      contentValue = contentValue[property]
-    }
-
-    result.push({
-      value: contentValue,
-      widgetId: item.widgetId
-    })
-  }
-
-  return result
-}
-
-/**
  * Query Plugin
  *
  * Provides functionality for filtering and sorting content items based on query configurations.
@@ -81,6 +45,43 @@ export const query = createPlugin('query', {
     title: 'Query',
     description: 'Filter and sort content items based on query configurations',
     icon: 'mdi:filter-variant'
+  },
+  privateMethods: {
+    /**
+     * Fetches content values for query items by navigating through content property paths.
+     * @private
+     * @param {QueryItem[]} items - Array of query items containing content references
+     * @returns {QueryValue[]} Array of extracted values with widget associations
+     */
+    fetchValues (items) {
+      const result = []
+
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i]
+        const content = stateGetValue({
+          name: 'content/items',
+          id: item.contentId
+        })
+        let contentValue = content.item.values
+
+        for (let i = 0; i < item.content.length; i++) {
+          const property = item.content[i]
+
+          if (content.item.tokens[property]) {
+            // process token value
+          }
+
+          contentValue = contentValue[property]
+        }
+
+        result.push({
+          value: contentValue,
+          widgetId: item.widgetId
+        })
+      }
+
+      return result
+    }
   },
   state: {
     schema: {
@@ -304,7 +305,7 @@ export const query = createPlugin('query', {
             name: 'query/items',
             id: where.item.id
           })
-          let items = fetchValues(queryData.item)
+          let items = this.fetchValues(queryData.item)
           const whereResults = listFilter({
             items,
             options: where.item.options
@@ -329,7 +330,7 @@ export const query = createPlugin('query', {
             }
 
             // fetch values from filtered items
-            items = fetchValues(filteredQueryItems)
+            items = this.fetchValues(filteredQueryItems)
             // sort the QueryValue[] results
             items = listSort({
               items,
@@ -341,7 +342,7 @@ export const query = createPlugin('query', {
         }
 
         if (!sort.isExpandEmpty) {
-          let items = fetchValues(sort.expand[0].item)
+          let items = this.fetchValues(sort.expand[0].item)
 
           items = listSort({
             items,
