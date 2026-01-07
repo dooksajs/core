@@ -2,10 +2,35 @@ import { createPlugin } from '@dooksa/create-plugin'
 import { listFilter, listSort, stateAddListener, stateSetValue, stateGetValue } from '#client'
 
 /**
- * Fetch content values
+ * @typedef {Object} QueryItem
+ * @property {string} contentId - The content item ID to fetch values from
+ * @property {string} widgetId - The widget ID associated with this query item
+ * @property {string[]} content - Array of property paths to navigate through content values
+ */
+
+/**
+ * @typedef {Object} QueryValue
+ * @property {*} value - The extracted content value
+ * @property {string} widgetId - The widget ID associated with the value
+ */
+
+/**
+ * @typedef {Object} QueryWhere
+ * @property {Array} options - Filter options for the query
+ * @property {string} id - Reference ID to query items collection
+ */
+
+/**
+ * @typedef {Object} QuerySort
+ * @property {string} options - Sort type/order options
+ * @property {string} id - Reference ID to query items collection
+ */
+
+/**
+ * Fetches content values for query items by navigating through content property paths.
  * @private
- * @param {QueryItem[]} items
- * @returns {QueryValue[]}
+ * @param {QueryItem[]} items - Array of query items containing content references
+ * @returns {QueryValue[]} Array of extracted values with widget associations
  */
 function fetchValues (items) {
   const result = []
@@ -37,10 +62,24 @@ function fetchValues (items) {
   return result
 }
 
+/**
+ * Query Plugin
+ *
+ * Provides functionality for filtering and sorting content items based on query configurations.
+ * The plugin manages query collections that can filter and sort widget content values.
+ *
+ * @module query
+ * @example
+ * // Filter content in a section
+ * queryFilter({ id: 'myQuery', sectionId: 'mySection' })
+ *
+ * // Fetch filtered and sorted values
+ * const values = queryFetch({ id: 'myQuery' })
+ */
 export const query = createPlugin('query', {
   metadata: {
     title: 'Query',
-    description: 'Filter and sort',
+    description: 'Filter and sort content items based on query configurations',
     icon: 'mdi:filter-variant'
   },
   state: {
@@ -104,11 +143,18 @@ export const query = createPlugin('query', {
   },
   actions: {
     filter: {
+      metadata: {
+        title: 'Filter Query',
+        description: 'Apply query filter to a section and update widget items dynamically'
+      },
       /**
-       * Append query to section
-       * @param {Object} param
-       * @param {string} param.id - Query Id
-       * @param {string} param.sectionId - Section to overwrite with query
+       * Applies a query filter to a section by setting up listeners to update widget items
+       * when section content changes. Filters query items to only include those present
+       * in the specified section.
+       * @param {Object} params - The parameters for the filter action
+       * @param {string} params.id - The query ID containing filter/sort configuration
+       * @param {string} params.sectionId - The section ID to apply the query to
+       * @returns {void}
        */
       method ({ id, sectionId }) {
         stateSetValue({
@@ -232,11 +278,16 @@ export const query = createPlugin('query', {
       }
     },
     fetch: {
+      metadata: {
+        title: 'Fetch Query',
+        description: 'Fetch and process content values based on query configuration'
+      },
       /**
-       * Fetch values by query
-       * @param {Object} param
-       * @param {string} param.id - Query Id
-       * @returns {QueryValue[]}
+       * Fetches and processes content values based on query configuration.
+       * Applies filtering and sorting to query items and returns the processed results.
+       * @param {Object} params - The parameters for the fetch action
+       * @param {string} params.id - The query ID containing where/sort configuration
+       * @returns {QueryValue[]} Array of processed query values with filtering and sorting applied
        */
       method ({ id }) {
         const where = stateGetValue({
@@ -266,18 +317,20 @@ export const query = createPlugin('query', {
               name: 'query/items',
               id: sort.item.id
             })
-            items = []
 
-            // filter where results
+            // filter where results to get QueryItem[]
+            const filteredQueryItems = []
             for (let i = 0; i < queryData.item.length; i++) {
               const item = queryData.item[i]
 
               if (whereResults.usedWidgets[item.widgetId]) {
-                items.push(item)
+                filteredQueryItems.push(item)
               }
             }
 
-            items = fetchValues(items)
+            // fetch values from filtered items
+            items = fetchValues(filteredQueryItems)
+            // sort the QueryValue[] results
             items = listSort({
               items,
               type: sort.item.options
