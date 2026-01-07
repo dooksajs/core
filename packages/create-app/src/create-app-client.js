@@ -83,7 +83,6 @@ function appendComponent () {
  * @param {Object[]} app.setup - Setup queue
  * @param {Object} app.options - Application options
  * @param {Function} app.use - Plugin registration function
- * @returns {Function} Callback function that loads plugins when actions are needed
  * @example
  * // Create callback for lazy loading
  * const actionCallback = callbackWhenAvailable({
@@ -132,10 +131,6 @@ function callbackWhenAvailable ({ actions, lazy, loader, setup, options, use }) 
    * })
    */
   return (name, callback) => {
-    if (typeof actions[name] === 'function') {
-      return callback()
-    }
-
     const pluginName = name.split('_', 1)[0]
     const fileName = lazy[pluginName]
 
@@ -206,38 +201,16 @@ function initialize (appPlugins, appComponents) {
     loader: () => {
     }
   }) => {
-    const actionWhenAvailable = callbackWhenAvailable({
-      actions: appPlugins.actions,
-      lazy,
-      loader,
-      setup: appPlugins.setup,
-      options,
-      use: appPlugins.use
-    })
-    const appActions = appPlugins.actions
-
     options.action = {
-      action: (name, params, context, callback = {}) => {
-        actionWhenAvailable(name, () => {
-          const result = appActions[name](params, context)
-          const onSuccess = callback.onSuccess
-          const onError = callback.onError
-
-          if (result instanceof Error) {
-            onError(result)
-          } else if (result instanceof Promise) {
-            Promise.resolve(result)
-              .then(results => {
-                onSuccess(results)
-              })
-              .catch(error => {
-                onError(error)
-              })
-          } else {
-            onSuccess(result)
-          }
-        })
-      }
+      lazyLoadAction: callbackWhenAvailable({
+        actions: appPlugins.actions,
+        lazy,
+        loader,
+        setup: appPlugins.setup,
+        options,
+        use: appPlugins.use
+      }),
+      actions: appPlugins.actions
     }
 
     // setup view components

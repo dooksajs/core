@@ -15,13 +15,14 @@ const dataTypes = {
   object: () => ({}),
   array: () => ([])
 }
-let $action = (name, param, context, callback) => {
-  throw new Error('Action: $action method was not defined during setup')
-}
 // current action in progress
 let $actionId = ''
 
 export const action = createPlugin('action', {
+  data: {
+    /** @type {Object.<string, Function>} */
+    actions: {}
+  },
   state: {
     schema: {
       blocks: {
@@ -98,6 +99,65 @@ export const action = createPlugin('action', {
     icon: 'mdi:code-braces-box'
   },
   privateMethods: {
+    /**
+     * Callback function that loads plugins when actions are needed.
+     *
+     * @param {string} name - Name of the action method to ensure is available
+     * @param {function} callback - Function to execute after plugin is loaded
+     * @returns {any} Result of the callback function
+     * @example
+     * // Ensure auth plugin is loaded before calling login
+     * actionCallback('auth_login', () => {
+     *   return app.actions.auth_login(credentials)
+     * })
+     */
+    callWhenAvailable (name, callback) {
+      if (typeof this.actions[name] === 'function') {
+        return callback()
+      }
+
+      if (typeof this.lazyLoader === 'function') {
+        this.lazyLoader(name, callback)
+      }
+
+      throw new Error('Action: no action found "' + name +'"')
+    },
+    /**
+     * @param {string} name
+     * @param {Object|undefined} params
+     * @param {Object} context
+     * @param {ActionDispatchContext} context.context - Current action execution context containing
+     *   id, rootId, parentId, and groupId information.
+     * @param {Object} context.payload - Data payload passed to action methods for processing.
+     * @param {Object} [context.blockValues={}] - Accumulated values from previously executed blocks.
+     *   Used to cache and share values between blocks during execution.
+     * @param {Object} callback
+     */
+    call (name, params, context, callback = {}) {
+      if (!params) {
+        params = {}
+      }
+
+      this.callWhenAvailable(name, () => {
+        const result = this.actions[name](params, context)
+        const onSuccess = callback.onSuccess
+        const onError = callback.onError
+
+        if (result instanceof Error) {
+          onError(result)
+        } else if (result instanceof Promise) {
+          Promise.resolve(result)
+            .then(results => {
+              onSuccess(results)
+            })
+            .catch(error => {
+              onError(error)
+            })
+        } else {
+          onSuccess(result)
+        }
+      })
+    },
     getBlockValue (id, blockValues) {
       let value = blockValues[id]
 
@@ -230,7 +290,7 @@ export const action = createPlugin('action', {
               try {
                 const blockResult = this.getBlockValueByKey(block, context, payload, blockValues)
 
-                $action(block.method, blockResult.value, {
+                this.call(block.method, blockResult.value, {
                   context,
                   payload,
                   blockValues
@@ -609,8 +669,30 @@ export const action = createPlugin('action', {
       }
     }
   },
-  setup ({ action }) {
-    $action = action
+  /**
+   * @template {Function} T
+   * @param {Object} options
+   * @param {Object.<string, Function>} [options.actions]
+   * @param {T} [options.lazyLoadAction]
+   */
+  setup ({ actions, lazyLoadAction }) {
+    for (const key in actions) {
+      if (!actions.hasOwnProperty(key)) continue
+
+      if (typeof actions[key] !== 'function') {
+        throw new Error(`Action: unexpected type "${typeof actions[key]}" for "${key}"`)
+      }
+    }
+
+    this.actions = actions
+
+    if (typeof action === 'function') {
+      this.call = action
+    }
+
+    if (typeof lazyLoadAction === 'function') {
+      this.lazyLoader = lazyLoadAction
+    }
   }
 })
 
