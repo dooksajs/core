@@ -10,7 +10,7 @@
  */
 
 // Plugins
-export { mockPlugin, mockPluginModule, mockPluginModuleContext } from './plugins/index.js'
+export { mockClientPlugin } from './plugins/index.js'
 
 // Utilities
 export {
@@ -40,6 +40,3 @@ export {
   createMockPlugin,
   createMockState
 } from './factories/index.js'
-
-// Re-export mockState for backward compatibility
-export { mockState } from './plugins/mock-state.js'
