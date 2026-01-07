@@ -7,7 +7,11 @@
   "license": "AGPL-3.0-or-later",
   "type": "module",
   "main": "src/index.js",
+  "scripts": {
+    "test": "node --test test/**/*.spec.js"
+  },
   "dependencies": {
-    "@dooksa/create-action": "workspace:^"
+    "@dooksa/create-action": "workspace:^",
+    "@dooksa/test": "workspace:^"
   }
 }
