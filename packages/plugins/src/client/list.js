@@ -24,6 +24,23 @@ import { actionDispatch, operatorCompare, operatorEval } from '#client'
  * @property {string} widgetId - widget/item id
  */
 
+/**
+ * @typedef {Object} CompareItem
+ * @property {*} value_1 - First value to compare
+ * @property {*} value_2 - Second value to compare
+ * @property {'&&'|'||'} op - Logical operator
+ */
+
+/**
+ * Sorts an array in ascending order.
+ * Handles both string and non-string values, with case-insensitive string comparison.
+ *
+ * @param {Object} a - First item to compare
+ * @param {string|number} a.value - The value to compare
+ * @param {Object} b - Second item to compare
+ * @param {string|number} b.value - The value to compare
+ * @returns {number} -1 if a < b, 1 if a > b, 0 if equal
+ */
 function sortAscending (a, b) {
   // ignore upper and lowercase
   const A = typeof a.value === 'string' ? a.value.toUpperCase() : a.value
@@ -41,6 +58,16 @@ function sortAscending (a, b) {
   return 0
 }
 
+/**
+ * Sorts an array in descending order.
+ * Handles both string and non-string values, with case-insensitive string comparison.
+ *
+ * @param {Object} a - First item to compare
+ * @param {string|number} a.value - The value to compare
+ * @param {Object} b - Second item to compare
+ * @param {string|number} b.value - The value to compare
+ * @returns {number} -1 if a > b, 1 if a < b, 0 if equal
+ */
 function sortDescending (a, b) {
   // ignore upper and lowercase
   const A = typeof a.value === 'string' ? a.value.toUpperCase() : a.value
@@ -58,13 +85,28 @@ function sortDescending (a, b) {
   return 0
 }
 
+/**
+ * Helper object for mapping array/object items to key-value pairs.
+ */
 const mapKeyValue = {
+  /**
+   * Maps array item to key-value pair.
+   * @param {number} i - Array index
+   * @param {Array} items - Array being mapped
+   * @returns {{key: number, value: *}} Key-value pair
+   */
   array (i, items) {
     return {
       key: i,
       value: items[i]
     }
   },
+  /**
+   * Maps object entry to key-value pair.
+   * @param {number} i - Index in entries array
+   * @param {Array} items - Object entries array
+   * @returns {{key: string, value: *}} Key-value pair
+   */
   object (i, items) {
     return {
       key: items[i][0],
@@ -87,11 +129,13 @@ export const list = createPlugin('list', {
         icon: 'mdi:filter'
       },
       /**
-       * Filter items based on conditions
-       * @param {Object} param
-       * @param {ArraySortValue[]} param.items
-       * @param {ArrayFilterBy[]} param.options
-       * @returns {Object}
+       * Filter items based on conditions using operators.
+       * Supports multiple conditions with AND/OR logic.
+       *
+       * @param {Object} param - Parameters for filtering
+       * @param {ArraySortValue[]} param.items - Items to filter
+       * @param {ArrayFilterBy[]} param.options - Filter conditions with operator and value
+       * @returns {{items: ArraySortValue[], usedWidgets: Object<string, boolean>}} Filtered items and widget lookup
        */
       method ({ items, options }) {
         const result = {
@@ -104,30 +148,30 @@ export const list = createPlugin('list', {
 
           if (options.length > 1) {
             let compareValues = []
-            /**
-             * @type {Object}
-             * @property {*} value_1
-             * @property {*} value_2
-             * @property {'&&'|'||'} op
-             */
-            let compareItem = {}
+            /** @type {CompareItem} */
+            let compareItem = {
+              value_1: null,
+              value_2: null,
+              op: '&&'
+            }
 
             for (let i = 0; i < options.length; i++) {
               const option = options[i]
               const value = operatorEval({
-                name: option.name,
+                name: /** @type {import('#client').Operator} */ (option.name),
                 values: [item.value, option.value]
               })
 
-              if (!compareItem.value_1) {
+              if (compareItem.value_1 === null) {
                 compareItem.value_1 = value
-              }
-
-              if (!compareItem.value_2) {
-                compareItem.op = '&&'
+              } else if (compareItem.value_2 === null) {
                 compareItem.value_2 = value
                 compareValues.push(compareItem)
-                compareItem = {}
+                compareItem = {
+                  value_1: null,
+                  value_2: null,
+                  op: '&&'
+                }
               }
             }
 
@@ -141,7 +185,7 @@ export const list = createPlugin('list', {
           } else {
             const option = options[0]
             const isValid = operatorEval({
-              name: option.name,
+              name: /** @type {import('#client').Operator} */ (option.name),
               values: [item.value, option.value]
             })
 
@@ -219,11 +263,11 @@ export const list = createPlugin('list', {
         icon: 'mdi:number-0-box-multiple-outline'
       },
       /**
-       * s returns the first index at which a given element can be found in the array, or -1 if it is not present.
-       * @param {Object} param
-       * @param {Array} param.items
-       * @param {number|string} param.value
-       * @returns {number}
+       * Returns the first index at which a given element can be found in the array, or -1 if it is not present.
+       * @param {Object} param - Parameters for finding the index
+       * @param {Array} param.items - Array to search within
+       * @param {number|string} param.value - Value to find in the array
+       * @returns {number} Index of the value, or -1 if not found
        */
       method ({ items, value }) {
         for (let i = 0; i < items.length; i++) {
@@ -245,12 +289,13 @@ export const list = createPlugin('list', {
       },
       /**
        * Adds the specified elements to the end of an array
-       * @param {Object} param
+       * @param {Object} param - Parameters for push operation
        * @param {Array} param.target - Array which the new element will be appended
        * @param {*} param.source - The element that will be appended to the end of the array
+       * @returns {number} New length of the array
        */
       method ({ target, source }) {
-        target.push(source)
+        return target.push(source)
       }
     },
     sort: {
@@ -284,12 +329,12 @@ export const list = createPlugin('list', {
       },
       /**
        * Remove or replace existing values and/or adding new values
-       * @param {Object} param
+       * @param {Object} param - Parameters for splice operation
        * @param {Array} param.target - The array which will be modified
        * @param {*} param.source - The elements to add to the array, beginning from start.
        * @param {number} param.start - Zero-based index at which to start changing the array, converted to an integer.
        * @param {number} param.deleteCount - An integer indicating the number of elements in the array to remove from start.
-       * @returns {Array}
+       * @returns {Array} Array of removed elements
        */
       method ({ target, source, start, deleteCount = 0 }) {
         if (start == null) {
