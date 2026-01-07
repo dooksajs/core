@@ -517,7 +517,7 @@ export const action = createPlugin('action', {
         context,
         payload,
         clearBlockValues
-      }, actionContext ) {
+      }, actionContext = {} ) {
         if (clearBlockValues) {
           actionContext.blockValues = {}
         }
