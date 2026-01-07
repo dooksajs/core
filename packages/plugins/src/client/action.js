@@ -101,10 +101,13 @@ export const action = createPlugin('action', {
   privateMethods: {
     /**
      * Callback function that loads plugins when actions are needed.
+     * This method ensures that the requested action method is available before executing the callback.
+     * If the action is not immediately available, it attempts to lazy load it.
      *
      * @param {string} name - Name of the action method to ensure is available
      * @param {function} callback - Function to execute after plugin is loaded
      * @returns {any} Result of the callback function
+     * @throws {Error} When no action found with the specified name
      * @example
      * // Ensure auth plugin is loaded before calling login
      * actionCallback('auth_login', () => {
@@ -123,15 +126,28 @@ export const action = createPlugin('action', {
       throw new Error('Action: no action found "' + name +'"')
     },
     /**
-     * @param {string} name
-     * @param {Object|undefined} params
-     * @param {Object} context
+     * Calls a specific action method by name, handling both synchronous and asynchronous execution.
+     * This method ensures the action is available before calling it and manages the execution flow.
+     *
+     * @param {string} name - Name of the action method to call
+     * @param {Object|undefined} params - Parameters to pass to the action method
+     * @param {Object} context - Context object containing execution context and data
      * @param {ActionDispatchContext} context.context - Current action execution context containing
-     *   id, rootId, parentId, and groupId information.
-     * @param {Object} context.payload - Data payload passed to action methods for processing.
+     *   id, rootId, parentId, and groupId information for tracking execution flow
+     * @param {Object} context.payload - Data payload passed to action methods for processing
      * @param {Object} [context.blockValues={}] - Accumulated values from previously executed blocks.
-     *   Used to cache and share values between blocks during execution.
-     * @param {Object} callback
+     *   Used to cache and share values between blocks during execution
+     * @param {Object} callback - Callback handlers for handling success and error cases
+     * @param {function} [callback.onSuccess] - Function to call when action executes successfully
+     * @param {function} [callback.onError] - Function to call when action execution fails
+     * @returns {any} Result of the callback function execution
+     * @throws {Error} When action method is not found or execution fails
+     * @example
+     * // Call an action method with callback handlers
+     * action.call('auth_login', credentials, context, {
+     *   onSuccess: (result) => console.log('Login successful', result),
+     *   onError: (error) => console.error('Login failed', error)
+     * })
      */
     call (name, params, context, callback = {}) {
       if (!params) {
@@ -158,6 +174,18 @@ export const action = createPlugin('action', {
         }
       })
     },
+    /**
+     * Retrieves the value of a specific action block from the cache or state.
+     * If the block value is not cached, it fetches it from the state and caches it.
+     *
+     * @param {string} id - The unique identifier of the action block to retrieve
+     * @param {Object} blockValues - Cache object containing previously retrieved block values
+     * @returns {Object} The block value object retrieved from cache or state
+     * @throws {Error} When the block cannot be found in state
+     * @example
+     * // Get a block value from cache or fetch from state
+     * const blockValue = action.getBlockValue('block_123', blockValuesCache)
+     */
     getBlockValue (id, blockValues) {
       let value = blockValues[id]
 
@@ -176,6 +204,31 @@ export const action = createPlugin('action', {
 
       return value
     },
+    /**
+     * Retrieves a block value by key, handling both single values and collections.
+     * This method determines whether to process a single block value or multiple block values
+     * based on the block structure.
+     *
+     * @param {Object} block - The action block object containing value information
+     * @param {string} [block.key] - Optional key to identify the value in a collection
+     * @param {*} [block.value] - Direct value if no block references exist
+     * @param {string} [block.blockValue] - Reference to a single block value to retrieve
+     * @param {string[]} [block.blockValues] - Array of block references for collection values
+     * @param {Object} context - Current action execution context
+     * @param {ActionDispatchContext} context.context - Context with id, rootId, parentId, groupId
+     * @param {Object} payload - Data payload for the action
+     * @param {Object} blockValues - Cache of previously retrieved block values
+     * @returns {{key: string|undefined, value: any}} Object containing the key and resolved value
+     * @throws {Error} When referenced blocks cannot be found
+     * @example
+     * // Get a single block value
+     * const result = action.getBlockValueByKey(
+     *   { blockValue: 'block_123' },
+     *   context,
+     *   payload,
+     *   blockValues
+     * )
+     */
     getBlockValueByKey (block, context, payload, blockValues) {
       if (block.hasOwnProperty('blockValues')) {
         return this.getBlockValues(block, context, payload, blockValues)
@@ -192,6 +245,30 @@ export const action = createPlugin('action', {
 
       return result
     },
+    /**
+     * Processes a collection of block values and combines them into a single value object.
+     * This method handles multiple block references and builds a composite value based on
+     * the specified data type (object or array).
+     *
+     * @param {Object} block - The parent block containing the collection configuration
+     * @param {string} [block.key] - Optional key for the resulting value in parent context
+     * @param {string} block.dataType - Type of data structure to create ('object' or 'array')
+     * @param {string[]} block.blockValues - Array of block IDs to process
+     * @param {Object} context - Current action execution context
+     * @param {ActionDispatchContext} context.context - Context with id, rootId, parentId, groupId
+     * @param {Object} payload - Data payload for the action
+     * @param {Object} blockValues - Cache of previously retrieved block values
+     * @returns {{key: string|undefined, value: Object|Array}} Object containing the key and combined value
+     * @throws {Error} When any referenced block cannot be found
+     * @example
+     * // Combine multiple block values into an object
+     * const result = action.getBlockValues(
+     *   { dataType: 'object', blockValues: ['block_1', 'block_2'] },
+     *   context,
+     *   payload,
+     *   blockValues
+     * )
+     */
     getBlockValues (block, context, payload, blockValues) {
       let value = dataTypes[block.dataType]()
       const blocks = block.blockValues
@@ -419,13 +496,25 @@ export const action = createPlugin('action', {
         }
       },
       /**
-       * @param {Object} param
-       * @param {string} param.id
-       * @param {Object} [param.context]
-       * @param {Object} [param.payload]
-       * @param {boolean} [param.clearBlockValues]
-       * @param {Object} [actionContext]
-       * @param {Object} [actionContext.blockValues]
+       * Dispatches an action by executing its sequence of blocks.
+       * This method handles both immediate execution and lazy loading of action sequences from the backend.
+       *
+       * @param {Object} param - Parameters for the action dispatch
+       * @param {string} param.id - Unique identifier of the action sequence to execute
+       * @param {Object} [param.context] - Execution context containing id, rootId, parentId, groupId
+       * @param {Object} [param.payload] - Data payload to pass to action methods
+       * @param {boolean} [param.clearBlockValues] - Whether to clear cached block values before execution
+       * @param {Object} actionContext - Internal execution context
+       * @param {Object} [actionContext.blockValues] - Cache of previously executed block values
+       * @returns {Promise<any>} Promise that resolves with the result of the action execution
+       * @throws {Error} When action sequence cannot be found or execution fails
+       * @example
+       * // Execute an action with context and payload
+       * const result = await action.dispatch({
+       *   id: 'user_login',
+       *   context: { id: 'session_123', rootId: 'app_1' },
+       *   payload: { username: 'user', password: 'pass' }
+       * }, { blockValues: {} })
        */
       method ({
         id,
@@ -497,10 +586,23 @@ export const action = createPlugin('action', {
         }
       },
       /**
-       * Get block value
-       * @param {Object} props
-       * @param {*} props.value
-       * @param {GetValueByQuery} [props.query]
+       * Retrieves a value from an action block result using an optional query path.
+       * This method allows accessing nested properties within block execution results.
+       *
+       * @param {Object} props - Parameters for retrieving the value
+       * @param {*} props.value - The value to query (typically from a block execution result)
+       * @param {GetValueByQuery} [props.query] - Optional query string or array for nested property access
+       * @returns {*} The retrieved value or undefined if not found
+       * @example
+       * // Get a nested property from a block result
+       * const username = action.getValue({
+       *   value: { user: { name: 'John', age: 30 } },
+       *   query: 'user.name'
+       * }) // Returns 'John'
+       *
+       * // Get the entire value if no query
+       * const result = action.getValue({ value: { data: 'test' } })
+       * // Returns { data: 'test' }
        */
       method (props) {
         if (props.value) {
@@ -518,9 +620,19 @@ export const action = createPlugin('action', {
         type: 'string'
       },
       /**
-       * Get context value
-       * @param {GetValueByQuery} query
-       * @param {Object} ctx
+       * Retrieves a value from the current action execution context using a query path.
+       * This method provides access to context data such as session information, user data, etc.
+       *
+       * @param {GetValueByQuery} query - Query string or array for nested property access within context
+       * @param {Object} ctx - Context object containing execution data
+       * @param {ActionDispatchContext} ctx.context - Current action execution context
+       * @returns {*} The retrieved value from context or undefined if not found
+       * @example
+       * // Get user ID from context
+       * const userId = action.getContextValue('context.user.id', { context })
+       *
+       * // Get entire context object
+       * const fullContext = action.getContextValue('', { context })
        */
       method (query, { context }) {
         return getValue(context, query)
@@ -536,8 +648,19 @@ export const action = createPlugin('action', {
         type: 'string'
       },
       /**
-       * Get payload value
-       * @param {GetValueByQuery} query
+       * Retrieves a value from the current action payload using a query path.
+       * This method provides access to data passed to the action, such as form inputs or event data.
+       *
+       * @param {GetValueByQuery} query - Query string or array for nested property access within payload
+       * @param {Object} ctx - Context object containing payload data
+       * @param {Object} ctx.payload - Current action payload containing event or request data
+       * @returns {*} The retrieved value from payload or undefined if not found
+       * @example
+       * // Get form input value from payload
+       * const username = action.getPayloadValue('formData.username', { payload })
+       *
+       * // Get entire payload object
+       * const fullPayload = action.getPayloadValue('', { payload })
        */
       method (query, { payload }) {
         return getValue(payload, query)
@@ -587,18 +710,41 @@ export const action = createPlugin('action', {
       },
       /**
        * Conditional statement to evaluate a condition and execute different blocks of code based on the result.
-       * @param {Object} props
-       * @param {Object} props.branch - The branch object containing the conditions and corresponding actions.
-       * @param {Object[]} props.branch.if - An list of condition evaluate.
-       * @param {'=='|'!='|'>'|'>='|'<'|'<='|'!'|'%'|'++'|'--'|'-'|'+'|'*'|'**'|'!!'|'~'} props.branch.if[].op - The operator for the condition (e.g., '==', '>', '<').
-       * @param {string|number} props.branch.if[].from - The left-hand side value of the comparison.
-       * @param {string|number} props.branch.if[].to - The right-hand side value of the comparison.
-       * @param {'&&'|'||'} props.branch.if[].andOr - The logical operator to combine multiple conditions. Valid operators include '&&' (AND) and '||' (OR).
-       * @param {number[]} props.branch.then - An list of block sequences to be executed if the condition is true.
-       * @param {number[]} props.branch.else - An list of block sequences to be executed if the condition is false.
-       * @param {ActionDispatchContext} props.context - The action context in which the action is being performed.
-       * @param {*} props.payload - Any additional data required for the action.
-       * @param {Object.<string, *>} props.blockValues - Values associated with the current scope.
+       * This method supports both single and multiple conditions with logical operators (AND/OR).
+       *
+       * @param {Object} branch - The branch object containing the conditions and corresponding actions
+       * @param {Object[]} branch.if - Array of condition objects to evaluate
+       * @param {'=='|'!='|'>'|'>='|'<'|'<='|'!'|'%'|'++'|'--'|'-'|'+'|'*'|'**'|'!!'|'~'} branch.if[].op - The operator for the condition
+       * @param {string|number} branch.if[].from - The left-hand side value of the comparison
+       * @param {string|number} branch.if[].to - The right-hand side value of the comparison
+       * @param {'&&'|'||'} [branch.if[].andOr] - Logical operator to combine multiple conditions ('&&' for AND, '||' for OR)
+       * @param {string[]} branch.then - Array of block sequence IDs to execute if condition is true
+       * @param {string[]} branch.else - Array of block sequence IDs to execute if condition is false
+       * @param {Function} callback - Completion callback to call after processing
+       * @param {Object} context - Current execution context
+       * @param {ActionDispatchContext} context.context - Action execution context with id, rootId, parentId, groupId
+       * @param {Object} context.payload - Data payload for the action
+       * @param {Object} context.blockValues - Cache of previously executed block values
+       * @returns {Function[]} Array of prepared block execution functions
+       * @throws {Error} When condition structure is invalid or operator is missing
+       * @example
+       * // Single condition
+       * action.ifElse({
+       *   if: [{ op: '==', from: 'user.role', to: 'admin' }],
+       *   then: ['admin_sequence'],
+       *   else: ['user_sequence']
+       * }, callback, { context, payload, blockValues })
+       *
+       * // Multiple conditions with AND
+       * action.ifElse({
+       *   if: [
+       *     { op: '==', from: 'user.role', to: 'admin' },
+       *     { andOr: '&&' },
+       *     { op: '>', from: 'user.age', to: 18 }
+       *   ],
+       *   then: ['adult_admin_sequence'],
+       *   else: ['other_sequence']
+       * }, callback, { context, payload, blockValues })
        */
       method (branch, callback, { context, payload, blockValues }) {
         let isTruthy = false
@@ -670,10 +816,26 @@ export const action = createPlugin('action', {
     }
   },
   /**
-   * @template {Function} T
-   * @param {Object} options
-   * @param {Object.<string, Function>} [options.actions]
-   * @param {T} [options.lazyLoadAction]
+   * Sets up the action plugin with external action methods and lazy loading capability.
+   * This method validates and registers action methods for use in the action system.
+   *
+   * @template {Function} T - Type of the lazy load action function
+   * @param {Object} options - Configuration options for setup
+   * @param {Object.<string, Function>} options.actions - Object map of action names to action functions
+   * @param {T} [options.lazyLoadAction] - Optional function for lazy loading actions when needed
+   * @throws {Error} When any action method is not a function
+   * @example
+   * // Setup with action methods
+   * action.setup({
+   *   actions: {
+   *     'auth_login': (params, context) => { /* login logic *\/ },
+   *     'data_save': (params, context) => { /* save logic *\/ }
+   *   },
+   *   lazyLoadAction: (actionName, callback) => {
+   *     // Load action plugin dynamically
+   *     loadPlugin(actionName).then(() => callback())
+   *   }
+   * })
    */
   setup ({ actions, lazyLoadAction }) {
     for (const key in actions) {
