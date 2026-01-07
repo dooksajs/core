@@ -59,6 +59,24 @@ export const variable = createPlugin('variable', {
         description: 'Retrieve variable value',
         icon: 'mdi:application-variable'
       },
+      parameters: {
+        type: 'object',
+        properties: {
+          scope: {
+            type: 'string'
+          },
+          prefixId: {
+            type: 'string'
+          },
+          suffixId: {
+            type: 'string'
+          },
+          query: {
+            type: 'string',
+            required: true
+          }
+        }
+      },
       /**
        * Get variable value
        * @param {Object} props
