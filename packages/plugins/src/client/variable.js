@@ -102,13 +102,18 @@ export const variable = createPlugin('variable', {
           return
         }
 
+        /** @TODO context.rootId must be present, we need to handle empty rootId */
         // get scopes
         const scopes = stateGetValue({
           name: 'variable/scopes',
           id: context.rootId
-        }).item
+        })
 
-        for (let i = 0; i < scopes.length; i++) {
+        if (scopes.isEmpty) {
+          return
+        }
+
+        for (let i = 0; i < scopes.item.length; i++) {
           // search for variable in scope
           const values = stateGetValue({
             name: 'variable/values',
