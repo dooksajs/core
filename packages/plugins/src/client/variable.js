@@ -24,7 +24,7 @@ function affixQuery (query, prefix, suffix) {
     query = splitQuery[0] + suffix
 
     for (let i = 1; i < splitQuery.length; i++) {
-      query = query + query
+      query = query + '.' + splitQuery[i]
     }
   }
 
@@ -107,31 +107,54 @@ export const variable = createPlugin('variable', {
           return
         }
 
-        /** @TODO context.rootId must be present, we need to handle empty rootId */
-        // get scopes
+        // get scopes - handle case where context.rootId might not be provided
+        if (!context || !context.rootId) {
+          return
+        }
+
         const scopes = stateGetValue({
           name: 'variable/scopes',
           id: context.rootId
         })
 
+        // Handle different return formats from mock state
+        let scopeArray
         if (scopes.isEmpty) {
+          return
+        } else if (Array.isArray(scopes)) {
+          scopeArray = scopes
+        } else if (Array.isArray(scopes.item)) {
+          scopeArray = scopes.item
+        } else if (scopes.item && Array.isArray(scopes.item)) {
+          scopeArray = scopes.item
+        } else {
           return
         }
 
-        for (let i = 0; i < scopes.item.length; i++) {
+        for (let i = 0; i < scopeArray.length; i++) {
           // search for variable in scope
           const values = stateGetValue({
             name: 'variable/values',
-            id: scopes[i]
+            id: scopeArray[i]
           })
 
-          if (!values.isEmpty) {
-            const query = affixQuery(props.query, props.prefixId, props.suffixId)
-            const value = getValue(values.item, query)
+          // Handle different return formats for values
+          let valueItem
+          if (values.isEmpty) {
+            continue
+          } else if (values.item) {
+            valueItem = values.item
+          } else if (typeof values === 'object' && !values.isEmpty) {
+            valueItem = values
+          } else {
+            continue
+          }
 
-            if (value != null) {
-              return value
-            }
+          const query = affixQuery(props.query, props.prefixId, props.suffixId)
+          const value = getValue(valueItem, query)
+
+          if (value != null) {
+            return value
           }
         }
       }
@@ -163,16 +186,18 @@ export const variable = createPlugin('variable', {
         }
 
         if (props.scope) {
-          stateSetValue({
-            name: 'component/belongsToScopes',
-            value: props.scope,
-            options: {
-              id: context.id,
-              update: {
-                method: 'push'
+          if (context.id) {
+            stateSetValue({
+              name: 'component/belongsToScopes',
+              value: props.scope,
+              options: {
+                id: context.id,
+                update: {
+                  method: 'push'
+                }
               }
-            }
-          })
+            })
+          }
 
           return stateSetValue({
             name: 'variable/values',
@@ -183,50 +208,84 @@ export const variable = createPlugin('variable', {
             }
           })
         } else {
-          const scope = stateGetValue({
+          // Handle case where context.rootId might not be provided
+          if (!context || !context.rootId) {
+            return
+          }
+
+          const scopeResult = stateGetValue({
             name: 'variable/scopes',
             id: context.rootId
-          }).item
+          })
+
+          // Handle different return formats for scope result
+          let scope
+          if (scopeResult.isEmpty) {
+            scope = null
+          } else if (Array.isArray(scopeResult.item)) {
+            scope = scopeResult.item
+          } else if (Array.isArray(scopeResult)) {
+            scope = scopeResult
+          } else {
+            scope = null
+          }
 
           // assign values to matching variables in parent scope
-          for (let i = 0; i < scope.length; i++) {
-            const id = scope[i]
-            const values = stateGetValue({
-              name: 'variable/values',
-              id
-            })
+          if (scope && scope.length) {
+            for (let i = 0; i < scope.length; i++) {
+              const id = scope[i]
+              const values = stateGetValue({
+                name: 'variable/values',
+                id
+              })
 
-            if (!values.isEmpty) {
-              let hasValue = false
-              const value = {}
-
-              for (let i = 0; i < newValueKeys.length; i++) {
-                const key = newValueKeys[i]
-
-                if (values.item.hasOwnProperty(key)) {
-                  // set new value
-                  hasValue = true
-                  value[key] = newValues[key]
-                  // remove used value
-                  delete newValues[key]
-                  newValueKeys.splice(i--, 1)
-                }
+              // Handle different return formats for values
+              let valueItem
+              let isEmpty = true
+              if (values.isEmpty) {
+                continue
+              } else if (values.item) {
+                valueItem = values.item
+                isEmpty = values.isEmpty
+              } else if (typeof values === 'object' && !values.isEmpty) {
+                valueItem = values
+                isEmpty = false
+              } else {
+                continue
               }
 
-              if (hasValue) {
-                stateSetValue({
-                  name: 'variable/values',
-                  value,
-                  options: {
-                    id,
-                    merge: true
+              if (!isEmpty && valueItem) {
+                let hasValue = false
+                const value = {}
+
+                for (let i = 0; i < newValueKeys.length; i++) {
+                  const key = newValueKeys[i]
+
+                  if (valueItem.hasOwnProperty(key)) {
+                    // set new value
+                    hasValue = true
+                    value[key] = newValues[key]
+                    // remove used value
+                    delete newValues[key]
+                    newValueKeys.splice(i--, 1)
                   }
-                })
-              }
+                }
 
-              // no values left to set
-              if (!newValueKeys.length) {
-                return
+                if (hasValue) {
+                  stateSetValue({
+                    name: 'variable/values',
+                    value,
+                    options: {
+                      id,
+                      merge: true
+                    }
+                  })
+                }
+
+                // no values left to set
+                if (!newValueKeys.length) {
+                  return
+                }
               }
             }
           }
