@@ -237,7 +237,11 @@ export function createMockFetchWithCache (t, options = {}) {
 
     if (cache.has(cacheKey)) {
       if (onCacheHit) onCacheHit(cacheKey)
-      cacheHits.push({ url, key: cacheKey, timestamp: Date.now() })
+      cacheHits.push({
+        url,
+        key: cacheKey,
+        timestamp: Date.now()
+      })
 
       return {
         ok: true,
@@ -247,7 +251,11 @@ export function createMockFetchWithCache (t, options = {}) {
     }
 
     if (onCacheMiss) onCacheMiss(cacheKey)
-    cacheMisses.push({ url, key: cacheKey, timestamp: Date.now() })
+    cacheMisses.push({
+      url,
+      key: cacheKey,
+      timestamp: Date.now()
+    })
 
     // Return fresh data
     return {
@@ -260,7 +268,10 @@ export function createMockFetchWithCache (t, options = {}) {
           {
             id: `test-${Date.now()}`,
             collection,
-            item: { name: 'test', value: 42 }
+            item: {
+              name: 'test',
+              value: 42
+            }
           }
         ]
       }
