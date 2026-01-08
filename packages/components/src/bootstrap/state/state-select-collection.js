@@ -15,7 +15,7 @@ export default createDiv({
       children: [
         createIcon({
           options: {
-            icon: 'mdi:folder-search',
+            icon: 'mdi:folders',
             margin: [{
               direction: 'end',
               strength: '2'
