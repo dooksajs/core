@@ -13,15 +13,7 @@
 export { mockClientPlugin } from './plugins/index.js'
 
 // Utilities
-export {
-  createMockGetValue,
-  createMockGenerateId,
-  createMockFetch,
-  createMockFetchWithCache,
-  createMockFetchError,
-  createMockFetchHttpError,
-  mockWindowLocationSearch
-} from './utils/index.js'
+export * from './utils/index.js'
 
 // Assertions
 export {
