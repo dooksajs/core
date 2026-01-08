@@ -188,11 +188,11 @@ export async function mockClientPlugin (
     mockPluginActions(context, plugin, clientNamedExports, result, actionMethods)
     mockPluginExports(context, plugin, clientNamedExports, result)
 
-    // Setup $action function for action plugin if included
-    if (result.method.action) {
-      // Call the action plugin's setup method to inject the $action function
-      if (result.method.action.setup) {
-        result.method.action.setup({ actions: actionMethods })
+    // Setup action function for action plugin if included
+    if (result.module.action) {
+      // Call the action plugin's setup method to inject the action function
+      if (result.module.action.setup) {
+        result.module.action.setup({ actions: actionMethods })
       }
     }
 
