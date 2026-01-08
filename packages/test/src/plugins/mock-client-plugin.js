@@ -1,7 +1,11 @@
 import { dirname, normalize } from 'node:path'
 import { mockStateData } from './mock-state-data.js'
 import { fileURLToPath, pathToFileURL } from 'node:url'
-import { mockActionMethod } from './mock-action-method.js'
+import {
+  mockPluginExports,
+  collectPluginState,
+  mockPluginActions
+} from '../utils/index.js'
 
 /**
  * @import {TestContext} from 'node:test'
@@ -45,21 +49,15 @@ import { mockActionMethod } from './mock-action-method.js'
  */
 
 /**
- * @template {string} PluginName
- * @typedef {{ [K in PluginName]: K extends keyof MockClientPluginMap ? MockClientPluginMap[K] : any }} MockClientPluginMapper
- */
-
-/**
- * @template {string} Name
- * @template {string} PluginName
  * @typedef {Object} MockPlugin
- * @property {Name extends keyof MockClientPluginMap ? MockClientPluginMap[Name] : any} plugin - The main mocked plugin instance
- * @property {MockClientPluginMapper<PluginName>} modules - Additional mocked plugin modules
+ * @property {any} plugin - The main mocked plugin instance
+ * @property {Object.<string, any>} modules - Additional mocked plugin modules
  * @property {Function} restore - Function to restore all mocks and clean up test state
  */
 
 /**
- * Creates a complete mock environment for a dooksa plugin
+ * Creates a complete mock environment for a dooksa plugin using utility functions
+ * to reduce code repetition and improve maintainability
  *
  * @template {string} Name - The name of the plugin to mock
  * @template {string} PluginName - Additional plugin names to include
@@ -68,20 +66,20 @@ import { mockActionMethod } from './mock-action-method.js'
  * @param {Name} param.name - Name of the primary plugin to mock
  * @param {'client' | 'server'} [param.platform='client'] - Target platform
  * @param {PluginName[]} [param.modules=[]] - Additional plugin names to mock
- * @param {Object.<string, Function>} [param.namedExports={}] - Pre-defined mock functions
- * @returns {Promise<MockPlugin<Name, PluginName> & MockStateMethods>} Complete mock plugin environment
+ * @param {Array} [param.namedExports=[]] - Array of mock definitions: { module, name, value }
+ * @returns {Promise<MockPlugin & MockStateMethods>} Complete mock plugin environment
  *
  * @example
  * // Basic plugin mock
- * const mock = await mockPlugin(t, {
+ * const mock = await mockClientPlugin(t, {
  *   name: 'event',
  * })
  *
  * // Advanced mock with custom exports and modules
  * const actionDispatch = t.mock.fn((x) => x)
- * const mock = await mockPlugin(t, {
+ * const mock = await mockClientPlugin(t, {
  *   name: 'event',
- *   namedExports: { actionDispatch },
+ *   namedExports: [{ module: '#client', name: 'actionDispatch', value: actionDispatch }],
  *   modules: ['action', 'component']
  * })
  */
@@ -90,12 +88,29 @@ export async function mockClientPlugin (
   {
     name,
     modules = [],
-    namedExports = {}
+    namedExports = []
   }
 ) {
+  // Group mock definitions by module
+  const clientNamedExports = {}
+  const mocksByModule = {
+    '#client': clientNamedExports
+  }
+
+  for (let i = 0; i < namedExports.length; i++) {
+    const { module, name, value } = namedExports[i]
+
+    if (!mocksByModule[module]) {
+      mocksByModule[module] = {}
+    }
+
+    mocksByModule[module][name] = value
+  }
+
   const restoreCallbacks = []
   const result = {
-    modules: ({}),
+    module: {},
+    method: {},
     restore: () => {
       // Execute all restore callbacks in reverse order
       for (let i = restoreCallbacks.length - 1; i >= 0; i--) {
@@ -110,85 +125,74 @@ export async function mockClientPlugin (
 
   try {
     const tempPluginModule = await import('#client')
-
+    /** @type {Object.<string, import('node:test').Mock<Function>>} */
+    const actionMethods = {}
     const state = tempPluginModule.state
     const pluginState = []
-    const mainPlugin = tempPluginModule[name]
+    /** @type {any} */
+    const mainPlugin = tempPluginModule[/** @type {string} */ (name)]
     // Setup state data
     if (mainPlugin && mainPlugin.state) {
       pluginState.push(mainPlugin)
     }
 
-    for (let i = 0; i < modules.length; i++) {
-      const name = modules[i]
-      const plugin = tempPluginModule[name]
+    /** @type {any} */
+    result.module[/** @type {string} */ (name)] = mainPlugin
 
-      // @ts-ignore
-      result.modules[name] = plugin
+    for (let i = 0; i < modules.length; i++) {
+      const moduleName = modules[i]
+      /** @type {any} */
+      const plugin = tempPluginModule[/** @type {string} */ (moduleName)]
+
+      result.module[/** @type {string} */ (moduleName)] = plugin
 
       // Setup state data
-      if (plugin && plugin.state) {
-        pluginState.push(plugin)
-      }
+      pluginState.push(...collectPluginState(plugin))
 
       // Setup mock module methods
-      for (const namedExport in plugin) {
-        if (typeof plugin[namedExport] === 'function') {
-          context.mock.method(plugin, namedExport)
-
-          if (!namedExports[namedExport]){
-            namedExports[namedExport] = plugin[namedExport]
-          }
-        }
-      }
+      mockPluginActions(context, plugin, clientNamedExports, result, actionMethods)
+      mockPluginExports(context, plugin, clientNamedExports, result)
     }
 
     // Setup mock state
     const stateData = mockStateData(pluginState)
-    const stateMethodNames = [
-      'stateAddListener',
-      'stateDeleteListener',
-      'stateDeleteValue',
-      'stateFind',
-      'stateGenerateId',
-      'stateGetSchema',
-      'stateGetValue',
-      'stateSetValue',
-      'stateUnsafeSetValue'
-    ]
+    result.module.state = state
 
-    stateMethodNames.forEach(methodName => {
-      context.mock.method(state, methodName)
-      result[methodName] = state[methodName]
-      namedExports[methodName] = state[methodName]
-    })
+    // Add state methods to #client mocks
+    mockPluginActions(context, state, clientNamedExports, result, actionMethods)
+    mockPluginExports(context, state, clientNamedExports, result)
 
     state.setup(stateData)
 
-    const mockContext = context.mock.module('#client', {
-      namedExports
-    })
-    restoreCallbacks.push(() => {
-      mockContext.restore()
-      // deregister()
-    })
+    // Create mock contexts for each module BEFORE importing the plugin
+    for (const [modulePath, moduleMocks] of Object.entries(mocksByModule)) {
+      const mockContext = context.mock.module(modulePath, {
+        namedExports: moduleMocks
+      })
+      restoreCallbacks.push(() => {
+        mockContext.restore()
+      })
+    }
 
+    // Import the plugin AFTER mock contexts are created
     const __filename = fileURLToPath(import.meta.url)
     const __dirname = dirname(__filename)
     const pluginPath = normalize(`${__dirname}/../../../plugins/src/client/${name}.js`)
     const pluginURLPath = pathToFileURL(pluginPath).href
     const pluginModule = await import(pluginURLPath + `?seed=${crypto.randomUUID()}`)
+    /** @type {any} */
+    const plugin = pluginModule[/** @type {string} */ (name)]
+    result.module[/** @type {string} */ (name)] = plugin
 
-    result.plugin = pluginModule[name]
+    // Use utility functions for the imported plugin as well
+    mockPluginActions(context, plugin, clientNamedExports, result, actionMethods)
+    mockPluginExports(context, plugin, clientNamedExports, result)
 
     // Setup $action function for action plugin if included
-    if (result.modules.action) {
-      // Create a working $action function that can execute action methods
-      const $action = mockActionMethod(result)
-
+    if (result.method.action) {
       // Call the action plugin's setup method to inject the $action function
-      if (result.modules.action.setup) {
-        result.modules.action.setup({ action: $action })
+      if (result.method.action.setup) {
+        result.method.action.setup({ actions: actionMethods })
       }
     }
 
