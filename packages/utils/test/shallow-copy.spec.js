@@ -18,7 +18,8 @@ describe('Shallow copy', function () {
     })
 
     it('should handle functions', function () {
-      const fn = () => {}
+      const fn = () => {
+      }
       strictEqual(shallowCopy(fn), fn)
     })
   })
@@ -124,7 +125,10 @@ describe('Shallow copy', function () {
     })
 
     it('should freeze objects when freeze=true', function () {
-      const data = { a: 1, b: 2 }
+      const data = {
+        a: 1,
+        b: 2
+      }
       const result = shallowCopy(data, true)
 
       strictEqual(Object.isFrozen(result), true)
