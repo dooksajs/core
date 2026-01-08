@@ -31,8 +31,9 @@ export function createActionMockWrapper (context, action) {
  * @param {Object} plugin - The plugin object to mock exports from
  * @param {Object} clientNamedExports - The client named exports object to populate
  * @param {Object} result - The result object to store method references
+ * @param {string} pluginName - Name of the plugin being mocked
  */
-export function mockPluginExports (context, plugin, clientNamedExports, result) {
+export function mockPluginExports (context, plugin, clientNamedExports, result, pluginName) {
   for (const namedExport in plugin) {
     if (
       !clientNamedExports[namedExport]
@@ -40,22 +41,9 @@ export function mockPluginExports (context, plugin, clientNamedExports, result) 
     ) {
       const mockPluginMethod = context.mock.fn(plugin[namedExport])
       clientNamedExports[namedExport] = mockPluginMethod
-      result.method[namedExport] = mockPluginMethod
+      result.methods[namedExport] = mockPluginMethod
     }
   }
-}
-
-/**
- * Collects plugin state if it exists
- * @param {Object} plugin - The plugin object to check for state
- * @returns {Array} Array containing the plugin if it has state, empty array otherwise
- */
-export function collectPluginState (plugin) {
-  const pluginState = []
-  if (plugin && plugin.state) {
-    pluginState.push(plugin)
-  }
-  return pluginState
 }
 
 /**
@@ -77,7 +65,7 @@ export function mockPluginActions (context, plugin, clientNamedExports, result, 
 
       clientNamedExports[actionMethodName] = mockActionMethod
       actionMethods[action.name] = mockActionMethod
-      result.method[actionMethodName] = mockActionMethod
+      result.actions[actionMethodName] = mockActionMethod
     }
   }
   return actionMethods
