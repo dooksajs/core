@@ -84,13 +84,15 @@ export const page = createPlugin('page', {
   },
   methods: {
     /**
-     * Get data and append
-     * @param {Object} param
-     * @param {string} param.collection,
-     * @param {string} param.id,
-     * @param {*} param.data
-     * @param {Object} [param.expandExclude]
-     * @param {boolean} [param.expand=true]
+     * Retrieves data from state and appends it to the provided data array.
+     * This method handles both direct data and expanded relationships.
+     *
+     * @param {Object} param - The parameters object
+     * @param {string} param.collection - The state collection name to retrieve data from
+     * @param {string} param.id - The ID of the item to retrieve
+     * @param {Array} param.data - The array to append retrieved data to
+     * @param {Object} [param.expandExclude] - Optional object containing IDs to exclude from expansion
+     * @param {boolean} [param.expand=true] - Whether to expand relationships
      */
     appendExpand ({ collection, id, data, expandExclude, expand = true }) {
       const getData = stateGetValue({
@@ -122,14 +124,20 @@ export const page = createPlugin('page', {
       }
     },
     /**
+     * Converts a path string to a unique ID by hashing it.
+     *
      * @param {string} path - Path name without query parameters
+     * @returns {string} The generated path ID
      */
     pathToId (path) {
       return '_' + hash.update(path) + '_'
     },
     /**
-     * @param {string} id - Page id
-     * @returns {PageGetItemsByPath}
+     * Retrieves all page items by ID, including expanded component relationships.
+     * This method recursively expands component children to build a complete page structure.
+     *
+     * @param {string} id - The page ID to retrieve
+     * @returns {Object} The page data object containing isEmpty and item properties
      */
     getItemsById (id) {
       const page = stateGetValue({
@@ -201,10 +209,12 @@ export const page = createPlugin('page', {
         icon: 'mdi:content-save'
       },
       /**
+       * Saves page data to the server via HTTP POST request.
+       * This method retrieves the complete page structure and sends it to the server.
        *
-       * @param {Object} param
-       * @param {string} param.id -
-       * @returns
+       * @param {Object} param - The parameters object
+       * @param {string} param.id - The page ID to save
+       * @returns {Promise} Promise that resolves when the save operation completes
        */
       method (id) {
         const pageData = this.getItemsById(id)
@@ -242,8 +252,11 @@ export const page = createPlugin('page', {
         icon: 'mdi:file-find'
       },
       /**
-       * @param {string} path
-       * @returns {PageGetItemsByPath}
+       * Retrieves page items by path, with support for redirects.
+       * This method handles both direct path lookups and temporary/permanent redirects.
+       *
+       * @param {string} path - The path to look up
+       * @returns {PageGetItemsByPath} The page data or redirect information
        */
       method (path) {
         const currentPathId = this.pathToId(path)
@@ -292,6 +305,11 @@ export const page = createPlugin('page', {
       }
     }
   },
+  /**
+   * Setup function that initializes the page on the client.
+   * Fetches the current page based on the route and loads all components.
+   * @TODO Implement 404 page handling
+   */
   setup () {
     // fetch current page
     const pagePath = stateGetValue({
