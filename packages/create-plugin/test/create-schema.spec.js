@@ -926,12 +926,22 @@ describe('Create schema', function () {
     })
 
     it('should handle all three ID properties together', function () {
-      const context = { prefix: 'pre-', suffix: '-suf', defaultVal: 'def' }
+      const context = {
+        prefix: 'pre-',
+        suffix: '-suf',
+        defaultVal: 'def'
+      }
       const schema = createSchema(context, {
         type: 'collection',
-        defaultId: function () { return this.prefix + this.defaultVal + this.suffix },
-        prefixId: function () { return this.prefix },
-        suffixId: function () { return this.suffix },
+        defaultId: function () {
+          return this.prefix + this.defaultVal + this.suffix
+        },
+        prefixId: function () {
+          return this.prefix
+        },
+        suffixId: function () {
+          return this.suffix
+        },
         items: { type: 'string' }
       }, 'test/collection')
 
@@ -1067,8 +1077,14 @@ describe('Create schema', function () {
           id: 'test/complex-array/items',
           entry: {
             properties: [
-              { name: 'name', type: 'string' },
-              { name: 'scores', type: 'array' }
+              {
+                name: 'name',
+                type: 'string'
+              },
+              {
+                name: 'scores',
+                type: 'array'
+              }
             ],
             type: 'object'
           }
@@ -1101,10 +1117,16 @@ describe('Create schema', function () {
           id: 'test/nested-pattern/data',
           entry: {
             properties: [
-              { name: 'id', type: 'string' }
+              {
+                name: 'id',
+                type: 'string'
+              }
             ],
             patternProperties: [
-              { name: '[a-z]+', type: 'boolean' }
+              {
+                name: '[a-z]+',
+                type: 'boolean'
+              }
             ],
             type: 'object'
           }
@@ -1113,7 +1135,10 @@ describe('Create schema', function () {
           id: 'test/nested-pattern',
           entry: {
             properties: [
-              { name: 'data', type: 'object' }
+              {
+                name: 'data',
+                type: 'object'
+              }
             ],
             type: 'object'
           }
@@ -1200,9 +1225,20 @@ describe('Create schema', function () {
             required: ['required1', 'required2']
           },
           properties: [
-            { name: 'required1', type: 'string', required: true },
-            { name: 'optional1', type: 'number' },
-            { name: 'required2', type: 'boolean', required: true }
+            {
+              name: 'required1',
+              type: 'string',
+              required: true
+            },
+            {
+              name: 'optional1',
+              type: 'number'
+            },
+            {
+              name: 'required2',
+              type: 'boolean',
+              required: true
+            }
           ],
           type: 'object'
         }
@@ -1249,7 +1285,7 @@ describe('Create schema', function () {
       }
 
       const schema = createSchema({}, deepSchema, 'test/deep')
-      
+
       deepStrictEqual(schema.length, 11)
       deepStrictEqual(schema[0].entry.type, 'string')
       deepStrictEqual(schema[1].entry.type, 'array')
