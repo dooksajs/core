@@ -3,14 +3,11 @@ import { mockStateData } from './mock-state-data.js'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import {
   mockPluginExports,
-  collectPluginState,
   mockPluginActions
 } from '../utils/index.js'
 
 /**
  * @import {
- *   metadata,
- *   state,
  *   stateAddListener,
  *   stateDeleteListener,
  *   stateDeleteValue,
@@ -19,51 +16,11 @@ import {
  *   stateGetSchema,
  *   stateGetValue,
  *   stateSetValue,
- *   stateUnsafeSetValue,
- *   editor,
- *   action,
- *   component,
- *   $fetch,
- *   list,
- *   event,
- *   page,
- *   operator,
- *   token,
- *   query,
- *   route,
- *   icon,
- *   string,
- *   form,
- *   variable,
- *   regex
- *  } from '#client'
+ *   stateUnsafeSetValue
+ * } from '#client'
  * @import {Mock, TestContext} from 'node:test'
  */
 
-/**
- * @typedef {Object} MockClientPluginMap
- * @description Maps plugin names to their type definitions. This type serves as a registry
- * for all available client-side plugin types that can be mocked in the testing system.
- * Each property represents a distinct plugin category with its specific type definition.
- * @property {metadata} metadata - Plugin metadata type for configuration and identification
- * @property {state} state - State management plugin type for application state
- * @property {editor} editor - Editor plugin type for UI editing functionality
- * @property {action} action - Action plugin type for event-driven operations
- * @property {component} component - Component plugin type for UI components
- * @property {$fetch} fetch - HTTP fetch plugin type for API requests
- * @property {list} list - List management plugin type for collections
- * @property {event} event - Event handling plugin type for pub/sub patterns
- * @property {page} page - Page management plugin type for routing/views
- * @property {operator} operator - Operator plugin type for data transformations
- * @property {token} token - Token management plugin type for authentication
- * @property {query} query - Query plugin type for data fetching
- * @property {route} route - Route management plugin type for navigation
- * @property {icon} icon - Icon plugin type for UI icons
- * @property {string} string - String utility plugin type for text operations
- * @property {form} form - Form management plugin type for user input
- * @property {variable} variable - Variable plugin type for dynamic data
- * @property {regex} regex - Regular expression plugin type for pattern matching
- */
 
 /**
  * @typedef {Object} MockStateMethods
@@ -83,48 +40,32 @@ import {
  */
 
 /**
- * @template {string} PluginName
- * @typedef {{ [K in PluginName]: K extends keyof MockClientPluginMap ? MockClientPluginMap[K] : any }} MockClientPluginMapper
- * @description Generic utility type that maps a subset of plugin names to their corresponding
- * type definitions. This allows creating typed objects that contain only specified plugins
- * while maintaining full type safety for those selected plugins.
+
+ * @typedef {Object} MockPlugin
+ * @property {Object.<string, Mock<Function>>} methods - Map of exposed method names to their mock functions
+ * @property {Object.<string, Mock<Function>>} actions - Map of exposed action names to their mock functions
+ * @property {Object.<string, Object>} schema - Map of plugin names to their schemas
+ * @property {Object.<string, Function>} setup - Map of plugin names to their setup functions
+ * @property {Object.<string, Function> & MockStateMethods} method - Map of exposed both action and method a names to their mock functions
+ * @property {Function} restore - Function to restore all mocks and clean up test state
  */
 
 /**
- * @template {string} PluginName
- * @typedef {Object} MockPlugin
- * @property {MockClientPluginMapper<PluginName>} module - Additional mocked plugin modules
- * @property {Object.<string, Function> & MockStateMethods} method - Map of exposed method names to their mock functions
- * @property {Function} restore - Function to restore all mocks and clean up test state
+ * @typedef {Object} MockPluginNamedExports
+ * @property {module} module - name of the module
+ * @property {string} name - name of the named export
+ * @property {*} value - the value of the named export
  */
 
 /**
  * Creates a complete mock environment for a dooksa plugin using utility functions
  * to reduce code repetition and improve maintainability
- *
- * @template {string} Name - The name of the plugin to mock
- * @template {string} PluginName - Additional plugin names to include
  * @param {TestContext} context - Node.js TestContext for creating mocks
  * @param {Object} param - Configuration object
- * @param {Name} param.name - Name of the primary plugin to mock
- * @param {'client' | 'server'} [param.platform='client'] - Target platform
- * @param {PluginName[]} [param.modules=[]] - Additional plugin names to mock
- * @param {Array} [param.namedExports=[]] - Array of mock definitions: { module, name, value }
- * @returns {Promise<MockPlugin<PluginName | Name>>} Complete mock plugin environment
- *
- * @example
- * // Basic plugin mock
- * const mock = await mockClientPlugin(t, {
- *   name: 'event',
- * })
- *
- * // Advanced mock with custom exports and modules
- * const actionDispatch = t.mock.fn((x) => x)
- * const mock = await mockClientPlugin(t, {
- *   name: 'event',
- *   namedExports: [{ module: '#client', name: 'actionDispatch', value: actionDispatch }],
- *   modules: ['action', 'component']
- * })
+ * @param {string} param.name - Name of the primary plugin to mock
+ * @param {string[]} [param.modules=[]] - Additional plugin names to mock
+ * @param {MockPluginNamedExports[]} [param.namedExports=[]] - Array of mock definitions: { module, name, value }
+ * @returns {Promise<MockPlugin>} Complete mock plugin environment
  */
 export async function mockClientPlugin (
   context,
@@ -152,8 +93,16 @@ export async function mockClientPlugin (
 
   const restoreCallbacks = []
   const result = {
-    module: {},
-    method: {},
+    methods: {},
+    actions: {},
+    setup: {},
+    schema: {},
+    get method () {
+      return {
+        ...this.methods,
+        ...this.actions
+      }
+    },
     restore: () => {
       // Execute all restore callbacks in reverse order
       for (let i = restoreCallbacks.length - 1; i >= 0; i--) {
@@ -170,6 +119,7 @@ export async function mockClientPlugin (
     const tempPluginModule = await import('#client')
     /** @type {Object.<string, import('node:test').Mock<Function>>} */
     const actionMethods = {}
+    let actionModule
     const state = tempPluginModule.state
     const pluginState = []
     const mainPlugin = tempPluginModule[name]
@@ -178,29 +128,34 @@ export async function mockClientPlugin (
       pluginState.push(mainPlugin)
     }
 
-    result.module[name] = mainPlugin
+    if (name === 'action') {
+      actionModule = mainPlugin
+    }
 
     for (let i = 0; i < modules.length; i++) {
       const moduleName = modules[i]
       const plugin = tempPluginModule[moduleName]
 
-      result.module[moduleName] = plugin
+      if (moduleName === 'action') {
+        actionModule = plugin
+      }
 
       // Setup state data
-      pluginState.push(...collectPluginState(plugin))
+      if (plugin && plugin.state) {
+        pluginState.push(plugin)
+      }
 
       // Setup mock module methods
       mockPluginActions(context, plugin, clientNamedExports, result, actionMethods)
-      mockPluginExports(context, plugin, clientNamedExports, result)
+      mockPluginExports(context, plugin, clientNamedExports, result, moduleName)
     }
 
     // Setup mock state
     const stateData = mockStateData(pluginState)
-    result.module.state = state
 
     // Add state methods to #client mocks
     mockPluginActions(context, state, clientNamedExports, result, actionMethods)
-    mockPluginExports(context, state, clientNamedExports, result)
+    mockPluginExports(context, state, clientNamedExports, result, 'state')
 
     state.setup(stateData)
 
@@ -221,18 +176,42 @@ export async function mockClientPlugin (
     const pluginURLPath = pathToFileURL(pluginPath).href
     const pluginModule = await import(pluginURLPath + `?seed=${crypto.randomUUID()}`)
     const plugin = pluginModule[name]
-    result.module[name] = plugin
 
     // Use utility functions for the imported plugin as well
     mockPluginActions(context, plugin, clientNamedExports, result, actionMethods)
-    mockPluginExports(context, plugin, clientNamedExports, result)
+    mockPluginExports(context, plugin, clientNamedExports, result, name)
+
+    // Add custom named exports to result.methods if they exist
+    for (const [exportName, mockFn] of Object.entries(clientNamedExports)) {
+      if (!result.methods[exportName] && !result.actions[exportName]) {
+        result.methods[exportName] = mockFn
+      }
+    }
+
+    // Populate schema and setup for the main plugin
+    if (plugin && plugin.schema) {
+      result.schema[name] = plugin.schema
+    }
+    if (plugin && plugin.setup && name !== 'state' && name !== 'action') {
+      result.setup[name] = plugin.setup
+    }
+
+    // Populate schema and setup for additional modules
+    for (let i = 0; i < modules.length; i++) {
+      const moduleName = modules[i]
+      const modulePlugin = tempPluginModule[moduleName]
+
+      if (modulePlugin && modulePlugin.schema) {
+        result.schema[moduleName] = modulePlugin.schema
+      }
+      if (modulePlugin && modulePlugin.setup && moduleName !== 'state' && moduleName !== 'action') {
+        result.setup[moduleName] = modulePlugin.setup
+      }
+    }
 
     // Setup action function for action plugin if included
-    if (result.module.action) {
-      // Call the action plugin's setup method to inject the action function
-      if (result.module.action.setup) {
-        result.module.action.setup({ actions: actionMethods })
-      }
+    if (actionModule && typeof actionModule.setup === 'function') {
+      actionModule.setup({ actions: actionMethods })
     }
 
     return result
