@@ -5,7 +5,11 @@ import { objectHash } from '../src/index.js'
 describe('Object Hash', function () {
   describe('Basic Functionality', function () {
     it('should produce consistent hash for same object', function () {
-      const data = { a: 1, b: 2, c: 3 }
+      const data = {
+        a: 1,
+        b: 2,
+        c: 3
+      }
       const hash1 = objectHash(data)
       const hash2 = objectHash(data)
 
@@ -13,8 +17,16 @@ describe('Object Hash', function () {
     })
 
     it('should produce same hash for equivalent objects with different property order', function () {
-      const data1 = { z: 1, a: 2, m: 3 }
-      const data2 = { a: 2, m: 3, z: 1 }
+      const data1 = {
+        z: 1,
+        a: 2,
+        m: 3
+      }
+      const data2 = {
+        a: 2,
+        m: 3,
+        z: 1
+      }
 
       const hash1 = objectHash(data1)
       const hash2 = objectHash(data2)
@@ -67,8 +79,14 @@ describe('Object Hash', function () {
 
     it('should handle arrays with objects', function () {
       const data = [
-        { z: 1, a: 2 },
-        { m: 3, b: 4 }
+        {
+          z: 1,
+          a: 2
+        },
+        {
+          m: 3,
+          b: 4
+        }
       ]
 
       const hash = objectHash(data)
@@ -175,7 +193,9 @@ describe('Object Hash', function () {
         undefined: undefined,
         array: [1, 2, 3],
         object: { nested: 'value' },
-        func: function () { return 1 }
+        func: function () {
+          return 1
+        }
       }
 
       const hash = objectHash(data)
@@ -208,7 +228,9 @@ describe('Object Hash', function () {
     it('should handle objects with function values', function () {
       const data = {
         fn1: () => 1,
-        fn2: function () { return 2 }
+        fn2: function () {
+          return 2
+        }
       }
 
       const hash = objectHash(data)
@@ -233,8 +255,16 @@ describe('Object Hash', function () {
     it('should always produce same hash for same complex object', function () {
       const data = {
         users: [
-          { id: 3, name: 'Zoe', roles: ['admin', 'user'] },
-          { id: 1, name: 'Alice', roles: ['user'] }
+          {
+            id: 3,
+            name: 'Zoe',
+            roles: ['admin', 'user']
+          },
+          {
+            id: 1,
+            name: 'Alice',
+            roles: ['user']
+          }
         ],
         settings: {
           theme: 'dark',
@@ -254,8 +284,14 @@ describe('Object Hash', function () {
     })
 
     it('should produce different hashes for different objects', function () {
-      const data1 = { a: 1, b: 2 }
-      const data2 = { a: 1, b: 3 }
+      const data1 = {
+        a: 1,
+        b: 2
+      }
+      const data2 = {
+        a: 1,
+        b: 3
+      }
 
       const hash1 = objectHash(data1)
       const hash2 = objectHash(data2)
@@ -328,7 +364,7 @@ describe('Object Hash', function () {
         'key-with-dash': 1,
         'key.with.dot': 2,
         'key with space': 3,
-        'key_underscore': 4
+        key_underscore: 4
       }
 
       const hash = objectHash(data)
@@ -338,10 +374,10 @@ describe('Object Hash', function () {
 
     it('should handle objects with numeric string keys', function () {
       const data = {
-        '10': 1,
-        '2': 2,
-        '1': 3,
-        '20': 4
+        10: 1,
+        2: 2,
+        1: 3,
+        20: 4
       }
 
       const hash = objectHash(data)
@@ -351,9 +387,9 @@ describe('Object Hash', function () {
 
     it('should handle unicode characters in keys and values', function () {
       const data = {
-        'α': 'beta',
-        'β': 'gamma',
-        'γ': 'delta'
+        α: 'beta',
+        β: 'gamma',
+        γ: 'delta'
       }
 
       const hash = objectHash(data)
@@ -387,8 +423,18 @@ describe('Object Hash', function () {
         status: 'success',
         data: {
           users: [
-            { id: 1, name: 'Alice', email: 'alice@example.com', roles: ['admin'] },
-            { id: 2, name: 'Bob', email: 'bob@example.com', roles: ['user'] }
+            {
+              id: 1,
+              name: 'Alice',
+              email: 'alice@example.com',
+              roles: ['admin']
+            },
+            {
+              id: 2,
+              name: 'Bob',
+              email: 'bob@example.com',
+              roles: ['user']
+            }
           ],
           pagination: {
             page: 1,
@@ -440,9 +486,21 @@ describe('Object Hash', function () {
     it('should handle form data structure', function () {
       const formData = {
         fields: {
-          name: { type: 'text', required: true, value: 'John' },
-          email: { type: 'email', required: true, value: 'john@example.com' },
-          age: { type: 'number', required: false, value: 30 }
+          name: {
+            type: 'text',
+            required: true,
+            value: 'John'
+          },
+          email: {
+            type: 'email',
+            required: true,
+            value: 'john@example.com'
+          },
+          age: {
+            type: 'number',
+            required: false,
+            value: 30
+          }
         },
         validation: {
           minLength: 3,
@@ -463,22 +521,39 @@ describe('Object Hash', function () {
         entities: {
           users: {
             byId: {
-              1: { id: 1, name: 'Alice' },
-              2: { id: 2, name: 'Bob' }
+              1: {
+                id: 1,
+                name: 'Alice'
+              },
+              2: {
+                id: 2,
+                name: 'Bob'
+              }
             },
             allIds: [1, 2]
           },
           posts: {
             byId: {
-              10: { id: 10, title: 'Post 1', author: 1 },
-              20: { id: 20, title: 'Post 2', author: 2 }
+              10: {
+                id: 10,
+                title: 'Post 1',
+                author: 1
+              },
+              20: {
+                id: 20,
+                title: 'Post 2',
+                author: 2
+              }
             },
             allIds: [10, 20]
           }
         },
         ui: {
           currentView: 'dashboard',
-          sidebar: { collapsed: false, width: 250 }
+          sidebar: {
+            collapsed: false,
+            width: 250
+          }
         }
       }
 
@@ -563,10 +638,22 @@ describe('Object Hash', function () {
     })
 
     it('should produce different hashes for different object structures', function () {
-      const obj1 = { a: 1, b: 2 }
-      const obj2 = { a: 1, b: 3 }
-      const obj3 = { a: 1, c: 2 }
-      const obj4 = { b: 2, a: 1 }
+      const obj1 = {
+        a: 1,
+        b: 2
+      }
+      const obj2 = {
+        a: 1,
+        b: 3
+      }
+      const obj3 = {
+        a: 1,
+        c: 2
+      }
+      const obj4 = {
+        b: 2,
+        a: 1
+      }
 
       const hash1 = objectHash(obj1)
       const hash2 = objectHash(obj2)
