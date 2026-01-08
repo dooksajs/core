@@ -18,7 +18,7 @@
     "test-unit": "pnpm --recursive test-unit"
   },
   "simple-git-hooks": {
-    "commit-msg": "node ./scripts/verify-commit.js"
+    "commit-msg": "/home/tom/.local/share/pnpm/node ./scripts/verify-commit.js"
   },
   "types": "./packages/types.js",
   "license": "AGPL-3.0-or-later",
@@ -31,6 +31,7 @@
     "@types/node": "^22.10.1",
     "chalk": "^5.3.0",
     "esbuild": "^0.24.0",
-    "simple-git-hooks": "^2.11.1"
+    "simple-git-hooks": "^2.11.1",
+    "typescript": "^5.9.3"
   }
 }
