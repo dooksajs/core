@@ -1,5 +1,5 @@
 /**
- * @import {ActionValue} from '../../../create-action/src/types.js'
+ * @import {ActionValue} from '../../../create-action/types/index.js'
  */
 
 /**
