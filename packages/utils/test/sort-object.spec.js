@@ -97,7 +97,7 @@ describe('Sort Object', function () {
 
     it('should throw error for custom class instances', function () {
       class MyClass {
-        constructor() {
+        constructor () {
           this.value = 1
         }
       }
@@ -635,10 +635,10 @@ describe('Sort Object', function () {
     it('should handle objects with getters and setters', function () {
       const data = {
         _value: 10,
-        get z() {
+        get z () {
           return this._value * 2
         },
-        set a(v) {
+        set a (v) {
           this._value = v
         }
       }
