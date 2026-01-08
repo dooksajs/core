@@ -38,7 +38,7 @@ export default createCardBody({
                     labelRequiredStar
                   ],
                   options: {
-                    fontSize: '5'
+                    fontSize: '6'
                   }
                 }),
                 createFormCheck({
