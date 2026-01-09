@@ -6,31 +6,6 @@ import { generateId, getValue } from '@dooksa/utils'
  * @import {VariableGetValue, VariableSetValue} from '../../../types.js'
  */
 
-/**
- * Add affix to query
- * @private
- * @param {string} query
- * @param {string} prefix
- * @param {string} suffix
- */
-function affixQuery (query, prefix, suffix) {
-  if (prefix) {
-    query = prefix + query
-  }
-
-  if (suffix) {
-    const splitQuery = query.split('.')
-
-    query = splitQuery[0] + suffix
-
-    for (let i = 1; i < splitQuery.length; i++) {
-      query = query + '.' + splitQuery[i]
-    }
-  }
-
-  return query
-}
-
 export const variable = createPlugin('variable', {
   metadata: {
     title: 'Variable',
@@ -55,6 +30,32 @@ export const variable = createPlugin('variable', {
           uniqueItems: true
         }
       }
+    }
+  },
+  privateMethods: {
+    /**
+     * Add affix to query
+     * @private
+     * @param {string} query
+     * @param {string} prefix
+     * @param {string} suffix
+     */
+    affixQuery (query, prefix, suffix) {
+      if (prefix) {
+        query = prefix + query
+      }
+
+      if (suffix) {
+        const splitQuery = query.split('.')
+
+        query = splitQuery[0] + suffix
+
+        for (let i = 1; i < splitQuery.length; i++) {
+          query = query + '.' + splitQuery[i]
+        }
+      }
+
+      return query
     }
   },
   actions: {
@@ -99,7 +100,7 @@ export const variable = createPlugin('variable', {
           })
 
           if (!value.isEmpty) {
-            const query = affixQuery(props.query, props.prefixId, props.suffixId)
+            const query = this.affixQuery(props.query, props.prefixId, props.suffixId)
 
             return getValue(value.item, query)
           }
@@ -150,7 +151,7 @@ export const variable = createPlugin('variable', {
             continue
           }
 
-          const query = affixQuery(props.query, props.prefixId, props.suffixId)
+          const query = this.affixQuery(props.query, props.prefixId, props.suffixId)
           const value = getValue(valueItem, query)
 
           if (value != null) {
