@@ -203,11 +203,10 @@ export const state = createPlugin('state', {
     },
     /**
      * Creates a data target object with metadata.
-     * @template T
      * @param {string} type - The data type for the target item
      * @param {Object} metadata - Metadata to set on the target
-     * @param {DataTarget<T>} [target] - Optional existing target to update
-     * @returns {DataTarget<T>} The created or updated target object
+     * @param {DataTarget} [target] - Optional existing target to update
+     * @returns {DataTarget} The created or updated target object
      */
     createTarget (type, metadata, target) {
       if (target == null) {
@@ -224,7 +223,7 @@ export const state = createPlugin('state', {
     /**
      * Filter data result based on condition
      * @private
-     * @param {DataValue<*>} data
+     * @param {DataValue} data
      * @param {DataWhere} where
      * @returns {boolean}
      */
@@ -282,7 +281,7 @@ export const state = createPlugin('state', {
     /**
      * Process where condition
      * @private
-     * @param {DataValue<*>} data - Data result
+     * @param {DataValue} data - Data result
      * @param {DataWhere} condition - Where condition
      * @returns {Boolean}
      */
@@ -1170,7 +1169,7 @@ export const state = createPlugin('state', {
     /**
      * Fetches and expands related data for a result.
      * @param {string} name - Name of data collection
-     * @param {DataValue<*>} result - Data result to expand
+     * @param {DataValue} result - Data result to expand
      * @param {GetDataOption} [options] - Options for data expansion
      */
     getExpandedData (name, result, options) {
@@ -1281,7 +1280,7 @@ export const state = createPlugin('state', {
      * @private
      * @param {string} name - Collection name
      * @param {'update'|'delete'} on - Event name
-     * @param {DataValue<*>} item - Value that is being set
+     * @param {DataValue} item - Value that is being set
      * @param {boolean} [stopPropagation] - Prevents further propagation of the update event
      */
     dispatchEvent (name, on, item, stopPropagation) {
@@ -1317,8 +1316,8 @@ export const state = createPlugin('state', {
     },
     /**
      * Validate and collection items
-     * @template {Object.<string, DataTarget<*>> & DataTarget<*>} Data
-     * @param {DataValue<Data>} data
+     * @template {Object.<string, DataTarget> & DataTarget} Data
+     * @param {DataValue} data
      * @param {string} path - Schema path
      * @param {Data} sources
      * @param {DataMetadata} metadata
@@ -1436,8 +1435,8 @@ export const state = createPlugin('state', {
     },
     /**
      * Validate and collection items
-     * @template {Object.<string, DataTarget<*>> & DataTarget<*>} Data
-     * @param {DataValue<Data>} data
+     * @template {Object.<string, DataTarget> & DataTarget} Data
+     * @param {DataValue} data
      * @param {string} path - Schema path
      * @param {Data} sources
      * @param {DataMetadata} metadata
@@ -1718,7 +1717,7 @@ export const state = createPlugin('state', {
        * @param {string} param.name - Name of collection to search
        * @param {DataWhere[]} [param.where] - Filter conditions
        * @param {GetDataOption} [param.options] - Additional options for retrieval
-       * @returns {DataValue<*>[]} Array of matching data values
+       * @returns {DataValue[]} Array of matching data values
        */
       method ({
         name,
@@ -2168,7 +2167,7 @@ export const state = createPlugin('state', {
        * @param {boolean} [query.options.expandClone] - Whether to clone expanded data
        * @param {boolean} [query.options.clone] - Whether to clone the result
        * @param {string} [query.options.position] - Position path to extract specific value
-       * @returns {DataValue<*> | Object.<string, DataValue<*>>} The retrieved data value(s)
+       * @returns {DataValue | Object.<string, DataValue>} The retrieved data value(s)
        */
       method (query) {
         const { name, id, prefixId, suffixId, options } = query
@@ -2184,7 +2183,7 @@ export const state = createPlugin('state', {
         if (schema.type === 'collection') {
           if (!query.hasOwnProperty('id')) {
             const value = []
-            /** @type {DataValue<*>} */
+            /** @type {DataValue} */
             const result = createDataValue({
               collection: name,
               id,
@@ -2388,7 +2387,7 @@ export const state = createPlugin('state', {
        * @param {string} param.name - Name of collection
        * @param {*} param.value - Data to be set
        * @param {SetDataOptions} [param.options] - Set data options
-       * @returns {DataValue<*>} The created data value
+       * @returns {DataValue} The created data value
        */
       method ({ name, value, options }) {
         const schema = this.getSchema(name)
