@@ -12,7 +12,7 @@ import { httpSetRoute } from './http.js'
 
 /**
  * @import {Action} from '@dooksa/create-action'
- * @import {Request, Response} from 'hyper-express'
+ * @import {Request, Response} from 'express'
  * @typedef {Object} ActionSequence
  * @property {Object} body
  * @property {ActionSequenceResult} body.sequence
@@ -348,12 +348,11 @@ export const action = createPlugin('action', {
     httpSetRoute({
       path: '/action/sequence',
       method: 'post',
-      middleware: ['request/urlencoded'],
       handlers: [
         this.parseSequence,
         /**
-         * @param {Request} request
-         * @param {Response} response
+         * @import {DataWhere} from '../../../types.js'
+         * @import {Request, Response} from 'express'
          */
         (request, response) => {
           const id = request.body['action-name']
