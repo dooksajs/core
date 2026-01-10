@@ -11,46 +11,32 @@ export const development = createPlugin('development', {
       }
     }
   },
-  data: {
-    init: 0,
-    sse_streams: {}
-  },
   setup () {
-    // init booting
-    this.init = 1
-
-    // sse rebuild notification
+    // sse rebuild route
     httpSetRoute({
       path: '/esbuild',
       handlers: [(request, response) => {
-        if (!response.sse) {
-          return response.send('Server-Sent Events Not Supported!')
-        }
+        // no cache
+        response.setHeader('Surrogate-Control', 'no-store')
+        response.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
+        response.setHeader('Expires', '0')
 
-        // open sse stream
-        response.sse.send()
+        // SSE headers
+        response.setHeader('Content-Type', 'text/event-stream')
+        response.setHeader('Connection', 'keep-alive')
 
-        const id = generateId()
+        // send initial connection message
+        response.write('data: Connected\n\n')
 
-        // assign a unique identifier to this stream and store it in our broadcast pool
-        response.sse.id = id
-        this.sse_streams[id] = response.sse
-
-        if (this.init === 1) {
-          // init complete
-          this.init = 2
-
-          // ping on restart
-          response.sse.send(id, 'rebuild', 'start')
-        }
+        const handlerId = generateId()
 
         // emit client rebuild data
         stateAddListener({
           name: 'development/rebuild',
           on: 'update',
-          handlerId: id,
+          handlerId,
           handler: (data) => {
-            response.sse.send(id, 'rebuild', JSON.stringify(data))
+            response.write(`data: Message ${JSON.stringify(data)}\n\n`)
           }
         })
 
@@ -60,10 +46,8 @@ export const development = createPlugin('development', {
           stateDeleteListener({
             name: 'development/rebuild',
             on: 'update',
-            handlerId: id
+            handlerId
           })
-          // Delete the stream from our broadcast pool
-          delete this.sse_streams[id]
         })
       }]
     })
