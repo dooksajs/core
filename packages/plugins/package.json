@@ -20,7 +20,7 @@
   },
   "exports": {
     "./client": "./src/client/index.js",
-    "./server": "./src/server.js"
+    "./server": "./src/server/index.js"
   },
   "dependencies": {
     "@dooksa/create-action": "workspace:^",
