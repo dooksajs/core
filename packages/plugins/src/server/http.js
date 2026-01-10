@@ -3,11 +3,11 @@ import { stateSetValue } from '../client/index.js'
 import { middlewareGet, middlewareSet } from './middleware.js'
 import helmet from 'helmet'
 import compression from 'compression'
-import HyperExpress from 'hyper-express'
-import LiveDirectory from 'live-directory'
+import express from 'express'
 
 /**
- * @import {MiddlewareHandler} from 'hyper-express'
+ * @import {Request, Response, NextFunction, Handler, Express} from 'express'
+ * @import { Server } from 'node:http'
  */
 
 /**
@@ -17,16 +17,6 @@ import LiveDirectory from 'live-directory'
  * @property {string} directory - Local asset directory
  */
 
-const routeTypes = {
-  get: true,
-  post: true,
-  put: true,
-  delete: true
-}
-const routes = { all: [] }
-let apiPrefix = ''
-let cookieSecret = ''
-
 export const $http = createPlugin('http', {
   state: {
     schema: {
@@ -34,22 +24,36 @@ export const $http = createPlugin('http', {
     }
   },
   data: {
-    /** @type {HyperExpress.Server} */
-    app: null
+    /** @type {Server|Null} */
+    server: null,
+    routes: {
+      all: []
+    },
+    apiPrefix: '',
+    cookieSecret: '',
+    routeTypes: {
+      get: true,
+      post: true,
+      put: true,
+      delete: true
+    },
+    app: express()
   },
   methods: {
     useRoutes () {
-      const apiRoutes = routes[apiPrefix]
+      const apiRoutes = this.routes[this.apiPrefix] || []
 
       for (let i = 0; i < apiRoutes.length; i++) {
         const route = apiRoutes[i]
 
+        // Register route with express
         this.app[route.method](route.path, ...route.handlers)
       }
 
-      for (let index = 0; index < routes.all.length; index++) {
-        const route = routes.all[index]
+      for (let i = 0; i < this.routes.all.length; i++) {
+        const route = this.routes.all[i]
 
+        // Register route with express
         this.app[route.method](route.path, ...route.handlers)
       }
     },
@@ -59,56 +63,25 @@ export const $http = createPlugin('http', {
      * @param {AssetLocation} [options.assets]
      */
     init ({ assets } = {}) {
-      this.app = new HyperExpress.Server()
-
       if (process.env.NODE_ENV === 'production') {
-        // @ts-ignore
         this.app.use(compression())
-        // @ts-ignore
         this.app.use(helmet())
       }
 
-      /** {@link https://github.com/kartikk221/hyper-express/blob/master/docs/LiveDirectory.md} */
+      // handle json requests
+      this.app.use(express.json())
+      // handle urlencoded requests
+      this.app.use(express.urlencoded({ extended: true }))
+
+      /** {@link https://expressjs.com/en/4x/api.html#express.static} */
       if (assets) {
-        const extensions = assets.extensions ?? ['css', 'ico', 'png', 'jpg', 'jpeg']
+        const extensions = assets.extensions ?? ['css', 'ico', 'png', 'jpg', 'jpeg', 'webp', 'avif']
 
-        // Create a LiveDirectory instance to virtualize directory with our assets
-        // Specify the "path" of the directory we want to consume using this instance as the first argument
-        const LiveAssets = new LiveDirectory(assets.directory, {
-          // Optional: Configure filters to ignore or include certain files, names, extensions etc etc.
-          filter: {
-            keep: { extensions },
-            ignore: (path) => {
-              // You can define a function to perform any kind of matching on the path of each file being considered by LiveDirectory
-              // For example, the below is a simple dot-file ignore match which will prevent any files starting with a dot from being loaded into live-directory
-              return path.startsWith('.')
-            }
-          }
-        })
-
-        // Create static serve route to serve frontend assets
-        this.app.get(assets.path + '/*', (request, response) => {
-          // Strip away '/assets' from the request path to get asset relative path
-          // Lookup LiveFile instance from our LiveDirectory instance.
-          const path = request.path.replace(assets.path, '')
-          const file = LiveAssets.get(path)
-
-          // Return a 404 if no asset/file exists on the derived path
-          if (file === undefined) return response.status(404).send()
-
-          const fileParts = file.path.split('.')
-          const extension = fileParts[fileParts.length - 1]
-
-          // Retrieve the file content and serve it depending on the type of content available for this file
-          const content = file.content
-          if (content instanceof Buffer) {
-            // Set appropriate mime-type and serve file content Buffer as response body (This means that the file content was cached in memory)
-            return response.type(extension).send(content)
-          } else {
-            // Set the type and stream the content as the response body (This means that the file content was NOT cached in memory)
-            return response.type(extension).stream(content)
-          }
-        })
+        // Use express.static to serve static files
+        this.app.use(assets.path, express.static(assets.directory, {
+          extensions: extensions,
+          dotfiles: 'ignore'
+        }))
       }
     },
     /**
@@ -118,16 +91,16 @@ export const $http = createPlugin('http', {
      * @param {string[]} [route.middleware] - List of middleware reference Ids
      * @param {'get'|'post'|'put'|'delete'} [route.method='get'] - HTTP method
      * @param {string} [route.suffix] - Path suffix
-     * @param {MiddlewareHandler[]} route.handlers - List of callbacks
+     * @param {Handler[]} route.handlers - List of callbacks
      */
     setRoute ({
       path = '/',
       method = 'get',
       middleware = [],
       handlers = [],
-      suffix = apiPrefix
+      suffix = this.apiPrefix
     }) {
-      if (!routeTypes[method]) {
+      if (!this.routeTypes[method]) {
         return
       }
 
@@ -154,11 +127,11 @@ export const $http = createPlugin('http', {
 
       const suffixPath = suffix + path
 
-      if (suffix !== apiPrefix) {
+      if (suffix !== this.apiPrefix) {
         suffix = 'all'
       }
 
-      routes[suffix].push({
+      this.routes[suffix].push({
         method,
         path: suffixPath,
         handlers
@@ -177,21 +150,38 @@ export const $http = createPlugin('http', {
       return new Promise((resolve, reject) => {
         this.useRoutes()
 
-        this.app.listen(port)
-          .then(function (socket) {
-            resolve({
-              hostname: path,
-              port: port || this.address().port,
-              socket
-            })
+        const server = this.app.listen(port, () => {
+          resolve({
+            hostname: path,
+            port: port,
+            socket: server
           })
-          .catch(error => reject(error))
+        })
+
+        server.on('error', reject)
+
+        // set server
+        this.server = server
       })
     },
     stop () {
-      const isClosed = this.app.close()
+      if (this.server !== null) {
+        this.server.close((error) => {
+          if (error) {
+            stateSetValue({
+              name: 'http/status',
+              value: 'stop-failed'
+            })
+          } else {
+            stateSetValue({
+              name: 'http/status',
+              value: 'stopped'
+            })
 
-      if (!isClosed) {
+            this.server = null
+          }
+        })
+      } else {
         stateSetValue({
           name: 'http/status',
           value: 'stop-failed'
@@ -219,55 +209,15 @@ export const $http = createPlugin('http', {
     }
 
     if (api) {
-      apiPrefix = api
+      this.apiPrefix = api
     }
 
     // prepare api route suffix
-    routes[apiPrefix] = []
-    cookieSecret = cookieSecret
+    this.routes[this.apiPrefix] = []
+    this.cookieSecret = cookieSecret
 
     // initialise server
-    this.init({ assets })
-
-    // handle json requests
-    middlewareSet({
-      name: 'request/json',
-      handler: (request, response, next) => {
-        // skip if body exists
-        if (typeof request.body === 'object') {
-          return next()
-        }
-
-        request.json()
-          .then(body => {
-            request.body = body
-            next()
-          })
-          .catch(error => {
-            response.status(500).send(error)
-          })
-      }
-    })
-
-    // handle urlencoded requests
-    middlewareSet({
-      name: 'request/urlencoded',
-      handler: (request, response, next) => {
-        // skip if body exists
-        if (typeof request.body === 'object') {
-          return next()
-        }
-
-        request.urlencoded()
-          .then(body => {
-            request.body = body
-            next()
-          })
-          .catch(error => {
-            response.status(500).send(error)
-          })
-      }
-    })
+    this.init({ assets }) 
   }
 })
 

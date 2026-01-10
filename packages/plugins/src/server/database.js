@@ -1,6 +1,6 @@
 import { createPlugin } from '@dooksa/create-plugin'
-import { existsSync, rename, readFile } from 'node:fs'
-import { writeFile } from 'fs/promises'
+import { existsSync, rename } from 'node:fs'
+import { writeFile, readFile, access } from 'fs/promises'
 import { resolve, join } from 'path'
 import { stateGetValue, stateSetValue, stateDeleteValue, stateFind } from '../client/index.js'
 import { generateId } from '@dooksa/utils'
@@ -8,7 +8,7 @@ import { log } from '@dooksa/utils/server'
 
 /**
  * @import {DataWhere} from '../../../types.js'
- * @import {Request, Response} from 'hyper-express'
+ * @import {Request, Response} from 'express'
  */
 
 const snapshotLock = {}
@@ -386,6 +386,9 @@ function stringToCondition (string) {
 
 export const database = createPlugin('database', {
   methods: {
+    /**
+     * @param {string[]} collections
+     */
     getValue (collections) {
       /**
        * @param {Request} request
@@ -395,7 +398,7 @@ export const database = createPlugin('database', {
         let result = []
         let where
 
-        if (request.query.where) {
+        if (request.query.where && typeof request.query.where === 'string') {
           where = stringToCondition(request.query.where)
         }
 
@@ -421,50 +424,52 @@ export const database = createPlugin('database', {
             continue
           }
 
-          for (let i = 0; i < request.query.id.length; i++) {
-            const id = request.query.id[i]
-            const args = {
-              name: collection,
-              id
-            }
-            const value = { id }
-
-            if (request.query.expand) {
-              args.options = {
-                expand: true
-              }
-
-              value.expand = []
-            }
-
-            const data = stateGetValue(args)
-
-            if (data.isEmpty) {
-              return response.status(404).send(`Document not found: ${collection} ${id}`)
-            }
-
-            value.item = data.item
-            value.metadata = data.metadata
-            value.collection = collection
-
-            if (!data.isExpandEmpty) {
-              value.expand = data.expand
-            }
-
-            if (where) {
-              const data = stateFind({
+          if (Array.isArray(request.query.id)) {
+            for (let i = 0; i < request.query.id.length; i++) {
+              const id = request.query.id[i]
+              const args = {
                 name: collection,
-                where
-              })
-
-              if (data) {
-                result.push(data)
-
-                continue
+                id
               }
-            }
+              const value = { id }
 
-            result.push(value)
+              if (request.query.expand) {
+                args.options = {
+                  expand: true
+                }
+
+                value.expand = []
+              }
+
+              const data = stateGetValue(args)
+
+              if (data.isEmpty) {
+                return response.status(404).send(`Document not found: ${collection} ${id}`)
+              }
+
+              value.item = data.item
+              value.metadata = data.metadata
+              value.collection = collection
+
+              if (!data.isExpandEmpty) {
+                value.expand = data.expand
+              }
+
+              if (where) {
+                const data = stateFind({
+                  name: collection,
+                  where
+                })
+
+                if (data) {
+                  result.push(data)
+
+                  continue
+                }
+              }
+
+              result.push(value)
+            }
           }
         }
 
@@ -489,19 +494,24 @@ export const database = createPlugin('database', {
         for (let i = 0; i < collections.length; i++) {
           const collection = collections[i]
 
-          for (let i = 0; i < request.query.id.length; i++) {
-            const id = request.query.id[i]
-            const data = stateDeleteValue({
-              name: collection,
-              id,
-              cascade: request.query.cascade
-            })
+          if (Array.isArray(request.query.id)) {
+            for (let i = 0; i < request.query.id.length; i++) {
+              const id = request.query.id[i]
 
-            if (!data.deleted) {
-              return response.status(400).send(`Could not delete document: ${collection} ${id}`)
+              if (typeof id === 'string') {
+                const data = stateDeleteValue({
+                  name: collection,
+                  id,
+                  cascade: !!request.query.cascade
+                })
+
+                if (!data.deleted) {
+                  return response.status(400).send(`Could not delete document: ${collection} ${id}`)
+                }
+
+                result += 1
+              }
             }
-
-            result += 1
           }
 
           if (snapshotError[collection]) {
@@ -517,20 +527,17 @@ export const database = createPlugin('database', {
     /**
      *
      * @param {string} name -
+     * @returns {Promise<void>}
      */
-    seed (name) {
+    async seed (name) {
       const path = resolve(snapshotPath, name + '.json')
 
-      if (!existsSync(path)) {
-        return
-      }
-
-      readFile(path, 'utf8', (err, json) => {
-        if (err) {
-          console.error(err)
-          return
-        }
-
+      try {
+        // Check if file exists using async access
+        await access(path)
+        
+        // Read file asynchronously
+        const json = await readFile(path, 'utf8')
         const data = JSON.parse(json)
 
         // set cache
@@ -551,7 +558,14 @@ export const database = createPlugin('database', {
           message: 'Loaded seed data',
           context: data.collection
         })
-      })
+      } catch (error) {
+        if (error.code === 'ENOENT') {
+          // File doesn't exist - this is expected behavior
+          return
+        }
+        console.error('Error loading seed data:', error)
+        throw error // Re-throw for caller to handle
+      }
     },
     /**
      *
