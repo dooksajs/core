@@ -8,6 +8,7 @@ import objectHash from './object-hash.js'
 import shallowCopy from './shallow-copy.js'
 import sortObject from './sort-object.js'
 
+export { getPreciseTimestamp } from './timestamp.js'
 export {
   capitalize,
   deepClone,
