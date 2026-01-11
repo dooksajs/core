@@ -103,21 +103,21 @@ export const page = createPlugin('page', {
     })
 
     httpSetRoute({
-      path: '/*',
+      path: '/{*splat}',
       suffix: '',
       handlers: [
         (request, response) => {
           const page = pageGetItemsByPath(request.path)
           const app = pageCreate(page.item)
 
-          response.set('Content-Security-Policy', app.csp)
+          response.setHeader('Content-Security-Policy', app.csp)
 
           if (!page.isEmpty) {
             if (page.redirect) {
               const status = !page.isTemporary ? 301 : 302
 
               response.status(status)
-              response.set('Location', page.redirect)
+              response.setHeader('Location', page.redirect)
             } else {
               response.status(200)
             }
@@ -125,7 +125,7 @@ export const page = createPlugin('page', {
             response.status(404)
           }
 
-          response.html(app.html)
+          response.send(app.html)
         }
       ]
     })
@@ -150,7 +150,7 @@ export const page = createPlugin('page', {
       path: '/',
       method: 'post',
       suffix: '',
-      middleware: ['user/auth', 'request/json'],
+      middleware: ['user/auth'],
       handlers: [(request, response) => {
         const setData = databaseSetValue({
           items: request.body,
