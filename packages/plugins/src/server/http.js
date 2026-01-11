@@ -205,7 +205,7 @@ export const $http = createPlugin('http', {
     }
 
     if (!cookieSecret || cookieSecret.length < 32) {
-      throw new Error('Invalid cookie secret length; secret must be at 32 characters')
+      throw new Error('HTTP: invalid cookie secret length; secret must be at 32 characters')
     }
 
     if (apiPrefix) {
