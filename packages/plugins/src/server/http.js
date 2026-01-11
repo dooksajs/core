@@ -1,6 +1,6 @@
 import { createPlugin } from '@dooksa/create-plugin'
 import { stateSetValue } from '../client/index.js'
-import { middlewareGet, middlewareSet } from './middleware.js'
+import { middlewareGet } from './middleware.js'
 import helmet from 'helmet'
 import compression from 'compression'
 import express from 'express'
