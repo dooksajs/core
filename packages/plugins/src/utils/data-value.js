@@ -8,27 +8,25 @@
 
 /**
  * Represents a data value with optional metadata and expansion capabilities
- * @template Data
  * @typedef {Object} DataValue
  * @property {string} [id] - The unique identifier for the data value
  * @property {string} collection - The collection name this data belongs to
- * @property {boolean} [isEmpty] - Flag indicating if the data value is empty
- * @property {boolean} [isExpandEmpty] - Flag indicating if expanded data is empty
- * @property {DataValue<Data>[]} [expand] - Array of expanded data values
+ * @property {boolean} isEmpty - Flag indicating if the data value is empty
+ * @property {boolean} isExpandEmpty - Flag indicating if expanded data is empty
+ * @property {DataValue[]} [expand] - Array of expanded data values
  * @property {Object.<string, (boolean|number)>} [expandIncluded] - Object indicating which fields are included in expansion
  * @property {boolean} [isAffixEmpty] - Flag indicating if affixes are empty
  * @property {boolean} [isValid] - Flag indicating if the data value is valid
- * @property {Object.<string, DataTarget<Data>> & DataTarget<Data>} [target] - Target data with expandable references
- * @property {Data} [item] - The actual data item
- * @property {Data} [previous] - Previous version of the data item
+ * @property {Object.<string, DataTarget> & DataTarget} [target] - Target data with expandable references
+ * @property {*} [item] - The actual data item
+ * @property {*} [previous] - Previous version of the data item
  * @property {DataMetadata} [metadata] - Metadata associated with the data
  */
 
 /**
  * Represents a data target containing the actual data item and its metadata
- * @template Data
  * @typedef {Object} DataTarget
- * @property {Data} _item - The actual data item
+ * @property {*} _item - The actual data item
  * @property {DataMetadata} _metadata - Metadata associated with the data item
  * @property {DataPreviousTarget} [_previous] - Previous version of the data target
  */
@@ -46,15 +44,19 @@
  * @param {Object} param - The parameters for creating the data value
  * @param {string} [param.collection=''] - The collection name for the data
  * @param {string} [param.id] - The unique identifier for the data
- * @param {Data|DataTarget<Data>} [param.value] - The data value, either raw data or a DataTarget object containing _item, _metadata, and optionally _previous
- * @returns {DataValue<Data>} A DataValue object containing the collection, id (if provided), item, and optionally metadata and previous values
+ * @param {Data|DataTarget} [param.value] - The data value, either raw data or a DataTarget object containing _item, _metadata, and optionally _previous
+ * @returns {DataValue} A DataValue object containing the collection, id (if provided), item, and optionally metadata and previous values
  */
 function createDataValue ({
   collection = '',
   id,
   value
 } = {}) {
-  const result = { collection }
+  const result = {
+    collection,
+    isEmpty: true,
+    isExpandEmpty: true
+  }
 
   if (typeof id === 'string' && id !== '') {
     result.id = id
@@ -72,6 +74,8 @@ function createDataValue ({
       if (value._previous) {
         result.previous = value._previous
       }
+
+      result.isEmpty = false
     } else {
       // Raw data value
       result.item = value
