@@ -66,7 +66,6 @@ export const user = createPlugin('user', {
     httpSetRoute({
       path: '/user/register',
       method: 'post',
-      middleware: ['request/json'],
       handlers: [
         checkPassword,
         create
@@ -76,7 +75,6 @@ export const user = createPlugin('user', {
     httpSetRoute({
       path: '/user/login',
       method: 'post',
-      middleware: ['request/json'],
       handlers: [
         checkPassword,
         login
