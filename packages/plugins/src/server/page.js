@@ -5,7 +5,7 @@ import { databaseSeed, databaseSetValue } from './database.js'
 import { httpSetRoute } from './http.js'
 
 /**
- * @import {DataValue} from '#types'
+ * @import {DataValue} from '../utils/data-value.js'
  */
 
 function hashSHA (item) {
