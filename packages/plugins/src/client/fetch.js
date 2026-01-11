@@ -1,113 +1,135 @@
 import { createPlugin } from '@dooksa/create-plugin'
 import { stateGetValue, stateSetValue, stateAddListener } from '#client'
 
-const fetchRequestQueue = {}
-const fetchRequestCache = {}
-let fetchRequestCacheExpire = 300000
-let _hostname = '/_/'
-
 /**
- * Retrieve cached data for a given request ID
- * @param {string} id - The cache key/path for the request
- * @returns {Promise|Array|undefined} - Returns cached promise, data array, or undefined if not cached
+ * @import {DataValue} from '../utils/data-value.js'
  */
-function getCache (id) {
-  const cache = fetchRequestCache[id]
 
-  if (!cache) {
-    return fetchRequestQueue[id]
-  }
-
-  if (cache.expireIn && cache.expireIn < Date.now()) {
-    return deleteCache(id)
-  }
-
-  const result = []
-
-  for (let i = 0; i < cache.data.length; i++) {
-    const item = cache.data[i]
-    const data = stateGetValue({
-      name: item.collection,
-      id: item.id,
-      options: {
-        expand: item.expand
-      }
-    })
-
-    result.push(data)
-  }
-
-  return result
-}
-
-/**
- * Store fetched data in state and set up cache
- * @param {Array} data - Array of data items to store
- * @param {string} id - Cache key/path for the request
- */
-function setRequestData (data, id) {
-  const requestCache = []
-
-  for (let i = 0; i < data.length; i++) {
-    const dataItem = data[i]
-
-    stateSetValue({
-      name: dataItem.collection,
-      value: dataItem.item,
-      options: {
-        id: dataItem.id,
-        metadata: dataItem.metadata
-      }
-    })
-
-    if (dataItem.expand) {
-      for (let i = 0; i < dataItem.expand.length; i++) {
-        const data = dataItem.expand[i]
-
-        stateSetValue({
-          name: data.collection,
-          value: data.item,
-          options: {
-            id: data.id,
-            metadata: data.metadata
-          }
-        })
-      }
-    }
-
-    requestCache.push({
-      id: dataItem.id,
-      collection: dataItem.collection,
-      expand: !!dataItem.expand
-    })
-
-    stateAddListener({
-      name: dataItem.collection,
-      on: 'delete',
-      id: dataItem.id,
-      handler: deleteCache
-    })
-  }
-
-  fetchRequestCache[id] = {
-    expireIn: Date.now() + fetchRequestCacheExpire,
-    data: requestCache
-  }
-}
-
-/**
- * Delete cached data for a given request ID
- * @param {string} id - The cache key/path to delete
- */
-function deleteCache (id) {
-  delete fetchRequestCache[id]
-}
 
 export const $fetch = createPlugin('fetch', {
   metadata: {
     title: 'Fetch',
     description: 'Fetch data from the backend',
     icon: 'mdi:file-document-box-search'
+  },
+  data: {
+    hostname: '/_/',
+    requestCacheExpire: 300000,
+    requestCache: {},
+    requestQueue: {}
+  },
+  privateMethods: {
+    /**
+     * Retrieve cached data for a given request ID
+     * @param {string} path - The cache key/path for the request
+     * @returns {DataValue[]|undefined} - Returns cached promise or undefined if not cached
+     */
+    getCacheByPath (path) {
+      // Check cache
+      const cache = this.requestCache[path]
+      if (!cache) {
+        return
+      }
+
+      // Handle expired cache
+      if (cache.expireIn && cache.expireIn < Date.now()) {
+        this.deleteCache(path)
+        return
+      }
+
+      // Return cached data
+      const result = []
+      for (let i = 0; i < cache.data.length; i++) {
+        const item = cache.data[i]
+        const data = stateGetValue({
+          name: item.collection,
+          id: item.id,
+          options: {
+            expand: item.expand
+          }
+        })
+
+        result.push(data)
+      }
+
+      return result
+    },
+    /**
+     * Retrieve cached data a given request ID
+     * @param {string} path - The cache key/path for the request
+     * @returns {Promise<DataValue[]>|undefined} - Returns cached promise or undefined if not cached
+     */
+    getRequestByPath (path) {
+      return this.requestQueue[path]
+    },
+    /**
+     * Remove a request from the request queue
+     * @param {string} path - The cache key/path to remove from queue
+     */
+    deleteRequestQueueByPath (path) {
+      delete this.requestQueue[path]
+    },
+    /**
+     * Delete cached data for a given request ID
+     * @param {string} path - The cache key/path to delete
+     */
+    deleteCacheByPath (path) {
+      delete this.requestCache[path]
+    },
+    /**
+     * Store fetched data in state and set up cache
+     * @param {Array} data - Array of data items to store
+     * @param {string} path - Cache key/path for the request
+     */
+    setRequestDataByPath (data, path) {
+      const requestCache = []
+
+      for (let i = 0; i < data.length; i++) {
+        const dataItem = data[i]
+
+        stateSetValue({
+          name: dataItem.collection,
+          value: dataItem.item,
+          options: {
+            id: dataItem.id,
+            metadata: dataItem.metadata
+          }
+        })
+
+        if (dataItem.expand) {
+          for (let i = 0; i < dataItem.expand.length; i++) {
+            const data = dataItem.expand[i]
+
+            stateSetValue({
+              name: data.collection,
+              value: data.item,
+              options: {
+                id: data.id,
+                metadata: data.metadata
+              }
+            })
+          }
+        }
+
+        requestCache.push({
+          id: dataItem.id,
+          collection: dataItem.collection,
+          expand: !!dataItem.expand
+        })
+
+        stateAddListener({
+          name: dataItem.collection,
+          on: 'delete',
+          id: dataItem.id,
+          handler: this.deleteCache
+        })
+      }
+
+      this.requestCache[path] = {
+        expireIn: Date.now() + this.requestCacheExpire,
+        data: requestCache
+      }
+    }
   },
   actions: {
     getAll: {
@@ -173,9 +195,17 @@ export const $fetch = createPlugin('fetch', {
        * @param {number} [param.limit] - Maximum total number of records to return (overrides perPage)
        * @param {string} [param.where] - Filter condition for the query
        * @param {boolean} [param.sync=true] - Whether to sync fetched data with local database state
-       * @returns {Promise<Array|boolean>} - Promise resolving to array of documents or false on error
+       * @returns {Promise<DataValue[]>} - Promise resolving to array of documents or false on error
        */
-      method ({ collection, page, perPage, limit, where, expand, sync = true }) {
+      method ({
+        collection,
+        page,
+        perPage,
+        limit,
+        where,
+        expand,
+        sync = true
+      }) {
         const and = '&'
         let query = '?'
         let firstQueryOption = true
@@ -217,7 +247,7 @@ export const $fetch = createPlugin('fetch', {
             query += and
           }
 
-          query += 'where=' + where
+          query += 'where=' + encodeURIComponent(where)
         }
 
         if (expand) {
@@ -236,32 +266,46 @@ export const $fetch = createPlugin('fetch', {
         }
 
         const path = collection + query
-        const cacheData = getCache(path)
+        const cacheData = this.getCacheByPath(path)
 
         if (cacheData) {
-          return cacheData
+          return Promise.resolve(cacheData)
         }
 
-        return new Promise((resolve, reject) => {
-          fetch(_hostname + path)
+        let request = this.getRequestByPath(path)
+
+        if (request) {
+          return request
+        }
+
+        request = new Promise((resolve, reject) => {
+          fetch(this.hostname + path)
             .then(response => {
               if (response.ok) {
                 return response.json()
               }
-
-              resolve(false)
+              throw new Error(`HTTP error! status: ${response.status}`)
             })
             .then(data => {
+              // remove from queue
+              this.deleteRequestQueueByPath(path)
+              
               if (sync) {
-                setRequestData(data, path)
+                this.setRequestDataByPath(data, path)
               }
 
               resolve(data)
             })
             .catch(error => {
+              // remove from queue on error
+              this.deleteRequestQueueByPath(path)
               reject(error)
             })
         })
+
+        this.requestQueue[path] = request
+
+        return request
       }
     },
     getById: {
@@ -305,7 +349,7 @@ export const $fetch = createPlugin('fetch', {
        * @param {string[]|string} param.id - Single document ID or array of IDs
        * @param {boolean} [param.expand=false] - Whether to fetch related documents
        * @param {boolean} [param.sync=true] - Whether to sync fetched data with local database state
-       * @returns {Promise<Object>} - Promise resolving to fetched document(s) or empty object if not found
+       * @returns {Promise<DataValue[]>} - Promise resolving to fetched document(s) or array
        */
       method ({ collection, id, expand, sync = true }) {
         if (!Array.isArray(id)) {
@@ -326,39 +370,50 @@ export const $fetch = createPlugin('fetch', {
         }
 
         const path = collection + query
-        const cacheData = getCache(path)
+        const cacheData = this.getCacheByPath(path)
 
         if (cacheData) {
-          return cacheData
+          return Promise.resolve(cacheData)
         }
 
-        const request = new Promise((resolve, reject) => {
-          fetch(_hostname + path)
+        let request = this.getRequestByPath(path)
+
+        if (request) {
+          return request
+        }
+
+        request = new Promise((resolve, reject) => {
+          fetch(this.hostname + path)
             .then(response => {
               if (response.ok) {
                 return response.json()
               }
+              throw new Error(`HTTP error! status: ${response.status}`)
             })
             .then(data => {
-              if (data) {
+              // Remove from queue once complete
+              this.deleteRequestQueueByPath(path)
+              
+              if (data && data.length > 0) {
                 if (sync) {
-                  setRequestData(data, path)
+                  this.setRequestDataByPath(data, path)
                 }
-
+                
                 resolve(data)
               } else {
-                resolve({
-                  isEmpty: true
-                })
+                // Return empty array for empty responses
+                reject(new Error('Fetch: no item found "' + path + '"'))
               }
             })
             .catch(error => {
+              // Remove from queue on error
+              this.deleteRequestQueueByPath(path)
               reject(error)
             })
         })
 
-        // add to queue
-        fetchRequestQueue[path] = request
+        // add to queue immediately
+        this.requestQueue[path] = request
 
         return request
       }
@@ -370,7 +425,7 @@ export const $fetch = createPlugin('fetch', {
    * @param {string} [param.hostname=''] - Base hostname/URL for API requests (will be prepended to '/_/')
    */
   setup ({ hostname = '' } = {}) {
-    _hostname = hostname + _hostname
+    this.hostname = hostname + this.hostname
   }
 })
 
@@ -380,3 +435,5 @@ export const {
 } = $fetch
 
 export default $fetch
+
+
