@@ -13,6 +13,7 @@ import { createMockExpressModule } from './mock-express-module.js'
  * @import {TestContext} from 'node:test'
  * @import {DsPluginExport} from '@dooksa/create-plugin/types'
  * @import {Mock} from 'node:test'
+ * @import {MockExpressApp} from './mock-express-module.js'
  */
 
 /**
@@ -28,7 +29,7 @@ import { createMockExpressModule } from './mock-express-module.js'
  * @typedef {Object} MockPlugin
  * @property {MockPluginPlatform} client - Client plugins
  * @property {MockPluginPlatform} server - Server plugins
- * @property {Object} app - Mock Express app with route tracking
+ * @property {MockExpressApp} app - Mock Express app with route tracking
  * @property {createRequest} createRequest - Helper to create mock Express request
  * @property {createResponse} createResponse - Helper to create mock Express response
  * @property {invokeRoute} invokeRoute - Manually invoke a registered route handler
