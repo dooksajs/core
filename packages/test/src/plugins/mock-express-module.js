@@ -1,17 +1,32 @@
 /**
  * Mock Express module that replaces the real express()
  * with our mock app for testing
- * @import {TestContext} from 'node:test'
+ * @import {TestContext, Mock} from 'node:test'
+ */
+
+/**
+ * @typedef {Object} MockExpressApp
+ * @property {Mock<Function>} get - Mock HTTP GET route handler
+ * @property {Mock<Function>} post - Mock HTTP POST route handler
+ * @property {Mock<Function>} put - Mock HTTP PUT route handler
+ * @property {Mock<Function>} delete - Mock HTTP DELETE route handler
+ * @property {Mock<Function>} use - Mock middleware registration
+ * @property {Mock<Function>} listen - Mock server listen method
+ * @property {Function} get routes - Getter that returns array of registered routes
+ * @property {Function} get middleware - Getter that returns array of registered middleware
  */
 
 /**
  * Creates a mock Express module that returns the mock app
  * @param {TestContext} context - Node.js TestContext for creating mocks
- * @returns {Object} Mocked express module exports
+ * @param {Object} mock - Object to store the mock app reference
+ * @returns {Mock<Function> & { json: Function, urlencoded: Function, static: Function, Router: Function }} Mocked express module exports
  */
 export function createMockExpressModule(context, mock) {
-  // Create the express function with middleware factories attached
-  // First create the function, then add properties, THEN mock it
+  /**
+   * Mock express app
+   * @returns {MockExpressApp}
+   */
   function express() {
     const routes = []
     const middleware = []
