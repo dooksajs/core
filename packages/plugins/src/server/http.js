@@ -146,7 +146,7 @@ export const $http = createPlugin('http', {
     start ({
       port = 6362,
       path = 'http://localhost'
-    } = {}) {
+    }) {
       return new Promise((resolve, reject) => {
         this.useRoutes()
 
@@ -192,12 +192,12 @@ export const $http = createPlugin('http', {
   /**
    * @param {Object} options
    * @param {string} [options.cookieSecret]
-   * @param {string} [options.api='/_'] - REST API prefix path
+   * @param {string} [options.apiPrefix='/_'] - REST API prefix path
    * @param {AssetLocation} [options.assets]
    */
   setup ({
     cookieSecret = '',
-    api = '/_',
+    apiPrefix = '/_',
     assets
   } = {}) {
     DEV: {
@@ -208,8 +208,12 @@ export const $http = createPlugin('http', {
       throw new Error('Invalid cookie secret length; secret must be at 32 characters')
     }
 
-    if (api) {
-      this.apiPrefix = api
+    if (apiPrefix) {
+      if (typeof apiPrefix !== 'string') {
+        throw new Error('HTTP: invalid api prefix type: "'+ typeof apiPrefix + '"')
+      }
+      
+      this.apiPrefix = apiPrefix
     }
 
     // prepare api route suffix
