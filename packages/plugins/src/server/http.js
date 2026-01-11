@@ -146,7 +146,7 @@ export const $http = createPlugin('http', {
     start ({
       port = 6362,
       path = 'http://localhost'
-    }) {
+    } = {}) {
       return new Promise((resolve, reject) => {
         this.useRoutes()
 
