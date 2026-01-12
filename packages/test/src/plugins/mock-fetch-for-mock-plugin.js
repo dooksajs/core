@@ -62,17 +62,13 @@ export function createMockFetchForMockPlugin (mock, context) {
     requests.push(requestInfo)
 
     // Create mock Express request
-    const mockRequest = {
+    const mockRequest = mock.createRequest({
       method: requestInfo.method,
       path,
-      params: {},
       query,
       body: init.body ? JSON.parse(init.body) : {},
-      cookies: {},
-      signedCookies: {},
-      headers: init.headers || {},
-      userId: null
-    }
+      headers: init.headers || {}
+    })
 
     // Create mock Express response
     const mockResponse = mock.createResponse()
