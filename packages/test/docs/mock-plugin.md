@@ -87,7 +87,7 @@ interface SeedData {
 ```javascript
 import { test, describe } from 'node:test'
 import { mockPlugin } from '@dooksa/test'
-import { deepStrictEqual } from 'node:assert'
+import { strictEqual } from 'node:assert'
 
 describe('Variable Plugin', () => {
   test('should mock variable methods', async (t) => {
@@ -102,7 +102,7 @@ describe('Variable Plugin', () => {
     variableSetValue.mockReturnValueOnce('test-value')
     const result = variableGetValue({ name: 'testVar' })
     
-    deepStrictEqual(result, 'test-value')
+    strictEqual(result, 'test-value')
     
     mock.restore()
   })
@@ -207,6 +207,8 @@ test('should test HTTP routes', async (t) => {
 
   // Setup component
   mock.server.setup.component()
+
+  // Start HTTP server
   await mock.server.method.httpStart()
 
   // Create request and response
@@ -221,8 +223,8 @@ test('should test HTTP routes', async (t) => {
   await mock.invokeRoute('/_/component', request, response)
 
   // Verify route was called
-  deepStrictEqual(mock.app.get.mock.callCount(), 1)
-  deepStrictEqual(response.statusCode, 200)
+  strictEqual(mock.app.get.mock.callCount(), 1)
+  strictEqual(response.statusCode, 200)
 
   mock.restore()
 })
@@ -251,7 +253,7 @@ test('should mock custom named exports', async (t) => {
 
   // Custom functions are available in methods
   const result = mock.server.method.customFunction()
-  deepStrictEqual(result, 'mocked-value')
+  strictEqual(result, 'mocked-value')
 
   mock.restore()
 })
@@ -375,7 +377,7 @@ const setups = mock.client.setup
 
 ```javascript
 // Check if called
-deepStrictEqual(mock.client.methods.variableSetValue.mock.callCount(), 1)
+strictEqual(mock.client.methods.variableSetValue.mock.callCount(), 1)
 
 // Check call arguments
 deepStrictEqual(
@@ -492,8 +494,8 @@ test('GET /_/component returns components', async (t) => {
 
   await mock.invokeRoute('/_/component', request, response)
 
-  deepStrictEqual(response.statusCode, 200)
-  deepStrictEqual(response.headers['Content-Type'], 'application/json')
+  strictEqual(response.statusCode, 200)
+  strictEqual(response.headers['Content-Type'], 'application/json')
   ok(Array.isArray(response.body))
 
   mock.restore()
@@ -554,7 +556,7 @@ test('middleware chain', async (t) => {
   
   await mock.invokeRoute('/_/test', request, response)
 
-  deepStrictEqual(middlewareCalls.length, 1)
+  strictEqual(middlewareCalls.length, 1)
 
   mock.restore()
 })
