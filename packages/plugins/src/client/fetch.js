@@ -278,6 +278,9 @@ export const $fetch = createPlugin('fetch', {
           return request
         }
 
+        const deleteRequestQueueByPath = this.deleteRequestQueueByPath
+        const setRequestDataByPath = this.setRequestDataByPath
+
         request = new Promise((resolve, reject) => {
           fetch(this.hostname + path)
             .then(response => {
@@ -288,17 +291,17 @@ export const $fetch = createPlugin('fetch', {
             })
             .then(data => {
               // remove from queue
-              this.deleteRequestQueueByPath(path)
+              deleteRequestQueueByPath(path)
 
               if (sync) {
-                this.setRequestDataByPath(data, path)
+                setRequestDataByPath(data, path)
               }
 
               resolve(data)
             })
             .catch(error => {
               // remove from queue on error
-              this.deleteRequestQueueByPath(path)
+              deleteRequestQueueByPath(path)
               reject(error)
             })
         })
