@@ -27,6 +27,12 @@ import { createMockFetchForMockPlugin } from './mock-fetch-for-mock-plugin.js'
  */
 
 /**
+ * @typedef {Object} MockFetchResult
+ * @property {Function} fetch - The mocked fetch function
+ * @property {Array<Object>} requests - Array of fetch request tracking objects
+ */
+
+/**
  * @typedef {Object} MockPlugin
  * @property {MockPluginPlatform} client - Client plugins
  * @property {MockPluginPlatform} server - Server plugins
@@ -34,6 +40,7 @@ import { createMockFetchForMockPlugin } from './mock-fetch-for-mock-plugin.js'
  * @property {createRequest} createRequest - Helper to create mock Express request
  * @property {createResponse} createResponse - Helper to create mock Express response
  * @property {invokeRoute} invokeRoute - Manually invoke a registered route handler
+ * @property {MockFetchResult} fetchMock - Mock fetch with request tracking
  * @property {Function} restore - Restore all mocks and clean up
  */
 
@@ -124,6 +131,7 @@ export async function mockPlugin (
     createRequest,
     createResponse,
     invokeRoute: (path, request, response) => invokeRoute(mockApp.app, path, request, response),
+    fetchMock: null,
     restore: () => {
       // Execute all restore callbacks in reverse order
       for (let i = restoreCallbacks.length - 1; i >= 0; i--) {
