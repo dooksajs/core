@@ -20,14 +20,16 @@
     "#server": "@dooksa/plugins/server"
   },
   "scripts": {
-    "test": "node --test --experimental-test-module-mocks test/**/*.test.js",
-    "test:watch": "node --test --experimental-test-module-mocks --watch test/**/*.test.js"
+    "test-unit": "node --experimental-test-module-mocks --test",
+    "test-coverage-lcov": "node --test --experimental-test-module-mocks --experimental-test-coverage --test-reporter=lcov --test-reporter-destination=lcov.info",
+    "test-coverage-report": "node --test --experimental-test-module-mocks --experimental-test-coverage"
   },
   "devDependencies": {
     "@dooksa/create-action": "workspace:^",
     "@dooksa/create-plugin": "workspace:^",
     "@dooksa/plugins": "workspace:^",
     "@dooksa/utils": "workspace:^",
+    "express": "^5.2.1",
     "jsdom": "^27.4.0"
   },
   "keywords": [
