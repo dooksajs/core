@@ -10,7 +10,7 @@
  */
 
 // Plugins
-export { mockClientPlugin } from './plugins/index.js'
+export * from './plugins/index.js'
 
 // Utilities
 export * from './utils/index.js'
