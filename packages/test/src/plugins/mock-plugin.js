@@ -8,6 +8,7 @@ import {
 import { mockDatabaseSeed } from './mock-database-seed.js'
 import { createRequest, createResponse, invokeRoute } from './mock-server-helpers.js'
 import { createMockExpressModule } from './mock-express-module.js'
+import { createMockFetchForMockPlugin } from './mock-fetch-for-mock-plugin.js'
 
 /**
  * @import {TestContext} from 'node:test'
@@ -134,6 +135,9 @@ export async function mockPlugin (
       }
     }
   }
+
+  // Track if we need to mock global.fetch
+  let originalFetch = null
 
   try {
     const __filename = fileURLToPath(import.meta.url)
@@ -330,6 +334,28 @@ export async function mockPlugin (
       for (const filename of databaseSeedMock.filenames) {
         await databaseModule.databaseSeed(filename)
       }
+    }
+
+    // If testing fetch plugin, automatically mock global.fetch
+    if ((name === 'fetch' && platform === 'client') || clientModules.includes('fetch')) {
+      const mockFetch = createMockFetchForMockPlugin(result, context)
+
+      // Store original fetch
+      originalFetch = global.fetch
+
+      // Mock global.fetch
+      global.fetch = mockFetch.fetch
+
+      // Add to restore callbacks
+      restoreCallbacks.push(() => {
+        if (originalFetch !== null) {
+          global.fetch = originalFetch
+          originalFetch = null
+        }
+      })
+
+      // Add fetch mock to result for access in tests
+      result.fetchMock = mockFetch
     }
 
     return result
