@@ -103,7 +103,7 @@ export async function mockPlugin (
           ...this.methods,
           ...this.actions
         }
-      },
+      }
     },
     server: {
       methods: {},
@@ -115,7 +115,7 @@ export async function mockPlugin (
           ...this.methods,
           ...this.actions
         }
-      },
+      }
     },
     get app () {
       return mockApp.app
@@ -136,10 +136,10 @@ export async function mockPlugin (
   }
 
   try {
-        // Import the actual plugin AFTER mock contexts are created
     const __filename = fileURLToPath(import.meta.url)
     const __dirname = dirname(__filename)
-     // Mock express for http plugin
+
+    // Mock express for http plugin
     if (serverModules.length || platform === 'server') {
       const mockExpressModule = createMockExpressModule(context, mockApp)
 
@@ -167,7 +167,7 @@ export async function mockPlugin (
     if (!clientModules.includes('state')) {
       clientModules.push('state')
     }
-    
+
     for (let i = 0; i < clientModules.length; i++) {
       const module = clientModules[i]
       let plugin
@@ -189,25 +189,25 @@ export async function mockPlugin (
         throw new Error('Client module not found: "' + pluginName + '"')
       }
 
-      if (plugin && plugin.state) {
-        pluginState.push(plugin)
-      }
-
       // Mock client plugin exports
       mockPluginActions(context, plugin, clientNamedExports, result.client, actionMethods)
       mockPluginExports(context, plugin, clientNamedExports, result.client)
 
-        // Populate schema and setup for the main plugin
-      if (plugin && plugin.schema) {
-        result.client.schema[pluginName] = plugin.schema
+      // Populate schema and setup for the main plugin
+      if (plugin && plugin.state) {
+        pluginState.push(plugin)
+
+        if (plugin.state.schema) {
+          result.client.schema[pluginName] = plugin.state.schema
+        }
       }
-      
+
       // Store setup functions for manual execution (except state and client action)
       if (plugin && plugin.setup && pluginName !== 'state' && pluginName !== 'action') {
         result.client.setup[pluginName] = plugin.setup
       }
     }
-    
+
     // Import server modules
     const tempServerModule = await import('#server')
 
@@ -238,10 +238,14 @@ export async function mockPlugin (
       mockPluginExports(context, plugin, serverNamedExports, result.server)
 
       // Populate schema and setup for the main plugin
-      if (plugin && plugin.schema) {
-        result.server.schema[pluginName] = plugin.schema
+      if (plugin && plugin.state) {
+        pluginState.push(plugin)
+
+        if (plugin.state.schema) {
+          result.server.schema[pluginName] = plugin.state.schema
+        }
       }
-      
+
       // Store setup functions for manual execution
       if (plugin && plugin.setup) {
         result.server.setup[pluginName] = plugin.setup
@@ -257,7 +261,7 @@ export async function mockPlugin (
         mockContext.restore()
       })
     }
-    
+
     // Determine if it's a client or server plugin
     let pluginPath
     let pluginModule
@@ -281,27 +285,25 @@ export async function mockPlugin (
     }
 
     const plugin = pluginModule[pluginNamedExport]
-    const resultPlatform = result[platform]
+    const platformResult = result[platform]
+    const platformNamedExports = platform === 'client' ? clientNamedExports : serverNamedExports
 
     // Mock the imported plugin
-    mockPluginActions(context, plugin, serverNamedExports, resultPlatform, actionMethods)
-    mockPluginExports(context, plugin, serverNamedExports, resultPlatform)
+    mockPluginActions(context, plugin, platformNamedExports, platformResult, actionMethods)
+    mockPluginExports(context, plugin, platformNamedExports, platformResult)
 
-    // Add custom named exports to result.methods if they exist
-    for (const [exportName, mockFn] of Object.entries(serverNamedExports)) {
-      if (!resultPlatform.methods[exportName] && !resultPlatform.actions[exportName]) {
-        resultPlatform.methods[exportName] = mockFn
+    // Populate schema and setup for the main plugin
+    if (plugin && plugin.state) {
+      pluginState.push(plugin)
+
+      if (plugin.state.schema) {
+        platformResult.schema[name] = plugin.state.schema
       }
     }
 
-    // Populate schema and setup for the main plugin
-    if (plugin && plugin.schema) {
-      resultPlatform.schema[name] = plugin.schema
-    }
-    
     // Store setup functions for manual execution
     if (plugin && plugin.setup) {
-      resultPlatform.setup[name] = plugin.setup
+      platformResult.setup[name] = plugin.setup
     }
 
     // Setup mock state for plugins
