@@ -1,18 +1,21 @@
 import { describe, it, beforeEach, afterEach } from 'node:test'
 import { strictEqual, deepStrictEqual, ok } from 'node:assert'
-import { createMockGetValue, createMockGenerateId } from '#mock'
-import { mockClientPlugin } from '@dooksa/test'
+import { mockPlugin, createMockGetValue, createMockGenerateId } from '@dooksa/test'
 
 describe('Variable plugin - getValue action', function () {
-  let mock
+  let mock,
+    stateGetValue,
+    stateSetValue,
+    variableGetValue,
+    variableSetValue
 
   beforeEach(async function () {
     const mockGetValue = createMockGetValue(this)
     const mockGenerateId = createMockGenerateId(this)
 
-    mock = await mockClientPlugin(this, {
+    mock = await mockPlugin(this, {
       name: 'variable',
-      modules: ['component'],
+      clientModules: ['component'],
       namedExports: [
         {
           module: '@dooksa/utils',
@@ -26,6 +29,11 @@ describe('Variable plugin - getValue action', function () {
         }
       ]
     })
+
+    stateGetValue = mock.client.method.stateGetValue
+    stateSetValue = mock.client.method.stateSetValue
+    variableGetValue = mock.client.method.variableGetValue
+    variableSetValue = mock.client.method.variableSetValue
   })
 
   afterEach(function () {
@@ -36,7 +44,7 @@ describe('Variable plugin - getValue action', function () {
 
   it('should get value from specific scope', async function () {
     // Setup state with variable values in a scope
-    await mock.method.stateSetValue({
+    await stateSetValue({
       name: 'variable/values',
       value: {
         'test-var': 'test-value'
@@ -46,7 +54,7 @@ describe('Variable plugin - getValue action', function () {
       }
     })
 
-    const result = mock.method.variableGetValue({
+    const result = variableGetValue({
       scope: 'scope-1',
       query: 'test-var'
     }, { context: {} })
@@ -55,7 +63,7 @@ describe('Variable plugin - getValue action', function () {
   })
 
   it('should get nested value using dot notation', async function () {
-    await mock.method.stateSetValue({
+    await stateSetValue({
       name: 'variable/values',
       value: {
         user: {
@@ -69,7 +77,7 @@ describe('Variable plugin - getValue action', function () {
       }
     })
 
-    const result = mock.method.variableGetValue({
+    const result = variableGetValue({
       scope: 'scope-1',
       query: 'user.profile.name'
     }, { context: {} })
@@ -78,7 +86,7 @@ describe('Variable plugin - getValue action', function () {
   })
 
   it('should apply prefix to query', async function () {
-    await mock.method.stateSetValue({
+    await stateSetValue({
       name: 'variable/values',
       value: {
         'prefix_test-var': 'prefixed-value'
@@ -88,7 +96,7 @@ describe('Variable plugin - getValue action', function () {
       }
     })
 
-    const result = mock.method.variableGetValue({
+    const result = variableGetValue({
       scope: 'scope-1',
       query: 'test-var',
       prefixId: 'prefix_'
@@ -98,7 +106,7 @@ describe('Variable plugin - getValue action', function () {
   })
 
   it('should apply suffix to query', async function () {
-    await mock.method.stateSetValue({
+    await stateSetValue({
       name: 'variable/values',
       value: {
         'test-var_suffix': 'suffixed-value'
@@ -108,7 +116,7 @@ describe('Variable plugin - getValue action', function () {
       }
     })
 
-    const result = mock.method.variableGetValue({
+    const result = variableGetValue({
       scope: 'scope-1',
       query: 'test-var',
       suffixId: '_suffix'
@@ -118,7 +126,7 @@ describe('Variable plugin - getValue action', function () {
   })
 
   it('should apply both prefix and suffix to query', async function () {
-    await mock.method.stateSetValue({
+    await stateSetValue({
       name: 'variable/values',
       value: {
         'prefix_test-var_suffix': 'combined-value'
@@ -128,7 +136,7 @@ describe('Variable plugin - getValue action', function () {
       }
     })
 
-    const result = mock.method.variableGetValue({
+    const result = variableGetValue({
       scope: 'scope-1',
       query: 'test-var',
       prefixId: 'prefix_',
@@ -139,7 +147,7 @@ describe('Variable plugin - getValue action', function () {
   })
 
   it('should return undefined when scope is empty', async function () {
-    await mock.method.stateSetValue({
+    await stateSetValue({
       name: 'variable/values',
       value: {},
       options: {
@@ -147,7 +155,7 @@ describe('Variable plugin - getValue action', function () {
       }
     })
 
-    const result = mock.method.variableGetValue({
+    const result = variableGetValue({
       scope: 'empty-scope',
       query: 'any-var'
     }, { context: {} })
@@ -156,7 +164,7 @@ describe('Variable plugin - getValue action', function () {
   })
 
   it('should return undefined when scope does not exist', async function () {
-    const result = mock.method.variableGetValue({
+    const result = variableGetValue({
       scope: 'non-existent-scope',
       query: 'any-var'
     }, { context: {} })
@@ -166,7 +174,7 @@ describe('Variable plugin - getValue action', function () {
 
   it('should search through multiple scopes when no scope specified', async function () {
     // Setup scopes for root context
-    await mock.method.stateSetValue({
+    await stateSetValue({
       name: 'variable/scopes',
       value: ['scope-1', 'scope-2', 'scope-3'],
       options: {
@@ -175,7 +183,7 @@ describe('Variable plugin - getValue action', function () {
     })
 
     // Setup values in different scopes
-    await mock.method.stateSetValue({
+    await stateSetValue({
       name: 'variable/values',
       value: {
         'var-a': 'value-a'
@@ -185,7 +193,7 @@ describe('Variable plugin - getValue action', function () {
       }
     })
 
-    await mock.method.stateSetValue({
+    await stateSetValue({
       name: 'variable/values',
       value: {
         'var-b': 'value-b'
@@ -195,7 +203,7 @@ describe('Variable plugin - getValue action', function () {
       }
     })
 
-    await mock.method.stateSetValue({
+    await stateSetValue({
       name: 'variable/values',
       value: {
         'var-c': 'value-c'
@@ -206,7 +214,7 @@ describe('Variable plugin - getValue action', function () {
     })
 
     // Should find first matching variable
-    const result = mock.method.variableGetValue({
+    const result = variableGetValue({
       query: 'var-b'
     }, { context: { rootId: 'root-context' } })
 
@@ -214,7 +222,7 @@ describe('Variable plugin - getValue action', function () {
   })
 
   it('should return first found value when searching scopes', async function () {
-    await mock.method.stateSetValue({
+    await stateSetValue({
       name: 'variable/scopes',
       value: ['scope-1', 'scope-2'],
       options: {
@@ -223,7 +231,7 @@ describe('Variable plugin - getValue action', function () {
     })
 
     // Both scopes have the same variable name
-    await mock.method.stateSetValue({
+    await stateSetValue({
       name: 'variable/values',
       value: {
         'shared-var': 'first-value'
@@ -233,7 +241,7 @@ describe('Variable plugin - getValue action', function () {
       }
     })
 
-    await mock.method.stateSetValue({
+    await stateSetValue({
       name: 'variable/values',
       value: {
         'shared-var': 'second-value'
@@ -243,7 +251,7 @@ describe('Variable plugin - getValue action', function () {
       }
     })
 
-    const result = mock.method.variableGetValue({
+    const result = variableGetValue({
       query: 'shared-var'
     }, { context: { rootId: 'root-context' } })
 
@@ -252,7 +260,7 @@ describe('Variable plugin - getValue action', function () {
   })
 
   it('should search through scopes with prefix and suffix', async function () {
-    await mock.method.stateSetValue({
+    await stateSetValue({
       name: 'variable/scopes',
       value: ['scope-1'],
       options: {
@@ -260,7 +268,7 @@ describe('Variable plugin - getValue action', function () {
       }
     })
 
-    await mock.method.stateSetValue({
+    await stateSetValue({
       name: 'variable/values',
       value: {
         'prefix_test-var_suffix': 'found-value'
@@ -270,7 +278,7 @@ describe('Variable plugin - getValue action', function () {
       }
     })
 
-    const result = mock.method.variableGetValue({
+    const result = variableGetValue({
       query: 'test-var',
       prefixId: 'prefix_',
       suffixId: '_suffix'
@@ -280,7 +288,7 @@ describe('Variable plugin - getValue action', function () {
   })
 
   it('should return undefined when variable not found in any scope', async function () {
-    await mock.method.stateSetValue({
+    await stateSetValue({
       name: 'variable/scopes',
       value: ['scope-1', 'scope-2'],
       options: {
@@ -288,7 +296,7 @@ describe('Variable plugin - getValue action', function () {
       }
     })
 
-    await mock.method.stateSetValue({
+    await stateSetValue({
       name: 'variable/values',
       value: {
         'var-a': 'value-a'
@@ -298,7 +306,7 @@ describe('Variable plugin - getValue action', function () {
       }
     })
 
-    const result = mock.method.variableGetValue({
+    const result = variableGetValue({
       query: 'non-existent-var'
     }, { context: { rootId: 'root-context' } })
 
@@ -308,7 +316,7 @@ describe('Variable plugin - getValue action', function () {
   it('should handle null values in state', async function () {
     // When setting null values, the state may handle it differently
     // We'll test by setting an empty object instead
-    await mock.method.stateSetValue({
+    await stateSetValue({
       name: 'variable/values',
       value: {},
       options: {
@@ -316,7 +324,7 @@ describe('Variable plugin - getValue action', function () {
       }
     })
 
-    const result = mock.method.variableGetValue({
+    const result = variableGetValue({
       scope: 'scope-1',
       query: 'any-var'
     }, { context: {} })
@@ -325,7 +333,7 @@ describe('Variable plugin - getValue action', function () {
   })
 
   it('should handle empty scopes array', async function () {
-    await mock.method.stateSetValue({
+    await stateSetValue({
       name: 'variable/scopes',
       value: [],
       options: {
@@ -333,7 +341,7 @@ describe('Variable plugin - getValue action', function () {
       }
     })
 
-    const result = mock.method.variableGetValue({
+    const result = variableGetValue({
       query: 'any-var'
     }, { context: { rootId: 'root-context' } })
 
@@ -341,7 +349,7 @@ describe('Variable plugin - getValue action', function () {
   })
 
   it('should handle complex nested queries', async function () {
-    await mock.method.stateSetValue({
+    await stateSetValue({
       name: 'variable/values',
       value: {
         data: {
@@ -362,7 +370,7 @@ describe('Variable plugin - getValue action', function () {
       }
     })
 
-    const result = mock.method.variableGetValue({
+    const result = variableGetValue({
       scope: 'scope-1',
       query: 'data.items.1.name'
     }, { context: {} })
@@ -372,15 +380,19 @@ describe('Variable plugin - getValue action', function () {
 })
 
 describe('Variable plugin - setValue action', function () {
-  let mock
+  let mock,
+    stateGetValue,
+    stateSetValue,
+    variableGetValue,
+    variableSetValue
 
   beforeEach(async function () {
     const mockGetValue = createMockGetValue(this)
     const mockGenerateId = createMockGenerateId(this)
 
-    mock = await mockClientPlugin(this, {
+    mock = await mockPlugin(this, {
       name: 'variable',
-      modules: ['component'],
+      clientModules: ['component'],
       namedExports: [
         {
           module: '@dooksa/utils',
@@ -394,6 +406,11 @@ describe('Variable plugin - setValue action', function () {
         }
       ]
     })
+
+    stateGetValue = mock.client.method.stateGetValue
+    stateSetValue = mock.client.method.stateSetValue
+    variableGetValue = mock.client.method.variableGetValue
+    variableSetValue = mock.client.method.variableSetValue
   })
 
   afterEach(function () {
@@ -403,7 +420,7 @@ describe('Variable plugin - setValue action', function () {
   })
 
   it('should set value in specific scope', async function () {
-    await mock.method.variableSetValue({
+    variableSetValue({
       scope: 'scope-1',
       values: [
         {
@@ -414,7 +431,7 @@ describe('Variable plugin - setValue action', function () {
     }, { context: { id: 'component-1' } })
 
     // Verify state was set
-    const values = await mock.method.stateGetValue({
+    const values = await mock.client.method.stateGetValue({
       name: 'variable/values',
       id: 'scope-1'
     })
@@ -423,7 +440,7 @@ describe('Variable plugin - setValue action', function () {
   })
 
   it('should generate ID automatically when not provided', async function () {
-    await mock.method.variableSetValue({
+    await variableSetValue({
       scope: 'scope-1',
       values: [
         {
@@ -432,7 +449,7 @@ describe('Variable plugin - setValue action', function () {
       ]
     }, { context: { id: 'component-1' } })
 
-    const values = await mock.method.stateGetValue({
+    const values = await mock.client.method.stateGetValue({
       name: 'variable/values',
       id: 'scope-1'
     })
@@ -441,7 +458,7 @@ describe('Variable plugin - setValue action', function () {
   })
 
   it('should apply prefix to generated ID', async function () {
-    await mock.method.variableSetValue({
+    await variableSetValue({
       scope: 'scope-1',
       values: [
         {
@@ -451,7 +468,7 @@ describe('Variable plugin - setValue action', function () {
       ]
     }, { context: { id: 'component-1' } })
 
-    const values = await mock.method.stateGetValue({
+    const values = await mock.client.method.stateGetValue({
       name: 'variable/values',
       id: 'scope-1'
     })
@@ -460,7 +477,7 @@ describe('Variable plugin - setValue action', function () {
   })
 
   it('should apply suffix to generated ID', async function () {
-    await mock.method.variableSetValue({
+    await variableSetValue({
       scope: 'scope-1',
       values: [
         {
@@ -470,7 +487,7 @@ describe('Variable plugin - setValue action', function () {
       ]
     }, { context: { id: 'component-1' } })
 
-    const values = await mock.method.stateGetValue({
+    const values = await mock.client.method.stateGetValue({
       name: 'variable/values',
       id: 'scope-1'
     })
@@ -479,7 +496,7 @@ describe('Variable plugin - setValue action', function () {
   })
 
   it('should apply both prefix and suffix to generated ID', async function () {
-    await mock.method.variableSetValue({
+    await variableSetValue({
       scope: 'scope-1',
       values: [
         {
@@ -490,7 +507,7 @@ describe('Variable plugin - setValue action', function () {
       ]
     }, { context: { id: 'component-1' } })
 
-    const values = await mock.method.stateGetValue({
+    const values = await mock.client.method.stateGetValue({
       name: 'variable/values',
       id: 'scope-1'
     })
@@ -499,7 +516,7 @@ describe('Variable plugin - setValue action', function () {
   })
 
   it('should use provided ID with prefix and suffix', async function () {
-    await mock.method.variableSetValue({
+    await variableSetValue({
       scope: 'scope-1',
       values: [
         {
@@ -511,7 +528,7 @@ describe('Variable plugin - setValue action', function () {
       ]
     }, { context: { id: 'component-1' } })
 
-    const values = await mock.method.stateGetValue({
+    const values = await mock.client.method.stateGetValue({
       name: 'variable/values',
       id: 'scope-1'
     })
@@ -520,7 +537,7 @@ describe('Variable plugin - setValue action', function () {
   })
 
   it('should set multiple values at once', async function () {
-    await mock.method.variableSetValue({
+    await variableSetValue({
       scope: 'scope-1',
       values: [
         {
@@ -537,7 +554,7 @@ describe('Variable plugin - setValue action', function () {
       ]
     }, { context: { id: 'component-1' } })
 
-    const values = await mock.method.stateGetValue({
+    const values = await mock.client.method.stateGetValue({
       name: 'variable/values',
       id: 'scope-1'
     })
@@ -549,7 +566,7 @@ describe('Variable plugin - setValue action', function () {
 
   it('should merge with existing values in scope', async function () {
     // Pre-populate scope with existing values
-    await mock.method.stateSetValue({
+    await stateSetValue({
       name: 'variable/values',
       value: {
         'existing-var': 'existing-value'
@@ -559,7 +576,7 @@ describe('Variable plugin - setValue action', function () {
       }
     })
 
-    await mock.method.variableSetValue({
+    await variableSetValue({
       scope: 'scope-1',
       values: [
         {
@@ -569,7 +586,7 @@ describe('Variable plugin - setValue action', function () {
       ]
     }, { context: { id: 'component-1' } })
 
-    const values = await mock.method.stateGetValue({
+    const values = await mock.client.method.stateGetValue({
       name: 'variable/values',
       id: 'scope-1'
     })
@@ -579,7 +596,7 @@ describe('Variable plugin - setValue action', function () {
   })
 
   it('should update existing value in scope', async function () {
-    await mock.method.stateSetValue({
+    await stateSetValue({
       name: 'variable/values',
       value: {
         'var-1': 'old-value'
@@ -589,7 +606,7 @@ describe('Variable plugin - setValue action', function () {
       }
     })
 
-    await mock.method.variableSetValue({
+    await variableSetValue({
       scope: 'scope-1',
       values: [
         {
@@ -599,7 +616,7 @@ describe('Variable plugin - setValue action', function () {
       ]
     }, { context: { id: 'component-1' } })
 
-    const values = await mock.method.stateGetValue({
+    const values = await mock.client.method.stateGetValue({
       name: 'variable/values',
       id: 'scope-1'
     })
@@ -609,7 +626,7 @@ describe('Variable plugin - setValue action', function () {
 
   it('should set value in current context when no scope specified', async function () {
     // Setup scopes for root context
-    await mock.method.stateSetValue({
+    await stateSetValue({
       name: 'variable/scopes',
       value: ['scope-1'],
       options: {
@@ -618,7 +635,7 @@ describe('Variable plugin - setValue action', function () {
     })
 
     // Setup existing values in scope-1
-    await mock.method.stateSetValue({
+    await stateSetValue({
       name: 'variable/values',
       value: {
         'existing-var': 'existing-value'
@@ -628,7 +645,7 @@ describe('Variable plugin - setValue action', function () {
       }
     })
 
-    await mock.method.variableSetValue({
+    await variableSetValue({
       values: [
         {
           id: 'new-var',
@@ -643,7 +660,7 @@ describe('Variable plugin - setValue action', function () {
     })
 
     // Should set in root context since new-var doesn't exist in scope-1
-    const values = await mock.method.stateGetValue({
+    const values = await mock.client.method.stateGetValue({
       name: 'variable/values',
       id: 'root-context'
     })
@@ -653,7 +670,7 @@ describe('Variable plugin - setValue action', function () {
 
   it('should set value in current context when not found in parent scopes', async function () {
     // Setup scopes for root context
-    await mock.method.stateSetValue({
+    await stateSetValue({
       name: 'variable/scopes',
       value: ['scope-1'],
       options: {
@@ -662,7 +679,7 @@ describe('Variable plugin - setValue action', function () {
     })
 
     // Setup values in scope-1 without matching variable
-    await mock.method.stateSetValue({
+    await stateSetValue({
       name: 'variable/values',
       value: {
         'other-var': 'other-value'
@@ -672,7 +689,7 @@ describe('Variable plugin - setValue action', function () {
       }
     })
 
-    await mock.method.variableSetValue({
+    await variableSetValue({
       values: [
         {
           id: 'new-var',
@@ -687,7 +704,7 @@ describe('Variable plugin - setValue action', function () {
     })
 
     // Should set in root context
-    const values = await mock.method.stateGetValue({
+    const values = await mock.client.method.stateGetValue({
       name: 'variable/values',
       id: 'root-context'
     })
@@ -696,7 +713,7 @@ describe('Variable plugin - setValue action', function () {
   })
 
   it('should stop searching when all values are set', async function () {
-    await mock.method.stateSetValue({
+    await stateSetValue({
       name: 'variable/scopes',
       value: ['scope-1', 'scope-2'],
       options: {
@@ -705,7 +722,7 @@ describe('Variable plugin - setValue action', function () {
     })
 
     // Both scopes have the same variable
-    await mock.method.stateSetValue({
+    await stateSetValue({
       name: 'variable/values',
       value: {
         'shared-var': 'scope-1-value'
@@ -715,7 +732,7 @@ describe('Variable plugin - setValue action', function () {
       }
     })
 
-    await mock.method.stateSetValue({
+    await stateSetValue({
       name: 'variable/values',
       value: {
         'shared-var': 'scope-2-value'
@@ -725,7 +742,7 @@ describe('Variable plugin - setValue action', function () {
       }
     })
 
-    await mock.method.variableSetValue({
+    await variableSetValue({
       values: [
         {
           id: 'shared-var',
@@ -740,12 +757,12 @@ describe('Variable plugin - setValue action', function () {
     })
 
     // Should update first scope only
-    const values1 = await mock.method.stateGetValue({
+    const values1 = await mock.client.method.stateGetValue({
       name: 'variable/values',
       id: 'scope-1'
     })
 
-    const values2 = await mock.method.stateGetValue({
+    const values2 = await mock.client.method.stateGetValue({
       name: 'variable/values',
       id: 'scope-2'
     })
@@ -755,7 +772,7 @@ describe('Variable plugin - setValue action', function () {
   })
 
   it('should handle empty values array', async function () {
-    await mock.method.variableSetValue({
+    await variableSetValue({
       scope: 'scope-1',
       values: []
     }, { context: { id: 'component-1' } })
@@ -765,7 +782,7 @@ describe('Variable plugin - setValue action', function () {
   })
 
   it('should add component to scope in component/belongsToScopes', async function () {
-    await mock.method.variableSetValue({
+    await variableSetValue({
       scope: 'scope-1',
       values: [
         {
@@ -775,7 +792,7 @@ describe('Variable plugin - setValue action', function () {
       ]
     }, { context: { id: 'component-1' } })
 
-    const belongsTo = await mock.method.stateGetValue({
+    const belongsTo = await mock.client.method.stateGetValue({
       name: 'component/belongsToScopes',
       id: 'component-1'
     })
@@ -790,7 +807,7 @@ describe('Variable plugin - setValue action', function () {
   })
 
   it('should handle complex nested values', async function () {
-    await mock.method.variableSetValue({
+    await variableSetValue({
       scope: 'scope-1',
       values: [
         {
@@ -804,7 +821,7 @@ describe('Variable plugin - setValue action', function () {
       ]
     }, { context: { id: 'component-1' } })
 
-    const values = await mock.method.stateGetValue({
+    const values = await mock.client.method.stateGetValue({
       name: 'variable/values',
       id: 'scope-1'
     })
@@ -817,7 +834,7 @@ describe('Variable plugin - setValue action', function () {
   })
 
   it('should handle array values', async function () {
-    await mock.method.variableSetValue({
+    await variableSetValue({
       scope: 'scope-1',
       values: [
         {
@@ -827,7 +844,7 @@ describe('Variable plugin - setValue action', function () {
       ]
     }, { context: { id: 'component-1' } })
 
-    const values = await mock.method.stateGetValue({
+    const values = await mock.client.method.stateGetValue({
       name: 'variable/values',
       id: 'scope-1'
     })
@@ -836,7 +853,7 @@ describe('Variable plugin - setValue action', function () {
   })
 
   it('should handle null and undefined values', async function () {
-    await mock.method.variableSetValue({
+    await variableSetValue({
       scope: 'scope-1',
       values: [
         {
@@ -850,7 +867,7 @@ describe('Variable plugin - setValue action', function () {
       ]
     }, { context: { id: 'component-1' } })
 
-    const values = await mock.method.stateGetValue({
+    const values = await mock.client.method.stateGetValue({
       name: 'variable/values',
       id: 'scope-1'
     })
