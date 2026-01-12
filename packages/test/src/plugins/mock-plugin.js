@@ -336,27 +336,24 @@ export async function mockPlugin (
       }
     }
 
-    // If testing fetch plugin, automatically mock global.fetch
-    if ((name === 'fetch' && platform === 'client') || clientModules.includes('fetch')) {
-      const mockFetch = createMockFetchForMockPlugin(result, context)
+    const mockFetch = createMockFetchForMockPlugin(result, context)
 
-      // Store original fetch
-      originalFetch = global.fetch
+    // Store original fetch
+    originalFetch = global.fetch
 
-      // Mock global.fetch
-      global.fetch = mockFetch.fetch
+    // Mock global.fetch
+    global.fetch = mockFetch.fetch
 
-      // Add to restore callbacks
-      restoreCallbacks.push(() => {
-        if (originalFetch !== null) {
-          global.fetch = originalFetch
-          originalFetch = null
-        }
-      })
+    // Add to restore callbacks
+    restoreCallbacks.push(() => {
+      if (originalFetch !== null) {
+        global.fetch = originalFetch
+        originalFetch = null
+      }
+    })
 
-      // Add fetch mock to result for access in tests
-      result.fetchMock = mockFetch
-    }
+    // Add fetch mock to result for access in tests
+    result.fetchMock = mockFetch
 
     return result
   } catch (err) {
