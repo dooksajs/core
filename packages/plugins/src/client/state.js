@@ -13,8 +13,17 @@ import { createDataValue } from '../utils/data-value.js'
 /**
  * Determines if an array contains duplicate values.
  *
+ * This function checks if any value in the array appears more than once by comparing
+ * the first and last occurrence indices of each value.
+ *
  * @param {Array} array - The array to check for duplicates.
- * @returns {boolean} - Returns true if there are duplicates, otherwise false.
+ * @returns {boolean} - Returns true if there are duplicate values, false otherwise.
+ * @example
+ * // Returns true
+ * arrayHasDuplicates([1, 2, 3, 2])
+ * @example
+ * // Returns false
+ * arrayHasDuplicates([1, 2, 3, 4])
  */
 function arrayHasDuplicates (array) {
   for (let i = 0; i < array.length; i++) {
@@ -29,10 +38,16 @@ function arrayHasDuplicates (array) {
 }
 
 /**
- * Check if the source exists in the target array
+ * Validates that an array contains only unique items by checking for duplicates.
+ *
+ * This is a private helper used for schema validation when the 'uniqueItems' option
+ * is enabled. It throws an exception if duplicates are found.
+ *
  * @private
- * @param {string} name - Schema path
- * @param {Array} source - Target array
+ * @param {string} name - The schema path being validated (used in error messages)
+ * @param {Array} source - The array to validate for uniqueness
+ * @throws {DataSchemaException} Thrown when the array contains duplicate values
+ * @see arrayHasDuplicates
  */
 function arrayIsUnique (name, source) {
   const hasDuplicates = arrayHasDuplicates(source)
@@ -43,11 +58,21 @@ function arrayIsUnique (name, source) {
 }
 
 /**
-   * Get new data instance
-  * @private
-  * @param {string} type - Data type name
-  * @returns {Array|Boolean|Function|number|Object|string}
-  */
+ * Creates a new data instance of the specified type.
+ *
+ * This factory function generates default instances for various data types used
+ * throughout the state management system. It handles primitive types, objects,
+ * arrays, functions, and special types like DOM nodes.
+ *
+ * @private
+ * @param {string} type - The data type name. Valid values: 'array', 'boolean', 'function', 'node', 'number', 'object', 'string'
+ * @returns {Array|Boolean|Function|number|Object|string} A new instance of the specified type
+ * @throws {Error} If an unsupported type is provided
+ * @example
+ * newDataInstance('array') // Returns []
+ * newDataInstance('object') // Returns {}
+ * newDataInstance('string') // Returns ''
+ */
 function newDataInstance (type) {
   switch (type) {
     case 'array':
@@ -65,6 +90,8 @@ function newDataInstance (type) {
       return new Object()
     case 'string':
       return new String().valueOf()
+    default:
+      throw new Error(`Unsupported data type: ${type}`)
   }
 }
 
@@ -100,8 +127,16 @@ export const state = createPlugin('state', {
   privateMethods: {
     /**
      * Creates an affix string from a function or string value.
+     *
+     * This helper is used to generate prefixes or suffixes for IDs. If the affix
+     * is a function, it will be called to generate the value dynamically.
+     *
      * @param {Function|string} affix - The affix value or function to generate it
      * @returns {string} The generated affix string
+     * @example
+     * createAffix('prefix_') // Returns 'prefix_'
+     * createAffix(() => 'dynamic') // Returns 'dynamic'
+     * createAffix('') // Returns ''
      */
     createAffix (affix) {
       if (typeof affix === 'function') {
@@ -110,14 +145,24 @@ export const state = createPlugin('state', {
 
       return affix || ''
     },
+
     /**
      * Creates a collection ID with optional prefix and suffix.
+     *
+     * This method generates IDs for collection items, applying any configured
+     * affixes from the schema. It handles custom IDs, prefix/suffix options,
+     * and default ID generation.
+     *
      * @param {string} name - Name of collection
      * @param {Object} option - Options for ID generation
      * @param {string} [option.id] - Custom ID to use
      * @param {string} [option.prefixId] - Prefix to add to the ID
      * @param {string} [option.suffixId] - Suffix to add to the ID
      * @returns {string} The generated collection ID
+     * @example
+     * // With schema: { id: { prefix: 'user_', suffix: '_v1' } }
+     * createCollectionId('users', { id: '123' })
+     * // Returns 'user_123_v1'
      */
     createCollectionId (name, option) {
       const schema = this.getSchema(name)
@@ -154,14 +199,22 @@ export const state = createPlugin('state', {
 
       return prefix + id + suffix
     },
+
     /**
-     * Generate the default id for a collection
+     * Generate the default id for a collection.
+     *
+     * This method creates a new collection ID with optional affixes and returns
+     * both the full ID and the ID without affixes for internal use.
+     *
      * @private
      * @param {string} name - Collection schema path
-     * @param {Object} option - Collection id prefix or suffix options
+     * @param {Object} [option={}] - Collection id prefix or suffix options
      * @param {string} [option.prefixId] - Prefix to add to the id
      * @param {string} [option.suffixId] - Suffix to add to the id
-     * @returns {Object}
+     * @returns {{id: string, noAffixId: string}} Object containing the full ID and ID without affixes
+     * @example
+     * createDefaultCollectionId('users', {})
+     * // Returns { id: 'user_abc123_v1', noAffixId: 'abc123' }
      */
     createDefaultCollectionId (name, option = {}) {
       const schema = this.getSchema(name)
@@ -201,12 +254,20 @@ export const state = createPlugin('state', {
         noAffixId: id
       }
     },
+
     /**
      * Creates a data target object with metadata.
+     *
+     * A data target is a container that holds both the actual data value (_item)
+     * and its metadata (_metadata). This method creates or updates such containers.
+     *
      * @param {string} type - The data type for the target item
      * @param {Object} metadata - Metadata to set on the target
      * @param {DataTarget} [target] - Optional existing target to update
      * @returns {DataTarget} The created or updated target object
+     * @example
+     * createTarget('object', { userId: '123' })
+     * // Returns { _item: {}, _metadata: { userId: '123', ... } }
      */
     createTarget (type, metadata, target) {
       if (target == null) {
@@ -220,12 +281,31 @@ export const state = createPlugin('state', {
 
       return target
     },
+
     /**
-     * Filter data result based on condition
+     * Filters data results based on complex conditions.
+     *
+     * This method evaluates boolean logic using AND/OR operators to determine if data
+     * matches the specified criteria. It supports nested conditions for complex filtering.
+     *
      * @private
-     * @param {DataValue} data
-     * @param {DataWhere} where
-     * @returns {boolean}
+     * @param {DataValue} data - The data value to filter
+     * @param {DataWhere} where - Filter conditions with 'and', 'or', or 'name' properties
+     * @returns {boolean} True if the data matches the conditions, false otherwise
+     * @example
+     * // Simple condition
+     * filterData(dataResult, { name: 'status', op: '==', value: 'active' })
+     * @example
+     * // Complex nested condition
+     * filterData(dataResult, {
+     *   and: [
+     *     { name: 'status', op: '==', value: 'active' },
+     *     { or: [
+     *       { name: 'role', op: '==', value: 'admin' },
+     *       { name: 'permissions', op: '>=', value: 5 }
+     *     ]}
+     *   ]
+     * })
      */
     filterData (data, where) {
       let isAndValid = false
@@ -278,12 +358,19 @@ export const state = createPlugin('state', {
 
       return (isAndValid || isOrValid || isValid)
     },
+
     /**
-     * Process where condition
+     * Evaluates a single filter condition against data.
+     *
+     * Extracts the value from the data (either from metadata or item properties)
+     * and compares it using the specified operator.
+     *
      * @private
-     * @param {DataValue} data - Data result
-     * @param {DataWhere} condition - Where condition
-     * @returns {Boolean}
+     * @param {DataValue} data - The data value containing item and metadata
+     * @param {DataWhere} condition - Condition with name, operator, and value
+     * @returns {boolean} True if the condition is satisfied
+     * @example
+     * filterValidateValue(dataResult, { name: 'age', op: '>', value: 18 })
      */
     filterValidateValue (data, condition) {
       let value
@@ -312,12 +399,20 @@ export const state = createPlugin('state', {
         ]
       })
     },
+
     /**
-     * Replaces collection items with new data.
+     * Replaces entire collection items with new data.
+     *
+     * This method completely replaces all items in a collection with the provided
+     * source data, validating each item and managing relationships.
+     *
+     * @private
      * @param {Object} data - The data object containing target and collection info
      * @param {string} path - Schema path for the collection
-     * @param {Object} sources - Object containing items to replace with
+     * @param {Object} sources - Object containing items to replace with (keyed by ID)
      * @param {Object} metadata - Metadata to apply to new items
+     * @example
+     * replaceCollectionItems(data, 'users', { '1': { name: 'John' } }, { userId: 'admin' })
      */
     replaceCollectionItems (data, path, sources, metadata) {
       const schemaPath = path + '/items'
@@ -327,6 +422,7 @@ export const state = createPlugin('state', {
       // set values
       for (const id in sources) {
         if (Object.hasOwnProperty.call(sources, id)) {
+          /** @TODO need to look into this, clone is not being used? */
           const clone = newDataInstance(schemaType)
           const source = deepClone(sources[id], true)
           const target = {
@@ -345,14 +441,21 @@ export const state = createPlugin('state', {
         }
       }
     },
+
     /**
-     * Validate data
+     * Validates and processes data for setting in the state.
+     *
+     * This is the core method for setting data. It handles validation, ID generation,
+     * relationship management, and creates the appropriate data structure.
+     *
      * @private
-     * @param {string} collection
-     * @param {*} target
-     * @param {*} source
-     * @param {SetDataOptions} [options]
-     * @returns {Object}
+     * @param {string} collection - Collection name
+     * @param {Object} target - Target data container
+     * @param {*} source - Source data to set
+     * @param {SetDataOptions} [options] - Options for data setting
+     * @returns {Object} Result with validation status, item, previous value, and metadata
+     * @example
+     * setData('users', {}, { name: 'John' }, { id: '123' })
      */
     setData (collection, target, source, options) {
       const data = {
@@ -447,11 +550,18 @@ export const state = createPlugin('state', {
       }
       return result
     },
+
     /**
-     * Set DataMetadata to target.
-     * @param {DataMetadata|Object} [item={}] - The item to set metadata for.
-     * @param {Object} [options={}] - Additional metadata options.
-     * @returns {DataMetadata}
+     * Adds or updates metadata for a data item.
+     *
+     * This method merges new metadata with existing metadata and automatically
+     * adds timestamps on the server side.
+     *
+     * @param {DataMetadata|Object} [item={}] - The item to set metadata for
+     * @param {Object} [options={}] - Additional metadata options
+     * @returns {DataMetadata} The complete metadata object
+     * @example
+     * setMetadata({}, { userId: '123', customField: 'value' })
      */
     setMetadata (item = {}, options) {
       if (options) {
@@ -482,19 +592,33 @@ export const state = createPlugin('state', {
 
       return item
     },
+
     /**
      * Updates an array with various operations (push, pull, pop, shift, unshift, splice).
+     *
+     * This method provides comprehensive array manipulation capabilities, supporting
+     * standard array operations while optionally managing data relationships.
+     *
+     * @private
      * @param {Array} target - The target array to update
-     * @param {Array|*} source - Source data for the operation
+     * @param {Array|*} source - Source data for the operation (will be converted to array if needed)
      * @param {Object} options - Update options
-     * @param {string} options.method - The operation method
-     * @param {number} [options.startIndex] - Start index for splice
+     * @param {string} options.method - The operation method: 'push', 'pull', 'pop', 'shift', 'unshift', or 'splice'
+     * @param {number} [options.startIndex] - Start index for splice operation
      * @param {number} [options.deleteCount] - Number of items to delete for splice
-     * @param {Object} [relation] - Relation information
-     * @param {string} relation.target - Target collection
-     * @param {string} relation.id - Target ID
-     * @param {string} relation.source - Source collection
+     * @param {Object} [relation] - Optional relation information for relationship management
+     * @param {string} relation.target - Target collection name
+     * @param {string} relation.id - Target document ID
+     * @param {string} relation.source - Source collection name
      * @returns {Object} Result with isValid and isComplete flags
+     * @example
+     * // Push operation
+     * updateArray(['a'], ['b'], { method: 'push' })
+     * // Result: ['a', 'b']
+     * @example
+     * // Splice operation
+     * updateArray(['a', 'b', 'c'], ['x'], { method: 'splice', startIndex: 1, deleteCount: 1 })
+     * // Result: ['a', 'x', 'c']
      */
     updateArray (target, source, options, relation) {
       const result = {
@@ -583,10 +707,19 @@ export const state = createPlugin('state', {
 
       return result
     },
+
     /**
      * Freezes newly added array items to make them immutable.
+     *
+     * This prevents accidental modification of array elements after they've been
+     * added to the state, ensuring data integrity.
+     *
+     * @private
      * @param {Array} items - The array containing items to freeze
      * @param {number} length - Number of items from the end to freeze
+     * @example
+     * // Freezes the last 2 items in the array
+     * updateArrayItemFreeze(['a', 'b', 'c', 'd'], 2)
      */
     updateArrayItemFreeze (items, length) {
       for (let i = items.length - length; i < items.length; i++) {
@@ -597,13 +730,23 @@ export const state = createPlugin('state', {
         }
       }
     },
+
     /**
-     * Check data type
+     * Validates that data matches the expected type and schema.
+     *
+     * This is the main type validation method that delegates to specific validators
+     * based on the type. It handles objects, arrays, and primitive types.
+     *
      * @private
-     * @param {*} data - Schema path
-     * @param {string} path - Schema path
-     * @param {*} value - value to be checked
-     * @param {string} type - Expected data type
+     * @param {*} data - Schema path context
+     * @param {string} path - Schema path for error reporting
+     * @param {*} value - Value to be checked
+     * @param {string} type - Expected data type ('object', 'array', 'node', 'string', 'number', 'boolean', 'function')
+     * @returns {boolean} True if validation passes
+     * @throws {DataSchemaException} If type mismatch occurs
+     * @example
+     * validateDataType(data, 'users/1/name', 'John', 'string') // Returns true
+     * validateDataType(data, 'users/1/age', 'twenty', 'number') // Throws exception
      */
     validateDataType (data, path, value, type) {
       if (type === 'object') {
@@ -644,6 +787,21 @@ export const state = createPlugin('state', {
 
       throw DataSchemaException.typeMismatch(path, type, value)
     },
+
+    /**
+     * Validates an array against its schema definition.
+     *
+     * This method checks if the source is an array, applies array-specific options
+     * (like uniqueItems), validates each item, and manages array relationships.
+     *
+     * @private
+     * @param {Object} data - The data context
+     * @param {string} path - Schema path for the array
+     * @param {Array} source - The array to validate
+     * @throws {DataSchemaException} If validation fails
+     * @example
+     * validateSchemaArray(data, 'users/1/tags', ['tag1', 'tag2'])
+     */
     validateSchemaArray (data, path, source) {
       const schema = this.getSchema(path)
 
@@ -682,6 +840,15 @@ export const state = createPlugin('state', {
         this.validateDataType(data, schemaName, item, schemaItems.type)
       }
     },
+
+    /**
+     * Validates array-specific options like uniqueItems.
+     *
+     * @private
+     * @param {string} path - Schema path
+     * @param {Array} source - Array to validate
+     * @throws {DataSchemaException} If uniqueItems constraint is violated
+     */
     validateSchemaArrayOption (path, source) {
       const schema = this.getSchema(path)
 
@@ -689,6 +856,22 @@ export const state = createPlugin('state', {
         arrayIsUnique(path, source)
       }
     },
+
+    /**
+     * Validates an object against its schema definition.
+     *
+     * This method checks object properties, pattern properties, and applies
+     * validation rules like additionalProperties restrictions.
+     *
+     * @private
+     * @param {Object} data - The data context
+     * @param {string} path - Schema path for the object
+     * @param {Object} source - The object to validate
+     * @returns {boolean} True if validation passes
+     * @throws {DataSchemaException} If validation fails
+     * @example
+     * validateSchemaObject(data, 'users/1/profile', { name: 'John', age: 30 })
+     */
     validateSchemaObject (data, path, source) {
       const schema = this.getSchema(path)
 
@@ -707,7 +890,18 @@ export const state = createPlugin('state', {
       if (schema.properties || schema.patternProperties) {
         this.validateSchemaObjectProperties(data, schema.properties, schema.patternProperties, source, path)
       }
+
+      return true
     },
+
+    /**
+     * Validates object-specific options like additionalProperties restrictions.
+     *
+     * @private
+     * @param {string} path - Schema path
+     * @param {Object} data - Object to validate
+     * @throws {DataSchemaException} If additionalProperties constraint is violated
+     */
     validateSchemaObjectOption (path, data) {
       const schema = this.getSchema(path)
 
@@ -763,6 +957,21 @@ export const state = createPlugin('state', {
         }
       }
     },
+
+    /**
+     * Validates a single object property against its schema.
+     *
+     * Handles default values, required fields, and relationship management.
+     *
+     * @private
+     * @param {Object} data - The data context
+     * @param {Object} property - Property schema definition
+     * @param {string} name - Property name
+     * @param {Object} source - Source object containing the property
+     * @param {string} path - Schema path
+     * @example
+     * validateSchemaObjectProperty(data, { name: 'age', type: 'number' }, 'age', { age: 25 }, 'users/1')
+     */
     validateSchemaObjectProperty (data, property, name, source, path) {
       const options = property.options || {}
       const value = source[name]
@@ -798,6 +1007,20 @@ export const state = createPlugin('state', {
         this.addRelation(data.collection, data.id, options.relation, value)
       }
     },
+
+    /**
+     * Validates all properties of an object against its schema.
+     *
+     * Handles both explicit properties and pattern-based properties.
+     *
+     * @private
+     * @param {Object} data - The data context
+     * @param {Array} properties - Array of property definitions
+     * @param {Array} patternProperties - Array of pattern-based property definitions
+     * @param {Object} source - The object to validate
+     * @param {string} path - Schema path
+     * @throws {DataSchemaException} If required properties are missing or validation fails
+     */
     validateSchemaObjectProperties (data, properties = [], patternProperties = [], source, path) {
       const checkedProperties = {}
 
@@ -854,6 +1077,21 @@ export const state = createPlugin('state', {
         }
       }
     },
+
+    /**
+     * Validates data against its schema definition.
+     *
+     * This is the main entry point for schema validation. It checks the type
+     * and applies any schema-level options like relationships.
+     *
+     * @private
+     * @param {Object} data - The data context
+     * @param {string} path - Schema path
+     * @param {*} source - Data to validate
+     * @throws {DataSchemaException} If schema validation fails
+     * @example
+     * validateSchema(data, 'users', { name: 'John', age: 30 })
+     */
     validateSchema (data, path, source) {
       const schema = this.getSchema(path)
 
@@ -869,6 +1107,30 @@ export const state = createPlugin('state', {
         this.addRelation(data.collection, data.id, schema.options.relation, source)
       }
     },
+
+    /**
+     * Handles update operations for data with position and method options.
+     *
+     * This method processes updates to nested data positions and array operations,
+     * managing relationships and validation throughout.
+     *
+     * @private
+     * @param {Object} data - The data context
+     * @param {string} schemaPath - Current schema path
+     * @param {*} source - Source data for the update
+     * @param {Object} options - Update options
+     * @param {string[]} [options.position] - Position path for nested updates
+     * @param {string} [options.method] - Array operation method
+     * @param {number} [options.startIndex] - Start index for splice
+     * @param {number} [options.deleteCount] - Delete count for splice
+     * @returns {Object} Result with complete and isValid flags
+     * @example
+     * // Update nested property
+     * setDataUpdateOptions(data, 'users/1', 'John', { position: ['name'] })
+     * @example
+     * // Array push operation
+     * setDataUpdateOptions(data, 'users/1/tags', 'tag1', { method: 'push' })
+     */
     setDataUpdateOptions (data, schemaPath, source, options) {
       let target = data.target
 
@@ -987,6 +1249,24 @@ export const state = createPlugin('state', {
         }
       }
     },
+
+    /**
+     * Processes data setting options and determines the appropriate action.
+     *
+     * This method handles merge, replace, ID generation, and update operations
+     * based on the provided options. It's the main coordinator for data setting.
+     *
+     * @private
+     * @param {Object} data - The data context
+     * @param {*} source - Source data to set
+     * @param {SetDataOptions} options - Options for data setting
+     * @returns {Object} Result with completion status and validation state
+     * @throws {DataSchemaException} If collection ID is null
+     * @example
+     * setDataOptions(data, { name: 'John' }, { id: '123', merge: true })
+     * @example
+     * setDataOptions(data, { name: 'John' }, { replace: true })
+     */
     setDataOptions (data, source, options) {
       if (Object.hasOwnProperty.call(options, 'id') && options.id == null) {
         throw new DataSchemaException({
@@ -1125,12 +1405,25 @@ export const state = createPlugin('state', {
 
       return { isValid: true }
     },
+
     /**
-     * Add the association id
-     * @param {string} collection - Primary collection
-     * @param {string} docId - Primary id
-     * @param {string} refCollection - Foreign collection
-     * @param {string} refId - Foreign id
+     * Adds a relationship between two data items.
+     *
+     * This method creates bidirectional relationships by storing both:
+     * 1. What data references other data (relations)
+     * 2. Where data is being referenced (relationsInUse)
+     *
+     * @private
+     * @param {string} collection - Primary collection name
+     * @param {string} docId - Primary document ID
+     * @param {string} refCollection - Foreign collection name
+     * @param {string} refId - Foreign document ID
+     * @example
+     * // User '123' has a reference to profile '456'
+     * addRelation('users', '123', 'profiles', '456')
+     * // Results in:
+     * // relations['users/123'] = ['profiles/456']
+     * // relationsInUse['profiles/456'] = ['users/123']
      */
     addRelation (collection, docId, refCollection, refId) {
       const name = collection + '/' + docId
@@ -1150,12 +1443,24 @@ export const state = createPlugin('state', {
         this.relationsInUse[usedName].push(name)
       }
     },
+
     /**
      * Retrieves a handler for a specific collection and event.
+     *
+     * This method provides access to event handlers that are triggered
+     * when data changes occur.
+     *
+     * @private
      * @param {string} name - Collection name
-     * @param {'update'|'delete'} on - Event trigger
+     * @param {'update'|'delete'} on - Event trigger type
      * @param {string} [id] - Optional handler ID to get specific handler
      * @returns {Object|Function} The handler object or specific handler function
+     * @example
+     * // Get all handlers for users collection update events
+     * getHandler('users', 'update')
+     * @example
+     * // Get specific handler by ID
+     * getHandler('users', 'update', 'handler123')
      */
     getHandler (name, on, id) {
       const handler = this.handlers[on][name]
@@ -1166,11 +1471,20 @@ export const state = createPlugin('state', {
 
       return handler
     },
+
     /**
      * Fetches and expands related data for a result.
+     *
+     * This method recursively loads related data and adds it to the result's
+     * expand array, preventing infinite loops and duplicates.
+     *
+     * @private
      * @param {string} name - Name of data collection
      * @param {DataValue} result - Data result to expand
      * @param {GetDataOption} [options] - Options for data expansion
+     * @example
+     * // Get user with expanded profile and posts
+     * getExpandedData('users', userResult, { expand: true })
      */
     getExpandedData (name, result, options) {
       const relations = this.relations[name + '/' + result.id]
@@ -1243,13 +1557,25 @@ export const state = createPlugin('state', {
         }
       }
     },
+
     /**
-     * Get listeners
+     * Retrieves event listeners for a collection.
+     *
+     * This method returns all listeners (priority, items, and capture-all)
+     * for a specific collection and event type.
+     *
      * @private
      * @param {string} name - Data collection name
      * @param {'update'|'delete'} on - Event trigger
-     * @param {string} id  - Data collection Id
-     * @returns {DataListenerCollection}
+     * @param {string} [id] - Optional data collection ID for item-specific listeners
+     * @returns {DataListenerCollection} Object containing all listener types
+     * @throws {Error} If the listener target is not found
+     * @example
+     * // Get all listeners for users collection
+     * getListeners('users', 'update')
+     * @example
+     * // Get listeners for specific user ID
+     * getListeners('users', 'update', '123')
      */
     getListeners (name, on, id) {
       const all = this.listeners[on].all[name]
@@ -1275,13 +1601,24 @@ export const state = createPlugin('state', {
         priority
       }
     },
+
     /**
-     * Process listeners on update event
+     * Dispatches an event to all registered listeners.
+     *
+     * This method notifies all listeners of a data change event, respecting
+     * priority order and propagation settings.
+     *
      * @private
      * @param {string} name - Collection name
      * @param {'update'|'delete'} on - Event name
-     * @param {DataValue} item - Value that is being set
+     * @param {DataValue} item - Value that is being set or deleted
      * @param {boolean} [stopPropagation] - Prevents further propagation of the update event
+     * @example
+     * // Dispatch update event for user
+     * dispatchEvent('users', 'update', userResult)
+     * @example
+     * // Dispatch with propagation stopped
+     * dispatchEvent('users', 'update', userResult, true)
      */
     dispatchEvent (name, on, item, stopPropagation) {
       const { all, priority, items } = this.getListeners(name, on, item.id)
@@ -1314,13 +1651,20 @@ export const state = createPlugin('state', {
         }
       }
     },
+
     /**
-     * Validate and collection items
-     * @template {Object.<string, DataTarget> & DataTarget} Data
-     * @param {DataValue} data
+     * Merges primitive collection items into the data target.
+     *
+     * This method handles merging for non-object/non-array collection items
+     * (like strings or numbers) into the state.
+     *
+     * @private
+     * @param {Object} data - The data context
      * @param {string} path - Schema path
-     * @param {Data} sources
-     * @param {DataMetadata} metadata
+     * @param {Object} sources - Object containing items to merge (keyed by ID)
+     * @param {DataMetadata} metadata - Metadata to apply to items
+     * @example
+     * mergeCollectionPrimitiveItems(data, 'users/tags', { '1': 'tag1', '2': 'tag2' }, { userId: '123' })
      */
     mergeCollectionPrimitiveItems (data, path, sources, metadata) {
       const schema = this.getSchema(path)
@@ -1354,8 +1698,26 @@ export const state = createPlugin('state', {
           data.target[id] = result
         }
       }
-
     },
+
+    /**
+     * Merges items into a non-collection data target.
+     *
+     * This method merges new data with existing data, preserving previous values
+     * and handling both object and primitive types.
+     *
+     * @private
+     * @param {Object} data - The data context
+     * @param {string} path - Schema path
+     * @param {*} sources - Data to merge
+     * @param {DataMetadata} metadata - Metadata to apply
+     * @example
+     * // Merge objects
+     * mergeItems(data, 'users/1/profile', { name: 'John', age: 30 }, { userId: '123' })
+     * @example
+     * // Merge primitives
+     * mergeItems(data, 'users/1/age', 25, { userId: '123' })
+     */
     mergeItems (data, path, sources, metadata) {
       const schema = this.getSchema(path)
       const schemaType = schema.type
@@ -1433,13 +1795,21 @@ export const state = createPlugin('state', {
       // set object source
       data.target._item = targetItem
     },
+
     /**
-     * Validate and collection items
-     * @template {Object.<string, DataTarget> & DataTarget} Data
-     * @param {DataValue} data
+     * Merges collection items into the state.
+     *
+     * This method handles merging for collection data, supporting both
+     * object/array items and primitive items.
+     *
+     * @private
+     * @param {Object} data - The data context
      * @param {string} path - Schema path
-     * @param {Data} sources
-     * @param {DataMetadata} metadata
+     * @param {Object} sources - Object containing items to merge (keyed by ID)
+     * @param {DataMetadata} metadata - Metadata to apply to items
+     * @example
+     * // Merge user profiles
+     * mergeCollectionItems(data, 'users/profiles', { '1': { name: 'John' } }, { userId: '123' })
      */
     mergeCollectionItems (data, path, sources, metadata) {
       let schema = this.getSchema(path)
@@ -1500,12 +1870,22 @@ export const state = createPlugin('state', {
         }
       }
     },
+
     /**
-     * Remove the association id
-     * @param {string} collection - Primary collection
-     * @param {string} docId - Primary id
-     * @param {string} refCollection - Foreign collection
-     * @param {string} refId - Foreign id
+     * Removes a relationship between two data items.
+     *
+     * This method removes bidirectional relationships by updating both:
+     * 1. What data references other data (relations)
+     * 2. Where data is being referenced (relationsInUse)
+     *
+     * @private
+     * @param {string} collection - Primary collection name
+     * @param {string} docId - Primary document ID
+     * @param {string} refCollection - Foreign collection name
+     * @param {string} refId - Foreign document ID
+     * @example
+     * // Remove relationship between user '123' and profile '456'
+     * removeRelation('users', '123', 'profiles', '456')
      */
     removeRelation (collection, docId, refCollection, refId) {
       const name = collection + '/' + docId
@@ -1537,12 +1917,21 @@ export const state = createPlugin('state', {
         }
       }
     },
+
     /**
      * Creates a collection item based on the given data and optional ID.
-     * @param {Object.<string, DataTarget<*>> | DataTarget<*>} collection - The collection to create the item in.
-     * @param {object} data - The data to use for the new item.
-     * @param {string} [id] - Optional ID for the new item within the collection.
-     * @returns {DataTarget<*>} The created item object.
+     *
+     * This method wraps data in the internal collection item structure,
+     * preserving previous values if they exist.
+     *
+     * @private
+     * @param {Object} collection - The collection to create the item in
+     * @param {object} data - The data to use for the new item
+     * @param {string} [id] - Optional ID for the new item within the collection
+     * @returns {Object} The created collection item object
+     * @example
+     * createCollectionItem({}, { name: 'John' }, '123')
+     * // Returns { _item: { name: 'John' }, _metadata: {} }
      */
     createCollectionItem (collection, data, id) {
       const item = {
@@ -1574,14 +1963,23 @@ export const state = createPlugin('state', {
   methods: {
     /**
      * Retrieves a schema entry by path.
+     *
      * @param {string} path - The schema path to retrieve
      * @returns {SchemaEntry} The schema entry for the given path
+     * @example
+     * getSchema('users') // Returns schema for users collection
+     * getSchema('users/items') // Returns schema for user items
      */
     getSchema (path) {
       return this.schema[path]
     },
+
     /**
      * Sets data without schema validation.
+     *
+     * This method provides a way to set data directly without validation,
+     * useful for internal operations or when data is already validated.
+     *
      * @param {Object} param - Parameters object
      * @param {string} param.name - Name of the collection
      * @param {*} param.value - Data value to set
@@ -1590,6 +1988,10 @@ export const state = createPlugin('state', {
      * @param {boolean} [param.options.replace] - Whether to replace the target collection
      * @param {boolean} [param.options.stopPropagation] - Whether to stop event propagation
      * @returns {DataValue|DataValue[]} The created data value(s)
+     * @example
+     * unsafeSetValue({ name: 'users', value: { name: 'John' }, options: { id: '123' } })
+     * @example
+     * unsafeSetValue({ name: 'users', value: { '1': { name: 'John' } }, options: { replace: true } })
      */
     unsafeSetValue ({ name, value, options = {} }) {
       const collection = this.values[name]
@@ -1668,10 +2070,14 @@ export const state = createPlugin('state', {
       },
       /**
        * Generates a unique identifier.
+       *
        * @returns {string} A unique ID string
+       * @example
+       * generateId() // Returns something like 'abc123def456'
        */
       method: generateId
     },
+
     find: {
       metadata: {
         title: 'Find document',
@@ -1713,11 +2119,16 @@ export const state = createPlugin('state', {
       },
       /**
        * Retrieves all entities from a collection with optional filtering.
+       *
        * @param {Object} param - Parameters object
        * @param {string} param.name - Name of collection to search
        * @param {DataWhere[]} [param.where] - Filter conditions
        * @param {GetDataOption} [param.options] - Additional options for retrieval
        * @returns {DataValue[]} Array of matching data values
+       * @example
+       * find({ name: 'users', where: [{ name: 'status', op: '==', value: 'active' }] })
+       * @example
+       * find({ name: 'users', options: { expand: true } })
        */
       method ({
         name,
@@ -1789,6 +2200,7 @@ export const state = createPlugin('state', {
         return [result]
       }
     },
+
     addListener: {
       metadata: {
         title: 'Add data listener',
@@ -1827,6 +2239,7 @@ export const state = createPlugin('state', {
       },
       /**
        * Adds a listener to a data collection event.
+       *
        * @param {Object} param - Parameters object
        * @param {string} param.name - Collection name
        * @param {'update'|'delete'} [param.on='update'] - Data event name
@@ -1838,6 +2251,8 @@ export const state = createPlugin('state', {
        * @param {Function|string} param.handler - Handler function or action ID
        * @param {Object} [action] - Action context
        * @returns {string} Handler instance ID
+       * @example
+       * addListener({ name: 'users', id: '123', on: 'update', handler: 'myAction' })
        */
       method ({
         name,
@@ -1920,6 +2335,7 @@ export const state = createPlugin('state', {
         return handlerId
       }
     },
+
     deleteListener: {
       metadata: {
         title: 'Delete data listener',
@@ -1949,11 +2365,14 @@ export const state = createPlugin('state', {
       },
       /**
        * Removes a listener from a data collection event.
+       *
        * @param {Object} param - Parameters object
        * @param {string} param.name - Data collection name
        * @param {string} [param.id] - Data collection Id
        * @param {'update'|'delete'} [param.on='update'] - Data event name
        * @param {string} param.handlerId - The reference handler ID to remove
+       * @example
+       * deleteListener({ name: 'users', id: '123', on: 'update', handlerId: 'abc123' })
        */
       method ({
         name,
@@ -1991,6 +2410,7 @@ export const state = createPlugin('state', {
         delete this.handlers[on][name][handlerId]
       }
     },
+
     deleteValue: {
       metadata: {
         title: 'Delete value',
@@ -2021,6 +2441,7 @@ export const state = createPlugin('state', {
       },
       /**
        * Deletes a data value from the state.
+       *
        * @param {Object} param - Parameters object
        * @param {string} param.name - Collection name
        * @param {string} param.id - Document ID to delete
@@ -2028,6 +2449,8 @@ export const state = createPlugin('state', {
        * @param {boolean} [param.listeners] - Whether to delete related listeners
        * @param {boolean} [param.stopPropagation] - Whether to stop event propagation
        * @returns {DataDeleteValueResult} Result indicating if data was deleted or is in use
+       * @example
+       * deleteValue({ name: 'users', id: '123', cascade: true })
        */
       method ({
         name,
@@ -2114,6 +2537,7 @@ export const state = createPlugin('state', {
         }
       }
     },
+
     getValue: {
       metadata: {
         title: 'Get value',
@@ -2157,6 +2581,7 @@ export const state = createPlugin('state', {
       },
       /**
        * Retrieves data values from the state with optional filtering and expansion.
+       *
        * @param {Object} query - Query parameters
        * @param {string} query.name - Name of the collection
        * @param {string} [query.id] - Optional document ID
@@ -2168,6 +2593,10 @@ export const state = createPlugin('state', {
        * @param {boolean} [query.options.clone] - Whether to clone the result
        * @param {string} [query.options.position] - Position path to extract specific value
        * @returns {DataValue | Object.<string, DataValue>} The retrieved data value(s)
+       * @example
+       * getValue({ name: 'users', id: '123' })
+       * @example
+       * getValue({ name: 'users', options: { expand: true, clone: true } })
        */
       method (query) {
         const { name, id, prefixId, suffixId, options } = query
@@ -2324,6 +2753,7 @@ export const state = createPlugin('state', {
         return result
       }
     },
+
     setValue: {
       metadata: [
         {
@@ -2383,11 +2813,16 @@ export const state = createPlugin('state', {
       },
       /**
        * Sets a data value in the state with schema validation.
+       *
        * @param {Object} param - Parameters object
        * @param {string} param.name - Name of collection
        * @param {*} param.value - Data to be set
        * @param {SetDataOptions} [param.options] - Set data options
        * @returns {DataValue} The created data value
+       * @example
+       * setValue({ name: 'users', value: { name: 'John' }, options: { id: '123' } })
+       * @example
+       * setValue({ name: 'users', value: { name: 'Jane' }, options: { id: '123', merge: true } })
        */
       method ({ name, value, options }) {
         const schema = this.getSchema(name)
@@ -2445,7 +2880,18 @@ export const state = createPlugin('state', {
   },
   /**
    * Sets up the state plugin with initial data and schemas.
+   *
+   * This method initializes the state management system with provided schemas,
+   * default values, and prepares the internal data structures.
+   *
    * @param {DsPluginStateExport} state - The state export containing values, schemas, and defaults
+   * @example
+   * setup({
+   *   _values: { users: {} },
+   *   _names: ['users'],
+   *   _items: [{ name: 'users', entries: [...], isCollection: true }],
+   *   _defaults: []
+   * })
    */
   setup (state) {
     // set plugin default values
