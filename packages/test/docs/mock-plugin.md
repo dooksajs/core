@@ -4,6 +4,17 @@
 
 The `mockPlugin` function is a comprehensive testing utility that creates a complete mock environment for Dooksa plugins. It enables isolated unit testing by providing mock implementations of plugin dependencies, state management, HTTP routes, and database operations.
 
+### Key Features
+
+- **Complete Plugin Mocking**: Mock any server or client plugin with all its dependencies
+- **Automatic Global Fetch Mocking**: Automatically mocks `global.fetch` for client-side plugins that depend on fetch
+- **Express Integration**: Built-in mock Express server for HTTP route testing
+- **Database Seeding**: Pre-populate mock database with test data
+- **State Management**: Automatic state setup and synchronization
+- **Request Tracking**: Monitor all HTTP requests and responses
+- **Custom Mock Exports**: Override specific module exports for fine-grained control
+
+
 ## Installation
 
 This function is part of the `@dooksa/test` package and is automatically available when you import from the test utilities.
@@ -44,6 +55,10 @@ interface MockPlugin {
   createResponse: Function
   invokeRoute: Function
   restore: Function
+  fetchMock: {
+    fetch: Function
+    requests: Array<{ url: string, method: string, path: string, query: Object, timestamp: number }>
+  }
 }
 ```
 
@@ -78,6 +93,29 @@ interface SeedData {
   collection: string  // Collection name
   item: Object        // Data items
 }
+```
+
+### Global Fetch Mocking
+
+The `mockPlugin` function automatically mocks `global.fetch` to route requests through the mock Express server. This enables seamless integration testing between client and server components.
+
+**Key Features:**
+- Automatically enabled for all mockPlugin instances
+- Routes fetch requests through mock Express app
+- Converts Express responses to Fetch Response objects
+- Tracks all fetch requests in `mock.fetchMock.requests`
+
+```javascript
+const mock = await mockPlugin(t, {
+  name: 'fetch',
+  platform: 'client',
+  serverModules: ['http', 'database', userPlugin],
+  clientModules: ['state']
+})
+
+// global.fetch is now mocked
+// Access fetch mock tracking
+console.log(mock.fetchMock.requests)
 ```
 
 ## Usage Examples
@@ -283,6 +321,84 @@ test('should execute setup functions', async (t) => {
   await mock.server.method.httpStart()
 
   mock.restore()
+})
+```
+
+### Testing Client Plugins with Fetch
+
+```javascript
+import { test, describe, beforeEach, afterEach } from 'node:test'
+import { mockPlugin, createMockFetch } from '@dooksa/test'
+import { strictEqual, ok } from 'node:assert'
+
+describe('Fetch Plugin Integration', () => {
+  let mock
+
+  beforeEach(async (t) => {
+    // Setup mock with server dependencies
+    mock = await mockPlugin(t, {
+      name: 'fetch',
+      platform: 'client',
+      serverModules: ['http', 'database', userPlugin],
+      clientModules: ['state'],
+      seedData: [
+        {
+          collection: 'user/profiles',
+          item: {
+            'user-1': { name: 'John', email: 'john@example.com' }
+          }
+        }
+      ]
+    })
+
+    // Setup HTTP server and database
+    mock.server.setup.http()
+    mock.server.setup.database()
+    await mock.server.method.httpStart()
+
+    // Setup fetch plugin
+    mock.client.setup.fetch({ hostname: 'http://localhost:6362' })
+  })
+
+  afterEach(() => {
+    if (mock) mock.restore()
+  })
+
+  test('should fetch data through mock server', async () => {
+    // This uses the automatically mocked global.fetch
+    const result = await mock.client.method.fetchGetAll({
+      collection: 'user/profiles'
+    })
+
+    strictEqual(result.length, 1)
+    strictEqual(result[0].item.name, 'John')
+  })
+
+  test('should handle custom fetch responses', async () => {
+    // Override global.fetch for specific test
+    const customFetch = createMockFetch(t, {
+      response: [{ id: 'custom', item: { name: 'Custom' } }]
+    })
+    global.fetch = customFetch.fetch
+
+    const result = await mock.client.method.fetchGetAll({
+      collection: 'custom/data'
+    })
+
+    strictEqual(result[0].item.name, 'Custom')
+  })
+
+  test('should track fetch requests', async () => {
+    await mock.client.method.fetchGetAll({
+      collection: 'user/profiles',
+      where: "role == 'admin'"
+    })
+
+    // Verify fetch was called with correct URL
+    strictEqual(mock.fetchMock.requests.length, 1)
+    ok(mock.fetchMock.requests[0].url.includes('user/profiles'))
+    ok(mock.fetchMock.requests[0].url.includes('role'))
+  })
 })
 ```
 
@@ -562,7 +678,57 @@ test('middleware chain', async (t) => {
 })
 ```
 
+### Testing Client Plugins with Fetch Integration
+
+```javascript
+test('client plugin with fetch integration', async (t) => {
+  // Setup complete environment with server and client
+  const mock = await mockPlugin(t, {
+    name: 'myClientPlugin',
+    platform: 'client',
+    serverModules: ['http', 'database'],
+    clientModules: ['state', 'fetch'],
+    seedData: [
+      {
+        collection: 'api/data',
+        item: {
+          'item-1': { name: 'Test', value: 123 }
+        }
+      }
+    ]
+  })
+
+  // Setup server
+  mock.server.setup.http()
+  mock.server.setup.database()
+  
+  // Register API route
+  mock.server.method.httpSetRoute({
+    path: '/api/data',
+    handlers: [mock.server.method.databaseGetValue(['api/data'])]
+  })
+  
+  await mock.server.method.httpStart()
+
+  // Setup client fetch
+  mock.client.setup.fetch({ hostname: 'http://localhost:6362' })
+
+  // Test client method that uses fetch internally
+  const result = await mock.client.method.myClientPluginGetData()
+
+  // Verify fetch was called
+  strictEqual(mock.fetchMock.requests.length, 1)
+  ok(mock.fetchMock.requests[0].url.includes('/api/data'))
+
+  // Verify result
+  strictEqual(result.item.name, 'Test')
+
+  mock.restore()
+})
+```
+
 ## Troubleshooting
+</parameter>
 
 ### Plugin Not Found Error
 
@@ -604,6 +770,51 @@ namedExports: [
 1. HTTP plugin is setup: `mock.server.setup.http()`
 2. Routes are registered before invoking
 3. Path matches exactly (including `/_/` prefix)
+
+### Fetch Not Working
+
+**Problem**: `global.fetch` is not mocked or fetch requests fail
+
+**Solution**: The `mockPlugin` function automatically mocks `global.fetch` for all instances. If fetch requests are failing:
+
+1. **Check HTTP server setup**: Ensure the HTTP server is started
+   ```javascript
+   mock.server.setup.http()
+   await mock.server.method.httpStart()
+   ```
+
+2. **Verify routes are registered**: Make sure your routes are set up before making fetch calls
+   ```javascript
+   mock.server.method.httpSetRoute({
+     path: '/api/data',
+     handlers: [mock.server.method.databaseGetValue(['data'])]
+   })
+   ```
+
+3. **Check fetch plugin setup**: For fetch plugin tests, ensure it's configured
+   ```javascript
+   mock.client.setup.fetch({ hostname: 'http://localhost:6362' })
+   ```
+
+4. **Access fetch mock tracking**: Use `mock.fetchMock.requests` to debug
+   ```javascript
+   console.log(mock.fetchMock.requests) // See all fetch calls
+   ```
+
+### Fetch Mock Returns Wrong Data
+
+**Problem**: Fetch calls return unexpected results
+
+**Solution**: The fetch mock routes through the mock Express server. Ensure:
+- The database has the correct seed data
+- The HTTP routes are properly configured
+- The URL path matches the registered route
+
+```javascript
+// Check what's happening
+console.log('Requests:', mock.fetchMock.requests)
+console.log('Database:', mock.client.method.stateGetValue({ name: 'your/collection', id: 'item-1' }))
+```
 
 ## Performance Considerations
 
