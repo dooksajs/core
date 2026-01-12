@@ -22,35 +22,54 @@
  * @param {Object} mock - Object to store the mock app reference
  * @returns {Mock<Function> & { json: Function, urlencoded: Function, static: Function, Router: Function }} Mocked express module exports
  */
-export function createMockExpressModule(context, mock) {
+export function createMockExpressModule (context, mock) {
   /**
    * Mock express app
    * @returns {MockExpressApp}
    */
-  function express() {
+  function express () {
     const routes = []
     const middleware = []
 
     const app = {
       // HTTP methods that track routes independently
       get: context.mock.fn((path, ...handlers) => {
-        routes.push({ method: 'get', path, handlers })
+        routes.push({
+          method: 'get',
+          path,
+          handlers
+        })
       }),
       post: context.mock.fn((path, ...handlers) => {
-        routes.push({ method: 'post', path, handlers })
+        routes.push({
+          method: 'post',
+          path,
+          handlers
+        })
       }),
       put: context.mock.fn((path, ...handlers) => {
-        routes.push({ method: 'put', path, handlers })
+        routes.push({
+          method: 'put',
+          path,
+          handlers
+        })
       }),
       delete: context.mock.fn((path, ...handlers) => {
-        routes.push({ method: 'delete', path, handlers })
+        routes.push({
+          method: 'delete',
+          path,
+          handlers
+        })
       }),
       // Middleware registration
       use: context.mock.fn((...args) => {
         if (typeof args[0] === 'function') {
           middleware.push(args[0])
         } else if (typeof args[0] === 'string') {
-          middleware.push({ path: args[0], handler: args[1] })
+          middleware.push({
+            path: args[0],
+            handler: args[1]
+          })
         }
       }),
       // Listen method for starting the server
@@ -83,7 +102,7 @@ export function createMockExpressModule(context, mock) {
       }
     }
 
-    // Mutate mock 
+    // Mutate mock
     mock.app = app
 
     return app
@@ -102,22 +121,41 @@ export function createMockExpressModule(context, mock) {
 
     return {
       get: (path, ...handlers) => {
-        routes.push({ method: 'get', path, handlers })
+        routes.push({
+          method: 'get',
+          path,
+          handlers
+        })
       },
       post: (path, ...handlers) => {
-        routes.push({ method: 'post', path, handlers })
+        routes.push({
+          method: 'post',
+          path,
+          handlers
+        })
       },
       put: (path, ...handlers) => {
-        routes.push({ method: 'put', path, handlers })
+        routes.push({
+          method: 'put',
+          path,
+          handlers
+        })
       },
       delete: (path, ...handlers) => {
-        routes.push({ method: 'delete', path, handlers })
+        routes.push({
+          method: 'delete',
+          path,
+          handlers
+        })
       },
       use: (...args) => {
         if (typeof args[0] === 'function') {
           middleware.push(args[0])
         } else if (typeof args[0] === 'string') {
-          middleware.push({ path: args[0], handler: args[1] })
+          middleware.push({
+            path: args[0],
+            handler: args[1]
+          })
         }
       },
       _getRoutes: () => [...routes],

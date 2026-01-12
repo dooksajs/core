@@ -212,7 +212,7 @@ export const $http = createPlugin('http', {
       if (typeof apiPrefix !== 'string') {
         throw new Error('HTTP: invalid api prefix type: "'+ typeof apiPrefix + '"')
       }
-      
+
       this.apiPrefix = apiPrefix
     }
 
@@ -221,7 +221,7 @@ export const $http = createPlugin('http', {
     this.cookieSecret = cookieSecret
 
     // initialise server
-    this.init({ assets }) 
+    this.init({ assets })
   }
 })
 

@@ -8,7 +8,7 @@ import { log } from '@dooksa/utils/server'
 
 /**
  * Custom error class for database snapshot operations
- * 
+ *
  * @extends Error
  * @property {number} timestamp - High-resolution timestamp in milliseconds
  * @property {string} code - Error code for categorization
@@ -17,14 +17,14 @@ import { log } from '@dooksa/utils/server'
 class SnapshotError extends Error {
   /**
    * Creates a new SnapshotError instance
-   * 
+   *
    * @param {string} message - Error message
    * @param {Object} options - Error options
    * @param {string} [options.code] - Error code
    * @param {string} [options.collection] - Collection name
    * @param {Error} [options.cause] - Original error cause
    */
-  constructor(message, options = {}) {
+  constructor (message, options = {}) {
     super(message)
     this.name = 'SnapshotError'
     this.timestamp = getPreciseTimestamp()
@@ -43,13 +43,13 @@ class SnapshotError extends Error {
 
 /**
  * Database Plugin - Manages data collections with snapshot capabilities
- * 
+ *
  * Provides CRUD operations for data collections via HTTP endpoints, with support for:
  * - Complex query conditions using WHERE clauses
  * - Data expansion for relational data
  * - Snapshot-based persistence and seeding
  * - Transaction-like operations with locking mechanisms
- * 
+ *
  * @import {DataWhere} from '../../../types.js'
  * @import {Request, Response} from 'express'
  */
@@ -89,25 +89,25 @@ export const database = createPlugin('database', {
   privateMethods: {
     /**
      * Creates a snapshot of a collection's current state
-     * 
+     *
      * This method implements a locking mechanism with timeout controls, memory limits,
      * and proper error recovery to prevent concurrent snapshot operations and resource issues.
-     * 
+     *
      * @private
      * @param {string} collection - The name of the collection to snapshot
      * @returns {void}
-     * 
+     *
      * @example
      * // Basic usage
      * this.setSnapshot('users')
-     * 
+     *
      * @example
      * // With locking mechanism
      * // First call: creates snapshot
      * this.setSnapshot('users')
      * // Second call (while first is running): queues the operation
      * this.setSnapshot('users')
-     * 
+     *
      * @example
      * // Error recovery
      * // If snapshot fails, error state is cleared after cleanup interval
@@ -115,7 +115,7 @@ export const database = createPlugin('database', {
      * this.setSnapshot('users') // Fails
      * // Wait for cleanup interval (60s default)
      * this.setSnapshot('users') // Retries successfully
-     * 
+     *
      * @note
      * - Uses config.maxSnapshotSize to validate data size
      * - Uses config.fileTimeout for file operation timeouts
@@ -125,7 +125,7 @@ export const database = createPlugin('database', {
      * - Implements proper lock release in finally block
      * - Uses temp file + rename for atomic operations
      */
-    setSnapshot(collection) {
+    setSnapshot (collection) {
       // Check queue size limit to prevent memory leaks
       if (this.snapshotQueue[collection] && this.snapshotQueue[collection] >= this.config.maxQueueSize) {
         // Queue is full, clear it and report error
@@ -181,13 +181,13 @@ export const database = createPlugin('database', {
 
     /**
      * Internal method to execute snapshot with retry logic and timeout controls
-     * 
+     *
      * @private
      * @param {string} collection - Collection name
      * @param {number} attempt - Current retry attempt
      * @returns {Promise<void>}
      */
-    executeSnapshotWithRetry(collection, attempt) {
+    executeSnapshotWithRetry (collection, attempt) {
       return new Promise((resolve, reject) => {
         // Get data first (synchronous)
         const data = stateGetValue({ name: collection })
@@ -275,11 +275,11 @@ export const database = createPlugin('database', {
 
     /**
      * Process queued snapshot operations
-     * 
+     *
      * @private
      * @param {string} collection - Collection name
      */
-    processSnapshotQueue(collection) {
+    processSnapshotQueue (collection) {
       // Release lock
       this.snapshotLock[collection] = false
 
@@ -303,12 +303,12 @@ export const database = createPlugin('database', {
 
     /**
      * Handle snapshot errors with proper state management
-     * 
+     *
      * @private
      * @param {string} collection - Collection name
      * @param {Error} error - Error object
      */
-    handleSnapshotError(collection, error) {
+    handleSnapshotError (collection, error) {
       // Log error (without exposing sensitive data)
       console.error(`[Database Plugin] Snapshot error for collection "${collection}":`, error.message)
 
@@ -324,34 +324,34 @@ export const database = createPlugin('database', {
     },
     /**
      * Converts a conditional string expression into a DataWhere object
-     * 
+     *
      * This method parses string-based conditional expressions and converts them into
      * structured DataWhere objects that can be used for querying data collections.
      * It supports complex conditions with AND/OR operators and parentheses for grouping.
-     * 
+     *
      * @private
      * @param {string} string - Conditional string expression to parse
      * @returns {DataWhere} Structured where object for data queries
      * @throws {Error} When the expression has invalid syntax or missing quotes
-     * 
+     *
      * @example
      * // Basic equality condition
      * stringToCondition("status == 'active'")
      * // Returns: { name: 'status', op: '==', value: 'active' }
-     * 
+     *
      * @example
      * // Numeric comparison
      * stringToCondition("age > 25")
      * // Returns: { name: 'age', op: '>', value: 25 }
-     * 
+     *
      * @example
      * // Boolean and null values
      * stringToCondition("isActive == true")
      * // Returns: { name: 'isActive', op: '==', value: true }
-     * 
+     *
      * stringToCondition("deletedAt == null")
      * // Returns: { name: 'deletedAt', op: '==', value: null }
-     * 
+     *
      * @example
      * // Complex AND/OR conditions
      * stringToCondition("(age > 18 && status == 'active') || role == 'admin'")
@@ -364,17 +364,17 @@ export const database = createPlugin('database', {
      * //     { name: 'role', op: '==', value: 'admin' }
      * //   ]
      * // }
-     * 
+     *
      * @example
      * // Pattern matching with ~ operator
      * stringToCondition("name ~ 'john'")
      * // Returns: { name: 'name', op: '~', value: 'john' }
-     * 
+     *
      * @example
      * // Not equal operator
      * stringToCondition("status != 'deleted'")
      * // Returns: { name: 'status', op: '!=', value: 'deleted' }
-     * 
+     *
      * @example
      * // Parentheses for grouping
      * stringToCondition("(age >= 18 && age <= 65)")
@@ -384,7 +384,7 @@ export const database = createPlugin('database', {
      * //     { name: 'age', op: '<=', value: 65 }
      * //   ]
      * // }
-     * 
+     *
      * @example
      * // Complex nested conditions
      * stringToCondition("((role == 'admin' || role == 'moderator') && active == true) || premium == true")
@@ -404,25 +404,25 @@ export const database = createPlugin('database', {
      * //     { name: 'premium', op: '==', value: true }
      * //   ]
      * // }
-     * 
+     *
      * @supported-operators
      * - Comparison: `==`, `!=`, `>`, `>=`, `<`, `<=`
      * - Pattern: `~` (like/contains)
      * - Logical: `&&` (and), `||` (or)
      * - Grouping: `(`, `)`
-     * 
+     *
      * @supported-values
      * - Strings: Must be quoted with single or double quotes
      * - Numbers: Integers and decimals (parsed as integers)
      * - Booleans: `true`, `false`
      * - Null: `null`
-     * 
+     *
      * @throws {Error} "String missing end quote" - When a string value is not properly closed
      * @throws {Error} "AND OR Unexpected character" - When AND/OR operators are malformed
      * @throws {Error} "Missing value before operator" - When an operator appears without a preceding value
      * @throws {Error} "Unexpected mix of '&&' and '||'" - When mixing operators without proper parentheses
      */
-    stringToCondition(string) {
+    stringToCondition (string) {
       const result = {}
       const sequence = {
         index: 0,
@@ -702,37 +702,37 @@ export const database = createPlugin('database', {
   methods: {
     /**
      * Creates an HTTP request handler for retrieving data from collections
-     * 
+     *
      * This method returns a function that handles GET requests to retrieve data from
      * specified collections. It supports querying by ID, complex WHERE conditions,
      * and data expansion for relational data.
-     * 
+     *
      * @param {string[]} collections - Array of collection names to query
      * @returns {Function} HTTP request handler (request, response) => void
-     * 
+     *
      * @example
      * // Basic usage with single collection
      * const handler = database.methods.getValue(['users'])
      * // Usage in Express: app.get('/users', handler)
-     * 
+     *
      * @example
      * // Multiple collections
      * const handler = database.methods.getValue(['users', 'posts'])
-     * 
+     *
      * @example
      * // With query parameters
      * // GET /users?id=123&expand=true
      * // GET /users?where=age>18
      * // GET /users?where=role=='admin'&&active==true
-     * 
+     *
      * @query-parameters
      * - `id`: Single ID or array of IDs to retrieve
      * - `where`: Conditional string for filtering results
      * - `expand`: Set to "true" to expand relational data
-     * 
+     *
      * @see {@link stringToCondition} for WHERE expression syntax
      */
-    getValue(collections) {
+    getValue (collections) {
       /**
        * HTTP request handler for data retrieval
        * @param {Request} request - Express request object with query parameters
@@ -831,41 +831,41 @@ export const database = createPlugin('database', {
     },
     /**
      * Creates an HTTP request handler for deleting data from collections
-     * 
+     *
      * This method returns a function that handles DELETE requests to remove data from
      * specified collections. It supports cascade deletion and creates snapshots
      * after successful deletions.
-     * 
+     *
      * @param {string[]} collections - Array of collection names to delete from
      * @returns {Function} HTTP request handler (request, response) => void
-     * 
+     *
      * @example
      * // Basic usage with single collection
      * const handler = database.methods.deleteValue(['users'])
      * // Usage in Express: app.delete('/users', handler)
-     * 
+     *
      * @example
      * // Multiple collections
      * const handler = database.methods.deleteValue(['users', 'posts'])
-     * 
+     *
      * @example
      * // With cascade parameter
      * // DELETE /users?id=123&cascade=true
-     * 
+     *
      * @query-parameters
      * - `id`: Array of document IDs to delete (required)
      * - `cascade`: Set to "true" to enable cascade deletion
-     * 
+     *
      * @returns-response
      * - 200: Success with "deleted: X" message
      * - 400: Deletion failed (document in use or not found)
      * - 500: Snapshot error occurred
-     * 
+     *
      * @throws {Error} When snapshot creation fails for a collection
-     * 
+     *
      * @see {@link setSnapshot} for snapshot mechanism
      */
-    deleteValue(collections) {
+    deleteValue (collections) {
       /**
        * HTTP request handler for data deletion
        * @param {Request} request - Express request object with query parameters
@@ -912,25 +912,25 @@ export const database = createPlugin('database', {
     },
     /**
      * Loads seed data from a snapshot file into the state
-     * 
+     *
      * This method loads data from a JSON snapshot file and merges it into the application state.
      * It's designed for initialization and testing purposes. If the seed file doesn't exist,
      * the method silently returns without error, making it safe to call even when no seed
      * data is available.
-     * 
+     *
      * @param {string} name - The name of the seed file (without .json extension)
      * @returns {Promise<void>} Promise that resolves when seed data is loaded
-     * 
+     *
      * @example
      * // Basic usage
      * await database.methods.seed('initial-users')
      * // Loads data from: .ds_snapshots/initial-users.json
-     * 
+     *
      * @example
      * // With nested collection names
      * await database.methods.seed('user-profiles')
      * // Loads from: .ds_snapshots/user-profiles.json
-     * 
+     *
      * @example
      * // Safe usage when file might not exist
      * try {
@@ -939,21 +939,21 @@ export const database = createPlugin('database', {
      * } catch (error) {
      *   console.error('Seed loading failed:', error)
      * }
-     * 
+     *
      * @fires log - When seed data is successfully loaded
-     * 
+     *
      * @throws {Error} When the seed file exists but cannot be parsed or loaded
-     * 
+     *
      * @note
      * - Files are expected in the snapshot directory configured during setup
      * - Existing data is merged (not replaced) when merge option is true
      * - Missing files are silently ignored (no error thrown)
      * - Automatically resets snapshot state for the loaded collection
-     * 
+     *
      * @see {@link setup} for snapshot directory configuration
      * @see {@link setSnapshot} for snapshot creation
      */
-    async seed(name) {
+    async seed (name) {
       const path = resolve(this.snapshotPath, name + '.json')
 
       try {
@@ -993,16 +993,16 @@ export const database = createPlugin('database', {
     },
     /**
      * Saves multiple data items to collections with validation and snapshotting
-     * 
+     *
      * This method handles bulk data insertion across multiple collections with automatic
      * metadata management and validation. It ensures each item has proper ownership
      * and creates snapshots after successful saves.
-     * 
+     *
      * @param {Object} params - Parameters object
      * @param {Array<Object>} params.items - Array of data items to save
      * @param {string} [params.userId] - User ID for ownership validation and metadata
      * @returns {Object} Result object containing operation status and details
-     * 
+     *
      * @example
      * // Basic usage with user ownership
      * const result = database.methods.setValue({
@@ -1012,28 +1012,28 @@ export const database = createPlugin('database', {
      *   ],
      *   userId: 'admin123'
      * })
-     * 
+     *
      * @example
      * // With custom metadata
      * const result = database.methods.setValue({
      *   items: [
-     *     { 
-     *       collection: 'users', 
-     *       id: 'user123', 
+     *     {
+     *       collection: 'users',
+     *       id: 'user123',
      *       item: { name: 'John' },
      *       metadata: { createdAt: Date.now(), source: 'api' }
      *     }
      *   ],
      *   userId: 'admin123'
      * })
-     * 
+     *
      * @example
      * // Error case - missing userId
      * const result = database.methods.setValue({
      *   items: [{ collection: 'users', item: { name: 'John' } }]
      * })
      * // Returns: { isValid: false, error: { details: 'Author missing' } }
-     * 
+     *
      * @example
      * // Error case - snapshot error
      * const result = database.methods.setValue({
@@ -1041,19 +1041,19 @@ export const database = createPlugin('database', {
      *   userId: 'admin123'
      * })
      * // Returns: { isValid: false, snapshotError: Error(...) }
-     * 
+     *
      * @returns-success
      * - `isValid`: true
      * - `item`: Array of state set results
      * - `message`: "Successfully saved"
-     * 
+     *
      * @returns-error
      * - `isValid`: false
      * - `error`: { details: 'Author missing' } (when userId is missing)
      * - `snapshotError`: Error object (when snapshot creation fails)
-     * 
+     *
      * @throws {Error} When snapshot creation fails for any collection
-     * 
+     *
      * @note
      * - Each item must have a collection name
      * - Items can include custom metadata, which will be merged with userId
@@ -1061,11 +1061,11 @@ export const database = createPlugin('database', {
      * - If an item has metadata but no userId in metadata, userId is added
      * - Snapshots are created for each unique collection after all items are saved
      * - If any item is missing userId, the entire operation fails
-     * 
+     *
      * @see {@link setSnapshot} for snapshot mechanism
      * @see {@link stateSetValue} for individual item storage
      */
-    setValue({ items, userId }) {
+    setValue ({ items, userId }) {
       const results = []
       const usedCollections = {}
       const collections = []
@@ -1126,10 +1126,10 @@ export const database = createPlugin('database', {
   },
   /**
    * Setup function for the database plugin
-   * 
+   *
    * Initializes the snapshot storage path and verifies that the directory exists.
    * Can override configuration defaults.
-   * 
+   *
    * @param {Object} options - Setup options
    * @param {string} [options.storage='.ds_snapshots'] - Relative or absolute path to the snapshot storage directory
    * @param {Object} [options.config] - Configuration overrides
@@ -1139,45 +1139,45 @@ export const database = createPlugin('database', {
    * @param {number} [options.maxRetries] - Maximum retry attempts for failed operations (default: 3)
    * @param {number} [options.cleanupInterval] - Cleanup interval for old snapshots in milliseconds (default: 60000)
    * @returns {void}
-   * 
+   *
    * @example
    * // Default setup (uses .ds_snapshots in current working directory)
    * createPlugin('database', {
    *   setup: ({ storage = '.ds_snapshots' } = {}) => { /* ... *\/ }
    * })
-   * 
+   *
    * @example
    * // Custom storage location
    * createPlugin('database', {
    *   setup: ({ storage = './data/snapshots' } = {}) => { /* ... *\/ }
    * })
-   * 
+   *
    * @example
    * // With config overrides
    * createPlugin('database', {
    *   setup: ({ storage = '.ds_snapshots', config } = {}) => { /* ... *\/ }
    * })
    * // config: { maxSnapshotSize: 200 * 1024 * 1024, fileTimeout: 60000 }
-   * 
+   *
    * @example
    * // Absolute path with config
    * createPlugin('database', {
    *   setup: ({ storage = '/var/lib/dooksa/snapshots', config: { maxQueueSize: 200 } }) => { /* ... *\/ }
    * })
-   * 
+   *
    * @throws {Error} When the specified storage directory does not exist
-   * 
+   *
    * @note
    * - The storage path is resolved relative to the current working directory
    * - The directory must exist before the plugin can function
    * - Snapshots will be saved as JSON files in this directory
    * - File naming: `{collection-name}-{timestamp}.json`
    * - Config overrides are merged with defaults
-   * 
+   *
    * @see {@link setSnapshot} for snapshot creation
    * @see {@link seed} for loading seed data
    */
-  setup({ storage = '.ds_snapshots', config } = {}) {
+  setup ({ storage = '.ds_snapshots', config } = {}) {
     this.snapshotPath = resolve(process.cwd(), storage)
 
     if (!existsSync(this.snapshotPath)) {
@@ -1186,34 +1186,37 @@ export const database = createPlugin('database', {
 
     // Override config if provided
     if (config) {
-      this.config = { ...this.config, ...config }
+      this.config = {
+        ...this.config,
+        ...config
+      }
     }
   }
 })
 
 /**
  * Database plugin exports
- * 
+ *
  * The plugin provides the following exported functions:
- * 
+ *
  * @example
  * // Import specific functions
- * import { 
- *   databaseSeed, 
- *   databaseDeleteValue, 
- *   databaseGetValue, 
- *   databaseSetValue 
+ * import {
+ *   databaseSeed,
+ *   databaseDeleteValue,
+ *   databaseGetValue,
+ *   databaseSetValue
  * } from '@dooksa/plugins'
- * 
+ *
  * @example
  * // Import default plugin
  * import database from '@dooksa/plugins'
- * 
+ *
  * @exports databaseSeed - Alias for database.methods.seed
  * @exports databaseDeleteValue - Alias for database.methods.deleteValue
  * @exports databaseGetValue - Alias for database.methods.getValue
  * @exports databaseSetValue - Alias for database.methods.setValue
- * 
+ *
  * @see {@link database.methods.seed}
  * @see {@link database.methods.deleteValue}
  * @see {@link database.methods.getValue}

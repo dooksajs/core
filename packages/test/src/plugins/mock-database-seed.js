@@ -28,12 +28,12 @@ export function mockDatabaseSeed (context, seedData = []) {
     const pathParts = path.split(/[\\/]/)
     const fileNameWithExt = pathParts[pathParts.length - 1]
     const fileName = fileNameWithExt.replace('.json', '')
-    
+
     // Check if we have seed data for this file
     if (seedDataMap.has(fileName)) {
       return Promise.resolve()
     }
-    
+
     // File doesn't exist - return ENOENT error
     const error = new Error('ENOENT: no such file or directory')
     const typedError = /** @type {NodeJS.ErrnoException} */ (error)
@@ -47,7 +47,7 @@ export function mockDatabaseSeed (context, seedData = []) {
     const pathParts = path.split(/[\\/]/)
     const fileNameWithExt = pathParts[pathParts.length - 1]
     const fileName = fileNameWithExt.replace('.json', '')
-    
+
     // Check if we have seed data for this file
     if (seedDataMap.has(fileName)) {
       const data = seedDataMap.get(fileName)
@@ -56,10 +56,10 @@ export function mockDatabaseSeed (context, seedData = []) {
         item: data.item,
         createdAt: Date.now()
       })
-      
+
       return Promise.resolve(json)
     }
-    
+
     // File doesn't exist - return error
     const error = new Error('ENOENT: no such file or directory')
     const typedError = /** @type {NodeJS.ErrnoException} */ (error)
@@ -84,7 +84,7 @@ export function mockDatabaseSeed (context, seedData = []) {
     const pathParts = path.split(/[\\/]/)
     const fileNameWithExt = pathParts[pathParts.length - 1]
     const fileName = fileNameWithExt.replace('.json', '')
-    
+
     // Return true if we have seed data, otherwise false
     return seedDataMap.has(fileName)
   })
@@ -98,7 +98,7 @@ export function mockDatabaseSeed (context, seedData = []) {
   const fsMockContext = context.mock.module('node:fs', {
     namedExports: {
       existsSync: mockExistsSync,
-      rename: mockRename,
+      rename: mockRename
     }
   })
   restoreCallbacks.push(() => fsMockContext.restore())

@@ -289,7 +289,7 @@ export const $fetch = createPlugin('fetch', {
             .then(data => {
               // remove from queue
               this.deleteRequestQueueByPath(path)
-              
+
               if (sync) {
                 this.setRequestDataByPath(data, path)
               }
@@ -393,12 +393,12 @@ export const $fetch = createPlugin('fetch', {
             .then(data => {
               // Remove from queue once complete
               this.deleteRequestQueueByPath(path)
-              
+
               if (data && data.length > 0) {
                 if (sync) {
                   this.setRequestDataByPath(data, path)
                 }
-                
+
                 resolve(data)
               } else {
                 // Return empty array for empty responses

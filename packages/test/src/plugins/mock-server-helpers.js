@@ -35,7 +35,7 @@ export function createResponse () {
     headers,
     body: null,
     cookies: {},
-    
+
     /**
      * Set HTTP status code
      * @param {number} code - HTTP status code
@@ -45,7 +45,7 @@ export function createResponse () {
       this.statusCode = code
       return this
     },
-    
+
     /**
      * Send response body
      * @param {*} data - Response data
@@ -55,7 +55,7 @@ export function createResponse () {
       this.body = data
       return this
     },
-    
+
     /**
      * Send JSON response
      * @param {*} data - Data to stringify
@@ -66,7 +66,7 @@ export function createResponse () {
       this.headers['Content-Type'] = 'application/json'
       return this
     },
-    
+
     /**
      * Send HTML response
      * @param {string} data - HTML string
@@ -77,7 +77,7 @@ export function createResponse () {
       this.headers['Content-Type'] = 'text/html'
       return this
     },
-    
+
     /**
      * Set response header(s)
      * @param {string|Object} key - Header name or object of headers
@@ -92,7 +92,7 @@ export function createResponse () {
       }
       return this
     },
-    
+
     /**
      * Set cookie
      * @param {string} name - Cookie name
@@ -101,7 +101,10 @@ export function createResponse () {
      * @returns {Object} Response instance
      */
     cookie (name, value, options) {
-      this.cookies[name] = { value, options }
+      this.cookies[name] = {
+        value,
+        options
+      }
       return this
     }
   }
