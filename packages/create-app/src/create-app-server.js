@@ -151,7 +151,6 @@ function appendClientPlugin () {
  * @param {AppPlugin} serverPlugins - Server-side plugin manager
  * @param {AppClientPlugin} clientPlugins - Client-side plugin manager
  * @param {AppAction} actions - Action collection manager
- * @returns {Function} Initialization function that starts the application
  * @example
  * // Initialize with managers
  * const init = initialize(serverPluginManager, clientPluginManager, actionManager)
@@ -211,7 +210,6 @@ function initialize (serverPlugins, clientPlugins, actions) {
  * @param {ClientPlugins} [options.clientPlugins={}] - Override default client plugins
  * @param {ServerPlugins} [options.serverPlugins={}] - Override default server plugins
  * @param {Object.<string, Action>} [options.actions={}] - Override default actions
- * @returns {Object} Server application instance with methods to extend and setup
  * @example
  * // Create server app with defaults
  * const app = createAppServer()
@@ -288,14 +286,17 @@ export default function createAppServer ({
     appActions.use(action)
   }
 
+
+  const setup = initialize(
+    appServerPlugins,
+    appClientPlugins,
+    appActions
+  )
+
   return {
     usePlugin: appServerPlugins.use,
     useClientPlugin: appClientPlugins.use,
     useAction: appActions.use,
-    setup: initialize(
-      appServerPlugins,
-      appClientPlugins,
-      appActions
-    )
+    setup
   }
 }
