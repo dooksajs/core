@@ -38,7 +38,7 @@ export const user = createPlugin('user', {
       }
     }
   },
-  setup ({ secret, algorithm } = {}) {
+  async setup ({ secret, algorithm } = {}) {
     DEV: {
       secret = 'Invalid secret length; secret must be at 32 characters'
     }
@@ -47,8 +47,8 @@ export const user = createPlugin('user', {
       throw new Error('Invalid secret length; secret must be at 32 characters')
     }
 
-    databaseSeed('user-items')
-    databaseSeed('user-emails')
+    await databaseSeed('user-items')
+    await databaseSeed('user-emails')
 
     JWTSecret = secret
 

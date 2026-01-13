@@ -18,12 +18,12 @@ export const metadata = createPlugin('metadata', {
    * @param {DsPluginMetadata} param.plugins[].metadata
    * @param {ActiveAction[]} param.actions
    */
-  setup ({ plugins, actions }) {
-    databaseSeed('metadata-currentLanguage')
-    databaseSeed('metadata-languages')
-    databaseSeed('metadata-plugins')
-    databaseSeed('metadata-actions')
-    databaseSeed('metadata-parameters')
+  async setup ({ plugins, actions }) {
+    await databaseSeed('metadata-currentLanguage')
+    await databaseSeed('metadata-languages')
+    await databaseSeed('metadata-plugins')
+    await databaseSeed('metadata-actions')
+    await databaseSeed('metadata-parameters')
 
     // set plugin metadata
     for (let i = 0; i < plugins.length; i++) {

@@ -12,11 +12,11 @@ export const component = createPlugin('component', {
    * @param {import('@dooksa/create-component').Component[]} [options.components]
    * @param {string[]} [options.excludeComponents=[]]
    */
-  setup ({
+  async setup ({
     components = defaultComponents,
     excludeComponents = []
   } = {}) {
-    databaseSeed('component-items')
+    await databaseSeed('component-items')
 
     const activeComponents = {}
 

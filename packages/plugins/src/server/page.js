@@ -5,7 +5,7 @@ import { databaseSeed, databaseSetValue } from './database.js'
 import { httpSetRoute } from './http.js'
 
 /**
- * @import {DataValue} from '../utils/data-value.js'
+ * @import {DataValue} from '../../../types.js'
  */
 
 function hashSHA (item) {
@@ -43,7 +43,10 @@ export const page = createPlugin('page', {
       let script = '(() => {const __ds =' + JSON.stringify(data) + ';' + appString
 
       DEV: {
-        const sourcemap = stateGetValue({ name: 'page/sourcemap' })
+        const sourcemap = stateGetValue({
+          name: 'page/sourcemap',
+          id: 'app-client.js.map'
+        })
 
         if (!sourcemap.isEmpty) {
           script += '//# sourceMappingURL=/_/sourcemap/app-client.js.map\n'
@@ -88,10 +91,10 @@ export const page = createPlugin('page', {
       }
     }
   },
-  setup ({ app = '', css = '' } = {}) {
-    databaseSeed('page-paths')
-    databaseSeed('page-redirects')
-    databaseSeed('page-items')
+  async setup ({ app = '', css = '' } = {}) {
+    await databaseSeed('page-paths')
+    await databaseSeed('page-redirects')
+    await databaseSeed('page-items')
 
     stateSetValue({
       name: 'page/app',

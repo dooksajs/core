@@ -306,10 +306,10 @@ export const action = createPlugin('action', {
       }
     }
   },
-  setup ({ actions }) {
-    databaseSeed('action-blocks')
-    databaseSeed('action-blockSequences')
-    databaseSeed('action-sequences')
+  async setup ({ actions }) {
+    await databaseSeed('action-blocks')
+    await databaseSeed('action-blockSequences')
+    await databaseSeed('action-sequences')
 
     if (Array.isArray(actions)) {
       for (let i = 0; i < actions.length; i++) {

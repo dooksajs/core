@@ -4,9 +4,9 @@ import { databaseSeed } from './database.js'
 
 export const event = createPlugin('event', {
   state: { ...mapState(eventClient) },
-  setup () {
-    databaseSeed('event-listeners')
-    databaseSeed('event-handlers')
+  async setup () {
+    await databaseSeed('event-listeners')
+    await databaseSeed('event-handlers')
   }
 })
 
