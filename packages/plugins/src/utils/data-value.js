@@ -1,41 +1,5 @@
 /**
- * Represents metadata associated with a data entity
- * @typedef {Object} DataMetadata
- * @property {number} createdAt - Timestamp indicating when the data was initially created (Unix timestamp in milliseconds)
- * @property {number} updatedAt - Timestamp of the most recent update to the data (Unix timestamp in milliseconds)
- * @property {number} [userId] - Unique identifier of the user who created or last modified the data
- */
-
-/**
- * Represents a data value with optional metadata and expansion capabilities
- * @typedef {Object} DataValue
- * @property {string} [id] - The unique identifier for the data value
- * @property {string} collection - The collection name this data belongs to
- * @property {boolean} isEmpty - Flag indicating if the data value is empty
- * @property {boolean} isExpandEmpty - Flag indicating if expanded data is empty
- * @property {DataValue[]} [expand] - Array of expanded data values
- * @property {Object.<string, (boolean|number)>} [expandIncluded] - Object indicating which fields are included in expansion
- * @property {boolean} [isAffixEmpty] - Flag indicating if affixes are empty
- * @property {boolean} [isValid] - Flag indicating if the data value is valid
- * @property {Object.<string, DataTarget> & DataTarget} [target] - Target data with expandable references
- * @property {*} [item] - The actual data item
- * @property {*} [previous] - Previous version of the data item
- * @property {DataMetadata} [metadata] - Metadata associated with the data
- */
-
-/**
- * Represents a data target containing the actual data item and its metadata
- * @typedef {Object} DataTarget
- * @property {*} _item - The actual data item
- * @property {DataMetadata} _metadata - Metadata associated with the data item
- * @property {DataPreviousTarget} [_previous] - Previous version of the data target
- */
-
-/**
- * Represents a previous version of a data target
- * @typedef {Object} DataPreviousTarget
- * @property {*} _item - The previous data item
- * @property {DataMetadata} _metadata - Metadata from the previous version
+ * @import {DataValue, DataTarget, DataMetadata} from '../../../types.js'
  */
 
 /**

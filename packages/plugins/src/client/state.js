@@ -5,8 +5,7 @@ import { deepClone, generateId, isEnvServer, getValue, shallowCopy } from '@dook
 import { createDataValue } from '../utils/data-value.js'
 
 /**
- * @import {SetDataOptions, GetDataQuery, GetDataOption, DataWhere, DataDeleteValueResult, DataListenerHandler, DataListenerCollection} from '../../../types.js'
- * @import {DataValue, DataMetadata, DataTarget} from '../utils/data-value.js'
+ * @import {SetDataOptions, GetDataQuery, GetDataOption, DataWhere, DataDeleteValueResult, DataListenerHandler, DataListenerCollection, UpdateOptions, DataUpdateResult, CollectionIdResult, RelationInfo, DataTarget, DataValue, DataMetadata, UpdateContext, MergeResult} from '../../../types.js'
  * @import {DsPluginStateExport, SchemaEntry} from '@dooksa/create-plugin/types'
  */
 
@@ -211,7 +210,7 @@ export const state = createPlugin('state', {
      * @param {Object} [option={}] - Collection id prefix or suffix options
      * @param {string} [option.prefixId] - Prefix to add to the id
      * @param {string} [option.suffixId] - Suffix to add to the id
-     * @returns {{id: string, noAffixId: string}} Object containing the full ID and ID without affixes
+     * @returns {CollectionIdResult} Object containing the full ID and ID without affixes
      * @example
      * createDefaultCollectionId('users', {})
      * // Returns { id: 'user_abc123_v1', noAffixId: 'abc123' }
@@ -2592,7 +2591,7 @@ export const state = createPlugin('state', {
        * @param {boolean} [query.options.expandClone] - Whether to clone expanded data
        * @param {boolean} [query.options.clone] - Whether to clone the result
        * @param {string} [query.options.position] - Position path to extract specific value
-       * @returns {DataValue | Object.<string, DataValue>} The retrieved data value(s)
+       * @returns {DataValue} The retrieved data value(s)
        * @example
        * getValue({ name: 'users', id: '123' })
        * @example
