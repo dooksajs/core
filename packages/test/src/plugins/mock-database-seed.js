@@ -79,37 +79,19 @@ export function mockDatabaseSeed (context, seedData = []) {
     return Promise.resolve()
   })
 
-  // Mock existsSync to return true for our seed files (kept for other database operations)
-  const mockExistsSync = context.mock.fn((path) => {
-    const pathParts = path.split(/[\\/]/)
-    const fileNameWithExt = pathParts[pathParts.length - 1]
-    const fileName = fileNameWithExt.replace('.json', '')
-
-    // Return true if we have seed data, otherwise false
-    return seedDataMap.has(fileName)
-  })
-
   // Mock rename to prevent actual file operations (kept for other database operations)
-  const mockRename = context.mock.fn((oldPath, newPath, callback) => {
-    setImmediate(() => callback(null))
+  const mockRename = context.mock.fn((oldPath, newPath) => {
+    return Promise.resolve()
   })
-
-  // Create mock contexts for fs operations
-  const fsMockContext = context.mock.module('node:fs', {
-    namedExports: {
-      existsSync: mockExistsSync,
-      rename: mockRename
-    }
-  })
-  restoreCallbacks.push(() => fsMockContext.restore())
 
   // Mock fs/promises
-  const fsPromisesMockContext = context.mock.module('fs/promises', {
+  const fsPromisesMockContext = context.mock.module('node:fs/promises', {
     namedExports: {
       access: mockAccess,
       readFile: mockReadFile,
       writeFile: mockWriteFile,
-      unlink: mockUnlink
+      unlink: mockUnlink,
+      rename: mockRename
     }
   })
   restoreCallbacks.push(() => fsPromisesMockContext.restore())
