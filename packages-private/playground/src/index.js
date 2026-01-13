@@ -46,8 +46,8 @@ nodemon
   .on('crash', function (error) {
     log({
       level: 'ERROR',
-      message: 'Development server crashed...',
-      context: error
+      message: 'Development server crashed... "' + error.message +'"',
+      context: error.stack
     })
   })
 
