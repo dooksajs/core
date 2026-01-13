@@ -298,3 +298,78 @@
  * @property {DataListenerHandler[] | undefined} items - Handlers related to an specific data instance
  * @property {DataListenerHandler[] | undefined} priority - Handlers that will emit before "all" or "items" handlers
  */
+
+/**
+ * @typedef {Object} UpdateOptions - Options for array update operations
+ * @property {'push'|'pull'|'pop'|'shift'|'unshift'|'splice'} method - Type of update method
+ * @property {number} [startIndex] - Zero-based index at which to start changing the array (for splice)
+ * @property {number} [deleteCount] - Number of elements to remove from start (for splice)
+ * @property {(string[] & number[]) | (string[] | number[])} [position] - Update nested data within target
+ */
+
+/**
+ * @typedef {Object} DataUpdateResult - Result from data update operations
+ * @property {boolean} isValid - Indicates if the update was valid
+ * @property {boolean} [complete] - Indicates if the operation is complete
+ * @property {boolean} [isComplete] - Alternative property for completion status
+ * @property {string} [id] - Document ID if applicable
+ * @property {*} [item] - The updated item value
+ * @property {*} [previous] - Previous item value
+ * @property {Object} [metadata] - Metadata associated with the update
+ * @property {*} [target] - The target data container
+ */
+
+/**
+ * @typedef {Object} CollectionIdResult - Result from collection ID generation
+ * @property {string} id - The full collection ID with affixes
+ * @property {string} noAffixId - The ID without affixes
+ */
+
+/**
+ * @typedef {Object} RelationInfo - Information for relationship management
+ * @property {string} target - Target collection name
+ * @property {string} id - Target document ID
+ * @property {string} source - Source collection name
+ */
+
+/**
+ * @typedef {Object} DataTarget - Container for data value and metadata
+ * @property {*} _item - The actual data value
+ * @property {Object} _metadata - Metadata associated with the data
+ * @property {Object} [_previous] - Previous data state
+ */
+
+/**
+ * @typedef {Object} DataValue - Complete data value with metadata and context
+ * @property {string} collection - Collection name
+ * @property {string} [id] - Document ID
+ * @property {*} item - The data value
+ * @property {Object} metadata - Metadata
+ * @property {*} [previous] - Previous value
+ * @property {DataValue[]} [expand] - Expanded related data
+ * @property {Object} [expandIncluded] - Track expanded items to prevent duplicates
+ * @property {boolean} [isEmpty] - Flag for empty results
+ * @property {boolean} [isExpandEmpty] - Flag for empty expansion
+ * @property {boolean} [isAffixEmpty] - Flag for affix lookup failure
+ */
+
+/**
+ * @typedef {Object} DataMetadata - Metadata for data values
+ * @property {number} [createdAt] - Creation timestamp
+ * @property {number} [updatedAt] - Last update timestamp
+ * @property {string} [userId] - User ID who created/modified the data
+ */
+
+/**
+ * @typedef {Object} UpdateContext - Context for update operations
+ * @property {string} collection - Collection name
+ * @property {string} [id] - Document ID
+ * @property {*} target - Target data container
+ * @property {string} schemaPath - Current schema path
+ */
+
+/**
+ * @typedef {Object} MergeResult - Result from merge operations
+ * @property {boolean} isValid - Indicates if merge was valid
+ * @property {boolean} complete - Indicates if operation is complete
+ */
