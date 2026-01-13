@@ -103,6 +103,7 @@ server
   .catch(error => {
     log({
       level: 'ERROR',
-      message: error.message
+      message: error.message,
+      context: error.stack
     })
   })
