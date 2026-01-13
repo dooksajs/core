@@ -165,7 +165,7 @@ function initialize (serverPlugins, clientPlugins, actions) {
    *
    * @param {Object} param - Initialization parameters
    * @param {Object} [param.options={}] - Application configuration options
-   * @returns {Object} HTTP server instance
+   * @returns {Promise<Object>} HTTP server instance
    * @example
    * // Start with custom options
    * const server = init({
@@ -176,7 +176,7 @@ function initialize (serverPlugins, clientPlugins, actions) {
    *   }
    * })
    */
-  return ({ options = {} }) => {
+  return async ({ options = {} }) => {
     options.state = serverPlugins.state
     options.action = { actions: actions.items }
     options.metadata = {
@@ -190,7 +190,7 @@ function initialize (serverPlugins, clientPlugins, actions) {
     for (let i = 0; i < appSetup.length; i++) {
       const plugin = appSetup[i]
 
-      plugin.setup(options[plugin.name])
+      await plugin.setup(options[plugin.name])
     }
 
     // clear setup queue
