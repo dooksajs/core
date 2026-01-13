@@ -708,7 +708,6 @@ export const database = createPlugin('database', {
      * and data expansion for relational data.
      *
      * @param {string[]} collections - Array of collection names to query
-     * @returns {Function} HTTP request handler (request, response) => void
      *
      * @example
      * // Basic usage with single collection
@@ -850,7 +849,6 @@ export const database = createPlugin('database', {
      * after successful deletions.
      *
      * @param {string[]} collections - Array of collection names to delete from
-     * @returns {Function} HTTP request handler (request, response) => void
      *
      * @example
      * // Basic usage with single collection
