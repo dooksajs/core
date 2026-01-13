@@ -740,11 +740,16 @@ export const database = createPlugin('database', {
        * @returns {void}
        */
       return (request, response) => {
+        let limit = -1
         let result = []
         let where
 
         if (request.query.where && typeof request.query.where === 'string') {
           where = this.stringToCondition(request.query.where)
+        }
+
+        if (typeof request.query.limit === 'number') {
+          limit = request.query.limit
         }
 
         for (let i = 0; i < collections.length; i++) {
@@ -764,13 +769,21 @@ export const database = createPlugin('database', {
 
             const dataValues = stateFind(args)
 
-            result = result.concat(dataValues)
-
-            continue
+            // Add only what fits
+            if (limit > 0) {
+              const remaining = limit - result.length
+              if (remaining > 0) {
+                result = result.concat(dataValues.slice(0, remaining))
+              } else {
+                break
+              }
+            } else {
+              result = result.concat(dataValues)
+            }
           }
 
           if (Array.isArray(request.query.id)) {
-            for (let i = 0; i < request.query.id.length; i++) {
+            for (let i = 0; i < request.query.id.length && (limit <= 0 || result.length < limit); i++) {
               const id = request.query.id[i]
               const args = {
                 name: collection,
