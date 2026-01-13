@@ -1,6 +1,5 @@
 import { createPlugin } from '@dooksa/create-plugin'
-import { existsSync, rename } from 'node:fs'
-import { writeFile, readFile, access, unlink } from 'fs/promises'
+import { writeFile, readFile, access, unlink, rename } from 'node:fs/promises'
 import { resolve, join } from 'path'
 import { stateGetValue, stateSetValue, stateDeleteValue, stateFind } from '../client/index.js'
 import { generateId, getPreciseTimestamp } from '@dooksa/utils'
@@ -234,8 +233,11 @@ export const database = createPlugin('database', {
           writeFile(tempFilePath, dataString)
             .then(() => {
               // Use rename for atomic operation
-              rename(tempFilePath, filePath, (error) => {
-                if (error) {
+              rename(tempFilePath, filePath)
+                .then(() => {
+                  resolveFile()
+                })
+                .catch((error) => {
                   // Clean up temp file on failure
                   unlink(tempFilePath).catch(() => {
                     // Ignore unlink errors
@@ -243,9 +245,7 @@ export const database = createPlugin('database', {
                   error.timestamp = getPreciseTimestamp()
                   rejectFile(error)
                   return
-                }
-                resolveFile()
-              })
+                })
             })
             .catch(error => {
               error.timestamp = getPreciseTimestamp()
@@ -1151,7 +1151,7 @@ export const database = createPlugin('database', {
    * @param {number} [options.maxQueueSize] - Maximum queued operations per collection (default: 100)
    * @param {number} [options.maxRetries] - Maximum retry attempts for failed operations (default: 3)
    * @param {number} [options.cleanupInterval] - Cleanup interval for old snapshots in milliseconds (default: 60000)
-   * @returns {void}
+   * @returns {Promise<void>}
    *
    * @example
    * // Default setup (uses .ds_snapshots in current working directory)
@@ -1190,19 +1190,21 @@ export const database = createPlugin('database', {
    * @see {@link setSnapshot} for snapshot creation
    * @see {@link seed} for loading seed data
    */
-  setup ({ storage = '.ds_snapshots', config } = {}) {
+  async setup ({ storage = '.ds_snapshots', config } = {}) {
     this.snapshotPath = resolve(process.cwd(), storage)
 
-    if (!existsSync(this.snapshotPath)) {
-      throw new SnapshotError('Storage path does not exist: ' + this.snapshotPath)
-    }
+    try {
+      await access(this.snapshotPath)
 
-    // Override config if provided
-    if (config) {
-      this.config = {
-        ...this.config,
-        ...config
+      // Override config if provided
+      if (config) {
+        this.config = {
+          ...this.config,
+          ...config
+        }
       }
+    } catch (error) {
+      throw new SnapshotError('Storage path does not exist: ' + this.snapshotPath)
     }
   }
 })
