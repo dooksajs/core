@@ -220,6 +220,15 @@ export async function mockPlugin (
       }
     }
 
+    let databaseSeedMockFilenames
+    // Seed database
+    if (seedData.length) {
+      const databaseSeedMock = mockDatabaseSeed(context, seedData)
+
+      databaseSeedMockFilenames = databaseSeedMock.filenames
+      restoreCallbacks.push(() => databaseSeedMock.restore())
+    }
+
     // Import server modules
     const tempServerModule = await import('#server')
 
@@ -322,6 +331,13 @@ export async function mockPlugin (
     const stateData = mockStateData(pluginState)
     // Setup app state
     tempClientModule.state.setup(stateData)
+
+    // add seed data to database
+    if (databaseSeedMockFilenames && tempServerModule.database) {
+      for (const filename of databaseSeedMockFilenames) {
+        await tempServerModule.database.databaseSeed(filename)
+      }
+    }
 
     // Setup action function for action plugin if included
     if (tempClientModule.action && typeof tempClientModule.action.setup === 'function') {
