@@ -339,24 +339,20 @@ export async function mockPlugin (
       }
     }
 
-    // Setup action function for action plugin if included
-    if (tempClientModule.action && typeof tempClientModule.action.setup === 'function') {
-      tempClientModule.action.setup({ actions: actionMethods })
+    let actionPlugin = tempClientModule.action
+    if (name === 'action') {
+      actionPlugin = plugin
     }
-
-    // Seed database
-    if (seedData.length) {
-      const databaseSeedMock = mockDatabaseSeed(context, seedData)
-
-      restoreCallbacks.push(() => databaseSeedMock.restore())
-
-      // load database with module context
-      const databasePath = normalize(`${__dirname}/../../../plugins/src/server/database.js`)
-      const databaseURLPath = pathToFileURL(databasePath).href
-      const databaseModule = await import(databaseURLPath + `?seed=${crypto.randomUUID()}`)
-
-      for (const filename of databaseSeedMock.filenames) {
-        await databaseModule.databaseSeed(filename)
+    // Setup action function for action plugin if included
+    if (actionPlugin && typeof actionPlugin.setup === 'function') {
+      result.client.setup.action = ({ actions, lazyLoadAction }) => {
+        actionPlugin.setup({
+          actions: {
+            ...actionMethods,
+            ...actions
+          },
+          lazyLoadAction
+        })
       }
     }
 
