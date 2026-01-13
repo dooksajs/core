@@ -32,7 +32,7 @@ export const component = createPlugin('component', {
     // route: get a list of component
     httpSetRoute({
       path: '/component',
-      middleware: ['request/queryIsArray'],
+      middleware: ['request/queryIdIsArray'],
       handlers: [
         databaseGetValue(['component/items'])
       ]
@@ -91,7 +91,7 @@ export const component = createPlugin('component', {
     httpSetRoute({
       path: '/component',
       method: 'delete',
-      middleware: ['user/auth', 'request/queryIsArray'],
+      middleware: ['user/auth', 'request/queryIdIsArray'],
       handlers: [
         databaseDeleteValue(['component/items'])
       ]

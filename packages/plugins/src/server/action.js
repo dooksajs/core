@@ -321,7 +321,7 @@ export const action = createPlugin('action', {
     httpSetRoute({
       path: '/action/block-sequence',
       method: 'get',
-      middleware: ['request/queryIsArray'],
+      middleware: ['request/queryIdIsArray'],
       handlers: [databaseGetValue(['action/blockSequences'])]
     })
 
@@ -329,7 +329,7 @@ export const action = createPlugin('action', {
     httpSetRoute({
       path: '/action/block-sequence',
       method: 'delete',
-      middleware: ['user/auth', 'request/queryIsArray'],
+      middleware: ['user/auth', 'request/queryIdIsArray'],
       handlers: [
         databaseDeleteValue(['action/blockSequences'])
       ]
@@ -339,7 +339,7 @@ export const action = createPlugin('action', {
     httpSetRoute({
       path: '/action/sequence',
       method: 'get',
-      middleware: ['request/queryIsArray'],
+      middleware: ['request/queryIdIsArray'],
       handlers: [
         databaseGetValue(['action/sequences'])
       ]
@@ -376,7 +376,7 @@ export const action = createPlugin('action', {
     httpSetRoute({
       path: '/action/sequence',
       method: 'delete',
-      middleware: ['user/auth', 'request/queryIsArray'],
+      middleware: ['user/auth', 'request/queryIdIsArray'],
       handlers: [
         databaseDeleteValue(['action/sequences'])
       ]
@@ -386,7 +386,7 @@ export const action = createPlugin('action', {
     httpSetRoute({
       path: '/action/block',
       method: 'get',
-      middleware: ['request/queryIsArray'],
+      middleware: ['request/queryIdIsArray'],
       handlers: [
         databaseGetValue(['action/blocks'])
       ]
@@ -396,7 +396,7 @@ export const action = createPlugin('action', {
     httpSetRoute({
       path: '/action/block',
       method: 'delete',
-      middleware: ['user/auth', 'request/queryIsArray'],
+      middleware: ['user/auth', 'request/queryIdIsArray'],
       handlers: [
         databaseDeleteValue(['action/blocks'])
       ]

@@ -16,12 +16,16 @@ export const middleware = createPlugin('middleware', {
 
         next()
       },
-      'request/queryIsArray' (request, response, next) {
-        const query = request.query.id
+      'request/queryIdIsArray' (request, response, next) {
+        const queryId = request.query.id
 
-        if (!Array.isArray(query)) {
-          if (query) {
-            request.query.id = [query]
+        if (typeof request.data !== 'object') {
+          request.data = {}
+        }
+
+        if (!Array.isArray(queryId)) {
+          if (queryId) {
+            request.data.id = [queryId]
           } else {
             return response.status(400).json({
               details: {
@@ -30,6 +34,8 @@ export const middleware = createPlugin('middleware', {
               name: 'noQuery'
             })
           }
+        } else {
+          request.data.id = queryId
         }
 
         next()

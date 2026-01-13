@@ -87,7 +87,7 @@ export const metadata = createPlugin('metadata', {
 
     httpSetRoute({
       path: '/metadata/parameters',
-      middleware: ['request/queryIsArray'],
+      middleware: ['request/queryIdIsArray'],
       handlers: [
         databaseGetValue(['metadata/parameters'])
       ]

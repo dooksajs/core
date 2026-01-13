@@ -743,6 +743,7 @@ export const database = createPlugin('database', {
         let limit = -1
         let result = []
         let where
+        const requestData = request.data || {}
 
         if (request.query.where && typeof request.query.where === 'string') {
           where = this.stringToCondition(request.query.where)
@@ -754,8 +755,9 @@ export const database = createPlugin('database', {
 
         for (let i = 0; i < collections.length; i++) {
           const collection = collections[i]
-          // fetch collection
-          if (!request.query.id) {
+
+          // fetch entire collection
+          if (!requestData.id) {
             const args = {
               name: collection,
               where
@@ -780,11 +782,9 @@ export const database = createPlugin('database', {
             } else {
               result = result.concat(dataValues)
             }
-          }
-
-          if (Array.isArray(request.query.id)) {
-            for (let i = 0; i < request.query.id.length && (limit <= 0 || result.length < limit); i++) {
-              const id = request.query.id[i]
+          } else if(Array.isArray(requestData.id)) {
+            for (let i = 0; i < requestData.id.length && (limit <= 0 || result.length < limit); i++) {
+              const id = requestData.id[i]
               const args = {
                 name: collection,
                 id
