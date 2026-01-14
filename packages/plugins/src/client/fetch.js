@@ -34,7 +34,8 @@ export const $fetch = createPlugin('fetch', {
     getCacheByPath (path) {
       // Check cache
       const cache = this.requestCache[path]
-      if (!cache) {
+
+      if (typeof cache !== 'object') {
         return
       }
 
@@ -44,29 +45,8 @@ export const $fetch = createPlugin('fetch', {
         return
       }
 
-      // Return cached data
-      const result = []
-      for (let i = 0; i < cache.data.length; i++) {
-        const item = cache.data[i]
-        const data = stateGetValue({
-          name: item.collection,
-          id: item.id,
-          options: {
-            expand: item.expand
-          }
-        })
-
-        result.push(data)
-      }
-
-      // Extract collection from path (before query string)
-      const collection = path.split('?')[0]
-
-      return {
-        collection: collection,
-        item: result,
-        isEmpty: result.length === 0
-      }
+      // Return the cached
+      return cache.cachedResult
     },
     /**
      * Retrieve cached data a given request ID
@@ -141,7 +121,12 @@ export const $fetch = createPlugin('fetch', {
 
       this.requestCache[path] = {
         expireIn: Date.now() + this.requestCacheExpire,
-        data: requestCache
+        data: requestCache,
+        cachedResult: {
+          collection,
+          item: data,
+          isEmpty: data.length === 0
+        }
       }
     }
   },
