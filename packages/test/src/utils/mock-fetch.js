@@ -57,17 +57,11 @@ export function createMockFetch (t, options = {}) {
     onRequest = null
   } = options
 
-  const requests = []
+  // Check if response is an object with special methods (like malformed JSON test)
+  const hasSpecialMethods = response && typeof response === 'object' &&
+    (response.json || response.text || response.headers)
 
-  const mockFetch = async (url, options = {}) => {
-    // Record the request
-    const requestDetails = {
-      url,
-      options,
-      timestamp: Date.now()
-    }
-    requests.push(requestDetails)
-
+  const mockFetch = t.mock.fn(async (url, options = {}) => {
     // Call onRequest callback if provided
     if (onRequest) {
       onRequest(url, options)
@@ -76,6 +70,18 @@ export function createMockFetch (t, options = {}) {
     // If error is configured, throw it
     if (error) {
       throw error
+    }
+
+    // Handle special response objects (like those with json() methods that throw)
+    if (hasSpecialMethods) {
+      return {
+        ok: response.ok ?? ok,
+        status: response.status ?? status,
+        json: response.json || (async () => response),
+        text: response.text || (async () => JSON.stringify(response)),
+        headers: response.headers || new Headers(),
+        statusText: response.statusText || (ok ? 'OK' : 'Error')
+      }
     }
 
     // Determine response data
@@ -92,22 +98,44 @@ export function createMockFetch (t, options = {}) {
       headers: new Headers(),
       statusText: ok ? 'OK' : 'Error'
     }
-  }
+  })
 
   return {
     fetch: mockFetch,
-    requests,
-    getLastRequest: () => requests[requests.length - 1],
+    get requests () {
+      return mockFetch.mock.calls.map(call => ({
+        url: call[0],
+        options: call[1] || {},
+        timestamp: Date.now()
+      }))
+    },
+    getLastRequest: () => {
+      const calls = mockFetch.mock.calls
+      if (calls.length === 0) return undefined
+      const lastCall = calls[calls.length - 1]
+      return {
+        url: lastCall[0],
+        options: lastCall[1] || {},
+        timestamp: Date.now()
+      }
+    },
     getRequestsByURL: (pattern) => {
       const regex = pattern instanceof RegExp ? pattern : new RegExp(pattern)
-      return requests.filter(req => regex.test(req.url))
+      return mockFetch.mock.calls
+        .map(call => ({
+          url: call[0],
+          options: call[1] || {},
+          timestamp: Date.now()
+        }))
+        .filter(req => regex.test(req.url))
     },
     clearRequests: () => {
-      requests.length = 0
+      mockFetch.mock.calls.length = 0
     },
     verifyRequestCount: (count) => {
-      if (requests.length !== count) {
-        throw new Error(`Expected ${count} requests, but got ${requests.length}`)
+      const actualCount = mockFetch.mock.calls.length
+      if (actualCount !== count) {
+        throw new Error(`Expected ${count} requests, but got ${actualCount}`)
       }
     }
   }
@@ -150,7 +178,7 @@ export function createMockFetchWithCache (t, options = {}) {
   const cacheHits = []
   const cacheMisses = []
 
-  const mockFetch = async (url) => {
+  const mockFetch = t.mock.fn(async (url) => {
     const cacheKey = url.replace('/_/', '')
 
     if (cache.has(cacheKey)) {
@@ -194,7 +222,7 @@ export function createMockFetchWithCache (t, options = {}) {
         ]
       }
     }
-  }
+  })
 
   return {
     fetch: mockFetch,
@@ -206,6 +234,7 @@ export function createMockFetchWithCache (t, options = {}) {
     clearTracking: () => {
       cacheHits.length = 0
       cacheMisses.length = 0
+      mockFetch.mock.calls.length = 0
     }
   }
 }
@@ -236,9 +265,9 @@ export function createMockFetchError (t, options = {}) {
     error = new Error(message)
   } = options
 
-  return async () => {
+  return t.mock.fn(async () => {
     throw error
-  }
+  })
 }
 
 /**
@@ -267,11 +296,11 @@ export function createMockFetchHttpError (t, options = {}) {
     body = { error: 'Resource not found' }
   } = options
 
-  return async () => ({
+  return t.mock.fn(async () => ({
     ok: false,
     status,
     statusText,
     json: async () => body,
     text: async () => JSON.stringify(body)
-  })
+  }))
 }
