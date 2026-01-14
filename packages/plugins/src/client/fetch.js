@@ -72,10 +72,11 @@ export const $fetch = createPlugin('fetch', {
     },
     /**
      * Store fetched data in state and set up cache
+     * @param {string} collection - Name of the records' collection
      * @param {Array} data - Array of data items to store
      * @param {string} path - Cache key/path for the request
      */
-    setRequestDataByPath (data, path) {
+    setRequestDataByPath (collection, data, path) {
       const requestCache = []
 
       for (let i = 0; i < data.length; i++) {
@@ -111,11 +112,15 @@ export const $fetch = createPlugin('fetch', {
           expand: !!dataItem.expand
         })
 
+        const deleteCacheByPath = this.deleteCacheByPath
+
         stateAddListener({
           name: dataItem.collection,
           on: 'delete',
           id: dataItem.id,
-          handler: this.deleteCache
+          handler: () => {
+            deleteCacheByPath(path)
+          }
         })
       }
 
@@ -293,7 +298,7 @@ export const $fetch = createPlugin('fetch', {
               deleteRequestQueueByPath(path)
 
               if (sync) {
-                setRequestDataByPath(data, path)
+                setRequestDataByPath(collection, data, path)
               }
 
               resolve({
@@ -402,7 +407,7 @@ export const $fetch = createPlugin('fetch', {
 
               if (data && data.length > 0) {
                 if (sync) {
-                  this.setRequestDataByPath(data, path)
+                  this.setRequestDataByPath(collection, data, path)
                 }
 
                 resolve({
