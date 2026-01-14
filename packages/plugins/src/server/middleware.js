@@ -23,19 +23,12 @@ export const middleware = createPlugin('middleware', {
           request.data = {}
         }
 
-        if (!Array.isArray(queryId)) {
-          if (queryId) {
+        if (queryId) {
+          if (!Array.isArray(queryId)) {
             request.data.id = [queryId]
           } else {
-            return response.status(400).json({
-              details: {
-                message: 'Query is undefined'
-              },
-              name: 'noQuery'
-            })
+            request.data.id = queryId
           }
-        } else {
-          request.data.id = queryId
         }
 
         next()
