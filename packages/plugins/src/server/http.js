@@ -1,6 +1,6 @@
 import { createPlugin } from '@dooksa/create-plugin'
-import { stateSetValue } from '../client/index.js'
-import { middlewareGet } from './middleware.js'
+import { stateSetValue } from '#client'
+import { middlewareGet } from '#server'
 import helmet from 'helmet'
 import compression from 'compression'
 import express from 'express'
@@ -37,7 +37,8 @@ export const $http = createPlugin('http', {
       put: true,
       delete: true
     },
-    app: express()
+    /** @type {Express} */
+    app: null
   },
   methods: {
     useRoutes () {
@@ -215,6 +216,8 @@ export const $http = createPlugin('http', {
 
       this.apiPrefix = apiPrefix
     }
+
+    this.app = express()
 
     // prepare api route suffix
     this.routes[this.apiPrefix] = []
