@@ -944,7 +944,7 @@ export const database = createPlugin('database', {
      * data is available.
      *
      * @param {string} name - The name of the seed file (without .json extension)
-     * @returns {Promise<void>} Promise that resolves when seed data is loaded
+     * @returns {Promise<boolean>} Promise that resolves when seed data is loaded
      *
      * @example
      * // Basic usage
@@ -1003,17 +1003,14 @@ export const database = createPlugin('database', {
         this.snapshotLock[data.collection] = false
         this.snapshotError[data.collection] = false
 
-        log({
-          message: 'Loaded seed data',
-          context: data.collection
-        })
+        return true
       } catch (error) {
         if (error.code === 'ENOENT') {
           // File doesn't exist - this is expected behavior
           return
         }
-        console.error('Error loading seed data:', error)
-        throw error // Re-throw for caller to handle
+
+        throw error
       }
     },
     /**
