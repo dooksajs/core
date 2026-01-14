@@ -7,7 +7,7 @@ import {
 } from '../utils/index.js'
 import { mockDatabaseSeed } from './mock-database-seed.js'
 import { createRequest, createResponse, invokeRoute } from './mock-server-helpers.js'
-import { createMockExpressModule } from './mock-express-module.js'
+import { createMockExpressModule, clearMockExpressModule } from './mock-express-module.js'
 import { createMockFetchForMockPlugin } from './mock-fetch-for-mock-plugin.js'
 
 /**
@@ -99,7 +99,6 @@ export async function mockPlugin (
   }
 
   const restoreCallbacks = []
-  const mockApp = {}
   const result = {
     client: {
       methods: {},
@@ -125,12 +124,13 @@ export async function mockPlugin (
         }
       }
     },
+    _mockApp: {},
     get app () {
-      return mockApp.app
+      return this._mockApp.app
     },
     createRequest,
     createResponse,
-    invokeRoute: (path, request, response) => invokeRoute(mockApp.app, path, request, response),
+    invokeRoute: (path, request, response) => invokeRoute(result._mockApp.app, path, request, response),
     fetchMock: null,
     restore: () => {
       // Execute all restore callbacks in reverse order
@@ -141,6 +141,8 @@ export async function mockPlugin (
           console.warn('Error during mock restoration:', error)
         }
       }
+      // Clear the mock app after restore
+      result._mockApp = {}
     }
   }
 
@@ -150,24 +152,7 @@ export async function mockPlugin (
   try {
     const __filename = fileURLToPath(import.meta.url)
     const __dirname = dirname(__filename)
-
-    // Mock express for http plugin
-    if (serverModules.length || platform === 'server') {
-      const mockExpressModule = createMockExpressModule(context, mockApp)
-
-      const expressMockContext = context.mock.module('express', {
-        defaultExport: mockExpressModule
-      })
-      restoreCallbacks.push(() => expressMockContext.restore())
-
-      // load http with module context
-      const httpPath = normalize(`${__dirname}/../../../plugins/src/server/http.js`)
-      const httpURLPath = pathToFileURL(httpPath).href
-      const httpModule = await import(httpURLPath)
-
-      // Mock the imported plugin
-      mockPluginExports(context, httpModule, serverNamedExports, result.server)
-    }
+    const seed = crypto.randomUUID()
 
     // Import client modules first (state is always required)
     const tempClientModule = await import('#client')
@@ -205,6 +190,9 @@ export async function mockPlugin (
       mockPluginActions(context, plugin, clientNamedExports, result.client, actionMethods)
       mockPluginExports(context, plugin, clientNamedExports, result.client)
 
+      // restore internal context
+      restoreCallbacks.push(() => plugin.restore())
+
       // Populate schema and setup for the main plugin
       if (plugin && plugin.state) {
         pluginState.push(plugin)
@@ -220,6 +208,10 @@ export async function mockPlugin (
       }
     }
 
+    if (!serverModules.includes('http')) {
+      serverModules.push('$http')
+    }
+
     let databaseSeedMockFilenames
     // Seed database
     if (seedData.length) {
@@ -229,8 +221,28 @@ export async function mockPlugin (
       restoreCallbacks.push(() => databaseSeedMock.restore())
     }
 
-    // Import server modules
+    // Register the express mock BEFORE importing server modules
+    const mockExpressModule = createMockExpressModule(context, result._mockApp)
+
+    const expressMockContext = context.mock.module('express', {
+      defaultExport: mockExpressModule
+    })
+    restoreCallbacks.push(() => {
+      expressMockContext.restore()
+      // Clear the global mock reference
+      clearMockExpressModule()
+    })
+
+    // Import server modules AFTER express mock is registered
     const tempServerModule = await import('#server')
+
+    // Create mock contexts for client modules only (server modules will be handled separately)
+    if (mocksByModule['#client'] && Object.keys(mocksByModule['#client']).length > 0) {
+      const clientMockContext = context.mock.module('#client', {
+        namedExports: mocksByModule['#client']
+      })
+      restoreCallbacks.push(() => clientMockContext.restore())
+    }
 
     // Handle server modules
     for (let i = 0; i < serverModules.length; i++) {
@@ -239,11 +251,15 @@ export async function mockPlugin (
       let pluginName
 
       if (typeof module === 'string') {
-        plugin = tempServerModule[module]
         pluginName = module
 
+        // Handle special naming plugins
         if (pluginName === 'http') {
           plugin = tempServerModule['$http']
+        } else if (pluginName === 'fetch') {
+          plugin = tempServerModule['$fetch']
+        } else {
+          plugin = tempServerModule[pluginName]
         }
       } else {
         plugin = module
@@ -257,6 +273,9 @@ export async function mockPlugin (
       // Mock server plugin exports
       mockPluginActions(context, plugin, serverNamedExports, result.server, actionMethods)
       mockPluginExports(context, plugin, serverNamedExports, result.server)
+
+      // restore internal context
+      restoreCallbacks.push(() => plugin.restore())
 
       // Populate schema and setup for the main plugin
       if (plugin && plugin.state) {
@@ -273,16 +292,6 @@ export async function mockPlugin (
       }
     }
 
-    // Create mock contexts for each module BEFORE importing the actual plugins
-    for (const [modulePath, moduleMocks] of Object.entries(mocksByModule)) {
-      const mockContext = context.mock.module(modulePath, {
-        namedExports: moduleMocks
-      })
-      restoreCallbacks.push(() => {
-        mockContext.restore()
-      })
-    }
-
     // Determine if it's a client or server plugin
     let pluginPath
     let pluginModule
@@ -291,7 +300,7 @@ export async function mockPlugin (
     try {
       pluginPath = normalize(`${__dirname}/../../../plugins/src/${platform}/${name}.js`)
       const pluginURLPath = pathToFileURL(pluginPath).href
-      pluginModule = await import(pluginURLPath + `?seed=${crypto.randomUUID()}`)
+      pluginModule = await import(pluginURLPath + '?seed=' + seed)
 
       // Handle special naming plugins
       if (name === 'http') {
@@ -312,6 +321,10 @@ export async function mockPlugin (
     // Mock the imported plugin
     mockPluginActions(context, plugin, platformNamedExports, platformResult, actionMethods)
     mockPluginExports(context, plugin, platformNamedExports, platformResult)
+
+    restoreCallbacks.push(() => {
+      plugin.restore()
+    })
 
     // Populate schema and setup for the main plugin
     if (plugin && plugin.state) {
