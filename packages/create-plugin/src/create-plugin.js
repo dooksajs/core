@@ -115,6 +115,8 @@ export function createPlugin (name, {
   privateMethods,
   setup
 }) {
+  /** @type {DsPluginExport<Name, Methods, Actions, Setup>} */
+  const result = {}
   const context = Object.create(null)
 
   // add plugin name to context
@@ -152,9 +154,8 @@ export function createPlugin (name, {
       }
     })
 
-    for (const key in defaults) {
-      if (Object.prototype.hasOwnProperty.call(defaults, key)) {
-        // @TODO could validate
+    if (defaults) {
+      for (const [key, value] of Object.entries(defaults)) {
         _defaults.push({
           name: name + '/' + key,
           value: bindContext(value, context)
@@ -162,23 +163,18 @@ export function createPlugin (name, {
       }
     }
 
-    for (const key in schema) {
-      if (Object.hasOwnProperty.call(schema, key)) {
-        const item = schema[key]
-        const schemaType = item.type
-        // data namespace
-        const collectionName = name + '/' + key
 
-        _values[collectionName] = dataValue(schemaType)
+    for (const [key, value] of Object.entries(schema)) {
+      const schemaType = value.type
+      const collectionName = name + '/' + key
 
-        _names.push(collectionName)
-        _items.push({
-          entries: createSchema(context, item, collectionName),
-          isCollection: schemaType === 'collection',
-          name: collectionName
-        })
-        _values[collectionName] = dataValue(schemaType)
-      }
+      _values[collectionName] = dataValue(schemaType)
+      _names.push(collectionName)
+      _items.push({
+        entries: createSchema(context, value, collectionName),
+        isCollection: schemaType === 'collection',
+        name: collectionName
+      })
     }
   }
 
@@ -187,10 +183,6 @@ export function createPlugin (name, {
    * @type {ActiveAction[]}
    */
   const _actions = []
-  /**
-   * @type {DsPluginExport<Name, Methods, Actions, Setup>}
-   */
-  const result = {}
 
   Object.defineProperties(result, {
     name: {
@@ -222,11 +214,9 @@ export function createPlugin (name, {
   if (data) {
     data = deepClone(data)
 
-    for (const key in data) {
-      if (Object.hasOwnProperty.call(data, key)) {
-        // set data context
-        context[key] = data[key]
-      }
+    // set data context
+    for (const [key, value] of Object.entries(data)) {
+      context[key] = value
     }
   }
 
@@ -318,6 +308,19 @@ export function createPlugin (name, {
         context[key] = privateMethods[key].bind(context)
       }
     }
+  }
+
+  DEV: {
+    const restorationData = data ? deepClone(data) : {}
+
+    Object.defineProperty(result, 'restore', {
+      value () {
+        Object.assign(context, restorationData)
+      },
+      enumerable: false,
+      writable: false,
+      configurable: false
+    })
   }
 
   return result
