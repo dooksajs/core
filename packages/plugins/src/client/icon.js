@@ -102,7 +102,7 @@ export const icon = createPlugin('icon', {
             options: { expand: true }
           })
 
-          if (!aliasIcon.isExpandEmpty) {
+          if (aliasIcon.isExpandEmpty === false) {
             node.innerHTML = aliasIcon.expand[0].item
 
             return
