@@ -1,6 +1,6 @@
 import { createPlugin } from '@dooksa/create-plugin'
-import { httpSetRoute } from './http.js'
-import { stateAddListener, stateDeleteListener } from '../client/index.js'
+import { httpSetRoute } from '#server'
+import { stateAddListener, stateDeleteListener } from '#client'
 import { generateId } from '@dooksa/utils'
 
 export const development = createPlugin('development', {
