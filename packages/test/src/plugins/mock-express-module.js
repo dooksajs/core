@@ -16,6 +16,9 @@
  * @property {Function} get middleware - Getter that returns array of registered middleware
  */
 
+// Global variable to store the current mock
+let currentMockApp = null
+
 /**
  * Creates a mock Express module that returns the mock app
  * @param {TestContext} context - Node.js TestContext for creating mocks
@@ -23,6 +26,9 @@
  * @returns {Mock<Function> & { json: Function, urlencoded: Function, static: Function, Router: Function }} Mocked express module exports
  */
 export function createMockExpressModule (context, mock) {
+  // Update global reference
+  currentMockApp = mock
+
   /**
    * Mock express app
    * @returns {MockExpressApp}
@@ -102,8 +108,10 @@ export function createMockExpressModule (context, mock) {
       }
     }
 
-    // Mutate mock
-    mock.app = app
+    // Mutate the global mock reference
+    if (currentMockApp) {
+      currentMockApp.app = app
+    }
 
     return app
   }
@@ -163,6 +171,11 @@ export function createMockExpressModule (context, mock) {
     }
   }
 
-  // Now mock the entire express function (including its properties)
+  // Return the mock function
   return context.mock.fn(express)
+}
+
+// Helper to clear the global mock (for cleanup)
+export function clearMockExpressModule () {
+  currentMockApp = null
 }
