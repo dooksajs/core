@@ -742,13 +742,18 @@ export const database = createPlugin('database', {
         let limit = -1
         let result = []
         let where
+        // @ts-ignore - request.data may not be defined in type but used in practice
         const requestData = request.data || {}
 
         if (request.query.where && typeof request.query.where === 'string') {
           where = this.stringToCondition(request.query.where)
         }
 
-        if (typeof request.query.limit === 'number') {
+        // Handle pagination parameters (already parsed by middleware)
+        const page = request.query.page
+        const perPage = request.query.perPage
+
+        if (request.query.limit > -1) {
           limit = request.query.limit
         }
 
@@ -758,8 +763,11 @@ export const database = createPlugin('database', {
           // fetch entire collection
           if (!requestData.id) {
             const args = {
-              name: collection,
-              where
+              name: collection
+            }
+
+            if (where) {
+              args.where = [where]
             }
 
             if (request.query.expand) {
@@ -770,8 +778,13 @@ export const database = createPlugin('database', {
 
             const dataValues = stateFind(args)
 
-            // Add only what fits
-            if (limit > 0) {
+            // Apply pagination if specified
+            if (page != null && perPage != null) {
+              const offset = (page - 1) * perPage
+              const paginatedResults = dataValues.slice(offset, offset + perPage)
+              result = result.concat(paginatedResults)
+            } else if (limit > 0) {
+              // Add only what fits
               const remaining = limit - result.length
               if (remaining > 0) {
                 result = result.concat(dataValues.slice(0, remaining))
@@ -801,8 +814,9 @@ export const database = createPlugin('database', {
               const data = stateGetValue(args)
 
               if (data.isEmpty) {
-                response.status(404).send(`Document not found: ${collection} ${id}`)
-                return
+                // Skip non-existent items instead of returning 404
+                // This allows fetchGetById to return empty results gracefully
+                continue
               }
 
               value.item = data.item
@@ -816,7 +830,7 @@ export const database = createPlugin('database', {
               if (where) {
                 const data = stateFind({
                   name: collection,
-                  where
+                  where: [where]
                 })
 
                 if (data) {
