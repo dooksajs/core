@@ -209,7 +209,10 @@ export const icon = createPlugin('icon', {
               delete iconQueue[iconPrefix]
             })
             .catch(error => {
-              throw error
+              // Handle fetch errors gracefully
+              console.error('DooksaWarning: Failed to fetch icons:', error.message)
+              // Clear the queue on error
+              delete iconQueue[iconPrefix]
             })
         })
       }
