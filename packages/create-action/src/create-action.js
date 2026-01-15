@@ -177,6 +177,15 @@ function createAction (...args) {
       blockValue = sequences[index]
     }
 
+    for (let i = 0; i < sequences.length; i++) {
+      const sequence = sequences[i]
+
+      if (blockValue === sequence) {
+        sequences.splice(i, 1)
+        break
+      }
+    }
+
     // update ref value
     block.value = blockValue
     // delete unused property
