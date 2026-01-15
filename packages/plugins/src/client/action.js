@@ -875,10 +875,6 @@ export const action = createPlugin('action', {
 
     this.actions = actions
 
-    if (typeof action === 'function') {
-      this.call = action
-    }
-
     if (typeof lazyLoadAction === 'function') {
       this.lazyLoader = lazyLoadAction
     }
