@@ -1,6 +1,6 @@
 import appendPlugin from './append-plugin.js'
 import defaultClientPlugins, { state } from '@dooksa/plugins/client'
-import defaultServerPlugins, { httpStart } from '@dooksa/plugins/server'
+import defaultServerPlugins, { serverStart } from '@dooksa/plugins/server'
 import defaultActions from '@dooksa/actions'
 
 /**
@@ -156,7 +156,7 @@ function appendClientPlugin () {
  * const init = initialize(serverPluginManager, clientPluginManager, actionManager)
  *
  * // Start the application
- * const httpServer = init({ options: { port: 3000 } })
+ * const server = init({ options: { port: 3000 } })
  */
 function initialize (serverPlugins, clientPlugins, actions) {
   /**
@@ -195,7 +195,7 @@ function initialize (serverPlugins, clientPlugins, actions) {
     // clear setup queue
     serverPlugins.setup = []
 
-    return httpStart(options.http)
+    return serverStart(options.server)
   }
 }
 
@@ -218,7 +218,7 @@ function initialize (serverPlugins, clientPlugins, actions) {
  * // Create server app with custom plugins
  * const app = createAppServer({
  *   serverPlugins: {
- *     http: customHttpPlugin,
+ *     server: customHttpPlugin,
  *     database: customDbPlugin
  *   },
  *   clientPlugins: {

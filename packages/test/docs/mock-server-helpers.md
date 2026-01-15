@@ -163,8 +163,8 @@ Invokes a registered route handler with the provided request and response object
 
 ```javascript
 // Basic route invocation
-const mock = await mockPlugin(t, { name: 'http', platform: 'server' })
-mock.server.setup.http()
+const mock = await mockPlugin(t, { name: 'server', platform: 'server' })
+mock.server.setup.server()
 
 const request = createRequest({
   method: 'GET',
@@ -176,12 +176,12 @@ await invokeRoute(mock.app, '/_/component', request, response)
 
 // With middleware
 const mock = await mockPlugin(t, {
-  name: 'http',
+  name: 'server',
   platform: 'server',
-  serverModules: ['http', 'middleware']
+  serverModules: ['server', 'middleware']
 })
 
-mock.server.setup.http()
+mock.server.setup.server()
 
 // Register middleware
 mock.server.method.middlewareSet({
@@ -210,7 +210,7 @@ console.log(response.body)        // Profile data
 These helpers are automatically available through the `mockPlugin` return object:
 
 ```javascript
-const mock = await mockPlugin(t, { name: 'http', platform: 'server' })
+const mock = await mockPlugin(t, { name: 'server', platform: 'server' })
 
 // Access helpers from mock object
 const request = mock.createRequest({ method: 'POST', body: { data: 'value' } })
@@ -232,11 +232,11 @@ describe('HTTP Route Testing', () => {
     const mock = await mockPlugin(t, {
       name: 'component',
       platform: 'server',
-      serverModules: ['http', 'database', 'page', 'middleware']
+      serverModules: ['server', 'database', 'page', 'middleware']
     })
 
     // Setup HTTP server
-    mock.server.setup.http()
+    mock.server.setup.server()
 
     // Register authentication middleware
     mock.server.method.middlewareSet({
@@ -254,7 +254,7 @@ describe('HTTP Route Testing', () => {
 
     // Setup component
     mock.server.setup.component()
-    await mock.server.method.httpStart()
+    await mock.server.method.serverStart()
 
     // Create authenticated request
     const request = mock.createRequest({
@@ -281,12 +281,12 @@ describe('HTTP Route Testing', () => {
     const mock = await mockPlugin(t, {
       name: 'database',
       platform: 'server',
-      serverModules: ['http', 'database']
+      serverModules: ['server', 'database']
     })
 
-    mock.server.setup.http()
+    mock.server.setup.server()
     mock.server.setup.database()
-    await mock.server.method.httpStart()
+    await mock.server.method.serverStart()
 
     const request = mock.createRequest({
       method: 'POST',
@@ -418,10 +418,10 @@ deepStrictEqual(unauthorizedResponse.statusCode, 401)
 **Problem**: `Error: Route not found: /_/endpoint`
 
 **Solutions**:
-1. Ensure HTTP plugin is setup: `mock.server.setup.http()`
+1. Ensure HTTP plugin is setup: `mock.server.setup.server()`
 2. Verify routes are registered before invoking
 3. Check path matches exactly (including `/_/` prefix)
-4. Call `await mock.server.method.httpStart()` if needed
+4. Call `await mock.server.method.serverStart()` if needed
 
 ### Middleware Not Executing
 

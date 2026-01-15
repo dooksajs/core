@@ -184,9 +184,9 @@ The mock Express module is automatically used by `mockPlugin` when server module
 
 ```javascript
 const mock = await mockPlugin(t, {
-  name: 'http',
+  name: 'server',
   platform: 'server',
-  serverModules: ['http']
+  serverModules: ['server']
 })
 
 // The mock app is available
@@ -203,13 +203,13 @@ import { deepStrictEqual, ok } from 'node:assert'
 describe('Express Mock Testing', () => {
   test('should track route registrations', async (t) => {
     const mock = await mockPlugin(t, {
-      name: 'http',
+      name: 'server',
       platform: 'server',
-      serverModules: ['http']
+      serverModules: ['server']
     })
 
-    // Setup HTTP plugin (registers routes)
-    mock.server.setup.http()
+    // Setup Server plugin (registers routes)
+    mock.server.setup.server()
 
     // Check that routes were registered
     ok(mock.app.get.mock.callCount() > 0)
@@ -221,7 +221,7 @@ describe('Express Mock Testing', () => {
     ok(routes.length > 0)
 
     // Check specific route
-    const getRoute = routes.find(r => r.method === 'get' && r.path === '/_/http')
+    const getRoute = routes.find(r => r.method === 'get' && r.path === '/_/server')
     ok(getRoute)
     ok(getRoute.handlers.length > 0)
 
@@ -230,12 +230,12 @@ describe('Express Mock Testing', () => {
 
   test('should track middleware registrations', async (t) => {
     const mock = await mockPlugin(t, {
-      name: 'http',
+      name: 'server',
       platform: 'server',
-      serverModules: ['http', 'middleware']
+      serverModules: ['server', 'middleware']
     })
 
-    mock.server.setup.http()
+    mock.server.setup.server()
 
     // Register custom middleware
     mock.server.method.middlewareSet({
@@ -259,15 +259,15 @@ describe('Express Mock Testing', () => {
 
   test('should mock server lifecycle', async (t) => {
     const mock = await mockPlugin(t, {
-      name: 'http',
+      name: 'server',
       platform: 'server',
-      serverModules: ['http']
+      serverModules: ['server']
     })
 
-    mock.server.setup.http()
+    mock.server.setup.server()
 
     // Start server
-    const server = await mock.server.method.httpStart()
+    const server = await mock.server.method.serverStart()
 
     // Verify server object
     ok(server)
@@ -298,11 +298,11 @@ test('should test complete HTTP flow', async (t) => {
   const mock = await mockPlugin(t, {
     name: 'component',
     platform: 'server',
-    serverModules: ['http', 'database', 'page', 'middleware']
+    serverModules: ['server', 'database', 'page', 'middleware']
   })
 
   // Setup HTTP server
-  mock.server.setup.http()
+  mock.server.setup.server()
 
   // Register middleware
   mock.server.method.middlewareSet({
@@ -321,7 +321,7 @@ test('should test complete HTTP flow', async (t) => {
   mock.server.setup.component()
 
   // Start server
-  await mock.server.method.httpStart()
+  await mock.server.method.serverStart()
 
   // Verify routes were registered
   const routes = mock.app.routes
@@ -352,7 +352,7 @@ test('should test complete HTTP flow', async (t) => {
 ```javascript
 test('should mock Express Router', async (t) => {
   const mock = await mockPlugin(t, {
-    name: 'http',
+    name: 'server',
     platform: 'server'
   })
 
@@ -383,12 +383,12 @@ test('should mock Express Router', async (t) => {
 ```javascript
 test('should inspect mock calls', async (t) => {
   const mock = await mockPlugin(t, {
-    name: 'http',
+    name: 'server',
     platform: 'server',
-    serverModules: ['http']
+    serverModules: ['server']
   })
 
-  mock.server.setup.http()
+  mock.server.setup.server()
 
   // Check GET calls
   const getCalls = mock.app.get.mock.calls
@@ -396,7 +396,7 @@ test('should inspect mock calls', async (t) => {
 
   // Inspect first GET call
   const firstGet = getCalls[0]
-  deepStrictEqual(firstGet.arguments[0], '/_/http')  // Path
+  deepStrictEqual(firstGet.arguments[0], '/_/server')  // Path
   ok(typeof firstGet.arguments[1] === 'function')    // Handler
 
   // Check call count
@@ -416,7 +416,7 @@ test('should inspect mock calls', async (t) => {
 
 ```javascript
 // After setup, verify routes exist
-mock.server.setup.http()
+mock.server.setup.server()
 
 const routes = mock.app.routes
 const route = routes.find(r => r.path === '/_/expected')
@@ -437,7 +437,7 @@ ok(typeof middleware[1] === 'function')  // Second middleware
 
 ```javascript
 // Verify server starts and stops correctly
-const server = await mock.server.method.httpStart()
+const server = await mock.server.method.serverStart()
 ok(server)
 
 let closed = false
@@ -463,7 +463,7 @@ ok(getCall.arguments[1])  // Handler exists
 **Problem**: `mock.app.routes` is empty
 
 **Solutions**:
-1. Ensure you're calling setup functions: `mock.server.setup.http()`
+1. Ensure you're calling setup functions: `mock.server.setup.server()`
 2. Verify the plugin actually registers routes
 3. Check that you're using the mock app: `mock.app` not `express()`
 
@@ -478,11 +478,11 @@ ok(getCall.arguments[1])  // Handler exists
 
 ### Server Not Starting
 
-**Problem**: `httpStart()` doesn't work
+**Problem**: `serverStart()` doesn't work
 
 **Solutions**:
-1. Ensure HTTP plugin is setup: `mock.server.setup.http()`
-2. Verify the method exists: `mock.server.method.httpStart`
+1. Ensure HTTP plugin is setup: `mock.server.setup.server()`
+2. Verify the method exists: `mock.server.method.serverStart`
 3. Check if it's async and needs `await`
 
 ### Mock Calls Undefined
@@ -500,9 +500,9 @@ The Express mock works seamlessly with other mockPlugin features:
 
 ```javascript
 const mock = await mockPlugin(t, {
-  name: 'http',
+  name: 'server',
   platform: 'server',
-  serverModules: ['http', 'database', 'middleware'],
+  serverModules: ['server', 'database', 'middleware'],
   seedData: [
     {
       collection: 'users',
@@ -512,7 +512,7 @@ const mock = await mockPlugin(t, {
 })
 
 // Express mock
-mock.server.setup.http()
+mock.server.setup.server()
 const routes = mock.app.routes
 
 // Database mock

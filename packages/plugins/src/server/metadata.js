@@ -1,7 +1,6 @@
 import { createPlugin, mapState } from '@dooksa/create-plugin'
-import { stateSetValue, metadata as metadataClient } from '../client/index.js'
-import { databaseSeed, databaseGetValue } from './database.js'
-import { httpSetRoute } from './http.js'
+import { stateSetValue, metadata as metadataClient } from '#client'
+import { serverSetRoute, databaseSeed, databaseGetValue } from '#server'
 
 /**
  * @import {DsPluginMetadata, ActiveAction } from '@dooksa/create-plugin/types'
@@ -64,28 +63,28 @@ export const metadata = createPlugin('metadata', {
     }
 
     // route: get a list of languages
-    httpSetRoute({
+    serverSetRoute({
       path: '/metadata/languages',
       handlers: [
         databaseGetValue(['metadata/languages'])
       ]
     })
 
-    httpSetRoute({
+    serverSetRoute({
       path: '/metadata/plugins',
       handlers: [
         databaseGetValue(['metadata/plugins'])
       ]
     })
 
-    httpSetRoute({
+    serverSetRoute({
       path: '/metadata/actions',
       handlers: [
         databaseGetValue(['metadata/actions'])
       ]
     })
 
-    httpSetRoute({
+    serverSetRoute({
       path: '/metadata/parameters',
       middleware: ['request/queryIdIsArray'],
       handlers: [

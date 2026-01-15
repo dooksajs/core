@@ -7,7 +7,7 @@ import express from 'express'
 
 /**
  * @import {Request, Response, NextFunction, Handler, Express} from 'express'
- * @import { Server } from 'node:http'
+ * @import { IncomingMessage, Server, ServerResponse } from 'node:http'
  */
 
 /**
@@ -17,14 +17,13 @@ import express from 'express'
  * @property {string} directory - Local asset directory
  */
 
-export const $http = createPlugin('http', {
+export const server = createPlugin('server', {
   state: {
     schema: {
       status: { type: 'string' }
     }
   },
   data: {
-    /** @type {Server|Null} */
     server: null,
     routes: {
       all: []
@@ -120,6 +119,7 @@ export const $http = createPlugin('http', {
         let handler = middlewareGet(id)
 
         if (options) {
+          // @ts-ignore
           handler = handler(options)
         }
 
@@ -170,12 +170,12 @@ export const $http = createPlugin('http', {
         this.server.close((error) => {
           if (error) {
             stateSetValue({
-              name: 'http/status',
+              name: 'server/status',
               value: 'stop-failed'
             })
           } else {
             stateSetValue({
-              name: 'http/status',
+              name: 'server/status',
               value: 'stopped'
             })
 
@@ -184,7 +184,7 @@ export const $http = createPlugin('http', {
         })
       } else {
         stateSetValue({
-          name: 'http/status',
+          name: 'server/status',
           value: 'stop-failed'
         })
       }
@@ -206,12 +206,12 @@ export const $http = createPlugin('http', {
     }
 
     if (!cookieSecret || cookieSecret.length < 32) {
-      throw new Error('HTTP: invalid cookie secret length; secret must be at 32 characters')
+      throw new Error('SERVER: invalid cookie secret length; secret must be at 32 characters')
     }
 
     if (apiPrefix) {
       if (typeof apiPrefix !== 'string') {
-        throw new Error('HTTP: invalid api prefix type: "'+ typeof apiPrefix + '"')
+        throw new Error('SERVER: invalid api prefix type: "'+ typeof apiPrefix + '"')
       }
 
       this.apiPrefix = apiPrefix
@@ -229,9 +229,9 @@ export const $http = createPlugin('http', {
 })
 
 export const {
-  httpSetRoute,
-  httpStart,
-  httpStop
-} = $http
+  serverSetRoute,
+  serverStart,
+  serverStop
+} = server
 
-export default $http
+export default server

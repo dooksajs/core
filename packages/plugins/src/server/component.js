@@ -1,8 +1,7 @@
 import { createPlugin, mapState } from '@dooksa/create-plugin'
 import { component as componentClient, stateGenerateId, pagePathToId } from '#client'
-import { databaseDeleteValue, databaseGetValue, databaseSeed, httpSetRoute } from '#server'
+import { databaseDeleteValue, databaseGetValue, databaseSeed, serverSetRoute, pageCreate } from '#server'
 import { components as defaultComponents } from '@dooksa/components'
-import { pageCreate } from '#server'
 import { createDataValue } from '#utils'
 
 export const component = createPlugin('component', {
@@ -30,7 +29,7 @@ export const component = createPlugin('component', {
     }
 
     // route: get a list of component
-    httpSetRoute({
+    serverSetRoute({
       path: '/component',
       middleware: ['request/queryIdIsArray'],
       handlers: [
@@ -39,7 +38,7 @@ export const component = createPlugin('component', {
     })
 
     // route: render a component by ID
-    httpSetRoute({
+    serverSetRoute({
       path: '/component/:id',
       handlers: [
         (request, response) => {
@@ -88,7 +87,7 @@ export const component = createPlugin('component', {
     })
 
     // route: delete component
-    httpSetRoute({
+    serverSetRoute({
       path: '/component',
       method: 'delete',
       middleware: ['user/auth', 'request/queryIdIsArray'],

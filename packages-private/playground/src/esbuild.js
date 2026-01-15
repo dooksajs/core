@@ -9,7 +9,7 @@ const server = createAppServer({
   database: {
     storage: './app/.ds_snapshots/development'
   },
-  http: {
+  server: {
     assets: {
       directory: resolve('./app/assets'),
       path: '/assets'

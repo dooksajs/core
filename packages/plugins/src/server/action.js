@@ -1,8 +1,7 @@
 import { createPlugin, mapState } from '@dooksa/create-plugin'
 import { createAction, compileAction } from '@dooksa/create-action'
-import { action as actionClient, stateSetValue } from '../client/index.js'
-import { databaseSeed, databaseGetValue, databaseDeleteValue } from './database.js'
-import { httpSetRoute } from './http.js'
+import { action as actionClient, stateSetValue } from '#client'
+import { serverSetRoute, databaseSeed, databaseGetValue, databaseDeleteValue } from '#server'
 
 /**
  * @typedef {Object} ActionSequenceResult
@@ -318,7 +317,7 @@ export const action = createPlugin('action', {
     }
 
     // route: get a list of action sequence entries
-    httpSetRoute({
+    serverSetRoute({
       path: '/action/block-sequence',
       method: 'get',
       middleware: ['request/queryIdIsArray'],
@@ -326,7 +325,7 @@ export const action = createPlugin('action', {
     })
 
     // route: delete action sequence entries
-    httpSetRoute({
+    serverSetRoute({
       path: '/action/block-sequence',
       method: 'delete',
       middleware: ['user/auth', 'request/queryIdIsArray'],
@@ -336,7 +335,7 @@ export const action = createPlugin('action', {
     })
 
     // route: get a list of action
-    httpSetRoute({
+    serverSetRoute({
       path: '/action/sequence',
       method: 'get',
       middleware: ['request/queryIdIsArray'],
@@ -345,7 +344,7 @@ export const action = createPlugin('action', {
       ]
     })
 
-    httpSetRoute({
+    serverSetRoute({
       path: '/action/sequence',
       method: 'post',
       handlers: [
@@ -373,7 +372,7 @@ export const action = createPlugin('action', {
     })
 
     // route: delete action sequence
-    httpSetRoute({
+    serverSetRoute({
       path: '/action/sequence',
       method: 'delete',
       middleware: ['user/auth', 'request/queryIdIsArray'],
@@ -383,7 +382,7 @@ export const action = createPlugin('action', {
     })
 
     // route: get a list of action
-    httpSetRoute({
+    serverSetRoute({
       path: '/action/block',
       method: 'get',
       middleware: ['request/queryIdIsArray'],
@@ -393,7 +392,7 @@ export const action = createPlugin('action', {
     })
 
     // route: delete action
-    httpSetRoute({
+    serverSetRoute({
       path: '/action/block',
       method: 'delete',
       middleware: ['user/auth', 'request/queryIdIsArray'],

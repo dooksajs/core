@@ -1,8 +1,7 @@
 import { createPlugin, mapState } from '@dooksa/create-plugin'
 import { createHash } from 'node:crypto'
-import { page as pageClient, pageGetItemsByPath, stateGetValue, stateSetValue } from '../client/index.js'
-import { databaseSeed, databaseSetValue } from './database.js'
-import { httpSetRoute } from './http.js'
+import { page as pageClient, pageGetItemsByPath, stateGetValue, stateSetValue } from '#client'
+import { serverSetRoute, databaseSeed, databaseSetValue } from '#server'
 
 /**
  * @import {DataValue} from '../../../types.js'
@@ -105,7 +104,7 @@ export const page = createPlugin('page', {
       value: css
     })
 
-    httpSetRoute({
+    serverSetRoute({
       path: '/{*splat}',
       suffix: '',
       handlers: [
@@ -133,7 +132,7 @@ export const page = createPlugin('page', {
       ]
     })
 
-    httpSetRoute({
+    serverSetRoute({
       path: '/sourcemap/:filename',
       handlers: [(request, response) => {
         const sourcemap = stateGetValue({
@@ -149,7 +148,7 @@ export const page = createPlugin('page', {
       }]
     })
 
-    httpSetRoute({
+    serverSetRoute({
       path: '/',
       method: 'post',
       suffix: '',

@@ -32,7 +32,7 @@ import createApp from '../create-app-server.js'
  * @example
  * // With custom plugin overrides
  * import app from '@dooksa/create-app/build/server'
- * import customHttpPlugin from './plugins/custom-http.js'
+ * import customServerPlugin from './plugins/custom-server.js'
  *
  * // Override default HTTP plugin
  * const serverApp = createApp({

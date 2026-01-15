@@ -205,8 +205,8 @@ export async function mockPlugin (
       }
     }
 
-    if (!serverModules.includes('http')) {
-      serverModules.push('$http')
+    if (!serverModules.includes('server')) {
+      serverModules.push('server')
     }
 
     let databaseSeedMockFilenames
@@ -250,12 +250,7 @@ export async function mockPlugin (
       if (typeof module === 'string') {
         pluginName = module
 
-        // Handle special naming plugins
-        if (pluginName === 'http') {
-          plugin = tempServerModule['$http']
-        } else {
-          plugin = tempServerModule[pluginName]
-        }
+        plugin = tempServerModule[pluginName]
       } else {
         plugin = module
         pluginName = module.name
@@ -296,11 +291,6 @@ export async function mockPlugin (
       pluginPath = normalize(`${__dirname}/../../../plugins/src/${platform}/${name}.js`)
       const pluginURLPath = pathToFileURL(pluginPath).href
       pluginModule = await import(pluginURLPath + '?seed=' + seed)
-
-      // Handle special naming plugins
-      if (name === 'http') {
-        pluginNamedExport = '$http'
-      }
     } catch (err) {
       const error = new Error(`Failed to find plugin "${name}" in form the "${platform}" platform \n\n ${err.message}`)
       error.stack = err.stack

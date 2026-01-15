@@ -109,7 +109,7 @@ The `mockPlugin` function automatically mocks `global.fetch` to route requests t
 const mock = await mockPlugin(t, {
   name: 'fetch',
   platform: 'client',
-  serverModules: ['http', 'database', userPlugin],
+  serverModules: ['server', 'database', userPlugin],
   clientModules: ['state']
 })
 
@@ -154,12 +154,12 @@ test('should mock server plugin with dependencies', async (t) => {
   const mock = await mockPlugin(t, {
     name: 'component',
     platform: 'server',
-    serverModules: ['database', 'http', 'page'],
+    serverModules: ['database', 'server', 'page'],
     clientModules: ['component', 'page']
   })
 
   // Setup HTTP server
-  mock.server.setup.http()
+  mock.server.setup.server()
   
   // Mock middleware
   mock.server.method.middlewareSet({
@@ -228,11 +228,11 @@ test('should test HTTP routes', async (t) => {
   const mock = await mockPlugin(t, {
     name: 'component',
     platform: 'server',
-    serverModules: ['http', 'database', 'page', 'middleware']
+    serverModules: ['server', 'database', 'page', 'middleware']
   })
 
   // Setup HTTP server
-  mock.server.setup.http()
+  mock.server.setup.server()
 
   // Mock middleware
   mock.server.method.middlewareSet({
@@ -247,7 +247,7 @@ test('should test HTTP routes', async (t) => {
   mock.server.setup.component()
 
   // Start HTTP server
-  await mock.server.method.httpStart()
+  await mock.server.method.serverStart()
 
   // Create request and response
   const request = mock.createRequest({
@@ -304,13 +304,13 @@ test('should execute setup functions', async (t) => {
   const mock = await mockPlugin(t, {
     name: 'database',
     platform: 'server',
-    serverModules: ['http']
+    serverModules: ['server']
   })
 
   // Setup functions are stored but not auto-executed
   // Execute them manually
-  if (mock.server.setup.http) {
-    mock.server.setup.http()
+  if (mock.server.setup.server) {
+    mock.server.setup.server()
   }
 
   if (mock.server.setup.database) {
@@ -318,7 +318,7 @@ test('should execute setup functions', async (t) => {
   }
 
   // Now test with setup complete
-  await mock.server.method.httpStart()
+  await mock.server.method.serverStart()
 
   mock.restore()
 })
@@ -339,7 +339,7 @@ describe('Fetch Plugin Integration', () => {
     mock = await mockPlugin(t, {
       name: 'fetch',
       platform: 'client',
-      serverModules: ['http', 'database', userPlugin],
+      serverModules: ['server', 'database', userPlugin],
       clientModules: ['state'],
       seedData: [
         {
@@ -352,12 +352,12 @@ describe('Fetch Plugin Integration', () => {
     })
 
     // Setup HTTP server and database
-    mock.server.setup.http()
+    mock.server.setup.server()
     mock.server.setup.database()
-    await mock.server.method.httpStart()
+    await mock.server.method.serverStart()
 
     // Setup fetch plugin
-    mock.client.setup.fetch({ hostname: 'http://localhost:6362' })
+    mock.client.setup.fetch({ hostname: 'server://localhost:6362' })
   })
 
   afterEach(() => {
@@ -366,7 +366,7 @@ describe('Fetch Plugin Integration', () => {
 
   test('should fetch data through mock server', async () => {
     // This uses the automatically mocked global.fetch
-    const result = await mock.client.method.fetchGetAll({
+    const result = await mock.client.method.apiGetAll({
       collection: 'user/profiles'
     })
 
@@ -381,7 +381,7 @@ describe('Fetch Plugin Integration', () => {
     })
     global.fetch = customFetch.fetch
 
-    const result = await mock.client.method.fetchGetAll({
+    const result = await mock.client.method.apiGetAll({
       collection: 'custom/data'
     })
 
@@ -389,7 +389,7 @@ describe('Fetch Plugin Integration', () => {
   })
 
   test('should track fetch requests', async () => {
-    await mock.client.method.fetchGetAll({
+    await mock.client.method.apiGetAll({
       collection: 'user/profiles',
       where: "role == 'admin'"
     })
@@ -542,7 +542,7 @@ The `state` plugin is automatically included for client mocks. For server plugin
 const mock = await mockPlugin(t, {
   name: 'component',
   platform: 'server',
-  serverModules: ['database', 'http', 'page', 'middleware']
+  serverModules: ['database', 'server', 'page', 'middleware']
 })
 ```
 
@@ -551,9 +551,9 @@ const mock = await mockPlugin(t, {
 Execute setup functions before testing:
 
 ```javascript
-mock.server.setup.http()
+mock.server.setup.server()
 mock.server.setup.component()
-await mock.server.method.httpStart()
+await mock.server.method.serverStart()
 ```
 
 ### 4. Use Named Exports for Custom Mocks
@@ -594,12 +594,12 @@ test('GET /_/component returns components', async (t) => {
   const mock = await mockPlugin(t, {
     name: 'component',
     platform: 'server',
-    serverModules: ['http', 'database', 'page']
+    serverModules: ['server', 'database', 'page']
   })
 
-  mock.server.setup.http()
+  mock.server.setup.server()
   mock.server.setup.component()
-  await mock.server.method.httpStart()
+  await mock.server.method.serverStart()
 
   const request = mock.createRequest({
     method: 'GET',
@@ -649,12 +649,12 @@ test('action dispatch', async (t) => {
 ```javascript
 test('middleware chain', async (t) => {
   const mock = await mockPlugin(t, {
-    name: 'http',
+    name: 'server',
     platform: 'server',
-    serverModules: ['http', 'middleware']
+    serverModules: ['server', 'middleware']
   })
 
-  mock.server.setup.http()
+  mock.server.setup.server()
 
   // Register middleware
   const middlewareCalls = []
@@ -686,7 +686,7 @@ test('client plugin with fetch integration', async (t) => {
   const mock = await mockPlugin(t, {
     name: 'myClientPlugin',
     platform: 'client',
-    serverModules: ['http', 'database'],
+    serverModules: ['server', 'database'],
     clientModules: ['state', 'fetch'],
     seedData: [
       {
@@ -699,16 +699,16 @@ test('client plugin with fetch integration', async (t) => {
   })
 
   // Setup server
-  mock.server.setup.http()
+  mock.server.setup.server()
   mock.server.setup.database()
   
   // Register API route
-  mock.server.method.httpSetRoute({
+  mock.server.method.serverSetRoute({
     path: '/api/data',
     handlers: [mock.server.method.databaseGetValue(['api/data'])]
   })
   
-  await mock.server.method.httpStart()
+  await mock.server.method.serverStart()
 
   // Setup client fetch
   mock.client.setup.fetch({ hostname: 'http://localhost:6362' })
@@ -767,7 +767,7 @@ namedExports: [
 **Problem**: `invokeRoute` throws "Route not found"
 
 **Solution**: Ensure:
-1. HTTP plugin is setup: `mock.server.setup.http()`
+1. HTTP plugin is setup: `mock.server.setup.server()`
 2. Routes are registered before invoking
 3. Path matches exactly (including `/_/` prefix)
 
@@ -779,13 +779,13 @@ namedExports: [
 
 1. **Check HTTP server setup**: Ensure the HTTP server is started
    ```javascript
-   mock.server.setup.http()
-   await mock.server.method.httpStart()
+   mock.server.setup.server()
+   await mock.server.method.serverStart()
    ```
 
 2. **Verify routes are registered**: Make sure your routes are set up before making fetch calls
    ```javascript
-   mock.server.method.httpSetRoute({
+   mock.server.method.serverSetRoute({
      path: '/api/data',
      handlers: [mock.server.method.databaseGetValue(['data'])]
    })

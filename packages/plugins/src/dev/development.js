@@ -1,5 +1,5 @@
 import { createPlugin } from '@dooksa/create-plugin'
-import { httpSetRoute } from '#server'
+import { serverSetRoute } from '#server'
 import { stateAddListener, stateDeleteListener } from '#client'
 import { generateId } from '@dooksa/utils'
 
@@ -13,7 +13,7 @@ export const development = createPlugin('development', {
   },
   setup () {
     // sse rebuild route
-    httpSetRoute({
+    serverSetRoute({
       path: '/esbuild',
       handlers: [(request, response) => {
         // no cache
@@ -53,4 +53,3 @@ export const development = createPlugin('development', {
     })
   }
 })
-

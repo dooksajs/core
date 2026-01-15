@@ -117,7 +117,7 @@ export function createMockExpressModule (context, mock) {
   }
 
   // Attach middleware factories to the express function
-  // These are called by http.js: express.json(), express.urlencoded(), express.static()
+  // These are called by server.js: express.json(), express.urlencoded(), express.static()
   express.json = () => (req, res, next) => next()
   express.urlencoded = (options) => (req, res, next) => next()
   express.static = (path, options) => (req, res, next) => next()

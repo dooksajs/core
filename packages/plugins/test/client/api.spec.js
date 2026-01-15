@@ -34,7 +34,7 @@ describe('API plugin', function () {
     mock = await mockPlugin(this, {
       name: 'api',
       platform: 'client',
-      serverModules: ['http', 'database', userPlugin],
+      serverModules: ['server', 'database', userPlugin],
       seedData: [
         {
           collection: 'user/profiles',
@@ -60,10 +60,10 @@ describe('API plugin', function () {
     })
 
     // Setup HTTP server and database
-    mock.server.setup.http()
+    mock.server.setup.server()
 
     // Setup user profile route
-    mock.server.method.httpSetRoute({
+    mock.server.method.serverSetRoute({
       path: '/user/profiles',
       middleware: ['request/queryIdIsArray'],
       handlers: [
@@ -71,7 +71,7 @@ describe('API plugin', function () {
       ]
     })
 
-    await mock.server.method.httpStart()
+    await mock.server.method.serverStart()
 
     // Setup api plugin with mock server URL
     mock.client.setup.api({ hostname: 'http://localhost:6362' })

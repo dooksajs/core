@@ -1,10 +1,8 @@
 import { createPlugin } from '@dooksa/create-plugin'
 import { randomBytes, scryptSync, timingSafeEqual } from 'crypto'
 import jwt from 'jsonwebtoken'
-import { databaseDeleteValue, databaseSeed, databaseSetValue } from './database.js'
-import { stateGetValue } from '../client/index.js'
-import { httpSetRoute } from './http.js'
-import { middlewareSet } from './middleware.js'
+import { stateGetValue } from '#client'
+import { serverSetRoute, middlewareSet, databaseDeleteValue, databaseSeed, databaseSetValue } from '#server'
 import { generateId } from '@dooksa/utils'
 
 let cookieMaxAge = 43200
@@ -63,7 +61,7 @@ export const user = createPlugin('user', {
     })
 
     // add routes
-    httpSetRoute({
+    serverSetRoute({
       path: '/user/register',
       method: 'post',
       handlers: [
@@ -72,7 +70,7 @@ export const user = createPlugin('user', {
       ]
     })
 
-    httpSetRoute({
+    serverSetRoute({
       path: '/user/login',
       method: 'post',
       handlers: [
@@ -81,7 +79,7 @@ export const user = createPlugin('user', {
       ]
     })
 
-    httpSetRoute({
+    serverSetRoute({
       path: '/user/delete',
       method: 'delete',
       handlers: [databaseDeleteValue(['user/items'])]
