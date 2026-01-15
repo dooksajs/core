@@ -10,27 +10,29 @@ let JWTAlgorithm = 'HS256'
 let JWTSecret = ''
 
 export const user = createPlugin('user', {
-  schema: {
-    emails: {
-      type: 'collection',
+  state: {
+    schema: {
+      emails: {
+        type: 'collection',
+        items: {
+          type: 'string',
+          relation: 'user/items'
+        }
+      },
       items: {
-        type: 'string',
-        relation: 'user/items'
-      }
-    },
-    items: {
-      type: 'collection',
-      items: {
-        type: 'object',
-        properties: {
-          email: {
-            type: 'string'
-          },
-          password: {
-            type: 'string'
-          },
-          verified: {
-            type: 'boolean'
+        type: 'collection',
+        items: {
+          type: 'object',
+          properties: {
+            email: {
+              type: 'string'
+            },
+            password: {
+              type: 'string'
+            },
+            verified: {
+              type: 'boolean'
+            }
           }
         }
       }
