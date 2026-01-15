@@ -5,8 +5,8 @@ export const dataSetValueByIdUpdateFieldset = createAction('data-set-value-by-id
     action_ifElse: {
       if: [
         {
-          from: { action_getPayloadValue: 'target.value' },
-          to: 'document-by-id',
+          left: { action_getPayloadValue: 'target.value' },
+          right: 'document-by-id',
           op: '=='
         }
       ],

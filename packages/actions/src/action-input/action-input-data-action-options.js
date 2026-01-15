@@ -38,13 +38,13 @@ export default createAction('action-input-data-action-options', [
     action_ifElse: {
       if: [
         {
-          from: {
+          left: {
             action_getValue: {
               value: { $ref: 1 },
               query: 'length'
             }
           },
-          to: 0,
+          right: 0,
           op: '>'
         }
       ],

@@ -46,8 +46,8 @@ export default createAction('action-input-object-property-data', [
     action_ifElse: {
       if: [
         {
-          from: { $ref: 'data_type' },
-          to: 'string',
+          left: { $ref: 'data_type' },
+          right: 'string',
           op: '=='
         }
       ],
@@ -108,8 +108,8 @@ export default createAction('action-input-object-property-data', [
     action_ifElse: {
       if: [
         {
-          from: { $ref: 'value_type' },
-          to: 'object',
+          left: { $ref: 'value_type' },
+          right: 'object',
           op: '=='
         }
       ],

@@ -16,7 +16,7 @@ export default createAction('select-edit-inner-iterate', [
       if: [
         {
           op: '!=',
-          from: {
+          left: {
             action_getValue: {
               value: {
                 $ref: 0
@@ -24,7 +24,7 @@ export default createAction('select-edit-inner-iterate', [
               query: 'id'
             }
           },
-          to: 'select-edit-inner'
+          right: 'select-edit-inner'
         }
       ],
       then: [{ $sequenceRef: 2 }, { $sequenceRef: 3 }, { $sequenceRef: 4 }, { $sequenceRef: 5 }],

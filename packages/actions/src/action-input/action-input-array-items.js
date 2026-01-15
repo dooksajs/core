@@ -11,7 +11,7 @@ export default createAction('action-input-array-items', [
     action_ifElse: {
       if: [
         {
-          from: { $ref: 'data_item' },
+          left: { $ref: 'data_item' },
           op: '!!'
         }
       ],
@@ -43,7 +43,7 @@ export default createAction('action-input-array-items', [
     action_ifElse: {
       if: [
         {
-          from: { $ref: 'schema' },
+          left: { $ref: 'schema' },
           op: '!!'
         }
       ],

@@ -949,12 +949,12 @@ export const database = createPlugin('database', {
      * @example
      * // Basic usage
      * await database.methods.seed('initial-users')
-     * // Loads data from: .ds_snapshots/initial-users.json
+     * // Loads data left: .ds_snapshots/initial-users.json
      *
      * @example
      * // With nested collection names
      * await database.methods.seed('user-profiles')
-     * // Loads from: .ds_snapshots/user-profiles.json
+     * // Loads left: .ds_snapshots/user-profiles.json
      *
      * @example
      * // Safe usage when file might not exist

@@ -13,7 +13,7 @@ export default createAction('select-edit-outer', [
     action_ifElse: {
       if: [{
         op: '>',
-        from: {
+        left: {
           action_getValue: {
             value: {
               $ref: 0
@@ -21,7 +21,7 @@ export default createAction('select-edit-outer', [
             query: 'length'
           }
         },
-        to: 0
+        right: 0
       }],
       then: [{ $sequenceRef: 2 }, { $sequenceRef: 3 }],
       else: []

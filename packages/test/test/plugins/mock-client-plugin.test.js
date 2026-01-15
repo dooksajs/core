@@ -301,8 +301,8 @@ describe('mockClientPlugin', () => {
         if: [
           {
             op: '==',
-            from: 'user.role',
-            to: 'admin'
+            left: 'user.role',
+            right: 'admin'
           }
         ],
         then: ['admin-seq'],
@@ -707,8 +707,8 @@ describe('mockClientPlugin', () => {
         {
           if: [{
             op: '==',
-            from: 'a',
-            to: 'a'
+            left: 'a',
+            right: 'a'
           }],
           then: ['seq-1'],
           else: ['seq-2']

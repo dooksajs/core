@@ -76,8 +76,8 @@ export const dataDocumentValue = createAction('data-document-value', [
     action_ifElse: {
       if: [
         {
-          from: { $ref: 'data_type' },
-          to: 'string',
+          left: { $ref: 'data_type' },
+          right: 'string',
           op: '=='
         }
       ],
@@ -130,8 +130,8 @@ export const dataDocumentValue = createAction('data-document-value', [
     action_ifElse: {
       if: [
         {
-          from: { $ref: 'data_type' },
-          to: 'object',
+          left: { $ref: 'data_type' },
+          right: 'object',
           op: '=='
         }
       ],
@@ -207,8 +207,8 @@ export const dataDocumentValue = createAction('data-document-value', [
     action_ifElse: {
       if: [
         {
-          from: { $ref: 'data_type' },
-          to: 'array',
+          left: { $ref: 'data_type' },
+          right: 'array',
           op: '=='
         }
       ],

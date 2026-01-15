@@ -11,7 +11,7 @@ export default createAction('action-input-update-name-prefix-action-value', [
     action_ifElse: {
       if: [
         {
-          from: { $ref: 'root_id' },
+          left: { $ref: 'root_id' },
           op: '!!'
         }
       ],

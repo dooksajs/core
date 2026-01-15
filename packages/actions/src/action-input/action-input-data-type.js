@@ -44,8 +44,8 @@ export default createAction('action-input-data-type', [
     action_ifElse: {
       if: [
         {
-          from: { $ref: 0 },
-          to: 'text',
+          left: { $ref: 0 },
+          right: 'text',
           op: '=='
         }
       ],
@@ -102,8 +102,8 @@ export default createAction('action-input-data-type', [
     action_ifElse: {
       if: [
         {
-          from: { $ref: 0 },
-          to: 'action',
+          left: { $ref: 0 },
+          right: 'action',
           op: '=='
         }
       ],
@@ -160,8 +160,8 @@ export default createAction('action-input-data-type', [
     action_ifElse: {
       if: [
         {
-          from: { $ref: 0 },
-          to: 'context',
+          left: { $ref: 0 },
+          right: 'context',
           op: '=='
         }
       ],

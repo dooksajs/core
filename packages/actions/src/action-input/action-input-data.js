@@ -18,8 +18,8 @@ export default createAction('action-input-data', [
     action_ifElse: {
       if: [
         {
-          from: { $ref: 'data_type' },
-          to: 'undefined',
+          left: { $ref: 'data_type' },
+          right: 'undefined',
           op: '!='
         }
       ],
@@ -37,8 +37,8 @@ export default createAction('action-input-data', [
     action_ifElse: {
       if: [
         {
-          from: { $ref: 'data_type' },
-          to: 'string',
+          left: { $ref: 'data_type' },
+          right: 'string',
           op: '=='
         }
       ],
@@ -85,8 +85,8 @@ export default createAction('action-input-data', [
     action_ifElse: {
       if: [
         {
-          from: { $ref: 'data_type' },
-          to: 'object',
+          left: { $ref: 'data_type' },
+          right: 'object',
           op: '=='
         }
       ],
@@ -110,8 +110,8 @@ export default createAction('action-input-data', [
     action_ifElse: {
       if: [
         {
-          from: { $ref: 'data_type' },
-          to: 'array',
+          left: { $ref: 'data_type' },
+          right: 'array',
           op: '=='
         }
       ],

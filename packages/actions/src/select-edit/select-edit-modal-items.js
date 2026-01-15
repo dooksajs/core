@@ -13,7 +13,7 @@ export default createAction('select-edit-modal-items', [
     action_ifElse: {
       if: [
         {
-          from: {
+          left: {
             action_getValue: {
               value: {
                 action_getDataValue: {
@@ -27,7 +27,7 @@ export default createAction('select-edit-modal-items', [
               query: 'type'
             }
           },
-          to: 'img',
+          right: 'img',
           op: '=='
         }
       ],

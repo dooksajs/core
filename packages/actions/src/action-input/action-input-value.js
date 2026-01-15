@@ -11,7 +11,7 @@ export default createAction('action-input-value', [
     action_ifElse: {
       if: [
         {
-          from: { $ref: 'value' },
+          left: { $ref: 'value' },
           op: '!!'
         }
       ],

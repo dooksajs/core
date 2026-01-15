@@ -11,7 +11,7 @@ export default createAction('action-input-key', [
     action_ifElse: {
       if: [
         {
-          from: { $ref: 'key' },
+          left: { $ref: 'key' },
           op: 'notNull'
         }
       ],

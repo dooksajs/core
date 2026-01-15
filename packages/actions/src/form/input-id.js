@@ -12,8 +12,8 @@ export default createAction('input-id', [
       if: [
         {
           op: '!!',
-          from: { $ref: 0 },
-          to: true
+          left: { $ref: 0 },
+          right: true
         }
       ],
       then: [{ $sequenceRef: 2 }, { $sequenceRef: 3 }],

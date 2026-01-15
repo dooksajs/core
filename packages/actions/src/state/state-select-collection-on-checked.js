@@ -29,7 +29,7 @@ export default createAction('state-select-collection-on-checked', [
     action_ifElse: {
       if: [
         {
-          from: { $ref: 'fieldset_children_id' },
+          left: { $ref: 'fieldset_children_id' },
           op: '!'
         }
       ],
@@ -62,8 +62,8 @@ export default createAction('state-select-collection-on-checked', [
     action_ifElse: {
       if: [
         {
-          from: { $ref: 'fieldset_children_value' },
-          to: 'state-select-collection',
+          left: { $ref: 'fieldset_children_value' },
+          right: 'state-select-collection',
           op: '!='
         }
       ],
@@ -78,10 +78,10 @@ export default createAction('state-select-collection-on-checked', [
     action_ifElse: {
       if: [
         {
-          from: {
+          left: {
             action_getPayloadValue: 'target.checked'
           },
-          to: true,
+          right: true,
           op: '=='
         }
       ],

@@ -23,8 +23,8 @@ export const actionCardBody = createAction('action-card-body', [
     action_ifElse: {
       if: [
         {
-          from: { $ref: 2 },
-          to: true,
+          left: { $ref: 2 },
+          right: true,
           op: '!!'
         }
       ],

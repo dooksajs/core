@@ -87,8 +87,8 @@ export default createAction('data-document-set-fieldset', [
     action_ifElse: {
       if: [
         {
-          from: { $ref: 'schema_type' },
-          to: 'string',
+          left: { $ref: 'schema_type' },
+          right: 'string',
           op: '=='
         }
       ],
@@ -157,8 +157,8 @@ export default createAction('data-document-set-fieldset', [
     action_ifElse: {
       if: [
         {
-          from: { $ref: 'schema_type' },
-          to: 'object',
+          left: { $ref: 'schema_type' },
+          right: 'object',
           op: '=='
         }
       ],

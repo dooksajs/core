@@ -18,8 +18,8 @@ export default createAction('action-input-object-property-value', [
     action_ifElse: {
       if: [
         {
-          from: { $ref: 'data_type' },
-          to: 'undefined',
+          left: { $ref: 'data_type' },
+          right: 'undefined',
           op: '!='
         }
       ],
@@ -34,16 +34,16 @@ export default createAction('action-input-object-property-value', [
     action_ifElse: {
       if: [
         {
-          from: { $ref: 'data_type' },
-          to: 'object',
+          left: { $ref: 'data_type' },
+          right: 'object',
           op: '=='
         },
         {
           andOr: '||'
         },
         {
-          from: { $ref: 'data_type' },
-          to: 'array',
+          left: { $ref: 'data_type' },
+          right: 'array',
           op: '=='
         }
       ],

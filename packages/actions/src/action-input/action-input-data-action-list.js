@@ -5,7 +5,7 @@ export default createAction('action-input-data-action-list', [
     action_ifElse: {
       if: [
         {
-          from: {
+          left: {
             variable_getValue: {
               scope: { action_getContextValue: 'groupId' },
               query: 'action-input-data-list-break'
@@ -28,8 +28,8 @@ export default createAction('action-input-data-action-list', [
     action_ifElse: {
       if: [
         {
-          from: { action_getPayloadValue: 'value' },
-          to: { $ref: 1 },
+          left: { action_getPayloadValue: 'value' },
+          right: { $ref: 1 },
           op: '=='
         }
       ],
@@ -59,7 +59,7 @@ export default createAction('action-input-data-action-list', [
     action_ifElse: {
       if: [
         {
-          from: { $ref: 4 },
+          left: { $ref: 4 },
           op: '!!'
         }
       ],

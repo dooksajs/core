@@ -188,8 +188,8 @@
 /**
  * @typedef {Object} EvalConditionFrom
  * @property {Operator} op
- * @property {ActionValue|string|number} from
- * @property {ActionValue|string|number|boolean} [to]
+ * @property {ActionValue|string|number} left
+ * @property {ActionValue|string|number|boolean} [right]
  */
 
 /**

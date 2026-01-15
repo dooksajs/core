@@ -26,8 +26,8 @@ export default createAction('action-input-object-property-schema', [
     action_ifElse: {
       if: [
         {
-          from: { $ref: 'schema_type' },
-          to: 'string',
+          left: { $ref: 'schema_type' },
+          right: 'string',
           op: '=='
         }
       ],

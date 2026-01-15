@@ -699,11 +699,11 @@ export const action = createPlugin('action', {
             items: {
               type: 'object',
               properties: {
-                from: {
+                left: {
                   type: 'any',
                   required: true
                 },
-                to: {
+                right: {
                   type: 'any'
                 },
                 op: {
@@ -734,8 +734,8 @@ export const action = createPlugin('action', {
        * @param {Object} branch - The branch object containing the conditions and corresponding actions
        * @param {Object[]} branch.if - Array of condition objects to evaluate
        * @param {'=='|'!='|'>'|'>='|'<'|'<='|'!'|'%'|'++'|'--'|'-'|'+'|'*'|'**'|'!!'|'~'} branch.if[].op - The operator for the condition
-       * @param {string|number} branch.if[].from - The left-hand side value of the comparison
-       * @param {string|number} branch.if[].to - The right-hand side value of the comparison
+       * @param {string|number} branch.if[].left - The left-hand side value of the comparison
+       * @param {string|number} branch.if[].right - The right-hand side value of the comparison
        * @param {'&&'|'||'} [branch.if[].andOr] - Logical operator to combine multiple conditions ('&&' for AND, '||' for OR)
        * @param {string[]} branch.then - Array of block sequence IDs to execute if condition is true
        * @param {string[]} branch.else - Array of block sequence IDs to execute if condition is false
@@ -749,7 +749,7 @@ export const action = createPlugin('action', {
        * @example
        * // Single condition
        * action.ifElse({
-       *   if: [{ op: '==', from: 'user.role', to: 'admin' }],
+       *   if: [{ op: '==', left: 'user.role', right: 'admin' }],
        *   then: ['admin_sequence'],
        *   else: ['user_sequence']
        * }, callback, { context, payload, blockValues })
@@ -790,13 +790,13 @@ export const action = createPlugin('action', {
             }
 
             // Resolve values before evaluation
-            const fromValue = this.resolveValue(context, payload, item.from)
-            const toValue = this.resolveValue(context, payload, item.to)
+            const leftValue = this.resolveValue(context, payload, item.left)
+            const rightValue = this.resolveValue(context, payload, item.right)
 
             // evaluate the comparison using the provided operator and operands.
             const value = operatorEval({
               name: item.op,
-              values: [fromValue, toValue]
+              values: [leftValue, rightValue]
             })
 
             // initialise first operand for a new condition pair.
@@ -823,12 +823,12 @@ export const action = createPlugin('action', {
           const item = branch.if[0]
 
           // Resolve values before evaluation
-          const fromValue = this.resolveValue(context, payload, item.from)
-          const toValue = this.resolveValue(context, payload, item.to)
+          const leftValue = this.resolveValue(context, payload, item.left)
+          const rightValue = this.resolveValue(context, payload, item.right)
 
           isTruthy = operatorEval({
             name: item.op,
-            values: [fromValue, toValue]
+            values: [leftValue, rightValue]
           })
         }
 

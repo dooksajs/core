@@ -14,10 +14,10 @@ export default createAction('label-html-for', [
       if: [
         {
           op: '!!',
-          from: {
+          left: {
             $ref: 0
           },
-          to: true
+          right: true
         }
       ],
       then: [{ $sequenceRef: 2 }, { $sequenceRef: 3 }],
