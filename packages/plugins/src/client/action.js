@@ -573,7 +573,7 @@ export const action = createPlugin('action', {
                   payload
                 }, actionContext)
                   .then(result => resolve(result))
-                  .then(error => reject(error))
+                  .catch(error => reject(error))
               })
               .catch(error => reject(error))
           }
