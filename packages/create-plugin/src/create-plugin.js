@@ -310,18 +310,16 @@ export function createPlugin (name, {
     }
   }
 
-  DEV: {
-    const restorationData = data ? deepClone(data) : {}
+  const restorationData = data ? deepClone(data) : {}
 
-    Object.defineProperty(result, 'restore', {
-      value () {
-        Object.assign(context, restorationData)
-      },
-      enumerable: false,
-      writable: false,
-      configurable: false
-    })
-  }
+  Object.defineProperty(result, 'restore', {
+    value () {
+      Object.assign(context, restorationData)
+    },
+    enumerable: false,
+    writable: false,
+    configurable: false
+  })
 
   return result
 }

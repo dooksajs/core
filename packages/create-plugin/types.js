@@ -133,7 +133,7 @@
  * @typedef {DsPluginModuleMethod<Name, Methods> &
 *  DsPluginModuleAction<Name, Actions> &
 *  DsPluginGetters &
-*  { setup: Setup }
+*  { setup: Setup, restore: Function }
 * } DsPluginExport
 */
 
