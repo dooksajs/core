@@ -1,17 +1,16 @@
 import { describe, it, beforeEach, afterEach } from 'node:test'
 import { strictEqual, ok } from 'node:assert'
-import { mockClientPlugin } from '@dooksa/test'
-import { mockNavigationWindow, mockWindowWithEvents } from '../../mock/index.js'
+import { mockPlugin, mockNavigationWindow, mockWindowWithEvents } from '@dooksa/test'
 
-describe('Route plugin (New Mock Utilities)', function () {
+describe('Route plugin', function () {
   let mock
-  let restoreWindow
 
   beforeEach(async function () {
-    // Setup mock plugin
-    mock = await mockClientPlugin(this, {
+    // Setup mock plugin with client modules
+    mock = await mockPlugin(this, {
       name: 'route',
-      modules: ['event', 'action', 'page']
+      platform: 'client',
+      clientModules: ['event', 'action', 'page']
     })
   })
 
@@ -19,26 +18,24 @@ describe('Route plugin (New Mock Utilities)', function () {
     if (mock) {
       mock.restore()
     }
-    if (restoreWindow) {
-      restoreWindow()
-    }
   })
 
-  describe('Setup with new mocks', function () {
+  describe('Setup', function () {
     it('should register popstate event listener', function () {
       // Use mockWindowWithEvents for comprehensive event testing
       const windowMock = mockWindowWithEvents(this, {
         pathname: '/',
         search: ''
       })
-      restoreWindow = windowMock.restore
 
       // Call setup
-      mock.module.route.setup()
+      mock.client.setup.route()
 
       // Verify addEventListener was called with popstate
       const eventListeners = windowMock.getEventListeners()
       strictEqual(eventListeners.popstate.length, 1)
+
+      windowMock.restore()
     })
 
     it('should emit route/history event on popstate', function () {
@@ -46,9 +43,8 @@ describe('Route plugin (New Mock Utilities)', function () {
         pathname: '/test',
         search: ''
       })
-      restoreWindow = windowMock.restore
 
-      mock.module.route.setup()
+      mock.client.setup.route()
 
       // Trigger popstate event
       windowMock.triggerEvent('popstate', {
@@ -60,29 +56,30 @@ describe('Route plugin (New Mock Utilities)', function () {
       })
 
       // Verify eventEmit was called
-      // @ts-ignore
-      strictEqual(mock.method.eventEmit.mock.calls.length, 1)
+      strictEqual(mock.client.method.eventEmit.mock.calls.length, 1)
 
-      // @ts-ignore
-      const callArgs = mock.method.eventEmit.mock.calls[0].arguments[0]
+      const callArgs = mock.client.method.eventEmit.mock.calls[0].arguments[0]
       strictEqual(callArgs.name, 'route/history')
       strictEqual(callArgs.id, 'popstate')
       ok(callArgs.payload)
       ok(callArgs.payload.location)
       ok(callArgs.payload.state)
+
+      windowMock.restore()
     })
   })
 
-  describe('currentPath action with new mocks', function () {
+  describe('currentPath action', function () {
     it('should return "/" when pathname is empty', function () {
       const windowMock = mockNavigationWindow(this, {
         pathname: '',
         search: ''
       })
-      restoreWindow = windowMock.restore
 
-      const result = mock.method.routeCurrentPath()
+      const result = mock.client.method.routeCurrentPath()
       strictEqual(result, '/')
+
+      windowMock.restore()
     })
 
     it('should return "/" when pathname is "/"', function () {
@@ -90,10 +87,11 @@ describe('Route plugin (New Mock Utilities)', function () {
         pathname: '/',
         search: ''
       })
-      restoreWindow = windowMock.restore
 
-      const result = mock.method.routeCurrentPath()
+      const result = mock.client.method.routeCurrentPath()
       strictEqual(result, '/')
+
+      windowMock.restore()
     })
 
     it('should return actual pathname', function () {
@@ -101,10 +99,11 @@ describe('Route plugin (New Mock Utilities)', function () {
         pathname: '/users/123',
         search: ''
       })
-      restoreWindow = windowMock.restore
 
-      const result = mock.method.routeCurrentPath()
+      const result = mock.client.method.routeCurrentPath()
       strictEqual(result, '/users/123')
+
+      windowMock.restore()
     })
 
     it('should handle complex paths', function () {
@@ -112,27 +111,29 @@ describe('Route plugin (New Mock Utilities)', function () {
         pathname: '/admin/users/123/edit',
         search: ''
       })
-      restoreWindow = windowMock.restore
 
-      const result = mock.method.routeCurrentPath()
+      const result = mock.client.method.routeCurrentPath()
       strictEqual(result, '/admin/users/123/edit')
+
+      windowMock.restore()
     })
   })
 
-  describe('currentId action with new mocks', function () {
+  describe('currentId action', function () {
     it('should generate consistent ID for same path', function () {
       const windowMock = mockNavigationWindow(this, {
         pathname: '/test',
         search: ''
       })
-      restoreWindow = windowMock.restore
 
-      const id1 = mock.method.routeCurrentId()
-      const id2 = mock.method.routeCurrentId()
+      const id1 = mock.client.method.routeCurrentId()
+      const id2 = mock.client.method.routeCurrentId()
 
       strictEqual(id1, id2)
       ok(id1.startsWith('_'))
       ok(id1.endsWith('_'))
+
+      windowMock.restore()
     })
 
     it('should cache path hash', function () {
@@ -140,12 +141,13 @@ describe('Route plugin (New Mock Utilities)', function () {
         pathname: '/cached',
         search: ''
       })
-      restoreWindow = windowMock.restore
 
-      const id1 = mock.method.routeCurrentId()
-      const id2 = mock.method.routeCurrentId()
+      const id1 = mock.client.method.routeCurrentId()
+      const id2 = mock.client.method.routeCurrentId()
 
       strictEqual(id1, id2)
+
+      windowMock.restore()
     })
 
     it('should generate different IDs for different paths', function () {
@@ -153,16 +155,15 @@ describe('Route plugin (New Mock Utilities)', function () {
         pathname: '/path1',
         search: ''
       })
-      const id1 = mock.method.routeCurrentPath()
+      const id1 = mock.client.method.routeCurrentId()
       windowMock1.restore()
 
       const windowMock2 = mockNavigationWindow(this, {
         pathname: '/path2',
         search: ''
       })
-      restoreWindow = windowMock2.restore
-
-      const id2 = mock.method.routeCurrentId()
+      const id2 = mock.client.method.routeCurrentId()
+      windowMock2.restore()
 
       strictEqual(id1 !== id2, true)
     })
@@ -172,36 +173,33 @@ describe('Route plugin (New Mock Utilities)', function () {
         pathname: '/',
         search: ''
       })
-      restoreWindow = windowMock.restore
 
-      const id = mock.method.routeCurrentId()
+      const id = mock.client.method.routeCurrentId()
       ok(id.startsWith('_'))
       ok(id.endsWith('_'))
+
+      windowMock.restore()
     })
   })
 
-  describe('navigate action with new mocks', function () {
+  describe('navigate action', function () {
     it('should push state to history', function () {
       const windowMock = mockNavigationWindow(this, {
         pathname: '/from',
         search: ''
       })
-      restoreWindow = windowMock.restore
 
-      mock.method.routeNavigate({ to: '/to' })
+      mock.client.method.routeNavigate({ to: '/to' })
 
       // Check that history.pushState was called
-      // Note: We need to access the mock history to verify calls
-      // @ts-ignore
       strictEqual(global.window.history.pushState.mock.calls.length, 1)
 
-      // @ts-ignore
       const callArgs = global.window.history.pushState.mock.calls[0].arguments
       strictEqual(callArgs[0].to, '/to')
       strictEqual(callArgs[0].from, '/from')
       strictEqual(callArgs[2], '/to')
-      // @ts-ignore
-      strictEqual(global.window.history.pushState.mock.calls.length, 1)
+
+      windowMock.restore()
     })
 
     it('should not navigate if paths are the same', function () {
@@ -209,12 +207,12 @@ describe('Route plugin (New Mock Utilities)', function () {
         pathname: '/same',
         search: ''
       })
-      restoreWindow = windowMock.restore
 
-      mock.method.routeNavigate({ to: '/same' })
+      mock.client.method.routeNavigate({ to: '/same' })
 
-      // @ts-ignore
       strictEqual(global.window.history.pushState.mock.calls.length, 0)
+
+      windowMock.restore()
     })
 
     it('should handle missing state data gracefully', function () {
@@ -222,14 +220,14 @@ describe('Route plugin (New Mock Utilities)', function () {
         pathname: '/current',
         search: ''
       })
-      restoreWindow = windowMock.restore
 
-      // stateGetValue will return empty data
-      mock.method.routeNavigate({ to: '/new' })
+      // stateGetValue will return empty data by default
+      mock.client.method.routeNavigate({ to: '/new' })
 
       // Should still push state
-      // @ts-ignore
       strictEqual(global.window.history.pushState.mock.calls.length, 1)
+
+      windowMock.restore()
     })
 
     it('should handle complex navigation flow', function () {
@@ -237,11 +235,10 @@ describe('Route plugin (New Mock Utilities)', function () {
         pathname: '/from',
         search: ''
       })
-      restoreWindow = windowMock.restore
 
       // Mock state data for page/items
-      const originalMock = mock.method.stateGetValue
-      mock.method.stateGetValue = this.mock.fn((params) => {
+      const originalMock = mock.client.method.stateGetValue
+      mock.client.method.stateGetValue = this.mock.fn((params) => {
         if (params.name === 'page/items') {
           if (params.id === '/from') {
             return {
@@ -265,17 +262,15 @@ describe('Route plugin (New Mock Utilities)', function () {
         return { isEmpty: true }
       })
 
-      mock.method.routeNavigate({ to: '/to' })
+      mock.client.method.routeNavigate({ to: '/to' })
 
-      // @ts-ignore
       strictEqual(global.window.history.pushState.mock.calls.length, 1)
-      // @ts-ignore
       strictEqual(global.window.history.pushState.mock.calls[0].arguments[0].to, '/to')
-      // @ts-ignore
       strictEqual(global.window.history.pushState.mock.calls[0].arguments[0].from, '/from')
 
       // Restore original mock
-      mock.method.stateGetValue = originalMock
+      mock.client.method.stateGetValue = originalMock
+      windowMock.restore()
     })
 
     it('should handle navigation to path with no existing state', function () {
@@ -283,55 +278,54 @@ describe('Route plugin (New Mock Utilities)', function () {
         pathname: '/current',
         search: ''
       })
-      restoreWindow = windowMock.restore
 
       // Mock state to return empty for both paths
-      const originalMock = mock.method.stateGetValue
-      mock.method.stateGetValue = this.mock.fn(() => ({
+      const originalMock = mock.client.method.stateGetValue
+      mock.client.method.stateGetValue = this.mock.fn(() => ({
         isEmpty: true,
         item: {}
       }))
 
-      mock.method.routeNavigate({ to: '/empty' })
+      mock.client.method.routeNavigate({ to: '/empty' })
 
-      // @ts-ignore
       strictEqual(global.window.history.pushState.mock.calls.length, 1)
 
       // Restore original mock
-      mock.method.stateGetValue = originalMock
+      mock.client.method.stateGetValue = originalMock
+      windowMock.restore()
     })
   })
 
-  describe('Integration scenarios with new mocks', function () {
+  describe('Integration scenarios', function () {
     it('should handle full navigation flow', function () {
       const windowMock = mockNavigationWindow(this, {
         pathname: '/',
         search: ''
       })
-      restoreWindow = windowMock.restore
 
       // 1. Get current path
-      const path1 = mock.method.routeCurrentPath()
+      const path1 = mock.client.method.routeCurrentPath()
       strictEqual(path1, '/')
 
       // 2. Get current ID
-      const id1 = mock.method.routeCurrentPath()
+      const id1 = mock.client.method.routeCurrentId()
       ok(id1)
 
       // 3. Navigate to new path
-      mock.method.routeNavigate({ to: '/dashboard' })
-      // @ts-ignore
+      mock.client.method.routeNavigate({ to: '/dashboard' })
       strictEqual(global.window.history.pushState.mock.calls.length, 1)
 
       // 4. Simulate browser navigation by updating location
       windowMock.setLocation('/dashboard')
 
       // 5. Get new path and ID
-      const path2 = mock.method.routeCurrentPath()
-      const id2 = mock.method.routeCurrentPath()
+      const path2 = mock.client.method.routeCurrentPath()
+      const id2 = mock.client.method.routeCurrentId()
 
       strictEqual(path2, '/dashboard')
       strictEqual(id1 !== id2, true)
+
+      windowMock.restore()
     })
 
     it('should handle browser back/forward navigation', function () {
@@ -339,14 +333,13 @@ describe('Route plugin (New Mock Utilities)', function () {
         pathname: '/page1',
         search: ''
       })
-      restoreWindow = windowMock.restore
 
-      mock.module.route.setup()
+      mock.client.setup.route()
 
-      const eventEmitSpy = mock.method.eventEmit
+      const eventEmitSpy = mock.client.method.eventEmit
 
       // Simulate navigation sequence
-      mock.method.routeNavigate({ to: '/page2' })
+      mock.client.method.routeNavigate({ to: '/page2' })
 
       // Simulate back button (popstate)
       windowMock.triggerEvent('popstate', {
@@ -360,6 +353,8 @@ describe('Route plugin (New Mock Utilities)', function () {
       // Verify event was emitted
       strictEqual(eventEmitSpy.mock.calls.length, 1)
       strictEqual(eventEmitSpy.mock.calls[0].arguments[0].name, 'route/history')
+
+      windowMock.restore()
     })
 
     it('should handle multiple rapid navigations', function () {
@@ -367,19 +362,19 @@ describe('Route plugin (New Mock Utilities)', function () {
         pathname: '/a',
         search: ''
       })
-      restoreWindow = windowMock.restore
 
       const paths = ['/a', '/b', '/c', '/d', '/e']
 
       for (let i = 1; i < paths.length; i++) {
-        mock.method.routeNavigate({ to: paths[i] })
+        mock.client.method.routeNavigate({ to: paths[i] })
 
         // Update URL for next iteration
         windowMock.setLocation(paths[i])
       }
 
-      // @ts-ignore
       strictEqual(global.window.history.pushState.mock.calls.length, paths.length - 1)
+
+      windowMock.restore()
     })
 
     it('should maintain ID consistency across navigation', function () {
@@ -390,7 +385,7 @@ describe('Route plugin (New Mock Utilities)', function () {
         pathname: testPath,
         search: ''
       })
-      const id1 = mock.method.routeCurrentPath()
+      const id1 = mock.client.method.routeCurrentId()
       windowMock1.restore()
 
       // Simulate navigation away
@@ -405,27 +400,28 @@ describe('Route plugin (New Mock Utilities)', function () {
         pathname: testPath,
         search: ''
       })
-      restoreWindow = windowMock3.restore
-      const id2 = mock.method.routeCurrentPath()
+      const id2 = mock.client.method.routeCurrentId()
+      windowMock3.restore()
 
       strictEqual(id1, id2)
     })
   })
 
-  describe('Edge cases with new mocks', function () {
+  describe('Edge cases', function () {
     it('should handle special characters in path', function () {
       const windowMock = mockNavigationWindow(this, {
         pathname: '/path/with spaces/and-special_chars',
         search: ''
       })
-      restoreWindow = windowMock.restore
 
-      const path = mock.method.routeCurrentPath()
-      const id = mock.method.routeCurrentId()
+      const path = mock.client.method.routeCurrentPath()
+      const id = mock.client.method.routeCurrentId()
 
       strictEqual(path, '/path/with spaces/and-special_chars')
       ok(id.startsWith('_'))
       ok(id.endsWith('_'))
+
+      windowMock.restore()
     })
 
     it('should handle very long paths', function () {
@@ -434,13 +430,14 @@ describe('Route plugin (New Mock Utilities)', function () {
         pathname: longPath,
         search: ''
       })
-      restoreWindow = windowMock.restore
 
-      const path = mock.method.routeCurrentPath()
-      const id = mock.method.routeCurrentPath()
+      const path = mock.client.method.routeCurrentPath()
+      const id = mock.client.method.routeCurrentId()
 
       strictEqual(path, longPath)
       ok(typeof id === 'string')
+
+      windowMock.restore()
     })
 
     it('should handle empty string navigation', function () {
@@ -448,13 +445,13 @@ describe('Route plugin (New Mock Utilities)', function () {
         pathname: '/current',
         search: ''
       })
-      restoreWindow = windowMock.restore
 
-      mock.method.routeNavigate({ to: '' })
+      mock.client.method.routeNavigate({ to: '' })
 
       // Should still push state (empty string !== '/current')
-      // @ts-ignore
       strictEqual(global.window.history.pushState.mock.calls.length, 1)
+
+      windowMock.restore()
     })
 
     it('should handle unicode characters in path', function () {
@@ -462,13 +459,14 @@ describe('Route plugin (New Mock Utilities)', function () {
         pathname: '/日本語',
         search: ''
       })
-      restoreWindow = windowMock.restore
 
-      const path = mock.method.routeCurrentPath()
-      const id = mock.method.routeCurrentId()
+      const path = mock.client.method.routeCurrentPath()
+      const id = mock.client.method.routeCurrentId()
 
       ok(path.includes('日本語'))
       ok(typeof id === 'string')
+
+      windowMock.restore()
     })
 
     it('should handle trailing slashes consistently', function () {
@@ -477,17 +475,30 @@ describe('Route plugin (New Mock Utilities)', function () {
         pathname: '/path',
         search: ''
       })
-      const id1 = mock.method.routeCurrentPath()
+      const id1 = mock.client.method.routeCurrentId()
       windowMock1.restore()
 
       const windowMock2 = mockNavigationWindow(this, {
         pathname: '/path/',
         search: ''
       })
-      restoreWindow = windowMock2.restore
-      const id2 = mock.method.routeCurrentPath()
+      const id2 = mock.client.method.routeCurrentId()
+      windowMock2.restore()
 
       strictEqual(id1 !== id2, true)
+    })
+  })
+
+  describe('Plugin metadata', function () {
+    it('should export route actions', function () {
+      // Verify the actions are available
+      ok(mock.client.method.routeCurrentPath)
+      ok(mock.client.method.routeCurrentId)
+      ok(mock.client.method.routeNavigate)
+
+      strictEqual(typeof mock.client.method.routeCurrentPath, 'function')
+      strictEqual(typeof mock.client.method.routeCurrentId, 'function')
+      strictEqual(typeof mock.client.method.routeNavigate, 'function')
     })
   })
 })
