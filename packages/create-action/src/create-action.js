@@ -27,14 +27,20 @@ import { parseAction } from '@dooksa/utils/server'
  * - **$ref**: Resolves to specific block IDs within the compiled action
  * - **$sequenceRef**: Resolves to sequence IDs (block sequences)
  * - References can use numeric indices or named action IDs
- *
- * @param {string} id - Unique identifier for the action. Used as the root action ID
+ * @overload
+ * @param {string} id - Unique identifier for the action.
  * @param {ActionValue[]} data - Array of action data objects to compile.
- *                              Each object can contain methods, nested data, and references
- * @param {string[]} [dependencies=[]] - Array of plugin or action dependencies required by this action.
- *                                      Used for dependency management and loading order
- * @param {Object.<string, boolean>} [methods=availableMethods] - Object mapping of allowed action method names to true.
- *                                                               Restricts which methods can be used in the action
+ *
+ * @overload
+ * @param {string} id - Unique identifier for the action.
+ * @param {ActionValue[]} data - Array of action data objects to compile.
+ * @param {string[]} dependencies - Array of plugin or action dependencies.
+ *
+ * @overload
+ * @param {string} id - Unique identifier for the action.
+ * @param {ActionValue[]} data - Array of action data objects to compile.
+ * @param {string[]} dependencies - Array of plugin or action dependencies.
+ * @param {Object.<string, boolean>} methods - Allowed action method names.
  *
  * @returns {Action} Compiled action object containing:
  *   - `id`: The action identifier
@@ -74,14 +80,36 @@ import { parseAction } from '@dooksa/utils/server'
  * const action = createAction('complex-action', [
  *   {
  *     action_ifElse: {
- *       if: [{ op: '==', from: 'status', to: 'active' }],
+ *       if: [{ op: '==', left: 'status', right: 'active' }],
  *       then: [{ $sequenceRef: 0 }],
  *       else: [{ $sequenceRef: 1 }]
  *     }
  *   }
  * ], ['plugin-a', 'plugin-b'], { action_ifElse: true })
  */
-function createAction (id, data, dependencies = [], methods = availableMethods) {
+function createAction (...args) {
+  const id = args[0]
+  const data = args[1]
+
+  let methods, dependencies
+  let arg2 = args[2]
+  let arg3 = args[3]
+
+  if (typeof arg2 === 'object') {
+    dependencies = arg2
+
+    if (!Array.isArray(arg2)) {
+      // add methods if dependencies is excluded
+      methods = arg2
+      dependencies = null
+    }
+  }
+
+  // set methods
+  if (typeof arg3 === 'object') {
+    methods = arg3
+  }
+
   const sequences = []
   /** @type {Object.<string, string[]>} */
   const blockSequences = {}
