@@ -289,26 +289,26 @@ export const action = createPlugin('action', {
      * )
      */
     getBlockValues (block, context, payload, blockValues) {
-      let value = dataTypes[block.dataType]()
+      let newValue = dataTypes[block.dataType]()
       const blocks = block.blockValues
 
       for (let i = 0; i < blocks.length; i++) {
         const id = blocks[i]
-        const block = stateGetValue({
+        const blockData = stateGetValue({
           name: 'action/blocks',
           id
         })
 
-        if (block.isEmpty) {
+        if (blockData.isEmpty) {
           throw new Error('Action: block could not be found: ' + id)
         }
 
-        const result = this.getBlockValueByKey(block.item, context, payload, blockValues)
+        const { key, value } = this.getBlockValueByKey(blockData.item, context, payload, blockValues)
 
-        if (result.key) {
-          value[result.key] = result.value
+        if (key) {
+          newValue[key] = value
         } else {
-          value = result.value
+          newValue = value
         }
 
         blockValues[id] = value
@@ -316,7 +316,7 @@ export const action = createPlugin('action', {
 
       return {
         key: block.key,
-        value
+        value: newValue
       }
     },
     /**
@@ -757,9 +757,9 @@ export const action = createPlugin('action', {
        * // Multiple conditions with AND
        * action.ifElse({
        *   if: [
-       *     { op: '==', from: 'user.role', to: 'admin' },
+       *     { op: '==', left: 'user.role', right: 'admin' },
        *     { andOr: '&&' },
-       *     { op: '>', from: 'user.age', to: 18 }
+       *     { op: '>', left: 'user.age', right: 18 }
        *   ],
        *   then: ['adult_admin_sequence'],
        *   else: ['other_sequence']
