@@ -399,7 +399,7 @@ export const action = createPlugin('action', {
                       return nextProcess()
                     }
 
-                    callback()
+                    callback(result)
                   }),
                   onError: (error) => {
                     /**
