@@ -76,7 +76,7 @@
  * const data = {
  *   action_ifElse: {
  *     if: [
- *       { op: '==', from: 'value', to: 'active' }
+ *       { op: '==', left: 'value', right: 'active' }
  *     ],
  *     then: [{ $sequenceRef: 0 }],
  *     else: [{ $sequenceRef: 1 }]
@@ -142,10 +142,12 @@ function parseAction (
       if (methods[key]) {
         result.isBlockSequence = true
         block.method = key
-      } else if (key === 'action_ifElse') {
-        // Special case for ifElse blocks
-        result.isBlockSequence = true
-        block.ifElse = true
+
+        if (key === 'action_ifElse') {
+          // Special case for ifElse blocks
+          block.ifElse = true
+          delete block.method
+        }
       }
 
       // For nested properties (not at root), add the key to the block
