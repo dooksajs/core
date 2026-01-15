@@ -96,6 +96,29 @@ export const action = createPlugin('action', {
   },
   privateMethods: {
     /**
+     * Helper function to resolve values from context/payload
+     * @param {*} context
+     * @param {*} payload
+     * @param {*} value
+     */
+    resolveValue (context, payload, value) {
+      // If it's a string that looks like a path, try to resolve it
+      if (typeof value === 'string') {
+        // Try context first
+        const contextValue = getValue(context, value)
+        if (contextValue != undefined) {
+          return contextValue
+        }
+        // Try payload
+        const payloadValue = getValue(payload, value)
+        if (payloadValue != undefined) {
+          return payloadValue
+        }
+      }
+      // Return as-is if not a path or not found
+      return value
+    },
+    /**
      * Callback function that loads plugins when actions are needed.
      * This method ensures that the requested action method is available before executing the callback.
      * If the action is not immediately available, it attempts to lazy load it.
@@ -766,10 +789,14 @@ export const action = createPlugin('action', {
               continue
             }
 
+            // Resolve values before evaluation
+            const fromValue = this.resolveValue(context, payload, item.from)
+            const toValue = this.resolveValue(context, payload, item.to)
+
             // evaluate the comparison using the provided operator and operands.
             const value = operatorEval({
               name: item.op,
-              values: [item.from, item.to]
+              values: [fromValue, toValue]
             })
 
             // initialise first operand for a new condition pair.
@@ -795,9 +822,13 @@ export const action = createPlugin('action', {
           // handle single condition: evaluate directly without grouping
           const item = branch.if[0]
 
+          // Resolve values before evaluation
+          const fromValue = this.resolveValue(context, payload, item.from)
+          const toValue = this.resolveValue(context, payload, item.to)
+
           isTruthy = operatorEval({
             name: item.op,
-            values: [item.from, item.to]
+            values: [fromValue, toValue]
           })
         }
 
