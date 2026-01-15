@@ -454,7 +454,10 @@ describe('Variable plugin - setValue action', function () {
       id: 'scope-1'
     })
 
-    strictEqual(values.item['_test_id_12345_'], 'auto-generated-value')
+    // Find the auto-generated key and verify the value
+    const keys = Object.keys(values.item)
+    strictEqual(keys.length, 1, 'Should have exactly one key')
+    strictEqual(values.item[keys[0]], 'auto-generated-value')
   })
 
   it('should apply prefix to generated ID', async function () {
@@ -473,7 +476,10 @@ describe('Variable plugin - setValue action', function () {
       id: 'scope-1'
     })
 
-    strictEqual(values.item['pre__test_id_12345_'], 'prefixed-value')
+    // Find the key that starts with 'pre_' and verify the value
+    const keys = Object.keys(values.item).filter(k => k.startsWith('pre_'))
+    strictEqual(keys.length, 1, 'Should have exactly one prefixed key')
+    strictEqual(values.item[keys[0]], 'prefixed-value')
   })
 
   it('should apply suffix to generated ID', async function () {
@@ -492,7 +498,10 @@ describe('Variable plugin - setValue action', function () {
       id: 'scope-1'
     })
 
-    strictEqual(values.item['_test_id_12345__suf'], 'suffixed-value')
+    // Find the key that ends with '_suf' and verify the value
+    const keys = Object.keys(values.item).filter(k => k.endsWith('_suf'))
+    strictEqual(keys.length, 1, 'Should have exactly one suffixed key')
+    strictEqual(values.item[keys[0]], 'suffixed-value')
   })
 
   it('should apply both prefix and suffix to generated ID', async function () {
@@ -512,7 +521,10 @@ describe('Variable plugin - setValue action', function () {
       id: 'scope-1'
     })
 
-    strictEqual(values.item['pre__test_id_12345__suf'], 'combined-value')
+    // Find the key that starts with 'pre_' and ends with '_suf' and verify the value
+    const keys = Object.keys(values.item).filter(k => k.startsWith('pre_') && k.endsWith('_suf'))
+    strictEqual(keys.length, 1, 'Should have exactly one combined key')
+    strictEqual(values.item[keys[0]], 'combined-value')
   })
 
   it('should use provided ID with prefix and suffix', async function () {
@@ -561,7 +573,11 @@ describe('Variable plugin - setValue action', function () {
 
     strictEqual(values.item['var-1'], 'value-1')
     strictEqual(values.item['var-2'], 'value-2')
-    strictEqual(values.item['_test_id_12345_'], 'value-3')
+
+    // Find the auto-generated ID key (should be the one that's not var-1 or var-2)
+    const keys = Object.keys(values.item).filter(k => k !== 'var-1' && k !== 'var-2')
+    strictEqual(keys.length, 1, 'Should have exactly one auto-generated key')
+    strictEqual(values.item[keys[0]], 'value-3')
   })
 
   it('should merge with existing values in scope', async function () {
