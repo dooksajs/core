@@ -76,7 +76,7 @@
  * Allows customization of core client plugins during app initialization.
  * @property {DsPlugin} [state] - State management plugin override
  * @property {DsPlugin} [metadata] - Metadata plugin override
- * @property {DsPlugin} [fetch] - Fetch API plugin override
+ * @property {DsPlugin} [api] - API plugin override
  * @property {DsPlugin} [operator] - Operator plugin override
  * @property {DsPlugin} [action] - Action plugin override
  * @property {DsPlugin} [variable] - Variable plugin override

@@ -174,9 +174,6 @@ export async function mockPlugin (
         plugin = tempClientModule[module]
         pluginName = module
 
-        if (pluginName === 'fetch') {
-          plugin = tempClientModule['$fetch']
-        }
       } else {
         plugin = module
         pluginName = module.name
@@ -256,8 +253,6 @@ export async function mockPlugin (
         // Handle special naming plugins
         if (pluginName === 'http') {
           plugin = tempServerModule['$http']
-        } else if (pluginName === 'fetch') {
-          plugin = tempServerModule['$fetch']
         } else {
           plugin = tempServerModule[pluginName]
         }
@@ -305,8 +300,6 @@ export async function mockPlugin (
       // Handle special naming plugins
       if (name === 'http') {
         pluginNamedExport = '$http'
-      } else if (name === 'fetch') {
-        pluginNamedExport = '$fetch'
       }
     } catch (err) {
       const error = new Error(`Failed to find plugin "${name}" in form the "${platform}" platform \n\n ${err.message}`)

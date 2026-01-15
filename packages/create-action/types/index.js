@@ -39,8 +39,8 @@
  * @property {StateGetValue} [state_getValue]
  * @property {StateSetValue} [state_setValue]
  * @property {string|ActionValue} [editor_getSchema]
- * @property {FetchGetAll} [fetch_getAll]
- * @property {FetchGetById} [fetch_getById]
+ * @property {ApiGetAll} [api_getAll]
+ * @property {ApiGetById} [api_getById]
  * @property {IconRender} [icon_render]
  * @property {ListFilter} [list_filter]
  * @property {ListMap} [list_map]
@@ -306,7 +306,7 @@
  */
 
 /**
- * @typedef {Object} FetchGetAll
+ * @typedef {Object} ApiGetAll
  * @property {ActionValue|string} collection
  * @property {ActionValue|boolean} [expand]
  * @property {ActionValue|number} [limit]
@@ -317,7 +317,7 @@
  */
 
 /**
- * @typedef {Object} FetchGetById
+ * @typedef {Object} ApiGetById
  * @property {ActionValue|string} collection
  * @property {ActionValue|string[]} id
  * @property {ActionValue|boolean} [expand]

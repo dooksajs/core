@@ -1,6 +1,6 @@
 /**
  * Creates a fetch mock that integrates with mockPlugin
- * This allows fetch plugin to communicate with the mock Express server
+ * This allows api plugin to communicate with the mock Express server
  *
  * @import {MockPlugin} from './mock-plugin.js'
  * @import {TestContext} from 'node:test'

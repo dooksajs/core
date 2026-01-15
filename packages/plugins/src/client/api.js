@@ -7,15 +7,15 @@ import { stateGetValue, stateSetValue, stateAddListener } from '#client'
 
 /**
  * @template T
- * @typedef {Object} FetchDataValue - Complete data value with metadata and context
+ * @typedef {Object} ApiDataValue - Complete data value with metadata and context
  * @property {string} collection - Collection name
  * @property {T} item - The data value
  * @property {boolean} isEmpty - Flag for empty results
  */
 
-export const $fetch = createPlugin('fetch', {
+export const api = createPlugin('api', {
   metadata: {
-    title: 'Fetch',
+    title: 'API',
     description: 'Fetch data from the backend',
     icon: 'mdi:file-document-box-search'
   },
@@ -29,7 +29,7 @@ export const $fetch = createPlugin('fetch', {
     /**
      * Retrieve cached data for a given request ID
      * @param {string} path - The cache key/path for the request
-     * @returns {FetchDataValue<DataValue[]>|undefined} - Returns cached fetch result or undefined if not cached
+     * @returns {ApiDataValue<DataValue[]>|undefined} - Returns cached api result or undefined if not cached
      */
     getCacheByPath (path) {
       // Check cache
@@ -51,7 +51,7 @@ export const $fetch = createPlugin('fetch', {
     /**
      * Retrieve cached data a given request ID
      * @param {string} path - The cache key/path for the request
-     * @returns {Promise<FetchDataValue<DataValue[]>>|undefined} - Returns cached promise or undefined if not cached
+     * @returns {Promise<ApiDataValue<DataValue[]>>|undefined} - Returns cached promise or undefined if not cached
      */
     getRequestByPath (path) {
       return this.requestQueue[path]
@@ -199,7 +199,7 @@ export const $fetch = createPlugin('fetch', {
        * @param {number} [param.limit] - Maximum total number of records to return (overrides perPage)
        * @param {string} [param.where] - Filter condition for the query
        * @param {boolean} [param.sync=true] - Whether to sync fetched data with local database state
-       * @returns {Promise<FetchDataValue<DataValue[]>>} - Promise resolving to array of documents or false on error
+       * @returns {Promise<ApiDataValue<DataValue[]>>} - Promise resolving to array of documents or false on error
        */
       method ({
         collection,
@@ -360,7 +360,7 @@ export const $fetch = createPlugin('fetch', {
        * @param {string[]|string} param.id - Single document ID or array of IDs
        * @param {boolean} [param.expand=false] - Whether to fetch related documents
        * @param {boolean} [param.sync=true] - Whether to sync fetched data with local database state
-       * @returns {Promise<FetchDataValue<DataValue[]>>} - Promise resolving to fetched document(s) or array
+       * @returns {Promise<ApiDataValue<DataValue[]>>} - Promise resolving to fetched document(s) or array
        */
       method ({ collection, id, expand, sync = true }) {
         if (!Array.isArray(id)) {
@@ -439,7 +439,7 @@ export const $fetch = createPlugin('fetch', {
     }
   },
   /**
-   * Setup the fetch plugin configuration
+   * Setup the api plugin configuration
    * @param {Object} param - Setup parameters
    * @param {string} [param.hostname=''] - Base hostname/URL for API requests (will be prepended to '/_/')
    */
@@ -449,8 +449,8 @@ export const $fetch = createPlugin('fetch', {
 })
 
 export const {
-  fetchGetAll,
-  fetchGetById
-} = $fetch
+  apiGetAll,
+  apiGetById
+} = api
 
-export default $fetch
+export default api

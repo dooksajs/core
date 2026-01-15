@@ -1,5 +1,5 @@
 import { createPlugin } from '@dooksa/create-plugin'
-import { stateGetValue, fetchGetById, operatorCompare, operatorEval } from '#client'
+import { stateGetValue, apiGetById, operatorCompare, operatorEval } from '#client'
 import { getValue } from '@dooksa/utils'
 
 /**
@@ -554,9 +554,9 @@ export const action = createPlugin('action', {
             }
           })
 
-          // attempt to fetch action from backend
+          // attempt to get action from backend
           if (sequence.isEmpty) {
-            return fetchGetById({
+            return apiGetById({
               collection: 'action/sequence',
               id: [id],
               expand: true

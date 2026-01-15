@@ -746,8 +746,8 @@ const config: ServerAppConfig = {
 
 ```typescript
 // Let TypeScript infer the type
-const app = createAppServer()
-const result = app.setup({ options: { port: 3000 } })
+const app =  createAppServer()
+const result = await app.setup({ options: { port: 3000 } })
 ```
 
 ### 3. Type Event Handlers

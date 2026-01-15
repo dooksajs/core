@@ -6,7 +6,7 @@
  * Creates a mock fetch function for testing HTTP requests
  *
  * This function provides a flexible mock for the global fetch API, allowing
- * controlled responses for testing fetch plugin behavior. It supports:
+ * controlled responses for testing api plugin behavior. It supports:
  * - Custom response data and status codes
  * - Error simulation
  * - Request verification (URL, method, headers)
@@ -144,7 +144,7 @@ export function createMockFetch (t, options = {}) {
 /**
  * Creates a mock fetch function that simulates caching behavior
  *
- * This mock is specifically designed for testing the fetch plugin's cache
+ * This mock is specifically designed for testing the api plugin's cache
  * functionality. It can return different responses based on the request URL
  * and track cache hits/misses.
  *

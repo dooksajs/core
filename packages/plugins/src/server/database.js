@@ -815,7 +815,7 @@ export const database = createPlugin('database', {
 
               if (data.isEmpty) {
                 // Skip non-existent items instead of returning 404
-                // This allows fetchGetById to return empty results gracefully
+                // This allows apiGetById to return empty results gracefully
                 continue
               }
 

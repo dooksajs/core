@@ -191,7 +191,7 @@ describe('mockClientPlugin', () => {
         namedExports: [
           {
             module: '#client',
-            name: 'fetchGetById',
+            name: 'apiGetById',
             value: t.mock.fn(() => Promise.resolve({ isEmpty: true }))
           },
           {
@@ -231,7 +231,7 @@ describe('mockClientPlugin', () => {
         namedExports: [
           {
             module: '#client',
-            name: 'fetchGetById',
+            name: 'apiGetById',
             value: t.mock.fn(() => Promise.resolve({ isEmpty: true }))
           },
           {
@@ -278,7 +278,7 @@ describe('mockClientPlugin', () => {
         namedExports: [
           {
             module: '#client',
-            name: 'fetchGetById',
+            name: 'apiGetById',
             value: t.mock.fn(() => Promise.resolve({ isEmpty: true }))
           },
           {
@@ -459,7 +459,7 @@ describe('mockClientPlugin', () => {
           },
           {
             module: '#client',
-            name: 'fetchGetById',
+            name: 'apiGetById',
             value: t.mock.fn(() => Promise.resolve({ isEmpty: true }))
           },
           {
@@ -502,7 +502,7 @@ describe('mockClientPlugin', () => {
         namedExports: [
           {
             module: '#client',
-            name: 'fetchGetById',
+            name: 'apiGetById',
             value: t.mock.fn(() => Promise.resolve({ isEmpty: true }))
           },
           {
@@ -668,7 +668,7 @@ describe('mockClientPlugin', () => {
         namedExports: [
           {
             module: '#client',
-            name: 'fetchGetById',
+            name: 'apiGetById',
             value: t.mock.fn(() => Promise.resolve({ isEmpty: true }))
           },
           {

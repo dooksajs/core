@@ -78,7 +78,7 @@ function appendAction () {
  *
  * // Add plugins
  * clientPluginManager.use(authPlugin)
- * clientPluginManager.use(fetchPlugin)
+ * clientPluginManager.use(apiPlugin)
  *
  * // Access collected data
  * console.log(clientPluginManager.metadata)
@@ -222,7 +222,7 @@ function initialize (serverPlugins, clientPlugins, actions) {
  *     database: customDbPlugin
  *   },
  *   clientPlugins: {
- *     fetch: customFetchPlugin
+ *     api: customApiPlugin
  *   },
  *   actions: {
  *     'custom-action': customAction

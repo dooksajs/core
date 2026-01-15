@@ -1281,8 +1281,8 @@ describe('appendPlugin', () => {
         }]
       }
 
-      const fetch = {
-        name: 'fetch',
+      const api = {
+        name: 'api',
         actions: [{
           name: 'request',
           method: () => {
@@ -1317,7 +1317,7 @@ describe('appendPlugin', () => {
 
       const action = {
         name: 'action',
-        dependencies: [state, event, fetch],
+        dependencies: [state, event, api],
         actions: [{
           name: 'dispatch',
           method: () => {
@@ -1346,7 +1346,7 @@ describe('appendPlugin', () => {
       ok(names.indexOf('event') < names.indexOf('variable'))
       ok(names.indexOf('state') < names.indexOf('action'))
       ok(names.indexOf('event') < names.indexOf('action'))
-      ok(names.indexOf('fetch') < names.indexOf('action'))
+      ok(names.indexOf('api') < names.indexOf('action'))
       ok(names.indexOf('state') < names.indexOf('component'))
       ok(names.indexOf('variable') < names.indexOf('component'))
       ok(names.indexOf('action') < names.indexOf('component'))
@@ -1550,8 +1550,8 @@ describe('appendPlugin', () => {
         }]
       }
 
-      const fetch = {
-        name: 'fetch',
+      const api = {
+        name: 'api',
         actions: [{
           name: 'get',
           method: () => {
@@ -1587,7 +1587,7 @@ describe('appendPlugin', () => {
 
       const action = {
         name: 'action',
-        dependencies: [state, event, fetch],
+        dependencies: [state, event, api],
         actions: [{
           name: 'dispatch',
           method: () => {

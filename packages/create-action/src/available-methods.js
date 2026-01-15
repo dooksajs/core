@@ -11,8 +11,8 @@
  * @property {boolean} component_remove - Remove component
  * @property {boolean} component_renderChildren - Render component children
  * @property {boolean} editor_getSchema - Get editor schema
- * @property {boolean} fetch_getAll - Fetch all items
- * @property {boolean} fetch_getById - Fetch by ID
+ * @property {boolean} api_getAll - Fetch all items
+ * @property {boolean} api_getById - Fetch by ID
  * @property {boolean} icon_render - Render icon
  * @property {boolean} list_filter - Filter list
  * @property {boolean} list_indexOf - Get list index
@@ -58,8 +58,8 @@ const availableMethods = {
   component_remove: true,
   component_renderChildren: true,
   editor_getSchema: true,
-  fetch_getAll: true,
-  fetch_getById: true,
+  api_getAll: true,
+  api_getById: true,
   icon_render: true,
   list_filter: true,
   list_indexOf: true,
