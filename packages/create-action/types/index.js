@@ -186,10 +186,10 @@
  */
 
 /**
- * @typedef {Object} EvalConditionFrom
- * @property {Operator} op
- * @property {ActionValue|string|number} left
- * @property {ActionValue|string|number|boolean} [right]
+ * @typedef {Object} EvalBinaryExpression
+ * @property {Operator} op - The operator (e.g., '==', '!=', '>', '<').
+ * @property {ActionValue|string|number} left - The Left-Hand Side (LHS) value to evaluate.
+ * @property {ActionValue|string|number|boolean} [right] - The Right-Hand Side (RHS) value to compare against.
  */
 
 /**
@@ -204,7 +204,7 @@
 
 /**
  * @typedef {Object} EvalCondition
- * @property {Array<EvalConditionFrom|EvalConditionAndOr>} if
+ * @property {Array<EvalBinaryExpression|EvalConditionAndOr>} if
  * @property {EvalConditionRef[]} then
  * @property {EvalConditionRef[]} else
  */
