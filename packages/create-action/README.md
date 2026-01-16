@@ -196,7 +196,7 @@ const setupComponent = createAction('setup-component', [
 - `list_filter`, `list_map`, `list_push`, `list_sort`, `list_splice`, `list_indexOf`
 
 **Fetch:**
-- `fetch_getAll`, `fetch_getById`
+- `api_getAll`, `api_getById`
 
 **Routes:**
 - `route_navigate`, `route_currentId`, `route_currentPath`
