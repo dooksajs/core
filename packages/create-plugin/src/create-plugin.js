@@ -118,10 +118,10 @@ export function createPlugin (name, {
   /** @type {DsPluginExport<Name, Methods, Actions, Setup>} */
   const result = {}
   const context = Object.create(null)
-
   // add plugin name to context
   context.name = name
 
+  const originalSetup = setup
   // bind context to setup
   setup = bindContext(setup, context)
 
@@ -315,6 +315,37 @@ export function createPlugin (name, {
   Object.defineProperty(result, 'restore', {
     value () {
       Object.assign(context, restorationData)
+    },
+    enumerable: false,
+    writable: false,
+    configurable: false
+  })
+
+  // Add instance creation method
+  Object.defineProperty(result, 'createInstance', {
+    value (options = {}) {
+      // Merge override data with original data
+      const mergedData = options?.data
+        ? {
+          ...data,
+          ...options.data
+        }
+        : data
+
+      // Use custom name or original name
+      const instanceName = options?.name || name
+
+      // Create new instance with merged configuration
+      return createPlugin(instanceName, {
+        dependencies,
+        state,
+        metadata,
+        data: mergedData,
+        actions,
+        methods,
+        privateMethods,
+        setup: originalSetup
+      })
     },
     enumerable: false,
     writable: false,

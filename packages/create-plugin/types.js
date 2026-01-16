@@ -122,7 +122,14 @@
  */
 
 /**
- * @typedef {DsPluginGetters & Object.<string, *>} DsPlugin
+* @typedef {Object.<string, *>} DsPluginData
+*/
+
+/**
+ * @template {DsPluginData} Data
+ * @typedef {Object} DsPluginInstanceOptions
+ * @property {Partial<Data>} [data] - Override data values for the new instance
+ * @property {string} [name] - Custom name for the new instance (optional)
  */
 
 /**
@@ -130,12 +137,38 @@
  * @template {DsPluginMethods} Methods
  * @template {DsPluginActions} Actions
  * @template {Function} Setup
+ * @template {DsPluginData} [Data=any]
+ * @template {DsPluginMethods} [PrivateMethods=any]
  * @typedef {DsPluginModuleMethod<Name, Methods> &
 *  DsPluginModuleAction<Name, Actions> &
 *  DsPluginGetters &
-*  { setup: Setup, restore: Function }
+*  {
+*    setup: Setup,
+*    restore: Function,
+*    createInstance: (options?: DsPluginInstanceOptions<Data>) => DsPluginExport<Name, Methods, Actions, Setup, Data, PrivateMethods>
+*  }
 * } DsPluginExport
 */
+
+/**
+ * @template {string} Name
+ * @template {DsPluginData} Data
+ * @template {DsPluginMethods} Methods
+ * @template {DsPluginMethods} PrivateMethods
+ * @template {DsPluginActions} Actions
+ * @template {Function} Setup
+ * @typedef {Object} DsPluginConfig
+ * @property {string} name
+ * @property {'client'|'server'} platform
+ * @property {DsPluginGetters[]} [dependencies]
+ * @property {DsPluginState} [state]
+ * @property {DsPluginMetadata} [metadata]
+ * @property {Data} [data]
+ * @property {Methods} [methods]
+ * @property {PrivateMethods} [privateMethods]
+ * @property {Actions} [actions]
+ * @property {Setup} [setup]
+ */
 
 /**
 * @typedef {Object} ActiveAction
@@ -150,9 +183,8 @@
  */
 
 /**
-* @typedef {DsPluginMetadataUnique & { DsPlugin: string, method: string }} DsPluginActionMetadata
+* @typedef {DsPluginMetadataUnique & { plugin: string, method: string }} DsPluginActionMetadata
 * @typedef {Object.<string, DsPluginAction>} DsPluginActions
-* @typedef {Object.<string, *>} DsPluginData
 */
 
 /**
@@ -163,9 +195,9 @@
 * @template {DsPluginActions} Actions
 * @template {Function} Setup
 * @typedef {Object} DsPluginOptions
-* @property {DsPluginGetters[]} [DsPlugin.dependencies]
-* @property {DsPluginState} [DsPlugin.state]
-* @property {DsPluginMetadata} [DsPlugin.metadata]
+* @property {DsPluginGetters[]} [dependencies]
+* @property {DsPluginState} [state]
+* @property {DsPluginMetadata} [metadata]
 * @property {Data} [data]
 * @property {Methods} [methods]
 * @property {PrivateMethods} [privateMethods]
