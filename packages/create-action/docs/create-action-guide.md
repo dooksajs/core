@@ -28,6 +28,104 @@ An `Action` object containing:
 - `sequences`: Array of sequence IDs
 - `dependencies`: Required dependencies
 
+### Basic ifElse Conditional
+
+This example shows conditional logic with better naming than generic placeholders:
+
+```javascript
+const conditionalAction = createAction('user-validation', [
+  {
+    action_ifElse: {
+      if: [{
+        op: '==',
+        left: { action_getPayloadValue: 'isValid' },
+        right: true
+      }],
+      then: [{ $sequenceRef: 'handleSuccess' }],
+      else: [{ $sequenceRef: 'handleFailure' }]
+    }
+  },
+  {
+    $id: 'handleSuccess',
+    action_dispatch: { id: 'show-success-message' }
+  },
+  {
+    $id: 'handleFailure',
+    action_dispatch: { id: 'show-error-message' }
+  }
+], {
+  action_dispatch: true,
+  action_getPayloadValue: true
+})
+```
+
+**Key improvements over generic naming:**
+- `handleSuccess` instead of `test_then`
+- `handleFailure` instead of `test_else`
+- Descriptive action IDs like `show-success-message` and `show-error-message`
+
+### Simple Action Sequence
+
+This example demonstrates sequential data processing:
+
+```javascript
+const processData = createAction('process-data', [
+  {
+    $id: 'fetchInput',
+    action_getPayloadValue: 'data'
+  },
+  {
+    $id: 'transformData',
+    action_getValue: {
+      value: { $ref: 'fetchInput' },
+      query: 'value'
+    }
+  },
+  {
+    state_setValue: {
+      name: 'result',
+      value: { $ref: 'transformData' }
+    }
+  }
+], {
+  action_getPayloadValue: true,
+  action_getValue: true,
+  state_setValue: true
+})
+```
+
+**Naming conventions used:**
+- `fetchInput` - clearly indicates data retrieval
+- `transformData` - indicates data transformation
+- Logical flow from input → transformation → storage
+
+### Action with Dependencies
+
+This example shows the full three-parameter signature with plugin dependencies:
+
+```javascript
+const userAction = createAction('handle-user-action', [
+  {
+    $id: 'validateUser',
+    action_validate: { minLength: 3 }
+  },
+  {
+    $id: 'processUser',
+    action_process: {
+      input: { $ref: 'validateUser' }
+    }
+  }
+], ['user-plugin', 'validation-plugin'], {
+  action_validate: true,
+  action_process: true
+})
+```
+
+**Key features:**
+- Plugin dependencies: `['user-plugin', 'validation-plugin']`
+- Method permissions object for allowed actions
+- Clear naming: `validateUser`, `processUser`
+
 ## Basic Structure
 
 An action is defined as an array of step objects. Each step performs a specific operation:
@@ -381,11 +479,11 @@ Get index of item:
 
 ### Fetch Operations
 
-#### `fetch_getAll`
+#### `api_getAll`
 Fetch all items from collection:
 ```javascript
 {
-  fetch_getAll: {
+  api_getAll: {
     collection: 'users',
     limit: 10,
     page: 1
@@ -393,11 +491,11 @@ Fetch all items from collection:
 }
 ```
 
-#### `fetch_getById`
+#### `api_getById`
 Fetch specific items by ID:
 ```javascript
 {
-  fetch_getById: {
+  api_getById: {
     collection: 'users',
     id: ['user-1', 'user-2'],
     expand: true
