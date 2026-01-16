@@ -41,7 +41,7 @@ import createApp from '@dooksa/create-app/server'
 
 const app = createApp({
   serverPlugins: {
-    http: customHttpPlugin,
+    server: customServerPlugin,
     database: customDbPlugin
   },
   clientPlugins: {
@@ -241,7 +241,7 @@ interface ServerAppConfig {
   serverPlugins?: {
     state?: DsPlugin
     middleware?: DsPlugin
-    http?: DsPlugin
+    server?: DsPlugin
     metadata?: DsPlugin
     user?: DsPlugin
     database?: DsPlugin
@@ -381,7 +381,7 @@ Configuration for server-side plugins.
 interface ServerPlugins {
   state?: DsPlugin
   middleware?: DsPlugin
-  http?: DsPlugin
+  server?: DsPlugin
   metadata?: DsPlugin
   user?: DsPlugin
   database?: DsPlugin
@@ -557,7 +557,7 @@ import type {
 ```typescript
 const app = createAppServer({
   serverPlugins: {
-    http: customHttpPlugin // Type-checked
+    server: customServerPlugin // Type-checked
   },
   actions: {
     'login': loginAction   // Type-checked

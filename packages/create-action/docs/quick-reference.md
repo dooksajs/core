@@ -58,8 +58,8 @@ const action = createAction('action-id', [
 - `list_indexOf` - Find index
 
 ### Fetch
-- `fetch_getAll` - Fetch all
-- `fetch_getById` - Fetch by ID
+- `api_getAll` - Fetch all
+- `api_getById` - Fetch by ID
 
 ### Routes
 - `route_navigate` - Navigate

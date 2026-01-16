@@ -92,7 +92,7 @@ Creates a mock fetch with cache behavior simulation.
 #### `createMockFetchError(t, options)`
 Creates a mock fetch that always throws an error.
 
-#### `createMockFetchHttpError(t, options)`
+#### `createMockFetchServerError(t, options)`
 Creates a mock fetch that returns HTTP error responses.
 
 #### `mockWindowLocationSearch(context, search)`

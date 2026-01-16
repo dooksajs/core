@@ -395,10 +395,10 @@ createAction('my-action', [...], [], {
 
 #### Fetch Operations
 
-**fetch_getAll**
+**api_getAll**
 ```javascript
 {
-  fetch_getAll: {
+  api_getAll: {
     collection: ActionValue|string,
     expand?: ActionValue|boolean,
     limit?: ActionValue|number,
@@ -410,10 +410,10 @@ createAction('my-action', [...], [], {
 }
 ```
 
-**fetch_getById**
+**api_getById**
 ```javascript
 {
-  fetch_getById: {
+  api_getById: {
     collection: ActionValue|string,
     id: ActionValue|string[],
     expand?: ActionValue|boolean,
