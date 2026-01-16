@@ -1,5 +1,5 @@
 import { capitalize, deepClone } from '@dooksa/utils'
-import { createSchema } from './create-schema.js'
+import { parseSchema } from './parse-schema.js'
 
 /**
  * @import {
@@ -171,7 +171,7 @@ export function createPlugin (name, {
       _values[collectionName] = dataValue(schemaType)
       _names.push(collectionName)
       _items.push({
-        entries: createSchema(context, value, collectionName),
+        entries: parseSchema(context, value, collectionName),
         isCollection: schemaType === 'collection',
         name: collectionName
       })

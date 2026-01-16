@@ -24,7 +24,7 @@ const ID_PROPERTIES = {
 }
 
 /**
- * Creates a schema array from a DataSchema definition
+ * Parses DataSchema definition to Schema
  * @param {Object} context - The context object that will apply the schema to
  * @param {DataSchema | SchemaObjectProperty} schema - The schema
  * @param {string} id - The schema ID
@@ -32,7 +32,7 @@ const ID_PROPERTIES = {
  * @param {boolean} [isNested=false] - Whether this is a nested schema entry
  * @returns {Schema[]}
  */
-export function createSchema (context, schema, id, entries = [], isNested = false) {
+export function parseSchema (context, schema, id, entries = [], isNested = false) {
   const $schema = optimiseSchema(context, schema)
 
   // Handle nested schema IDs
@@ -50,7 +50,7 @@ export function createSchema (context, schema, id, entries = [], isNested = fals
     )
   } else {
     if ($schema.items) {
-      createSchema(context, $schema.items, schemaId, entries, true)
+      parseSchema(context, $schema.items, schemaId, entries, true)
     }
 
     entries.push({
@@ -298,7 +298,7 @@ function objectPropertySchema (context, id, properties = [], options, schema) {
       delete processedProperty.properties
       delete processedProperty.patternProperties
     } else if (processedProperty.items) {
-      createSchema(context, processedProperty, `${id}/${name}`, schema)
+      parseSchema(context, processedProperty, `${id}/${name}`, schema)
       delete processedProperty.items
     }
 
