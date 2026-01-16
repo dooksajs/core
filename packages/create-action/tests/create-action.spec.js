@@ -171,8 +171,8 @@ describe('createAction', function () {
           action_ifElse: {
             if: [{
               op: '==',
-              from: 'value',
-              to: 'active'
+              left: 'value',
+              right: 'active'
             }],
             then: [{ $sequenceRef: 0 }],
             else: [{ $sequenceRef: 1 }]
@@ -547,8 +547,8 @@ describe('createAction', function () {
             if: [
               {
                 op: '==',
-                from: 'value',
-                to: 'active'
+                left: 'value',
+                right: 'active'
               }
             ],
             then: [{ $sequenceRef: 0 }],
@@ -584,8 +584,8 @@ describe('createAction', function () {
           action_ifElse: {
             if: [{
               op: '==',
-              from: 'x',
-              to: 'y'
+              left: 'x',
+              right: 'y'
             }],
             then: [{ $sequenceRef: 0 }],
             else: [{ $sequenceRef: 1 }]
@@ -656,8 +656,8 @@ describe('createAction', function () {
           action_ifElse: {
             if: [{
               op: '==',
-              from: 'x',
-              to: 'y'
+              left: 'x',
+              right: 'y'
             }],
             then: [{ $sequenceRef: 0 }],
             else: [{ $sequenceRef: 1 }]
