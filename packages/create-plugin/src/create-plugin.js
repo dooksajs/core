@@ -1,5 +1,6 @@
-import { capitalize, deepClone } from '@dooksa/utils'
-import { parseSchema } from './parse-schema.js'
+import { deepClone } from '@dooksa/utils'
+import { bindContext } from './utils.js'
+import { createPluginActions, createPluginMethods, createPluginPrivateMethods, createPluginState } from './create-plugin-helpers.js'
 
 /**
  * @import {
@@ -14,96 +15,66 @@ import { parseSchema } from './parse-schema.js'
  *  SchemaType } from '#types'
  */
 
-const actionContext = {
-  context: {},
-  payload: {},
-  blockValues: {}
-}
-
 /**
+ * Creates a Dooksa plugin with comprehensive context binding and lifecycle management.
  *
- * @param {*} value
- * @returns
- */
-function isPlainObject (value) {
-  if (value === null || typeof value !== 'object') return false
-  const proto = Object.getPrototypeOf(value)
-  return proto === null || proto === Object.prototype
-}
-
-/**
- * @param {any} target - The object/function to bind
- * @param {any} context - The 'this' context to apply
- * @param {WeakMap} seen - Internal tracker for circular references
- */
-function bindContext (target, context, seen = new WeakMap()) {
-  // Handle Functions: Bind and return
-  if (typeof target === 'function') {
-    return target.bind(context)
-  }
-
-  // Handle Primitives and "Special" Objects (Date, RegExp, etc.)
-  if (
-    !target
-    || typeof target !== 'object'
-    || (
-      !isPlainObject(target)
-      && !Array.isArray(target)
-    )
-  ) {
-    return target
-  }
-
-  // Circular Reference Check: If we've seen this object, return the bound version
-  if (seen.has(target)) {
-    return seen.get(target)
-  }
-
-  // Prepare the container (Array or Null-Prototype Object)
-  const isArray = Array.isArray(target)
-  const boundClone = isArray ? [] : Object.create(null)
-
-  // Store the mapping BEFORE recursing to catch deep circularity
-  seen.set(target, boundClone)
-
-  // Recurse through keys
-  const keys = isArray ? target.keys() : Object.keys(target)
-
-  for (const key of keys) {
-    const value = target[key]
-    // Recursively bind children
-    boundClone[key] = bindContext(value, context, seen)
-  }
-
-  return boundClone
-}
-
-Object.freeze(actionContext)
-
-/**
- * @template {string} Name
- * @template {DsPluginData} Data
- * @template {DsPluginMethods} Methods
- * @template {DsPluginMethods} PrivateMethods
- * @template {DsPluginActions} Actions
- * @template {Function} Setup
- * @param {Name} name
- * @param {DsPluginOptions<
- *    Name,
- *    Data,
- *    Methods,
- *    PrivateMethods,
- *    Actions,
- *    Setup
- *  > &
- *  ThisType<
- *    { name: Name } &
- *    Data &
- *    Methods &
- *    PrivateMethods &
- *    DsPluginActionMapper<Actions>
- *  >} plugin
- * @returns {DsPluginExport<Name, Methods, Actions, Setup>}
+ * This function orchestrates the creation of a plugin by:
+ * - Initializing a isolated context for plugin execution
+ * - Setting up state management with schema validation
+ * - Binding data to the context
+ * - Creating action handlers with metadata
+ * - Registering public and private methods
+ * - Providing instance creation capabilities
+ *
+ * @template {string} Name - The unique plugin name identifier
+ * @template {DsPluginData} Data - Plugin data structure type
+ * @template {DsPluginMethods} Methods - Public methods interface type
+ * @template {DsPluginMethods} PrivateMethods - Private methods interface type
+ * @template {DsPluginActions} Actions - Action handlers type
+ * @template {Function} Setup - Setup function type
+ *
+ * @param {Name} name - Unique identifier for the plugin (e.g., 'user', 'auth')
+ * @param {DsPluginOptions<Name, Data, Methods, PrivateMethods, Actions, Setup> &
+ *         ThisType<{ name: Name } & Data & Methods & PrivateMethods & DsPluginActionMapper<Actions>>} pluginOptions - Full plugin options type with context binding
+ * @returns {DsPluginExport<Name, Methods, Actions, Setup>} - Frozen plugin object with setup, actions, methods, and instance creation
+ *
+ * @example
+ * // Basic plugin with data and methods
+ * const userPlugin = createPlugin('user', {
+ *   data: {
+ *     name: 'John',
+ *     age: 30
+ *   },
+ *   methods: {
+ *     greet() {
+ *       return `Hello, ${this.name}!`
+ *     }
+ *   }
+ * })
+ *
+ * @example
+ * // Plugin with actions and state
+ * const authPlugin = createPlugin('auth', {
+ *   state: {
+ *     defaults: {
+ *       token: null
+ *     },
+ *     schema: {
+ *       token: { type: 'string' }
+ *     }
+ *   },
+ *   actions: {
+ *     login: {
+ *       method: function(params) {
+ *         this.token = params.token
+ *       },
+ *       metadata: {
+ *         title: 'User Login',
+ *         description: 'Authenticate user and store token'
+ *       }
+ *     }
+ *   }
+ * })
  */
 export function createPlugin (name, {
   dependencies,
@@ -115,274 +86,141 @@ export function createPlugin (name, {
   privateMethods,
   setup
 }) {
-  /** @type {DsPluginExport<Name, Methods, Actions, Setup>} */
-  const result = {}
+
+  // Initialize isolated execution context for the plugin
   const context = Object.create(null)
-  // add plugin name to context
+  const plugin = Object.create(null)
+
+  // Set plugin name in context for identification
   context.name = name
+  plugin.name = name
 
-  const originalSetup = setup
-  // bind context to setup
-  setup = bindContext(setup, context)
-
-  if (state) {
-    state = deepClone(state)
-
-    const defaults = state.defaults
-    const schema = state.schema
-    const _defaults = []
-    const _values = {}
-    const _items = []
-    const _names = []
-
-    Object.defineProperties(state, {
-      _items: {
-        value: _items,
-        enumerable: false
-      },
-      _names: {
-        value: _names,
-        enumerable: false
-      },
-      _values: {
-        value: _values,
-        enumerable: false
-      },
-      _defaults: {
-        value: _defaults,
-        enumerable: false
-      }
-    })
-
-    if (defaults) {
-      for (const [key, value] of Object.entries(defaults)) {
-        _defaults.push({
-          name: name + '/' + key,
-          value: bindContext(value, context)
-        })
-      }
-    }
-
-
-    for (const [key, value] of Object.entries(schema)) {
-      const schemaType = value.type
-      const collectionName = name + '/' + key
-
-      _values[collectionName] = dataValue(schemaType)
-      _names.push(collectionName)
-      _items.push({
-        entries: parseSchema(context, value, collectionName),
-        isCollection: schemaType === 'collection',
-        name: collectionName
-      })
-    }
+  if (metadata) {
+    plugin.metadata = deepClone(metadata)
   }
 
-  /**
-   * Active actions
-   * @type {ActiveAction[]}
-   */
-  const _actions = []
+  if (dependencies) {
+    plugin.dependencies = dependencies
+  }
 
-  Object.defineProperties(result, {
-    name: {
-      value: name,
-      enumerable: false
-    },
-    dependencies: {
-      value: dependencies,
-      enumerable: false
-    },
-    metadata: {
-      value: metadata,
-      enumerable: false
-    },
-    state: {
-      value: state,
-      enumerable: false
-    },
-    actions: {
-      value: _actions,
-      enumerable: false
-    },
-    setup: {
-      value: setup,
-      enumerable: false
-    }
-  })
+  // Bind setup function to plugin context for proper 'this' binding
+  plugin.setup = bindContext(setup, context)
 
+  // Create state management if state configuration is provided
+  if (state) {
+    plugin.state = createPluginState(context, name, state)
+  }
+
+  // Clone and bind data to context
   if (data) {
-    data = deepClone(data)
+    plugin.data = deepClone(data)
 
-    // set data context
-    for (const [key, value] of Object.entries(data)) {
+    // Populate context with data properties for direct access
+    for (const [key, value] of Object.entries(plugin.data)) {
       context[key] = value
     }
   }
 
-  // map actions
+  // Create and register action handlers
   if (actions) {
-    for (const key in actions) {
-      if (Object.prototype.hasOwnProperty.call(actions, key)) {
-        if (context[key]) {
-          throw new Error(`Plugin [${key}]: Expected unique action name`)
-        }
+    const results = createPluginActions(context, name, actions)
 
-        const action = actions[key]
-        const actionModuleName = name + capitalize(key)
-        const actionName = name + '_' + key
-        const method = action.method.bind(context)
+    // Attach action metadata to plugin
+    plugin.actions = results.actions
 
-        // bind context to method
-        context[key] = method
-
-        // mocks action call
-        result[actionModuleName] = (params) => {
-          return method(params, actionContext)
-        }
-
-        /** @type {DsPluginActionMetadata[]} */
-        const metadata = []
-
-        if (Array.isArray(action.metadata)) {
-          for (let i = 0; i < action.metadata.length; i++) {
-            const actionMetadata = action.metadata[i]
-            metadata.push(Object.assign({
-              plugin: name,
-              method: actionName
-            }, actionMetadata))
-          }
-        } else {
-          metadata.push(Object.assign({
-            id: 'default',
-            plugin: name,
-            method: actionName
-          }, action.metadata))
-        }
-
-        /** @type {ActiveAction} */
-        const actionItem = {
-          name: actionName,
-          method,
-          metadata
-        }
-
-        if (action.parameters) {
-          actionItem.parameters = action.parameters
-        }
-
-        _actions.push(actionItem)
-      }
+    // Register action method modules on plugin object
+    for (let i = 0; i < results.methods.length; i++) {
+      const method = results.methods[i]
+      plugin[method.name] = method.value
     }
   }
 
-  // map methods to result
+  // Register public methods
   if (methods) {
-    for (const key in methods) {
-      if (Object.prototype.hasOwnProperty.call(methods, key)) {
-        if (context[key]) {
-          throw new Error(`Plugin [${key}]: Expected unique method name`)
-        }
+    const results = createPluginMethods(context, name, methods)
 
-        const method = methods[key].bind(context)
-        const methodName = name + capitalize(key)
-
-        // add method to context
-        context[key] = method
-
-        // add method to result
-        result[methodName] = method
-      }
+    // Attach methods to plugin object
+    for (let i = 0; i < results.length; i++) {
+      const method = results[i]
+      plugin[method.name] = method.value
     }
   }
 
-
+  // Register private methods in context only
   if (privateMethods) {
-    for (const key in privateMethods) {
-      if (Object.prototype.hasOwnProperty.call(privateMethods, key)) {
-        if (context[key]) {
-          throw new Error(`Plugin [${key}]: Expected unique private method name`)
-        }
+    createPluginPrivateMethods(context, privateMethods)
+  }
 
-        // bind context to private methods
-        context[key] = privateMethods[key].bind(context)
+  /**
+   * Creates a new plugin instance with optional configuration overrides.
+   *
+   * This method enables plugin reuse with different configurations while
+   * maintaining the original plugin structure and behavior.
+   *
+   * @param {Object} [options={}] - Instance creation options
+   * @param {string} [options.name] - Override plugin name for the instance
+   * @param {Data} [options.data] - Override or extend original data
+   * @returns {DsPluginExport<Name, Methods, Actions, Setup>} - New plugin instance
+   *
+   * @example
+   * // Create instance with custom data
+   * const adminInstance = userPlugin.createInstance({
+   *   name: 'admin-user',
+   *   data: { name: 'Admin', role: 'administrator' }
+   * })
+   *
+   * @example
+   * // Create instance with extended data
+   * const extendedInstance = authPlugin.createInstance({
+   *   data: { token: 'abc123', remember: true }
+   * })
+   */
+  plugin.createInstance = (options = {}) => {
+    // Merge override data with original data
+    const mergedData = options?.data
+      ? {
+        ...data,
+        ...options.data
       }
-    }
+      : data
+
+    // Use custom name or original name
+    const instanceName = options?.name || name
+
+    // Create new instance with merged configuration
+    return createPlugin(instanceName, {
+      dependencies,
+      state,
+      metadata,
+      data: mergedData,
+      actions,
+      methods,
+      privateMethods,
+      setup
+    })
   }
 
-  const restorationData = data ? deepClone(data) : {}
-
-  Object.defineProperty(result, 'restore', {
-    value () {
-      Object.assign(context, restorationData)
-    },
+  const propertyDescriptorValues = {
+    configurable: false,
     enumerable: false,
-    writable: false,
-    configurable: false
-  })
-
-  // Add instance creation method
-  Object.defineProperty(result, 'createInstance', {
-    value (options = {}) {
-      // Merge override data with original data
-      const mergedData = options?.data
-        ? {
-          ...data,
-          ...options.data
-        }
-        : data
-
-      // Use custom name or original name
-      const instanceName = options?.name || name
-
-      // Create new instance with merged configuration
-      return createPlugin(instanceName, {
-        dependencies,
-        state,
-        metadata,
-        data: mergedData,
-        actions,
-        methods,
-        privateMethods,
-        setup: originalSetup
-      })
-    },
-    enumerable: false,
-    writable: false,
-    configurable: false
-  })
-
-  return result
-}
-
-/**
- * @param {SchemaType} type
- */
-function dataValue (type) {
-  let value
-
-  switch (type) {
-    case 'collection':
-      value = {}
-      break
-    case 'object':
-      value = {}
-      break
-    case 'array':
-      value = []
-      break
-    case 'string':
-      value = ''
-      break
-    case 'number':
-      value = 0
-      break
-    case 'boolean':
-      value = true
-      break
-    default:
-      throw new Error('DooksaError: Unexpected data schema "' + type + '"')
+    writable: false
   }
+  Object.defineProperties(plugin, {
+    name: propertyDescriptorValues,
+    dependencies: propertyDescriptorValues,
+    state: propertyDescriptorValues,
+    metadata: propertyDescriptorValues,
+    data: propertyDescriptorValues,
+    actions: propertyDescriptorValues,
+    methods: propertyDescriptorValues,
+    privateMethods: propertyDescriptorValues,
+    setup: propertyDescriptorValues,
+    createInstance: propertyDescriptorValues
+  })
 
-  return value
+  // Freeze context and plugin to prevent runtime modifications
+  Object.preventExtensions(context)
+  Object.freeze(plugin)
+
+  return plugin
 }
