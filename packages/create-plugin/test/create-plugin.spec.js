@@ -37,7 +37,7 @@ describe('Create plugin', function () {
       }
     })
 
-    deepStrictEqual(plugin.setup(), 'hello!')
+    strictEqual(plugin.setup(), 'hello!')
   })
 
   it('should return the schema', function () {
@@ -92,7 +92,7 @@ describe('Create plugin', function () {
         }
       })
 
-      deepStrictEqual(plugin.setup(), 'redDogHello!')
+      strictEqual(plugin.setup(), 'redDogHello!')
     })
 
     it('should handle setup without setup function', function () {
@@ -436,14 +436,13 @@ describe('Create plugin', function () {
 
   describe('Action Context', function () {
     it('should pass frozen actionContext to actions', function () {
-      let receivedContext
       const plugin = createPlugin('test', {
         metadata,
         actions: {
           test: {
             metadata: { title: 'Test' },
             method (params, context) {
-              receivedContext = context
+              strictEqual(Object.isFrozen(context), true)
               return 'ok'
             }
           }
@@ -451,13 +450,6 @@ describe('Create plugin', function () {
       })
 
       plugin.testTest()
-      strictEqual(Object.isFrozen(receivedContext), true)
-      // @ts-ignore
-      strictEqual(receivedContext.hasOwnProperty('context'), true)
-      // @ts-ignore
-      strictEqual(receivedContext.hasOwnProperty('payload'), true)
-      // @ts-ignore
-      strictEqual(receivedContext.hasOwnProperty('blockValues'), true)
     })
 
     it('should have correct actionContext structure', function () {
@@ -474,11 +466,26 @@ describe('Create plugin', function () {
       })
 
       const result = plugin.testTest()
-      deepStrictEqual(result, {
-        context: {},
-        payload: {},
-        blockValues: {}
-      })
+      deepStrictEqual(result, Object.create(null, {
+        context: {
+          value: {},
+          writable: false,
+          enumerable: true,
+          configurable: false
+        },
+        payload: {
+          value: {},
+          writable: false,
+          enumerable: true,
+          configurable: false
+        },
+        blockValues: {
+          value: {},
+          writable: false,
+          enumerable: true,
+          configurable: false
+        }
+      }))
     })
 
     it('should not allow modification of actionContext', function () {
@@ -595,11 +602,12 @@ describe('Create plugin', function () {
       const plugin = createPlugin('test', { metadata })
 
       strictEqual(plugin.name, 'test')
-      strictEqual(plugin.metadata, metadata)
+      deepStrictEqual(plugin.metadata, metadata)
       strictEqual(plugin.dependencies, undefined)
       strictEqual(plugin.state, undefined)
-      strictEqual(plugin.actions.length, 0)
+      strictEqual(plugin.actions, undefined)
       strictEqual(plugin.setup, undefined)
+      strictEqual(typeof plugin.createInstance, 'function')
     })
 
     it('should handle plugin with all features', function () {
@@ -1171,6 +1179,285 @@ describe('Create plugin', function () {
       } catch (error) {
         strictEqual(error.message, 'Plugin [sayHi]: Expected unique action name')
       }
+    })
+  })
+
+  describe('createInstance', function () {
+    it('should create a new plugin instance without overrides', function () {
+      const plugin = createPlugin('test', {
+        metadata,
+        data: {
+          counter: 0,
+          name: 'default'
+        },
+        methods: {
+          increment () {
+            this.counter++
+            return this.counter
+          }
+        }
+      })
+
+      const instance = plugin.createInstance()
+
+      // Verify instance has same configuration
+      strictEqual(instance.name, 'test')
+      deepStrictEqual(instance.metadata, metadata)
+      strictEqual(instance.testIncrement(), 1)
+      strictEqual(plugin.testIncrement(), 1)
+    })
+
+    it('should create instance with data overrides', function () {
+      const plugin = createPlugin('test', {
+        metadata,
+        data: {
+          counter: 0,
+          name: 'default'
+        },
+        methods: {
+          increment () {
+            this.counter++
+            return this.counter
+          },
+          getName () {
+            return this.name
+          }
+        }
+      })
+
+      const instance = plugin.createInstance({
+        data: {
+          counter: 10,
+          name: 'custom'
+        }
+      })
+
+      // Verify instance has overridden data
+      strictEqual(instance.testIncrement(), 11)
+      strictEqual(instance.testGetName(), 'custom')
+
+      // Verify original plugin is unchanged
+      strictEqual(plugin.testIncrement(), 1)
+      strictEqual(plugin.testGetName(), 'default')
+    })
+
+    it('should create instance with partial data overrides', function () {
+      const plugin = createPlugin('test', {
+        metadata,
+        data: {
+          counter: 0,
+          name: 'default',
+          value: 42
+        },
+        methods: {
+          increment () {
+            this.counter++
+            return this.counter
+          },
+          getName () {
+            return this.name
+          },
+          getValue () {
+            return this.value
+          }
+        }
+      })
+
+      const instance = plugin.createInstance({
+        data: { counter: 10 }
+      })
+
+      // Verify instance has merged data
+      strictEqual(instance.testIncrement(), 11)
+      strictEqual(instance.testGetName(), 'default')
+      strictEqual(instance.testGetValue(), 42)
+
+      // Verify original plugin is unchanged
+      strictEqual(plugin.testIncrement(), 1)
+      strictEqual(plugin.testGetName(), 'default')
+      strictEqual(plugin.testGetValue(), 42)
+    })
+
+    it('should create instance with custom name', function () {
+      const plugin = createPlugin('test', {
+        metadata,
+        data: { counter: 0 },
+        methods: {
+          increment () {
+            this.counter++
+            return this.counter
+          }
+        }
+      })
+
+      const instance = plugin.createInstance({
+        name: 'customTest'
+      })
+
+      // Verify instance has custom name
+      strictEqual(instance.name, 'customTest')
+      // @ts-ignore
+      strictEqual(instance.customTestIncrement(), 1)
+    })
+
+    it('should have isolated context', function () {
+      const plugin = createPlugin('test', {
+        metadata,
+        data: { value: 42 },
+        methods: {
+          getValue () {
+            return this.value
+          }
+        }
+      })
+
+      const instance = plugin.createInstance({
+        data: { value: 100 }
+      })
+
+      // Verify each instance has its own context
+      strictEqual(plugin.testGetValue(), 42)
+      strictEqual(instance.testGetValue(), 100)
+    })
+
+    it('should work with actions', function () {
+      const plugin = createPlugin('test', {
+        metadata,
+        data: { counter: 0 },
+        actions: {
+          add: {
+            metadata: { title: 'Add' },
+            method ({ value }) {
+              this.counter += value
+              return this.counter
+            }
+          }
+        }
+      })
+
+      const instance = plugin.createInstance({
+        data: { counter: 10 }
+      })
+
+      // Verify actions work on both instances
+      strictEqual(plugin.testAdd({ value: 5 }), 5)
+      strictEqual(instance.testAdd({ value: 5 }), 15)
+    })
+
+    it('should work with state', function () {
+      const plugin = createPlugin('test', {
+        metadata,
+        state: {
+          schema: {
+            items: { type: 'collection' }
+          }
+        },
+        data: { counter: 0 },
+        methods: {
+          increment () {
+            this.counter++
+            return this.counter
+          }
+        }
+      })
+
+      const instance = plugin.createInstance({
+        data: { counter: 10 }
+      })
+
+      // Verify state schema is preserved
+      deepStrictEqual(instance.state.schema, {
+        items: { type: 'collection' }
+      })
+
+      // Verify data isolation
+      strictEqual(plugin.testIncrement(), 1)
+      strictEqual(instance.testIncrement(), 11)
+    })
+
+    it('should work with empty data', function () {
+      const plugin = createPlugin('test', {
+        metadata,
+        methods: {
+          test () {
+            return 'ok'
+          }
+        }
+      })
+
+      const instance = plugin.createInstance()
+
+      strictEqual(instance.testTest(), 'ok')
+    })
+
+    it('should work with no overrides', function () {
+      const plugin = createPlugin('test', {
+        metadata,
+        data: { counter: 42 },
+        methods: {
+          getCounter () {
+            return this.counter
+          }
+        }
+      })
+
+      const instance = plugin.createInstance()
+
+      strictEqual(instance.testGetCounter(), 42)
+      strictEqual(plugin.testGetCounter(), 42)
+    })
+
+    it('should preserve setup function', function () {
+      const plugin = createPlugin('test', {
+        metadata,
+        data: { value: 'test' },
+        setup () {
+          return this.value
+        }
+      })
+
+      const instance = plugin.createInstance({
+        data: { value: 'custom' }
+      })
+
+      strictEqual(plugin.setup(), 'test')
+      strictEqual(instance.setup(), 'custom')
+    })
+
+    it('should preserve dependencies', function () {
+      const dep = createPlugin('dep', { metadata })
+      const plugin = createPlugin('test', {
+        metadata,
+        dependencies: [dep]
+      })
+
+      const instance = plugin.createInstance()
+
+      deepStrictEqual(instance.dependencies, [dep])
+    })
+
+    it('should preserve private methods', function () {
+      const plugin = createPlugin('test', {
+        metadata,
+        data: { secret: 'hidden' },
+        privateMethods: {
+          getSecret () {
+            return this.secret
+          }
+        },
+        methods: {
+          reveal () {
+            return this.getSecret()
+          }
+        }
+      })
+
+      const instance = plugin.createInstance({
+        data: { secret: 'custom' }
+      })
+
+      strictEqual(plugin.testReveal(), 'hidden')
+      strictEqual(instance.testReveal(), 'custom')
     })
   })
 })
