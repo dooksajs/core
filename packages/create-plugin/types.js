@@ -171,12 +171,13 @@
  */
 
 /**
-* @typedef {Object} ActiveAction
-* @property {string} name - Method name
-* @property {Function} method - Method
-* @property {DsPluginActionParameter} [parameters]
-* @property {DsPluginActionMetadata[]} metadata
-*/
+ * @typedef {Object} ActiveAction
+ * @property {string} key - Original key name
+ * @property {string} name - Namespaced method name [pluginName]_[key]
+ * @property {Function} method - Method
+ * @property {DsPluginActionParameter} [parameters] - Method parameter schema used by the action system
+ * @property {DsPluginActionMetadata[]} metadata - Metadata to display method information
+ */
 
 /**
  * @typedef {Object.<string, Function>} DsPluginMethods
