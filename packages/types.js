@@ -1,92 +1,159 @@
 /**
- * @typedef {Object} DataSchema - Dooksa data schema
- * @property {('collection'|'object'|'array'|'string'|'number'|'boolean')} type - Data type
- * @property {DataSchemaItem} [items]
- * @property {Object.<string, DataSchemaObject>} [properties]
- * @property {Object.<string, DataSchemaObject>} [patternProperties]
- * @property {(Function|string)} [suffixId] - Collection suffix id
- * @property {(Function|string)} [prefixId] - Collection prefix id
- * @property {Function} [defaultId] - Default collection id
- * @property {string[]} [required] - List of required properties that must exist and contain a value
- * @property {string} [relation] - Name of data collection the foreign key is related to
- * @property {boolean} [uniqueItems] - Ensure that each of the items in an array is unique
- * @property {boolean} [additionalProperties] - Additional properties are allowed by default
+ * @typedef {Object} DataSchema - Dooksa data schema definition used for validation and parsing
+ *
+ * Defines the structure and constraints for data stored in the state management system.
+ * Used extensively in schema parsing (packages/create-plugin/src/parse-schema.js) and
+ * validation (packages/plugins/src/core/state.js).
+ *
+ * @property {('collection'|'object'|'array'|'string'|'number'|'boolean')} type - The data type.
+ *   'collection' is a special type for grouped data with auto-generated IDs.
+ * @property {DataSchemaItem} [items] - For array/collection types, defines the schema of items.
+ *   Used when type is 'array' or 'collection'.
+ * @property {Object.<string, DataSchemaObject>} [properties] - For object types, defines schemas
+ *   for specific property names. Used when type is 'object'.
+ * @property {Object.<string, DataSchemaObject>} [patternProperties] - For object types, defines
+ *   schemas for property names matching regex patterns. Example: { '[0-9]': { type: 'string' } }
+ * @property {(Function|string)} [suffixId] - Collection suffix generator. Can be a function that
+ *   returns a string or a static string. Applied to collection document IDs.
+ * @property {(Function|string)} [prefixId] - Collection prefix generator. Can be a function that
+ *   returns a string or a static string. Applied to collection document IDs.
+ * @property {Function} [defaultId] - Function that generates the default ID for collection items.
+ *   If not provided, a random ID is generated using generateId().
+ * @property {string[]} [required] - List of required property names that must exist and contain
+ *   a value. Validation throws DataSchemaException if missing.
+ * @property {string} [relation] - Name of data collection the foreign key is related to.
+ *   Creates bidirectional relationships for cascade operations and data integrity.
+ * @property {boolean} [uniqueItems] - When true, ensures each item in an array is unique.
+ *   Validation throws DataSchemaException.uniqueItems() if duplicates are found.
+ * @property {boolean} [additionalProperties] - When false, only properties defined in 'properties'
+ *   or matching 'patternProperties' are allowed. Defaults to true if not specified.
  */
 
 /**
- * @typedef {Object} DataSchemaItem - Dooksa data schema
- * @property {('object'|'array'|'string'|'number'|'boolean')} type - Data type
- * @property {DataSchemaItem} [items]
- * @property {Object.<string, DataSchemaObject>} [properties] - The properties of an object
- * @property {Object.<string, DataSchemaObject>} [patternProperties] - The property name is equal regex pattern, e.g patternProperties: { '[0-9]': { } }
- * @property {string[]} [required] - List of required properties that must exist and contain a value
- * @property {string} [relation] - Name of data collection the foreign key is related to
- * @property {boolean} [uniqueItems] - Ensure that each of the items in an array is unique
+ * @typedef {Object} DataSchemaItem - Dooksa data schema for array items and nested structures
+ *
+ * Defines the schema for individual items within arrays or nested object properties.
+ * Used when parsing array schemas in packages/create-plugin/src/parse-schema.js.
+ *
+ * @property {('object'|'array'|'string'|'number'|'boolean')} type - The data type of the item
+ * @property {DataSchemaItem} [items] - For array items, defines the schema of nested array items
+ * @property {Object.<string, DataSchemaObject>} [properties] - For object items, defines schemas
+ *   for specific property names
+ * @property {Object.<string, DataSchemaObject>} [patternProperties] - For object items, defines
+ *   schemas for property names matching regex patterns
+ * @property {string[]} [required] - List of required property names for object items
+ * @property {string} [relation] - Name of data collection the foreign key is related to.
+ *   Creates bidirectional relationships for cascade operations
+ * @property {boolean} [uniqueItems] - When true, ensures each item in the array is unique.
+ *   Validation throws DataSchemaException.uniqueItems() if duplicates are found
  */
 
 /**
- * @typedef {Object} DataSchemaObject
- * @property {('object'|'array'|'string'|'number'|'boolean')} type - Data type
- * @property {DataSchemaItem} [items]
- * @property {Object.<string, DataSchemaObject>} [properties] - The properties of an object
- * @property {Object.<string, DataSchemaObject>} [patternProperties] - The property name is equal regex pattern, e.g patternProperties: { '[0-9]': { } }
- * @property {boolean} [additionalProperties] - Additional properties are allowed by default
- * @property {string} [relation] - Name of data collection the foreign key is related to
- * @property {string[]} [required] - List of required properties that must exist and contain a value
- * @property {boolean} [uniqueItems] - Ensure that each of the items in an array is unique
+ * @typedef {Object} DataSchemaObject - Dooksa data schema for object properties
+ *
+ * Defines the schema for individual object properties within a parent object schema.
+ * Used when parsing object schemas with properties in packages/create-plugin/src/parse-schema.js.
+ *
+ * @property {('object'|'array'|'string'|'number'|'boolean')} type - The data type of the property
+ * @property {DataSchemaItem} [items] - For array properties, defines the schema of array items
+ * @property {Object.<string, DataSchemaObject>} [properties] - For object properties, defines schemas
+ *   for nested property names
+ * @property {Object.<string, DataSchemaObject>} [patternProperties] - For object properties, defines
+ *   schemas for property names matching regex patterns
+ * @property {boolean} [additionalProperties] - When false, only properties defined in 'properties'
+ *   or matching 'patternProperties' are allowed. Defaults to true if not specified
+ * @property {string} [relation] - Name of data collection the foreign key is related to.
+ *   Creates bidirectional relationships for cascade operations
+ * @property {string[]} [required] - List of required property names for object properties
+ * @property {boolean} [uniqueItems] - When true, ensures each item in the array is unique.
+ *   Validation throws DataSchemaException.uniqueItems() if duplicates are found
  */
 
 /**
- * @typedef {Function} Token
+ * @callback Token - Token function for parameter validation
  * @param {Object.<string, *>} param - Parameter requires a single object
+ * @returns {*} The validated parameter
  */
 
 /**
- * @typedef {Object} TokenGet
- * @property {Token} get - Parameter requires a single object
+ * @typedef {Object} TokenGet - Token getter configuration
+ * @property {Token} get - Token function that validates and returns the parameter
  */
 
 /**
- * @typedef {Object} Component
- * @property {string} name - Name of HTMLElement
- * @property {Function} [lazy] - Function to import external resources e.g. () => import('iconify-icon')
- * @property {boolean} [isLazy] - DsPlugin constructor set if component is lazy loaded
- * @property {string} [type] - Category of element, e.g. <img> == 'image'
- * @property {(string[]|Component[])} [events] - The getter and setters for the element
- * @property {Object} [content] - The getter and setters for the element
- * @property {ComponentGet[]} [content.get] - The element getters
- * @property {ComponentSet[]} [content.set] - The element setters
+ * @typedef {Object} Component - Dooksa component definition
+ *
+ * Defines a reusable UI component with properties, events, and content handlers.
+ * Used extensively in packages/create-component/src/component.js for component creation
+ * and management.
+ *
+ * @property {string} name - Name of the component/HTMLElement. Used as identifier
+ * @property {Function} [lazy] - Function to import external resources dynamically.
+ *   Example: () => import('iconify-icon')
+ * @property {boolean} [isLazy] - Indicates if component is lazy loaded. Set by DsPlugin constructor
+ * @property {string} [type] - Category of element (e.g., 'link', 'section', 'img', 'input', 'element').
+ *   Used for component categorization and rendering logic
+ * @property {(string[]|Component[])} [events] - Event handlers and listeners for the component.
+ *   Can be array of event names or nested component definitions
+ * @property {Object} [content] - Content management configuration with getters and setters
+ * @property {ComponentGet[]} [content.get] - Content getters - methods to extract data from the component
+ * @property {ComponentSet[]} [content.set] - Content setters - methods to inject data into the component
  */
 
 /**
- * @typedef {Object} ComponentEvent
- * @property {string} name
- * @property {boolean} [syncContent]
+ * @typedef {Object} ComponentEvent - Event definition for a component
+ *
+ * Defines an event listener that triggers an action when a specific event occurs.
+ * Used in packages/create-component/src/types.js for component event management.
+ *
+ * @property {string} on - Event type to listen for (e.g., 'click', 'change', 'submit')
+ * @property {string} actionId - Unique identifier for the action to execute
+ * @property {boolean} [syncContent] - When true, synchronizes component content before action execution
  */
 
 /**
- * @typedef {Object} ComponentGet
- * @property {('attribute'|'getter')} type - The type of getter by getAttribute or an element getter
- * @property {string} name - The name of the attribute
- * @property {string} [property] - The property name for the dsContent object to store the value
- * @property {boolean} [token] - The property name for the dsContent object to store the value
+ * @typedef {Object} ComponentGet - Content getter definition for a component
+ *
+ * Defines how to extract data from a component element.
+ * Used in packages/create-component/src/component.js for content management.
+ *
+ * @property {('attribute'|'getter')} type - The type of getter:
+ *   'attribute' - Uses getAttribute() to retrieve element attribute
+ *   'getter' - Uses element property getter to retrieve value
+ * @property {string} name - The name of the attribute or property to retrieve
+ * @property {string} [property] - The property name in the dsContent object to store the retrieved value
+ * @property {boolean} [token] - When true, indicates the value should be treated as a token for replacement
  */
 
 /**
- * @typedef {Object} ComponentSet
- * @property {('attribute'|'setter')} type - The type of setter by setAttribute or an element setter
- * @property {string} name - The name of the attribute
- * @property {string} [property] - The property name for the dsContent object to store the value
- * @property {boolean} [token] - The property name for the dsContent object to store the value
+ * @typedef {Object} ComponentSet - Content setter definition for a component
+ *
+ * Defines how to inject data into a component element.
+ * Used in packages/create-component/src/component.js for content management.
+ *
+ * @property {('attribute'|'setter')} type - The type of setter:
+ *   'attribute' - Uses setAttribute() to set element attribute
+ *   'setter' - Uses element property setter to set value
+ * @property {string} name - The name of the attribute or property to set
+ * @property {string} [property] - The property name in the dsContent object to get the value from
+ * @property {boolean} [token] - When true, indicates the value should be treated as a token for replacement
  */
 
 /**
  * @callback DsSetup - Setup initialises the plugin
+ *
+ * Called when the plugin is loaded to initialize it with configuration.
+ * Used in packages/create-plugin/src/create-plugin.js for plugin lifecycle.
+ *
  * @param {Object.<string, *>} options - Options that change the default behavior of the plugin
  */
 
 /**
  * @typedef {Object} DsPluginOptions - Setup options
+ *
+ * Defines configuration options for plugin creation and initialization.
+ * Used in packages/create-plugin/src/create-plugin.js for plugin setup.
+ *
  * @property {string} name - Plugin name related to the options
  * @property {boolean} [setupOnRequest] - Load plugin when the plugin is requested by dsManager
  * @property {string} [import] - Name of plugin file to dynamically import
@@ -95,90 +162,136 @@
  */
 
 /**
- * @typedef {Object} DataWhereProperty
- * @property {string} name - Property name
- * @property {'=='|'>'|'>='|'<'|'<='|'!='|'~'|'!~'} op - Operator
- * @property {string|number|boolean} value - Value to compare
+ * @typedef {Object} DataWhereProperty - Single filter condition for data queries
+ *
+ * Defines a comparison condition used in data filtering operations.
+ * Used in packages/plugins/src/core/state.js for data filtering.
+ *
+ * @property {string} name - Property name to filter on (supports dot notation for nested properties)
+ * @property {'=='|'>'|'>='|'<'|'<='|'!='|'~'|'!~'} op - Comparison operator:
+ *   '==' - Equal to
+ *   '!=' - Not equal to
+ *   '>' - Greater than
+ *   '>=' - Greater than or equal to
+ *   '<' - Less than
+ *   '<=' - Less than or equal to
+ *   '~' - Contains (string match)
+ *   '!~' - Does not contain
+ * @property {string|number|boolean} value - Value to compare against
  */
 
 /**
- * @typedef {Object} DataWhere
- * @property {DataWhere[]} [and] - And
- * @property {DataWhere[]} [or] - And
- * @property {string} [name] - Property name
- * @property {'=='|'>'|'>='|'<'|'<='|'!='|'~'|'!~'} [op] - Operator
- * @property {string|number|boolean} [value] - Value to compare
+ * @typedef {Object} DataWhere - Complex filter condition with logical operators
+ *
+ * Defines hierarchical filtering conditions for data queries.
+ * Used in packages/plugins/src/core/state.js for complex filtering.
+ *
+ * @property {DataWhere[]} [and] - Array of conditions that must ALL be true (logical AND)
+ * @property {DataWhere[]} [or] - Array of conditions where ANY can be true (logical OR)
+ * @property {string} [name] - Property name for simple conditions
+ * @property {'=='|'>'|'>='|'<'|'<='|'!='|'~'|'!~'} [op] - Operator for simple conditions
+ * @property {string|number|boolean} [value] - Value for simple conditions
  */
 
 /**
- * @typedef {Object} SetDataOptions
- * @property {string} [id] - Document Id
- * @property {Object} [metadata] - Document metadata
- * @property {boolean} [stopPropagation] - Prevents further propagation of the update event
- * @property {boolean} [merge] - Merge target with source
- * @property {boolean} [replace] - Replace target with source
- * @property {Object} [update] - Update target with source
- * @property {(string[] & number[]) | (string[] | number[])} [update.position] - Update nested data within target with source
- * @property {'push'|'pull'|'pop'|'shift'|'unshift'|'splice'} [update.method] - Type of update method
- * @property {number} [update.startIndex] - Zero-based index at which to start changing the array
- * @property {number} [update.deleteCount] - An integer indicating the number of elements in the array to remove from start
+ * @typedef {Object} SetDataOptions - Options for setting data in state
+ *
+ * Controls how data is inserted or updated in the state management system.
+ * Used extensively in packages/plugins/src/core/state.js for data modification.
+ *
+ * @property {string} [id] - Document ID for collection items
+ * @property {Object} [metadata] - Metadata to associate with the data
+ * @property {boolean} [stopPropagation] - Prevents update event propagation to listeners
+ * @property {boolean} [merge] - Merge new data with existing data (shallow merge)
+ * @property {boolean} [replace] - Completely replace existing data with new data
+ * @property {Object} [update] - Configuration for nested array/object updates
+ * @property {(string[] & number[]) | (string[] | number[])} [update.position] - Path to nested data
+ * @property {'push'|'pull'|'pop'|'shift'|'unshift'|'splice'} [update.method] - Array operation method
+ * @property {number} [update.startIndex] - Start index for splice operations
+ * @property {number} [update.deleteCount] - Number of elements to delete for splice
  */
 
 /**
- * Get data value query
- * @typedef {Object} GetDataOption
- * @property {boolean} [expand] - Expand all relational data
- * @property {Object} [expandExclude] - Exclude items from expanding
- * @property {boolean} [expandClone] - Expanded items returns a deep clone of the item value
- * @property {string|string[]} [position] - Return the value by key of the data value
- * @property {boolean} [clone] - Returns a deep clone of the item value
+ * @typedef {Object} GetDataOption - Options for data retrieval queries
+ *
+ * Controls how data is retrieved from the state management system.
+ * Used in packages/plugins/src/core/state.js for data queries.
+ *
+ * @property {boolean} [expand] - Expand all relational data (foreign key relationships)
+ * @property {Object} [expandExclude] - Map of items to exclude from expansion
+ * @property {boolean} [expandClone] - Return deep clones of expanded items
+ * @property {string|string[]} [position] - Extract specific nested value using dot notation
+ * @property {boolean} [clone] - Return deep clone of the main item value
  */
 
 /**
- * Get data value query
- * @typedef {Object} GetDataQuery
+ * @typedef {Object} GetDataQuery - Complete query for retrieving data
+ *
+ * Defines a complete data retrieval request with collection, ID, and options.
+ * Used in packages/plugins/src/core/state.js for state queries.
+ *
  * @property {string} name - Data collection name
- * @property {string} [id] - Data collection document id
- * @property {string} [prefixId] - Data collection document prefix
- * @property {string} [suffixId] - Data collection document suffix
- * @property {GetDataOption} [options] - Options
+ * @property {string} [id] - Document ID within collection
+ * @property {string} [prefixId] - Prefix for ID lookup
+ * @property {string} [suffixId] - Suffix for ID lookup
+ * @property {GetDataOption} [options] - Query options
  */
 
 /**
- * @typedef {string | string[]} GetValueByQuery - Request to return a specific key value, dot notations are permitted
+ * @typedef {string | string[]} GetValueByQuery - Dot-notation path for nested data access
+ *
+ * Specifies a path to extract nested values from objects/arrays.
+ * Used throughout the codebase for accessing nested properties.
+ *
  */
 
 /**
- * @typedef {Object} ComponentItem
- * @property {string} [id] - Component item id
- * @property {string} [rootId] - Root component item id
- * @property {string} [parentId] - Parent component item id
- * @property {string} [groupId] - Component group id
- * @property {Object} [component] - Component instance
- * @property {Object} [template] - Component template
- * @property {Node} [node] - Component node
- * @property {Object[]} [events] - Component events
- * @property {ComponentItem[]} [children]
+ * @typedef {Object} ComponentItem - Component instance data
+ *
+ * Represents a rendered component instance with hierarchy and runtime state.
+ * Used in packages/create-component/src/types.js for component instance management.
+ *
+ * @property {string} [id] - Unique identifier for the component instance
+ * @property {string} [rootId] - Root component item ID (top-level template)
+ * @property {string} [parentId] - Parent component item ID for hierarchical structure
+ * @property {string} [groupId] - Component group ID for grouping related components
+ * @property {Object} [component] - Component instance data with runtime state
+ * @property {Object} [template] - Original component template definition
+ * @property {Node} [node] - DOM node reference for the component element
+ * @property {Object[]} [events] - Event listeners attached to this component instance
+ * @property {ComponentItem[]} [children] - Child component instances for nested components
  */
 
 /**
- * @typedef {Object} EditorDataSchemaObject
- * @property {boolean} isPatterned - Is property name a regex pattern
- * @property {string} name - Name of property
- * @property {string} type - Data type
+ * @typedef {Object} EditorDataSchemaObject - Editor schema for object properties
+ *
+ * Defines the schema structure for the editor to render property inputs.
+ * Used in packages/plugins/src/client/editor.js for form generation.
+ *
+ * @property {boolean} isPatterned - Indicates if property name is a regex pattern
+ * @property {string} name - Name of the property
+ * @property {string} type - Data type of the property
+ * @property {EditorDataSchemaObject[]} [properties] - Nested object properties
+ * @property {EditorDataSchema} [items] - Array items schema
+ */
+
+/**
+ * @typedef {Object} EditorDataSchema - Editor schema for data structures
+ *
+ * Defines the complete schema structure for the editor to render forms.
+ * Used in packages/plugins/src/client/editor.js for form generation.
+ *
+ * @property {EditorDataSchema} [items] - Array items schema
  * @property {EditorDataSchemaObject[]} [properties] - Object properties
- * @property {EditorDataSchema} [items] - Array items
+ * @property {string} type - Root data type
  */
 
 /**
- * @typedef {Object} EditorDataSchema
- * @property {EditorDataSchema} [items]
- * @property {EditorDataSchemaObject[]} [properties]
- * @property {string} type - Data type
- */
-
-/**
- * @typedef {Object} EventEmit
+ * @typedef {Object} EventEmit - Event emission configuration
+ *
+ * Defines parameters for emitting events through the event system.
+ * Used in packages/plugins/src/core/event.js for event handling.
+ *
  * @property {string} name - Name of the event to emit
  * @property {string} id - Event listener reference item ID
  * @property {Object} [context] - Context object containing data available to action handlers
@@ -187,6 +300,10 @@
 
 /**
  * @typedef {Object} FormOrderedValue - Represents an ordered form field value
+ *
+ * Defines a hierarchical structure for form field values with nesting support.
+ * Used in form processing and validation throughout the application.
+ *
  * @property {string} name - The name of the form field
  * @property {string} [value] - The value of the field (for non-nested fields)
  * @property {FormOrderedValue[]} [values] - Array of nested values (for fieldsets or multi-value fields)
@@ -194,121 +311,192 @@
 
 /**
  * @typedef {Object} FormFiles - Container for file attachments
+ *
+ * Wraps file data in a FormData object for upload operations.
+ * Used in form submission and file handling.
+ *
  * @property {FormData} [files.data] - FormData object containing file attachments
  */
 
 /**
  * @typedef {Object} IconQueueItem - Queue item for batch icon fetching
- * @property {string[]} icons - Array of icon IDs to fetch
- * @property {Object.<string, IconComponentData>} components - Components waiting for icons
+ *
+ * Represents a batch request for fetching icons from Iconify API.
+ * Used in packages/plugins/src/client/icon.js for icon management.
+ *
+ * @property {string[]} icons - Array of icon IDs to fetch from Iconify
+ * @property {Object.<string, IconComponentData>} components - Components waiting for icons (keyed by component ID)
  */
 
 /**
  * @typedef {Object} IconData - Icon data from Iconify API
- * @property {Object} [icons] - Object containing icon data
- * @property {Object} [aliases] - Object containing icon aliases
+ *
+ * Contains icon SVG data and aliases from the Iconify API response.
+ * Used in packages/plugins/src/client/icon.js for icon rendering.
+ *
+ * @property {Object} [icons] - Object containing icon data (keyed by icon name)
+ * @property {Object} [aliases] - Object containing icon aliases (keyed by alias name)
  * @property {number} [icons.iconName.body] - SVG body content for an icon
  * @property {Object} [aliases.aliasName] - Alias definition with parent property
  */
 
 /**
  * @typedef {Object} IconComponentData - Component data stored in icon queue
+ *
+ * Contains the DOM node and icon ID for icon rendering.
+ * Used in packages/plugins/src/client/icon.js for icon queue management.
+ *
  * @property {Node} node - The DOM node to render the icon into
  * @property {string} iconId - The icon ID (without prefix)
  */
 
 /**
  * @typedef {Object} IconStateSchema - Schema for icon state
- * @property {Object} items - Collection of cached icon SVG strings
+ *
+ * Defines the structure for caching icon data in the state.
+ * Used in packages/plugins/src/client/icon.js for icon state management.
+ *
+ * @property {Object} items - Collection of cached icon SVG strings (keyed by icon ID)
  * @property {Object} aliases - Collection of icon aliases mapping to original icons
  */
 
 /**
- * @typedef {Object} RegexPattern
- * @property {RegExp} pattern - The text of the regular expression. This can also be another RegExp object.
- * @property {string} flags - If specified, flags is a string that contains the flags to add. Alternatively, if a RegExp object is supplied for the pattern, the flags string will replace any of that object's flags (and lastIndex will be reset to 0).
+ * @typedef {Object} RegexPattern - Regular expression pattern with flags
+ *
+ * Defines a regular expression for pattern matching operations.
+ * Used in packages/create-action/types/index.js for string operations.
+ *
+ * @property {RegExp} pattern - The text of the regular expression.
+ *   This can also be another RegExp object.
+ * @property {string} [flags] - Flags to add to the regex (e.g., 'i', 'g', 'm').
+ *   If a RegExp object is supplied for the pattern, the flags string will replace
+ *   any of that object's flags (and lastIndex will be reset to 0).
  */
 
 /**
- * @typedef {Object} StringReplace
- * @property {string} value - Target string
- * @property {string} pattern - Can be a string or regular expression
+ * @typedef {Object} StringReplace - String replacement configuration
+ *
+ * Defines parameters for string replacement operations.
+ * Used in packages/create-action/types/index.js for string manipulation.
+ *
+ * @property {string} value - Target string to search within
+ * @property {string} pattern - Pattern to search for (string or regular expression)
  * @property {string} replacement - String that will replace what matches the pattern
  */
 
 /**
- * @typedef {Object} PageGetItemsByPath
- * @property {boolean} isEmpty
- * @property {string} [redirect]
- * @property {boolean} [isTemporary]
- * @property {string} [pageId]
- * @property {Object[]} [item]
+ * @typedef {Object} PageGetItemsByPath - Result from page path lookup
+ *
+ * Contains page items and redirect information for route resolution.
+ * Used in packages/plugins/src/server/page.js for page routing.
+ *
+ * @property {boolean} isEmpty - Flag indicating no items were found
+ * @property {string} [redirect] - Redirect path if page not found
+ * @property {boolean} [isTemporary] - Whether redirect is temporary (302) or permanent (307)
+ * @property {string} [pageId] - Page ID if found
+ * @property {Object[]} [item] - Array of page component items
  */
 
 /**
- * @typedef {Object} VariableGetValue
- * @property {string} [scope] - Variable scope
- * @property {string} [prefixId] - ID prefix
- * @property {string} [suffixId] - ID suffix
- * @property {string} query - Query string
+ * @typedef {Object} VariableGetValue - Configuration for retrieving variable values
+ *
+ * Defines parameters for accessing variables from different scopes.
+ * Used in packages/create-action/types/index.js for variable operations.
+ *
+ * @property {string} [scope] - Variable scope (e.g., 'user', 'global', 'local')
+ * @property {string} [prefixId] - ID prefix for variable lookup
+ * @property {string} [suffixId] - ID suffix for variable lookup
+ * @property {string} query - Query string for variable access (supports dot notation)
  */
 
 /**
- * @typedef {Object} VariableSetValue
- * @property {string} [scope] - Variable scope
- * @property {Array} values - Values to set
+ * @typedef {Object} VariableSetValue - Configuration for setting variable values
+ *
+ * Defines parameters for storing variables in different scopes.
+ * Used in packages/create-action/types/index.js for variable operations.
+ *
+ * @property {string} [scope] - Variable scope (e.g., 'user', 'global', 'local')
+ * @property {Array} values - Array of value objects to set
  */
 
 /**
- * @typedef {Object} ActionDispatchContext
- * @property {string} id - Action context ID
- * @property {string} [rootId] - Root context ID
- * @property {string} [parentId] - Parent context ID
- * @property {string} [groupId] - Group context ID
+ * @typedef {Object} ActionDispatchContext - Context for action execution
+ *
+ * Defines the execution context for actions, including component hierarchy.
+ * Used in packages/create-action/types/index.js for action compilation.
+ *
+ * @property {string} id - Action context ID (unique identifier)
+ * @property {string} [rootId] - Root context ID (top-level template)
+ * @property {string} [parentId] - Parent context ID for hierarchical structure
+ * @property {string} [groupId] - Group context ID for grouping related actions
  */
 
 /**
- * @typedef {Object} ActionBlock
- * @property {string} [method] - Action method name
- * @property {string} [key] - Block key
- * @property {string} [blockValue] - Block value reference
- * @property {string[]} [blockValues] - Multiple block value references
- * @property {string} [blockSequence] - Block sequence reference
- * @property {string} [dataType] - Data type
- * @property {boolean} [ifElse] - If else flag
- * @property {*} [value] - Direct value
+ * @typedef {Object} ActionBlock - Compiled action block
+ *
+ * Represents a single executable unit in an action sequence.
+ * Used in packages/create-action/types/index.js for action compilation.
+ *
+ * @property {string} [method] - Action method name to execute
+ * @property {string} [key] - Block identifier for reference
+ * @property {string} [blockValue] - Single child block reference
+ * @property {string[]} [blockValues] - Multiple child block references
+ * @property {string} [blockSequence] - Associated block sequence ID
+ * @property {string} [dataType] - Data type ('array', 'object', 'string', 'number', 'boolean')
+ * @property {boolean} [ifElse] - Flag indicating conditional block
+ * @property {*} [value] - Direct primitive value
  */
 
 /**
- * @typedef {Object} DataDeleteValueResult
- * @property {boolean} inUse - Indicates if data value is in use
- * @property {boolean} deleted - Indicate if data was deleted
+ * @typedef {Object} DataDeleteValueResult - Result from data deletion operations
+ *
+ * Indicates the outcome of a delete operation and whether the data can be safely removed.
+ * Used in packages/plugins/src/core/state.js for data deletion.
+ *
+ * @property {boolean} inUse - Indicates if data value is referenced by other data
+ * @property {boolean} deleted - Indicates if data was successfully deleted
  */
 
 /**
- * @typedef {Object} DataListenerHandler
- * @property {boolean} [force]
- * @property {number} [priority]
- * @property {Function} value
+ * @typedef {Object} DataListenerHandler - Event handler for data changes
+ *
+ * Defines a callback function that responds to data updates or deletions.
+ * Used in packages/plugins/src/core/state.js for event management.
+ *
+ * @property {boolean} [force] - When true, fires even if event propagation is stopped
+ * @property {number} [priority] - Handler priority (lower numbers execute first)
+ * @property {Function} value - The callback function to execute
  */
 
 /**
- * @typedef {Object} DataListenerCollection
- * @property {DataListenerHandler[]} all - Handlers that will fire on data instances
- * @property {DataListenerHandler[] | undefined} items - Handlers related to an specific data instance
- * @property {DataListenerHandler[] | undefined} priority - Handlers that will emit before "all" or "items" handlers
+ * @typedef {Object} DataListenerCollection - Collection of event handlers
+ *
+ * Groups handlers by priority and scope for efficient event dispatching.
+ * Used in packages/plugins/src/core/state.js for listener management.
+ *
+ * @property {DataListenerHandler[]} all - Handlers that fire on all data instances
+ * @property {DataListenerHandler[] | undefined} items - Handlers for specific data instances
+ * @property {DataListenerHandler[] | undefined} priority - Priority handlers (execute before others)
  */
 
 /**
  * @typedef {Object} UpdateOptions - Options for array update operations
- * @property {'push'|'pull'|'pop'|'shift'|'unshift'|'splice'} method - Type of update method
- * @property {number} [startIndex] - Zero-based index at which to start changing the array (for splice)
- * @property {number} [deleteCount] - Number of elements to remove from start (for splice)
- * @property {(string[] & number[]) | (string[] | number[])} [position] - Update nested data within target
+ *
+ * Defines parameters for array manipulation operations.
+ * Used in packages/plugins/src/core/state.js for array updates.
+ *
+ * @property {'push'|'pull'|'pop'|'shift'|'unshift'|'splice'} method - Array operation method
+ * @property {number} [startIndex] - Start index for splice operations
+ * @property {number} [deleteCount] - Number of elements to remove for splice
+ * @property {(string[] & number[]) | (string[] | number[])} [position] - Path to nested array
  */
 
 /**
  * @typedef {Object} DataUpdateResult - Result from data update operations
+ *
+ * Contains the outcome of a data modification operation.
+ * Used in packages/plugins/src/core/state.js for update results.
+ *
  * @property {boolean} isValid - Indicates if the update was valid
  * @property {boolean} [complete] - Indicates if the operation is complete
  * @property {boolean} [isComplete] - Alternative property for completion status
@@ -321,47 +509,69 @@
 
 /**
  * @typedef {Object} CollectionIdResult - Result from collection ID generation
- * @property {string} id - The full collection ID with affixes
- * @property {string} noAffixId - The ID without affixes
+ *
+ * @property {string} id - The full collection ID with prefix/suffix affixes
+ * @property {string} noAffixId - The ID without any affixes
  */
 
 /**
  * @typedef {Object} RelationInfo - Information for relationship management
+ *
+ * Defines a relationship between data items for cascade operations.
+ * Used in packages/plugins/src/core/state.js for relationship tracking.
+ *
  * @property {string} target - Target collection name
  * @property {string} id - Target document ID
  * @property {string} source - Source collection name
  */
 
 /**
- * @typedef {Object} DataTarget - Container for data value and metadata
- * @property {*} _item - The actual data value
- * @property {Object} _metadata - Metadata associated with the data
- * @property {Object} [_previous] - Previous data state
+ * @typedef {Object} DataTarget - Internal container for data value and metadata
+ *
+ * Used internally by the state management system to store data with metadata.
+ * Created and managed in packages/plugins/src/core/state.js.
+ *
+ * @property {*} _item - The actual data value stored in the state
+ * @property {Object} _metadata - Metadata associated with the data (timestamps, user IDs, etc.)
+ * @property {Object} [_previous] - Previous data state for change tracking and rollback
  */
 
 /**
  * @typedef {Object} DataValue - Complete data value with metadata and context
- * @property {string} collection - Collection name
- * @property {string} [id] - Document ID
- * @property {*} item - The data value
- * @property {Object} metadata - Metadata
- * @property {*} [previous] - Previous value
- * @property {DataValue[]} [expand] - Expanded related data
- * @property {Object} [expandIncluded] - Track expanded items to prevent duplicates
- * @property {boolean} [isEmpty] - Flag for empty results
- * @property {boolean} [isExpandEmpty] - Flag for empty expansion
- * @property {boolean} [isAffixEmpty] - Flag for affix lookup failure
+ *
+ * Represents a data value returned from state queries with full context.
+ * Used extensively in packages/plugins/src/core/state.js for data retrieval
+ * and packages/plugins/src/utils/data-value.js for creation.
+ *
+ * @property {string} collection - Name of the data collection
+ * @property {string} [id] - Document ID within the collection
+ * @property {*} item - The actual data value
+ * @property {Object} metadata - Metadata (timestamps, user IDs, etc.)
+ * @property {*} [previous] - Previous value for change tracking
+ * @property {DataValue[]} [expand] - Expanded related data (when expand option is used)
+ * @property {Object} [expandIncluded] - Track expanded items to prevent duplicates/infinite loops
+ * @property {boolean} [isEmpty] - Flag indicating no data was found
+ * @property {boolean} [isExpandEmpty] - Flag indicating expanded data is empty
+ * @property {boolean} [isAffixEmpty] - Flag indicating affix lookup failed
  */
 
 /**
  * @typedef {Object} DataMetadata - Metadata for data values
- * @property {number} [createdAt] - Creation timestamp
- * @property {number} [updatedAt] - Last update timestamp
+ *
+ * Contains temporal and ownership information for data items.
+ * Automatically managed by the state management system.
+ *
+ * @property {number} [createdAt] - Creation timestamp (milliseconds since epoch)
+ * @property {number} [updatedAt] - Last update timestamp (milliseconds since epoch)
  * @property {string} [userId] - User ID who created/modified the data
  */
 
 /**
  * @typedef {Object} UpdateContext - Context for update operations
+ *
+ * Provides context information during data update operations.
+ * Used in packages/plugins/src/core/state.js for update processing.
+ *
  * @property {string} collection - Collection name
  * @property {string} [id] - Document ID
  * @property {*} target - Target data container
@@ -370,6 +580,10 @@
 
 /**
  * @typedef {Object} MergeResult - Result from merge operations
+ *
+ * Indicates the outcome of a merge operation.
+ * Used in packages/plugins/src/core/state.js for merge results.
+ *
  * @property {boolean} isValid - Indicates if merge was valid
  * @property {boolean} complete - Indicates if operation is complete
  */
