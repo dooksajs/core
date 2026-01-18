@@ -240,6 +240,7 @@ export function createPluginActions (context, name, source, wrapper) {
 
     /** @type {import('#types').ActiveAction} */
     const actionItem = {
+      key,
       name: actionName,
       method,
       metadata
@@ -269,7 +270,7 @@ export function createPluginActions (context, name, source, wrapper) {
  * @param {string} name - The plugin name (used as prefix for method names)
  * @param {DsPluginMethods} methods - Public method definitions object
  * @param {Function} [wrapper] - Optional wrapper function to wrap methods
- * @returns {Array<{ name: string, value: Function }>} - Array of method objects with name and value
+ * @returns {Array<{ key: string, name: string, value: Function }>} - Array of method objects with name and value
  *
  * @example
  * // Basic public methods
@@ -316,6 +317,7 @@ export function createPluginMethods (context, name, methods, wrapper) {
 
     // Add method to result with standardized naming
     results.push({
+      key,
       name: name + capitalize(key),
       value: method
     })
