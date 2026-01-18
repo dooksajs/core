@@ -1,5 +1,5 @@
 import createPlugin from '../src/index.js'
-import { describe, it } from 'node:test'
+import { describe, it, mock } from 'node:test'
 import { deepStrictEqual, strictEqual, throws } from 'node:assert'
 
 describe('Create plugin', function () {
@@ -1458,6 +1458,400 @@ describe('Create plugin', function () {
 
       strictEqual(plugin.testReveal(), 'hidden')
       strictEqual(instance.testReveal(), 'custom')
+    })
+  })
+
+  describe('createObservableInstance', function () {
+    it('should create an observable instance with correct structure', function (t) {
+      const plugin = createPlugin('test', {
+        metadata,
+        data: { value: 42 },
+        methods: {
+          getValue () {
+            return this.value
+          }
+        }
+      })
+
+      const observable = plugin.createObservableInstance(t)
+
+      strictEqual(observable.name, 'test')
+      deepStrictEqual(observable.metadata, metadata)
+      strictEqual(typeof observable.observe, 'object')
+      strictEqual(typeof observable.testGetValue, 'function')
+    })
+
+    it('should wrap action methods with mocks', function (t) {
+      const plugin = createPlugin('test', {
+        metadata,
+        actions: {
+          greet: {
+            metadata: { title: 'Greet' },
+            method (name) {
+              return `Hello ${name}!`
+            }
+          }
+        }
+      })
+
+      const observable = plugin.createObservableInstance(t)
+
+      // Verify the action method is callable
+      strictEqual(observable.testGreet('World'), 'Hello World!')
+
+      // Verify the mock is tracked in observe
+      strictEqual(typeof observable.observe.greet, 'object')
+    })
+
+    it('should wrap public method methods with mocks', function (t) {
+      const plugin = createPlugin('test', {
+        metadata,
+        methods: {
+          add (x, y) {
+            return x + y
+          }
+        }
+      })
+
+      const observable = plugin.createObservableInstance(t)
+
+      // Verify the method is callable
+      strictEqual(typeof observable.testAdd, 'function')
+      strictEqual(observable.testAdd(2, 3), 5)
+
+      // Verify the mock is tracked in observe
+      strictEqual(observable.observe.add.callCount(), 1)
+    })
+
+    it('should wrap private method methods with mocks', function (t) {
+      const plugin = createPlugin('test', {
+        metadata,
+        data: { secret: 'hidden' },
+        privateMethods: {
+          getSecret () {
+            return this.secret
+          }
+        },
+        methods: {
+          reveal () {
+            return this.getSecret()
+          }
+        }
+      })
+
+      const observable = plugin.createObservableInstance(t)
+
+      // Verify the public method is callable
+      strictEqual(typeof observable.testReveal, 'function')
+      strictEqual(observable.testReveal(), 'hidden')
+
+      strictEqual(observable.observe.reveal.callCount(), 1)
+      strictEqual(observable.observe.getSecret.callCount(), 1)
+    })
+
+    it('should have observe property with all mock methods', function (t) {
+      const plugin = createPlugin('test', {
+        metadata,
+        data: { value: 10 },
+        actions: {
+          compute: {
+            metadata: { title: 'Compute' },
+            method (x) {
+              return this.value + x
+            }
+          }
+        },
+        methods: {
+          multiply (x) {
+            return this.value * x
+          }
+        },
+        privateMethods: {
+          double () {
+            return this.value * 2
+          }
+        }
+      })
+
+      const observable = plugin.createObservableInstance(t)
+
+      // Verify observe contains all mock methods
+      strictEqual(typeof observable.observe.compute, 'object')
+      strictEqual(typeof observable.observe.multiply, 'object')
+      strictEqual(typeof observable.observe.double, 'object')
+    })
+
+    it('should work with state configuration', function (t) {
+      const plugin = createPlugin('test', {
+        metadata,
+        state: {
+          schema: {
+            items: { type: 'collection' }
+          }
+        },
+        data: { counter: 0 },
+        methods: {
+          increment () {
+            this.counter++
+            return this.counter
+          }
+        }
+      })
+
+      const observable = plugin.createObservableInstance(t)
+
+      // Verify state is preserved
+      strictEqual(observable.state._items.length, 1)
+      strictEqual(observable.state._items[0].name, 'test/items')
+
+      // Verify method works
+      strictEqual(observable.testIncrement(), 1)
+    })
+
+    it('should work with dependencies', function (t) {
+      const dep = createPlugin('dep', { metadata })
+      const plugin = createPlugin('test', {
+        metadata,
+        dependencies: [dep]
+      })
+
+      const observable = plugin.createObservableInstance(t)
+
+      // Verify dependencies are preserved
+      deepStrictEqual(observable.dependencies, [dep])
+    })
+
+    it('should work with setup function', function (t) {
+      const plugin = createPlugin('test', {
+        metadata,
+        data: { value: 'test' },
+        setup () {
+          return this.value
+        }
+      })
+
+      const observable = plugin.createObservableInstance(t)
+
+      // Verify setup is preserved and callable
+      strictEqual(typeof observable.setup, 'function')
+      strictEqual(observable.setup(), 'test')
+    })
+
+    it('should work with all plugin features combined', function (t) {
+      const dep = createPlugin('dep', { metadata })
+      const plugin = createPlugin('test', {
+        metadata,
+        dependencies: [dep],
+        data: { value: 10 },
+        state: {
+          defaults: { count: 0 },
+          schema: {
+            count: { type: 'number' }
+          }
+        },
+        methods: {
+          add (x) {
+            return this.value + x
+          }
+        },
+        privateMethods: {
+          secret () {
+            return 'hidden'
+          }
+        },
+        actions: {
+          compute: {
+            metadata: { title: 'Compute' },
+            parameters: { type: 'number' },
+            method (x) {
+              return this.add(x)
+            }
+          }
+        },
+        setup () {
+          return this.secret()
+        }
+      })
+
+      const observable = plugin.createObservableInstance(t)
+
+      // Verify all features are preserved
+      strictEqual(observable.name, 'test')
+      strictEqual(observable.dependencies.length, 1)
+      strictEqual(observable.state._items.length, 1)
+      strictEqual(observable.testAdd(5), 15)
+      strictEqual(observable.testCompute(5), 15)
+      strictEqual(observable.setup(), 'hidden')
+      strictEqual(observable.actions.length, 1)
+
+      // Verify observe mock call counts
+      strictEqual(observable.observe.add.callCount(), 2)
+      strictEqual(observable.observe.compute.callCount(), 1)
+      strictEqual(observable.observe.secret.callCount(), 1)
+      strictEqual(observable.observe.setup.callCount(), 1)
+    })
+
+    it('should work with empty plugin configuration', function (t) {
+      const plugin = createPlugin('test', { metadata })
+
+      const observable = plugin.createObservableInstance(t)
+
+      strictEqual(observable.name, 'test')
+      deepStrictEqual(observable.metadata, metadata)
+      strictEqual(observable.dependencies, undefined)
+      strictEqual(observable.state, undefined)
+      strictEqual(observable.actions, undefined)
+      strictEqual(observable.setup, undefined)
+      strictEqual(typeof observable.observe, 'object')
+    })
+
+    it('should work with empty actions object', function (t) {
+      const plugin = createPlugin('test', {
+        metadata,
+        actions: {}
+      })
+
+      const observable = plugin.createObservableInstance(t)
+
+      strictEqual(observable.actions.length, 0)
+      strictEqual(typeof observable.observe, 'object')
+    })
+
+    it('should work with empty methods object', function (t) {
+      const plugin = createPlugin('test', {
+        metadata,
+        methods: {}
+      })
+
+      const observable = plugin.createObservableInstance(t)
+
+      // Should not throw and should have no methods
+      strictEqual(Object.keys(observable).filter(k => k.startsWith('test')).length, 0)
+      strictEqual(typeof observable.observe, 'object')
+    })
+
+    it('should work with empty private methods object', function (t) {
+      const plugin = createPlugin('test', {
+        metadata,
+        privateMethods: {}
+      })
+
+      const observable = plugin.createObservableInstance(t)
+
+      // Should not throw
+      strictEqual(observable.name, 'test')
+      strictEqual(typeof observable.observe, 'object')
+    })
+
+    it('should work with actions with array metadata', function (t) {
+      const plugin = createPlugin('test', {
+        metadata,
+        actions: {
+          test: {
+            metadata: [{
+              id: 'variant1',
+              title: 'Variant 1'
+            }],
+            method () {
+              return 'ok'
+            }
+          }
+        }
+      })
+
+      const observable = plugin.createObservableInstance(t)
+
+      strictEqual(observable.actions[0].metadata.length, 1)
+      strictEqual(observable.actions[0].metadata[0].id, 'variant1')
+      strictEqual(observable.observe.test.callCount(), 0)
+    })
+
+    it('should work with contextual this binding', function (t) {
+      const plugin = createPlugin('test', {
+        metadata,
+        data: {
+          colour: 'red',
+          pet: 'Dog'
+        },
+        methods: {
+          getColour () {
+            return this.colour
+          }
+        },
+        actions: {
+          sayHi: {
+            metadata: {
+              title: 'Say hi!'
+            },
+            method () {
+              return this.pet + ' and ' + this.getColour()
+            }
+          }
+        }
+      })
+
+      const observable = plugin.createObservableInstance(t)
+
+      strictEqual(observable.testSayHi(), 'Dog and red')
+    })
+
+    it('should work with private methods calling other private methods', function (t) {
+      const plugin = createPlugin('test', {
+        metadata,
+        data: { base: 5 },
+        privateMethods: {
+          add (x) {
+            return this.base + x
+          },
+          multiply (x) {
+            return this.base * x
+          },
+          compute (x, y) {
+            return this.add(x) + this.multiply(y)
+          }
+        },
+        methods: {
+          calculate (x, y) {
+            return this.compute(x, y)
+          }
+        }
+      })
+
+      const observable = plugin.createObservableInstance(t)
+
+      strictEqual(observable.testCalculate(3, 2), (5 + 3) + (5 * 2)) // 5+3+10 = 18
+      strictEqual(typeof observable.observe.add, 'object')
+      strictEqual(typeof observable.observe.multiply, 'object')
+      strictEqual(typeof observable.observe.compute, 'object')
+    })
+
+    it('should work with data deep cloning', function (t) {
+      const originalData = {
+        nested: { value: 42 },
+        array: [1, 2, 3]
+      }
+      const plugin = createPlugin('test', {
+        metadata,
+        data: originalData,
+        methods: {
+          getNested () {
+            return this.nested
+          },
+          getArray () {
+            return this.array
+          }
+        }
+      })
+
+      const observable = plugin.createObservableInstance(t)
+
+      // Modify original to ensure it doesn't affect observable
+      originalData.nested.value = 999
+      originalData.array.push(4)
+
+      // Observable should have original values
+      strictEqual(observable.testGetNested().value, 42)
+      deepStrictEqual(observable.testGetArray(), [1, 2, 3])
     })
   })
 })
