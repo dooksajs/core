@@ -269,12 +269,10 @@ export function createPluginPrivateMethods (context, methods, wrapper) {
     let method = createBridge(context, key).bind(context)
 
     if (wrapper) {
-      method = wrapper(method)
+      method = wrapper(key, method)
     }
 
     // Only internal access
     context[key] = method
   }
-
-  return [] // Private methods are never exported
 }

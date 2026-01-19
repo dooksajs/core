@@ -157,13 +157,12 @@ export function createPlugin (name, {
       }
 
       if (privateMethods) {
-        createPluginPrivateMethods(context, privateMethods, (fn) => {
-          const m = wrapper(fn)
+        createPluginPrivateMethods(context, privateMethods, (key, fn) => {
+          const method = wrapper(fn)
           // Capture private method mocks for observation
-          // Find the key by value since createPluginPrivateMethods doesn't return keys
-          const key = Object.keys(privateMethods).find(k => privateMethods[k] === fn)
-          if (key) mockMethods[key] = m.mock
-          return m
+          mockMethods[key] = method.mock
+
+          return method
         })
       }
 
