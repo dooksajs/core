@@ -3,49 +3,53 @@ import { bindContext, dataValue } from './utils.js'
 import { parseSchema } from './parse-schema.js'
 
 /**
- * @import { DsPluginStateExport, DsPluginState, ActiveAction, DsPluginMethods } from '#types'
- */
-
-/**
- * Creates and initializes the state management system for a plugin.
- *
- * This function processes the state configuration, creates default values,
- * validates schemas, and sets up the internal state structure with
- * non-enumerable properties for internal tracking.
+ * @internal
+ * Ensures the internal implementation registry exists on the context.
+ * This registry (`_impl`) is the "live heart" of the plugin where actual logic resides.
  *
  * @param {Object} context - The plugin execution context
- * @param {string} name - The plugin name (used as prefix for state keys)
- * @param {DsPluginState} state - State configuration object
- * @returns {DsPluginStateExport} - Configured state object with internal tracking properties
+ */
+function ensureImplRegistry (context) {
+  if (!context._impl) {
+    context._impl = Object.create(null)
+  }
+}
+
+/**
+ * @internal
+ * Creates a stable "Bridge" function.
  *
- * @example
- * // Basic state with defaults and schema
- * const context = { name: 'user' }
- * const state = createPluginState(context, 'user', {
- *   defaults: {
- *     count: 0,
- *     isActive: true
- *   },
- *   schema: {
- *     count: { type: 'number' },
- *     isActive: { type: 'boolean' }
- *   }
- * })
- * // Result: state has properties like 'user/count' and 'user/isActive'
+ * The returned function is a permanent proxy. When called, it looks up the
+ * current implementation in `context._impl[key]` and executes it.
+ * This allows us to hot-swap the logic (e.g., for mocking) without changing
+ * the exported function reference held by other modules.
  *
- * @example
- * // State with collection type
- * const state = createPluginState(context, 'products', {
- *   schema: {
- *     items: { type: 'collection' }
- *   }
- * })
- * // Result: state.items will be a collection type
+ * @param {Object} context - The plugin context containing the `_impl` registry
+ * @param {string} key - The method name to look up
+ * @returns {Function} A stable function that delegates to the current implementation
+ */
+function createBridge (context, key) {
+  return function (...args) {
+    const currentLogic = context._impl[key]
+    if (typeof currentLogic !== 'function') {
+      throw new Error(`Implementation for [${key}] is not a function.`)
+    }
+    // usage of .apply preserves the 'this' context passed to the bridge
+    return currentLogic.apply(this, args)
+  }
+}
+
+/**
+ * Creates and initializes the state management system.
+ * State is data-driven and does not require the Bridge pattern.
+ *
+ * @param {Object} context - The plugin execution context
+ * @param {string} name - The plugin name (used as prefix)
+ * @param {import('#types').DsPluginState} state - State configuration
+ * @returns {import('#types').DsPluginStateExport} Configured state object
  */
 export function createPluginState (context, name, state) {
-  // Deep clone state to prevent mutations
   state = deepClone(state)
-
   const defaults = state.defaults
   const schema = state.schema
   const _defaults = []
@@ -53,7 +57,7 @@ export function createPluginState (context, name, state) {
   const _items = []
   const _names = []
 
-  // Define non-enumerable internal properties for state tracking
+  // Internal tracking properties (non-enumerable)
   Object.defineProperties(state, {
     _items: {
       value: _items,
@@ -73,7 +77,7 @@ export function createPluginState (context, name, state) {
     }
   })
 
-  // Process default values and bind them to plugin context
+  // Process defaults
   if (defaults) {
     for (const [key, value] of Object.entries(defaults)) {
       _defaults.push({
@@ -83,16 +87,12 @@ export function createPluginState (context, name, state) {
     }
   }
 
-  // Process schema and initialize state values
+  // Process schema
   for (const [key, value] of Object.entries(schema)) {
     const schemaType = value.type
     const collectionName = name + '/' + key
-
-    // Initialize data value based on schema type
     _values[collectionName] = dataValue(schemaType)
     _names.push(collectionName)
-
-    // Parse schema entries for complex types
     _items.push({
       entries: parseSchema(context, value, collectionName),
       isCollection: schemaType === 'collection',
@@ -100,67 +100,26 @@ export function createPluginState (context, name, state) {
     })
   }
 
-  // Freeze state to prevent runtime modifications
   Object.preventExtensions(state)
-
   return state
 }
 
-
 /**
- * Creates and registers action handlers for a plugin.
+ * Registers action handlers using the Bridge pattern.
  *
- * This function processes action definitions, binds them to the plugin context,
- * creates action metadata, and returns both the action handlers and their
- * corresponding method modules for export.
+ * Actions are registered into `context._impl` to allow for test interception.
+ * The returned methods are "Bridges" that can be safely exported via ESM.
  *
  * @param {Object} context - The plugin execution context
- * @param {string} name - The plugin name (used as prefix for action names)
- * @param {import('#types').DsPluginActions} source - Action definitions object
- * @param {Function} [wrapper] - Optional wrapper function to wrap action methods
- * @returns {{ methods: Array<{ name: string, value: Function }>, actions: ActiveAction[] }} -
- *         Object containing action methods and action metadata
- *
- * @example
- * // Basic action with metadata
- * const context = { name: 'auth' }
- * const result = createPluginActions(context, 'auth', {
- *   login: {
- *     method: function(params) {
- *       this.token = params.token
- *     },
- *     metadata: {
- *       title: 'User Login',
- *       description: 'Authenticate user and store token'
- *     }
- *   }
- * })
- * // Result: result.methods contains 'authLogin' function
- * //         result.actions contains action metadata
- *
- * @example
- * // Action with parameters
- * const result = createPluginActions(context, 'user', {
- *   updateProfile: {
- *     method: function(params) {
- *       this.name = params.name
- *     },
- *     metadata: {
- *       title: 'Update Profile'
- *     },
- *     parameters: {
- *       type: 'object',
- *       properties: {
- *         name: { type: 'string', required: true }
- *       }
- *     }
- *   }
- * })
+ * @param {string} name - The plugin name
+ * @param {import('#types').DsPluginActions} source - Action definitions
+ * @param {Function} [wrapper] - Optional wrapper (e.g., mock.fn) for the implementation
  */
 export function createPluginActions (context, name, source, wrapper) {
+  ensureImplRegistry(context)
   const methods = []
+  const actions = []
 
-  // Create isolated action context with non-enumerable properties
   const actionContext = Object.create(null, {
     context: {
       value: {},
@@ -183,52 +142,44 @@ export function createPluginActions (context, name, source, wrapper) {
   })
   Object.preventExtensions(actionContext)
 
-  /**
-   * Active actions for the action plugin
-   * @type {import('#types').ActiveAction[]}
-   */
-  const actions = []
-
-  // Process each action definition
   for (const [key, action] of Object.entries(source)) {
-    // Validate unique action name
     if (context[key]) {
-      throw new Error(`Plugin [${key}]: Expected unique action name`)
+      throw new Error(`Plugin Action [${key}]: Expected unique name`)
     }
 
     const actionModuleName = name + capitalize(key)
     const actionName = name + '_' + key
 
-    // Bind method to plugin context
-    let method = action.method.bind(context)
+    // Store the actual logic in the mutable registry
+    context._impl[key] = action.method
 
-    // Apply optional wrapper if provided
+    // Create the stable Bridge and bind it to context
+    let method = createBridge(context, key).bind(context)
+
+    // Apply wrapper if provided (used during createObservableInstance)
     if (wrapper) {
       method = wrapper(method)
     }
 
-    // Bind context to method for internal access
+    // Register bound bridge on context for internal usage (this.actionName())
     context[key] = method
 
-    // Create mock action call for export
+    // Exported method wrapper that injects actionContext
     methods.push({
       name: actionModuleName,
-      value: (params) => {
+      value (params) {
         return method(params, actionContext)
       }
     })
 
-    /** @type {import('#types').DsPluginActionMetadata[]} */
+    // Metadata processing
     const metadata = []
-
-    // Process metadata (can be array or single object)
     if (Array.isArray(action.metadata)) {
-      for (let i = 0; i < action.metadata.length; i++) {
-        const actionMetadata = action.metadata[i]
+      for (const item of action.metadata) {
         metadata.push(Object.assign({
           plugin: name,
           method: actionName
-        }, actionMetadata))
+        }, item))
       }
     } else {
       metadata.push(Object.assign({
@@ -238,20 +189,13 @@ export function createPluginActions (context, name, source, wrapper) {
       }, action.metadata))
     }
 
-    /** @type {import('#types').ActiveAction} */
-    const actionItem = {
+    actions.push({
       key,
       name: actionName,
       method,
-      metadata
-    }
-
-    // Add parameters if defined
-    if (action.parameters) {
-      actionItem.parameters = action.parameters
-    }
-
-    actions.push(actionItem)
+      metadata,
+      ...(action.parameters && { parameters: action.parameters })
+    })
   }
 
   return {
@@ -261,64 +205,39 @@ export function createPluginActions (context, name, source, wrapper) {
 }
 
 /**
- * Creates and registers public methods for a plugin.
- *
- * This function processes method definitions, binds them to the plugin context,
- * and returns them with standardized naming for export.
+ * Registers public methods using the Bridge pattern.
  *
  * @param {Object} context - The plugin execution context
- * @param {string} name - The plugin name (used as prefix for method names)
- * @param {DsPluginMethods} methods - Public method definitions object
- * @param {Function} [wrapper] - Optional wrapper function to wrap methods
- * @returns {Array<{ key: string, name: string, value: Function }>} - Array of method objects with name and value
- *
- * @example
- * // Basic public methods
- * const context = { name: 'user' }
- * const methods = createPluginMethods(context, 'user', {
- *   greet() {
- *     return `Hello, ${this.name}!`
- *   },
- *   getAge() {
- *     return this.age
- *   }
- * })
- * // Result: methods array with 'userGreet' and 'userGetAge' functions
- *
- * @example
- * // Method with parameters
- * const methods = createPluginMethods(context, 'math', {
- *   add(a, b) {
- *     return a + b
- *   }
- * })
- * // Result: methods array with 'mathAdd' function
+ * @param {string} name - The plugin name
+ * @param {import('#types').DsPluginMethods} methods - Method definitions
+ * @param {Function} [wrapper] - Optional wrapper (e.g., mock.fn)
  */
 export function createPluginMethods (context, name, methods, wrapper) {
+  ensureImplRegistry(context)
   const results = []
 
-  // Process each public method definition
   for (const [key, value] of Object.entries(methods)) {
-    // Validate unique method name
     if (context[key]) {
-      throw new Error(`Plugin [${key}]: Expected unique method name`)
+      throw new Error(`Plugin Method [${key}]: Expected unique name`)
     }
 
-    // Bind method to plugin context for 'this' access
-    let method = value.bind(context)
+    // Store logic in mutable registry
+    context._impl[key] = value
 
-    // Apply optional wrapper if provided
+    // Create and bind stable Bridge
+    let method = createBridge(context, key).bind(context)
+
     if (wrapper) {
       method = wrapper(method)
     }
 
-    // Add method to context for internal access
+    // Internal access
     context[key] = method
 
-    // Add method to result with standardized naming
+    // External access (Standardized naming)
     results.push({
-      key,
-      name: name + capitalize(key),
+      key, // Internal key (for registry lookup)
+      name: name + capitalize(key), // Public name (for export)
       value: method
     })
   }
@@ -326,71 +245,36 @@ export function createPluginMethods (context, name, methods, wrapper) {
   return results
 }
 
-
 /**
- * Creates and registers private methods for a plugin.
- *
- * This function processes private method definitions, binds them to the plugin context,
- * and makes them available internally without exporting them. Private methods are
- * only accessible within the plugin's context and are not exposed to other plugins.
+ * Registers private methods using the Bridge pattern.
+ * Private methods are not exported but are still bridged to allow
+ * for internal spying/mocking during tests.
  *
  * @param {Object} context - The plugin execution context
- * @param {DsPluginMethods} methods - Private method definitions object
- * @param {Function} [wrapper] - Optional wrapper function to wrap private methods
- * @returns {Array} - Empty array (private methods are not exported)
- *
- * @example
- * // Private methods for internal use
- * const context = { name: 'auth' }
- * const results = createPluginPrivateMethods(context, {
- *   validateToken(token) {
- *     // Internal validation logic
- *     return token && token.length > 0
- *   },
- *   generateHash(input) {
- *     // Internal hash generation
- *     return input.split('').reverse().join('')
- *   }
- * })
- * // Result: methods are bound to context but not exported
- * // Can be called internally as this.validateToken(token)
- *
- * @example
- * // Private method with wrapper
- * const results = createPluginPrivateMethods(context, {
- *   logError(error) {
- *     console.error('Plugin error:', error)
- *   }
- * }, (method) => {
- *   return function(...args) {
- *     try {
- *       return method.apply(this, args)
- *     } catch (error) {
- *       this.logError(error)
- *       throw error
- *     }
- *   }
- * })
+ * @param {import('#types').DsPluginMethods} methods - Private method definitions
+ * @param {Function} [wrapper] - Optional wrapper
  */
 export function createPluginPrivateMethods (context, methods, wrapper) {
-  const results = []
+  ensureImplRegistry(context)
 
   for (const [key, value] of Object.entries(methods)) {
     if (context[key]) {
-      throw new Error(`Plugin [${key}]: Expected unique private method name`)
+      throw new Error(`Plugin Private Method [${key}]: Expected unique name`)
     }
 
-    // Bind method to plugin context for 'this' access
-    let method = value.bind(context)
+    // Store logic
+    context._impl[key] = value
 
-    // Apply optional wrapper if provided
+    // Create Bridge
+    let method = createBridge(context, key).bind(context)
+
     if (wrapper) {
       method = wrapper(method)
     }
 
-    // Add method to context (private methods are not exported)
+    // Only internal access
     context[key] = method
   }
 
-  return results
+  return [] // Private methods are never exported
 }
