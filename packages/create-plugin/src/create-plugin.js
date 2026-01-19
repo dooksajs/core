@@ -144,15 +144,15 @@ export function createPlugin (name, {
       // Create Mocks (using helpers but with mock wrapper)
       if (actions) {
         const res = createPluginActions(context, name, actions, wrapper)
-        for (const m of res.methods) plugin[m.name] = m.value
-        for (const a of res.actions) mockMethods[a.key] = a.method.mock
+        for (const method of res.methods) plugin[method.name] = method.value
+        for (const action of res.actions) mockMethods[action.key] = action.method.mock
       }
 
       if (methods) {
         const res = createPluginMethods(context, name, methods, wrapper)
-        for (const m of res) {
-          plugin[m.name] = m.value
-          mockMethods[m.key] = m.value.mock
+        for (const method of res) {
+          plugin[method.name] = method.value
+          mockMethods[method.key] = method.value.mock
         }
       }
 
