@@ -27,23 +27,16 @@ import {
  * @template {DsPluginMethods} PrivateMethods
  * @template {DsPluginActions} Actions
  * @template {Function} Setup
- * @param {Name} name
- * @param {DsPluginOptions<
- * Name,
- * Data,
- * Methods,
- * PrivateMethods,
- * Actions,
- * Setup
- * > &
+ * @param {Name} name - Plugin name
+ * @param {DsPluginOptions<Name, Data, Methods, PrivateMethods, Actions, Setup> &
  * ThisType<
  * { name: Name } &
  * Data &
  * Methods &
  * PrivateMethods &
  * DsPluginActionMapper<Actions>
- * >} pluginOptions
- * @returns {DsPluginExport<Name, Methods, Actions, Setup, Data, PrivateMethods>}
+ * >} pluginOptions - Plugin configuration options
+ * @returns {DsPluginExport<Name, Methods, Actions, Setup, Data, PrivateMethods>} The created plugin
  */
 export function createPlugin (name, {
   dependencies,
