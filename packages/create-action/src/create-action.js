@@ -120,6 +120,8 @@ function createAction (...args) {
 
   if (methods) {
     Object.assign(methods, availableMethods)
+  } else {
+    methods = { ...availableMethods }
   }
 
   const actionId = {
