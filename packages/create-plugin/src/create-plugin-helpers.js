@@ -3,6 +3,46 @@ import { bindContext, dataValue } from './utils.js'
 import { parseSchema } from './parse-schema.js'
 
 /**
+ * @import {DsPluginStateExport, DsPluginActions, DsPluginState, DsPluginMethods, DsPluginSchemaDefaults} from '#types'
+ * @import {Mock, MockFunctionContext} from 'node:test'
+ */
+
+/**
+ * @callback WrapperCallback
+ * @param {Function} fn - Function to wrap
+ * @returns {Mock<Function>} Wrapped function
+ */
+
+/**
+ * @callback PrivateMethodWrapperCallback
+ * @param {string} key - Method key
+ * @param {Function} fn - Function to wrap
+ * @returns {Mock<Function>} Wrapped function
+ */
+
+/**
+ * @template {Function} T = Function
+ * @typedef {Object} PluginActionResult
+ * @property {Object[]} methods - Exported methods
+ * @property {string} methods[].name - Method name
+ * @property {T} methods[].value - Method function
+ * @property {Object[]} actions - Action metadata
+ * @property {string} actions[].key - Action key
+ * @property {string} actions[].name - Action name
+ * @property {T} actions[].method - Action method
+ * @property {Object[]} actions[].metadata - Action metadata
+ * @property {Object} [actions[].parameters] - Action parameters
+ */
+
+/**
+ * @template {Function} T = Function
+ * @typedef {Object} PluginMethodResult
+ * @property {string} key - Internal key (for registry lookup)
+ * @property {string} name - Public name (for export)
+ * @property {T} value - Method function
+ */
+
+/**
  * @internal
  * Ensures the internal implementation registry exists on the context.
  * This registry (`_impl`) is the "live heart" of the plugin where actual logic resides.
@@ -45,8 +85,8 @@ function createBridge (context, key) {
  *
  * @param {Object} context - The plugin execution context
  * @param {string} name - The plugin name (used as prefix)
- * @param {import('#types').DsPluginState} state - State configuration
- * @returns {import('#types').DsPluginStateExport} Configured state object
+ * @param {DsPluginState} state - State configuration
+ * @returns {DsPluginStateExport} Configured state object
  */
 export function createPluginState (context, name, state) {
   state = deepClone(state)
@@ -110,10 +150,24 @@ export function createPluginState (context, name, state) {
  * Actions are registered into `context._impl` to allow for test interception.
  * The returned methods are "Bridges" that can be safely exported via ESM.
  *
+ * @overload
  * @param {Object} context - The plugin execution context
  * @param {string} name - The plugin name
- * @param {import('#types').DsPluginActions} source - Action definitions
- * @param {Function} [wrapper] - Optional wrapper (e.g., mock.fn) for the implementation
+ * @param {DsPluginActions} source - Action definitions
+ * @returns {PluginActionResult<Function>} Object containing methods and actions
+ *
+ * @overload
+ * @param {Object} context - The plugin execution context
+ * @param {string} name - The plugin name
+ * @param {DsPluginActions} source - Action definitions
+ * @param {WrapperCallback} wrapper - Wrapper (e.g., mock.fn) for the implementation
+ * @returns {PluginActionResult<Mock<Function>>} Object containing methods and actions
+ *
+ * @param {Object} context - The plugin execution context
+ * @param {string} name - The plugin name
+ * @param {DsPluginActions} source - Action definitions
+ * @param {WrapperCallback} [wrapper] - Optional wrapper (e.g., mock.fn) for the implementation
+ * @returns {PluginActionResult<Function | Mock<Function>>} Object containing methods and actions
  */
 export function createPluginActions (context, name, source, wrapper) {
   ensureImplRegistry(context)
@@ -207,10 +261,24 @@ export function createPluginActions (context, name, source, wrapper) {
 /**
  * Registers public methods using the Bridge pattern.
  *
+ * @overload
  * @param {Object} context - The plugin execution context
  * @param {string} name - The plugin name
- * @param {import('#types').DsPluginMethods} methods - Method definitions
- * @param {Function} [wrapper] - Optional wrapper (e.g., mock.fn)
+ * @param {DsPluginMethods} methods - Method definitions
+ * @returns {PluginMethodResult<Function>[]} Array of method objects
+ *
+ * @overload
+ * @param {Object} context - The plugin execution context
+ * @param {string} name - The plugin name
+ * @param {DsPluginMethods} methods - Method definitions
+ * @param {WrapperCallback} wrapper - Wrapper (e.g., mock.fn)
+ * @returns {PluginMethodResult<Mock<Function>>[]} Array of method objects
+ *
+ * @param {Object} context - The plugin execution context
+ * @param {string} name - The plugin name
+ * @param {DsPluginMethods} methods - Method definitions
+ * @param {WrapperCallback} [wrapper] - Optional wrapper (e.g., mock.fn)
+ * @returns {PluginMethodResult<Function | Mock<Function>>[]} Array of method objects
  */
 export function createPluginMethods (context, name, methods, wrapper) {
   ensureImplRegistry(context)
@@ -251,8 +319,8 @@ export function createPluginMethods (context, name, methods, wrapper) {
  * for internal spying/mocking during tests.
  *
  * @param {Object} context - The plugin execution context
- * @param {import('#types').DsPluginMethods} methods - Private method definitions
- * @param {Function} [wrapper] - Optional wrapper
+ * @param {DsPluginMethods} methods - Private method definitions
+ * @param {PrivateMethodWrapperCallback} [wrapper] - Optional wrapper
  */
 export function createPluginPrivateMethods (context, methods, wrapper) {
   ensureImplRegistry(context)
