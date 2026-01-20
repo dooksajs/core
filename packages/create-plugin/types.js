@@ -80,9 +80,9 @@
  * Used for parameter validation and UI generation.
  *
  * @typedef {Object} DsPluginActionParameter
- * @property {'string'|'number'|'array'|'object'|'boolean'} [type]
- * @property {Object.<string, DsPluginActionParameterItem>} [properties]
- * @property {DsPluginActionParameterItem} [items]
+ * @property {'string'|'number'|'array'|'object'|'boolean'} [type] - Parameter data type
+ * @property {Object.<string, DsPluginActionParameterItem>} [properties] - Object properties (for 'object' type)
+ * @property {DsPluginActionParameterItem} [items] - Array item schema (for 'array' type)
  */
 
 /**
