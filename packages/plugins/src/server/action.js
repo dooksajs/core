@@ -305,7 +305,7 @@ export const action = createPlugin('action', {
       }
     }
   },
-  async setup ({ actions }) {
+  async setup ({ actions = [] } = {}) {
     await databaseSeed('action-blocks')
     await databaseSeed('action-blockSequences')
     await databaseSeed('action-sequences')
