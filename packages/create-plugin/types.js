@@ -1,6 +1,6 @@
 /**
  * @import { DataSchema, DataSchemaObject, DataSchemaItem} from '../types.js'
- * @import { Mock } from 'node:test'
+ * @import { Mock, MockFunctionContext } from 'node:test'
  */
 
 /**
@@ -80,9 +80,9 @@
  * Used for parameter validation and UI generation.
  *
  * @typedef {Object} DsPluginActionParameter
- * @property {'string'|'number'|'array'|'object'|'boolean'} [type] - Parameter data type
- * @property {Object.<string, DsPluginActionParameterItem>} [properties] - Object properties (for 'object' type)
- * @property {DsPluginActionParameterItem} [items] - Array item schema (for 'array' type)
+ * @property {'string'|'number'|'array'|'object'|'boolean'} [type]
+ * @property {Object.<string, DsPluginActionParameterItem>} [properties]
+ * @property {DsPluginActionParameterItem} [items]
  */
 
 /**
@@ -232,11 +232,11 @@
  * @template {Object<string, Function>} PrivateMethods - Object mapping private method names to function types
  * @template {Function} Setup - Setup function type
  * @typedef {{
- * [K in keyof Methods]: Mock<Methods[K]>
+ * [K in keyof Methods]: MockFunctionContext<Methods[K]>
  * } & {
- * [K in keyof Actions]: Mock<Actions[K]["method"]>
+ * [K in keyof Actions]: MockFunctionContext<Actions[K]["method"]>
  * } & {
- * [K in keyof PrivateMethods]: Mock<PrivateMethods[K]>
+ * [K in keyof PrivateMethods]: MockFunctionContext<PrivateMethods[K]>
  * } & {
  * setup?: Mock<Setup>
  * }} DsPluginMocks
