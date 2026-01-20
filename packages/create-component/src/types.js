@@ -142,7 +142,7 @@
  */
 
 /**
- * @import {EventEmit} from '../../plugins/src/client/event.js'
+ * @import {EventEmit} from '../../plugins/src/core/event.js'
  * @callback EventEmitCallback
  * @param {EventEmit} param
  */
