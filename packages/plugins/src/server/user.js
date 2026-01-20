@@ -219,7 +219,7 @@ function create (request, response) {
       response.status(500).json(setData.snapshotError)
     }
 
-    return response.status(400).sejsonnd(setData.error.details)
+    return response.status(400).json(setData.error.details)
   }
 
   response.status(201).json({
