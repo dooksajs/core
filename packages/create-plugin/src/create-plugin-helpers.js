@@ -89,33 +89,14 @@ function createBridge (context, key) {
  * @returns {DsPluginStateExport} Configured state object
  */
 export function createPluginState (context, name, state) {
-  state = deepClone(state)
-  const defaults = state.defaults
-  const schema = state.schema
+  const clonedState = deepClone(state)
+  const defaults = clonedState.defaults
+  const schema = clonedState.schema
   const _defaults = []
+  /** @type {DsPluginSchemaDefaults} */
   const _values = {}
   const _items = []
   const _names = []
-
-  // Internal tracking properties (non-enumerable)
-  Object.defineProperties(state, {
-    _items: {
-      value: _items,
-      enumerable: false
-    },
-    _names: {
-      value: _names,
-      enumerable: false
-    },
-    _values: {
-      value: _values,
-      enumerable: false
-    },
-    _defaults: {
-      value: _defaults,
-      enumerable: false
-    }
-  })
 
   // Process defaults
   if (defaults) {
@@ -140,8 +121,34 @@ export function createPluginState (context, name, state) {
     })
   }
 
-  Object.preventExtensions(state)
-  return state
+  // Create the state export object with all properties
+  const stateExport = {
+    schema,
+    defaults,
+    _values,
+    _names,
+    _items,
+    _defaults
+  }
+
+  // Define Property Descriptors
+  const propertyDescriptorValues = {
+    configurable: false,
+    enumerable: false,
+    writable: false
+  }
+
+  Object.defineProperties(stateExport, {
+    schema: propertyDescriptorValues,
+    defaults: propertyDescriptorValues,
+    _values: propertyDescriptorValues,
+    _names: propertyDescriptorValues,
+    _items: propertyDescriptorValues,
+    _defaults: propertyDescriptorValues
+  })
+
+  Object.preventExtensions(stateExport)
+  return stateExport
 }
 
 /**
