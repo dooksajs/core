@@ -12,12 +12,14 @@
     "test-coverage-report": "node --test --experimental-test-module-mocks --experimental-test-coverage"
   },
   "imports": {
+    "#core": "./src/core/index.js",
     "#client": "./src/client/index.js",
     "#server": "./src/server/index.js",
     "#types": "./src/types.js",
     "#utils": "./src/utils/index.js"
   },
   "exports": {
+    "./core": "./src/core/index.js",
     "./client": "./src/client/index.js",
     "./server": "./src/server/index.js",
     "./dev": "./src/dev/index.js"
