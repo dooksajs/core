@@ -82,7 +82,7 @@ export const component = createPlugin('component', {
           ])
 
           response.set('Content-Security-Policy', page.csp)
-          response.status(200).html(page.html)
+          response.status(200).send(page.html)
         }
       ]
     })
