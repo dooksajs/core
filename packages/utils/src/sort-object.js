@@ -1,8 +1,8 @@
 /**
  * Sort object properties alphanumerically
- * @param {(Object|Array)} source - The original object or array to sort
- * @returns {(Object|Array)} - New object or array with sorted properties
- * @throws {Error} - If source is not an object or array
+ * @param {Object|Array} source - The original object or array to sort
+ * @returns {Object|Array} New object or array with sorted properties
+ * @throws {Error} If source is not an object or array
  */
 function sortObject (source) {
   // Handle null and undefined
