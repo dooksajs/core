@@ -1,7 +1,22 @@
 
 ## How to contribute to Dooksa
 
-#### **Did you find a bug?**
+### JSDoc Documentation Standards
+
+All code contributions must follow our JSDoc documentation standards. Before submitting code, please review the following guides:
+
+- [JSDoc Guidelines](docs/jsdoc-guidelines.md) - Comprehensive documentation standards
+- [JSDoc Examples](docs/jsdoc-examples.md) - Real-world examples from the codebase
+- [JSDoc Type Examples](docs/jsdoc-type-examples.md) - When to use typedef vs inline types
+
+**Key Requirements:**
+- All exported functions must have JSDoc comments
+- Use typedefs for complex object types (3+ properties, nested objects, callbacks)
+- Use inline types for primitives and simple unions
+- Follow PascalCase naming for type definitions
+- Document all parameters and return values
+
+### **Did you find a bug?**
 
 * **Do not open up a complete GitHub issue if the bug is a security vulnerability
   in Dooksa*, just email [Support](mailto:support@dooksa.com) and we can take it from there** Note that this a placeholder while we create a complete security policy. We do not publish details of vulnerabilities publically until the threat is properly addressed,
