@@ -1,11 +1,37 @@
 import stylisticJs from '@stylistic/eslint-plugin'
+import jsdoc from 'eslint-plugin-jsdoc'
 
 export default [
   {
     plugins: {
-      '@stylistic/js': stylisticJs
+      '@stylistic/js': stylisticJs,
+      jsdoc
     },
     rules: {
+      // JSDoc Rules
+      'jsdoc/require-jsdoc': [
+        'error',
+        {
+          publicOnly: true,
+          require: {
+            FunctionDeclaration: true,
+            MethodDefinition: true,
+            ClassDeclaration: true,
+            ArrowFunctionExpression: true,
+            FunctionExpression: true
+          }
+        }
+      ],
+      'jsdoc/check-tag-names': [
+        'warn',
+        {
+          definedTags: ['overload']
+        }
+      ],
+      'jsdoc/require-param-description': 'error',
+      'jsdoc/require-param-type': 'error',
+      'jsdoc/check-syntax': 'error',
+      'jsdoc/no-undefined-types': 'error',
       '@stylistic/js/curly-newline': ['error', 'always'],
       '@stylistic/js/indent': [
         'error', 2, {

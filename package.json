@@ -33,6 +33,7 @@
     "commander": "^14.0.2",
     "esbuild": "^0.27.2",
     "eslint": "^9.39.2",
+    "eslint-plugin-jsdoc": "^62.2.0",
     "simple-git-hooks": "^2.13.1",
     "typescript": "^5.9.3"
   },
