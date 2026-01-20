@@ -135,8 +135,8 @@ describe('parseAction', function () {
         action_ifElse: {
           if: [{
             op: '==',
-            from: 'value',
-            to: 'active'
+            left: 'value',
+            right: 'active'
           }],
           then: [{ $sequenceRef: 0 }],
           else: [{ $sequenceRef: 1 }]
@@ -947,14 +947,14 @@ describe('parseAction', function () {
           if: [
             {
               op: '==',
-              from: 'value',
-              to: 'active'
+              left: 'value',
+              right: 'active'
             },
             { andOr: '&&' },
             {
               op: '!=',
-              from: 'status',
-              to: 'disabled'
+              left: 'status',
+              right: 'disabled'
             }
           ],
           then: [{ $sequenceRef: 0 }],
@@ -1235,8 +1235,8 @@ describe('parseAction', function () {
           if: [
             {
               op: '==',
-              from: 'validationResult',
-              to: 'pass'
+              left: 'validationResult',
+              right: 'pass'
             }
           ],
           then: [
