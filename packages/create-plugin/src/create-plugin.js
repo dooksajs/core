@@ -153,7 +153,7 @@ export function createPlugin (name, {
       if (actions) {
         const res = createPluginActions(context, name, actions, wrapper)
         for (const method of res.methods) plugin[method.name] = method.value
-        for (const action of res.actions) mockMethods[action.key] = action.method.mock
+        for (const action of res.actions) mockMethods[action.key] = action.method
       }
 
       if (methods) {
@@ -167,7 +167,9 @@ export function createPlugin (name, {
       if (privateMethods) {
         createPluginPrivateMethods(context, privateMethods, (key, fn) => {
           const method = wrapper(fn)
+
           // Capture private method mocks for observation
+          plugin[key] = method
           mockMethods[key] = method.mock
 
           return method
@@ -183,7 +185,7 @@ export function createPlugin (name, {
       /**
        * Creates an observable (mocked) instance and "hijacks" the original plugin.
        *
-       * Mechanism:
+       * MECHANISM:
        * - Creates a fresh, isolated instance where all methods are wrapped in `mock.fn`.
        * - Updates the original plugin's `_impl` registry to point to this new instance.
        * - Any external module holding a reference to the original plugin will now
@@ -211,7 +213,6 @@ export function createPlugin (name, {
             testContext
           )
 
-          // THE HIJACK
           // Redirect the original context's _impl to the new observable methods.
 
           if (methods) {
@@ -232,8 +233,8 @@ export function createPlugin (name, {
 
           if (privateMethods) {
             for (const key of Object.keys(privateMethods)) {
-              // Private methods are only on .observe
-              context._impl[key] = (...args) => obs.observe[key](...args)
+              // Redirect original bridge -> Observable Mock
+              context._impl[key] = (...args) => obs[key](...args)
             }
           }
 
