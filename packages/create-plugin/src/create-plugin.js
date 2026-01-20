@@ -9,8 +9,9 @@ import {
 
 
 /**
- * @import {DsPluginData, DsPluginMethods, DsPluginActions, DsPluginOptions, DsPluginActionMapper, DsPluginExport} from '#types'
- * @import {TestContext} from 'node:test'
+ * @import {DsPluginData, DsPluginMethods, DsPluginActions, DsPluginOptions, DsPluginActionMapper, DsPluginExport, DsPluginGetters, DsPluginState, DsPluginMetadata, DsPluginObservable} from '#types'
+ * @import {TestContext, Mock} from 'node:test'
+ * @import {WrapperCallback, PrivateMethodWrapperCallback} from './create-plugin-helpers.js'
  */
 
 /**
@@ -107,6 +108,19 @@ export function createPlugin (name, {
      * @internal
      * Internal helper to create the actual Observable object with `node:test` tracking.
      * Unlike the main factory, this does NOT create bridges; it creates direct mocks.
+     *
+     * @param {string} name - Plugin name
+     * @param {Object} config - Plugin configuration
+     * @param {DsPluginGetters[]} [config.dependencies] - Plugin dependencies
+     * @param {DsPluginState} [config.state] - State configuration
+     * @param {DsPluginMetadata} [config.metadata] - Plugin metadata
+     * @param {DsPluginData} [config.data] - Plugin data
+     * @param {DsPluginActions} [config.actions] - Plugin actions
+     * @param {DsPluginMethods} [config.methods] - Plugin methods
+     * @param {DsPluginMethods} [config.privateMethods] - Plugin private methods
+     * @param {Function} [config.setup] - Setup function
+     * @param {TestContext} testContext - Node test context
+     * @returns {DsPluginObservable<Name, Methods, Actions, PrivateMethods, Setup>} The observable plugin instance
      */
     function createObservableInstanceInternal (name, config, testContext) {
       const { dependencies, state, metadata, data, actions, methods, privateMethods, setup } = config
@@ -114,6 +128,7 @@ export function createPlugin (name, {
       const context = Object.create(null)
       const plugin = Object.create(null)
       const mockMethods = Object.create(null)
+      /** @type {WrapperCallback} */
       const wrapper = (fn) => testContext.mock.fn(fn)
 
       // Setup Observable Structure
