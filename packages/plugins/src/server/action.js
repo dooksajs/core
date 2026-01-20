@@ -1,6 +1,6 @@
 import { createPlugin, mapState } from '@dooksa/create-plugin'
 import { createAction, compileAction } from '@dooksa/create-action'
-import { action as actionClient, stateSetValue } from '#client'
+import { action as actionClient, stateSetValue } from '#core'
 import { serverSetRoute, databaseSeed, databaseGetValue, databaseDeleteValue } from '#server'
 
 /**

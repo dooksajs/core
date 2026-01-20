@@ -1,5 +1,5 @@
 import { createPlugin } from '@dooksa/create-plugin'
-import { stateGetValue, apiGetById, operatorCompare, operatorEval } from '#client'
+import { apiGetById, operatorCompare, operatorEval, stateGetValue } from '#core'
 import { getValue } from '@dooksa/utils'
 
 /**
@@ -233,8 +233,7 @@ export const action = createPlugin('action', {
      * @param {*} [block.value] - Direct value if no block references exist
      * @param {string} [block.blockValue] - Reference to a single block value to retrieve
      * @param {string[]} [block.blockValues] - Array of block references for collection values
-     * @param {Object} context - Current action execution context
-     * @param {ActionDispatchContext} context.context - Context with id, rootId, parentId, groupId
+     * @param {ActionDispatchContext} context - Current action execution context
      * @param {Object} payload - Data payload for the action
      * @param {Object} blockValues - Cache of previously retrieved block values
      * @returns {{key: string|undefined, value: any}} Object containing the key and resolved value
@@ -428,7 +427,13 @@ export const action = createPlugin('action', {
                 enhancedError.cause = error
                 // @ts-ignore
                 enhancedError.blockId = id
-                throw enhancedError
+
+                // errorLogError({
+                //   message: `Action block preparation failed for '${id}': ${error.message}`,
+                //   level: 'ERROR'
+                // })
+
+                throw error
               }
             })
           } else if (block.ifElse) {
@@ -442,8 +447,8 @@ export const action = createPlugin('action', {
                 })
 
                 // append new process items
-                for (let index = 0; index < processItems.length; index++) {
-                  blockProcess.push(processItems[index])
+                for (let i = 0; i < processItems.length; i++) {
+                  blockProcess.push(processItems[i])
                 }
 
                 const nextProcess = blockProcess[++blockProcessIndex]
@@ -765,7 +770,11 @@ export const action = createPlugin('action', {
        *   else: ['other_sequence']
        * }, callback, { context, payload, blockValues })
        */
-      method (branch, callback, { context, payload, blockValues }) {
+      method (branch, callback, { context, payload, blockValues } = {
+        context: {},
+        payload: {},
+        blockValues: {}
+      }) {
         let isTruthy = false
 
         // handle multiple conditions joined by '&&' or '||'

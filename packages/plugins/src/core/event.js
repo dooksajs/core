@@ -1,5 +1,5 @@
 import { createPlugin } from '@dooksa/create-plugin'
-import { actionDispatch, stateGetValue } from '#client'
+import { actionDispatch, stateGetValue } from '#core'
 
 /**
  * @import {EventEmit} from '../../../types.js'

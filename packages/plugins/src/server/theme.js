@@ -1,6 +1,6 @@
 import { createPlugin } from '@dooksa/create-plugin'
 import { existsSync } from 'node:fs'
-import { stateSetValue } from '../client/index.js'
+import { stateSetValue } from '#core'
 import compileSass from '@dooksa/theme'
 
 export const theme = createPlugin('theme', {

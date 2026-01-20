@@ -1,5 +1,5 @@
 import { createPlugin } from '@dooksa/create-plugin'
-import { stateGetValue, stateSetValue, stateAddListener } from '#client'
+import { stateSetValue, stateAddListener } from '#core'
 
 /**
  * @import {DataValue} from '../../../types.js'

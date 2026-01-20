@@ -1,5 +1,5 @@
 import { createPlugin } from '@dooksa/create-plugin'
-import { actionDispatch, operatorCompare, operatorEval } from '#client'
+import { actionDispatch, operatorCompare, operatorEval } from '#core'
 
 /**
  * @typedef {Object} ArraySortContent
@@ -357,7 +357,6 @@ export const list = createPlugin('list', {
 
 export const {
   listFilter,
-  listForEach,
   listPush,
   listSort,
   listSplice,

@@ -1,5 +1,5 @@
 import { createPlugin, mapState } from '@dooksa/create-plugin'
-import { event as eventClient } from '../client/index.js'
+import { event as eventClient } from '#core'
 import { databaseSeed } from './database.js'
 
 export const event = createPlugin('event', {

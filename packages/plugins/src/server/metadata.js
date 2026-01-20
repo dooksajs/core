@@ -1,5 +1,5 @@
 import { createPlugin, mapState } from '@dooksa/create-plugin'
-import { stateSetValue, metadata as metadataClient } from '#client'
+import { stateSetValue, metadata as metadataClient } from '#core'
 import { serverSetRoute, databaseSeed, databaseGetValue } from '#server'
 
 /**

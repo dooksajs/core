@@ -1,7 +1,7 @@
 import { createPlugin } from '@dooksa/create-plugin'
 import { writeFile, readFile, access, unlink, rename } from 'node:fs/promises'
 import { resolve, join } from 'path'
-import { stateGetValue, stateSetValue, stateDeleteValue, stateFind } from '../client/index.js'
+import { stateGetValue, stateSetValue, stateDeleteValue, stateFind } from '#core'
 import { generateId, getPreciseTimestamp } from '@dooksa/utils'
 import { log } from '@dooksa/utils/server'
 

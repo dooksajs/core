@@ -1,5 +1,6 @@
 import { createPlugin } from '@dooksa/create-plugin'
 import { componentOptions } from '@dooksa/create-component'
+import { generateId } from '@dooksa/utils'
 import {
   eventEmit,
   stateUnsafeSetValue,
@@ -7,8 +8,7 @@ import {
   stateAddListener,
   stateSetValue,
   stateDeleteValue
-} from '#client'
-import { generateId } from '@dooksa/utils'
+} from '#core'
 
 /**
  * @import {Component, ComponentEvent, ComponentInstance} from '@dooksa/create-component'

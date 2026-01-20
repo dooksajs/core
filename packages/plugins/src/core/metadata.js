@@ -1,5 +1,5 @@
 import { createPlugin } from '@dooksa/create-plugin'
-import { stateAddListener, stateGetValue, stateSetValue } from '#client'
+import { stateAddListener, stateGetValue, stateSetValue } from '#core'
 
 /**
  * @typedef {Object} MetadataSetupOptions

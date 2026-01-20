@@ -1,6 +1,7 @@
 import { createPlugin, mapState } from '@dooksa/create-plugin'
 import { createHash } from 'node:crypto'
-import { page as pageClient, pageGetItemsByPath, stateGetValue, stateSetValue } from '#client'
+import { page as pageClient, pageGetItemsByPath } from '#client'
+import { stateGetValue, stateSetValue } from '#core'
 import { serverSetRoute, databaseSeed, databaseSetValue } from '#server'
 
 /**

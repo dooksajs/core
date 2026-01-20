@@ -1,7 +1,7 @@
 import { createPlugin } from '@dooksa/create-plugin'
 import { randomBytes, scryptSync, timingSafeEqual } from 'crypto'
 import jwt from 'jsonwebtoken'
-import { stateGetValue } from '#client'
+import { stateGetValue } from '#core'
 import { serverSetRoute, middlewareSet, databaseDeleteValue, databaseSeed, databaseSetValue } from '#server'
 import { generateId } from '@dooksa/utils'
 

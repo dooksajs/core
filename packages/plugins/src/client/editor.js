@@ -1,5 +1,5 @@
 import { createPlugin } from '@dooksa/create-plugin'
-import { stateGetSchema } from '#client'
+import { stateGetSchema } from '#core'
 
 /**
  * @import {EditorDataSchema, EditorDataSchemaObject} from '../../../types.js'

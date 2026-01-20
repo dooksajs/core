@@ -1,5 +1,6 @@
 import { createPlugin, mapState } from '@dooksa/create-plugin'
-import { component as componentClient, stateGenerateId, pagePathToId } from '#client'
+import { component as componentClient, pagePathToId } from '#client'
+import { stateGenerateId } from '#core'
 import { databaseDeleteValue, databaseGetValue, databaseSeed, serverSetRoute, pageCreate } from '#server'
 import { components as defaultComponents } from '@dooksa/components'
 import { createDataValue } from '#utils'

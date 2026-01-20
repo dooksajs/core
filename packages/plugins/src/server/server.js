@@ -1,5 +1,5 @@
 import { createPlugin } from '@dooksa/create-plugin'
-import { stateSetValue } from '#client'
+import { stateSetValue } from '#core'
 import { middlewareGet } from '#server'
 import helmet from 'helmet'
 import compression from 'compression'

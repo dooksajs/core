@@ -1,5 +1,6 @@
 import { createPlugin } from '@dooksa/create-plugin'
-import { stateGetValue, routeCurrentId, stateSetValue } from '#client'
+import { stateGetValue, stateSetValue } from '#core'
+import { routeCurrentId } from '#client'
 import { hash } from '@dooksa/utils'
 import { createDataValue } from '#utils'
 

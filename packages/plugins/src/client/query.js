@@ -1,5 +1,5 @@
 import { createPlugin } from '@dooksa/create-plugin'
-import { listFilter, listSort, stateAddListener, stateSetValue, stateGetValue } from '#client'
+import { listFilter, listSort, stateAddListener, stateSetValue, stateGetValue } from '#core'
 
 /**
  * @typedef {Object} QueryItem
