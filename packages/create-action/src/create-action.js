@@ -27,6 +27,78 @@ import { parseAction } from '@dooksa/utils/server'
  * - **$ref**: Resolves to specific block IDs within the compiled action
  * - **$sequenceRef**: Resolves to sequence IDs (block sequences)
  * - References can use numeric indices or named action IDs
+ *
+ * @example
+ * // Basic ifElse conditional with meaningful names
+ * const conditionalAction = createAction('user-validation', [
+ *   {
+ *     action_ifElse: {
+ *       if: [{
+ *         op: '==',
+ *         left: { action_getPayloadValue: 'isValid' },
+ *         right: true
+ *       }],
+ *       then: [{ $sequenceRef: 'handleSuccess' }],
+ *       else: [{ $sequenceRef: 'handleFailure' }]
+ *       }
+ *   },
+ *   {
+ *     $id: 'handleSuccess',
+ *     action_dispatch: { id: 'show-success-message' }
+ *   },
+ *   {
+ *     $id: 'handleFailure',
+ *     action_dispatch: { id: 'show-error-message' }
+ *   }
+ * ], {
+ *   action_dispatch: true,
+ *   action_getPayloadValue: true
+ * })
+ *
+ * @example
+ * // Simple action sequence
+ * const processData = createAction('process-data', [
+ *   {
+ *     $id: 'fetchInput',
+ *     action_getPayloadValue: 'data'
+ *   },
+ *   {
+ *     $id: 'transformData',
+ *     action_getValue: {
+ *       value: { $ref: 'fetchInput' },
+ *       query: 'value'
+ *     }
+ *   },
+ *   {
+ *     state_setValue: {
+ *       name: 'result',
+ *       value: { $ref: 'transformData' }
+ *     }
+ *   }
+ * ], {
+ *   action_getPayloadValue: true,
+ *   action_getValue: true,
+ *   state_setValue: true
+ * })
+ *
+ * @example
+ * // Action with dependencies
+ * const userAction = createAction('handle-user-action', [
+ *   {
+ *     $id: 'validateUser',
+ *     action_validate: { minLength: 3 }
+ *   },
+ *   {
+ *     $id: 'processUser',
+ *     action_process: {
+ *       input: { $ref: 'validateUser' }
+ *     }
+ *   }
+ * ], ['user-plugin', 'validation-plugin'], {
+ *   action_validate: true,
+ *   action_process: true
+ * })
+ *
  * @overload
  * @param {string} id - Unique identifier for the action.
  * @param {ActionValue[]} data - Array of action data objects to compile.
@@ -49,43 +121,6 @@ import { parseAction } from '@dooksa/utils/server'
  *   - `sequences`: Array of sequence IDs in execution order
  *   - `dependencies`: Array of required dependencies
  *
- * @example
- * // Create a simple action with dispatch
- * const action = createAction('my-action', [
- *   {
- *     action_dispatch: {
- *       id: 'component-123',
- *       payload: { value: 'Hello' }
- *     }
- *   }
- * ], [], { action_dispatch: true })
- *
- * @example
- * // Create action with references
- * const action = createAction('ref-action', [
- *   {
- *     $id: 'step1',
- *     action_dispatch: { id: 'comp1' }
- *   },
- *   {
- *     state_setValue: {
- *       name: 'test',
- *       value: { $ref: 'step1' }
- *     }
- *   }
- * ], [], { action_dispatch: true, state_setValue: true })
- *
- * @example
- * // Create action with dependencies
- * const action = createAction('complex-action', [
- *   {
- *     action_ifElse: {
- *       if: [{ op: '==', left: 'status', right: 'active' }],
- *       then: [{ $sequenceRef: 0 }],
- *       else: [{ $sequenceRef: 1 }]
- *     }
- *   }
- * ], ['plugin-a', 'plugin-b'], { action_ifElse: true })
  */
 function createAction (...args) {
   const id = args[0]
