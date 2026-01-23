@@ -25,14 +25,14 @@ export function createPluginTester (testContext) {
      * The plugin behaves normally (return real values, update state),
      * but all calls are tracked in `.observe`.
      *
-     * @param {string} key - Alias for the test (e.g., 'auth', 'user')
+     * @param {string} alias - Alias for the test (e.g., 'auth', 'user')
      * @param {Object} plugin - The real plugin imported from core
      * @returns {Object} The observable instance
      */
-    spy (key, plugin) {
-      // createObservableInstance defaults to wrapping real logic in mock.fn()
-      const obs = plugin.createObservableInstance(testContext)
-      return register(key, plugin, obs)
+    spy (alias, plugin) {
+      const mock = plugin.createObservableInstance(testContext)
+
+      return register(alias, plugin, mock)
     },
 
     /**
@@ -43,20 +43,20 @@ export function createPluginTester (testContext) {
      * Custom return values can be provided using:
      * `tester.obs.key.observe.method.mock.mockImplementation(() => 'val')`
      *
-     * @param {string} key - Alias for the test
+     * @param {string} alias - Alias for the test
      * @param {Object} plugin - The real plugin
      * @returns {Object} The observable instance with silenced methods
      */
-    mock (key, plugin) {
-      const obs = plugin.createObservableInstance(testContext)
+    mock (alias, plugin) {
+      const mock = plugin.createObservableInstance(testContext)
 
-      // Iterate over the .observe registry and silence implementations
-      for (const methodMock of Object.values(obs.observe)) {
+      // Iterate over the .observe registry and replace implementations with No-Op
+      for (const methodMock of Object.values(mock.observe)) {
         methodMock.mock.mockImplementation(() => {
         })
       }
 
-      return register(key, plugin, obs)
+      return register(alias, plugin, mock)
     },
 
     /**
