@@ -302,17 +302,31 @@ export function createPlugin (name, {
           // Reset original implementation
           if (methods) {
             for (const key of Object.keys(methods)) {
-              context._impl[key] = _originalImplementation[key]
+              // If original implementation was saved (e.g., after createObservableInstance), restore it
+              // Otherwise, restore the original method from the methods object
+              if (_originalImplementation[key]) {
+                context._impl[key] = _originalImplementation[key]
+              } else {
+                context._impl[key] = methods[key].bind(context)
+              }
             }
           }
           if (actions) {
             for (const key of Object.keys(actions)) {
-              context._impl[key] = _originalImplementation[key]
+              if (_originalImplementation[key]) {
+                context._impl[key] = _originalImplementation[key]
+              } else {
+                context._impl[key] = actions[key].method.bind(context)
+              }
             }
           }
           if (privateMethods) {
             for (const key of Object.keys(privateMethods)) {
-              context._impl[key] = _originalImplementation[key]
+              if (_originalImplementation[key]) {
+                context._impl[key] = _originalImplementation[key]
+              } else {
+                context._impl[key] = privateMethods[key].bind(context)
+              }
             }
           }
         },
