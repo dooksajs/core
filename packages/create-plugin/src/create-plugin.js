@@ -192,7 +192,7 @@ export function createPlugin (name, {
           const actionModuleName = name + capitalize(action.key)
           // insert action method as plugin method to escape the context wrapper
           plugin[actionModuleName] = action.method
-          mockMethods[action.key] = action.method
+          mockMethods[action.key] = action.method.mock
         }
       }
 
