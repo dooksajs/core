@@ -53,15 +53,22 @@ export function createPlugin (name, {
   const context = Object.create(null)
   const plugin = Object.create(null)
 
-  // The Implementation Registry: The "live" destination for all Bridge calls.
+  // The implementation registry - the "live" destination for all Bridge calls.
   context._impl = Object.create(null)
-
   context.name = name
   plugin.name = name
 
-  if (metadata) plugin.metadata = deepClone(metadata)
-  if (dependencies) plugin.dependencies = dependencies
-  if (setup) plugin.setup = bindContext(setup, context)
+  if (metadata) {
+    plugin.metadata = deepClone(metadata)
+  }
+
+  if (dependencies) {
+    plugin.dependencies = dependencies
+  }
+
+  if (setup) {
+    plugin.setup = bindContext(setup, context)
+  }
 
   // Initialise Data
   if (data) {
@@ -81,15 +88,20 @@ export function createPlugin (name, {
   // The helpers populate context._impl and return stable Bridge functions.
 
   if (actions) {
-    const res = createPluginActions(context, name, actions)
+    const result = createPluginActions(context, name, actions)
     // Attach stable bridges to plugin object
-    for (const m of res.methods) plugin[m.name] = m.value
-    plugin.actions = res.actions
+    for (const method of result.methods) {
+      plugin[method.name] = method.value
+    }
+
+    plugin.actions = result.actions
   }
 
   if (methods) {
-    const res = createPluginMethods(context, name, methods)
-    for (const m of res) plugin[m.name] = m.value
+    const result = createPluginMethods(context, name, methods)
+    for (const method of result) {
+      plugin[method.name] = method.value
+    }
   }
 
   if (privateMethods) {
@@ -122,8 +134,16 @@ export function createPlugin (name, {
      * @param {TestContext} testContext - Node test context
      * @returns {DsPluginObservable<Name, Methods, Actions, PrivateMethods, Setup>} The observable plugin instance
      */
-    function createObservableInstanceInternal (name, config, testContext) {
-      const { dependencies, state, metadata, data, actions, methods, privateMethods, setup } = config
+    function createObservableInstanceInternal (name, {
+      dependencies,
+      state,
+      metadata,
+      data,
+      actions,
+      methods,
+      privateMethods,
+      setup
+    }, testContext) {
 
       const context = Object.create(null)
       const plugin = Object.create(null)
@@ -136,13 +156,22 @@ export function createPlugin (name, {
       context.name = name
       plugin.name = name
 
-      if (metadata) plugin.metadata = deepClone(metadata)
-      if (dependencies) plugin.dependencies = dependencies
+      if (metadata) {
+        plugin.metadata = deepClone(metadata)
+      }
+
+      if (dependencies) {
+        plugin.dependencies = dependencies
+      }
+
       if (data) {
         plugin.data = deepClone(data)
         Object.assign(context, plugin.data)
       }
-      if (state) plugin.state = createPluginState(context, name, state)
+
+      if (state) {
+        plugin.state = createPluginState(context, name, state)
+      }
 
       if (setup) {
         plugin.setup = wrapper(bindContext(setup, context))
@@ -151,14 +180,21 @@ export function createPlugin (name, {
 
       // Create Mocks (using helpers but with mock wrapper)
       if (actions) {
-        const res = createPluginActions(context, name, actions, wrapper)
-        for (const method of res.methods) plugin[method.name] = method.value
-        for (const action of res.actions) mockMethods[action.key] = action.method
+        const result = createPluginActions(context, name, actions, wrapper)
+
+        for (const method of result.methods) {
+          plugin[method.name] = method.value
+        }
+
+        for (const action of result.actions) {
+          mockMethods[action.key] = action.method
+        }
       }
 
       if (methods) {
-        const res = createPluginMethods(context, name, methods, wrapper)
-        for (const method of res) {
+        const result = createPluginMethods(context, name, methods, wrapper)
+
+        for (const method of result) {
           plugin[method.name] = method.value
           mockMethods[method.key] = method.value.mock
         }

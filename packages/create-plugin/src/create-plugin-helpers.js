@@ -71,10 +71,11 @@ function ensureImplRegistry (context) {
 function createBridge (context, key) {
   return function (...args) {
     const currentLogic = context._impl[key]
+
     if (typeof currentLogic !== 'function') {
       throw new Error(`Implementation for [${key}] is not a function.`)
     }
-    // usage of .apply preserves the 'this' context passed to the bridge
+
     return currentLogic.apply(this, args)
   }
 }
