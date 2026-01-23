@@ -186,12 +186,12 @@ export function createPlugin (name, {
       // Create Mocks (using helpers but with mock wrapper)
       if (actions) {
         const result = createPluginActions(context, name, actions, wrapper)
-
-        for (const method of result.methods) {
-          plugin[method.name] = method.value
-        }
+        plugin.actions = result.actions
 
         for (const action of result.actions) {
+          const actionModuleName = name + capitalize(action.key)
+          // insert action method as plugin method to escape the context wrapper
+          plugin[actionModuleName] = action.method
           mockMethods[action.key] = action.method
         }
       }
