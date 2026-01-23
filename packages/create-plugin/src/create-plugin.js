@@ -52,6 +52,7 @@ export function createPlugin (name, {
   // Setup the Permanent Production Context
   const context = Object.create(null)
   const plugin = Object.create(null)
+  const _originalImplementation = Object.create(null)
 
   // The implementation registry - the "live" destination for all Bridge calls.
   context._impl = Object.create(null)
@@ -153,6 +154,10 @@ export function createPlugin (name, {
 
       // Setup Observable Structure
       plugin.observe = mockMethods
+      // The Implementation Registry: The "live" destination for all Bridge calls.
+      context._impl = Object.create(null)
+
+      // Set plugin name
       context.name = name
       plugin.name = name
 
@@ -215,26 +220,25 @@ export function createPlugin (name, {
       return plugin
     }
 
-
-    // Add createObservableInstance with Hijack Logic
+    // Add createObservableInstance
     Object.defineProperties(plugin, {
-      /**
-       * Creates an observable (mocked) instance and "hijacks" the original plugin.
-       *
-       * MECHANISM:
-       * - Creates a fresh, isolated instance where all methods are wrapped in `mock.fn`.
-       * - Updates the original plugin's `_impl` registry to point to this new instance.
-       * - Any external module holding a reference to the original plugin will now
-       * unwittingly execute the mocked logic.
-       *
-       * @param {TestContext} testContext - Node test context
-       * @returns {Object} The observable instance (for assertions)
-       */
       createObservableInstance: {
-        value: (testContext) => {
+        /**
+         * Creates an observable (mocked) instance and "hijacks" the original plugin.
+         *
+         * MECHANISM:
+         * - Creates a fresh, isolated instance where all methods are wrapped in `mock.fn`.
+         * - Updates the original plugin's `_impl` registry to point to this new instance.
+         * - Any external module holding a reference to the original plugin will now
+         * unwittingly execute the mocked logic.
+         *
+         * @param {TestContext} testContext - Node test context
+         * @returns {Object} The observable instance (for assertions)
+         */
+        value (testContext) {
           // Create the isolated Mocked Instance
           // We use an internal helper to bypass the bridge logic and get raw mock.fn objects.
-          const obs = createObservableInstanceInternal(
+          const observable = createObservableInstanceInternal(
             name,
             {
               dependencies,
@@ -254,58 +258,66 @@ export function createPlugin (name, {
           if (methods) {
             for (const key of Object.keys(methods)) {
               const fullName = name + capitalize(key)
+              // store original implementation
+              _originalImplementation[key] = context._impl[key]
               // Redirect original bridge -> Observable Mock
-              context._impl[key] = (...args) => obs[fullName](...args)
+              context._impl[key] = (...args) => observable[fullName](...args)
             }
           }
 
           if (actions) {
             for (const key of Object.keys(actions)) {
               const fullName = name + capitalize(key)
+              // store original implementation
+              _originalImplementation[key] = context._impl[key]
               // Actions need params extracted, Bridge handles 'this', we just pass args
-              context._impl[key] = (params) => obs[fullName](params)
+              context._impl[key] = (params) => observable[fullName](params)
             }
           }
 
           if (privateMethods) {
             for (const key of Object.keys(privateMethods)) {
+              // store original implementation
+              _originalImplementation[key] = context._impl[key]
               // Redirect original bridge -> Observable Mock
-              context._impl[key] = (...args) => obs[key](...args)
+              context._impl[key] = (...args) => observable[key](...args)
             }
           }
 
-          return obs
+          return observable
         },
         ...propertyDescriptorValues
       },
-
-      /**
-       * Restores the plugin to its original state.
-       *
-       * - Resets `context._impl` to the original functions.
-       * - Resets `context` data to original values.
-       * MUST be called after tests to prevent leakage.
-       */
       restore: {
+        /**
+         * Restores the plugin to its original state.
+         *
+         * - Resets `context._impl` to the original functions.
+         * - Resets `context` data to original values.
+         */
         value () {
           // Reset data
           Object.assign(context, data ? deepClone(data) : {})
 
-          // Reset bridges to original logic
+          // Reset original implementation
           if (methods) {
-            for (const [key, val] of Object.entries(methods)) context._impl[key] = val
+            for (const key of Object.keys(methods)) {
+              context._impl[key] = _originalImplementation[key]
+            }
           }
           if (actions) {
-            for (const [key, val] of Object.entries(actions)) context._impl[key] = val.method
+            for (const key of Object.keys(actions)) {
+              context._impl[key] = _originalImplementation[key]
+            }
           }
           if (privateMethods) {
-            for (const [key, val] of Object.entries(privateMethods)) context._impl[key] = val
+            for (const key of Object.keys(privateMethods)) {
+              context._impl[key] = _originalImplementation[key]
+            }
           }
         },
         ...propertyDescriptorValues
       }
-
-      // ... (include createInstance and other properties here as needed)
     })
   }
 

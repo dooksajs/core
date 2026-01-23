@@ -43,20 +43,6 @@ import { parseSchema } from './parse-schema.js'
  */
 
 /**
- * @internal
- * Ensures the internal implementation registry exists on the context.
- * This registry (`_impl`) is the "live heart" of the plugin where actual logic resides.
- *
- * @param {Object} context - The plugin execution context
- */
-function ensureImplRegistry (context) {
-  if (!context._impl) {
-    context._impl = Object.create(null)
-  }
-}
-
-/**
- * @internal
  * Creates a stable "Bridge" function.
  *
  * The returned function is a permanent proxy. When called, it looks up the
@@ -64,9 +50,9 @@ function ensureImplRegistry (context) {
  * This allows us to hot-swap the logic (e.g., for mocking) without changing
  * the exported function reference held by other modules.
  *
- * @param {Object} context - The plugin context containing the `_impl` registry
- * @param {string} key - The method name to look up
- * @returns {Function} A stable function that delegates to the current implementation
+ * @param {Object} context - The plugin execution context.
+ * @param {string} key - The internal method name (e.g., 'getFlavor').
+ * @returns {Function} A stable proxy function.
  */
 function createBridge (context, key) {
   return function (...args) {
@@ -178,7 +164,6 @@ export function createPluginState (context, name, state) {
  * @returns {PluginActionResult<Function | Mock<Function>>} Object containing methods and actions
  */
 export function createPluginActions (context, name, source, wrapper) {
-  ensureImplRegistry(context)
   const methods = []
   const actions = []
 
@@ -212,15 +197,19 @@ export function createPluginActions (context, name, source, wrapper) {
     const actionModuleName = name + capitalize(key)
     const actionName = name + '_' + key
 
-    // Store the actual logic in the mutable registry
-    context._impl[key] = action.method
-
     // Create the stable Bridge and bind it to context
-    let method = createBridge(context, key).bind(context)
+    let method = action.method.bind(context)
 
-    // Apply wrapper if provided (used during createObservableInstance)
-    if (wrapper) {
-      method = wrapper(method)
+    // Store the actual logic in the mutable registry
+    context._impl[key] = method
+
+    DEV: {
+      method = createBridge(context, key).bind(context)
+
+      // Apply wrapper if provided (used during createObservableInstance)
+      if (wrapper) {
+        method = wrapper(method)
+      }
     }
 
     // Register bound bridge on context for internal usage (this.actionName())
@@ -289,22 +278,26 @@ export function createPluginActions (context, name, source, wrapper) {
  * @returns {PluginMethodResult<Function | Mock<Function>>[]} Array of method objects
  */
 export function createPluginMethods (context, name, methods, wrapper) {
-  ensureImplRegistry(context)
   const results = []
 
-  for (const [key, value] of Object.entries(methods)) {
+  for (const [key, fn] of Object.entries(methods)) {
     if (context[key]) {
       throw new Error(`Plugin Method [${key}]: Expected unique name`)
     }
 
+    // Bind context method
+    let method = fn.bind(context)
+
     // Store logic in mutable registry
-    context._impl[key] = value
+    context._impl[key] = method
 
-    // Create and bind stable Bridge
-    let method = createBridge(context, key).bind(context)
+    DEV: {
+      method = createBridge(context, key).bind(context)
 
-    if (wrapper) {
-      method = wrapper(method)
+      // Apply wrapper if provided (used during createObservableInstance)
+      if (wrapper) {
+        method = wrapper(method)
+      }
     }
 
     // Internal access
@@ -331,24 +324,27 @@ export function createPluginMethods (context, name, methods, wrapper) {
  * @param {PrivateMethodWrapperCallback} [wrapper] - Optional wrapper
  */
 export function createPluginPrivateMethods (context, methods, wrapper) {
-  ensureImplRegistry(context)
-
-  for (const [key, value] of Object.entries(methods)) {
+  for (const [key, fn] of Object.entries(methods)) {
     if (context[key]) {
       throw new Error(`Plugin Private Method [${key}]: Expected unique name`)
     }
 
+    // Bind context method for production
+    let method = fn.bind(context)
+
     // Store logic
-    context._impl[key] = value
+    context._impl[key] = method
 
-    // Create Bridge
-    let method = createBridge(context, key).bind(context)
+    DEV: {
+      method = createBridge(context, key).bind(context)
 
-    if (wrapper) {
-      method = wrapper(key, method)
+      // Apply wrapper if provided (used during createObservableInstance)
+      if (wrapper) {
+        method = wrapper(key, method)
+      }
     }
 
-    // Only internal access
+    // Internal access
     context[key] = method
   }
 }
