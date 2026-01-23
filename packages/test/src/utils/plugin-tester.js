@@ -10,9 +10,6 @@ export function createPluginTester (testContext) {
   const activePlugins = new Set()
   const observables = {}
 
-  /**
-   * Internal helper to register an active observable
-   */
   const register = (key, plugin, observable) => {
     activePlugins.add(plugin)
     observables[key] = observable
@@ -63,6 +60,8 @@ export function createPluginTester (testContext) {
      * Restores all hijacked plugins to their original state.
      * Call this in `test.afterEach()` to prevent test pollution.
      * This resets the internal `_impl` registry of the production plugins.
+     *
+     * @returns {void} No return value
      */
     restoreAll () {
       for (const plugin of activePlugins) {
@@ -77,14 +76,21 @@ export function createPluginTester (testContext) {
      * // Check call count for 'auth' plugin's 'login' action
      * assert.equal(tester.obs.auth.observe.login.mock.callCount(), 1)
      */
-    obs: observables
+    observables
   }
 }
 
 /**
+ * @callback PluginTesterCallback
+ * @param {string} alias - Alias for the test (e.g., 'auth', 'user')
+ * @param {Object} plugin - The real plugin imported from core
+ * @returns {Object} The observable instance
+ */
+
+/**
  * @typedef {Object} PluginTester
- * @property {(key: string, plugin: Object) => Object} spy - Track calls, run real logic
- * @property {(key: string, plugin: Object) => Object} mock - Track calls, silence logic
- * @property {() => void} restoreAll - Reset all plugins
- * @property {Record<string, Object>} obs - Map of active observables
+ * @property {PluginTesterCallback} spy - Track calls and execute real logic for a plugin
+ * @property {PluginTesterCallback} mock - Track calls and silence real logic for a plugin
+ * @property {Function} restoreAll - Restore all hijacked plugins to their original state
+ * @property {Record<string, Object>} observables - Map of active observables by alias
  */
