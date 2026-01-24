@@ -8,11 +8,11 @@
  */
 export function createPluginTester (testContext) {
   const activePlugins = new Set()
-  const observables = {}
+  const plugins = {}
 
   const register = (key, plugin, observable) => {
     activePlugins.add(plugin)
-    observables[key] = observable
+    plugins[key] = observable
     return observable
   }
 
@@ -76,7 +76,7 @@ export function createPluginTester (testContext) {
      * // Check call count for 'auth' plugin's 'login' action
      * assert.equal(tester.obs.auth.observe.login.mock.callCount(), 1)
      */
-    observables
+    plugins
   }
 }
 
@@ -92,5 +92,5 @@ export function createPluginTester (testContext) {
  * @property {PluginTesterCallback} spy - Track calls and execute real logic for a plugin
  * @property {PluginTesterCallback} mock - Track calls and silence real logic for a plugin
  * @property {Function} restoreAll - Restore all hijacked plugins to their original state
- * @property {Record<string, Object>} observables - Map of active observables by alias
+ * @property {Record<string, Object>} plugins - Map of active observables by alias
  */
