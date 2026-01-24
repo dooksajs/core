@@ -1,11 +1,11 @@
 import { describe, it } from 'node:test'
 import { deepStrictEqual } from 'node:assert'
-import { createSchema } from '../src/index.js'
+import { parseSchema } from '../src/index.js'
 
 describe('Create schema', function () {
   describe('Primitives', function () {
     it('should process a type of string', function () {
-      const schema = createSchema({}, {
+      const schema = parseSchema({}, {
         type: 'string'
       }, 'test/text')
 
@@ -18,7 +18,7 @@ describe('Create schema', function () {
     })
 
     it('should process a type of number', function () {
-      const schema = createSchema({}, {
+      const schema = parseSchema({}, {
         type: 'number'
       }, 'test/number')
 
@@ -31,7 +31,7 @@ describe('Create schema', function () {
     })
 
     it('should process a type of boolean', function () {
-      const schema = createSchema({}, {
+      const schema = parseSchema({}, {
         type: 'boolean'
       }, 'test/boolean')
 
@@ -44,7 +44,7 @@ describe('Create schema', function () {
     })
 
     it('should handle relation option', function () {
-      const schema = createSchema({}, {
+      const schema = parseSchema({}, {
         type: 'string',
         relation: 'test/primary'
       }, 'test/secondary')
@@ -65,7 +65,7 @@ describe('Create schema', function () {
     describe('Height of one', function () {
       describe('Options', function () {
         it('should handle required properties', function () {
-          const schema = createSchema({}, {
+          const schema = parseSchema({}, {
             type: 'object',
             properties: {
               firstName: {
@@ -103,7 +103,7 @@ describe('Create schema', function () {
         })
 
         it('should handle additionalProperties properties', function () {
-          const schema = createSchema({}, {
+          const schema = parseSchema({}, {
             type: 'object',
             properties: {
               firstName: {
@@ -146,7 +146,7 @@ describe('Create schema', function () {
 
       describe('Patterned property', function () {
         it('should process patterned properties', function () {
-          const schema = createSchema({}, {
+          const schema = parseSchema({}, {
             type: 'object',
             patternProperties: {
               '[0-9]': {
@@ -179,7 +179,7 @@ describe('Create schema', function () {
         })
 
         it('should process a mix patterned properties and named properties', function () {
-          const schema = createSchema({}, {
+          const schema = parseSchema({}, {
             type: 'object',
             properties: {
               colour: {
@@ -225,7 +225,7 @@ describe('Create schema', function () {
 
       describe('Primitives', function () {
         it('should process property types of string', function () {
-          const schema = createSchema({}, {
+          const schema = parseSchema({}, {
             type: 'object',
             properties: {
               firstName: {
@@ -258,7 +258,7 @@ describe('Create schema', function () {
         })
 
         it('should process property types of number', function () {
-          const schema = createSchema({}, {
+          const schema = parseSchema({}, {
             type: 'object',
             properties: {
               price: {
@@ -291,7 +291,7 @@ describe('Create schema', function () {
         })
 
         it('should process property types of boolean', function () {
-          const schema = createSchema({}, {
+          const schema = parseSchema({}, {
             type: 'object',
             properties: {
               isEmpty: {
@@ -326,7 +326,7 @@ describe('Create schema', function () {
 
       describe('Array', function () {
         it('should process property types of array', function () {
-          const schema = createSchema({}, {
+          const schema = parseSchema({}, {
             type: 'object',
             properties: {
               products: {
@@ -371,7 +371,7 @@ describe('Create schema', function () {
     describe('Height of two', function () {
       describe('Patterned property', function () {
         it('should process patterned properties', function () {
-          const schema = createSchema({}, {
+          const schema = parseSchema({}, {
             type: 'object',
             properties: {
               any: {
@@ -421,7 +421,7 @@ describe('Create schema', function () {
         })
 
         it('should process properties and patterned properties', function () {
-          const schema = createSchema({}, {
+          const schema = parseSchema({}, {
             type: 'object',
             properties: {
               person: {
@@ -484,7 +484,7 @@ describe('Create schema', function () {
 
       describe('Primitives', function () {
         it('should process property types of string', function () {
-          const schema = createSchema({}, {
+          const schema = parseSchema({}, {
             type: 'object',
             properties: {
               person: {
@@ -534,7 +534,7 @@ describe('Create schema', function () {
         })
 
         it('should process property types of number', function () {
-          const schema = createSchema({}, {
+          const schema = parseSchema({}, {
             type: 'object',
             properties: {
               product: {
@@ -584,7 +584,7 @@ describe('Create schema', function () {
         })
 
         it('should process property types of boolean', function () {
-          const schema = createSchema({}, {
+          const schema = parseSchema({}, {
             type: 'object',
             properties: {
               schema: {
@@ -639,7 +639,7 @@ describe('Create schema', function () {
   describe('Array', function () {
     describe('Primitives', function () {
       it('should process a type of string', function () {
-        const schema = createSchema({}, {
+        const schema = parseSchema({}, {
           type: 'array',
           items: {
             type: 'string'
@@ -663,7 +663,7 @@ describe('Create schema', function () {
       })
 
       it('should process a type of number', function () {
-        const schema = createSchema({}, {
+        const schema = parseSchema({}, {
           type: 'array',
           items: {
             type: 'number'
@@ -687,7 +687,7 @@ describe('Create schema', function () {
       })
 
       it('should process a type of boolean', function () {
-        const schema = createSchema({}, {
+        const schema = parseSchema({}, {
           type: 'array',
           items: {
             type: 'boolean'
@@ -714,7 +714,7 @@ describe('Create schema', function () {
     describe('Multidimensional', function () {
       describe('Primitives', function () {
         it('should process a type of string', function () {
-          const schema = createSchema({}, {
+          const schema = parseSchema({}, {
             type: 'array',
             items: {
               type: 'array',
@@ -747,7 +747,7 @@ describe('Create schema', function () {
         })
 
         it('should process a type of number', function () {
-          const schema = createSchema({}, {
+          const schema = parseSchema({}, {
             type: 'array',
             items: {
               type: 'array',
@@ -780,7 +780,7 @@ describe('Create schema', function () {
         })
 
         it('should process a type of boolean', function () {
-          const schema = createSchema({}, {
+          const schema = parseSchema({}, {
             type: 'array',
             items: {
               type: 'array',
@@ -816,7 +816,7 @@ describe('Create schema', function () {
 
     describe('Options', function () {
       it('should handle unique items', function () {
-        const schema = createSchema({}, {
+        const schema = parseSchema({}, {
           type: 'array',
           items: {
             type: 'string'
@@ -847,7 +847,7 @@ describe('Create schema', function () {
 
   describe('Collection', function () {
     it('should create a new collection', function () {
-      const schema = createSchema({}, {
+      const schema = parseSchema({}, {
         type: 'collection',
         items: {
           type: 'string'
@@ -874,7 +874,7 @@ describe('Create schema', function () {
   describe('ID Property Function Binding', function () {
     it('should bind defaultId function to context', function () {
       const context = { prefix: 'test-' }
-      const schema = createSchema(context, {
+      const schema = parseSchema(context, {
         type: 'collection',
         defaultId: function () {
           return this.prefix + 'default'
@@ -892,7 +892,7 @@ describe('Create schema', function () {
 
     it('should bind prefixId function to context', function () {
       const context = { prefix: 'user-' }
-      const schema = createSchema(context, {
+      const schema = parseSchema(context, {
         type: 'collection',
         prefixId: function () {
           return this.prefix
@@ -910,7 +910,7 @@ describe('Create schema', function () {
 
     it('should bind suffixId function to context', function () {
       const context = { suffix: '-item' }
-      const schema = createSchema(context, {
+      const schema = parseSchema(context, {
         type: 'collection',
         suffixId: function () {
           return this.suffix
@@ -931,7 +931,7 @@ describe('Create schema', function () {
         suffix: '-suf',
         defaultVal: 'def'
       }
-      const schema = createSchema(context, {
+      const schema = parseSchema(context, {
         type: 'collection',
         defaultId: function () {
           return this.prefix + this.defaultVal + this.suffix
@@ -954,7 +954,7 @@ describe('Create schema', function () {
 
   describe('Additional Properties Edge Cases', function () {
     it('should handle additionalProperties false with empty properties', function () {
-      const schema = createSchema({}, {
+      const schema = parseSchema({}, {
         type: 'object',
         properties: {},
         additionalProperties: false
@@ -973,7 +973,7 @@ describe('Create schema', function () {
     })
 
     it('should handle additionalProperties false with pattern properties only', function () {
-      const schema = createSchema({}, {
+      const schema = parseSchema({}, {
         type: 'object',
         patternProperties: {
           '[0-9]+': { type: 'number' }
@@ -1001,7 +1001,7 @@ describe('Create schema', function () {
 
     it('should handle default function binding', function () {
       const context = { value: 'default-value' }
-      const schema = createSchema(context, {
+      const schema = parseSchema(context, {
         type: 'string',
         default: function () {
           return this.value
@@ -1016,7 +1016,7 @@ describe('Create schema', function () {
 
   describe('Complex Nested Structures', function () {
     it('should handle deeply nested arrays (3+ levels)', function () {
-      const schema = createSchema({}, {
+      const schema = parseSchema({}, {
         type: 'array',
         items: {
           type: 'array',
@@ -1050,7 +1050,7 @@ describe('Create schema', function () {
     })
 
     it('should handle arrays of objects with complex properties', function () {
-      const schema = createSchema({}, {
+      const schema = parseSchema({}, {
         type: 'array',
         items: {
           type: 'object',
@@ -1097,7 +1097,7 @@ describe('Create schema', function () {
     })
 
     it('should handle objects with nested objects and pattern properties', function () {
-      const schema = createSchema({}, {
+      const schema = parseSchema({}, {
         type: 'object',
         properties: {
           data: {
@@ -1149,7 +1149,7 @@ describe('Create schema', function () {
 
   describe('Edge Cases and Error Conditions', function () {
     it('should handle empty properties object', function () {
-      const schema = createSchema({}, {
+      const schema = parseSchema({}, {
         type: 'object',
         properties: {}
       }, 'test/empty-props')
@@ -1163,7 +1163,7 @@ describe('Create schema', function () {
     })
 
     it('should handle empty patternProperties object', function () {
-      const schema = createSchema({}, {
+      const schema = parseSchema({}, {
         type: 'object',
         patternProperties: {}
       }, 'test/empty-pattern')
@@ -1177,7 +1177,7 @@ describe('Create schema', function () {
     })
 
     it('should handle schema with only type', function () {
-      const schema = createSchema({}, {
+      const schema = parseSchema({}, {
         type: 'string'
       }, 'test/type-only')
 
@@ -1190,7 +1190,7 @@ describe('Create schema', function () {
     })
 
     it('should handle collection with empty items', function () {
-      const schema = createSchema({}, {
+      const schema = parseSchema({}, {
         type: 'collection',
         items: {}
       }, 'test/collection-empty')
@@ -1208,7 +1208,7 @@ describe('Create schema', function () {
     })
 
     it('should handle mixed required and optional properties', function () {
-      const schema = createSchema({}, {
+      const schema = parseSchema({}, {
         type: 'object',
         properties: {
           required1: { type: 'string' },
@@ -1246,7 +1246,7 @@ describe('Create schema', function () {
     })
 
     it('should handle array with uniqueItems and other options', function () {
-      const schema = createSchema({}, {
+      const schema = parseSchema({}, {
         type: 'array',
         items: { type: 'string' },
         uniqueItems: true,
@@ -1284,7 +1284,7 @@ describe('Create schema', function () {
         }
       }
 
-      const schema = createSchema({}, deepSchema, 'test/deep')
+      const schema = parseSchema({}, deepSchema, 'test/deep')
 
       deepStrictEqual(schema.length, 11)
       deepStrictEqual(schema[0].entry.type, 'string')
