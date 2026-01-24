@@ -54,6 +54,13 @@ export function createPlugin (name, {
   const plugin = Object.create(null)
   const _originalImplementation = Object.create(null)
 
+  // Define Property Descriptors
+  const propertyDescriptorValues = {
+    configurable: false,
+    enumerable: false,
+    writable: false
+  }
+
   // The implementation registry - the "live" destination for all Bridge calls.
   context._impl = Object.create(null)
   context.name = name
@@ -107,13 +114,6 @@ export function createPlugin (name, {
 
   if (privateMethods) {
     createPluginPrivateMethods(context, privateMethods)
-  }
-
-  // Define Property Descriptors
-  const propertyDescriptorValues = {
-    configurable: false,
-    enumerable: false,
-    writable: false
   }
 
   DEV: {
@@ -334,6 +334,19 @@ export function createPlugin (name, {
       }
     })
   }
+
+  Object.defineProperties(plugin, {
+    name: propertyDescriptorValues,
+    dependencies: propertyDescriptorValues,
+    state: propertyDescriptorValues,
+    metadata: propertyDescriptorValues,
+    data: propertyDescriptorValues,
+    actions: propertyDescriptorValues,
+    methods: propertyDescriptorValues,
+    privateMethods: propertyDescriptorValues,
+    setup: propertyDescriptorValues,
+    createInstance: propertyDescriptorValues
+  })
 
   // Lock down the production plugin
   Object.preventExtensions(context)
