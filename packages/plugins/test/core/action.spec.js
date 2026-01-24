@@ -318,7 +318,7 @@ describe('Action Plugin', () => {
     })
 
     it('should fetch action from backend if not in state', async (t) => {
-      // Mock apiGetById to return action data
+      // Create action data that will be returned from the mock fetch
       const actionData = createAction('fetched-action', [
         {
           // @ts-ignore
@@ -330,28 +330,44 @@ describe('Action Plugin', () => {
 
       const handleFetchedAction = t.mock.fn((params, context) => 'Hello world!')
 
+      // Create mock fetch that returns the action data in the correct format
+      const mockFetch = createMockFetch(t, {
+        response: [
+          {
+            id: 'fetched-action',
+            collection: 'action/sequence',
+            item: actionData.sequences['fetched-action'],
+            expand: actionData.blocks
+          }
+        ]
+      })
+
+      // Replace global.fetch with the mock BEFORE making any network calls
+      const originalFetch = global.fetch
+      global.fetch = mockFetch.fetch
+
       const { tester, actionPlugin, statePlugin } = setupActionPlugin(t, {
         actions: {
           handle_fetchedAction: handleFetchedAction
         }
       })
 
-      // Seed state
-      seedActionState(statePlugin,
-        { 'clear-test': actionData.sequences },
-        actionData.blocks,
-        actionData.blockSequences
-      )
+      // Note: We don't seed state with 'fetched-action' so it will try to fetch from backend
+      // This is the key difference from the original test
 
-      await actionPlugin.actionDispatch({
-        id: 'fetched-action',
-        context: {},
-        payload: {}
-      })
+      try {
+        await actionPlugin.actionDispatch({
+          id: 'fetched-action',
+          context: {},
+          payload: {}
+        })
 
-      strictEqual(handleFetchedAction.mock.callCount(), 1)
-
-      tester.restoreAll()
+        strictEqual(handleFetchedAction.mock.callCount(), 1)
+      } finally {
+        // Always restore the original fetch
+        global.fetch = originalFetch
+        tester.restoreAll()
+      }
     })
 
     it('should throw error when action sequence not found', async (t) => {
