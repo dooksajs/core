@@ -13,6 +13,7 @@ This guide will walk you through creating Dooksa plugins using the `createPlugin
 7. [Lifecycle & Setup](#lifecycle--setup)
 8. [Testing & Mocking](#testing--mocking)
 9. [Best Practices](#best-practices)
+10. [Next Steps](#next-steps)
 
 ## Getting Started
 
@@ -879,6 +880,7 @@ test('counter plugin', async (t) => {
 
 ## Next Steps
 
+- Read the [Testing Guide](testing.md) for comprehensive instructions on testing plugins
 - Read the [Reference Documentation](reference.md) for complete API details
 - Explore the [Restore Documentation](restore.md) for testing patterns
 - Check out the test files in `packages/create-plugin/test/` for examples
