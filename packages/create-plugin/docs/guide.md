@@ -1,16 +1,20 @@
-# CreatePlugin User Guide
+# User Guide: Creating Dooksa Plugins
 
-Welcome to the createPlugin user guide! This tutorial will take you from zero to production-ready plugins with practical examples and best practices.
+This guide will walk you through creating Dooksa plugins using the `createPlugin` function. You'll learn how to define state, actions, methods, and manage plugin dependencies.
 
-## 🎯 What You'll Learn
+## Table of Contents
 
-- How to create your first plugin in 5 minutes
-- Understanding the plugin architecture
-- Building real-world plugins with state, actions, and methods
-- Advanced patterns for complex applications
-- Troubleshooting common issues
+1. [Getting Started](#getting-started)
+2. [Plugin Basics](#plugin-basics)
+3. [Data Management](#data-management)
+4. [Methods](#methods)
+5. [Actions](#actions)
+6. [Dependencies](#dependencies)
+7. [Lifecycle & Setup](#lifecycle--setup)
+8. [Testing & Mocking](#testing--mocking)
+9. [Best Practices](#best-practices)
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Installation
 
@@ -18,1395 +22,863 @@ Welcome to the createPlugin user guide! This tutorial will take you from zero to
 npm install @dooksa/create-plugin
 ```
 
-### Your First Plugin (5-Minute Tutorial)
-
-Let's create a simple counter plugin to understand the basics:
+### Basic Example
 
 ```javascript
 import { createPlugin } from '@dooksa/create-plugin'
 
-// Step 1: Create the plugin
-const counterPlugin = createPlugin('counter', {
-  // Plugin metadata
+const myPlugin = createPlugin('myPlugin', {
   metadata: {
-    title: 'Counter Plugin',
-    description: 'A simple counter for demonstration'
-  },
-  
-  // State management
-  state: {
-    defaults: {
-      count: 0
-    },
-    schema: {
-      count: { type: 'number' }
-    }
-  },
-  
-  // Public methods
+    title: 'My Plugin',
+    description: 'A sample plugin'
+  }
+})
+
+console.log(myPlugin.name) // 'myPlugin'
+console.log(myPlugin.metadata.title) // 'My Plugin'
+```
+
+## Plugin Basics
+
+### Plugin Structure
+
+Every plugin has a unique name and can include:
+
+- **metadata** - Plugin information (title, description, etc.)
+- **dependencies** - Other plugins this plugin depends on
+- **state** - Schema-based state management
+- **data** - Initial data values
+- **methods** - Public methods callable by other plugins
+- **privateMethods** - Internal methods not exposed externally
+- **actions** - Named actions with metadata and parameters
+- **setup** - Initialization function
+
+### Naming Convention
+
+Plugin methods and actions are automatically namespaced:
+
+```javascript
+const plugin = createPlugin('user', {
   methods: {
-    getValue() {
+    getName() { return 'John' }
+  },
+  actions: {
+    login: {
+      metadata: { title: 'Login' },
+      method() { /* ... */ }
+    }
+  }
+})
+
+// Access via namespaced names
+plugin.userGetName()      // Method
+plugin.userLogin()        // Action
+```
+
+## Data Management
+
+### Defining Data
+
+Data is initial state that is copied to the plugin context:
+
+```javascript
+const plugin = createPlugin('counter', {
+  metadata: { title: 'Counter Plugin' },
+  data: {
+    count: 0,
+    name: 'default',
+    isActive: true,
+    items: [],
+    settings: {
+      theme: 'dark'
+    }
+  }
+})
+```
+
+### Data Types
+
+Data can be any JavaScript value:
+
+| Type | Example | Description |
+|------|---------|-------------|
+| `string` | `'hello'` | Text data |
+| `number` | `42` | Numeric data |
+| `boolean` | `true` | Boolean flag |
+| `object` | `{ key: 'value' }` | Key-value object |
+| `array` | `[1, 2, 3]` | Ordered list |
+| `null` | `null` | Null value |
+| `undefined` | `undefined` | Undefined value |
+
+### Accessing Data
+
+Data is accessible via the plugin context (`this`):
+
+```javascript
+const plugin = createPlugin('counter', {
+  metadata: { title: 'Counter' },
+  data: {
+    count: 0
+  },
+  methods: {
+    increment() {
+      this.count++  // Access data via 'this'
       return this.count
     },
-    
-    increment() {
-      this.count++
+    getCount() {
       return this.count
     }
+  }
+})
+
+plugin.counterIncrement()  // Returns: 1
+plugin.counterGetCount()   // Returns: 1
+```
+
+### Data Modification
+
+Data can be modified directly in methods:
+
+```javascript
+const plugin = createPlugin('user', {
+  metadata: { title: 'User Plugin' },
+  data: {
+    users: [],
+    currentUser: null
   },
-  
-  // Actions
+  methods: {
+    addUser(name) {
+      const user = { id: Date.now(), name }
+      this.users.push(user)
+      return user
+    },
+    setCurrentUser(userId) {
+      this.currentUser = this.users.find(u => u.id === userId)
+      return this.currentUser
+    }
+  }
+})
+```
+
+### State Management (Global State Plugin)
+
+The `state` property is used for metadata about a global state plugin, not for internal state management:
+
+```javascript
+// This is for a global state plugin that manages state across the application
+const statePlugin = createPlugin('globalState', {
+  metadata: { title: 'Global State' },
+  state: {
+    schema: {
+      users: { type: 'collection' },
+      settings: { type: 'object' }
+    }
+  }
+})
+```
+
+**Important:** For internal plugin state, use the `data` property instead.
+
+## Methods
+
+### Public Methods
+
+Public methods are exposed on the plugin and can be called by other plugins:
+
+```javascript
+const plugin = createPlugin('math', {
+  metadata: { title: 'Math Plugin' },
+  data: {
+    base: 10
+  },
+  methods: {
+    add(x, y) {
+      return this.base + x + y
+    },
+    multiply(x, y) {
+      return x * y
+    }
+  }
+})
+
+plugin.mathAdd(5, 3)      // Returns: 18 (10 + 5 + 3)
+plugin.mathMultiply(4, 5) // Returns: 20
+```
+
+### Private Methods
+
+Private methods are internal to the plugin and not exposed externally:
+
+```javascript
+const plugin = createPlugin('calculator', {
+  metadata: { title: 'Calculator' },
+  data: {
+    result: 0
+  },
+  privateMethods: {
+    validateNumber(num) {
+      if (typeof num !== 'number') {
+        throw new Error('Must be a number')
+      }
+      return num
+    }
+  },
+  methods: {
+    add(x, y) {
+      const validatedX = this.validateNumber(x)
+      const validatedY = this.validateNumber(y)
+      this.result = validatedX + validatedY
+      return this.result
+    }
+  }
+})
+
+plugin.calculatorAdd(5, 3)  // Works: Returns 8
+plugin.calculatorValidateNumber // undefined (not exposed)
+```
+
+### Method Context
+
+All methods (public and private) have access to the plugin context:
+
+```javascript
+const plugin = createPlugin('user', {
+  metadata: { title: 'User Plugin' },
+  data: {
+    firstName: 'John',
+    lastName: 'Doe'
+  },
+  methods: {
+    getFullName() {
+      // 'this' refers to the plugin context
+      return `${this.firstName} ${this.lastName}`
+    }
+  }
+})
+
+plugin.userGetFullName()  // Returns: "John Doe"
+```
+
+## Actions
+
+### What Are Actions?
+
+Actions are **exported operations** that serve two purposes:
+
+1. **Programmatic Usage**: Like methods, they can be called directly from other plugins
+2. **Visual Programming**: They provide metadata that enables the visual programming plugin (action.js) to build user interfaces
+
+Think of actions as "public API endpoints" with rich metadata for UI generation.
+
+### How Actions Differ from Methods
+
+| Feature | Methods | Actions |
+|---------|---------|---------|
+| **Purpose** | Internal logic, reusable functions | Public operations with UI metadata |
+| **Metadata** | Minimal (just implementation) | Rich (title, description, parameters) |
+| **Visual Programming** | Not supported | Fully supported |
+| **Parameters** | Any signature | Structured schema with types |
+| **Usage** | Plugin-to-plugin | Plugin-to-plugin + UI generation |
+
+### Defining Actions
+
+```javascript
+const plugin = createPlugin('user', {
+  metadata: { title: 'User Plugin' },
   actions: {
-    add: {
+    login: {
       metadata: {
-        title: 'Add to Counter'
+        title: 'User Login',
+        description: 'Authenticate a user with credentials'
       },
       parameters: {
         type: 'object',
         properties: {
-          value: { type: 'number', required: true }
+          username: { type: 'string', required: true },
+          password: { type: 'string', required: true }
         }
       },
-      method({ value }) {
-        this.count += value
-        return this.count
+      method({ username, password }) {
+        // Authentication logic
+        return { success: true, user: username }
       }
     }
   }
 })
-
-// Step 2: Use your plugin
-console.log(counterPlugin.counterGetValue()) // 0
-console.log(counterPlugin.counterIncrement()) // 1
-console.log(counterPlugin.counterAdd({ value: 5 })) // 6
 ```
 
-**What just happened?**
-- ✅ Created a plugin named 'counter'
-- ✅ Added state with a count property
-- ✅ Created public methods (getValue, increment)
-- ✅ Created an action (add) with parameters
-- ✅ All methods are namespaced (counterGetValue, counterAdd)
+### Action Metadata
 
-## 🏗️ Core Concepts
-
-### 1. Plugin Structure
-
-Every plugin has these key components:
+The metadata describes the action for both programmatic and visual usage:
 
 ```javascript
-const myPlugin = createPlugin('myPlugin', {
-  // 1. Metadata - Plugin identity
-  metadata: { title: 'My Plugin', description: '...' },
-  
-  // 2. Dependencies - Other plugins needed
-  dependencies: [otherPlugin],
-  
-  // 3. State - Global data management
-  state: { defaults: {}, schema: {} },
-  
-  // 4. Data - Initial values (configuration)
-  data: { config: {} },
-  
-  // 5. Methods - Public API
-  methods: { publicMethod() {} },
-  
-  // 6. Private Methods - Internal logic
-  privateMethods: { internalMethod() {} },
-  
-  // 7. Actions - Callable functions
-  actions: { actionName: { method() {} } },
-  
-  // 8. Setup - Initialization
-  setup() { return 'ready' }
-})
-```
-
-### 2. State Management - Global Data Only
-
-**Important**: The `state` property is designed **exclusively for global state** - data that needs to be accessible across multiple plugins or components in your application.
-
-#### ✅ Correct: State for Global Data
-
-```javascript
-state: {
-  defaults: {
-    // Global user session (accessible by auth, permissions, UI plugins)
-    currentUser: null,
-    
-    // Global app settings (accessible by theme, layout plugins)
-    settings: {
-      theme: 'light',
-      language: 'en'
+// Single metadata object
+actions: {
+  save: {
+    metadata: {
+      title: 'Save Data',
+      description: 'Save data to storage',
+      icon: 'mdi-content-save',  // For visual UI
+      category: 'data'            // For organization
     },
-    
-    // Global cache (accessible by performance monitoring plugins)
-    cacheStats: {
-      hits: 0,
-      misses: 0
-    }
-  },
-  schema: {
-    currentUser: { type: 'object' },
-    settings: { type: 'object' },
-    cacheStats: { type: 'object' }
+    method() { /* ... */ }
+  }
+}
+
+// Multiple metadata variants (for different contexts)
+actions: {
+  save: {
+    metadata: [
+      {
+        id: 'local',
+        title: 'Save Locally',
+        description: 'Save to local storage',
+        icon: 'mdi-harddisk'
+      },
+      {
+        id: 'remote',
+        title: 'Save Remotely',
+        description: 'Save to server',
+        icon: 'mdi-cloud-upload'
+      }
+    ],
+    method() { /* ... */ }
   }
 }
 ```
 
-#### ❌ Incorrect: State for Private Data
+### Action Parameters
 
-```javascript
-// DON'T DO THIS
-state: {
-  defaults: {
-    // Private internal state - not needed globally
-    requestQueue: new Map(),
-    cacheStore: new Map(),
-    rateLimitCounters: new Map(),
-    internalConfig: {},
-    tempData: []
-  }
-}
-```
+Parameters use a structured schema that enables:
 
-#### ✅ Correct: Private Data in Module Scope
-
-```javascript
-// Private module-level variables (not in state)
-const requestQueue = new Map()
-const cacheStore = new Map()
-const rateLimitCounters = new Map()
-
-const myPlugin = createPlugin('myPlugin', {
-  // State only for global data
-  state: {
-    defaults: {
-      // Only data that other plugins might need
-      stats: { totalRequests: 0 }
-    },
-    schema: {
-      stats: { type: 'object' }
-    }
-  },
-  
-  // Configuration in data property
-  data: {
-    config: {
-      timeout: 5000,
-      retryAttempts: 3
-    }
-  },
-  
-  // Private methods for internal logic
-  privateMethods: {
-    // Use module-level variables internally
-    addToQueue(id, request) {
-      requestQueue.set(id, request)
-    },
-    
-    getFromQueue(id) {
-      return requestQueue.get(id)
-    }
-  },
-  
-  // Public methods for user API
-  methods: {
-    getStats() {
-      // Can access global state
-      return this.stats
-    }
-  }
-})
-```
-
-### 3. When to Use Each Property
-
-| Property | Purpose | Example | Global? |
-|----------|---------|---------|---------|
-| `state` | Data accessible by other plugins | `currentUser`, `appSettings` | ✅ Yes |
-| `data` | Configuration and initial values | `apiUrl`, `timeout` | ❌ No |
-| `privateMethods` | Internal logic | `validateEmail()`, `generateId()` | ❌ No |
-| `module variables` | Private state | `requestQueue`, `cacheStore` | ❌ No |
-
-### 4. State vs Data Comparison
-
-```javascript
-// State - Global, reactive, accessible by other plugins
-state: {
-  defaults: {
-    userSession: null,  // Auth plugin needs this
-    permissions: []     // Access control needs this
-  }
-}
-
-// Data - Configuration, not reactive, private
-data: {
-  apiBase: '/api',      // Only fetch plugin needs this
-  timeout: 5000         // Only fetch plugin needs this
-}
-
-// Private variables - Completely internal
-const cache = new Map() // Only this plugin uses this
-```
-
-### 5. Best Practices
-
-```javascript
-// ✅ Good: State for shared data
-state: {
-  defaults: {
-    currentUser: null,
-    appTheme: 'light'
-  }
-}
-
-// ✅ Good: Data for configuration
-data: {
-  config: {
-    retryAttempts: 3,
-    cacheTTL: 300000
-  }
-}
-
-// ✅ Good: Module variables for private state
-const pendingRequests = new Map()
-
-// ❌ Bad: State for private data
-state: {
-  defaults: {
-    internalQueue: [],  // Should be module variable
-    tempCache: {}       // Should be module variable
-  }
-}
-
-// ❌ Bad: Data for shared state
-data: {
-  currentUser: null    // Should be in state
-}
-```
-
-### 6. Performance Considerations
-
-**State**:
-- Triggers reactivity system
-- Can be observed by other plugins
-- Uses more memory
-- Slower to update
-
-**Data/Module Variables**:
-- No reactivity overhead
-- Private to plugin
-- Faster access
-- Lower memory usage
-
-**Rule of Thumb**: If other plugins don't need to watch or react to the data, don't put it in state.
-
-### 7. Methods vs Actions
-
-**Methods** are public functions exposed on the plugin object:
-
-```javascript
-methods: {
-  getUser(id) {
-    return this.users[id]
-  },
-  
-  getAllUsers() {
-    return Object.values(this.users)
-  }
-}
-
-// Usage
-plugin.myPluginGetUser('user123')
-plugin.myPluginGetAllUsers()
-```
-
-**Actions** are callable functions with metadata and parameters:
+1. **Validation**: Automatic parameter validation
+2. **UI Generation**: Forms can be auto-generated
+3. **Type Safety**: Clear input expectations
 
 ```javascript
 actions: {
   createUser: {
+    metadata: { title: 'Create User' },
+    parameters: {
+      type: 'object',
+      properties: {
+        name: { 
+          type: 'string', 
+          required: true,
+          minLength: 1,
+          maxLength: 100
+        },
+        email: { 
+          type: 'string', 
+          required: true,
+          pattern: '^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$'
+        },
+        age: { 
+          type: 'number',
+          minimum: 0,
+          maximum: 120
+        },
+        role: {
+          type: 'string',
+          enum: ['user', 'admin', 'guest'],
+          default: 'user'
+        }
+      }
+    },
+    method({ name, email, age, role }) {
+      return { id: Date.now(), name, email, age, role }
+    }
+  }
+}
+```
+
+### Calling Actions
+
+Actions are called like methods but with namespaced names:
+
+```javascript
+const plugin = createPlugin('user', {
+  metadata: { title: 'User Plugin' },
+  actions: {
+    login: {
+      metadata: { title: 'Login' },
+      parameters: {
+        type: 'object',
+        properties: {
+          username: { type: 'string', required: true },
+          password: { type: 'string', required: true }
+        }
+      },
+      method({ username, password }) {
+        return { success: true, user: username }
+      }
+    }
+  }
+})
+
+// Programmatic usage
+const result = plugin.userLogin({
+  username: 'john',
+  password: 'secret'
+})
+// Returns: { success: true, user: 'john' }
+```
+
+### Visual Programming Integration
+
+The visual programming plugin (action.js) uses action metadata to:
+
+1. **Generate UI**: Create forms and input fields
+2. **Display Options**: Show actions in a searchable list
+3. **Validate Inputs**: Ensure correct data types
+4. **Provide Help**: Show descriptions and tooltips
+
+```javascript
+// Visual programming plugin can:
+// 1. List all available actions
+// 2. Display them with titles and descriptions
+// 3. Generate forms based on parameters schema
+// 4. Call the action with user input
+```
+
+### Action Context
+
+Actions receive a special context object as the second parameter:
+
+```javascript
+actions: {
+  save: {
+    metadata: { title: 'Save' },
+    method(params, context) {
+      // context is frozen and contains:
+      // - context.context: Plugin context (this)
+      // - context.payload: Action parameters
+      // - context.blockValues: Block-specific values
+      
+      console.log(context.context)  // Plugin context
+      console.log(context.payload)  // Action parameters
+      return 'saved'
+    }
+  }
+}
+```
+
+### When to Use Actions vs Methods
+
+**Use Actions when:**
+- The operation should be available to visual programming
+- You need rich metadata (title, description, icons)
+- Parameters need structured schemas
+- You want auto-generated UIs
+
+**Use Methods when:**
+- The operation is internal to your plugin
+- No UI generation is needed
+- You need simple, flexible function signatures
+- Performance is critical (methods have less overhead)
+
+### Best Practices for Actions
+
+1. **Descriptive Metadata**: Always provide clear titles and descriptions
+2. **Complete Schemas**: Define all parameters with types and constraints
+3. **Consistent Naming**: Use action names that describe the operation
+4. **Error Handling**: Return meaningful errors that can be displayed in UI
+5. **Documentation**: Document what each action does and its parameters
+
+```javascript
+// Good example
+actions: {
+  sendEmail: {
     metadata: {
-      title: 'Create User',
-      description: 'Creates a new user account'
+      title: 'Send Email',
+      description: 'Send an email to a recipient',
+      icon: 'mdi-email-send',
+      category: 'communication'
     },
     parameters: {
       type: 'object',
       properties: {
-        name: { type: 'string', required: true },
-        email: { type: 'string', required: true }
+        to: { 
+          type: 'string', 
+          required: true,
+          description: 'Email recipient address'
+        },
+        subject: { 
+          type: 'string', 
+          required: true,
+          description: 'Email subject line'
+        },
+        body: { 
+          type: 'string', 
+          required: true,
+          description: 'Email body content'
+        }
       }
     },
-    method({ name, email }) {
-      const id = this.generateId()
-      this.users[id] = { id, name, email }
-      return id
+    method({ to, subject, body }) {
+      // Implementation
+      return { success: true, recipient: to }
     }
   }
 }
-
-// Usage
-plugin.myPluginCreateUser({ name: 'John', email: 'john@example.com' })
 ```
 
-**When to use each:**
-- Use **methods** for simple data access and manipulation
-- Use **actions** for complex operations with validation and metadata
-- Use **actions** when you need to expose functionality to other systems
+## Dependencies
 
-### 8. Private Methods
+### Defining Dependencies
 
-Private methods are internal functions not exposed publicly:
+Plugins can depend on other plugins:
 
 ```javascript
-privateMethods: {
-  validateEmail(email) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-  },
-  
-  generateId() {
-    return Math.random().toString(36).substr(2, 9)
-  },
-  
-  async apiCall(endpoint, data) {
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      body: JSON.stringify(data)
-    })
-    return response.json()
-  }
-},
-
-methods: {
-  registerUser(email, password) {
-    if (!this.validateEmail(email)) {
-      throw new Error('Invalid email')
+const storagePlugin = createPlugin('storage', {
+  metadata: { title: 'Storage Plugin' },
+  methods: {
+    save(key, value) {
+      // Save to storage
     }
-    
-    const id = this.generateId()
-    return this.apiCall('/api/users', { id, email, password })
   }
-}
+})
+
+const userPlugin = createPlugin('user', {
+  metadata: { title: 'User Plugin' },
+  dependencies: [storagePlugin],
+  actions: {
+    saveProfile: {
+      metadata: { title: 'Save Profile' },
+      method({ profile }) {
+        // Can use storage plugin methods
+        return this.storageSave('profile', profile)
+      }
+    }
+  }
+})
 ```
 
-### 9. Context Binding
+### Dependency Injection
 
-All functions share the same context (`this`):
+Dependencies are automatically injected into the plugin context:
 
 ```javascript
-data: {
-  apiKey: 'secret-key',
-  endpoint: '/api'
-},
-
-privateMethods: {
-  async request(path, options) {
-    // Access data via 'this'
-    const url = this.endpoint + path
-    const response = await fetch(url, {
-      headers: { 'Authorization': this.apiKey },
-      ...options
-    })
-    return response.json()
+const dep1 = createPlugin('dep1', {
+  metadata: { title: 'Dependency 1' },
+  methods: {
+    getValue() { return 42 }
   }
-},
+})
 
-methods: {
-  async getUser(id) {
-    // Can call private methods
-    return this.request(`/users/${id}`)
+const dep2 = createPlugin('dep2', {
+  metadata: { title: 'Dependency 2' },
+  methods: {
+    getValue() { return 100 }
   }
-},
+})
 
-actions: {
-  updateUser: {
-    method({ id, data }) {
-      // Can access everything
-      return this.request(`/users/${id}`, {
-        method: 'PUT',
-        body: JSON.stringify(data)
-      })
+const plugin = createPlugin('main', {
+  metadata: { title: 'Main Plugin' },
+  dependencies: [dep1, dep2],
+  methods: {
+    calculate() {
+      // Dependencies are accessible via their names
+      return this.dep1GetValue() + this.dep2GetValue()
     }
   }
-}
+})
+
+plugin.mainCalculate()  // Returns: 142
 ```
 
-## 🛠️ Building Real-World Plugins
+## Lifecycle & Setup
 
-### Example 1: User Authentication Plugin
+### Setup Function
+
+The setup function runs once when the plugin is initialized:
+
+```javascript
+const plugin = createPlugin('app', {
+  metadata: { title: 'Application' },
+  data: {
+    initialized: false
+  },
+  setup() {
+    // This runs once when plugin is created
+    this.initialized = true
+    console.log('Plugin initialized!')
+    return 'ready'
+  }
+})
+
+// Setup is called automatically
+const result = plugin.setup()  // Returns: 'ready'
+console.log(plugin.data.initialized)  // true
+```
+
+### Setup Context
+
+The setup function has access to the full plugin context:
+
+```javascript
+const plugin = createPlugin('user', {
+  metadata: { title: 'User Plugin' },
+  data: {
+    users: []
+  },
+  state: {
+    schema: {
+      count: { type: 'number' }
+    }
+  },
+  methods: {
+    addUser(name) {
+      this.users.push({ id: Date.now(), name })
+      this.count++
+      return this.count
+    }
+  },
+  setup() {
+    // Access all plugin features
+    this.addUser('Admin')
+    return `Initialized with ${this.count} user(s)`
+  }
+})
+
+plugin.setup()  // Returns: "Initialized with 1 user(s)"
+```
+
+## Testing & Mocking
+
+### Observable Instances
+
+In development mode, plugins can create observable (mocked) instances for testing:
 
 ```javascript
 import { createPlugin } from '@dooksa/create-plugin'
+import { test } from 'node:test'
 
-const authPlugin = createPlugin('auth', {
-  metadata: {
-    title: 'Authentication',
-    description: 'User authentication and session management'
-  },
-  
-  state: {
-    defaults: {
-      user: null,
-      token: null,
-      isAuthenticated: false
-    },
-    schema: {
-      user: {
-        type: 'object',
-        properties: {
-          id: { type: 'string', required: true },
-          name: { type: 'string', required: true },
-          email: { type: 'string', required: true }
-        }
-      },
-      token: { type: 'string' },
-      isAuthenticated: { type: 'boolean' }
-    }
-  },
-  
-  data: {
-    apiBase: '/api/auth',
-    tokenKey: 'auth_token'
-  },
-  
-  privateMethods: {
-    async apiCall(endpoint, options = {}) {
-      const url = this.apiBase + endpoint
-      const headers = {
-        'Content-Type': 'application/json',
-        ...options.headers
-      }
-      
-      // Add token if available
-      if (this.token) {
-        headers['Authorization'] = `Bearer ${this.token}`
-      }
-      
-      const response = await fetch(url, { ...options, headers })
-      
-      if (!response.ok) {
-        throw new Error(`API Error: ${response.status}`)
-      }
-      
-      return response.json()
-    },
-    
-    saveToken(token) {
-      this.token = token
-      localStorage.setItem(this.tokenKey, token)
-    },
-    
-    clearToken() {
-      this.token = null
-      localStorage.removeItem(this.tokenKey)
-    }
-  },
-  
-  methods: {
-    getUser() {
-      return this.user
-    },
-    
-    isAuthenticated() {
-      return this.isAuthenticated
-    },
-    
-    async loadToken() {
-      const token = localStorage.getItem(this.tokenKey)
-      if (token) {
-        this.token = token
-        return true
-      }
-      return false
-    }
-  },
-  
-  actions: {
-    login: {
-      metadata: {
-        title: 'User Login',
-        description: 'Authenticate a user'
-      },
-      parameters: {
-        type: 'object',
-        properties: {
-          email: { type: 'string', required: true },
-          password: { type: 'string', required: true }
-        }
-      },
-      async method({ email, password }) {
-        const response = await this.apiCall('/login', {
-          method: 'POST',
-          body: JSON.stringify({ email, password })
-        })
-        
-        this.saveToken(response.token)
-        this.user = response.user
-        this.isAuthenticated = true
-        
-        return response.user
+test('plugin behavior', async (t) => {
+  const plugin = createPlugin('counter', {
+    metadata: { title: 'Counter' },
+    state: {
+      schema: {
+        count: { type: 'number' }
       }
     },
-    
-    logout: {
-      metadata: {
-        title: 'User Logout',
-        description: 'End user session'
-      },
-      method() {
-        this.clearToken()
-        this.user = null
-        this.isAuthenticated = false
-        return true
-      }
-    },
-    
-    register: {
-      metadata: {
-        title: 'User Registration',
-        description: 'Create a new user account'
-      },
-      parameters: {
-        type: 'object',
-        properties: {
-          name: { type: 'string', required: true },
-          email: { type: 'string', required: true },
-          password: { type: 'string', required: true }
-        }
-      },
-      async method({ name, email, password }) {
-        const response = await this.apiCall('/register', {
-          method: 'POST',
-          body: JSON.stringify({ name, email, password })
-        })
-        
-        return response.user
-      }
-    },
-    
-    refreshToken: {
-      metadata: {
-        title: 'Refresh Token',
-        description: 'Refresh authentication token'
-      },
-      async method() {
-        const response = await this.apiCall('/refresh', {
-          method: 'POST'
-        })
-        
-        this.saveToken(response.token)
-        return response.token
+    methods: {
+      increment() {
+        this.count++
+        return this.count
       }
     }
-  },
-  
-  setup() {
-    // Try to load existing token
-    return this.loadToken()
-  }
-})
+  })
 
-// Usage
-await authPlugin.authLogin({ email: 'user@example.com', password: 'secret' })
-const user = authPlugin.authGetUser()
-const isLoggedIn = authPlugin.authIsAuthenticated()
-await authPlugin.authLogout()
-```
+  // Create observable instance
+  const observable = plugin.createObservableInstance(t)
 
-### Example 2: Data Table Plugin
+  // Call the method
+  const result = observable.testIncrement()
 
-```javascript
-const dataTablePlugin = createPlugin('dataTable', {
-  metadata: {
-    title: 'Data Table',
-    description: 'Manage and display tabular data'
-  },
-  
-  state: {
-    defaults: {
-      data: [],
-      columns: [],
-      filters: {},
-      sort: { field: null, direction: 'asc' },
-      pagination: { page: 1, pageSize: 10, total: 0 }
-    },
-    schema: {
-      data: { type: 'array' },
-      columns: { type: 'array' },
-      filters: { type: 'object' },
-      sort: {
-        type: 'object',
-        properties: {
-          field: { type: 'string' },
-          direction: { type: 'string' }
-        }
-      },
-      pagination: {
-        type: 'object',
-        properties: {
-          page: { type: 'number' },
-          pageSize: { type: 'number' },
-          total: { type: 'number' }
-        }
-      }
-    }
-  },
-  
-  privateMethods: {
-    applyFilters(data) {
-      return data.filter(item => {
-        for (const [key, value] of Object.entries(this.filters)) {
-          if (item[key] !== value) return false
-        }
-        return true
-      })
-    },
-    
-    applySort(data) {
-      if (!this.sort.field) return data
-      
-      return [...data].sort((a, b) => {
-        const aVal = a[this.sort.field]
-        const bVal = b[this.sort.field]
-        
-        if (this.sort.direction === 'asc') {
-          return aVal > bVal ? 1 : -1
-        } else {
-          return aVal < bVal ? 1 : -1
-        }
-      })
-    },
-    
-    applyPagination(data) {
-      const start = (this.pagination.page - 1) * this.pagination.pageSize
-      const end = start + this.pagination.pageSize
-      return data.slice(start, end)
-    }
-  },
-  
-  methods: {
-    getDisplayData() {
-      let result = this.data
-      
-      // Apply filters
-      result = this.applyFilters(result)
-      
-      // Apply sort
-      result = this.applySort(result)
-      
-      // Update total count
-      this.pagination.total = result.length
-      
-      // Apply pagination
-      result = this.applyPagination(result)
-      
-      return result
-    },
-    
-    getColumns() {
-      return this.columns
-    },
-    
-    getPagination() {
-      return this.pagination
-    }
-  },
-  
-  actions: {
-    setData: {
-      metadata: { title: 'Set Data' },
-      parameters: {
-        type: 'object',
-        properties: {
-          data: { type: 'array', required: true },
-          columns: { type: 'array' }
-        }
-      },
-      method({ data, columns }) {
-        this.data = data
-        if (columns) this.columns = columns
-        this.pagination.page = 1
-        return true
-      }
-    },
-    
-    setFilter: {
-      metadata: { title: 'Set Filter' },
-      parameters: {
-        type: 'object',
-        properties: {
-          field: { type: 'string', required: true },
-          value: { type: 'any' }
-        }
-      },
-      method({ field, value }) {
-        if (value === null || value === undefined) {
-          delete this.filters[field]
-        } else {
-          this.filters[field] = value
-        }
-        this.pagination.page = 1
-        return this.filters
-      }
-    },
-    
-    clearFilters: {
-      metadata: { title: 'Clear Filters' },
-      method() {
-        this.filters = {}
-        this.pagination.page = 1
-        return true
-      }
-    },
-    
-    setSort: {
-      metadata: { title: 'Set Sort' },
-      parameters: {
-        type: 'object',
-        properties: {
-          field: { type: 'string', required: true }
-        }
-      },
-      method({ field }) {
-        if (this.sort.field === field) {
-          // Toggle direction
-          this.sort.direction = this.sort.direction === 'asc' ? 'desc' : 'asc'
-        } else {
-          this.sort.field = field
-          this.sort.direction = 'asc'
-        }
-        return this.sort
-      }
-    },
-    
-    setPage: {
-      metadata: { title: 'Set Page' },
-      parameters: {
-        type: 'object',
-        properties: {
-          page: { type: 'number', required: true }
-        }
-      },
-      method({ page }) {
-        this.pagination.page = page
-        return this.pagination
-      }
-    },
-    
-    setPageSize: {
-      metadata: { title: 'Set Page Size' },
-      parameters: {
-        type: 'object',
-        properties: {
-          size: { type: 'number', required: true }
-        }
-      },
-      method({ size }) {
-        this.pagination.pageSize = size
-        this.pagination.page = 1
-        return this.pagination
-      }
-    }
-  }
-})
-
-// Usage
-dataTablePlugin.dataTableSetData({
-  data: [
-    { id: 1, name: 'John', age: 30 },
-    { id: 2, name: 'Jane', age: 25 },
-    { id: 3, name: 'Bob', age: 35 }
-  ],
-  columns: ['id', 'name', 'age']
-})
-
-dataTablePlugin.dataTableSetFilter({ field: 'age', value: 30 })
-dataTablePlugin.dataTableSetSort({ field: 'name' })
-dataTablePlugin.dataTableSetPage({ page: 2 })
-
-const displayData = dataTablePlugin.dataTableGetDisplayData()
-```
-
-### Example 3: Cache Plugin
-
-```javascript
-const cachePlugin = createPlugin('cache', {
-  metadata: {
-    title: 'Cache Manager',
-    description: 'In-memory cache with TTL support'
-  },
-  
-  state: {
-    defaults: {
-      entries: {}
-    },
-    schema: {
-      entries: { type: 'collection' }
-    }
-  },
-  
-  data: {
-    defaultTTL: 300000 // 5 minutes
-  },
-  
-  privateMethods: {
-    isExpired(entry) {
-      if (!entry.expiresAt) return false
-      return Date.now() > entry.expiresAt
-    },
-    
-    cleanup() {
-      const entries = this.entries
-      for (const key in entries) {
-        if (this.isExpired(entries[key])) {
-          delete entries[key]
-        }
-      }
-    }
-  },
-  
-  methods: {
-    get(key) {
-      this.cleanup()
-      
-      const entry = this.entries[key]
-      if (!entry) return null
-      
-      if (this.isExpired(entry)) {
-        delete this.entries[key]
-        return null
-      }
-      
-      return entry.value
-    },
-    
-    has(key) {
-      this.cleanup()
-      return this.entries[key] !== undefined && !this.isExpired(this.entries[key])
-    },
-    
-    getAll() {
-      this.cleanup()
-      const result = {}
-      for (const key in this.entries) {
-        result[key] = this.entries[key].value
-      }
-      return result
-    },
-    
-    getStats() {
-      this.cleanup()
-      return {
-        total: Object.keys(this.entries).length,
-        size: JSON.stringify(this.entries).length
-      }
-    }
-  },
-  
-  actions: {
-    set: {
-      metadata: { title: 'Set Cache' },
-      parameters: {
-        type: 'object',
-        properties: {
-          key: { type: 'string', required: true },
-          value: { type: 'any', required: true },
-          ttl: { type: 'number' }
-        }
-      },
-      method({ key, value, ttl }) {
-        const expiresAt = ttl 
-          ? Date.now() + ttl 
-          : Date.now() + this.defaultTTL
-        
-        this.entries[key] = {
-          value,
-          expiresAt,
-          createdAt: Date.now()
-        }
-        
-        return true
-      }
-    },
-    
-    remove: {
-      metadata: { title: 'Remove Cache' },
-      parameters: {
-        type: 'object',
-        properties: {
-          key: { type: 'string', required: true }
-        }
-      },
-      method({ key }) {
-        delete this.entries[key]
-        return true
-      }
-    },
-    
-    clear: {
-      metadata: { title: 'Clear Cache' },
-      method() {
-        this.entries = {}
-        return true
-      }
-    },
-    
-    setDefaultTTL: {
-      metadata: { title: 'Set Default TTL' },
-      parameters: {
-        type: 'object',
-        properties: {
-          ttl: { type: 'number', required: true }
-        }
-      },
-      method({ ttl }) {
-        this.defaultTTL = ttl
-        return ttl
-      }
-    }
-  },
-  
-  setup() {
-    // Periodic cleanup
-    setInterval(() => this.cleanup(), 60000) // Every minute
-    return 'Cache service ready'
-  }
-})
-
-// Usage
-cachePlugin.cacheSet({ key: 'user:123', value: { name: 'John' }, ttl: 60000 })
-const user = cachePlugin.cacheGet({ key: 'user:123' })
-cachePlugin.cacheRemove({ key: 'user:123' })
-```
-
-## 🔧 Advanced Patterns
-
-### Pattern 1: Plugin Composition
-
-```javascript
-// Base plugin with shared functionality
-const basePlugin = createPlugin('base', {
-  methods: {
-    log(message) {
-      console.log(`[${this.name}] ${message}`)
-    },
-    
-    error(message) {
-      console.error(`[${this.name}] ERROR: ${message}`)
-    }
-  }
-})
-
-// Plugin that depends on base
-const advancedPlugin = createPlugin('advanced', {
-  dependencies: [basePlugin],
-  
-  methods: {
-    doSomething() {
-      this.log('Starting operation')
-      // ... work
-      this.log('Operation complete')
-    }
-  }
+  // Verify the mock was called
+  t.assert(observable.observe.increment.mock.calls.length === 1)
+  t.assert(result === 1)
 })
 ```
 
-### Pattern 2: Event Emitter
+### Mock Assertions
+
+Observable instances provide access to mock tracking:
 
 ```javascript
-const eventPlugin = createPlugin('events', {
-  state: {
-    defaults: {
-      listeners: {}
-    },
-    schema: {
-      listeners: { type: 'collection' }
-    }
-  },
-  
-  privateMethods: {
-    emit(event, data) {
-      const listeners = this.listeners[event] || []
-      listeners.forEach(callback => callback(data))
-    }
-  },
-  
-  methods: {
-    on(event, callback) {
-      if (!this.listeners[event]) {
-        this.listeners[event] = []
-      }
-      this.listeners[event].push(callback)
-      return () => this.off(event, callback)
-    },
-    
-    off(event, callback) {
-      if (this.listeners[event]) {
-        this.listeners[event] = this.listeners[event].filter(cb => cb !== callback)
-      }
-    }
-  },
-  
-  actions: {
-    emit: {
-      metadata: { title: 'Emit Event' },
-      parameters: {
-        type: 'object',
-        properties: {
-          event: { type: 'string', required: true },
-          data: { type: 'any' }
-        }
-      },
-      method({ event, data }) {
-        this.emit(event, data)
-        return true
-      }
-    }
-  }
-})
+const observable = plugin.createObservableInstance(t)
+
+// Call methods
+observable.testMethod1()
+observable.testMethod2('arg')
+
+// Check mock calls
+console.log(observable.observe.method1.mock.calls.length)  // 1
+console.log(observable.observe.method1.mock.results)       // [{ type: 'return', value: ... }]
+
+// Check specific call
+const firstCall = observable.observe.method2.mock.calls[0]
+console.log(firstCall.arguments)  // ['arg']
 ```
 
-### Pattern 3: Async Queue
+### Restore Function
+
+Reset the plugin to its original state:
 
 ```javascript
-const queuePlugin = createPlugin('queue', {
-  state: {
-    defaults: {
-      queue: [],
-      processing: false
-    },
-    schema: {
-      queue: { type: 'array' },
-      processing: { type: 'boolean' }
-    }
-  },
-  
-  privateMethods: {
-    async processNext() {
-      if (this.processing || this.queue.length === 0) {
-        return
-      }
-      
-      this.processing = true
-      const task = this.queue.shift()
-      
-      try {
-        await task()
-      } catch (error) {
-        console.error('Task failed:', error)
-      }
-      
-      this.processing = false
-      
-      // Process next
-      if (this.queue.length > 0) {
-        this.processNext()
-      }
-    }
-  },
-  
+const plugin = createPlugin('counter', {
+  metadata: { title: 'Counter' },
+  data: { count: 0 },
   methods: {
-    getLength() {
-      return this.queue.length
-    },
-    
-    isProcessing() {
-      return this.processing
-    }
-  },
-  
-  actions: {
-    add: {
-      metadata: { title: 'Add Task' },
-      parameters: {
-        type: 'object',
-        properties: {
-          task: { type: 'any', required: true }
-        }
-      },
-      method({ task }) {
-        this.queue.push(task)
-        this.processNext()
-        return this.queue.length
-      }
-    },
-    
-    clear: {
-      metadata: { title: 'Clear Queue' },
-      method() {
-        this.queue = []
-        return true
-      }
+    increment() {
+      this.count++
+      return this.count
     }
   }
 })
+
+// Modify state
+plugin.counterIncrement()  // count = 1
+plugin.counterIncrement()  // count = 2
+
+// Restore to original state
+plugin.restore()
+
+// State is reset
+plugin.counterIncrement()  // count = 1 (starts from 0 again)
 ```
 
-## 🐛 Troubleshooting
+## Best Practices
 
-### Common Issues
+### 1. Keep Methods Focused
 
-#### 1. "Expected unique method name"
-
-**Problem:** Duplicate method/action names
+Each method should have a single responsibility:
 
 ```javascript
-// ❌ Wrong
-createPlugin('test', {
-  data: { conflict: 'value' },
-  methods: {
-    conflict() { return 'bad' }
-  }
-})
-
-// ✅ Correct
-createPlugin('test', {
-  data: { myData: 'value' },
-  methods: {
-    conflict() { return 'good' }
-  }
-})
-```
-
-#### 2. "this" is undefined
-
-**Problem:** Arrow functions don't bind context
-
-```javascript
-// ❌ Wrong
+// Good
 methods: {
-  getUser: () => this.user // 'this' is undefined
-}
-
-// ✅ Correct
-methods: {
-  getUser() { return this.user }
-}
-```
-
-#### 3. State not updating
-
-**Problem:** Mutating state directly
-
-```javascript
-// ❌ Wrong
-methods: {
-  addItem(item) {
-    this.items.push(item) // Won't trigger reactivity
+  validateEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  },
+  sendEmail(to, subject, body) {
+    // Send email logic
   }
 }
 
-// ✅ Correct
+// Avoid
 methods: {
-  addItem(item) {
-    this.items = [...this.items, item] // Creates new array
+  processEmail(email, subject, body) {
+    // Validation + sending in one method
   }
 }
 ```
 
-#### 4. Actions not accessible
+### 2. Use Private Methods for Internal Logic
 
-**Problem:** Forgetting namespacing
-
-```javascript
-// ❌ Wrong
-plugin.login() // Doesn't exist
-
-// ✅ Correct
-plugin.myPluginLogin()
-```
-
-### Debug Tips
+Keep implementation details private:
 
 ```javascript
-// Enable debug logging
-const plugin = createPlugin('debug', {
-  metadata: { title: 'Debug Plugin' },
-  
-  methods: {
-    getUser(id) {
-      console.log('getUser called with:', id)
-      console.log('Current state:', this)
-      const result = this.users[id]
-      console.log('Result:', result)
-      return result
-    }
-  },
-  
-  actions: {
-    updateUser: {
-      method(params) {
-        console.group('updateUser action')
-        console.log('Params:', params)
-        console.log('Context:', this)
-        console.groupEnd()
-        // ... implementation
-      }
-    }
-  }
-})
-```
-
-## 📚 Best Practices
-
-### 1. Naming Conventions
-
-```javascript
-// ✅ Good
-const userPlugin = createPlugin('user', {
-  metadata: { title: 'User Management' },
-  methods: {
-    getUser() {},        // userGetUser()
-    getAllUsers() {}     // userGetAllUsers()
-  },
-  actions: {
-    createUser: {},      // userCreateUser()
-    updateUser: {}       // userUpdateUser()
-  }
-})
-
-// ❌ Bad
-const userPlugin = createPlugin('user', {
-  methods: {
-    get() {},            // Unclear
-    all() {}             // Unclear
-  },
-  actions: {
-    create: {},          // Unclear
-    update: {}           // Unclear
-  }
-})
-```
-
-### 2. State vs Data
-
-```javascript
-// ✅ Good
-state: {
-  defaults: {
-    currentUser: null,     // Changes frequently
-    items: []              // Changes frequently
+// Good
+privateMethods: {
+  encryptPassword(password) {
+    // Encryption logic
+    return encrypted
   }
 },
-data: {
-  apiBase: '/api',         // Static config
-  timeout: 5000            // Static config
-}
-
-// ❌ Bad
-state: {
-  defaults: {
-    apiBase: '/api',       // Should be in data
-    timeout: 5000          // Should be in data
+actions: {
+  register: {
+    method({ password }) {
+      const encrypted = this.encryptPassword(password)
+      // Store encrypted password
+    }
   }
-},
-data: {
-  currentUser: null,       // Should be in state
-  items: []                // Should be in state
 }
 ```
 
-### 3. Error Handling
+### 3. Validate Parameters
+
+Always validate action parameters:
 
 ```javascript
-// ✅ Good
 actions: {
-  fetchUser: {
-    method: async ({ id }) {
-      try {
-        const user = await this.apiCall(`/users/${id}`)
-        return user
-      } catch (error) {
-        this.error(`Failed to fetch user ${id}: ${error.message}`)
-        throw new Error(`User fetch failed: ${error.message}`)
+  createUser: {
+    parameters: {
+      type: 'object',
+      properties: {
+        email: { type: 'string', required: true },
+        age: { type: 'number', minimum: 0 }
       }
-    }
-  }
-}
-
-// ❌ Bad
-actions: {
-  fetchUser: {
-    method: async ({ id }) {
-      const user = await this.apiCall(`/users/${id}`)
-      return user // No error handling
-    }
-  }
-}
-```
-
-### 4. Documentation
-
-```javascript
-// ✅ Good
-/**
- * User Management Plugin
- * 
- * Handles user authentication, registration, and profile management.
- * 
- * @example
- * await userPlugin.userLogin({ email, password })
- * const user = userPlugin.userGetCurrentUser()
- */
-const userPlugin = createPlugin('user', {
-  metadata: {
-    title: 'User Management',
-    description: 'Handles user authentication and profiles'
-  },
-  
-  /**
-   * Login action
-   * @param {Object} credentials - User credentials
-   * @param {string} credentials.email - User email
-   * @param {string} credentials.password - User password
-   * @returns {Promise<Object>} User object
-   */
-  actions: {
-    login: {
-      metadata: {
-        title: 'User Login',
-        description: 'Authenticate a user'
-      },
+    },
+    method({ email, age }) {
+      // Parameters are validated by the schema system
       // ...
     }
   }
+}
+```
+
+### 4. Use Dependencies Wisely
+
+Only depend on what you need:
+
+```javascript
+// Good - only depend on storage
+const plugin = createPlugin('user', {
+  dependencies: [storagePlugin],
+  // ...
+})
+
+// Avoid - depending on everything
+const plugin = createPlugin('user', {
+  dependencies: [storagePlugin, apiPlugin, uiPlugin, analyticsPlugin],
+  // ...
 })
 ```
 
-## 🎓 Learning Path
+### 5. Document Your Plugin
 
-### Beginner (You are here)
-- ✅ Create simple plugins with state and methods
-- ✅ Understand namespacing
-- ✅ Build basic actions
+Use metadata to document your plugin:
 
-### Intermediate
-- [ ] Use private methods for internal logic
-- [ ] Implement plugin dependencies
-- [ ] Handle async operations
-- [ ] Add proper error handling
+```javascript
+const plugin = createPlugin('myPlugin', {
+  metadata: {
+    title: 'My Plugin',
+    description: 'Handles user authentication and profile management',
+    author: 'Your Name',
+    version: '1.0.0'
+  },
+  // ...
+})
+```
 
-### Advanced
-- [ ] Create plugin compositions
-- [ ] Implement event systems
-- [ ] Build complex state management
-- [ ] Optimize performance
+### 6. Handle Errors Gracefully
 
-## 📖 Next Steps
+Use try-catch for error handling:
 
-1. **Read the Reference Documentation** - Complete API details
-2. **Explore Examples** - Study the real-world examples above
-3. **Build Your First Plugin** - Start with a simple use case
-4. **Join the Community** - Share your plugins and get help
+```javascript
+methods: {
+  async fetchData() {
+    try {
+      const response = await fetch('/api/data')
+      return await response.json()
+    } catch (error) {
+      console.error('Failed to fetch data:', error)
+      throw new Error('Data fetch failed')
+    }
+  }
+}
+```
 
-## 🆘 Getting Help
+### 7. Test Thoroughly
 
-- **Reference Docs**: `docs/reference.md` - Complete API reference
-- **Examples**: See the examples in this guide
-- **Tests**: Check `test/create-plugin.spec.js` for usage patterns
-- **Source Code**: Read `src/create-plugin.js` for implementation details
+Write tests for all plugin features:
 
----
+```javascript
+import { test } from 'node:test'
+import { strictEqual } from 'node:assert'
 
-**Happy Plugin Building!** 🚀
+test('counter plugin', async (t) => {
+  const plugin = createPlugin('counter', {
+    // ... plugin definition
+  })
+
+  await t.test('increment method', () => {
+    const result = plugin.counterIncrement()
+    strictEqual(result, 1)
+  })
+
+  await t.test('restore functionality', () => {
+    plugin.counterIncrement()
+    plugin.counterIncrement()
+    plugin.restore()
+    strictEqual(plugin.counterIncrement(), 1)
+  })
+})
+```
+
+## Next Steps
+
+- Read the [Reference Documentation](reference.md) for complete API details
+- Explore the [Restore Documentation](restore.md) for testing patterns
+- Check out the test files in `packages/create-plugin/test/` for examples

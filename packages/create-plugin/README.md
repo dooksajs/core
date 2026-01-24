@@ -8,6 +8,7 @@ The create-plugin package includes comprehensive documentation:
 
 - **[User Guide](docs/guide.md)** - Step-by-step tutorial with practical examples
 - **[Reference Documentation](docs/reference.md)** - Complete API reference with all options
+- **[Restore Documentation](docs/restore.md)** - Testing patterns and restore functionality
 
 **Quick Start:**
 ```javascript
