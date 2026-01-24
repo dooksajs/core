@@ -19,7 +19,7 @@
  * @param {boolean} [options.ok=true] - Whether response is OK
  * @param {Error} [options.error] - Error to throw (for testing failures)
  * @param {Function} [options.onRequest] - Callback called with request details
- * @returns {Object} Mock object with fetch function and verification methods
+ * @returns {Object} Mock object with fetch function, verification methods, and restore function
  *
  * @example
  * // Simple successful response
@@ -47,8 +47,18 @@
  *     console.log('Request to:', url)
  *   }
  * })
+ *
+ * @example
+ * // Restore original fetch after mocking
+ * const mock = createMockFetch(t, {
+ *   response: { data: 'test' }
+ * })
+ * // Use mock.fetch...
+ * mock.restore() // Restores global.fetch to original
  */
 export function createMockFetch (t, options = {}) {
+  // Save original fetch for restoration
+  const originalFetch = global.fetch
   const {
     response = { data: 'mock-response' },
     status = 200,
@@ -137,6 +147,9 @@ export function createMockFetch (t, options = {}) {
       if (actualCount !== count) {
         throw new Error(`Expected ${count} requests, but got ${actualCount}`)
       }
+    },
+    restore: () => {
+      global.fetch = originalFetch
     }
   }
 }
@@ -153,7 +166,7 @@ export function createMockFetch (t, options = {}) {
  * @param {Map<string, Object>} [options.cache] - Pre-populated cache
  * @param {Function} [options.onCacheHit] - Callback when cache is hit
  * @param {Function} [options.onCacheMiss] - Callback when cache is missed
- * @returns {Object} Mock fetch with cache tracking
+ * @returns {Object} Mock fetch with cache tracking and restore function
  *
  * @example
  * // Test cache behavior
@@ -167,8 +180,16 @@ export function createMockFetch (t, options = {}) {
  *
  * // Second call - cache hit
  * await mock.fetch('/_/collection1')
+ *
+ * @example
+ * // Restore original fetch after mocking
+ * const mock = createMockFetchWithCache(t, { cache })
+ * // Use mock.fetch...
+ * mock.restore() // Restores global.fetch to original
  */
 export function createMockFetchWithCache (t, options = {}) {
+  // Save original fetch for restoration
+  const originalFetch = global.fetch
   const {
     cache = new Map(),
     onCacheHit = null,
@@ -235,6 +256,9 @@ export function createMockFetchWithCache (t, options = {}) {
       cacheHits.length = 0
       cacheMisses.length = 0
       mockFetch.mock.calls.length = 0
+    },
+    restore: () => {
+      global.fetch = originalFetch
     }
   }
 }
@@ -248,26 +272,43 @@ export function createMockFetchWithCache (t, options = {}) {
  * @param {Object} [options] - Error configuration
  * @param {string} [options.message='Network error'] - Error message
  * @param {Error} [options.error] - Custom error object
- * @returns {Function} Mock fetch that always throws
+ * @returns {Object} Mock object with fetch function and restore function
  *
  * @example
  * // Test network failure
- * const mockFetch = createMockFetchError(t, {
+ * const mock = createMockFetchError(t, {
  *   message: 'Connection timeout'
  * })
  *
  * // Replace global fetch
- * global.fetch = mockFetch
+ * global.fetch = mock.fetch
+ *
+ * @example
+ * // Restore original fetch after mocking
+ * const mock = createMockFetchError(t, {
+ *   message: 'Connection timeout'
+ * })
+ * // Use mock.fetch...
+ * mock.restore() // Restores global.fetch to original
  */
 export function createMockFetchError (t, options = {}) {
+  // Save original fetch for restoration
+  const originalFetch = global.fetch
   const {
     message = 'Network error',
     error = new Error(message)
   } = options
 
-  return t.mock.fn(async () => {
+  const mockFetch = t.mock.fn(async () => {
     throw error
   })
+
+  return {
+    fetch: mockFetch,
+    restore: () => {
+      global.fetch = originalFetch
+    }
+  }
 }
 
 /**
@@ -280,27 +321,48 @@ export function createMockFetchError (t, options = {}) {
  * @param {number} [options.status=404] - HTTP status code
  * @param {string} [options.statusText='Not Found'] - Status text
  * @param {Object} [options.body] - Response body
- * @returns {Function} Mock fetch returning error response
+ * @returns {Object} Mock object with fetch function and restore function
  *
  * @example
  * // Test 404 response
- * const mockFetch = createMockFetchHttpError(t, {
+ * const mock = createMockFetchHttpError(t, {
  *   status: 404,
  *   statusText: 'Not Found'
  * })
+ *
+ * // Replace global fetch
+ * global.fetch = mock.fetch
+ *
+ * @example
+ * // Restore original fetch after mocking
+ * const mock = createMockFetchHttpError(t, {
+ *   status: 404,
+ *   statusText: 'Not Found'
+ * })
+ * // Use mock.fetch...
+ * mock.restore() // Restores global.fetch to original
  */
 export function createMockFetchHttpError (t, options = {}) {
+  // Save original fetch for restoration
+  const originalFetch = global.fetch
   const {
     status = 404,
     statusText = 'Not Found',
     body = { error: 'Resource not found' }
   } = options
 
-  return t.mock.fn(async () => ({
+  const mockFetch = t.mock.fn(async () => ({
     ok: false,
     status,
     statusText,
     json: async () => body,
     text: async () => JSON.stringify(body)
   }))
+
+  return {
+    fetch: mockFetch,
+    restore: () => {
+      global.fetch = originalFetch
+    }
+  }
 }
