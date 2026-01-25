@@ -1619,7 +1619,7 @@ export const state = createPlugin('state', {
     dispatchEvent (name, on, item, stopPropagation) {
       const { all, priority, items } = this.getListeners(name, on, item.id)
 
-      if (priority) {
+      if (Array.isArray(priority)) {
         for (let i = 0; i < priority.length; i++) {
           const handler = priority[i]
 
@@ -1629,7 +1629,7 @@ export const state = createPlugin('state', {
         }
       }
 
-      if (items) {
+      if (Array.isArray(items)) {
         for (let i = 0; i < items.length; i++) {
           const handler = items[i]
 
@@ -2262,23 +2262,6 @@ export const state = createPlugin('state', {
       }, action) {
         const listeners = this.getListeners(name, on, id)
 
-        // set default listener value
-        if (!listeners.items) {
-          const items = []
-          const priority = []
-
-          listeners.items = items
-          listeners.priority = priority
-
-          if (id) {
-            this.listeners[on].items[name][id] = items
-            this.listeners[on].priority[name][id] = priority
-          } else {
-            this.listeners[on].items[name] = items
-            this.listeners[on].priority[name] = priority
-          }
-        }
-
         if (typeof handler === 'string') {
           const id = handler
           // call action dispatch for actions
@@ -2298,12 +2281,30 @@ export const state = createPlugin('state', {
           item.force = force
         }
 
-        if (captureAll) {
+        // check if we've selected a collection
+        if (captureAll || (!Array.isArray(listeners.items) && typeof listeners.items === 'object')) {
           listeners.all.push(item)
 
           handlers[handlerId] = handler
 
           return handlerId
+        }
+
+        // set default listener value
+        if (!listeners.items) {
+          const items = []
+          const priority = []
+
+          listeners.items = items
+          listeners.priority = priority
+
+          if (id) {
+            this.listeners[on].items[name][id] = items
+            this.listeners[on].priority[name][id] = priority
+          } else {
+            this.listeners[on].items[name] = items
+            this.listeners[on].priority[name] = priority
+          }
         }
 
         if (id) {
@@ -2391,16 +2392,24 @@ export const state = createPlugin('state', {
           return
         }
 
-        const handlerIndex = listeners.items.indexOf(handler)
-        const handlerPriorityIndex = listeners.priority.indexOf(handler)
+        if (Array.isArray(listeners.items)) {
+          const handlerIndex = listeners.items.indexOf(handler)
+          const handlerPriorityIndex = listeners.priority.indexOf(handler)
 
-        // remove handler
-        if (handlerIndex !== -1) {
-          listeners.items.splice(handlerIndex, 1)
+          // remove handler
+          if (handlerIndex !== -1) {
+            listeners.items.splice(handlerIndex, 1)
+          }
+
+          if (handlerPriorityIndex !== -1) {
+            listeners.priority.splice(handlerPriorityIndex, 1)
+          }
         }
 
-        if (handlerPriorityIndex !== -1) {
-          listeners.priority.splice(handlerIndex, 1)
+        const handlerIndex = listeners.all.indexOf(handler)
+
+        if (handlerIndex !== -1) {
+          listeners.all.splice(handlerIndex, 1)
         }
 
         delete this.handlers[on][name][handlerId]
