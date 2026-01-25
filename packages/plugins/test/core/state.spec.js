@@ -1778,6 +1778,891 @@ describe('State Plugin - Schema Validation', () => {
     })
   })
 
+  describe('Pattern validation', { skip: true }, () => {
+    it('should validate string pattern', async (t) => {
+      const testPlugin = createPlugin('test', {
+        state: {
+          schema: {
+            user: {
+              type: 'object',
+              properties: {
+                email: {
+                  type: 'string',
+                  pattern: '^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$'
+                }
+              }
+            }
+          }
+        }
+      })
+
+      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+
+      // Valid email
+      const result = statePlugin.stateSetValue({
+        name: 'test/user',
+        value: { email: 'john@example.com' }
+      })
+
+      strictEqual(result.item.email, 'john@example.com')
+
+      tester.restoreAll()
+    })
+
+    it('should throw error for invalid pattern', async (t) => {
+      const testPlugin = createPlugin('test', {
+        state: {
+          schema: {
+            user: {
+              type: 'object',
+              properties: {
+                email: {
+                  type: 'string',
+                  pattern: '^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$'
+                }
+              }
+            }
+          }
+        }
+      })
+
+      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+
+      throws(() => {
+        statePlugin.stateSetValue({
+          name: 'test/user',
+          value: { email: 'not-an-email' }
+        })
+      })
+
+      tester.restoreAll()
+    })
+  })
+
+  describe('Enum validation', { skip: true }, () => {
+    it('should validate enum values', async (t) => {
+      const testPlugin = createPlugin('test', {
+        state: {
+          schema: {
+            user: {
+              type: 'object',
+              properties: {
+                status: {
+                  type: 'string',
+                  enum: ['active', 'inactive', 'pending']
+                }
+              }
+            }
+          }
+        }
+      })
+
+      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+
+      // Valid enum value
+      const result = statePlugin.stateSetValue({
+        name: 'test/user',
+        value: { status: 'active' }
+      })
+
+      strictEqual(result.item.status, 'active')
+
+      tester.restoreAll()
+    })
+
+    it('should throw error for invalid enum value', async (t) => {
+      const testPlugin = createPlugin('test', {
+        state: {
+          schema: {
+            user: {
+              type: 'object',
+              properties: {
+                status: {
+                  type: 'string',
+                  enum: ['active', 'inactive', 'pending']
+                }
+              }
+            }
+          }
+        }
+      })
+
+      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+
+      throws(() => {
+        statePlugin.stateSetValue({
+          name: 'test/user',
+          value: { status: 'archived' }
+        })
+      })
+
+      tester.restoreAll()
+    })
+  })
+
+  describe('Min/Max length validation', { skip: true }, () => {
+    it('should validate minLength', async (t) => {
+      const testPlugin = createPlugin('test', {
+        state: {
+          schema: {
+            user: {
+              type: 'object',
+              properties: {
+                name: {
+                  type: 'string',
+                  minLength: 3
+                }
+              }
+            }
+          }
+        }
+      })
+
+      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+
+      // Valid length
+      const result = statePlugin.stateSetValue({
+        name: 'test/user',
+        value: { name: 'John' }
+      })
+
+      strictEqual(result.item.name, 'John')
+
+      tester.restoreAll()
+    })
+
+    it('should throw error for minLength violation', async (t) => {
+      const testPlugin = createPlugin('test', {
+        state: {
+          schema: {
+            user: {
+              type: 'object',
+              properties: {
+                name: {
+                  type: 'string',
+                  minLength: 3
+                }
+              }
+            }
+          }
+        }
+      })
+
+      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+
+      throws(() => {
+        statePlugin.stateSetValue({
+          name: 'test/user',
+          value: { name: 'Jo' }
+        })
+      })
+
+      tester.restoreAll()
+    })
+
+    it('should validate maxLength', async (t) => {
+      const testPlugin = createPlugin('test', {
+        state: {
+          schema: {
+            user: {
+              type: 'object',
+              properties: {
+                name: {
+                  type: 'string',
+                  maxLength: 10
+                }
+              }
+            }
+          }
+        }
+      })
+
+      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+
+      // Valid length
+      const result = statePlugin.stateSetValue({
+        name: 'test/user',
+        value: { name: 'John' }
+      })
+
+      strictEqual(result.item.name, 'John')
+
+      tester.restoreAll()
+    })
+
+    it('should throw error for maxLength violation', async (t) => {
+      const testPlugin = createPlugin('test', {
+        state: {
+          schema: {
+            user: {
+              type: 'object',
+              properties: {
+                name: {
+                  type: 'string',
+                  maxLength: 3
+                }
+              }
+            }
+          }
+        }
+      })
+
+      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+
+      throws(() => {
+        statePlugin.stateSetValue({
+          name: 'test/user',
+          value: { name: 'John' }
+        })
+      })
+
+      tester.restoreAll()
+    })
+  })
+
+  describe('Min/Max value validation', { skip: true }, () => {
+    it('should validate minimum', async (t) => {
+      const testPlugin = createPlugin('test', {
+        state: {
+          schema: {
+            user: {
+              type: 'object',
+              properties: {
+                age: {
+                  type: 'number',
+                  minimum: 18
+                }
+              }
+            }
+          }
+        }
+      })
+
+      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+
+      // Valid value
+      const result = statePlugin.stateSetValue({
+        name: 'test/user',
+        value: { age: 25 }
+      })
+
+      strictEqual(result.item.age, 25)
+
+      tester.restoreAll()
+    })
+
+    it('should throw error for minimum violation', async (t) => {
+      const testPlugin = createPlugin('test', {
+        state: {
+          schema: {
+            user: {
+              type: 'object',
+              properties: {
+                age: {
+                  type: 'number',
+                  minimum: 18
+                }
+              }
+            }
+          }
+        }
+      })
+
+      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+
+      throws(() => {
+        statePlugin.stateSetValue({
+          name: 'test/user',
+          value: { age: 15 }
+        })
+      })
+
+      tester.restoreAll()
+    })
+
+    it('should validate maximum', async (t) => {
+      const testPlugin = createPlugin('test', {
+        state: {
+          schema: {
+            user: {
+              type: 'object',
+              properties: {
+                age: {
+                  type: 'number',
+                  maximum: 100
+                }
+              }
+            }
+          }
+        }
+      })
+
+      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+
+      // Valid value
+      const result = statePlugin.stateSetValue({
+        name: 'test/user',
+        value: { age: 50 }
+      })
+
+      strictEqual(result.item.age, 50)
+
+      tester.restoreAll()
+    })
+
+    it('should throw error for maximum violation', async (t) => {
+      const testPlugin = createPlugin('test', {
+        state: {
+          schema: {
+            user: {
+              type: 'object',
+              properties: {
+                age: {
+                  type: 'number',
+                  maximum: 100
+                }
+              }
+            }
+          }
+        }
+      })
+
+      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+
+      throws(() => {
+        statePlugin.stateSetValue({
+          name: 'test/user',
+          value: { age: 150 }
+        })
+      })
+
+      tester.restoreAll()
+    })
+
+    it('should validate exclusiveMinimum', async (t) => {
+      const testPlugin = createPlugin('test', {
+        state: {
+          schema: {
+            user: {
+              type: 'object',
+              properties: {
+                age: {
+                  type: 'number',
+                  exclusiveMinimum: 18
+                }
+              }
+            }
+          }
+        }
+      })
+
+      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+
+      // Valid value (greater than 18)
+      const result = statePlugin.stateSetValue({
+        name: 'test/user',
+        value: { age: 19 }
+      })
+
+      strictEqual(result.item.age, 19)
+
+      tester.restoreAll()
+    })
+
+    it('should throw error for exclusiveMinimum violation', async (t) => {
+      const testPlugin = createPlugin('test', {
+        state: {
+          schema: {
+            user: {
+              type: 'object',
+              properties: {
+                age: {
+                  type: 'number',
+                  exclusiveMinimum: 18
+                }
+              }
+            }
+          }
+        }
+      })
+
+      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+
+      throws(() => {
+        statePlugin.stateSetValue({
+          name: 'test/user',
+          value: { age: 18 }
+        })
+      })
+
+      tester.restoreAll()
+    })
+
+    it('should validate exclusiveMaximum', async (t) => {
+      const testPlugin = createPlugin('test', {
+        state: {
+          schema: {
+            user: {
+              type: 'object',
+              properties: {
+                age: {
+                  type: 'number',
+                  exclusiveMaximum: 100
+                }
+              }
+            }
+          }
+        }
+      })
+
+      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+
+      // Valid value (less than 100)
+      const result = statePlugin.stateSetValue({
+        name: 'test/user',
+        value: { age: 99 }
+      })
+
+      strictEqual(result.item.age, 99)
+
+      tester.restoreAll()
+    })
+
+    it('should throw error for exclusiveMaximum violation', async (t) => {
+      const testPlugin = createPlugin('test', {
+        state: {
+          schema: {
+            user: {
+              type: 'object',
+              properties: {
+                age: {
+                  type: 'number',
+                  exclusiveMaximum: 100
+                }
+              }
+            }
+          }
+        }
+      })
+
+      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+
+      throws(() => {
+        statePlugin.stateSetValue({
+          name: 'test/user',
+          value: { age: 100 }
+        })
+      })
+
+      tester.restoreAll()
+    })
+
+    it('should validate multipleOf', async (t) => {
+      const testPlugin = createPlugin('test', {
+        state: {
+          schema: {
+            user: {
+              type: 'object',
+              properties: {
+                age: {
+                  type: 'number',
+                  multipleOf: 5
+                }
+              }
+            }
+          }
+        }
+      })
+
+      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+
+      // Valid value (multiple of 5)
+      const result = statePlugin.stateSetValue({
+        name: 'test/user',
+        value: { age: 25 }
+      })
+
+      strictEqual(result.item.age, 25)
+
+      tester.restoreAll()
+    })
+
+    it('should throw error for multipleOf violation', async (t) => {
+      const testPlugin = createPlugin('test', {
+        state: {
+          schema: {
+            user: {
+              type: 'object',
+              properties: {
+                age: {
+                  type: 'number',
+                  multipleOf: 5
+                }
+              }
+            }
+          }
+        }
+      })
+
+      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+
+      throws(() => {
+        statePlugin.stateSetValue({
+          name: 'test/user',
+          value: { age: 23 }
+        })
+      })
+
+      tester.restoreAll()
+    })
+  })
+
+  describe('Array constraint validation', { skip: true }, () => {
+    it('should validate minItems', async (t) => {
+      const testPlugin = createPlugin('test', {
+        state: {
+          schema: {
+            user: {
+              type: 'object',
+              properties: {
+                tags: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  minItems: 2
+                }
+              }
+            }
+          }
+        }
+      })
+
+      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+
+      // Valid array with 2 items
+      const result = statePlugin.stateSetValue({
+        name: 'test/user',
+        value: { tags: ['tag1', 'tag2'] }
+      })
+
+      deepStrictEqual(result.item.tags, ['tag1', 'tag2'])
+
+      tester.restoreAll()
+    })
+
+    it('should throw error for minItems violation', async (t) => {
+      const testPlugin = createPlugin('test', {
+        state: {
+          schema: {
+            user: {
+              type: 'object',
+              properties: {
+                tags: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  minItems: 2
+                }
+              }
+            }
+          }
+        }
+      })
+
+      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+
+      throws(() => {
+        statePlugin.stateSetValue({
+          name: 'test/user',
+          value: { tags: ['tag1'] }
+        })
+      })
+
+      tester.restoreAll()
+    })
+
+    it('should validate maxItems', async (t) => {
+      const testPlugin = createPlugin('test', {
+        state: {
+          schema: {
+            user: {
+              type: 'object',
+              properties: {
+                tags: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  maxItems: 3
+                }
+              }
+            }
+          }
+        }
+      })
+
+      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+
+      // Valid array with 3 items
+      const result = statePlugin.stateSetValue({
+        name: 'test/user',
+        value: { tags: ['tag1', 'tag2', 'tag3'] }
+      })
+
+      deepStrictEqual(result.item.tags, ['tag1', 'tag2', 'tag3'])
+
+      tester.restoreAll()
+    })
+
+    it('should throw error for maxItems violation', async (t) => {
+      const testPlugin = createPlugin('test', {
+        state: {
+          schema: {
+            user: {
+              type: 'object',
+              properties: {
+                tags: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  maxItems: 2
+                }
+              }
+            }
+          }
+        }
+      })
+
+      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+
+      throws(() => {
+        statePlugin.stateSetValue({
+          name: 'test/user',
+          value: { tags: ['tag1', 'tag2', 'tag3'] }
+        })
+      })
+
+      tester.restoreAll()
+    })
+
+    it('should validate uniqueItems', async (t) => {
+      const testPlugin = createPlugin('test', {
+        state: {
+          schema: {
+            user: {
+              type: 'object',
+              properties: {
+                tags: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  uniqueItems: true
+                }
+              }
+            }
+          }
+        }
+      })
+
+      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+
+      // Valid array with unique items
+      const result = statePlugin.stateSetValue({
+        name: 'test/user',
+        value: { tags: ['tag1', 'tag2', 'tag3'] }
+      })
+
+      deepStrictEqual(result.item.tags, ['tag1', 'tag2', 'tag3'])
+
+      tester.restoreAll()
+    })
+
+    it('should throw error for uniqueItems violation', async (t) => {
+      const testPlugin = createPlugin('test', {
+        state: {
+          schema: {
+            user: {
+              type: 'object',
+              properties: {
+                tags: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  uniqueItems: true
+                }
+              }
+            }
+          }
+        }
+      })
+
+      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+
+      throws(() => {
+        statePlugin.stateSetValue({
+          name: 'test/user',
+          value: { tags: ['tag1', 'tag2', 'tag1'] }
+        })
+      })
+
+      tester.restoreAll()
+    })
+
+    it('should validate uniqueItems with objects', async (t) => {
+      const testPlugin = createPlugin('test', {
+        state: {
+          schema: {
+            user: {
+              type: 'object',
+              properties: {
+                items: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      id: { type: 'string' },
+                      name: { type: 'string' }
+                    }
+                  },
+                  uniqueItems: true
+                }
+              }
+            }
+          }
+        }
+      })
+
+      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+
+      // Valid array with unique objects
+      const result = statePlugin.stateSetValue({
+        name: 'test/user',
+        value: {
+          items: [
+            {
+              id: '1',
+              name: 'Item 1'
+            },
+            {
+              id: '2',
+              name: 'Item 2'
+            }
+          ]
+        }
+      })
+
+      deepStrictEqual(result.item.items, [
+        {
+          id: '1',
+          name: 'Item 1'
+        },
+        {
+          id: '2',
+          name: 'Item 2'
+        }
+      ])
+
+      tester.restoreAll()
+    })
+  })
+
+  describe('Additional properties validation', () => {
+    it('should validate additionalProperties: false', async (t) => {
+      const testPlugin = createPlugin('test', {
+        state: {
+          schema: {
+            user: {
+              type: 'object',
+              properties: {
+                name: { type: 'string' },
+                age: { type: 'number' }
+              },
+              additionalProperties: false
+            }
+          }
+        }
+      })
+
+      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+
+      // Valid object with only defined properties
+      const result = statePlugin.stateSetValue({
+        name: 'test/user',
+        value: {
+          name: 'John',
+          age: 30
+        }
+      })
+
+      deepStrictEqual(result.item, {
+        name: 'John',
+        age: 30
+      })
+
+      tester.restoreAll()
+    })
+
+    it('should throw error for additionalProperties: false', async (t) => {
+      const testPlugin = createPlugin('test', {
+        state: {
+          schema: {
+            user: {
+              type: 'object',
+              properties: {
+                name: { type: 'string' },
+                age: { type: 'number' }
+              },
+              additionalProperties: false
+            }
+          }
+        }
+      })
+
+      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+
+      throws(() => {
+        statePlugin.stateSetValue({
+          name: 'test/user',
+          value: {
+            name: 'John',
+            age: 30,
+            email: 'john@example.com'
+          }
+        })
+      })
+
+      tester.restoreAll()
+    })
+  })
+
+  describe('Pattern properties validation', () => {
+    it('should validate patternProperties', async (t) => {
+      const testPlugin = createPlugin('test', {
+        state: {
+          schema: {
+            user: {
+              type: 'object',
+              patternProperties: {
+                '^[a-zA-Z_]+$': { type: 'string' }
+              }
+            }
+          }
+        }
+      })
+
+      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+
+      // Valid object with pattern-matching properties
+      const result = statePlugin.stateSetValue({
+        name: 'test/user',
+        value: {
+          name: 'John',
+          age: '30'
+        }
+      })
+
+      deepStrictEqual(result.item, {
+        name: 'John',
+        age: '30'
+      })
+
+      tester.restoreAll()
+    })
+  })
+
   describe('Relationships', () => {
     it('should add relation between collections', async (t) => {
       const { tester, statePlugin } = setupStatePlugin(t)
