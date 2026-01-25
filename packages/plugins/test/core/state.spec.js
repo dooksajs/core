@@ -7,107 +7,86 @@ import createPlugin from '@dooksa/create-plugin'
 /**
  * Helper function to set up the state plugin with dependencies
  * @param {import('node:test').TestContext} t - Test context
- * @param {Object} [options] - Configuration object
- * @param {Object} [options.state] - State data to seed
+ * @param {Array} [plugins=[]] - plugins to add to state
  * @returns {Object} Object with tester and state plugin instance
  */
-function setupStatePlugin (t, options = { state: [] }) {
+function setupStatePlugin (t, plugins = []) {
   const tester = createPluginTester(t)
 
   // Create observable instance of state plugin
   const statePlugin = tester.spy('state', state)
 
-  // Create test plugin with schemas for the collections we'll use in tests
-  const testPlugin = createPlugin('test', {
-    state: {
-      schema: {
-        collection: {
-          type: 'collection',
-          items: {
+  if (!plugins.length) {
+    plugins.push(createPlugin('test', {
+      state: {
+        schema: {
+          collection: {
+            type: 'collection',
+            items: {
+              type: 'object',
+              properties: {
+                name: { type: 'string' },
+                status: { type: 'string' },
+                role: { type: 'string' },
+                age: { type: 'number' },
+                relatedId: { type: 'string' }
+              }
+            }
+          },
+          single: {
             type: 'object',
             properties: {
               name: { type: 'string' },
-              status: { type: 'string' },
-              role: { type: 'string' },
-              age: { type: 'number' },
-              relatedId: { type: 'string' }
+              value: { type: 'number' }
             }
-          }
-        },
-        single: {
-          type: 'object',
-          properties: {
-            name: { type: 'string' },
-            value: { type: 'number' }
-          }
-        },
-        array: {
-          type: 'array',
-          items: {
-            type: 'string'
-          }
-        },
-        complex: {
-          type: 'object',
-          properties: {
-            user: {
-              type: 'object',
-              properties: {
-                profile: {
-                  type: 'object',
-                  properties: {
-                    name: { type: 'string' },
-                    age: { type: 'number' },
-                    settings: {
-                      type: 'object',
-                      properties: {
-                        theme: { type: 'string' },
-                        notifications: { type: 'boolean' }
+          },
+          array: {
+            type: 'array',
+            items: {
+              type: 'string'
+            }
+          },
+          complex: {
+            type: 'object',
+            properties: {
+              user: {
+                type: 'object',
+                properties: {
+                  profile: {
+                    type: 'object',
+                    properties: {
+                      name: { type: 'string' },
+                      age: { type: 'number' },
+                      settings: {
+                        type: 'object',
+                        properties: {
+                          theme: { type: 'string' },
+                          notifications: { type: 'boolean' }
+                        }
                       }
                     }
                   }
                 }
               }
             }
-          }
-        },
-        related: {
-          type: 'collection',
-          items: {
-            type: 'object',
-            properties: {
-              name: { type: 'string' },
-              refId: { type: 'string' }
+          },
+          related: {
+            type: 'collection',
+            items: {
+              type: 'object',
+              properties: {
+                name: { type: 'string' },
+                refId: { type: 'string' }
+              }
             }
           }
         }
       }
-    }
-  })
-
-  // Setup mock state data
-  const stateData = mockStateData([testPlugin])
-  statePlugin.setup(stateData)
-
-  // Seed state if provided
-  if (options.state) {
-    options.state.forEach(({ collection, item }) => {
-      if (Array.isArray(item)) {
-        item.forEach((data, index) => {
-          statePlugin.stateSetValue({
-            name: collection,
-            value: data,
-            options: { id: Object.keys(data)[0] }
-          })
-        })
-      } else {
-        statePlugin.stateSetValue({
-          name: collection,
-          value: item
-        })
-      }
-    })
+    }))
   }
+  // Setup mock state data
+  const stateData = mockStateData(plugins)
+  statePlugin.setup(stateData)
 
   return {
     tester,
