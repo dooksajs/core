@@ -1237,14 +1237,13 @@ export const state = createPlugin('state', {
           //   }
           // }
 
-          if (schema.options.relation) {
-            this.addRelation(data.collection, data.id, schema.options.relation, source)
-          }
+          // Note: relation is already handled in updateArray for each item
+          // No need to validate source again here
+        }
 
-          return {
-            complete: true,
-            isValid: true
-          }
+        return {
+          complete: true,
+          isValid: true
         }
       }
     },
@@ -1400,9 +1399,7 @@ export const state = createPlugin('state', {
         }
       }
 
-      this.setDataUpdateOptions(data, schemaPath, source, options.update)
-
-      return { isValid: true }
+      return this.setDataUpdateOptions(data, schemaPath, source, options.update)
     },
 
     /**
