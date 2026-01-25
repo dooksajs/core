@@ -155,17 +155,17 @@ describe('State Plugin - getValue Action', () => {
     it('should get value from specific collection', async (t) => {
       const { tester, statePlugin } = setupStatePlugin(t)
 
-      statePlugin.stateSetValue({
+      const dataIn =statePlugin.stateSetValue({
         name: 'test/collection',
         value: { 'item-1': 'value-1' }
       })
 
-      const result = statePlugin.stateGetValue({
+      const dataOut = statePlugin.stateGetValue({
         name: 'test/collection',
-        id: 'item-1'
+        id: dataIn.id
       })
 
-      strictEqual(result.item, 'value-1')
+      strictEqual(dataOut.item['item-1'], 'value-1')
 
       tester.restoreAll()
     })
@@ -173,24 +173,24 @@ describe('State Plugin - getValue Action', () => {
     it('should get nested value using dot notation', async (t) => {
       const { tester, statePlugin } = setupStatePlugin(t)
 
-      statePlugin.stateSetValue({
-        name: 'test/collection',
+      const dataIn = statePlugin.stateSetValue({
+        name: 'test/complex',
         value: {
-          'item-1': {
-            nested: {
-              deep: 'deep-value'
+          user: {
+            profile: {
+              name: 'Dave'
             }
           }
         }
       })
 
       const result = statePlugin.stateGetValue({
-        name: 'test/collection',
-        id: 'item-1',
-        options: { position: 'nested.deep' }
+        name: 'test/complex',
+        id: dataIn.id,
+        options: { position: 'user.profile.name' }
       })
 
-      strictEqual(result, 'deep-value')
+      strictEqual(result.item, 'Dave')
 
       tester.restoreAll()
     })
@@ -201,9 +201,10 @@ describe('State Plugin - getValue Action', () => {
       statePlugin.stateSetValue({
         name: 'test/collection',
         value: {
-          'item-1': 'value-1',
-          'item-2': 'value-2'
-        }
+          'item-1': { name: 'Item 1' },
+          'item-2': { name: 'Item 2' }
+        },
+        options: { merge: true }
       })
 
       const result = statePlugin.stateGetValue({
@@ -229,14 +230,16 @@ describe('State Plugin - getValue Action', () => {
       tester.restoreAll()
     })
 
-    it('should return empty result when collection not found', async (t) => {
+    it('should throw error when collection not found', async (t) => {
       const { tester, statePlugin } = setupStatePlugin(t)
 
-      const result = statePlugin.stateGetValue({
-        name: 'non-existent/collection'
+      throws(() => {
+        statePlugin.stateGetValue({
+          name: 'non-existent/collection'
+        })
+      }, {
+        message: /No such collection/
       })
-
-      strictEqual(result.isEmpty, true)
 
       tester.restoreAll()
     })
@@ -244,11 +247,11 @@ describe('State Plugin - getValue Action', () => {
     it('should apply prefix to ID', async (t) => {
       const { tester, statePlugin } = setupStatePlugin(t)
 
+      // Set value with custom ID
       statePlugin.stateSetValue({
         name: 'test/collection',
-        value: {
-          'prefix_item-1': 'prefixed-value'
-        }
+        value: { name: 'Test Item' },
+        options: { id: 'prefix_item-1' }
       })
 
       const result = statePlugin.stateGetValue({
@@ -257,7 +260,7 @@ describe('State Plugin - getValue Action', () => {
         prefixId: 'prefix_'
       })
 
-      strictEqual(result.item, 'prefixed-value')
+      deepStrictEqual(result.item, { name: 'Test Item' })
 
       tester.restoreAll()
     })
@@ -265,11 +268,11 @@ describe('State Plugin - getValue Action', () => {
     it('should apply suffix to ID', async (t) => {
       const { tester, statePlugin } = setupStatePlugin(t)
 
+      // Set value with custom ID
       statePlugin.stateSetValue({
         name: 'test/collection',
-        value: {
-          'item-1_suffix': 'suffixed-value'
-        }
+        value: { name: 'Test Item' },
+        options: { id: 'item-1_suffix' }
       })
 
       const result = statePlugin.stateGetValue({
@@ -278,7 +281,7 @@ describe('State Plugin - getValue Action', () => {
         suffixId: '_suffix'
       })
 
-      strictEqual(result.item, 'suffixed-value')
+      deepStrictEqual(result.item, { name: 'Test Item' })
 
       tester.restoreAll()
     })
@@ -286,11 +289,11 @@ describe('State Plugin - getValue Action', () => {
     it('should apply both prefix and suffix to ID', async (t) => {
       const { tester, statePlugin } = setupStatePlugin(t)
 
+      // Set value with custom ID
       statePlugin.stateSetValue({
         name: 'test/collection',
-        value: {
-          'prefix_item-1_suffix': 'combined-value'
-        }
+        value: { name: 'Test Item' },
+        options: { id: 'prefix_item-1_suffix' }
       })
 
       const result = statePlugin.stateGetValue({
@@ -300,7 +303,7 @@ describe('State Plugin - getValue Action', () => {
         suffixId: '_suffix'
       })
 
-      strictEqual(result.item, 'combined-value')
+      deepStrictEqual(result.item, { name: 'Test Item' })
 
       tester.restoreAll()
     })
@@ -308,12 +311,15 @@ describe('State Plugin - getValue Action', () => {
     it('should clone result when clone option is true', async (t) => {
       const { tester, statePlugin } = setupStatePlugin(t)
 
-      const originalValue = { nested: { deep: 'value' } }
+      const originalValue = {
+        name: 'Test Item',
+        age: 30
+      }
+      // Set value with custom ID
       statePlugin.stateSetValue({
         name: 'test/collection',
-        value: {
-          'item-1': originalValue
-        }
+        value: originalValue,
+        options: { id: 'item-1' }
       })
 
       const result = statePlugin.stateGetValue({
@@ -349,7 +355,8 @@ describe('State Plugin - getValue Action', () => {
             status: 'active',
             name: 'Item 3'
           }
-        }
+        },
+        options: { merge: true }
       })
 
       const results = statePlugin.stateFind({
@@ -391,7 +398,8 @@ describe('State Plugin - getValue Action', () => {
             role: 'admin',
             name: 'Item 3'
           }
-        }
+        },
+        options: { merge: true }
       })
 
       const results = statePlugin.stateFind({
@@ -441,7 +449,8 @@ describe('State Plugin - getValue Action', () => {
             role: 'admin',
             name: 'Item 3'
           }
-        }
+        },
+        options: { merge: true }
       })
 
       const results = statePlugin.stateFind({
@@ -464,7 +473,11 @@ describe('State Plugin - getValue Action', () => {
         ]
       })
 
-      strictEqual(results.length, 3)
+      // Item 1: status is 'active' (matches first condition)
+      // Item 2: role is 'user' (doesn't match either condition)
+      // Item 3: role is 'admin' (matches second condition)
+      // So we expect 2 results (Item 1 and Item 3)
+      strictEqual(results.length, 2)
 
       tester.restoreAll()
     })
@@ -487,7 +500,8 @@ describe('State Plugin - getValue Action', () => {
             age: 35,
             name: 'Item 3'
           }
-        }
+        },
+        options: { merge: true }
       })
 
       const results = statePlugin.stateFind({
