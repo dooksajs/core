@@ -143,6 +143,11 @@ export const list = createPlugin('list', {
           usedWidgets: {}
         }
 
+        // If no options provided, return empty result (no items match)
+        if (options.length === 0) {
+          return result
+        }
+
         filter: for (let i = 0; i < items.length; i++) {
           const item = items[i]
 
