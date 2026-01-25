@@ -29,6 +29,7 @@ import { createPlugin } from '@dooksa/create-plugin'
  * '**'|
  * '!!'|
  * '~'|
+ * '!~'|
  * 'isNull'|
  * 'notNull'|
  * 'typeof'} Operator
@@ -312,6 +313,19 @@ export const operator = createPlugin('operator', {
     },
 
     /**
+     * Does not include check (does not contain)
+     * @param {string|Array} v - Array where v[0] is the container and v[1] is the search value
+     * @returns {boolean} - True if v[1] is NOT included in v[0]
+     * @example
+     * isNotLike(['hello world', 'xyz']) // true
+     * isNotLike([[1, 2, 3], 4]) // true
+     * isNotLike(['hello', 'ell']) // false
+     */
+    isNotLike (v) {
+      return !v[0].includes(v[1])
+    },
+
+    /**
      * Type detection
      * @param {*[]} v - Array with one value to get type of
      * @returns {string} - Type of the value ('array' for arrays, otherwise typeof result)
@@ -477,6 +491,7 @@ export const operator = createPlugin('operator', {
           case '**': return this.exponentiation(values)
           case '!!': return this.isBoolean(values)
           case '~': return this.isLike(values)
+          case '!~': return this.isNotLike(values)
           case 'isNull': return this.isNull(values)
           case 'notNull': return this.notNull(values)
           case 'typeof': return this.typeOf(values)

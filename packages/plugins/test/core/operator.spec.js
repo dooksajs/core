@@ -1416,6 +1416,105 @@ describe('Operator eval', function () {
     })
   })
 
+  describe('Does not include (!~)', function () {
+    it('should return false when searching for an existing value in array', function () {
+      const { tester, operatorPlugin } = setupOperatorPlugin(this)
+
+      const result = operatorPlugin.operatorEval({
+        name: '!~',
+        values: [
+          [1, 2, 3],
+          2
+        ]
+      })
+
+      strictEqual(result, false)
+
+      tester.restoreAll()
+    })
+
+    it('should return true when searching for a non-existing value in array', function () {
+      const { tester, operatorPlugin } = setupOperatorPlugin(this)
+
+      const result = operatorPlugin.operatorEval({
+        name: '!~',
+        values: [
+          [1, 2, 3],
+          4
+        ]
+      })
+
+      strictEqual(result, true)
+
+      tester.restoreAll()
+    })
+
+    it('should return false when searching for a substring in string', function () {
+      const { tester, operatorPlugin } = setupOperatorPlugin(this)
+
+      const result = operatorPlugin.operatorEval({
+        name: '!~',
+        values: ['hello world', 'world']
+      })
+
+      strictEqual(result, false)
+
+      tester.restoreAll()
+    })
+
+    it('should return true when searching for a non-existing substring in string', function () {
+      const { tester, operatorPlugin } = setupOperatorPlugin(this)
+
+      const result = operatorPlugin.operatorEval({
+        name: '!~',
+        values: ['hello world', 'moon']
+      })
+
+      strictEqual(result, true)
+
+      tester.restoreAll()
+    })
+
+    it('should return false for exact string match', function () {
+      const { tester, operatorPlugin } = setupOperatorPlugin(this)
+
+      const result = operatorPlugin.operatorEval({
+        name: '!~',
+        values: ['hello', 'hello']
+      })
+
+      strictEqual(result, false)
+
+      tester.restoreAll()
+    })
+
+    it('should handle empty array', function () {
+      const { tester, operatorPlugin } = setupOperatorPlugin(this)
+
+      const result = operatorPlugin.operatorEval({
+        name: '!~',
+        values: [[], 1]
+      })
+
+      strictEqual(result, true)
+
+      tester.restoreAll()
+    })
+
+    it('should handle empty string', function () {
+      const { tester, operatorPlugin } = setupOperatorPlugin(this)
+
+      const result = operatorPlugin.operatorEval({
+        name: '!~',
+        values: ['', 'a']
+      })
+
+      strictEqual(result, true)
+
+      tester.restoreAll()
+    })
+  })
+
   describe('Typeof', function () {
     it('should return "string" when value is a string', function () {
       const { tester, operatorPlugin } = setupOperatorPlugin(this)
