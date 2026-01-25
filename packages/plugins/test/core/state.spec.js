@@ -627,12 +627,11 @@ describe('State Plugin - setValue Action', () => {
 
       const result = statePlugin.stateSetValue({
         name: 'test/collection',
-        value: { 'test-value': 'value' },
+        value: { name: 'Test Item' },
         options: { prefixId: 'prefix_' }
       })
 
-      const keys = Object.keys(result.item)
-      ok(keys[0].startsWith('prefix_'), 'ID should start with prefix')
+      strictEqual(result.id.startsWith('prefix_'), true)
 
       tester.restoreAll()
     })
@@ -858,19 +857,15 @@ describe('State Plugin - setValue Action', () => {
       const { tester, statePlugin } = setupStatePlugin(t)
 
       statePlugin.stateSetValue({
-        name: 'test/collection',
-        value: {
-          'item-1': ['a', 'b']
-        }
+        name: 'test/array',
+        value: ['a', 'b']
       })
 
       const result = statePlugin.stateSetValue({
-        name: 'test/collection',
+        name: 'test/array',
         value: 'c',
         options: {
-          id: 'item-1',
           update: {
-            position: [],
             method: 'push'
           }
         }
@@ -2090,23 +2085,23 @@ describe('State Plugin - Integration Tests', () => {
 
     // Set values in multiple collections
     statePlugin.stateSetValue({
-      name: 'collection1',
+      name: 'test/collection',
       value: { 'item-1': 'value-1' }
     })
 
     statePlugin.stateSetValue({
-      name: 'collection2',
+      name: 'test/single',
       value: { 'item-2': 'value-2' }
     })
 
     // Get values from both collections
     const result1 = statePlugin.stateGetValue({
-      name: 'collection1',
+      name: 'test/collection',
       id: 'item-1'
     })
 
     const result2 = statePlugin.stateGetValue({
-      name: 'collection2',
+      name: 'test/single',
       id: 'item-2'
     })
 
@@ -2121,7 +2116,7 @@ describe('State Plugin - Integration Tests', () => {
 
     // 1. Create initial data
     statePlugin.stateSetValue({
-      name: 'users',
+      name: 'test/collection',
       value: {
         'user-1': {
           name: 'John',
@@ -2133,7 +2128,7 @@ describe('State Plugin - Integration Tests', () => {
 
     // 2. Update data
     statePlugin.stateSetValue({
-      name: 'users',
+      name: 'test/collection',
       value: {
         'user-1': {
           name: 'John',
@@ -2145,7 +2140,7 @@ describe('State Plugin - Integration Tests', () => {
 
     // 3. Find filtered data
     const results = statePlugin.stateFind({
-      name: 'users',
+      name: 'test/collection',
       where: [
         {
           name: 'role',
@@ -2161,7 +2156,7 @@ describe('State Plugin - Integration Tests', () => {
     // 4. Add listener
     let listenerCalled = false
     statePlugin.stateAddListener({
-      name: 'users',
+      name: 'test/collection',
       on: 'update',
       handler: () => {
         listenerCalled = true
@@ -2170,7 +2165,7 @@ describe('State Plugin - Integration Tests', () => {
 
     // 5. Update again (should trigger listener)
     statePlugin.stateSetValue({
-      name: 'users',
+      name: 'test/collection',
       value: {
         'user-1': {
           name: 'John',
@@ -2184,7 +2179,7 @@ describe('State Plugin - Integration Tests', () => {
 
     // 6. Delete
     const deleteResult = statePlugin.stateDeleteValue({
-      name: 'users',
+      name: 'test/collection',
       id: 'user-1'
     })
 
