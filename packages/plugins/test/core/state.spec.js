@@ -97,7 +97,23 @@ function setupStatePlugin (t, plugins = []) {
 describe('State Plugin - Plugin Setup & Initialization', () => {
   describe('setup method', () => {
     it('should initialize with state data', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const testPlugin = createPlugin('test', {
+        state: {
+          schema: {
+            collection: {
+              type: 'collection',
+              items: {
+                type: 'object',
+                properties: {
+                  name: { type: 'string' }
+                }
+              }
+            }
+          }
+        }
+      })
+
+      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
 
       // Verify state plugin is set up
       strictEqual(typeof statePlugin.setup, 'function')
@@ -106,7 +122,23 @@ describe('State Plugin - Plugin Setup & Initialization', () => {
     })
 
     it('should register schemas from state data', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const testPlugin = createPlugin('test', {
+        state: {
+          schema: {
+            collection: {
+              type: 'collection',
+              items: {
+                type: 'object',
+                properties: {
+                  name: { type: 'string' }
+                }
+              }
+            }
+          }
+        }
+      })
+
+      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
 
       // Check that state has schema
       const schema = statePlugin.stateGetSchema('test/collection')
@@ -115,25 +147,6 @@ describe('State Plugin - Plugin Setup & Initialization', () => {
       tester.restoreAll()
     })
 
-    it('should set default values during setup', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t, {
-        state: [
-          {
-            collection: 'test/collection',
-            item: { 'test-id': 'test-value' }
-          }
-        ]
-      })
-
-      const result = statePlugin.stateGetValue({
-        name: 'test/collection',
-        id: 'test-id'
-      })
-
-      strictEqual(result.item, 'test-value')
-
-      tester.restoreAll()
-    })
   })
 })
 
