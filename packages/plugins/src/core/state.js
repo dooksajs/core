@@ -2048,56 +2048,61 @@ export const state = createPlugin('state', {
     unsafeSetValue ({ name, value, options = {} }) {
       const collection = this.values[name]
 
-      if (options.hasOwnProperty('id')) {
-        const id = options.id
-
-        if (id == null) {
-          throw DataValueException.unsafeSetValueInvalidId(options.id)
-        }
-        const item = this.createCollectionItem(collection, value, id)
-        const result = createDataValue({
-          collection: name,
-          value: item,
-          id
-        })
-        // set new data
-        collection[id] = item
-
-        this.dispatchEvent(name, 'update', result, options.stopPropagation)
-
-        return result
-      }
-
       // update entire collection
       const schema = this.getSchema(name)
 
       if (schema.type === 'collection') {
-        const results = []
+        if (options.hasOwnProperty('id')) {
+          const id = options.id
+
+          if (id == null) {
+            throw DataValueException.unsafeSetValueInvalidId(options.id)
+          }
+          const item = this.createCollectionItem(collection, value, id)
+          const result = createDataValue({
+            collection: name,
+            value: item,
+            id
+          })
+          // set new data
+          collection[id] = item
+
+          this.dispatchEvent(name, 'update', result, options.stopPropagation)
+
+          return result
+        }
+
+        const values = []
         let replacement = collection
+        const result = createDataValue({
+          collection: name,
+          value: values
+        })
 
         if (options.replace) {
-          replacement = {}
+          replacement = Object.create(null)
         }
 
-        for (const id in value) {
-          if (Object.prototype.hasOwnProperty.call(value, id)) {
-            const item = this.createCollectionItem(collection, value[id], id)
-            // set new value
-            replacement[id] = item
+        for (const [id, entry] of Object.entries(value)) {
+          const item = this.createCollectionItem(collection, entry, id)
+          // set new value
+          replacement[id] = item
 
-            const result = createDataValue({
-              collection: name,
-              id,
-              value: item
-            })
-            results.push(result)
-            this.dispatchEvent(name, 'update', result, options.stopPropagation)
-          }
+          const result = createDataValue({
+            collection: name,
+            id,
+            value: item
+          })
+          values.push(result)
+          this.dispatchEvent(name, 'update', result, options.stopPropagation)
         }
+
         // update collection
         this.values[name] = replacement
 
-        return results
+        result.isEmpty = !values.length
+
+        return result
       }
 
       const item = this.createCollectionItem(collection, value)
