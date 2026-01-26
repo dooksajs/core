@@ -537,6 +537,7 @@
  */
 
 /**
+ * @template T
  * @typedef {Object} DataValue - Complete data value with metadata and context
  *
  * Represents a data value returned from state queries with full context.
@@ -545,10 +546,10 @@
  *
  * @property {string} collection - Name of the data collection
  * @property {string} [id] - Document ID within the collection
- * @property {*} item - The actual data value
+ * @property {T} item - The actual data value
  * @property {Object} metadata - Metadata (timestamps, user IDs, etc.)
- * @property {*} [previous] - Previous value for change tracking
- * @property {DataValue[]} [expand] - Expanded related data (when expand option is used)
+ * @property {T} [previous] - Previous value for change tracking
+ * @property {DataValue<DataValue<*>>[]} [expand] - Expanded related data (when expand option is used)
  * @property {Object} [expandIncluded] - Track expanded items to prevent duplicates/infinite loops
  * @property {boolean} [isEmpty] - Flag indicating no data was found
  * @property {boolean} [isExpandEmpty] - Flag indicating expanded data is empty

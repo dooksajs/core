@@ -10,6 +10,60 @@ import { createDataValue } from '../utils/data-value.js'
  */
 
 /**
+ * Parameters for unsafeSetValue when an ID is provided.
+ *
+ * @typedef {Object} UnsafeSetValueParamsWithId
+ * @property {string} name - Name of the collection
+ * @property {*} value - Data value to set
+ * @property {Object} options - Additional options
+ * @property {string} options.id - Required ID for the data
+ * @property {boolean} [options.replace] - Whether to replace the target collection
+ * @property {boolean} [options.stopPropagation] - Whether to stop event propagation
+ */
+
+/**
+ * Parameters for unsafeSetValue when no ID is provided.
+ *
+ * @typedef {Object} UnsafeSetValueParamsWithoutId
+ * @property {string} name - Name of the collection
+ * @property {*} value - Data value to set
+ * @property {Object} [options] - Additional options (optional when no ID is used)
+ * @property {undefined} [options.id] - Must be undefined or omitted
+ * @property {boolean} [options.replace] - Whether to replace the target collection
+ * @property {boolean} [options.stopPropagation] - Whether to stop event propagation
+ */
+
+/**
+ * Query parameters for getValue when an ID is provided.
+ *
+ * @typedef {Object} GetValueQueryWithId
+ * @property {string} name - Name of the collection
+ * @property {string} id - Document ID (required in this variant)
+ * @property {string} [prefixId] - Whether to use prefix for ID
+ * @property {string} [suffixId] - Whether to use suffix for ID
+ * @property {Object} [options] - Additional options
+ * @property {boolean} [options.expand] - Whether to expand related data
+ * @property {boolean} [options.expandClone] - Whether to clone expanded data
+ * @property {boolean} [options.clone] - Whether to clone the result
+ * @property {string} [options.position] - Position path to extract specific value
+ */
+
+/**
+ * Query parameters for getValue when no ID is provided.
+ *
+ * @typedef {Object} GetValueQueryWithoutId
+ * @property {string} name - Name of the collection
+ * @property {undefined} [id] - Must be omitted or undefined
+ * @property {string} [prefixId] - Whether to use prefix for ID
+ * @property {string} [suffixId] - Whether to use suffix for ID
+ * @property {Object} [options] - Additional options
+ * @property {boolean} [options.expand] - Whether to expand related data
+ * @property {boolean} [options.expandClone] - Whether to clone expanded data
+ * @property {boolean} [options.clone] - Whether to clone the result
+ * @property {string} [options.position] - Position path to extract specific value
+ */
+
+/**
  * Determines if an array contains duplicate values.
  *
  * This function checks if any value in the array appears more than once by comparing
@@ -288,7 +342,7 @@ export const state = createPlugin('state', {
      * matches the specified criteria. It supports nested conditions for complex filtering.
      *
      * @private
-     * @param {DataValue} data - The data value to filter
+     * @param {DataValue<*>} data - The data value to filter
      * @param {DataWhere} where - Filter conditions with 'and', 'or', or 'name' properties
      * @returns {boolean} True if the data matches the conditions, false otherwise
      * @example
@@ -365,7 +419,7 @@ export const state = createPlugin('state', {
      * and compares it using the specified operator.
      *
      * @private
-     * @param {DataValue} data - The data value containing item and metadata
+     * @param {DataValue<*>} data - The data value containing item and metadata
      * @param {DataWhere} condition - Condition with name, operator, and value
      * @returns {boolean} True if the condition is satisfied
      * @example
@@ -1476,7 +1530,7 @@ export const state = createPlugin('state', {
      *
      * @private
      * @param {string} name - Name of data collection
-     * @param {DataValue} result - Data result to expand
+     * @param {DataValue<*>} result - Data result to expand
      * @param {GetDataOption} [options] - Options for data expansion
      * @example
      * // Get user with expanded profile and posts
@@ -1607,7 +1661,7 @@ export const state = createPlugin('state', {
      * @private
      * @param {string} name - Collection name
      * @param {'update'|'delete'} on - Event name
-     * @param {DataValue} item - Value that is being set or deleted
+     * @param {DataValue<*>} item - Value that is being set or deleted
      * @param {boolean} [stopPropagation] - Prevents further propagation of the update event
      * @example
      * // Dispatch update event for user
@@ -1975,19 +2029,21 @@ export const state = createPlugin('state', {
      *
      * This method provides a way to set data directly without validation,
      * useful for internal operations or when data is already validated.
+     * @template T
+     * @overload
+     * @param {UnsafeSetValueParamsWithId} param
+     * @returns {DataValue<DataValue<T>>}
      *
-     * @param {Object} param - Parameters object
-     * @param {string} param.name - Name of the collection
-     * @param {*} param.value - Data value to set
-     * @param {Object} [param.options] - Additional options
-     * @param {string} [param.options.id] - Optional ID for the data
-     * @param {boolean} [param.options.replace] - Whether to replace the target collection
-     * @param {boolean} [param.options.stopPropagation] - Whether to stop event propagation
-     * @returns {DataValue|DataValue[]} The created data value(s)
+     * @overload
+     * @param {UnsafeSetValueParamsWithoutId} param
+     * @returns {DataValue<DataValue<T>[]>}
+     *
+     * @param {UnsafeSetValueParamsWithId | UnsafeSetValueParamsWithoutId} param
+     * @returns {DataValue<T[]> | DataValue<T>} The created data value(s)
      * @example
-     * unsafeSetValue({ name: 'users', value: { name: 'John' }, options: { id: '123' } })
+     * unsafeSetValue({ name: 'users/profiles', value: { name: 'John' }, options: { id: '123' } })
      * @example
-     * unsafeSetValue({ name: 'users', value: { '1': { name: 'John' } }, options: { replace: true } })
+     * unsafeSetValue({ name: 'users/profiles', value: { userId_1: { name: 'John' } }, options: { replace: true } })
      */
     unsafeSetValue ({ name, value, options = {} }) {
       const collection = this.values[name]
@@ -2120,7 +2176,7 @@ export const state = createPlugin('state', {
        * @param {string} param.name - Name of collection to search
        * @param {DataWhere[]} [param.where] - Filter conditions
        * @param {GetDataOption} [param.options] - Additional options for retrieval
-       * @returns {DataValue[]} Array of matching data values
+       * @returns {DataValue<*>[]} Array of matching data values
        * @example
        * find({ name: 'users', where: [{ name: 'status', op: '==', value: 'active' }] })
        * @example
@@ -2617,7 +2673,7 @@ export const state = createPlugin('state', {
         if (schema.type === 'collection') {
           if (!query.hasOwnProperty('id')) {
             const value = []
-            /** @type {DataValue} */
+            /** @type {DataValue<*>} */
             const result = createDataValue({
               collection: name,
               id,
@@ -2823,7 +2879,7 @@ export const state = createPlugin('state', {
        * @param {string} param.name - Name of collection
        * @param {*} param.value - Data to be set
        * @param {SetDataOptions} [param.options] - Set data options
-       * @returns {DataValue} The created data value
+       * @returns {DataValue<*>} The created data value
        * @example
        * setValue({ name: 'users', value: { name: 'John' }, options: { id: '123' } })
        * @example
