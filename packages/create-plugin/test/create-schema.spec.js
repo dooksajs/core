@@ -842,6 +842,51 @@ describe('Create schema', function () {
           }
         ])
       })
+
+      it('should handle a nested property with unique items', function () {
+        const schema = parseSchema({}, {
+          type: 'object',
+          properties: {
+            list: {
+              type: 'array',
+              items: {
+                type: 'string'
+              },
+              uniqueItems: true
+            }
+          }
+        }, 'test/text')
+
+        deepStrictEqual(schema, [
+          {
+            id: 'test/text/list/items',
+            entry: {
+              type: 'string'
+            }
+          },
+          {
+            id: 'test/text/list',
+            entry: {
+              options: {
+                uniqueItems: true
+              },
+              type: 'array'
+            }
+          },
+          {
+            id: 'test/text',
+            entry: {
+              type: 'object',
+              properties: [
+                {
+                  name: 'list',
+                  type: 'array'
+                }
+              ]
+            }
+          }
+        ])
+      })
     })
   })
 

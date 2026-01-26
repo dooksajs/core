@@ -124,8 +124,16 @@ function createNestedProperty (property, name, nestedProps) {
     type: property.type
   }
 
+  // Copy nested schema properties
   for (const nestedProp of nestedProps) {
     prop[nestedProp] = property[nestedProp]
+  }
+
+  // Copy all non-schema properties (options) from the original property
+  for (const [key, value] of Object.entries(property)) {
+    if (!SCHEMA_PROPERTIES[key] && !ID_PROPERTIES[key] && key !== 'name' && key !== 'type') {
+      prop[key] = value
+    }
   }
 
   return prop
@@ -300,6 +308,11 @@ function objectPropertySchema (context, id, properties = [], options, schema) {
     } else if (processedProperty.items) {
       parseSchema(context, processedProperty, `${id}/${name}`, schema)
       delete processedProperty.items
+      // Remove array-specific options from the property that gets added to parent object
+      // These options belong to the array entry, not the property reference
+      delete processedProperty.uniqueItems
+      delete processedProperty.minItems
+      delete processedProperty.maxItems
     }
 
     entryProperties.push(processedProperty)
