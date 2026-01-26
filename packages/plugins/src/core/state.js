@@ -1211,7 +1211,7 @@ export const state = createPlugin('state', {
       let targetItem = target._item
 
       // update target position
-      if (options.position) {
+      if (options.position && options.position.length) {
         const length = options.position.length - 1
         const lastKey = options.position[length]
         let path = schemaPath
@@ -1283,7 +1283,7 @@ export const state = createPlugin('state', {
         }
 
         // Clone array if position was not changed
-        if (options.position == null) {
+        if (options.position == null || !options.position.length) {
           if (data.id) {
             data.target[data.id]._item = target._item.slice()
             targetItem = data.target[data.id]._item
