@@ -2581,76 +2581,60 @@ export const state = createPlugin('state', {
         handler,
         handlerId = generateId()
       }, action) {
-        const listeners = this.getListeners(name, on, id)
+        let executableHandler = handler
 
         if (typeof handler === 'string') {
-          const id = handler
-          // call action dispatch for actions
-          handler = (value) =>{
+          /** @TODO check if action exists */
+          const actionId = handler
+          executableHandler = (value) => {
             actionDispatch({
-              id,
+              id: actionId,
               payload: value.item,
               context: action.context
             })
           }
         }
 
-        const handlers = this.getHandler(name, on)
-        const item = { value: handler }
+        // Create the Listener Item Object
+        const listenerItem = {
+          value: executableHandler
+        }
 
         if (force) {
-          item.force = force
+          listenerItem.force = true
         }
 
-        // check if we've selected a collection
-        if (captureAll || (!Array.isArray(listeners.items) && typeof listeners.items === 'object')) {
-          listeners.all.push(item)
+        // Retrieve Context
+        const listenersContext = this.getListeners(name, on, id)
+        const handlersMap = this.getHandler(name, on)
 
-          handlers[handlerId] = handler
+        // Handle "Capture All" or Object-type Items (Collection Level)
+        // If explicitly capturing all, or if items is not an array (likely an object map)
+        const isCollectionLevel = !Array.isArray(listenersContext.items) && typeof listenersContext.items === 'object'
 
+        if (captureAll || isCollectionLevel) {
+          listenersContext.all.push(listenerItem)
+          handlersMap[handlerId] = executableHandler
           return handlerId
         }
 
-        // set default listener value
-        if (!listeners.items) {
-          const items = []
-          const priority = []
-
-          listeners.items = items
-          listeners.priority = priority
-
-          if (id) {
-            this.listeners[on].items[name][id] = items
-            this.listeners[on].priority[name][id] = priority
-          } else {
-            this.listeners[on].items[name] = items
-            this.listeners[on].priority[name] = priority
-          }
-        }
-
+        // Handle Specific Listeners (Delegated to new function)
+        let finalHandlerId = handlerId
         if (id) {
-          handlerId = id + handlerId
+          finalHandlerId = id + handlerId
         }
 
-        if (isNaN(priority)) {
-          // add listener item
-          listeners.items.push(item)
-          handlers[handlerId] = handler
-
-          return handlerId
-        }
-
-        item.priority = priority
-
-        // add priority listener
-        listeners.priority.push(item)
-
-        // sort by acceding order
-        listeners.priority.sort((a, b) => a.priority - b.priority)
-
-        handlers[handlerId] = handler
-
-        return handlerId
+        return this.registerListener({
+          name,
+          id,
+          on,
+          priority,
+          listenerItem,
+          listenersContext,
+          handlersMap,
+          handlerId: finalHandlerId,
+          executableHandler
+        })
       }
     },
 
