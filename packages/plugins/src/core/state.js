@@ -534,11 +534,13 @@ export const state = createPlugin('state', {
             value = data.target[data.id]
 
             result.id = data.id
+            result.item = value._item
+            result.previous = value._previous
+            result.metadata = this.setMetadata(value._metadata, options.metadata)
+          } else {
+            // When no ID is specified (e.g., merging a collection), return the target itself
+            result.item = value
           }
-
-          result.item = value._item
-          result.previous = value._previous
-          result.metadata = this.setMetadata(value._metadata, options.metadata)
 
           return result
         }
@@ -1228,6 +1230,30 @@ export const state = createPlugin('state', {
         // insert data
         if (!options.method) {
           this.validateSchema(data, path, source)
+
+          // Check if targetItem is frozen and create a shallow copy if needed
+          if (Object.isFrozen(targetItem)) {
+            targetItem = shallowCopy(targetItem)
+            // Update the parent reference to point to the copy
+            if (options.position.length > 1) {
+              let parent = data.target
+              if (data.id) {
+                parent = parent[data.id]
+              }
+              parent = parent._item
+              for (let i = 0; i < length - 1; i++) {
+                parent = parent[options.position[i]]
+              }
+              parent[options.position[length - 1]] = targetItem
+            } else {
+              // Direct parent is the target item
+              if (data.id) {
+                data.target[data.id]._item = targetItem
+              } else {
+                data.target._item = targetItem
+              }
+            }
+          }
 
           targetItem[lastKey] = source
 
