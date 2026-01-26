@@ -1201,7 +1201,7 @@ export const state = createPlugin('state', {
         let path = schemaPath
 
         for (let i = 0; i < length; i++) {
-          const key = options.update.position[i]
+          const key = options.position[i]
           path = path + '/' + key
 
           if (!targetItem[key]) {
@@ -1265,6 +1265,7 @@ export const state = createPlugin('state', {
         }
 
         // update target array
+        // @ts-ignore
         const result = this.updateArray(targetItem, source, options, relation)
 
         if (!result.isValid) {
@@ -1303,6 +1304,159 @@ export const state = createPlugin('state', {
     },
 
     /**
+     * Processes data setting options for collection types.
+     *
+     * This method handles collection-specific operations including ID generation,
+     * merge/replace operations, and update operations for collection items.
+     *
+     * @private
+     * @param {Object} data - The data context containing collection and target information
+     * @param {*} source - Source data to set in the collection
+     * @param {SetDataOptions} options - Options for data setting including merge, replace, and update
+     * @returns {Object} Result with completion status and validation state
+     * @throws {DataSchemaException} If collection ID is null or invalid
+     * @example
+     * setCollectionData(data, { name: 'John' }, { id: '123', merge: true })
+     * @example
+     * setCollectionData(data, { name: 'Jane' }, { replace: true })
+     */
+    setCollectionData (data, source, options) {
+      if (Object.hasOwnProperty.call(options, 'id') && options.id == null) {
+        throw new DataSchemaException({
+          schemaPath: data.collection,
+          keyword: 'collection',
+          message: 'Expected collection id to be a string but got undefined'
+        })
+      }
+
+      const schemaPath = `${data.collection}/items`
+      const nestedSchema = this.getSchema(schemaPath)
+
+      // Resolve ID
+      let id = options.id
+
+      if (id) {
+        id = this.createCollectionId(data.collection, options)
+      } else if (!options.merge && !options.replace) {
+        id = this.createDefaultCollectionId(data.collection, options).id
+      } else {
+        id = null
+      }
+
+      data.id = id
+
+      // Merge or replace collection
+      if (options.merge || options.replace) {
+        const wrappedSource = id ? { [id]: source } : source
+
+        if (options.merge) {
+          this.mergeCollectionItems(data, schemaPath, wrappedSource, options.metadata)
+        } else {
+          this.replaceCollectionItems(data, data.collection, wrappedSource, options.metadata)
+        }
+
+        return {
+          complete: true,
+          isValid: true
+        }
+      }
+
+      // Create state management instance
+      const instance = this.prepareTargetInstance(data.target[id], nestedSchema.type, options.metadata)
+      data.target[id] = instance
+
+      // Update data
+      if (options.update) {
+        return this.setDataUpdateOptions(data, schemaPath, source, options.update)
+      }
+
+      this.validateSchema(data, schemaPath, source)
+      instance._item = source
+
+      return {
+        complete: true,
+        isValid: true
+      }
+    },
+
+    /**
+     * Processes data setting options for standard (non-collection) types.
+     *
+     * This method handles standard data operations including merge, replace, and update
+     * operations for non-collection data types like objects and arrays.
+     *
+     * @private
+     * @param {Object} data - The data context containing collection and target information
+     * @param {*} source - Source data to set
+     * @param {SetDataOptions} options - Options for data setting including merge, replace, and update
+     * @param {SchemaEntry} schema - The schema definition for the data type
+     * @returns {Object} Result with completion status and validation state
+     * @example
+     * setStandardData(data, { name: 'John' }, { merge: true }, schema)
+     * @example
+     * setStandardData(data, ['a', 'b'], { replace: true }, schema)
+     */
+    setStandardData (data, source, options, schema) {
+      let schemaPath = data.collection
+      let targetSchema = schema
+
+      // If array and not merging, we drill down to items
+      if (schema.type === 'array' && !options.merge) {
+        schemaPath = schemaPath + '/items'
+        targetSchema = this.getSchema(schemaPath)
+      }
+
+      // Merge or replace data
+      if (options.merge || options.replace) {
+        if (options.merge && data.target._item) {
+          this.mergeItems(data, schemaPath, source, options)
+        } else {
+          this.validateDataType(data, schemaPath, source, targetSchema.type)
+
+          const target = data.target
+
+          if (target) {
+            // backup previous value
+            target._previous = target._item
+            target._item = deepClone(source, true)
+          } else {
+            // create new target
+            data.target = this.createTarget(targetSchema.type, options.metadata)
+            data.target._item = deepClone(source, true)
+          }
+        }
+
+        return {
+          complete: true,
+          isValid: true
+        }
+      }
+
+      // Create state management instance
+      const instance = this.prepareTargetInstance(data.target, targetSchema.type, options.metadata)
+      data.target = instance
+
+      // Update data
+      if (options.update) {
+        return this.setDataUpdateOptions(data, schemaPath, source, options.update)
+      }
+
+      this.validateSchema(data, schemaPath, source)
+
+      if (targetSchema.type === 'array') {
+        return this.setDataUpdateOptions(data, schemaPath, source, { method: 'push' })
+      }
+
+      // Set data
+      instance._item = source
+
+      return {
+        complete: true,
+        isValid: true
+      }
+    },
+
+    /**
      * Processes data setting options and determines the appropriate action.
      *
      * This method handles merge, replace, ID generation, and update operations
@@ -1320,140 +1474,48 @@ export const state = createPlugin('state', {
      * setDataOptions(data, { name: 'John' }, { replace: true })
      */
     setDataOptions (data, source, options) {
-      if (Object.hasOwnProperty.call(options, 'id') && options.id == null) {
-        throw new DataSchemaException({
-          schemaPath: data.collection,
-          keyword: 'collection',
-          message: 'Expected collection id to be a string but got undefined'
-        })
+      const schema = this.getSchema(data.collection)
+
+      if (schema.type === 'collection') {
+        return this.setCollectionData(data, source, options)
       }
 
-      let schemaPath = data.collection
-      let schema = this.getSchema(data.collection)
-      let isCollection = schema.type === 'collection'
+      return this.setStandardData(data, source, options, schema)
+    },
 
-      if (
-        schema.type === 'array' ||
-        isCollection
-      ) {
-        schemaPath = data.collection + '/items'
-        schema = this.getSchema(schemaPath)
+    /**
+     * Helper: Handles history preservation (Snapshotting).
+     */
+    prepareTargetInstance (previousTarget, schemaType, metadata) {
+      // SCENARIO 1: No previous data exists
+      if (!previousTarget) {
+        return this.createTarget(schemaType, metadata)
       }
 
-      // process document id
-      if (options.id && isCollection) {
-        const id = this.createCollectionId(data.collection, options)
+      // SCENARIO 2: Existing state has an item (In-place update/history shift)
+      if (previousTarget._item) {
+        const result = this.createTarget(schemaType, metadata, previousTarget)
 
-        data.id = id
-
-        if (options.merge) {
-          this.mergeCollectionItems(data, schemaPath, { [id]: source }, options.metadata)
-
-          return {
-            complete: true,
-            isValid: true
-          }
-        } else if (options.replace) {
-          this.replaceCollectionItems(data, data.collection, { [id]: source }, options.metadata)
-
-          return {
-            complete: true,
-            isValid: true
-          }
-        }
-      } else {
-        if (options.merge) {
-          if (isCollection) {
-            this.mergeCollectionItems(data, schemaPath, source, options.metadata)
-          } else {
-            this.mergeItems(data, schemaPath, source, options.metadata)
-          }
-
-          return {
-            complete: true,
-            isValid: true
-          }
-        } else if (options.replace) {
-          this.replaceCollectionItems(data, data.collection, source, options.metadata)
-
-          return {
-            complete: true,
-            isValid: true
-          }
+        // Move current state to history
+        previousTarget._previous = {
+          _item: previousTarget._item,
+          _metadata: previousTarget._metadata
         }
 
-        if (isCollection) {
-          // create new id
-          const collection = this.createDefaultCollectionId(data.collection, options)
+        // Update current metadata
+        previousTarget._metadata = result._metadata
 
-          data.id = collection.id
-        }
+        return previousTarget // Mutated in place
       }
 
-      let previousTarget = data.target
+      // SCENARIO 3: Existing state is a raw value (Wrapping logic)
+      const newDataInstance = this.createTarget(schemaType, metadata)
+      const snapshot = this.createTarget(schemaType, metadata)
 
-      if (isCollection) {
-        previousTarget = data.target[data.id]
-      }
+      snapshot._item = previousTarget
+      newDataInstance._previous = snapshot
 
-      // store previous state
-      if (previousTarget) {
-        // previous state that was set
-        if (previousTarget._item) {
-          const result = this.createTarget(schema.type, options.metadata, previousTarget)
-
-          previousTarget._previous = {
-            _item: previousTarget._item,
-            _metadata: previousTarget._metadata
-          }
-
-          previousTarget._metadata = result._metadata
-        } else {
-          // handle new instance
-          const newDataInstance = this.createTarget(schema.type, options.metadata)
-          const newDataPreviousInstance = this.createTarget(schema.type, options.metadata)
-
-          // set previous value
-          newDataPreviousInstance._item = previousTarget
-          newDataInstance._previous = newDataPreviousInstance
-
-          data.target = newDataInstance
-        }
-      } else {
-        const newDataInstance = this.createTarget(schema.type, options.metadata)
-
-        // add new data
-        if (isCollection) {
-          data.target[data.id] = newDataInstance
-        } else {
-          data.target = newDataInstance
-        }
-      }
-
-      // insert new data
-      if (!options.update) {
-        this.validateSchema(data, schemaPath, source)
-
-        if (schema.type === 'array') {
-          this.setDataUpdateOptions(data, schemaPath, source, {
-            method: 'push'
-          })
-        } else {
-          // add new data
-          if (isCollection) {
-            data.target[data.id]._item = source
-          } else {
-            data.target._item = source
-          }
-        }
-
-        return {
-          complete: true,
-          isValid: true
-        }
-      }
-
-      return this.setDataUpdateOptions(data, schemaPath, source, options.update)
+      return newDataInstance
     },
 
     /**
@@ -1760,7 +1822,7 @@ export const state = createPlugin('state', {
      * @param {Object} data - The data context
      * @param {string} path - Schema path
      * @param {*} sources - Data to merge
-     * @param {DataMetadata} metadata - Metadata to apply
+     * @param {SetDataOptions} options - Options for data setting including metadata
      * @example
      * // Merge objects
      * mergeItems(data, 'users/1/profile', { name: 'John', age: 30 }, { userId: '123' })
@@ -1768,11 +1830,11 @@ export const state = createPlugin('state', {
      * // Merge primitives
      * mergeItems(data, 'users/1/age', 25, { userId: '123' })
      */
-    mergeItems (data, path, sources, metadata) {
+    mergeItems (data, path, sources, options) {
       const schema = this.getSchema(path)
       const schemaType = schema.type
 
-      if (schemaType !== 'object') {
+      if (schemaType !== 'object' && schemaType !=='array') {
         this.validateDataType(data, path, sources, schemaType)
 
         const target = data.target
@@ -1783,7 +1845,7 @@ export const state = createPlugin('state', {
           target._item = deepClone(sources, true)
         } else {
           // create new target
-          data.target = this.createTarget(schemaType, metadata)
+          data.target = this.createTarget(schemaType, options.metadata)
           data.target._item = deepClone(sources, true)
         }
 
@@ -1796,43 +1858,57 @@ export const state = createPlugin('state', {
       if (hasTarget) {
         targetItem = shallowCopy(data.target._item)
       } else {
-        targetItem = {}
+        targetItem = schemaType === 'object' ? {} : []
       }
 
-      for (const id in sources) {
-        if (Object.hasOwnProperty.call(sources, id)) {
-          // deep freeze clone
-          const source = deepClone(sources[id], true)
+      if (schemaType === 'array') {
+        let relation
 
-          // get target
-          const targetValue = targetItem[id]
-
-          // merge target and source objects
-          if (typeof targetValue === 'object' && !Array.isArray(source)) {
-            // unfreeze target
-            const result = shallowCopy(targetValue)
-
-            // merge object
-            for (const key in source) {
-              if (Object.hasOwnProperty.call(source, key)) {
-                result[key] = source[key]
-              }
-            }
-
-            // add new item value
-            targetItem[id] = result
-          } else {
-            targetItem[id] = source
+        if (schema.options && schema.options.relation) {
+          relation = {
+            target: data.collection,
+            id: data.id,
+            source: schema.options.relation
           }
         }
-      }
 
-      /**
-       * @TODO the schema properties need to be split into named paths to allow validation per property
-       * Currently, only complete objects are validated, hence the need to validate after the merge
-       */
-      // validate result source
-      this.validateDataType(data, path, targetItem, schemaType)
+        this.updateArray(targetItem, sources, { method: 'push' }, relation)
+      } else {
+        for (const id in sources) {
+          if (Object.hasOwnProperty.call(sources, id)) {
+            // deep freeze clone
+            const source = deepClone(sources[id], true)
+
+            // get target
+            const targetValue = targetItem[id]
+
+            // merge target and source objects
+            if (typeof targetValue === 'object' && !Array.isArray(source)) {
+              // unfreeze target
+              const result = shallowCopy(targetValue)
+
+              // merge object
+              for (const key in source) {
+                if (Object.hasOwnProperty.call(source, key)) {
+                  result[key] = source[key]
+                }
+              }
+
+              // add new item value
+              targetItem[id] = result
+            } else {
+              targetItem[id] = source
+            }
+          }
+        }
+
+        /**
+         * @TODO the schema properties need to be split into named paths to allow validation per property
+         * Currently, only complete objects are validated, hence the need to validate after the merge
+         */
+        // validate result source
+        this.validateDataType(data, path, targetItem, schemaType)
+      }
 
       if (hasTarget) {
         // store previous data
