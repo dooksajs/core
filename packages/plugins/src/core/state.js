@@ -657,6 +657,7 @@ export const state = createPlugin('state', {
      * @param {Array|*} source - Source data for the operation (will be converted to array if needed)
      * @param {Object} options - Update options
      * @param {string} options.method - The operation method: 'push', 'pull', 'pop', 'shift', 'unshift', or 'splice'
+     * @param {number} [options.unique] - Ensure item is unique
      * @param {number} [options.startIndex] - Start index for splice operation
      * @param {number} [options.deleteCount] - Number of items to delete for splice
      * @param {Object} [relation] - Optional relation information for relationship management
@@ -674,16 +675,24 @@ export const state = createPlugin('state', {
      * // Result: ['a', 'x', 'c']
      */
     updateArray (target, source, options, relation) {
+      const existingSet = options.unique ? new Set(target) : null
       const result = {
         isValid: true,
         isComplete: false
       }
+
+      // ensure source is an array of items
       source = Array.isArray(source) ? source : [source]
 
       switch (options.method) {
         case 'push':
           for (let i = 0; i < source.length; i++) {
             const value = source[i]
+
+            // check if uniqueness
+            if (options.unique && existingSet.has(value)) {
+              continue
+            }
 
             target.push(value)
 
@@ -730,6 +739,11 @@ export const state = createPlugin('state', {
         case 'unshift':
           for (let i = 0; i < source.length; i++) {
             const value = source[i]
+
+            // check uniqueness
+            if (options.unique && existingSet.has(value)) {
+              continue
+            }
 
             target.unshift(value)
 
