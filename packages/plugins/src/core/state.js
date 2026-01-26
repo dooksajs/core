@@ -67,16 +67,19 @@ import { createDataValue } from '../utils/data-value.js'
  * Determines if an array contains duplicate values.
  *
  * This function checks if any value in the array appears more than once by comparing
- * the first and last occurrence indices of each value.
+ * the first and last occurrence indices of each value. It's used internally for
+ * validating the `uniqueItems` constraint in array schemas.
  *
  * @param {Array} array - The array to check for duplicates.
  * @returns {boolean} - Returns true if there are duplicate values, false otherwise.
  * @example
- * // Returns true
+ * // Returns true (2 appears twice)
  * arrayHasDuplicates([1, 2, 3, 2])
  * @example
- * // Returns false
+ * // Returns false (all unique)
  * arrayHasDuplicates([1, 2, 3, 4])
+ * @see {@link validateSchemaArrayOption} for usage in schema validation
+ * @private
  */
 function arrayHasDuplicates (array) {
   for (let i = 0; i < array.length; i++) {
@@ -913,10 +916,20 @@ export const state = createPlugin('state', {
     /**
      * Validates array-specific options like uniqueItems.
      *
+     * This method checks if the array contains unique items when the `uniqueItems`
+     * constraint is enabled in the schema. It throws an exception if duplicates
+     * are found, preventing invalid data from being stored.
+     *
      * @private
-     * @param {string} path - Schema path
-     * @param {Array} source - Array to validate
-     * @throws {DataSchemaException} If uniqueItems constraint is violated
+     * @param {string} path - Schema path for error reporting
+     * @param {Array} source - Array to validate for uniqueness
+     * @throws {DataSchemaException} If uniqueItems constraint is violated (duplicate items found)
+     * @see {@link arrayHasDuplicates} for the duplicate detection logic
+     * @see {@link validateSchemaArray} for usage in array validation
+     * @example
+     * // Schema: { type: 'array', options: { uniqueItems: true } }
+     * validateSchemaArrayOption('users/1/tags', ['tag1', 'tag2', 'tag1'])
+     * // Throws: DataSchemaException.uniqueItems('users/1/tags')
      */
     validateSchemaArrayOption (path, source) {
       const schema = this.getSchema(path)
@@ -930,16 +943,20 @@ export const state = createPlugin('state', {
      * Validates an object against its schema definition.
      *
      * This method checks object properties, pattern properties, and applies
-     * validation rules like additionalProperties restrictions.
+     * validation rules like additionalProperties restrictions. It also freezes
+     * the object to prevent accidental modifications after validation.
      *
      * @private
-     * @param {Object} data - The data context
-     * @param {string} path - Schema path for the object
+     * @param {Object} data - The data context containing collection and ID information
+     * @param {string} path - Schema path for the object (used for error reporting and nested validation)
      * @param {Object} source - The object to validate
      * @returns {boolean} True if validation passes
-     * @throws {DataSchemaException} If validation fails
+     * @throws {DataSchemaException} If validation fails (missing required properties, additional properties not allowed, etc.)
      * @example
+     * // Validates user profile object
      * validateSchemaObject(data, 'users/1/profile', { name: 'John', age: 30 })
+     * @see {@link validateSchemaObjectProperties} for property-level validation
+     * @see {@link validateSchemaObjectOption} for option validation
      */
     validateSchemaObject (data, path, source) {
       const schema = this.getSchema(path)
@@ -966,10 +983,19 @@ export const state = createPlugin('state', {
     /**
      * Validates object-specific options like additionalProperties restrictions.
      *
+     * This method checks if the object contains only allowed properties when
+     * `additionalProperties` is set to false in the schema. It supports both
+     * explicit property names and pattern-based property definitions.
+     *
      * @private
-     * @param {string} path - Schema path
+     * @param {string} path - Schema path for error reporting
      * @param {Object} data - Object to validate
      * @throws {DataSchemaException} If additionalProperties constraint is violated
+     * @see {@link validateSchemaObject} for usage in object validation
+     * @example
+     * // Schema with additionalProperties: false
+     * validateSchemaObjectOption('users/1', { name: 'John', age: 30, extra: 'not allowed' })
+     * // Throws: DataSchemaException about additional property 'extra'
      */
     validateSchemaObjectOption (path, data) {
       const schema = this.getSchema(path)
@@ -1061,7 +1087,7 @@ export const state = createPlugin('state', {
       }
 
       let schemaName = path + '/' + property.name
-      const schema = this.getSchema(schemaName)
+      let schema = this.getSchema(schemaName)
       let schemaType = property.type
 
       if (!schema) {
@@ -1106,6 +1132,7 @@ export const state = createPlugin('state', {
           })
         }
 
+        // validate nested data or set default values
         this.validateSchemaObjectProperty(
           data,
           property,
@@ -1135,6 +1162,7 @@ export const state = createPlugin('state', {
               })
             }
 
+            // validate nested data or set default values
             this.validateSchemaObjectProperty(
               data,
               property,
@@ -1188,7 +1216,7 @@ export const state = createPlugin('state', {
      * @param {string} schemaPath - Current schema path
      * @param {*} source - Source data for the update
      * @param {Object} options - Update options
-     * @param {string[]} [options.position] - Position path for nested updates
+     * @param {string[]|number[]} [options.position] - Position path for nested updates
      * @param {string} [options.method] - Array operation method
      * @param {number} [options.startIndex] - Start index for splice
      * @param {number} [options.deleteCount] - Delete count for splice
@@ -1863,7 +1891,7 @@ export const state = createPlugin('state', {
      * @private
      * @param {string} name - Data collection name
      * @param {'update'|'delete'} on - Event trigger
-     * @param {string} [id] - Optional data collection ID for item-specific listeners
+     * @param {string} [id] - Optional collection ID for item-specific listeners
      * @returns {DataListenerCollection} Object containing all listener types
      * @throws {Error} If the listener target is not found
      * @example
