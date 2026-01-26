@@ -96,7 +96,7 @@ stateSetValue({
 
 ### stateGetValue
 
-Retrieves a value from the state with optional configuration.
+Retrieves a value from the state with optional configuration. This is the primary method for reading data from the Dooksa state management system.
 
 **Signature:**
 ```javascript
@@ -107,22 +107,57 @@ stateGetValue({ name, id, prefixId, suffixId, options })
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `name` | `string` | Yes | The collection/path name |
-| `id` | `string` | No | Specific ID to retrieve |
-| `prefixId` | `string` | No | Custom prefix for ID lookup |
-| `suffixId` | `string` | No | Custom suffix for ID lookup |
-| `options` | `object` | No | Configuration options |
+| `name` | `string` | Yes | The collection/path name (e.g., `'user/profiles'`) |
+| `id` | `string` | No | Specific ID to retrieve. If omitted, returns all items in the collection |
+| `prefixId` | `string` | No | Custom prefix for ID lookup. Overrides schema-level prefix |
+| `suffixId` | `string` | No | Custom suffix for ID lookup. Overrides schema-level suffix |
+| `options` | `object` | No | Configuration options for data retrieval |
 
 **Options:**
 
-| Option | Type | Description |
-|--------|------|-------------|
-| `expand` | `boolean` | Fetch related data (default: false) |
-| `expandClone` | `boolean` | Clone expanded data (default: false) |
-| `clone` | `boolean` | Clone the result (default: false) |
-| `position` | `string` | Path to extract specific value |
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `expand` | `boolean` | `false` | Fetch related data defined in schema relationships |
+| `expandClone` | `boolean` | `false` | Create deep clones of all expanded data (significant performance overhead) |
+| `clone` | `boolean` | `false` | Create deep clone of the main result |
+| `position` | `string \| string[]` | - | Extract specific nested value using dot notation or array path |
 
 **Returns:** `DataValue`
+
+The return value is a `DataValue` object with the following structure:
+
+```javascript
+{
+  collection: 'plugin/collection',  // Collection name
+  id: 'item-123',                   // Item ID (if specific item)
+  item: { /* actual data */ },      // The retrieved data
+  metadata: {                       // Metadata
+    userId: 'user-456',
+    createdAt: 1234567890,
+    updatedAt: 1234567890
+  },
+  previous: { /* prev data */ },    // Previous value (if updated)
+  expand: [ /* expanded items */ ], // Related data (when expand=true)
+  isEmpty: false,                   // No data found
+  isExpandEmpty: false,            // No expanded data found
+  isAffixEmpty: false              // Affix lookup failed
+}
+```
+
+**Behavior:**
+
+- **With `id`**: Returns a single `DataValue` object for that specific item
+- **Without `id`**: Returns all items in the collection as an array of `DataValue` objects
+- **With `position`**: Returns the nested value directly (not wrapped in DataValue)
+- **With `expand`**: Populates the `expand` array with related `DataValue` objects
+- **Empty states**: Returns a `DataValue` with `isEmpty: true` if data doesn't exist
+
+**Performance Considerations:**
+
+- Use `position` to retrieve specific values instead of entire objects
+- Avoid `expandClone` unless you need to modify expanded data
+- Consider using `stateFind` for filtering large collections
+- Cloning doubles memory usage - use only when necessary
 
 **Examples:**
 
@@ -160,9 +195,54 @@ const theme = stateGetValue({
   id: 'user-123',
   options: { position: 'settings.theme' }
 })
+
+// Get with cloning
+const user = stateGetValue({
+  name: 'user/profiles',
+  id: 'user-123',
+  options: { clone: true }
+})
+
+// Get with expansion and cloning
+const post = stateGetValue({
+  name: 'content/posts',
+  id: 'post-123',
+  options: { 
+    expand: true,
+    expandClone: true,
+    clone: true
+  }
+})
+```
+
+**Error Handling:**
+
+```javascript
+const result = stateGetValue({
+  name: 'user/profiles',
+  id: 'non-existent'
+})
+
+if (result.isEmpty) {
+  console.log('Item not found')
+}
+
+// Check specific empty states
+if (result.isAffixEmpty) {
+  console.log('Affix lookup failed')
+}
+
+if (result.isExpandEmpty) {
+  console.log('No related data found')
+}
 ```
 
 **Throws:** `DataValueException` if collection not found
+
+**Related Documentation:**
+- [StateGetValue Guide](stateGetValue-guide.md) - Comprehensive guide with examples
+- [StateGetValue Quick Reference](stateGetValue-quick-reference.md) - One-page cheat sheet
+- [State Relationships Guide](state-relationships-guide.md) - Understanding relationships
 
 ---
 

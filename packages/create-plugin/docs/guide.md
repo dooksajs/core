@@ -97,6 +97,58 @@ const plugin = createPlugin('counter', {
 })
 ```
 
+### State Management
+
+For global state management across your application, use the `state` property with schemas:
+
+```javascript
+const plugin = createPlugin('user', {
+  metadata: { title: 'User Plugin' },
+  state: {
+    schema: {
+      profiles: {
+        type: 'collection',
+        items: {
+          type: 'object',
+          properties: {
+            name: { type: 'string' },
+            email: { type: 'string' },
+            role: { 
+              type: 'string',
+              enum: ['user', 'admin', 'guest'],
+              default: 'user'
+            }
+          },
+          required: ['name', 'email']
+        },
+        id: {
+          prefix: 'user_'
+        }
+      }
+    }
+  }
+})
+```
+
+**Key Differences:**
+- **`data`**: Internal plugin state (simple values, not validated)
+- **`state`**: Global application state with schemas, validation, and relationships
+
+**When to use each:**
+- Use `data` for internal plugin state that doesn't need validation
+- Use `state` for shared application data that requires validation, relationships, and event handling
+
+For comprehensive documentation on state management, see:
+- [State Schema Guide](../plugins/docs/state-schema-guide.md)
+- [State Default Values Guide](../plugins/docs/state-default-values-guide.md)
+- [State Data Types Guide](../plugins/docs/state-data-types-guide.md)
+- [State Relationships Guide](../plugins/docs/state-relationships-guide.md)
+- [State Validation Guide](../plugins/docs/state-validation-guide.md)
+- [State Events and Listeners Guide](../plugins/docs/state-events-listeners-guide.md)
+- [State Advanced Patterns Guide](../plugins/docs/state-advanced-patterns.md)
+- [State API Reference](../plugins/docs/state-api-reference.md)
+- [StateSetValue Guide](../plugins/docs/stateSetValue-guide.md)
+
 ### Data Types
 
 Data can be any JavaScript value:
