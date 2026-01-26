@@ -2736,19 +2736,18 @@ export const state = createPlugin('state', {
         }
       },
       /**
+       * @overload
+       * @param {GetValueQueryWithId} query
+       * @returns {DataValue<*>}
+       *
+       * @overload
+       * @param {GetValueQueryWithoutId} query
+       * @returns {DataValue<*>[]}
+       *
        * Retrieves data values from the state with optional filtering and expansion.
        *
-       * @param {Object} query - Query parameters
-       * @param {string} query.name - Name of the collection
-       * @param {string} [query.id] - Optional document ID
-       * @param {string} [query.prefixId] - Whether to use prefix for ID
-       * @param {string} [query.suffixId] - Whether to use suffix for ID
-       * @param {Object} [query.options] - Additional options
-       * @param {boolean} [query.options.expand] - Whether to expand related data
-       * @param {boolean} [query.options.expandClone] - Whether to clone expanded data
-       * @param {boolean} [query.options.clone] - Whether to clone the result
-       * @param {string} [query.options.position] - Position path to extract specific value
-       * @returns {DataValue} The retrieved data value(s)
+       * @param {GetValueQueryWithId | GetValueQueryWithoutId} query - Query parameters
+       * @returns {DataValue<*>[] | DataValue<*>} The retrieved data value(s)
        * @example
        * getValue({ name: 'users', id: '123' })
        * @example
@@ -2775,20 +2774,15 @@ export const state = createPlugin('state', {
               value
             })
 
-            for (const id in collection) {
-              if (Object.prototype.hasOwnProperty.call(collection, id)) {
-                value.push(createDataValue({
-                  collection: name,
-                  id,
-                  value: collection[id]
-                }))
-              }
+            for (const [id, entry] of Object.entries(collection)) {
+              value.push(createDataValue({
+                collection: name,
+                id,
+                value: entry
+              }))
             }
 
-            if (!value.length) {
-              // no documents found
-              result.isEmpty = true
-            }
+            result.isEmpty = !value.length
 
             return result
           } else if (id == null) {
