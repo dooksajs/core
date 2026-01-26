@@ -1711,6 +1711,150 @@ export const state = createPlugin('state', {
     },
 
     /**
+     * Internal helper to set the listener into the correct storage array
+     * and handle initialization and priority sorting.
+     *
+     * This method manages the core logic for storing event listeners in the state system.
+     * It handles both priority-based and standard (non-priority) listeners, initializes
+     * storage arrays when needed, and maintains proper sorting for priority listeners.
+     *
+     * @private
+     * @param {Object} params - Parameters for registering a listener
+     * @param {string} params.name - The collection name the listener is attached to
+     * @param {string} [params.id] - Optional document ID for item-specific listeners
+     * @param {'update'|'delete'} params.on - The event type (update or delete)
+     * @param {number} [params.priority] - Optional priority value for ordered execution
+     * @param {Object} params.listenerItem - The listener object containing the handler function
+     * @param {Object} params.listenersContext - The context object containing items and priority arrays
+     * @param {Object} params.handlersMap - The handlers map to store the executable handler
+     * @param {string} params.handlerId - The unique ID for this handler
+     * @param {Function} params.executableHandler - The actual function to execute when the event fires
+     * @returns {string} The final handler ID (may be modified with prefix if ID is provided)
+     * @example
+     * // Register a priority listener
+     * registerListener({
+     *   name: 'users',
+     *   id: '123',
+     *   on: 'update',
+     *   priority: 10,
+     *   listenerItem: { value: handlerFunc },
+     *   listenersContext: { items: [], priority: [] },
+     *   handlersMap: {},
+     *   handlerId: 'abc123',
+     *   executableHandler: handlerFunc
+     * })
+     */
+    registerListener ({
+      name,
+      id,
+      on,
+      priority,
+      listenerItem,
+      listenersContext,
+      handlersMap,
+      handlerId,
+      executableHandler
+    }) {
+      // Initialize storage arrays if they don't exist
+      if (!listenersContext.items) {
+        const newItems = []
+        const newPriority = []
+
+        // Update the context reference
+        listenersContext.items = newItems
+        listenersContext.priority = newPriority
+
+        // Update the main state storage
+        if (id) {
+          this.listeners[on].items[name][id] = newItems
+          this.listeners[on].priority[name][id] = newPriority
+        } else {
+          this.listeners[on].items[name] = newItems
+          this.listeners[on].priority[name] = newPriority
+        }
+      }
+
+      // Register handler function to map
+      handlersMap[handlerId] = executableHandler
+
+      // Add to Standard Items (No Priority)
+      if (isNaN(priority)) {
+        listenersContext.items.push(listenerItem)
+        return handlerId
+      }
+
+      // Add to priority items (With Sorting)
+      listenerItem.priority = priority
+      listenersContext.priority.push(listenerItem)
+
+      // Sort ascending by priority
+      listenersContext.priority.sort((a, b) => {
+        return a.priority - b.priority
+      })
+
+      return handlerId
+    },
+
+    /**
+     * Removes a listener from a data collection event.
+     *
+     * This is the internal implementation that handles the actual removal logic.
+     * It searches through items, priority, and all arrays to find and remove the handler.
+     *
+     * @private
+     * @param {Object} params - Parameters object
+     * @param {string} params.name - Data collection name
+     * @param {string} [params.id] - Data collection Id
+     * @param {'update'|'delete'} params.on - Data event name
+     * @param {string} params.handlerId - The reference handler ID to remove
+     * @returns {boolean} True if handler was found and removed, false otherwise
+     * @example
+     * unregisterListener({ name: 'users', id: '123', on: 'update', handlerId: 'abc123' })
+     */
+    unregisterListener ({
+      name,
+      id,
+      on,
+      handlerId
+    }) {
+      const listeners = this.getListeners(name, on, id)
+      const handler = this.getHandler(name, on, handlerId)
+
+      if (handler == null) {
+        return false
+      }
+
+      // Remove from items array
+      if (Array.isArray(listeners.items)) {
+        const itemsIndex = listeners.items.findIndex(item => item.value === handler)
+        if (itemsIndex !== -1) {
+          listeners.items.splice(itemsIndex, 1)
+        }
+      }
+
+      // Remove from priority array
+      if (Array.isArray(listeners.priority)) {
+        const priorityIndex = listeners.priority.findIndex(item => item.value === handler)
+        if (priorityIndex !== -1) {
+          listeners.priority.splice(priorityIndex, 1)
+        }
+      }
+
+      // Remove from all array
+      if (Array.isArray(listeners.all)) {
+        const allIndex = listeners.all.findIndex(item => item.value === handler)
+        if (allIndex !== -1) {
+          listeners.all.splice(allIndex, 1)
+        }
+      }
+
+      // Delete from handlers map
+      delete this.handlers[on][name][handlerId]
+
+      return true
+    },
+
+    /**
      * Retrieves event listeners for a collection.
      *
      * This method returns all listeners (priority, items, and capture-all)
