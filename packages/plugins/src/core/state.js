@@ -2682,42 +2682,12 @@ export const state = createPlugin('state', {
         on = 'update',
         handlerId
       }) {
-        const listeners = this.getListeners(name, on, id)
-
-        if (id) {
-          handlerId = id + handlerId
-        }
-
-        const handler = this.getHandler(name, on, handlerId)
-
-        if (!handler) {
-          DEV: {
-            throw new Error(`DooksaError: deleteListener expected a handler "${on}.${name}.${id}"`)
-          }
-          return
-        }
-
-        if (Array.isArray(listeners.items)) {
-          const handlerIndex = listeners.items.indexOf(handler)
-          const handlerPriorityIndex = listeners.priority.indexOf(handler)
-
-          // remove handler
-          if (handlerIndex !== -1) {
-            listeners.items.splice(handlerIndex, 1)
-          }
-
-          if (handlerPriorityIndex !== -1) {
-            listeners.priority.splice(handlerPriorityIndex, 1)
-          }
-        }
-
-        const handlerIndex = listeners.all.indexOf(handler)
-
-        if (handlerIndex !== -1) {
-          listeners.all.splice(handlerIndex, 1)
-        }
-
-        delete this.handlers[on][name][handlerId]
+        return this.unregisterListener({
+          name,
+          id,
+          on,
+          handlerId
+        })
       }
     },
 
