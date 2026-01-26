@@ -2897,7 +2897,10 @@ export const state = createPlugin('state', {
 
         // return a value from position
         if (options.position) {
-          result.item = getValue(result.item, options.position)
+          const value = getValue(result.item, options.position)
+
+          result.isEmpty = !value
+          result.item = value
         }
 
         return result
