@@ -1,5 +1,5 @@
 import { describe, it } from 'node:test'
-import { strictEqual } from 'node:assert'
+import { ok, strictEqual } from 'node:assert'
 import parseAction from '../../src/server/parse-action.js'
 
 describe('parseAction', function () {
@@ -207,7 +207,7 @@ describe('parseAction', function () {
       strictEqual(result.blockSequences.length, 1)
       // The method block has method property
       const methodBlockId = result.blockSequences[0]
-      strictEqual(result.blocks[methodBlockId].method, 'action_ifElse')
+      ok(result.blocks[methodBlockId].ifElse)
     })
 
     it('should handle mixed methods and non-methods', function () {
@@ -942,37 +942,43 @@ describe('parseAction', function () {
     })
 
     it('should handle action_ifElse with complex conditions', function () {
-      const data = {
-        action_ifElse: {
-          if: [
-            {
-              op: '==',
-              left: 'value',
-              right: 'active'
-            },
-            { andOr: '&&' },
-            {
-              op: '!=',
-              left: 'status',
-              right: 'disabled'
-            }
-          ],
-          then: [{ $sequenceRef: 0 }],
-          else: [{ $sequenceRef: 1 }]
-        }
-      }
-
       const methods = { action_ifElse: true }
       const uuid = {
         prefix: 'ifelse',
         increment: 0
       }
       // @ts-ignore
-      const result = parseAction(data, methods, uuid)
+      const result = parseAction([
+        {
+          action_ifElse: {
+            if: [
+              {
+                op: '==',
+                left: 'value',
+                right: 'active'
+              },
+              { andOr: '&&' },
+              {
+                op: '!=',
+                left: 'status',
+                right: 'disabled'
+              }
+            ],
+            then: [{ $sequenceRef: 0 }],
+            else: [{ $sequenceRef: 1 }]
+          }
+        },
+        {
+          variable_getValue: '$null'
+        },
+        {
+          variable_getValue: '$null'
+        }
+      ], methods, uuid)
 
       strictEqual(result.blockSequences.length, 1)
       // The method block has method property set to 'action_ifElse'
-      strictEqual(result.blocks[result.blockSequences[0]].method, 'action_ifElse')
+      ok(result.blocks[result.blockSequences[0]].ifElse)
       strictEqual(result.$sequenceRefs.length, 2)
     })
 
