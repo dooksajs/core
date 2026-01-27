@@ -220,6 +220,8 @@
  * @property {'push'|'pull'|'pop'|'shift'|'unshift'|'splice'} [update.method] - Array operation method
  * @property {number} [update.startIndex] - Start index for splice operations
  * @property {number} [update.deleteCount] - Number of elements to delete for splice
+ * @property {string} [prefixId] - Prefix to add to the ID
+ * @property {string} [suffixId] - Suffix to add to the ID
  */
 
 /**
