@@ -16,6 +16,7 @@
     "./factories": "./src/factories/index.js"
   },
   "imports": {
+    "#core": "@dooksa/plugins/core",
     "#client": "@dooksa/plugins/client",
     "#server": "@dooksa/plugins/server"
   },
