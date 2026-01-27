@@ -7,12 +7,18 @@
   "license": "AGPL-3.0-or-later",
   "type": "module",
   "main": "src/index.js",
+  "imports": {
+    "#core": "@dooksa/plugins/core",
+    "#client": "@dooksa/plugins/client",
+    "#server": "@dooksa/plugins/server"
+  },
   "scripts": {
     "test-unit": "node --experimental-test-module-mocks --test",
     "test-coverage-lcov": "node --test --experimental-test-module-mocks --experimental-test-coverage --test-reporter=lcov --test-reporter-destination=lcov.info",
     "test-coverage-report": "node --test --experimental-test-module-mocks --experimental-test-coverage"
   },
   "dependencies": {
+    "@dooksa/plugins": "workspace:^",
     "@dooksa/create-action": "workspace:^",
     "@dooksa/test": "workspace:^"
   }
