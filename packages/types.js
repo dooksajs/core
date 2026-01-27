@@ -231,7 +231,7 @@
  * Used in packages/plugins/src/core/state.js for data queries.
  *
  * @property {boolean} [expand] - Expand all relational data (foreign key relationships)
- * @property {Object} [expandExclude] - Map of items to exclude from expansion
+ * @property {Object.<string, number>} [expandExclude] - Map of items to exclude from expansion (keyed by collection/id, value is index in expand array)
  * @property {boolean} [expandClone] - Return deep clones of expanded items
  * @property {string|string[]} [position] - Extract specific nested value using dot notation
  * @property {boolean} [clone] - Return deep clone of the main item value
