@@ -67,6 +67,17 @@
  * @property {string[]} [required] - List of required property names for object properties
  * @property {boolean} [uniqueItems] - When true, ensures each item in the array is unique.
  *   Validation throws DataSchemaException.uniqueItems() if duplicates are found
+ * @property {string} [pattern] - Regular expression pattern for string validation
+ * @property {string[]} [enum] - Array of allowed values for enum validation
+ * @property {number} [minLength] - Minimum length for string values
+ * @property {number} [maxLength] - Maximum length for string values
+ * @property {number} [minimum] - Minimum value for number values
+ * @property {number} [maximum] - Maximum value for number values
+ * @property {number} [exclusiveMinimum] - Exclusive minimum value for number values
+ * @property {number} [exclusiveMaximum] - Exclusive maximum value for number values
+ * @property {number} [multipleOf] - Value must be a multiple of this number
+ * @property {number} [minItems] - Minimum number of items in an array
+ * @property {number} [maxItems] - Maximum number of items in an array
  */
 
 /**
