@@ -4,7 +4,7 @@ import { parseSchema } from './parse-schema.js'
 
 /**
  * @import {DsPluginStateExport, DsPluginActions, DsPluginState, DsPluginMethods, DsPluginSchemaDefaults} from '#types'
- * @import {Mock, MockFunctionContext} from 'node:test'
+ * @import {Mock} from 'node:test'
  */
 
 /**
@@ -73,9 +73,10 @@ function createBridge (context, key) {
  * @param {Object} context - The plugin execution context
  * @param {string} name - The plugin name (used as prefix)
  * @param {DsPluginState} state - State configuration
+ * @param {boolean} [locked] - State configuration
  * @returns {DsPluginStateExport} Configured state object
  */
-export function createPluginState (context, name, state) {
+export function createPluginState (context, name, state, locked) {
   const clonedState = deepClone(state)
   const defaults = clonedState.defaults
   const schema = clonedState.schema
@@ -125,16 +126,19 @@ export function createPluginState (context, name, state) {
     writable: false
   }
 
-  Object.defineProperties(stateExport, {
-    schema: propertyDescriptorValues,
-    defaults: propertyDescriptorValues,
-    _values: propertyDescriptorValues,
-    _names: propertyDescriptorValues,
-    _items: propertyDescriptorValues,
-    _defaults: propertyDescriptorValues
-  })
+  if (locked) {
+    Object.defineProperties(stateExport, {
+      schema: propertyDescriptorValues,
+      defaults: propertyDescriptorValues,
+      _values: propertyDescriptorValues,
+      _names: propertyDescriptorValues,
+      _items: propertyDescriptorValues,
+      _defaults: propertyDescriptorValues
+    })
 
-  Object.preventExtensions(stateExport)
+    Object.preventExtensions(stateExport)
+  }
+
   return stateExport
 }
 
@@ -200,10 +204,10 @@ export function createPluginActions (context, name, source, wrapper) {
     // Create the stable Bridge and bind it to context
     let method = action.method.bind(context)
 
-    // Store the actual logic in the mutable registry
-    context._impl[key] = method
-
     DEV: {
+      // Store the actual logic in the mutable registry
+      context._impl[key] = method
+
       method = createBridge(context, key).bind(context)
 
       // Apply wrapper if provided (used during createObservableInstance)
@@ -288,10 +292,10 @@ export function createPluginMethods (context, name, methods, wrapper) {
     // Bind context method
     let method = fn.bind(context)
 
-    // Store logic in mutable registry
-    context._impl[key] = method
-
     DEV: {
+      // Store logic in mutable registry
+      context._impl[key] = method
+
       method = createBridge(context, key).bind(context)
 
       // Apply wrapper if provided (used during createObservableInstance)
@@ -332,10 +336,10 @@ export function createPluginPrivateMethods (context, methods, wrapper) {
     // Bind context method for production
     let method = fn.bind(context)
 
-    // Store logic
-    context._impl[key] = method
-
     DEV: {
+      // Store logic
+      context._impl[key] = method
+
       method = createBridge(context, key).bind(context)
 
       // Apply wrapper if provided (used during createObservableInstance)
