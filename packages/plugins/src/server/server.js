@@ -4,6 +4,7 @@ import { middlewareGet } from '#server'
 import helmet from 'helmet'
 import compression from 'compression'
 import express from 'express'
+import { log } from '@dooksa/utils/server'
 
 /**
  * @import {Request, Response, NextFunction, Handler, Express} from 'express'
@@ -101,6 +102,10 @@ export const server = createPlugin('server', {
       suffix = this.apiPrefix
     }) {
       if (!this.routeTypes[method]) {
+        log({
+          level: 'WARN',
+          message: `Server(setRoute): Unexpected method "${method}", supported methods: ${Object.keys(this.routeTypes)}`
+        })
         return
       }
 
@@ -124,6 +129,11 @@ export const server = createPlugin('server', {
         }
 
         handlers.unshift(handler)
+      }
+
+      // ensure absolute path
+      if (path[0] !== '/') {
+        path = '/' + path
       }
 
       const suffixPath = suffix + path
@@ -151,18 +161,21 @@ export const server = createPlugin('server', {
       return new Promise((resolve, reject) => {
         this.useRoutes()
 
-        const server = this.app.listen(port, () => {
+        const webserver = this.app.listen(port, function (error) {
+          if (error) {
+            reject(error)
+          }
+
           resolve({
             hostname: path,
-            port: port,
-            socket: server
+            port: this.address().port
           })
         })
 
-        server.on('error', reject)
+        webserver.on('error', reject)
 
         // set server
-        this.server = server
+        this.server = webserver
       })
     },
     stop () {
