@@ -7,7 +7,6 @@ import {
   createPluginState
 } from './create-plugin-helpers.js'
 
-
 /**
  * @import {DsPluginData, DsPluginMethods, DsPluginActions, DsPluginOptions, DsPluginActionMapper, DsPluginExport, DsPluginGetters, DsPluginState, DsPluginMetadata, DsPluginObservable} from '#types'
  * @import {TestContext, Mock} from 'node:test'
@@ -152,9 +151,9 @@ export function createPlugin (name, {
       /** @type {WrapperCallback} */
       const wrapper = (fn) => testContext.mock.fn(fn)
 
-      // Setup Observable Structure
+      // Setup observable structure
       plugin.observe = mockMethods
-      // The Implementation Registry: The "live" destination for all Bridge calls.
+      // The implementation registry
       context._impl = Object.create(null)
 
       // Set plugin name
@@ -175,7 +174,7 @@ export function createPlugin (name, {
       }
 
       if (state) {
-        plugin.state = createPluginState(context, name, state)
+        plugin.state = createPluginState(context, name, state, false)
       }
 
       if (setup) {
@@ -254,7 +253,6 @@ export function createPlugin (name, {
           )
 
           // Redirect the original context's _impl to the new observable methods.
-
           if (methods) {
             for (const key of Object.keys(methods)) {
               const fullName = name + capitalize(key)
@@ -297,17 +295,19 @@ export function createPlugin (name, {
          */
         value () {
           // Reset data
-          Object.assign(context, data ? deepClone(data) : {})
+          if (data) {
+            const newData = deepClone(data)
+            // Populate context with data properties
+            for (const [key, value] of Object.entries(newData)) {
+              context[key] = value
+            }
+          }
 
           // Reset original implementation
           if (methods) {
             for (const key of Object.keys(methods)) {
-              // If original implementation was saved (e.g., after createObservableInstance), restore it
-              // Otherwise, restore the original method from the methods object
               if (_originalImplementation[key]) {
                 context._impl[key] = _originalImplementation[key]
-              } else {
-                context._impl[key] = methods[key].bind(context)
               }
             }
           }
@@ -315,8 +315,6 @@ export function createPlugin (name, {
             for (const key of Object.keys(actions)) {
               if (_originalImplementation[key]) {
                 context._impl[key] = _originalImplementation[key]
-              } else {
-                context._impl[key] = actions[key].method.bind(context)
               }
             }
           }
@@ -324,8 +322,6 @@ export function createPlugin (name, {
             for (const key of Object.keys(privateMethods)) {
               if (_originalImplementation[key]) {
                 context._impl[key] = _originalImplementation[key]
-              } else {
-                context._impl[key] = privateMethods[key].bind(context)
               }
             }
           }
