@@ -20,7 +20,9 @@ export const api = createPlugin('api', {
     icon: 'mdi:file-document-box-search'
   },
   data: {
-    hostname: '/_/',
+    urlPrefix: '',
+    hostname: '',
+    baseUrl: '',
     requestCacheExpire: 300000,
     requestCache: {},
     requestQueue: {}
@@ -29,7 +31,7 @@ export const api = createPlugin('api', {
     /**
      * Retrieve cached data for a given request ID
      * @param {string} path - The cache key/path for the request
-     * @returns {ApiDataValue<DataValue[]>|undefined} - Returns cached api result or undefined if not cached
+     * @returns {ApiDataValue<DataValue<*>[]>|undefined} - Returns cached api result or undefined if not cached
      */
     getCacheByPath (path) {
       // Check cache
@@ -41,7 +43,7 @@ export const api = createPlugin('api', {
 
       // Handle expired cache
       if (cache.expireIn && cache.expireIn < Date.now()) {
-        this.deleteCache(path)
+        this.deleteCacheByPath(path)
         return
       }
 
@@ -51,7 +53,7 @@ export const api = createPlugin('api', {
     /**
      * Retrieve cached data a given request ID
      * @param {string} path - The cache key/path for the request
-     * @returns {Promise<ApiDataValue<DataValue[]>>|undefined} - Returns cached promise or undefined if not cached
+     * @returns {Promise<ApiDataValue<DataValue<*>[]>>|undefined} - Returns cached promise or undefined if not cached
      */
     getRequestByPath (path) {
       return this.requestQueue[path]
@@ -199,7 +201,7 @@ export const api = createPlugin('api', {
        * @param {number} [param.limit] - Maximum total number of records to return (overrides perPage)
        * @param {string} [param.where] - Filter condition for the query
        * @param {boolean} [param.sync=true] - Whether to sync fetched data with local database state
-       * @returns {Promise<ApiDataValue<DataValue[]>>} - Promise resolving to array of documents or false on error
+       * @returns {Promise<ApiDataValue<DataValue<*>[]>>} - Promise resolving to array of documents or false on error
        */
       method ({
         collection,
@@ -281,12 +283,9 @@ export const api = createPlugin('api', {
         if (request) {
           return request
         }
-
-        const deleteRequestQueueByPath = this.deleteRequestQueueByPath
-        const setRequestDataByPath = this.setRequestDataByPath
-
+        const self = this
         request = new Promise((resolve, reject) => {
-          fetch(this.hostname + path)
+          fetch(this.baseUrl + path)
             .then(response => {
               if (response.ok) {
                 return response.json()
@@ -295,10 +294,10 @@ export const api = createPlugin('api', {
             })
             .then(data => {
               // remove from queue
-              deleteRequestQueueByPath(path)
+              self.deleteRequestQueueByPath(path)
 
               if (sync) {
-                setRequestDataByPath(collection, data, path)
+                self.setRequestDataByPath(collection, data, path)
               }
 
               resolve({
@@ -309,7 +308,7 @@ export const api = createPlugin('api', {
             })
             .catch(error => {
               // remove from queue on error
-              deleteRequestQueueByPath(path)
+              self.deleteRequestQueueByPath(path)
               reject(error)
             })
         })
@@ -360,7 +359,7 @@ export const api = createPlugin('api', {
        * @param {string[]|string} param.id - Single document ID or array of IDs
        * @param {boolean} [param.expand=false] - Whether to fetch related documents
        * @param {boolean} [param.sync=true] - Whether to sync fetched data with local database state
-       * @returns {Promise<ApiDataValue<DataValue[]>>} - Promise resolving to fetched document(s) or array
+       * @returns {Promise<ApiDataValue<DataValue<*>[]>>} - Promise resolving to fetched document(s) or array
        */
       method ({ collection, id, expand, sync = true }) {
         if (!Array.isArray(id)) {
@@ -394,7 +393,7 @@ export const api = createPlugin('api', {
         }
 
         request = new Promise((resolve, reject) => {
-          fetch(this.hostname + path)
+          fetch(this.baseUrl + path)
             .then(response => {
               if (response.ok) {
                 return response.json()
@@ -441,10 +440,20 @@ export const api = createPlugin('api', {
   /**
    * Setup the api plugin configuration
    * @param {Object} param - Setup parameters
-   * @param {string} [param.hostname=''] - Base hostname/URL for API requests (will be prepended to '/_/')
+   * @param {string} [param.hostname='http://localhost:6362'] - Hostname
+   * @param {string} [param.urlPrefix='/_/'] - Url prefix, defaults to '/_/'
    */
-  setup ({ hostname = '' } = {}) {
-    this.hostname = hostname + this.hostname
+  setup ({ hostname = 'http://localhost:6362', urlPrefix = '/_/' } = {}) {
+    if (hostname) {
+      this.hostname = hostname
+    }
+
+    if (urlPrefix) {
+      this.urlPrefix = urlPrefix
+    }
+
+    // set url
+    this.baseUrl = this.hostname + this.urlPrefix
   }
 })
 
