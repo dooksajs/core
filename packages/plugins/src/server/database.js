@@ -8,7 +8,7 @@ import { log } from '@dooksa/utils/server'
 /**
  * Custom error class for database snapshot operations
  *
- * @extends Error
+ * @augments Error
  * @property {number} timestamp - High-resolution timestamp in milliseconds
  * @property {string} code - Error code for categorization
  * @property {string} collection - Collection name associated with the error
@@ -728,8 +728,6 @@ export const database = createPlugin('database', {
      * - `id`: Single ID or array of IDs to retrieve
      * - `where`: Conditional string for filtering results
      * - `expand`: Set to "true" to expand relational data
-     *
-     * @see {@link stringToCondition} for WHERE expression syntax
      */
     getValue (collections) {
       /**
@@ -887,8 +885,6 @@ export const database = createPlugin('database', {
      * - 500: Snapshot error occurred
      *
      * @throws {Error} When snapshot creation fails for a collection
-     *
-     * @see {@link setSnapshot} for snapshot mechanism
      */
     deleteValue (collections) {
       /**
@@ -974,9 +970,6 @@ export const database = createPlugin('database', {
      * - Existing data is merged (not replaced) when merge option is true
      * - Missing files are silently ignored (no error thrown)
      * - Automatically resets snapshot state for the loaded collection
-     *
-     * @see {@link setup} for snapshot directory configuration
-     * @see {@link setSnapshot} for snapshot creation
      */
     async seed (name) {
       const path = resolve(this.snapshotPath, name + '.json')
@@ -1083,9 +1076,6 @@ export const database = createPlugin('database', {
      * - If an item has metadata but no userId in metadata, userId is added
      * - Snapshots are created for each unique collection after all items are saved
      * - If any item is missing userId, the entire operation fails
-     *
-     * @see {@link setSnapshot} for snapshot mechanism
-     * @see {@link stateSetValue} for individual item storage
      */
     setValue ({ items, userId }) {
       const results = []
@@ -1195,9 +1185,6 @@ export const database = createPlugin('database', {
    * - Snapshots will be saved as JSON files in this directory
    * - File naming: `{collection-name}-{timestamp}.json`
    * - Config overrides are merged with defaults
-   *
-   * @see {@link setSnapshot} for snapshot creation
-   * @see {@link seed} for loading seed data
    */
   async setup ({ storage = '.ds_snapshots', config } = {}) {
     this.snapshotPath = resolve(process.cwd(), storage)
@@ -1213,7 +1200,10 @@ export const database = createPlugin('database', {
         }
       }
     } catch (error) {
-      throw new SnapshotError('Storage path does not exist: ' + this.snapshotPath)
+      log({
+        level: 'WARN',
+        message: 'Storage path does not exist: ' + this.snapshotPath
+      })
     }
   }
 })
