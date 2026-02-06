@@ -1,21 +1,15 @@
-import { describe, it } from 'node:test'
+import { describe, it, afterEach } from 'node:test'
 import { strictEqual, deepStrictEqual, ok, throws, deepEqual } from 'node:assert'
-import { createPluginTester, mockStateData } from '@dooksa/test'
+import { mockStateData } from '@dooksa/test'
 import { state } from '#core'
 import createPlugin from '@dooksa/create-plugin'
 
 /**
- * Helper function to set up the state plugin with dependencies
- * @param {import('node:test').TestContext} t - Test context
+ * Helper function to create state data
  * @param {Array} [plugins=[]] - plugins to add to state
- * @returns {Object} Object with tester and state plugin instance
+ * @returns {Object} State data object
  */
-function setupStatePlugin (t, plugins = []) {
-  const tester = createPluginTester(t)
-
-  // Create observable instance of state plugin
-  const statePlugin = tester.spy('state', state)
-
+function createStateData (plugins = []) {
   if (!plugins.length) {
     plugins.push(createPlugin('test', {
       state: {
@@ -84,17 +78,14 @@ function setupStatePlugin (t, plugins = []) {
       }
     }))
   }
-  // Setup mock state data
-  const stateData = mockStateData(plugins)
-  statePlugin.setup(stateData)
-
-  return {
-    tester,
-    statePlugin
-  }
+  return mockStateData(plugins)
 }
 
 describe('State Plugin - Plugin Setup & Initialization', () => {
+  afterEach(() => {
+    state.restore()
+  })
+
   describe('setup method', () => {
     it('should initialize with state data', async (t) => {
       const testPlugin = createPlugin('test', {
@@ -113,12 +104,11 @@ describe('State Plugin - Plugin Setup & Initialization', () => {
         }
       })
 
-      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+      const stateData = createStateData([testPlugin])
+      state.setup(stateData)
 
       // Verify state plugin is set up
-      strictEqual(typeof statePlugin.setup, 'function')
-
-      tester.restoreAll()
+      strictEqual(typeof state.setup, 'function')
     })
 
     it('should register schemas from state data', async (t) => {
@@ -138,42 +128,44 @@ describe('State Plugin - Plugin Setup & Initialization', () => {
         }
       })
 
-      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+      const stateData = createStateData([testPlugin])
+      state.setup(stateData)
 
       // Check that state has schema
-      const schema = statePlugin.stateGetSchema('test/collection')
+      const schema = state.stateGetSchema('test/collection')
       ok(schema, 'Schema should be registered')
-
-      tester.restoreAll()
     })
-
   })
 })
 
 describe('State Plugin - getValue Action', () => {
+  afterEach(() => {
+    state.restore()
+  })
+
   describe('Direct access', () => {
     it('should get value from specific collection', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      const dataIn =statePlugin.stateSetValue({
+      const dataIn = state.stateSetValue({
         name: 'test/collection',
         value: { 'item-1': 'value-1' }
       })
 
-      const dataOut = statePlugin.stateGetValue({
+      const dataOut = state.stateGetValue({
         name: 'test/collection',
         id: dataIn.id
       })
 
       strictEqual(dataOut.item['item-1'], 'value-1')
-
-      tester.restoreAll()
     })
 
     it('should get nested value using dot notation', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      const dataIn = statePlugin.stateSetValue({
+      const dataIn = state.stateSetValue({
         name: 'test/complex',
         value: {
           user: {
@@ -184,21 +176,20 @@ describe('State Plugin - getValue Action', () => {
         }
       })
 
-      const result = statePlugin.stateGetValue({
+      const result = state.stateGetValue({
         name: 'test/complex',
         id: dataIn.id,
         options: { position: 'user.profile.name' }
       })
 
       strictEqual(result.item, 'Dave')
-
-      tester.restoreAll()
     })
 
     it('should get entire collection when no ID specified', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: {
           'item-1': { name: 'Item 1' },
@@ -207,75 +198,70 @@ describe('State Plugin - getValue Action', () => {
         options: { merge: true }
       })
 
-      const result = statePlugin.stateGetValue({
+      const result = state.stateGetValue({
         name: 'test/collection'
       })
 
       ok(Array.isArray(result.item), 'Result should be an array')
       strictEqual(result.item.length, 2)
-
-      tester.restoreAll()
     })
 
     it('should return empty result when ID not found', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      const result = statePlugin.stateGetValue({
+      const result = state.stateGetValue({
         name: 'test/collection',
         id: 'non-existent'
       })
 
       strictEqual(result.isEmpty, true)
-
-      tester.restoreAll()
     })
 
     it('should throw error when collection not found', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       throws(() => {
-        statePlugin.stateGetValue({
+        state.stateGetValue({
           name: 'non-existent/collection'
         })
       }, {
         message: /No such collection/
       })
-
-      tester.restoreAll()
     })
 
     it('should apply prefix to generated ID', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/collection',
         value: { name: 'Test Item' },
         options: { prefixId: 'prefix_' }
       })
 
       strictEqual(result.id.startsWith('prefix_'), true)
-
-      tester.restoreAll()
     })
 
     it('should apply suffix to generated ID', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/collection',
         value: { name: 'Test Item' },
         options: { suffixId: '_suffix' }
       })
 
       strictEqual(result.id.endsWith('_suffix'), true)
-
-      tester.restoreAll()
     })
 
     it('should apply both prefix and suffix to generated ID', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/collection',
         value: { name: 'Test Item' },
         options: {
@@ -286,25 +272,24 @@ describe('State Plugin - getValue Action', () => {
 
       strictEqual(result.id.startsWith('prefix_'), true)
       strictEqual(result.id.endsWith('_suffix'), true)
-
-      tester.restoreAll()
     })
 
     it('should clone result when clone option is true', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       const originalValue = {
         name: 'Test Item',
         age: 30
       }
       // Set value with custom ID
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: originalValue,
         options: { id: 'item-1' }
       })
 
-      const result = statePlugin.stateGetValue({
+      const result = state.stateGetValue({
         name: 'test/collection',
         id: 'item-1',
         options: { clone: true }
@@ -313,16 +298,15 @@ describe('State Plugin - getValue Action', () => {
       // Verify it's a clone (different reference)
       strictEqual(result.item === originalValue, false)
       deepStrictEqual(result.item, originalValue)
-
-      tester.restoreAll()
     })
   })
 
   describe('Collection filtering', () => {
     it('should filter collection with simple condition', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: {
           'item-1': {
@@ -341,7 +325,7 @@ describe('State Plugin - getValue Action', () => {
         options: { merge: true }
       })
 
-      const results = statePlugin.stateFind({
+      const results = state.stateFind({
         name: 'test/collection',
         where: [
           {
@@ -355,14 +339,13 @@ describe('State Plugin - getValue Action', () => {
       strictEqual(results.length, 2)
       strictEqual(results[0].item.status, 'active')
       strictEqual(results[1].item.status, 'active')
-
-      tester.restoreAll()
     })
 
     it('should filter collection with AND conditions', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: {
           'item-1': {
@@ -384,7 +367,7 @@ describe('State Plugin - getValue Action', () => {
         options: { merge: true }
       })
 
-      const results = statePlugin.stateFind({
+      const results = state.stateFind({
         name: 'test/collection',
         where: [
           {
@@ -406,14 +389,13 @@ describe('State Plugin - getValue Action', () => {
 
       strictEqual(results.length, 1)
       strictEqual(results[0].item.name, 'Item 1')
-
-      tester.restoreAll()
     })
 
     it('should filter collection with OR conditions', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: {
           'item-1': {
@@ -435,7 +417,7 @@ describe('State Plugin - getValue Action', () => {
         options: { merge: true }
       })
 
-      const results = statePlugin.stateFind({
+      const results = state.stateFind({
         name: 'test/collection',
         where: [
           {
@@ -460,14 +442,13 @@ describe('State Plugin - getValue Action', () => {
       // Item 3: role is 'admin' (matches second condition)
       // So we expect 2 results (Item 1 and Item 3)
       strictEqual(results.length, 2)
-
-      tester.restoreAll()
     })
 
     it('should filter with comparison operators', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: {
           'item-1': {
@@ -486,7 +467,7 @@ describe('State Plugin - getValue Action', () => {
         options: { merge: true }
       })
 
-      const results = statePlugin.stateFind({
+      const results = state.stateFind({
         name: 'test/collection',
         where: [
           {
@@ -500,21 +481,20 @@ describe('State Plugin - getValue Action', () => {
       strictEqual(results.length, 2)
       strictEqual(results[0].item.age, 30)
       strictEqual(results[1].item.age, 35)
-
-      tester.restoreAll()
     })
 
     it('should return empty array when no matches', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: {
           'item-1': { status: 'active' }
         }
       })
 
-      const results = statePlugin.stateFind({
+      const results = state.stateFind({
         name: 'test/collection',
         where: [
           {
@@ -526,15 +506,14 @@ describe('State Plugin - getValue Action', () => {
       })
 
       strictEqual(results.length, 0)
-
-      tester.restoreAll()
     })
 
     it('should expand related data', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       // Setup main collection
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: {
           'item-1': {
@@ -545,7 +524,7 @@ describe('State Plugin - getValue Action', () => {
       })
 
       // Setup related collection
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/related',
         value: {
           'related-1': { name: 'Related Item' }
@@ -553,7 +532,7 @@ describe('State Plugin - getValue Action', () => {
       })
 
       // Add relation
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: {
           'item-1': {
@@ -568,37 +547,39 @@ describe('State Plugin - getValue Action', () => {
         }
       })
 
-      const results = statePlugin.stateFind({
+      const results = state.stateFind({
         name: 'test/collection',
         options: { expand: true }
       })
 
       ok(results[0].expand, 'Should have expand property')
-
-      tester.restoreAll()
     })
   })
 })
 
 describe('State Plugin - setValue Action', () => {
+  afterEach(() => {
+    state.restore()
+  })
+
   describe('Creating values', () => {
     it('should set value in collection', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/collection',
         value: { 'item-1': 'value-1' }
       })
 
       strictEqual(result.item['item-1'], 'value-1')
-
-      tester.restoreAll()
     })
 
     it('should generate ID automatically', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/collection',
         value: { 'auto-generated': 'value' }
       })
@@ -606,22 +587,19 @@ describe('State Plugin - setValue Action', () => {
       const keys = Object.keys(result.item)
       strictEqual(keys.length, 1)
       strictEqual(result.item[keys[0]], 'value')
-
-      tester.restoreAll()
     })
 
     it('should apply prefix to generated ID', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/collection',
         value: { name: 'Test Item' },
         options: { prefixId: 'prefix_' }
       })
 
       strictEqual(result.id.startsWith('prefix_'), true)
-
-      tester.restoreAll()
     })
 
     it('should apply suffix to generated ID defined by schema', async (t) => {
@@ -639,9 +617,10 @@ describe('State Plugin - setValue Action', () => {
         }
       })
 
-      const { statePlugin } = setupStatePlugin(t, [testPlugin])
+      const stateData = createStateData([testPlugin])
+      state.setup(stateData)
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/products',
         value: 'shoes'
       })
@@ -663,9 +642,10 @@ describe('State Plugin - setValue Action', () => {
         }
       })
 
-      const { statePlugin } = setupStatePlugin(t, [testPlugin])
+      const stateData = createStateData([testPlugin])
+      state.setup(stateData)
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/products',
         value: 'shoes',
         options: {
@@ -677,9 +657,10 @@ describe('State Plugin - setValue Action', () => {
     })
 
     it('should apply both prefix and suffix to generated ID', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/collection',
         value: { 'test-value': 'value' },
         options: {
@@ -689,14 +670,13 @@ describe('State Plugin - setValue Action', () => {
       })
 
       ok(result.id.startsWith('pre_') && result.id.endsWith('_suf'), 'ID should have both affixes')
-
-      tester.restoreAll()
     })
 
     it('should use provided ID with prefix and suffix', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/collection',
         value: { name: 'joe' },
         options: {
@@ -706,14 +686,13 @@ describe('State Plugin - setValue Action', () => {
       })
 
       ok(result.id.startsWith('pre_') && result.id.endsWith('_suf'), 'ID should have both affixes')
-
-      tester.restoreAll()
     })
 
     it('should set multiple values at once', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/collection',
         value: {
           'item-1': 'value-1',
@@ -725,14 +704,13 @@ describe('State Plugin - setValue Action', () => {
       strictEqual(result.item['item-1'], 'value-1')
       strictEqual(result.item['item-2'], 'value-2')
       strictEqual(result.item['item-3'], 'value-3')
-
-      tester.restoreAll()
     })
 
     it('should set value in non-collection schema', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/single',
         value: {
           name: 'Test',
@@ -744,25 +722,23 @@ describe('State Plugin - setValue Action', () => {
         name: 'Test',
         value: 123
       })
-
-      tester.restoreAll()
     })
 
     it('should set array value', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/array',
         value: ['a', 'b', 'c']
       })
 
       deepStrictEqual(result.item, ['a', 'b', 'c'])
-
-      tester.restoreAll()
     })
 
     it('should set complex nested values', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       const complexValue = {
         user: {
@@ -777,46 +753,44 @@ describe('State Plugin - setValue Action', () => {
         }
       }
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/complex',
         value: complexValue
       })
 
       deepStrictEqual(result.item, complexValue)
-
-      tester.restoreAll()
     })
   })
 
   describe('Updating values', () => {
     it('should update existing value', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: { 'item-1': 'old-value' }
       })
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/collection',
         value: { 'item-1': 'new-value' }
       })
 
       strictEqual(result.item['item-1'], 'new-value')
-
-      tester.restoreAll()
     })
 
     it('should merge with existing values', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: { name: 'Joe' },
         options: { id: 'item-1' }
       })
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/collection',
         value: { age: 23 },
         options: {
@@ -827,19 +801,18 @@ describe('State Plugin - setValue Action', () => {
 
       strictEqual(result.item.name, 'Joe')
       strictEqual(result.item.age, 23)
-
-      tester.restoreAll()
     })
 
     it('should merge with existing values in single object schema', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/single',
         value: { name: 'Test Item' }
       })
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/single',
         value: { value: 456 },
         options: { merge: true }
@@ -847,33 +820,31 @@ describe('State Plugin - setValue Action', () => {
 
       strictEqual(result.item.name, 'Test Item')
       strictEqual(result.item.value, 456)
-
-      tester.restoreAll()
     })
 
     it('should merge with existing values in array schema', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/array',
         value: ['a', 'b']
       })
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/array',
         value: ['c', 'd'],
         options: { merge: true }
       })
 
       deepStrictEqual(result.item, ['a', 'b', 'c', 'd'])
-
-      tester.restoreAll()
     })
 
     it('should merge with existing values in complex nested object schema', { skip: true }, async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/complex',
         value: {
           user: {
@@ -889,7 +860,7 @@ describe('State Plugin - setValue Action', () => {
         }
       })
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/complex',
         value: {
           user: {
@@ -907,14 +878,13 @@ describe('State Plugin - setValue Action', () => {
       strictEqual(result.item.user.profile.age, 30)
       strictEqual(result.item.user.profile.settings.theme, 'light')
       strictEqual(result.item.user.profile.settings.notifications, true)
-
-      tester.restoreAll()
     })
 
     it('should merge with existing values in related collection', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/related',
         value: {
           name: 'Related Item 1',
@@ -923,7 +893,7 @@ describe('State Plugin - setValue Action', () => {
         options: { id: 'related-1' }
       })
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/related',
         value: { refId: 'ref-2' },
         options: {
@@ -934,14 +904,13 @@ describe('State Plugin - setValue Action', () => {
 
       strictEqual(result.item.name, 'Related Item 1')
       strictEqual(result.item.refId, 'ref-2')
-
-      tester.restoreAll()
     })
 
     it('should merge with deeply nested objects', { skip: true }, async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: {
           level1: {
@@ -956,7 +925,7 @@ describe('State Plugin - setValue Action', () => {
         options: { id: 'item-1' }
       })
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/collection',
         value: {
           level1: {
@@ -975,14 +944,13 @@ describe('State Plugin - setValue Action', () => {
 
       strictEqual(result.item.level1.level2.level3.value, 'updated')
       strictEqual(result.item.level1.level2.level3.extra, 'data')
-
-      tester.restoreAll()
     })
 
     it('should merge with array values in objects', { skip: true }, async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: {
           tags: ['tag1', 'tag2'],
@@ -992,7 +960,7 @@ describe('State Plugin - setValue Action', () => {
 
       })
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/collection',
         value: {
           tags: ['tag3', 'tag4']
@@ -1005,14 +973,13 @@ describe('State Plugin - setValue Action', () => {
 
       deepStrictEqual(result.item.tags, ['tag1', 'tag2', 'tag3', 'tag4'])
       strictEqual(result.item.name, 'Item')
-
-      tester.restoreAll()
     })
 
     it('should merge with nested collection items', { skip: true }, async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: {
           name: 'Parent',
@@ -1023,7 +990,7 @@ describe('State Plugin - setValue Action', () => {
         options: { id: 'item-1 ' }
       })
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/collection',
         value: {
           children: {
@@ -1039,14 +1006,13 @@ describe('State Plugin - setValue Action', () => {
       strictEqual(result.item.name, 'Parent')
       strictEqual(result.item.children['child-1'].name, 'Child 1')
       strictEqual(result.item.children['child-2'].name, 'Child 2')
-
-      tester.restoreAll()
     })
 
     it('should merge with primitive values overriding objects', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: {
           value: { nested: 'object' }
@@ -1054,7 +1020,7 @@ describe('State Plugin - setValue Action', () => {
         options: { id: 'item-1' }
       })
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/collection',
         value: {
           value: 'simple string'
@@ -1066,14 +1032,13 @@ describe('State Plugin - setValue Action', () => {
       })
 
       strictEqual(result.item.value, 'simple string')
-
-      tester.restoreAll()
     })
 
     it('should merge with null values', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: {
           name: 'Test',
@@ -1082,7 +1047,7 @@ describe('State Plugin - setValue Action', () => {
         options: { id: 'item-1' }
       })
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/collection',
         value: {
           'item-1': {
@@ -1095,14 +1060,13 @@ describe('State Plugin - setValue Action', () => {
       strictEqual(result.item.name, 'Test')
       strictEqual(result.item.value, null)
       strictEqual(result.item.age, 25)
-
-      tester.restoreAll()
     })
 
     it('should merge with undefined values', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: {
           name: 'Test',
@@ -1111,7 +1075,7 @@ describe('State Plugin - setValue Action', () => {
         options: { id: 'item-1' }
       })
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/collection',
         value: {
           'item-1': {
@@ -1124,14 +1088,13 @@ describe('State Plugin - setValue Action', () => {
       strictEqual(result.item.name, 'Test')
       strictEqual(result.item.value, undefined)
       strictEqual(result.item.age, 25)
-
-      tester.restoreAll()
     })
 
     it('should merge with boolean values', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: {
           name: 'Test',
@@ -1140,7 +1103,7 @@ describe('State Plugin - setValue Action', () => {
         options: { id: 'item-1' }
       })
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/collection',
         value: {
           'item-1': {
@@ -1152,14 +1115,13 @@ describe('State Plugin - setValue Action', () => {
 
       strictEqual(result.item.name, 'Test')
       strictEqual(result.item.active, false)
-
-      tester.restoreAll()
     })
 
     it('should merge with number values', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: {
           name: 'Test',
@@ -1168,7 +1130,7 @@ describe('State Plugin - setValue Action', () => {
         options: { id: 'item-1' }
       })
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/collection',
         value: {
           count: 20
@@ -1181,19 +1143,18 @@ describe('State Plugin - setValue Action', () => {
 
       strictEqual(result.item.name, 'Test')
       strictEqual(result.item.count, 20)
-
-      tester.restoreAll()
     })
 
     it('should replace entire collection', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      statePlugin.stateUnsafeSetValue({
+      state.stateUnsafeSetValue({
         name: 'test/collection',
         value: { 'item-1': 'value-1' }
       })
 
-      const result = statePlugin.stateUnsafeSetValue({
+      const result = state.stateUnsafeSetValue({
         name: 'test/collection',
         value: { 'item-2': 'value-2' },
         options: { replace: true }
@@ -1206,7 +1167,7 @@ describe('State Plugin - setValue Action', () => {
       strictEqual(result.item[0].item, 'value-2')
 
       // Verify the collection was replaced
-      const collection = statePlugin.stateGetValue({
+      const collection = state.stateGetValue({
         name: 'test/collection'
       })
 
@@ -1214,14 +1175,13 @@ describe('State Plugin - setValue Action', () => {
       strictEqual(collection.item.length, 1)
       strictEqual(collection.item[0].id, 'item-2')
       strictEqual(collection.item[0].item, 'value-2')
-
-      tester.restoreAll()
     })
 
     it('should update nested property', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: {
           name: 'Old Name',
@@ -1230,7 +1190,7 @@ describe('State Plugin - setValue Action', () => {
         options: { id: 'item-1' }
       })
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/collection',
         value: 'New Name',
         options: {
@@ -1243,19 +1203,18 @@ describe('State Plugin - setValue Action', () => {
 
       strictEqual(result.item.name, 'New Name')
       strictEqual(result.item.age, 25)
-
-      tester.restoreAll()
     })
 
     it('should update array with push method', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/array',
         value: ['a', 'b']
       })
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/array',
         value: 'c',
         options: {
@@ -1266,19 +1225,18 @@ describe('State Plugin - setValue Action', () => {
       })
 
       deepStrictEqual(result.item, ['a', 'b', 'c'])
-
-      tester.restoreAll()
     })
 
     it('should update array with pull method', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/array',
         value: ['a', 'b', 'c']
       })
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/array',
         value: 'b',
         options: {
@@ -1289,19 +1247,18 @@ describe('State Plugin - setValue Action', () => {
       })
 
       deepStrictEqual(result.item, ['a', 'c'])
-
-      tester.restoreAll()
     })
 
     it('should update array with splice method', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/array',
         value: ['a', 'b', 'c']
       })
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/array',
         value: ['x', 'y'],
         options: {
@@ -1315,20 +1272,19 @@ describe('State Plugin - setValue Action', () => {
       })
 
       deepStrictEqual(result.item, ['a', 'x', 'y', 'c'])
-
-      tester.restoreAll()
     })
 
     it('should store previous value', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: 'old-value',
         options: { id: 'item-1' }
       })
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/collection',
         value: 'new-value',
         options: { id: 'item-1' }
@@ -1336,16 +1292,15 @@ describe('State Plugin - setValue Action', () => {
 
       ok(result.previous, 'Should have previous value')
       strictEqual(result.previous._item, 'old-value')
-
-      tester.restoreAll()
     })
   })
 
   describe('Metadata', () => {
     it('should set metadata on values', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/collection',
         value: { 'item-1': 'value-1' },
         options: {
@@ -1359,14 +1314,13 @@ describe('State Plugin - setValue Action', () => {
       ok(result.metadata, 'Should have metadata')
       strictEqual(result.metadata.userId, 'user-123')
       strictEqual(result.metadata.custom, 'data')
-
-      tester.restoreAll()
     })
 
     it('should add timestamps on server', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/collection',
         value: { 'item-1': 'value-1' }
       })
@@ -1374,18 +1328,21 @@ describe('State Plugin - setValue Action', () => {
       // Timestamps are only added on server
       // This test verifies the structure exists
       ok(result.metadata, 'Should have metadata')
-
-      tester.restoreAll()
     })
   })
 })
 
 describe('State Plugin - deleteValue Action', () => {
+  afterEach(() => {
+    state.restore()
+  })
+
   describe('Basic deletion', () => {
     it('should delete value from collection', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: {
           'item-1': 'value-1',
@@ -1393,7 +1350,7 @@ describe('State Plugin - deleteValue Action', () => {
         }
       })
 
-      const result = statePlugin.stateDeleteValue({
+      const result = state.stateDeleteValue({
         name: 'test/collection',
         id: 'item-1'
       })
@@ -1402,27 +1359,26 @@ describe('State Plugin - deleteValue Action', () => {
       strictEqual(result.inUse, false)
 
       // Verify deletion
-      const getValue = statePlugin.stateGetValue({
+      const getValue = state.stateGetValue({
         name: 'test/collection',
         id: 'item-1'
       })
 
       strictEqual(getValue.isEmpty, true)
-
-      tester.restoreAll()
     })
 
     it('should return inUse true when data is referenced', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       // Setup main collection
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: { 'item-1': 'value-1' }
       })
 
       // Setup related collection with reference
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/related',
         value: { 'related-1': { refId: 'item-1' } }
       })
@@ -1431,59 +1387,56 @@ describe('State Plugin - deleteValue Action', () => {
       // Note: In real usage, relations are added during validation
       // For this test, we're testing the deletion logic
 
-      const result = statePlugin.stateDeleteValue({
+      const result = state.stateDeleteValue({
         name: 'test/collection',
         id: 'item-1'
       })
 
       // Should allow deletion if not in use
       strictEqual(result.deleted, true)
-
-      tester.restoreAll()
     })
 
     it('should throw error when collection not found', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       throws(() => {
-        statePlugin.stateDeleteValue({
+        state.stateDeleteValue({
           name: 'non-existent/collection',
           id: 'item-1'
         })
       }, {
         message: /Collection not found/
       })
-
-      tester.restoreAll()
     })
 
     it('should not throw when ID not found', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      const result = statePlugin.stateDeleteValue({
+      const result = state.stateDeleteValue({
         name: 'test/collection',
         id: 'non-existent'
       })
 
       // Should complete without error
       ok(result)
-
-      tester.restoreAll()
     })
   })
 
   describe('Cascade deletion', () => {
     it('should delete related data when cascade is true', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       // Setup main collection
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: { 'item-1': 'value-1' }
       })
 
       // Setup related collection
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/related',
         value: { 'related-1': 'related-value' }
       })
@@ -1491,23 +1444,22 @@ describe('State Plugin - deleteValue Action', () => {
       // Note: In real usage, relations are managed by the state plugin
       // For this test, we're testing the cascade parameter
 
-      const result = statePlugin.stateDeleteValue({
+      const result = state.stateDeleteValue({
         name: 'test/collection',
         id: 'item-1',
         cascade: true
       })
 
       strictEqual(result.deleted, true)
-
-      tester.restoreAll()
     })
   })
 
   describe('Event dispatching', () => {
     it('should dispatch delete event', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: 'value-1',
         options: { id: 'item-1' }
@@ -1517,7 +1469,7 @@ describe('State Plugin - deleteValue Action', () => {
       let eventValue = null
 
       // Add listener
-      statePlugin.stateAddListener({
+      state.stateAddListener({
         name: 'test/collection',
         on: 'delete',
         handler: (value) => {
@@ -1526,7 +1478,7 @@ describe('State Plugin - deleteValue Action', () => {
         }
       })
 
-      statePlugin.stateDeleteValue({
+      state.stateDeleteValue({
         name: 'test/collection',
         id: 'item-1'
       })
@@ -1534,21 +1486,20 @@ describe('State Plugin - deleteValue Action', () => {
       strictEqual(eventFired, true)
       ok(eventValue, 'Event should have value')
       strictEqual(eventValue.id, 'item-1')
-
-      tester.restoreAll()
     })
 
     it('should not dispatch event when stopPropagation is true', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: { 'item-1': 'value-1' }
       })
 
       let eventFired = false
 
-      statePlugin.stateAddListener({
+      state.stateAddListener({
         name: 'test/collection',
         on: 'delete',
         handler: () => {
@@ -1556,24 +1507,27 @@ describe('State Plugin - deleteValue Action', () => {
         }
       })
 
-      statePlugin.stateDeleteValue({
+      state.stateDeleteValue({
         name: 'test/collection',
         id: 'item-1',
         stopPropagation: true
       })
 
       strictEqual(eventFired, false)
-
-      tester.restoreAll()
     })
   })
 })
 
 describe('State Plugin - find Action', () => {
-  it('should find all items in collection', async (t) => {
-    const { tester, statePlugin } = setupStatePlugin(t)
+  afterEach(() => {
+    state.restore()
+  })
 
-    statePlugin.stateSetValue({
+  it('should find all items in collection', async (t) => {
+    const stateData = createStateData()
+    state.setup(stateData)
+
+    state.stateSetValue({
       name: 'test/collection',
       value: {
         'item-1': { name: 'Item 1' },
@@ -1583,19 +1537,18 @@ describe('State Plugin - find Action', () => {
       options: { replace: true }
     })
 
-    const results = statePlugin.stateFind({
+    const results = state.stateFind({
       name: 'test/collection'
     })
 
     strictEqual(results.length, 3)
-
-    tester.restoreAll()
   })
 
   it('should filter results with where conditions', async (t) => {
-    const { tester, statePlugin } = setupStatePlugin(t)
+    const stateData = createStateData()
+    state.setup(stateData)
 
-    statePlugin.stateSetValue({
+    state.stateSetValue({
       name: 'test/collection',
       value: {
         'item-1': {
@@ -1614,7 +1567,7 @@ describe('State Plugin - find Action', () => {
       options: { replace: true }
     })
 
-    const results = statePlugin.stateFind({
+    const results = state.stateFind({
       name: 'test/collection',
       where: [
         {
@@ -1628,14 +1581,13 @@ describe('State Plugin - find Action', () => {
     strictEqual(results.length, 2)
     strictEqual(results[0].item.status, 'active')
     strictEqual(results[1].item.status, 'active')
-
-    tester.restoreAll()
   })
 
   it('should expand related data', async (t) => {
-    const { tester, statePlugin } = setupStatePlugin(t)
+    const stateData = createStateData()
+    state.setup(stateData)
 
-    statePlugin.stateSetValue({
+    state.stateSetValue({
       name: 'test/collection',
       value: {
         'item-1': {
@@ -1645,46 +1597,48 @@ describe('State Plugin - find Action', () => {
       }
     })
 
-    statePlugin.stateSetValue({
+    state.stateSetValue({
       name: 'test/related',
       value: {
         'related-1': { name: 'Related Item' }
       }
     })
 
-    const results = statePlugin.stateFind({
+    const results = state.stateFind({
       name: 'test/collection',
       options: { expand: true }
     })
 
     ok(results[0].expand, 'Should have expand property')
-
-    tester.restoreAll()
   })
 
   it('should return empty array when collection not found', async (t) => {
-    const { tester, statePlugin } = setupStatePlugin(t)
+    const stateData = createStateData()
+    state.setup(stateData)
 
     throws(() => {
-      statePlugin.stateFind({
+      state.stateFind({
         name: 'non-existent/collection'
       })
     }, {
       message: 'No collection found: "non-existent/collection"'
     })
-
-    tester.restoreAll()
   })
 })
 
 describe('State Plugin - Event Listeners', () => {
+  afterEach(() => {
+    state.restore()
+  })
+
   describe('addListener', () => {
     it('should add listener to collection', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       let eventFired = false
 
-      const handlerId = statePlugin.stateAddListener({
+      const handlerId = state.stateAddListener({
         name: 'test/collection',
         on: 'update',
         handler: () => {
@@ -1695,22 +1649,21 @@ describe('State Plugin - Event Listeners', () => {
       ok(handlerId, 'Should return handler ID')
 
       // Trigger event
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: { 'item-1': 'value-1' }
       })
 
       strictEqual(eventFired, true)
-
-      tester.restoreAll()
     })
 
     it('should add listener to specific item', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       let eventFired = false
 
-      statePlugin.stateAddListener({
+      state.stateAddListener({
         name: 'test/collection',
         id: 'item-1',
         on: 'update',
@@ -1720,23 +1673,22 @@ describe('State Plugin - Event Listeners', () => {
       })
 
       // Update specific item
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: 'value-1',
         options: { id: 'item-1' }
       })
 
       strictEqual(eventFired, true)
-
-      tester.restoreAll()
     })
 
     it('should add priority listener', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       const order = []
 
-      statePlugin.stateAddListener({
+      state.stateAddListener({
         name: 'test/collection',
         on: 'update',
         priority: 1,
@@ -1745,7 +1697,7 @@ describe('State Plugin - Event Listeners', () => {
         }
       })
 
-      statePlugin.stateAddListener({
+      state.stateAddListener({
         name: 'test/collection',
         on: 'update',
         priority: 2,
@@ -1754,7 +1706,7 @@ describe('State Plugin - Event Listeners', () => {
         }
       })
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: { 'item-1': 'value-1' }
       })
@@ -1762,16 +1714,15 @@ describe('State Plugin - Event Listeners', () => {
       // Priority listeners should execute in order
       strictEqual(order[0], 'priority-1')
       strictEqual(order[1], 'priority-2')
-
-      tester.restoreAll()
     })
 
     it('should add capture-all listener', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       let eventCount = 0
 
-      statePlugin.stateAddListener({
+      state.stateAddListener({
         name: 'test/collection',
         on: 'update',
         captureAll: true,
@@ -1781,27 +1732,26 @@ describe('State Plugin - Event Listeners', () => {
       })
 
       // Multiple updates
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: { 'item-1': 'value-1' }
       })
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: { 'item-2': 'value-2' }
       })
 
       strictEqual(eventCount, 2)
-
-      tester.restoreAll()
     })
 
     it('should force event even with stopPropagation', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       let eventFired = false
 
-      statePlugin.stateAddListener({
+      state.stateAddListener({
         name: 'test/collection',
         on: 'update',
         force: true,
@@ -1810,41 +1760,39 @@ describe('State Plugin - Event Listeners', () => {
         }
       })
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: { 'item-1': 'value-1' },
         options: { stopPropagation: true }
       })
 
       strictEqual(eventFired, true)
-
-      tester.restoreAll()
     })
 
     it('should accept string handler (action ID)', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       // Note: This test verifies the structure, actual action dispatch
       // would require the action plugin to be set up
-      const handlerId = statePlugin.stateAddListener({
+      const handlerId = state.stateAddListener({
         name: 'test/collection',
         on: 'update',
         handler: 'some-action-id'
       })
 
       ok(handlerId, 'Should return handler ID')
-
-      tester.restoreAll()
     })
   })
 
   describe('deleteListener', () => {
     it('should delete listener', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       let eventFired = false
 
-      const handlerId = statePlugin.stateAddListener({
+      const handlerId = state.stateAddListener({
         name: 'test/collection',
         on: 'update',
         handler: () => {
@@ -1853,7 +1801,7 @@ describe('State Plugin - Event Listeners', () => {
       })
 
       // Delete listener
-      statePlugin.stateDeleteListener({
+      state.stateDeleteListener({
         name: 'test/collection',
         on: 'update',
         handlerId
@@ -1863,22 +1811,21 @@ describe('State Plugin - Event Listeners', () => {
       eventFired = false
 
       // Trigger event
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: { 'item-1': 'value-1' }
       })
 
       strictEqual(eventFired, false)
-
-      tester.restoreAll()
     })
 
     it('should delete listener from specific item', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       let eventFired = false
 
-      const handlerId = statePlugin.stateAddListener({
+      const handlerId = state.stateAddListener({
         name: 'test/collection',
         id: 'item-1',
         on: 'update',
@@ -1887,45 +1834,44 @@ describe('State Plugin - Event Listeners', () => {
         }
       })
 
-      statePlugin.stateDeleteListener({
+      state.stateDeleteListener({
         name: 'test/collection',
         id: 'item-1',
         on: 'update',
         handlerId
       })
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: 'value-1',
         options: { id: 'item-1' }
       })
 
       strictEqual(eventFired, false)
-
-      tester.restoreAll()
     })
 
     it('should return false with non-existent listener is deleted', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      const result = statePlugin.stateDeleteListener({
+      const result = state.stateDeleteListener({
         name: 'test/collection',
         on: 'update',
         handlerId: 'non-existent'
       })
 
       strictEqual(result, false)
-      tester.restoreAll()
     })
   })
 
   describe('Event dispatching', () => {
     it('should dispatch update event to all listeners', { skip: true }, async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       const events = []
 
-      statePlugin.stateAddListener({
+      state.stateAddListener({
         name: 'test/collection',
         on: 'update',
         handler: (value) => {
@@ -1936,7 +1882,7 @@ describe('State Plugin - Event Listeners', () => {
         }
       })
 
-      statePlugin.stateAddListener({
+      state.stateAddListener({
         name: 'test/collection',
         on: 'update',
         priority: 1,
@@ -1948,7 +1894,7 @@ describe('State Plugin - Event Listeners', () => {
         }
       })
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: 'value-1',
         options: { id: 'item-1' }
@@ -1957,16 +1903,15 @@ describe('State Plugin - Event Listeners', () => {
       strictEqual(events.length, 2)
       strictEqual(events[0].type, 'priority')
       strictEqual(events[1].type, 'all')
-
-      tester.restoreAll()
     })
 
     it('should stop propagation when requested', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       const events = []
 
-      statePlugin.stateAddListener({
+      state.stateAddListener({
         name: 'test/collection',
         on: 'update',
         handler: (value) => {
@@ -1974,7 +1919,7 @@ describe('State Plugin - Event Listeners', () => {
         }
       })
 
-      statePlugin.stateAddListener({
+      state.stateAddListener({
         name: 'test/collection',
         on: 'update',
         handler: (value) => {
@@ -1982,7 +1927,7 @@ describe('State Plugin - Event Listeners', () => {
         }
       })
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: { 'item-1': 'value-1' },
         options: { stopPropagation: true }
@@ -1990,16 +1935,15 @@ describe('State Plugin - Event Listeners', () => {
 
       // With stopPropagation, no listeners should fire
       strictEqual(events.length, 0)
-
-      tester.restoreAll()
     })
 
     it('should dispatch delete event', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       let eventFired = false
 
-      statePlugin.stateAddListener({
+      state.stateAddListener({
         name: 'test/collection',
         on: 'delete',
         handler: () => {
@@ -2007,71 +1951,71 @@ describe('State Plugin - Event Listeners', () => {
         }
       })
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: 'value-1',
         options: { id: 'item-1' }
       })
 
-      statePlugin.stateDeleteValue({
+      state.stateDeleteValue({
         name: 'test/collection',
         id: 'item-1'
       })
 
       strictEqual(eventFired, true)
-
-      tester.restoreAll()
     })
   })
 })
 
 describe('State Plugin - Schema Validation', () => {
+  afterEach(() => {
+    state.restore()
+  })
+
   describe('Type validation', () => {
     it('should validate string type', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       // Note: Schema validation happens during setValue
       // This test verifies the structure exists
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/collection',
         value: { 'item-1': 'string-value' }
       })
 
       ok(result.item)
-
-      tester.restoreAll()
     })
 
     it('should validate number type', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/collection',
         value: { 'item-1': 123 }
       })
 
       ok(result.item)
-
-      tester.restoreAll()
     })
 
     it('should validate boolean type', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/collection',
         value: { 'item-1': true }
       })
 
       ok(result.item)
-
-      tester.restoreAll()
     })
 
     it('should validate object type', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/collection',
         value: {
           'item-1': {
@@ -2082,27 +2026,25 @@ describe('State Plugin - Schema Validation', () => {
       })
 
       ok(result.item)
-
-      tester.restoreAll()
     })
 
     it('should validate array type', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/array',
         value: ['a', 'b', 'c']
       })
 
       ok(result.item)
-
-      tester.restoreAll()
     })
 
     it('should validate function type', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/collection',
         value: {
           'item-1': () => {
@@ -2111,21 +2053,18 @@ describe('State Plugin - Schema Validation', () => {
       })
 
       ok(result.item)
-
-      tester.restoreAll()
     })
 
     it('should validate node type', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/collection',
         value: { 'item-1': { nodeName: 'DIV' } }
       })
 
       ok(result.item)
-
-      tester.restoreAll()
     })
   })
 
@@ -2146,10 +2085,11 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+      const stateData = createStateData([testPlugin])
+      state.setup(stateData)
 
       // Valid object with all required properties
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/user',
         value: {
           name: 'John',
@@ -2161,8 +2101,6 @@ describe('State Plugin - Schema Validation', () => {
         name: 'John',
         email: 'john@example.com'
       })
-
-      tester.restoreAll()
     })
 
     it('should throw error when required property is missing', async (t) => {
@@ -2181,16 +2119,15 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+      const stateData = createStateData([testPlugin])
+      state.setup(stateData)
 
       throws(() => {
-        statePlugin.stateSetValue({
+        state.stateSetValue({
           name: 'test/user',
           value: { name: 'John' }
         })
       })
-
-      tester.restoreAll()
     })
 
     it('should validate unique items in arrays', async (t) => {
@@ -2211,17 +2148,16 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+      const stateData = createStateData([testPlugin])
+      state.setup(stateData)
 
       // Valid array with unique items
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/user',
         value: { tags: ['tag1', 'tag2', 'tag3'] }
       })
 
       deepStrictEqual(result.item.tags, ['tag1', 'tag2', 'tag3'])
-
-      tester.restoreAll()
     })
 
     it('should throw error for unique items violation', async (t) => {
@@ -2242,18 +2178,17 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+      const stateData = createStateData([testPlugin])
+      state.setup(stateData)
 
       throws(() => {
-        statePlugin.stateSetValue({
+        state.stateSetValue({
           name: 'test/users',
           value: { tags: ['tag1', 'tag2', 'tag1'] }
         })
       }, {
         message: 'Array items must be unique'
       })
-
-      tester.restoreAll()
     })
 
     it('should validate additional properties: false', async (t) => {
@@ -2272,10 +2207,11 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+      const stateData = createStateData([testPlugin])
+      state.setup(stateData)
 
       // Valid object with only defined properties
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/user',
         value: {
           name: 'John',
@@ -2287,8 +2223,6 @@ describe('State Plugin - Schema Validation', () => {
         name: 'John',
         age: 30
       })
-
-      tester.restoreAll()
     })
 
     it('should throw error for additional properties violation', async (t) => {
@@ -2307,10 +2241,11 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+      const stateData = createStateData([testPlugin])
+      state.setup(stateData)
 
       throws(() => {
-        statePlugin.stateSetValue({
+        state.stateSetValue({
           name: 'test/user',
           value: {
             name: 'John',
@@ -2319,8 +2254,6 @@ describe('State Plugin - Schema Validation', () => {
           }
         })
       })
-
-      tester.restoreAll()
     })
   })
 
@@ -2342,17 +2275,16 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+      const stateData = createStateData([testPlugin])
+      state.setup(stateData)
 
       // Valid email
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/user',
         value: { email: 'john@example.com' }
       })
 
       strictEqual(result.item.email, 'john@example.com')
-
-      tester.restoreAll()
     })
 
     it('should throw error for invalid pattern', async (t) => {
@@ -2372,16 +2304,15 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+      const stateData = createStateData([testPlugin])
+      state.setup(stateData)
 
       throws(() => {
-        statePlugin.stateSetValue({
+        state.stateSetValue({
           name: 'test/user',
           value: { email: 'not-an-email' }
         })
       })
-
-      tester.restoreAll()
     })
   })
 
@@ -2403,17 +2334,16 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+      const stateData = createStateData([testPlugin])
+      state.setup(stateData)
 
       // Valid enum value
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/user',
         value: { status: 'active' }
       })
 
       strictEqual(result.item.status, 'active')
-
-      tester.restoreAll()
     })
 
     it('should throw error for invalid enum value', async (t) => {
@@ -2433,16 +2363,15 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+      const stateData = createStateData([testPlugin])
+      state.setup(stateData)
 
       throws(() => {
-        statePlugin.stateSetValue({
+        state.stateSetValue({
           name: 'test/user',
           value: { status: 'archived' }
         })
       })
-
-      tester.restoreAll()
     })
   })
 
@@ -2464,17 +2393,16 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+      const stateData = createStateData([testPlugin])
+      state.setup(stateData)
 
       // Valid length
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/user',
         value: { name: 'John' }
       })
 
       strictEqual(result.item.name, 'John')
-
-      tester.restoreAll()
     })
 
     it('should throw error for minLength violation', async (t) => {
@@ -2494,16 +2422,15 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+      const stateData = createStateData([testPlugin])
+      state.setup(stateData)
 
       throws(() => {
-        statePlugin.stateSetValue({
+        state.stateSetValue({
           name: 'test/user',
           value: { name: 'Jo' }
         })
       })
-
-      tester.restoreAll()
     })
 
     it('should validate maxLength', async (t) => {
@@ -2523,17 +2450,16 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+      const stateData = createStateData([testPlugin])
+      state.setup(stateData)
 
       // Valid length
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/user',
         value: { name: 'John' }
       })
 
       strictEqual(result.item.name, 'John')
-
-      tester.restoreAll()
     })
 
     it('should throw error for maxLength violation', async (t) => {
@@ -2553,16 +2479,15 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+      const stateData = createStateData([testPlugin])
+      state.setup(stateData)
 
       throws(() => {
-        statePlugin.stateSetValue({
+        state.stateSetValue({
           name: 'test/user',
           value: { name: 'John' }
         })
       })
-
-      tester.restoreAll()
     })
   })
 
@@ -2584,17 +2509,16 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+      const stateData = createStateData([testPlugin])
+      state.setup(stateData)
 
       // Valid value
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/user',
         value: { age: 25 }
       })
 
       strictEqual(result.item.age, 25)
-
-      tester.restoreAll()
     })
 
     it('should throw error for minimum violation', async (t) => {
@@ -2614,16 +2538,15 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+      const stateData = createStateData([testPlugin])
+      state.setup(stateData)
 
       throws(() => {
-        statePlugin.stateSetValue({
+        state.stateSetValue({
           name: 'test/user',
           value: { age: 15 }
         })
       })
-
-      tester.restoreAll()
     })
 
     it('should validate maximum', async (t) => {
@@ -2643,17 +2566,16 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+      const stateData = createStateData([testPlugin])
+      state.setup(stateData)
 
       // Valid value
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/user',
         value: { age: 50 }
       })
 
       strictEqual(result.item.age, 50)
-
-      tester.restoreAll()
     })
 
     it('should throw error for maximum violation', async (t) => {
@@ -2673,16 +2595,15 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+      const stateData = createStateData([testPlugin])
+      state.setup(stateData)
 
       throws(() => {
-        statePlugin.stateSetValue({
+        state.stateSetValue({
           name: 'test/user',
           value: { age: 150 }
         })
       })
-
-      tester.restoreAll()
     })
 
     it('should validate exclusiveMinimum', async (t) => {
@@ -2702,17 +2623,16 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+      const stateData = createStateData([testPlugin])
+      state.setup(stateData)
 
       // Valid value (greater than 18)
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/user',
         value: { age: 19 }
       })
 
       strictEqual(result.item.age, 19)
-
-      tester.restoreAll()
     })
 
     it('should throw error for exclusiveMinimum violation', async (t) => {
@@ -2732,16 +2652,15 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+      const stateData = createStateData([testPlugin])
+      state.setup(stateData)
 
       throws(() => {
-        statePlugin.stateSetValue({
+        state.stateSetValue({
           name: 'test/user',
           value: { age: 18 }
         })
       })
-
-      tester.restoreAll()
     })
 
     it('should validate exclusiveMaximum', async (t) => {
@@ -2761,17 +2680,16 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+      const stateData = createStateData([testPlugin])
+      state.setup(stateData)
 
       // Valid value (less than 100)
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/user',
         value: { age: 99 }
       })
 
       strictEqual(result.item.age, 99)
-
-      tester.restoreAll()
     })
 
     it('should throw error for exclusiveMaximum violation', async (t) => {
@@ -2791,16 +2709,15 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+      const stateData = createStateData([testPlugin])
+      state.setup(stateData)
 
       throws(() => {
-        statePlugin.stateSetValue({
+        state.stateSetValue({
           name: 'test/user',
           value: { age: 100 }
         })
       })
-
-      tester.restoreAll()
     })
 
     it('should validate multipleOf', async (t) => {
@@ -2820,17 +2737,16 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+      const stateData = createStateData([testPlugin])
+      state.setup(stateData)
 
       // Valid value (multiple of 5)
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/user',
         value: { age: 25 }
       })
 
       strictEqual(result.item.age, 25)
-
-      tester.restoreAll()
     })
 
     it('should throw error for multipleOf violation', async (t) => {
@@ -2850,16 +2766,15 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+      const stateData = createStateData([testPlugin])
+      state.setup(stateData)
 
       throws(() => {
-        statePlugin.stateSetValue({
+        state.stateSetValue({
           name: 'test/user',
           value: { age: 23 }
         })
       })
-
-      tester.restoreAll()
     })
   })
 
@@ -2882,17 +2797,16 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+      const stateData = createStateData([testPlugin])
+      state.setup(stateData)
 
       // Valid array with 2 items
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/user',
         value: { tags: ['tag1', 'tag2'] }
       })
 
       deepStrictEqual(result.item.tags, ['tag1', 'tag2'])
-
-      tester.restoreAll()
     })
 
     it('should throw error for minItems violation', async (t) => {
@@ -2913,16 +2827,15 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+      const stateData = createStateData([testPlugin])
+      state.setup(stateData)
 
       throws(() => {
-        statePlugin.stateSetValue({
+        state.stateSetValue({
           name: 'test/user',
           value: { tags: ['tag1'] }
         })
       })
-
-      tester.restoreAll()
     })
 
     it('should validate maxItems', async (t) => {
@@ -2943,17 +2856,16 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+      const stateData = createStateData([testPlugin])
+      state.setup(stateData)
 
       // Valid array with 3 items
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/user',
         value: { tags: ['tag1', 'tag2', 'tag3'] }
       })
 
       deepStrictEqual(result.item.tags, ['tag1', 'tag2', 'tag3'])
-
-      tester.restoreAll()
     })
 
     it('should throw error for maxItems violation', async (t) => {
@@ -2974,16 +2886,15 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+      const stateData = createStateData([testPlugin])
+      state.setup(stateData)
 
       throws(() => {
-        statePlugin.stateSetValue({
+        state.stateSetValue({
           name: 'test/user',
           value: { tags: ['tag1', 'tag2', 'tag3'] }
         })
       })
-
-      tester.restoreAll()
     })
 
     it('should validate uniqueItems', async (t) => {
@@ -3004,17 +2915,16 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+      const stateData = createStateData([testPlugin])
+      state.setup(stateData)
 
       // Valid array with unique items
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/user',
         value: { tags: ['tag1', 'tag2', 'tag3'] }
       })
 
       deepStrictEqual(result.item.tags, ['tag1', 'tag2', 'tag3'])
-
-      tester.restoreAll()
     })
 
     it('should throw error for uniqueItems violation', async (t) => {
@@ -3035,16 +2945,15 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+      const stateData = createStateData([testPlugin])
+      state.setup(stateData)
 
       throws(() => {
-        statePlugin.stateSetValue({
+        state.stateSetValue({
           name: 'test/user',
           value: { tags: ['tag1', 'tag2', 'tag1'] }
         })
       })
-
-      tester.restoreAll()
     })
 
     it('should validate uniqueItems with objects', async (t) => {
@@ -3071,10 +2980,11 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+      const stateData = createStateData([testPlugin])
+      state.setup(stateData)
 
       // Valid array with unique objects
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/user',
         value: {
           items: [
@@ -3100,8 +3010,6 @@ describe('State Plugin - Schema Validation', () => {
           name: 'Item 2'
         }
       ])
-
-      tester.restoreAll()
     })
   })
 
@@ -3122,10 +3030,11 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+      const stateData = createStateData([testPlugin])
+      state.setup(stateData)
 
       // Valid object with only defined properties
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/user',
         value: {
           name: 'John',
@@ -3137,8 +3046,6 @@ describe('State Plugin - Schema Validation', () => {
         name: 'John',
         age: 30
       })
-
-      tester.restoreAll()
     })
 
     it('should throw error for additionalProperties: false', async (t) => {
@@ -3157,10 +3064,11 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+      const stateData = createStateData([testPlugin])
+      state.setup(stateData)
 
       throws(() => {
-        statePlugin.stateSetValue({
+        state.stateSetValue({
           name: 'test/user',
           value: {
             name: 'John',
@@ -3169,8 +3077,6 @@ describe('State Plugin - Schema Validation', () => {
           }
         })
       })
-
-      tester.restoreAll()
     })
   })
 
@@ -3189,10 +3095,11 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const { tester, statePlugin } = setupStatePlugin(t, [testPlugin])
+      const stateData = createStateData([testPlugin])
+      state.setup(stateData)
 
       // Valid object with pattern-matching properties
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/user',
         value: {
           name: 'John',
@@ -3204,23 +3111,22 @@ describe('State Plugin - Schema Validation', () => {
         name: 'John',
         age: '30'
       })
-
-      tester.restoreAll()
     })
   })
 
   describe('Relationships', () => {
     it('should add relation between collections', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       // Setup main collection
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: { 'item-1': 'value-1' }
       })
 
       // Setup related collection
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/related',
         value: { 'related-1': { refId: 'item-1' } }
       })
@@ -3228,70 +3134,70 @@ describe('State Plugin - Schema Validation', () => {
       // Note: Relations are added during validation
       // This test verifies the structure exists
       ok(true)
-
-      tester.restoreAll()
     })
 
     it('should remove relation when data is deleted', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       // Setup collections
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: { 'item-1': 'value-1' }
       })
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/related',
         value: { 'related-1': 'related-value' }
       })
 
       // Delete item
-      const result = statePlugin.stateDeleteValue({
+      const result = state.stateDeleteValue({
         name: 'test/collection',
         id: 'item-1'
       })
 
       strictEqual(result.deleted, true)
-
-      tester.restoreAll()
     })
   })
 })
 
 describe('State Plugin - Edge Cases', () => {
+  afterEach(() => {
+    state.restore()
+  })
+
   describe('Null and undefined values', () => {
     it('should handle null values', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/collection',
         value: { 'item-1': null }
       })
 
       strictEqual(result.item['item-1'], null)
-
-      tester.restoreAll()
     })
 
     it('should handle undefined values', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/collection',
         value: { 'item-1': undefined }
       })
 
       strictEqual(result.item['item-1'], undefined)
-
-      tester.restoreAll()
     })
 
     it('should not get null value', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       throws(() => {
-        statePlugin.stateSetValue({
+        state.stateSetValue({
           name: 'test/collection',
           value: null,
           options: { id: 'item-1' }
@@ -3299,68 +3205,64 @@ describe('State Plugin - Edge Cases', () => {
       }, {
         message: 'Source was undefined'
       })
-
-      tester.restoreAll()
     })
 
     it('should get undefined value', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: { 'item-1': undefined }
       })
 
-      const result = statePlugin.stateGetValue({
+      const result = state.stateGetValue({
         name: 'test/collection',
         id: 'item-1'
       })
 
       strictEqual(result.item, undefined)
-
-      tester.restoreAll()
     })
   })
 
   describe('Missing data', () => {
     it('should handle missing collection', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       throws(() => {
-        statePlugin.stateGetValue({
+        state.stateGetValue({
           name: 'non-existent/collection'
         })
       },
       {
         message: 'No such collection "non-existent/collection"'
       })
-
-      tester.restoreAll()
     })
 
     it('should handle missing ID', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      const result = statePlugin.stateGetValue({
+      const result = state.stateGetValue({
         name: 'test/collection',
         id: 'non-existent'
       })
 
       strictEqual(result.isEmpty, true)
-
-      tester.restoreAll()
     })
 
     it('should handle missing nested property', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: { name: 'Test' },
         options: { id: 'item-1' }
       })
 
-      const result = statePlugin.stateGetValue({
+      const result = state.stateGetValue({
         name: 'test/collection',
         id: 'item-1',
         options: { position: 'missing.nested.property' }
@@ -3368,77 +3270,72 @@ describe('State Plugin - Edge Cases', () => {
 
       ok(result.isEmpty)
       strictEqual(result.item, undefined)
-
-      tester.restoreAll()
     })
   })
 
   describe('Invalid operations', () => {
     it('should throw error when setting value in non-existent collection', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       throws(() => {
-        statePlugin.stateSetValue({
+        state.stateSetValue({
           name: 'non-existent/collection',
           value: { 'item-1': 'value-1' }
         })
       }, {
         message: /Schema not found/
       })
-
-      tester.restoreAll()
     })
 
     it('should throw error when deleting from non-existent collection', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       throws(() => {
-        statePlugin.stateDeleteValue({
+        state.stateDeleteValue({
           name: 'non-existent/collection',
           id: 'item-1'
         })
       }, {
         message: /Collection not found/
       })
-
-      tester.restoreAll()
     })
 
     it('should handle empty values array', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/collection',
         value: {}
       })
 
       ok(result)
-
-      tester.restoreAll()
     })
 
     it('should handle empty filter conditions', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'test/collection',
         value: { 'item-1': 'value-1' }
       })
 
-      const results = statePlugin.stateFind({
+      const results = state.stateFind({
         name: 'test/collection',
         where: []
       })
 
       strictEqual(results.length, 1)
-
-      tester.restoreAll()
     })
   })
 
   describe('Complex scenarios', () => {
     it('should handle deeply nested structures', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       const deepValue = {
         level1: {
@@ -3454,36 +3351,34 @@ describe('State Plugin - Edge Cases', () => {
         }
       }
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/collection',
         value: { 'item-1': deepValue }
       })
 
       deepStrictEqual(result.item['item-1'], deepValue)
-
-      tester.restoreAll()
     })
 
     it('should handle large collections', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       const largeCollection = {}
       for (let i = 0; i < 100; i++) {
         largeCollection[`item-${i}`] = { value: i }
       }
 
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/collection',
         value: largeCollection
       })
 
       strictEqual(Object.keys(result.item).length, 100)
-
-      tester.restoreAll()
     })
 
     it('should handle circular references in values', async (t) => {
-      const { tester, statePlugin } = setupStatePlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       const obj1 = { name: 'Object 1' }
       const obj2 = {
@@ -3493,55 +3388,57 @@ describe('State Plugin - Edge Cases', () => {
       obj1.ref = obj2
 
       // Note: deepClone should handle circular references
-      const result = statePlugin.stateSetValue({
+      const result = state.stateSetValue({
         name: 'test/collection',
         value: { 'item-1': obj1 }
       })
 
       ok(result.item)
-
-      tester.restoreAll()
     })
   })
 })
 
 describe('State Plugin - Integration Tests', () => {
+  afterEach(() => {
+    state.restore()
+  })
+
   it('should work with multiple collections', async (t) => {
-    const { tester, statePlugin } = setupStatePlugin(t)
+    const stateData = createStateData()
+    state.setup(stateData)
 
     // Set values in multiple collections
-    statePlugin.stateSetValue({
+    state.stateSetValue({
       name: 'test/collection',
       value: 'value-1',
       options: { id: 'item-1' }
     })
 
-    statePlugin.stateSetValue({
+    state.stateSetValue({
       name: 'test/single',
       value: 'value-2'
     })
 
     // Get values from both collections
-    const result1 = statePlugin.stateGetValue({
+    const result1 = state.stateGetValue({
       name: 'test/collection',
       id: 'item-1'
     })
 
-    const result2 = statePlugin.stateGetValue({
+    const result2 = state.stateGetValue({
       name: 'test/single'
     })
 
     strictEqual(result1.item, 'value-1')
     strictEqual(result2.item, 'value-2')
-
-    tester.restoreAll()
   })
 
   it('should handle complex workflow', async (t) => {
-    const { tester, statePlugin } = setupStatePlugin(t)
+    const stateData = createStateData()
+    state.setup(stateData)
 
     // 1. Create initial data
-    statePlugin.stateSetValue({
+    state.stateSetValue({
       name: 'test/collection',
       value: {
         'user-1': {
@@ -3554,7 +3451,7 @@ describe('State Plugin - Integration Tests', () => {
     })
 
     // 2. Update data
-    statePlugin.stateSetValue({
+    state.stateSetValue({
       name: 'test/collection',
       value: {
         name: 'John',
@@ -3565,7 +3462,7 @@ describe('State Plugin - Integration Tests', () => {
     })
 
     // 3. Find filtered data
-    const results = statePlugin.stateFind({
+    const results = state.stateFind({
       name: 'test/collection',
       where: [
         {
@@ -3581,7 +3478,7 @@ describe('State Plugin - Integration Tests', () => {
 
     // 4. Add listener
     let listenerCalled = false
-    statePlugin.stateAddListener({
+    state.stateAddListener({
       name: 'test/collection',
       on: 'update',
       handler: () => {
@@ -3590,7 +3487,7 @@ describe('State Plugin - Integration Tests', () => {
     })
 
     // 5. Update again (should trigger listener)
-    statePlugin.stateSetValue({
+    state.stateSetValue({
       name: 'test/collection',
       value: {
         'user-1': {
@@ -3604,25 +3501,24 @@ describe('State Plugin - Integration Tests', () => {
     strictEqual(listenerCalled, true)
 
     // 6. Delete
-    const deleteResult = statePlugin.stateDeleteValue({
+    const deleteResult = state.stateDeleteValue({
       name: 'test/collection',
       id: 'user-1'
     })
 
     strictEqual(deleteResult.deleted, true)
-
-    tester.restoreAll()
   })
 
   it('should handle concurrent operations', async (t) => {
-    const { tester, statePlugin } = setupStatePlugin(t)
+    const stateData = createStateData()
+    state.setup(stateData)
 
     // Set multiple values
     const promises = []
     for (let i = 0; i < 10; i++) {
       promises.push(
         Promise.resolve(
-          statePlugin.stateSetValue({
+          state.stateSetValue({
             name: 'test/collection',
             value: { [`item-${i}`]: `value-${i}` }
           })
@@ -3633,40 +3529,39 @@ describe('State Plugin - Integration Tests', () => {
     await Promise.all(promises)
 
     // Verify all values were set
-    const results = statePlugin.stateFind({
+    const results = state.stateFind({
       name: 'test/collection'
     })
 
     strictEqual(results.length, 10)
-
-    tester.restoreAll()
   })
 
   it('should maintain data consistency', async (t) => {
-    const { tester, statePlugin } = setupStatePlugin(t)
+    const stateData = createStateData()
+    state.setup(stateData)
 
     // Set initial value
-    statePlugin.stateSetValue({
+    state.stateSetValue({
       name: 'test/collection',
       value: 'initial',
       options: { id: 'item-1' }
     })
 
     // Get initial value
-    const initial = statePlugin.stateGetValue({
+    const initial = state.stateGetValue({
       name: 'test/collection',
       id: 'item-1'
     })
 
     // Update value
-    statePlugin.stateSetValue({
+    state.stateSetValue({
       name: 'test/collection',
       value: 'updated',
       options: { id: 'item-1' }
     })
 
     // Get updated value
-    const updated = statePlugin.stateGetValue({
+    const updated = state.stateGetValue({
       name: 'test/collection',
       id: 'item-1'
     })
@@ -3674,14 +3569,17 @@ describe('State Plugin - Integration Tests', () => {
     // Verify consistency
     strictEqual(initial.item, 'initial')
     strictEqual(updated.item, 'updated')
-
-    tester.restoreAll()
   })
 })
 
 describe('State Plugin - unsafeSetValue Action', () => {
+  afterEach(() => {
+    state.restore()
+  })
+
   it('should set value without validation', async (t) => {
-    const { tester, statePlugin } = setupStatePlugin(t)
+    const stateData = createStateData()
+    state.setup(stateData)
     const data_1 = {
       item_1: { name: 'Sarah' }
     }
@@ -3690,13 +3588,13 @@ describe('State Plugin - unsafeSetValue Action', () => {
     }
 
     // init state
-    statePlugin.stateUnsafeSetValue({
+    state.stateUnsafeSetValue({
       name: 'test/collection',
       value: data_1
     })
 
     // update state
-    const result = statePlugin.stateUnsafeSetValue({
+    const result = state.stateUnsafeSetValue({
       name: 'test/collection',
       value: data_2
     })
@@ -3708,7 +3606,7 @@ describe('State Plugin - unsafeSetValue Action', () => {
     strictEqual(test_1.id, 'item_2')
     deepEqual(test_1.item, data_2.item_2)
 
-    const collection = statePlugin.stateGetValue({
+    const collection = state.stateGetValue({
       name: 'test/collection'
     })
 
@@ -3718,16 +3616,15 @@ describe('State Plugin - unsafeSetValue Action', () => {
     const test_2 = collection.item[0]
     strictEqual(test_2.id, 'item_1')
     deepEqual(test_2.item, data_1.item_1)
-
-    tester.restoreAll()
   })
 
   it('should set value with ID', async (t) => {
-    const { tester, statePlugin } = setupStatePlugin(t)
+    const stateData = createStateData()
+    state.setup(stateData)
     const value = {
       name: 'Joe'
     }
-    const result = statePlugin.stateUnsafeSetValue({
+    const result = state.stateUnsafeSetValue({
       name: 'test/collection',
       value,
       options: { id: 'custom-id' }
@@ -3738,7 +3635,7 @@ describe('State Plugin - unsafeSetValue Action', () => {
     deepStrictEqual(result.item, value)
 
     // Verify the value was actually set
-    const collection = statePlugin.stateGetValue({
+    const collection = state.stateGetValue({
       name: 'test/collection'
     })
 
@@ -3746,15 +3643,14 @@ describe('State Plugin - unsafeSetValue Action', () => {
     strictEqual(collection.item.length, 1)
     strictEqual(collection.item[0].id, 'custom-id')
     deepStrictEqual(collection.item[0].item, value)
-
-    tester.restoreAll()
   })
 
   it('should replace entire collection', async (t) => {
-    const { tester, statePlugin } = setupStatePlugin(t)
+    const stateData = createStateData()
+    state.setup(stateData)
 
     // Set initial value
-    statePlugin.stateUnsafeSetValue({
+    state.stateUnsafeSetValue({
       name: 'test/collection',
       value: {
         'item-1': 'value-1',
@@ -3763,7 +3659,7 @@ describe('State Plugin - unsafeSetValue Action', () => {
     })
 
     // Verify initial value exists
-    const initial = statePlugin.stateGetValue({
+    const initial = state.stateGetValue({
       name: 'test/collection'
     })
 
@@ -3773,7 +3669,7 @@ describe('State Plugin - unsafeSetValue Action', () => {
     strictEqual(initial.item[1].id, 'item-2')
 
     // Replace with new value
-    const result = statePlugin.stateUnsafeSetValue({
+    const result = state.stateUnsafeSetValue({
       name: 'test/collection',
       value: { 'item-3': 'value-3' },
       options: { replace: true }
@@ -3786,7 +3682,7 @@ describe('State Plugin - unsafeSetValue Action', () => {
     strictEqual(result.item[0].item, 'value-3')
 
     // Verify the collection was actually replaced
-    const collection = statePlugin.stateGetValue({
+    const collection = state.stateGetValue({
       name: 'test/collection'
     })
 
@@ -3794,17 +3690,16 @@ describe('State Plugin - unsafeSetValue Action', () => {
     strictEqual(collection.item.length, 1)
     strictEqual(collection.item[0].id, 'item-3')
     strictEqual(result.item[0].item, 'value-3')
-
-    tester.restoreAll()
   })
 
   it('should dispatch update event', async (t) => {
-    const { tester, statePlugin } = setupStatePlugin(t)
+    const stateData = createStateData()
+    state.setup(stateData)
 
     let eventFired = false
     let eventValue = null
 
-    statePlugin.stateAddListener({
+    state.stateAddListener({
       name: 'test/collection',
       on: 'update',
       handler: (value) => {
@@ -3813,7 +3708,7 @@ describe('State Plugin - unsafeSetValue Action', () => {
       }
     })
 
-    const result = statePlugin.stateUnsafeSetValue({
+    const result = state.stateUnsafeSetValue({
       name: 'test/collection',
       value: 'value-1',
       options: { id: 'item-1' }
@@ -3828,7 +3723,7 @@ describe('State Plugin - unsafeSetValue Action', () => {
     strictEqual(eventValue.item, 'value-1')
 
     // Verify the value was actually set
-    const collection = statePlugin.stateGetValue({
+    const collection = state.stateGetValue({
       name: 'test/collection'
     })
 
@@ -3836,16 +3731,15 @@ describe('State Plugin - unsafeSetValue Action', () => {
     strictEqual(collection.item.length, 1)
     strictEqual(collection.item[0].id, result.id)
     strictEqual(collection.item[0].item, 'value-1')
-
-    tester.restoreAll()
   })
 
   it('should stop propagation when requested', async (t) => {
-    const { tester, statePlugin } = setupStatePlugin(t)
+    const stateData = createStateData()
+    state.setup(stateData)
 
     let eventFired = false
 
-    statePlugin.stateAddListener({
+    state.stateAddListener({
       name: 'test/collection',
       on: 'update',
       handler: () => {
@@ -3853,7 +3747,7 @@ describe('State Plugin - unsafeSetValue Action', () => {
       }
     })
 
-    const result = statePlugin.stateUnsafeSetValue({
+    const result = state.stateUnsafeSetValue({
       name: 'test/collection',
       value: 'value-1',
       options: {
@@ -3871,7 +3765,7 @@ describe('State Plugin - unsafeSetValue Action', () => {
     strictEqual(result.item, 'value-1')
 
     // Verify the value was actually set in state
-    const collection = statePlugin.stateGetValue({
+    const collection = state.stateGetValue({
       name: 'test/collection'
     })
 
@@ -3879,56 +3773,58 @@ describe('State Plugin - unsafeSetValue Action', () => {
     strictEqual(collection.item.length, 1)
     strictEqual(collection.item[0].id, 'item-1')
     strictEqual(collection.item[0].item, 'value-1')
-
-    tester.restoreAll()
   })
 })
 
 describe('State Plugin - generateId Action', () => {
-  it('should generate unique ID', async (t) => {
-    const { tester, statePlugin } = setupStatePlugin(t)
+  afterEach(() => {
+    state.restore()
+  })
 
-    const id1 = statePlugin.stateGenerateId()
-    const id2 = statePlugin.stateGenerateId()
+  it('should generate unique ID', async (t) => {
+    const stateData = createStateData()
+    state.setup(stateData)
+
+    const id1 = state.stateGenerateId()
+    const id2 = state.stateGenerateId()
 
     strictEqual(typeof id1, 'string')
     strictEqual(typeof id2, 'string')
     strictEqual(id1 === id2, false)
-
-    tester.restoreAll()
   })
 
   it('should generate ID with correct length', async (t) => {
-    const { tester, statePlugin } = setupStatePlugin(t)
+    const stateData = createStateData()
+    state.setup(stateData)
 
-    const id = statePlugin.stateGenerateId()
+    const id = state.stateGenerateId()
 
     // ID should be a non-empty string
     ok(id.length > 0)
-
-    tester.restoreAll()
   })
 })
 
 describe('State Plugin - getSchema Action', () => {
-  it('should get schema by path', async (t) => {
-    const { tester, statePlugin } = setupStatePlugin(t)
+  afterEach(() => {
+    state.restore()
+  })
 
-    const schema = statePlugin.stateGetSchema('test/collection')
+  it('should get schema by path', async (t) => {
+    const stateData = createStateData()
+    state.setup(stateData)
+
+    const schema = state.stateGetSchema('test/collection')
 
     ok(schema, 'Schema should exist')
     strictEqual(schema.type, 'collection')
-
-    tester.restoreAll()
   })
 
   it('should return undefined for non-existent schema', async (t) => {
-    const { tester, statePlugin } = setupStatePlugin(t)
+    const stateData = createStateData()
+    state.setup(stateData)
 
-    const schema = statePlugin.stateGetSchema('non-existent/schema')
+    const schema = state.stateGetSchema('non-existent/schema')
 
     strictEqual(schema, undefined)
-
-    tester.restoreAll()
   })
 })
