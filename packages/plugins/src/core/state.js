@@ -442,7 +442,7 @@ export const state = createPlugin('state', {
           if (Object.hasOwnProperty.call(data.item, property)) {
             value = data.item[property]
           } else {
-            break
+            return false
           }
         }
       }
