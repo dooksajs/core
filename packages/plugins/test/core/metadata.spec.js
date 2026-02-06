@@ -1,27 +1,31 @@
-import { describe, it, beforeEach, afterEach } from 'node:test'
+import { describe, it, afterEach } from 'node:test'
 import { strictEqual, deepStrictEqual, ok } from 'node:assert/strict'
-import { mockPlugin, mockWindow } from '@dooksa/test'
+import { metadata, state } from '#core'
+import { mockWindow, mockStateData } from '@dooksa/test'
 
 describe('Metadata', function () {
+  afterEach(() => {
+    state.restore()
+    metadata.restore()
+  })
+
   describe('Setup', function () {
     it('should successfully set default languages', async function (t) {
       const mockWindowInstance = mockWindow(t)
-      const mock = await mockPlugin(this, {
-        name: 'metadata',
-        platform: 'client'
-      })
+      const stateData = mockStateData([metadata])
+      state.setup(stateData)
 
       // set up metadata
-      mock.client.setup.metadata()
+      metadata.setup()
 
       // get metadata default values
-      const defaultLanguage = mock.client.method.stateGetValue({
+      const defaultLanguage = state.stateGetValue({
         name: 'metadata/defaultLanguage'
       })
-      const currentLanguage = mock.client.method.stateGetValue({
+      const currentLanguage = state.stateGetValue({
         name: 'metadata/currentLanguage'
       })
-      const languages = mock.client.method.stateGetValue({
+      const languages = state.stateGetValue({
         name: 'metadata/languages'
       })
 
@@ -30,28 +34,25 @@ describe('Metadata', function () {
       deepStrictEqual(languages.item, ['en'])
 
       mockWindowInstance.restore()
-      mock.restore()
     })
 
     it('should successfully set current language', async function (t) {
       // set current language to fr
       const mockWindowInstance = mockWindow(t, { search: '?lang=fr' })
-      const mock = await mockPlugin(this, {
-        name: 'metadata',
-        platform: 'client'
-      })
+      const stateData = mockStateData([metadata])
+      state.setup(stateData)
 
-      mock.client.setup.metadata({
+      metadata.setup({
         languages: ['en', 'fr']
       })
 
-      const defaultLanguage = mock.client.method.stateGetValue({
+      const defaultLanguage = state.stateGetValue({
         name: 'metadata/defaultLanguage'
       })
-      const currentLanguage = mock.client.method.stateGetValue({
+      const currentLanguage = state.stateGetValue({
         name: 'metadata/currentLanguage'
       })
-      const languages = mock.client.method.stateGetValue({
+      const languages = state.stateGetValue({
         name: 'metadata/languages'
       })
 
@@ -60,28 +61,25 @@ describe('Metadata', function () {
       deepStrictEqual(languages.item, ['en', 'fr'])
 
       mockWindowInstance.restore()
-      mock.restore()
     })
 
     it('should use custom default language when provided', async function (t) {
       const mockWindowInstance = mockWindow(t, { search: '?lang=fr' })
-      const mock = await mockPlugin(this, {
-        name: 'metadata',
-        platform: 'client'
-      })
+      const stateData = mockStateData([metadata])
+      state.setup(stateData)
 
-      mock.client.setup.metadata({
+      metadata.setup({
         defaultLanguage: 'fr',
         languages: ['en', 'fr']
       })
 
-      const defaultLanguage = mock.client.method.stateGetValue({
+      const defaultLanguage = state.stateGetValue({
         name: 'metadata/defaultLanguage'
       })
-      const currentLanguage = mock.client.method.stateGetValue({
+      const currentLanguage = state.stateGetValue({
         name: 'metadata/currentLanguage'
       })
-      const languages = mock.client.method.stateGetValue({
+      const languages = state.stateGetValue({
         name: 'metadata/languages'
       })
 
@@ -90,96 +88,84 @@ describe('Metadata', function () {
       deepStrictEqual(languages.item, ['en', 'fr'])
 
       mockWindowInstance.restore()
-      mock.restore()
     })
 
     it('should ignore URL language when it equals default language', async function (t) {
       const mockWindowInstance = mockWindow(t, { search: '?lang=en' })
-      const mock = await mockPlugin(this, {
-        name: 'metadata',
-        platform: 'client'
-      })
+      const stateData = mockStateData([metadata])
+      state.setup(stateData)
 
-      mock.client.setup.metadata({
+      metadata.setup({
         languages: ['en', 'fr']
       })
 
-      const currentLanguage = mock.client.method.stateGetValue({
+      const currentLanguage = state.stateGetValue({
         name: 'metadata/currentLanguage'
       })
 
       strictEqual(currentLanguage.item, '')
 
       mockWindowInstance.restore()
-      mock.restore()
     })
 
     it('should ignore URL language when not in available languages', async function (t) {
       const mockWindowInstance = mockWindow(t, { search: '?lang=de' })
-      const mock = await mockPlugin(this, {
-        name: 'metadata',
-        platform: 'client'
-      })
+      const stateData = mockStateData([metadata])
+      state.setup(stateData)
 
-      mock.client.setup.metadata({
+      metadata.setup({
         languages: ['en', 'fr']
       })
 
-      const currentLanguage = mock.client.method.stateGetValue({
+      const currentLanguage = state.stateGetValue({
         name: 'metadata/currentLanguage'
       })
 
       strictEqual(currentLanguage.item, '')
 
       mockWindowInstance.restore()
-      mock.restore()
     })
 
     it('should handle empty languages array', async function (t) {
       const mockWindowInstance = mockWindow(t)
-      const mock = await mockPlugin(this, {
-        name: 'metadata',
-        platform: 'client'
-      })
+      const stateData = mockStateData([metadata])
+      state.setup(stateData)
 
-      mock.client.setup.metadata({
+      metadata.setup({
         languages: []
       })
 
-      const languages = mock.client.method.stateGetValue({
+      const languages = state.stateGetValue({
         name: 'metadata/languages'
       })
 
       deepStrictEqual(languages.item, [])
 
       mockWindowInstance.restore()
-      mock.restore()
     })
 
     it('should preserve existing state values when no options provided', async function (t) {
       const mockWindowInstance = mockWindow(t)
-      const mock = await mockPlugin(this, {
-        name: 'metadata',
-        platform: 'client'
-      })
+      const stateData = mockStateData([metadata])
+      state.setup(stateData)
 
       // Set initial state
-      mock.client.method.stateSetValue({
+      state.stateSetValue({
         name: 'metadata/languages',
         value: ['es', 'de']
       })
-      mock.client.method.stateSetValue({
+      state.stateSetValue({
         name: 'metadata/defaultLanguage',
         value: 'es'
       })
 
       // Setup without options
-      mock.client.setup.metadata()
+      metadata.setup()
 
-      const languages = mock.client.method.stateGetValue({
+      const languages = state.stateGetValue({
         name: 'metadata/languages'
       })
-      const defaultLanguage = mock.client.method.stateGetValue({
+      const defaultLanguage = state.stateGetValue({
         name: 'metadata/defaultLanguage'
       })
 
@@ -187,35 +173,32 @@ describe('Metadata', function () {
       strictEqual(defaultLanguage.item, 'es')
 
       mockWindowInstance.restore()
-      mock.restore()
     })
   })
 
   describe('Change language', function () {
     it('should successfully change current language', async function (t) {
       const mockWindowInstance = mockWindow(t, { search: '' })
-      const mock = await mockPlugin(this, {
-        name: 'metadata',
-        platform: 'client'
-      })
+      const stateData = mockStateData([metadata])
+      state.setup(stateData)
 
-      mock.client.setup.metadata({
+      metadata.setup({
         languages: ['en', 'fr']
       })
 
       // change current language
-      mock.client.method.stateSetValue({
+      state.stateSetValue({
         name: 'metadata/currentLanguage',
         value: 'fr'
       })
 
-      const defaultLanguage = mock.client.method.stateGetValue({
+      const defaultLanguage = state.stateGetValue({
         name: 'metadata/defaultLanguage'
       })
-      const currentLanguage = mock.client.method.stateGetValue({
+      const currentLanguage = state.stateGetValue({
         name: 'metadata/currentLanguage'
       })
-      const languages = mock.client.method.stateGetValue({
+      const languages = state.stateGetValue({
         name: 'metadata/languages'
       })
 
@@ -224,33 +207,30 @@ describe('Metadata', function () {
       deepStrictEqual(languages.item, ['en', 'fr'])
 
       mockWindowInstance.restore()
-      mock.restore()
     })
 
     it('should revert language if language does not exist', async function (t) {
       const mockWindowInstance = mockWindow(t, { search: '?lang=fr' })
-      const mock = await mockPlugin(this, {
-        name: 'metadata',
-        platform: 'client'
-      })
+      const stateData = mockStateData([metadata])
+      state.setup(stateData)
 
-      mock.client.setup.metadata({
+      metadata.setup({
         languages: ['en', 'fr']
       })
 
       // change language
-      mock.client.method.stateSetValue({
+      state.stateSetValue({
         name: 'metadata/currentLanguage',
         value: 'de'
       })
 
-      const defaultLanguage = mock.client.method.stateGetValue({
+      const defaultLanguage = state.stateGetValue({
         name: 'metadata/defaultLanguage'
       })
-      const currentLanguage = mock.client.method.stateGetValue({
+      const currentLanguage = state.stateGetValue({
         name: 'metadata/currentLanguage'
       })
-      const languages = mock.client.method.stateGetValue({
+      const languages = state.stateGetValue({
         name: 'metadata/languages'
       })
 
@@ -259,33 +239,30 @@ describe('Metadata', function () {
       deepStrictEqual(languages.item, ['en', 'fr'])
 
       mockWindowInstance.restore()
-      mock.restore()
     })
 
     it('should not set language is the same as the default', async function (t) {
       const mockWindowInstance = mockWindow(t)
-      const mock = await mockPlugin(this, {
-        name: 'metadata',
-        platform: 'client'
-      })
+      const stateData = mockStateData([metadata])
+      state.setup(stateData)
 
-      mock.client.setup.metadata({
+      metadata.setup({
         languages: ['en', 'fr']
       })
 
       // change language
-      mock.client.method.stateSetValue({
+      state.stateSetValue({
         name: 'metadata/currentLanguage',
         value: 'en'
       })
 
-      const defaultLanguage = mock.client.method.stateGetValue({
+      const defaultLanguage = state.stateGetValue({
         name: 'metadata/defaultLanguage'
       })
-      const currentLanguage = mock.client.method.stateGetValue({
+      const currentLanguage = state.stateGetValue({
         name: 'metadata/currentLanguage'
       })
-      const languages = mock.client.method.stateGetValue({
+      const languages = state.stateGetValue({
         name: 'metadata/languages'
       })
 
@@ -294,44 +271,38 @@ describe('Metadata', function () {
       deepStrictEqual(languages.item, ['en', 'fr'])
 
       mockWindowInstance.restore()
-      mock.restore()
     })
 
     it('should revert to empty string when previous value is undefined', async function (t) {
       const mockWindowInstance = mockWindow(t)
-      const mock = await mockPlugin(this, {
-        name: 'metadata',
-        platform: 'client'
-      })
+      const stateData = mockStateData([metadata])
+      state.setup(stateData)
 
-      mock.client.setup.metadata({
+      metadata.setup({
         languages: ['en', 'fr']
       })
 
       // Set to invalid language from empty state
-      mock.client.method.stateSetValue({
+      state.stateSetValue({
         name: 'metadata/currentLanguage',
         value: 'de'
       })
 
-      const currentLanguage = mock.client.method.stateGetValue({
+      const currentLanguage = state.stateGetValue({
         name: 'metadata/currentLanguage'
       })
 
       strictEqual(currentLanguage.item, '')
 
       mockWindowInstance.restore()
-      mock.restore()
     })
 
     it('should allow changing to any valid language', async function (t) {
       const mockWindowInstance = mockWindow(t)
-      const mock = await mockPlugin(this, {
-        name: 'metadata',
-        platform: 'client'
-      })
+      const stateData = mockStateData([metadata])
+      state.setup(stateData)
 
-      mock.client.setup.metadata({
+      metadata.setup({
         languages: ['en', 'fr', 'es', 'de']
       })
 
@@ -339,12 +310,12 @@ describe('Metadata', function () {
       const languages = ['fr', 'es', 'de']
 
       for (const lang of languages) {
-        mock.client.method.stateSetValue({
+        state.stateSetValue({
           name: 'metadata/currentLanguage',
           value: lang
         })
 
-        const currentLanguage = mock.client.method.stateGetValue({
+        const currentLanguage = state.stateGetValue({
           name: 'metadata/currentLanguage'
         })
 
@@ -352,114 +323,99 @@ describe('Metadata', function () {
       }
 
       mockWindowInstance.restore()
-      mock.restore()
     })
   })
 
   describe('State Schema', function () {
     it('should have correct schema for currentLanguage', async function (t) {
       const mockWindowInstance = mockWindow(t)
-      const mock = await mockPlugin(this, {
-        name: 'metadata',
-        platform: 'client'
-      })
+      const stateData = mockStateData([metadata])
+      state.setup(stateData)
+      metadata.setup()
 
-      const schema = mock.client.method.stateGetSchema('metadata/currentLanguage')
+      const schema = state.stateGetSchema('metadata/currentLanguage')
 
       strictEqual(schema.type, 'string')
 
       mockWindowInstance.restore()
-      mock.restore()
     })
 
     it('should have correct schema for defaultLanguage', async function (t) {
       const mockWindowInstance = mockWindow(t)
-      const mock = await mockPlugin(this, {
-        name: 'metadata',
-        platform: 'client'
-      })
+      const stateData = mockStateData([metadata])
+      state.setup(stateData)
+      metadata.setup()
 
-      const schema = mock.client.method.stateGetSchema('metadata/defaultLanguage')
+      const schema = state.stateGetSchema('metadata/defaultLanguage')
 
       strictEqual(schema.type, 'string')
 
       mockWindowInstance.restore()
-      mock.restore()
     })
 
     it('should have correct schema for languages', async function (t) {
       const mockWindowInstance = mockWindow(t)
-      const mock = await mockPlugin(this, {
-        name: 'metadata',
-        platform: 'client'
-      })
+      const stateData = mockStateData([metadata])
+      state.setup(stateData)
+      metadata.setup()
 
-      const schema = mock.client.method.stateGetSchema('metadata/languages')
+      const schema = state.stateGetSchema('metadata/languages')
 
       strictEqual(schema.type, 'array')
 
       mockWindowInstance.restore()
-      mock.restore()
     })
 
     it('should have correct schema for plugins collection', async function (t) {
       const mockWindowInstance = mockWindow(t)
-      const mock = await mockPlugin(this, {
-        name: 'metadata',
-        platform: 'client'
-      })
+      const stateData = mockStateData([metadata])
+      state.setup(stateData)
+      metadata.setup()
 
-      const schema = mock.client.method.stateGetSchema('metadata/plugins')
+      const schema = state.stateGetSchema('metadata/plugins')
 
       strictEqual(schema.type, 'collection')
 
       mockWindowInstance.restore()
-      mock.restore()
     })
 
     it('should have correct schema for actions collection', async function (t) {
       const mockWindowInstance = mockWindow(t)
-      const mock = await mockPlugin(this, {
-        name: 'metadata',
-        platform: 'client'
-      })
+      const stateData = mockStateData([metadata])
+      state.setup(stateData)
+      metadata.setup()
 
-      const schema = mock.client.method.stateGetSchema('metadata/actions')
+      const schema = state.stateGetSchema('metadata/actions')
 
       strictEqual(schema.type, 'collection')
 
       mockWindowInstance.restore()
-      mock.restore()
     })
 
     it('should have correct schema for parameters collection', async function (t) {
       const mockWindowInstance = mockWindow(t)
-      const mock = await mockPlugin(this, {
-        name: 'metadata',
-        platform: 'client'
-      })
+      const stateData = mockStateData([metadata])
+      state.setup(stateData)
+      metadata.setup()
 
-      const schema = mock.client.method.stateGetSchema('metadata/parameters')
+      const schema = state.stateGetSchema('metadata/parameters')
 
       strictEqual(schema.type, 'collection')
 
       mockWindowInstance.restore()
-      mock.restore()
     })
   })
 
   describe('State Operations', function () {
     it('should allow adding plugin metadata', async function (t) {
       const mockWindowInstance = mockWindow(t)
-      const mock = await mockPlugin(this, {
-        name: 'metadata',
-        platform: 'client'
-      })
+      const stateData = mockStateData([metadata])
+      state.setup(stateData)
 
-      mock.client.setup.metadata()
+      metadata.setup()
 
       // Add plugin metadata
-      mock.client.method.stateSetValue({
+      state.stateSetValue({
         name: 'metadata/plugins',
         value: {
           title: 'Test Plugin',
@@ -471,7 +427,7 @@ describe('Metadata', function () {
         }
       })
 
-      const plugins = mock.client.method.stateGetValue({
+      const plugins = state.stateGetValue({
         name: 'metadata/plugins'
       })
 
@@ -482,20 +438,17 @@ describe('Metadata', function () {
       strictEqual(plugin.item.icon, 'test:icon')
 
       mockWindowInstance.restore()
-      mock.restore()
     })
 
     it('should allow adding action metadata', async function (t) {
       const mockWindowInstance = mockWindow(t)
-      const mock = await mockPlugin(this, {
-        name: 'metadata',
-        platform: 'client'
-      })
+      const stateData = mockStateData([metadata])
+      state.setup(stateData)
 
-      mock.client.setup.metadata()
+      metadata.setup()
 
       // First add a plugin
-      mock.client.method.stateSetValue({
+      state.stateSetValue({
         name: 'metadata/plugins',
         value: {
           title: 'Test Plugin',
@@ -508,7 +461,7 @@ describe('Metadata', function () {
       })
 
       // Then add an action
-      mock.client.method.stateSetValue({
+      state.stateSetValue({
         name: 'metadata/actions',
         value: {
           plugin: 'test-plugin',
@@ -523,7 +476,7 @@ describe('Metadata', function () {
         }
       })
 
-      const actions = mock.client.method.stateGetValue({
+      const actions = state.stateGetValue({
         name: 'metadata/actions'
       })
 
@@ -537,20 +490,17 @@ describe('Metadata', function () {
       strictEqual(action.item.component, 'TestComponent')
 
       mockWindowInstance.restore()
-      mock.restore()
     })
 
     it('should allow adding parameter metadata', async function (t) {
       const mockWindowInstance = mockWindow(t)
-      const mock = await mockPlugin(this, {
-        name: 'metadata',
-        platform: 'client'
-      })
+      const stateData = mockStateData([metadata])
+      state.setup(stateData)
 
-      mock.client.setup.metadata()
+      metadata.setup()
 
       // Add parameter metadata
-      mock.client.method.stateSetValue({
+      state.stateSetValue({
         name: 'metadata/parameters',
         value: {
           type: 'string',
@@ -562,7 +512,7 @@ describe('Metadata', function () {
         }
       })
 
-      const parameters = mock.client.method.stateGetValue({
+      const parameters = state.stateGetValue({
         name: 'metadata/parameters'
       })
 
@@ -573,20 +523,17 @@ describe('Metadata', function () {
       strictEqual(parameter.item.default, 'test')
 
       mockWindowInstance.restore()
-      mock.restore()
     })
 
     it('should handle multiple plugins in collection', async function (t) {
       const mockWindowInstance = mockWindow(t)
-      const mock = await mockPlugin(this, {
-        name: 'metadata',
-        platform: 'client'
-      })
+      const stateData = mockStateData([metadata])
+      state.setup(stateData)
 
-      mock.client.setup.metadata()
+      metadata.setup()
 
       // Add multiple plugins
-      mock.client.method.stateSetValue({
+      state.stateSetValue({
         name: 'metadata/plugins',
         value: {
           title: 'Plugin 1',
@@ -598,7 +545,7 @@ describe('Metadata', function () {
         }
       })
 
-      mock.client.method.stateSetValue({
+      state.stateSetValue({
         name: 'metadata/plugins',
         value: {
           title: 'Plugin 2',
@@ -610,7 +557,7 @@ describe('Metadata', function () {
         }
       })
 
-      const plugins = mock.client.method.stateGetValue({
+      const plugins = state.stateGetValue({
         name: 'metadata/plugins'
       })
 
@@ -624,35 +571,32 @@ describe('Metadata', function () {
       strictEqual(plugin2.item.title, 'Plugin 2')
 
       mockWindowInstance.restore()
-      mock.restore()
     })
   })
 
   describe('State Listener Behavior', function () {
     it('should prevent setting language to default via state listener', async function (t) {
       const mockWindowInstance = mockWindow(t)
-      const mock = await mockPlugin(this, {
-        name: 'metadata',
-        platform: 'client'
-      })
+      const stateData = mockStateData([metadata])
+      state.setup(stateData)
 
-      mock.client.setup.metadata({
+      metadata.setup({
         languages: ['en', 'fr']
       })
 
       // Set a valid language first
-      mock.client.method.stateSetValue({
+      state.stateSetValue({
         name: 'metadata/currentLanguage',
         value: 'fr'
       })
 
       // Try to set to default language
-      mock.client.method.stateSetValue({
+      state.stateSetValue({
         name: 'metadata/currentLanguage',
         value: 'en'
       })
 
-      const currentLanguage = mock.client.method.stateGetValue({
+      const currentLanguage = state.stateGetValue({
         name: 'metadata/currentLanguage'
       })
 
@@ -660,33 +604,30 @@ describe('Metadata', function () {
       ok(currentLanguage.item === 'fr' || currentLanguage.item === '')
 
       mockWindowInstance.restore()
-      mock.restore()
     })
 
     it('should prevent setting invalid language via state listener', async function (t) {
       const mockWindowInstance = mockWindow(t)
-      const mock = await mockPlugin(this, {
-        name: 'metadata',
-        platform: 'client'
-      })
+      const stateData = mockStateData([metadata])
+      state.setup(stateData)
 
-      mock.client.setup.metadata({
+      metadata.setup({
         languages: ['en', 'fr']
       })
 
       // Set a valid language first
-      mock.client.method.stateSetValue({
+      state.stateSetValue({
         name: 'metadata/currentLanguage',
         value: 'fr'
       })
 
       // Try to set to invalid language
-      mock.client.method.stateSetValue({
+      state.stateSetValue({
         name: 'metadata/currentLanguage',
         value: 'de'
       })
 
-      const currentLanguage = mock.client.method.stateGetValue({
+      const currentLanguage = state.stateGetValue({
         name: 'metadata/currentLanguage'
       })
 
@@ -694,33 +635,30 @@ describe('Metadata', function () {
       ok(currentLanguage.item === 'fr' || currentLanguage.item === '')
 
       mockWindowInstance.restore()
-      mock.restore()
     })
 
     it('should handle listener with previous value fallback', async function (t) {
       const mockWindowInstance = mockWindow(t)
-      const mock = await mockPlugin(this, {
-        name: 'metadata',
-        platform: 'client'
-      })
+      const stateData = mockStateData([metadata])
+      state.setup(stateData)
 
-      mock.client.setup.metadata({
+      metadata.setup({
         languages: ['en', 'fr']
       })
 
       // Set initial language
-      mock.client.method.stateSetValue({
+      state.stateSetValue({
         name: 'metadata/currentLanguage',
         value: 'fr'
       })
 
       // Set to invalid language (listener should revert)
-      mock.client.method.stateSetValue({
+      state.stateSetValue({
         name: 'metadata/currentLanguage',
         value: 'de'
       })
 
-      const currentLanguage = mock.client.method.stateGetValue({
+      const currentLanguage = state.stateGetValue({
         name: 'metadata/currentLanguage'
       })
 
@@ -728,27 +666,24 @@ describe('Metadata', function () {
       ok(currentLanguage.item === 'fr' || currentLanguage.item === '')
 
       mockWindowInstance.restore()
-      mock.restore()
     })
 
     it('should handle listener when no previous value exists', async function (t) {
       const mockWindowInstance = mockWindow(t)
-      const mock = await mockPlugin(this, {
-        name: 'metadata',
-        platform: 'client'
-      })
+      const stateData = mockStateData([metadata])
+      state.setup(stateData)
 
-      mock.client.setup.metadata({
+      metadata.setup({
         languages: ['en', 'fr']
       })
 
       // Set to invalid language without previous value
-      mock.client.method.stateSetValue({
+      state.stateSetValue({
         name: 'metadata/currentLanguage',
         value: 'de'
       })
 
-      const currentLanguage = mock.client.method.stateGetValue({
+      const currentLanguage = state.stateGetValue({
         name: 'metadata/currentLanguage'
       })
 
@@ -756,29 +691,26 @@ describe('Metadata', function () {
       strictEqual(currentLanguage.item, '')
 
       mockWindowInstance.restore()
-      mock.restore()
     })
   })
 
   describe('Edge Cases', function () {
     it('should handle setup with only defaultLanguage option', async function (t) {
       const mockWindowInstance = mockWindow(t, { search: '?lang=fr' })
-      const mock = await mockPlugin(this, {
-        name: 'metadata',
-        platform: 'client'
-      })
+      const stateData = mockStateData([metadata])
+      state.setup(stateData)
 
-      mock.client.setup.metadata({
+      metadata.setup({
         defaultLanguage: 'fr'
       })
 
-      const defaultLanguage = mock.client.method.stateGetValue({
+      const defaultLanguage = state.stateGetValue({
         name: 'metadata/defaultLanguage'
       })
-      const currentLanguage = mock.client.method.stateGetValue({
+      const currentLanguage = state.stateGetValue({
         name: 'metadata/currentLanguage'
       })
-      const languages = mock.client.method.stateGetValue({
+      const languages = state.stateGetValue({
         name: 'metadata/languages'
       })
 
@@ -787,27 +719,24 @@ describe('Metadata', function () {
       deepStrictEqual(languages.item, ['en']) // Should keep default
 
       mockWindowInstance.restore()
-      mock.restore()
     })
 
     it('should handle setup with only languages option', async function (t) {
       const mockWindowInstance = mockWindow(t, { search: '?lang=es' })
-      const mock = await mockPlugin(this, {
-        name: 'metadata',
-        platform: 'client'
-      })
+      const stateData = mockStateData([metadata])
+      state.setup(stateData)
 
-      mock.client.setup.metadata({
+      metadata.setup({
         languages: ['en', 'fr', 'es']
       })
 
-      const defaultLanguage = mock.client.method.stateGetValue({
+      const defaultLanguage = state.stateGetValue({
         name: 'metadata/defaultLanguage'
       })
-      const currentLanguage = mock.client.method.stateGetValue({
+      const currentLanguage = state.stateGetValue({
         name: 'metadata/currentLanguage'
       })
-      const languages = mock.client.method.stateGetValue({
+      const languages = state.stateGetValue({
         name: 'metadata/languages'
       })
 
@@ -816,84 +745,72 @@ describe('Metadata', function () {
       deepStrictEqual(languages.item, ['en', 'fr', 'es'])
 
       mockWindowInstance.restore()
-      mock.restore()
     })
 
     it('should handle URL with no lang parameter', async function (t) {
       const mockWindowInstance = mockWindow(t, { search: '?other=param' })
-      const mock = await mockPlugin(this, {
-        name: 'metadata',
-        platform: 'client'
-      })
+      const stateData = mockStateData([metadata])
+      state.setup(stateData)
 
-      mock.client.setup.metadata({
+      metadata.setup({
         languages: ['en', 'fr']
       })
 
-      const currentLanguage = mock.client.method.stateGetValue({
+      const currentLanguage = state.stateGetValue({
         name: 'metadata/currentLanguage'
       })
 
       strictEqual(currentLanguage.item, '')
 
       mockWindowInstance.restore()
-      mock.restore()
     })
 
     it('should handle empty URL search string', async function (t) {
       const mockWindowInstance = mockWindow(t, { search: '' })
-      const mock = await mockPlugin(this, {
-        name: 'metadata',
-        platform: 'client'
-      })
+      const stateData = mockStateData([metadata])
+      state.setup(stateData)
 
-      mock.client.setup.metadata({
+      metadata.setup({
         languages: ['en', 'fr']
       })
 
-      const currentLanguage = mock.client.method.stateGetValue({
+      const currentLanguage = state.stateGetValue({
         name: 'metadata/currentLanguage'
       })
 
       strictEqual(currentLanguage.item, '')
 
       mockWindowInstance.restore()
-      mock.restore()
     })
 
     it('should handle special characters in language codes', async function (t) {
       const mockWindowInstance = mockWindow(t, { search: '?lang=pt-BR' })
-      const mock = await mockPlugin(this, {
-        name: 'metadata',
-        platform: 'client'
-      })
+      const stateData = mockStateData([metadata])
+      state.setup(stateData)
 
-      mock.client.setup.metadata({
+      metadata.setup({
         languages: ['en', 'pt-BR', 'zh-CN']
       })
 
-      const currentLanguage = mock.client.method.stateGetValue({
+      const currentLanguage = state.stateGetValue({
         name: 'metadata/currentLanguage'
       })
 
       strictEqual(currentLanguage.item, 'pt-BR')
 
       mockWindowInstance.restore()
-      mock.restore()
     })
 
     it('should handle case sensitivity in language codes', async function (t) {
       const mockWindowInstance = mockWindow(t, { search: '?lang=FR' })
-      const mock = await mockPlugin(this, {
-        name: 'metadata',
-        platform: 'client'
-      })
+      const stateData = mockStateData([metadata])
+      state.setup(stateData)
 
-      mock.client.setup.metadata({
+      metadata.setup({
         languages: ['en', 'fr']
       })
 
-      const currentLanguage = mock.client.method.stateGetValue({
+      const currentLanguage = state.stateGetValue({
         name: 'metadata/currentLanguage'
       })
 
@@ -901,39 +818,36 @@ describe('Metadata', function () {
       strictEqual(currentLanguage.item, '')
 
       mockWindowInstance.restore()
-      mock.restore()
     })
 
     it('should handle repeated setup calls', async function (t) {
       const mockWindowInstance = mockWindow(t, { search: '?lang=fr' })
-      const mock = await mockPlugin(this, {
-        name: 'metadata',
-        platform: 'client'
-      })
+      const stateData = mockStateData([metadata])
+      state.setup(stateData)
 
       // First setup
-      mock.client.setup.metadata({
+      metadata.setup({
         languages: ['en', 'fr']
       })
 
-      let currentLanguage = mock.client.method.stateGetValue({
+      let currentLanguage = state.stateGetValue({
         name: 'metadata/currentLanguage'
       })
       strictEqual(currentLanguage.item, 'fr')
 
       // Second setup with different options
-      mock.client.setup.metadata({
+      metadata.setup({
         languages: ['en', 'fr', 'es'],
         defaultLanguage: 'fr'
       })
 
-      currentLanguage = mock.client.method.stateGetValue({
+      currentLanguage = state.stateGetValue({
         name: 'metadata/currentLanguage'
       })
-      const languages = mock.client.method.stateGetValue({
+      const languages = state.stateGetValue({
         name: 'metadata/languages'
       })
-      const defaultLanguage = mock.client.method.stateGetValue({
+      const defaultLanguage = state.stateGetValue({
         name: 'metadata/defaultLanguage'
       })
 
@@ -943,23 +857,20 @@ describe('Metadata', function () {
       strictEqual(defaultLanguage.item, 'fr')
 
       mockWindowInstance.restore()
-      mock.restore()
     })
 
     it('should handle very long language arrays', async function (t) {
       const mockWindowInstance = mockWindow(t)
-      const mock = await mockPlugin(this, {
-        name: 'metadata',
-        platform: 'client'
-      })
+      const stateData = mockStateData([metadata])
+      state.setup(stateData)
 
       const manyLanguages = Array.from({ length: 50 }, (_, i) => `lang${i}`)
 
-      mock.client.setup.metadata({
+      metadata.setup({
         languages: manyLanguages
       })
 
-      const languages = mock.client.method.stateGetValue({
+      const languages = state.stateGetValue({
         name: 'metadata/languages'
       })
 
@@ -967,28 +878,24 @@ describe('Metadata', function () {
       strictEqual(languages.item[49], 'lang49')
 
       mockWindowInstance.restore()
-      mock.restore()
     })
 
     it('should handle Unicode characters in language codes', async function (t) {
       const mockWindowInstance = mockWindow(t, { search: '?lang=日本語' })
-      const mock = await mockPlugin(this, {
-        name: 'metadata',
-        platform: 'client'
-      })
+      const stateData = mockStateData([metadata])
+      state.setup(stateData)
 
-      mock.client.setup.metadata({
+      metadata.setup({
         languages: ['en', '日本語']
       })
 
-      const currentLanguage = mock.client.method.stateGetValue({
+      const currentLanguage = state.stateGetValue({
         name: 'metadata/currentLanguage'
       })
 
       strictEqual(currentLanguage.item, '日本語')
 
       mockWindowInstance.restore()
-      mock.restore()
     })
   })
 })
