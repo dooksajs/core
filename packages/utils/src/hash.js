@@ -5,20 +5,15 @@ export default {
   lastHash: null,
   /**
    * Initializes the hash object with seed 6362 if it doesn't exist
-   * @method
+   * @function
    * @returns {void}
-   * @example
-   * // Initialize the hash
-   * hash.init()
    */
   init () {
-    if (!this.hash) {
-      this.hash = xxh64(6362)
-    }
+    this.hash = xxh64(6362)
   },
   /**
    * Updates the hash with the provided value and returns the hex digest
-   * @method
+   * @function
    * @param {any} value - The value to hash. Non-string values will be converted to JSON
    * @returns {string} The hex digest of the updated hash
    * @example
@@ -31,6 +26,10 @@ export default {
    * console.log(result2) // 'a1b2c3d4e5f6...'
    */
   update (value) {
+    if (!this.hash) {
+      this.init()
+    }
+
     if (!this.lastHash) {
       this.hash.reset(6362)
     }
