@@ -486,6 +486,9 @@ export const state = createPlugin('state', {
             _metadata: source._metadata || metadata || {}
           }
 
+          // set collection id
+          data.id = id
+
           // validate current value
           this.validateDataType(data, schemaPath, target._item, schemaType)
 
