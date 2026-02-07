@@ -1,100 +1,27 @@
-import { describe, it } from 'node:test'
-import { strictEqual, deepStrictEqual, throws } from 'node:assert'
-import { createPluginTester, mockStateData, createMockFetch } from '@dooksa/test'
+import { describe, it, afterEach, after } from 'node:test'
+import { strictEqual, deepStrictEqual, rejects, throws } from 'node:assert'
+import { mockStateData } from '@dooksa/test'
 import { createAction } from '@dooksa/create-action'
 import { action, state, api } from '#core'
+import createTestServer from '../fixtures/test-server.js'
 
 /**
- * Helper function to set up the action plugin with dependencies
- * @param {import('node:test').TestContext} t - Test context
- * @param {Object} [options] - Configuration object
- * @param {Object} [options.actions] - Action methods to register
- * @param {Function} [options.lazyLoadAction] - Lazy loading function
- * @param {Array} [options.state] - State data to seed
- * @returns {Object} Object with tester, action plugin instance, and state helpers
+ * Helper function to create state data
+ * @returns {Object} State data object
  */
-function setupActionPlugin (t, options = {
-  actions: {},
-  lazyLoadAction: () =>{
-  },
-  state: []
-}) {
-  const tester = createPluginTester(t)
-
-  // Create observable instances of required plugins
-  const statePlugin = tester.spy('state', state)
-  const actionPlugin = tester.spy('action', action)
-  const apiPlugin = tester.spy('api', api)
-
-  const stateData = mockStateData([action])
-
-  statePlugin.setup(stateData)
-
-  const defaultActions = {}
-
-  for (let i = 0; i < actionPlugin.actions.length; i++) {
-    const action = actionPlugin.actions[i]
-    defaultActions[action.name] = action.method
-  }
-
-  for (let i = 0; i < apiPlugin.actions.length; i++) {
-    const action = apiPlugin.actions[i]
-    defaultActions[action.name] = action.method
-  }
-
-  for (let i = 0; i < statePlugin.actions.length; i++) {
-    const action = statePlugin.actions[i]
-    defaultActions[action.name] = action.method
-  }
-
-  apiPlugin.setup({ hostname: 'http://localhost:3000' })
-
-  // Setup action plugin with actions and lazy loader first
-  actionPlugin.setup({
-    actions: {
-      ...defaultActions,
-      ...options.actions
-    },
-    lazyLoadAction: options.lazyLoadAction
-  })
-
-  // Seed state if provided
-  if (options.state) {
-    options.state.forEach(({ collection, item }) => {
-      if (Array.isArray(item)) {
-        item.forEach((data, index) => {
-          statePlugin.stateSetValue({
-            name: collection,
-            value: data,
-            options: { id: Object.keys(data)[0] }
-          })
-        })
-      } else {
-        statePlugin.stateSetValue({
-          name: collection,
-          value: item
-        })
-      }
-    })
-  }
-
-  return {
-    tester,
-    actionPlugin,
-    statePlugin
-  }
+function createStateData () {
+  return mockStateData([action])
 }
 
 /**
  * Helper function to seed action state data
- * @param {Object} statePlugin - State plugin instance
  * @param {Object} sequences - Action sequences to seed
  * @param {Object} blocks - Action blocks to seed
  * @param {Object} blockSequences - Block sequences to seed
  */
-function seedActionState (statePlugin, sequences, blocks, blockSequences) {
+function seedActionState (sequences, blocks, blockSequences) {
   if (sequences) {
-    statePlugin.stateSetValue({
+    state.stateSetValue({
       name: 'action/sequences',
       value: sequences,
       options: { replace: true }
@@ -102,7 +29,7 @@ function seedActionState (statePlugin, sequences, blocks, blockSequences) {
   }
 
   if (blocks) {
-    statePlugin.stateSetValue({
+    state.stateSetValue({
       name: 'action/blocks',
       value: blocks,
       options: { replace: true }
@@ -110,7 +37,7 @@ function seedActionState (statePlugin, sequences, blocks, blockSequences) {
   }
 
   if (blockSequences) {
-    statePlugin.stateSetValue({
+    state.stateSetValue({
       name: 'action/blockSequences',
       value: blockSequences,
       options: { replace: true }
@@ -118,7 +45,71 @@ function seedActionState (statePlugin, sequences, blocks, blockSequences) {
   }
 }
 
+// Capture default actions before they are cleared by restore()
+const originalActionActions = [...(action.actions || [])]
+
+function getActionsMap (actions) {
+  const map = {}
+  if (!actions) return map
+
+  const list = Array.isArray(actions) ? actions : Object.values(actions)
+
+  list.forEach(a => {
+    // Check if item is valid action object or just the function itself if passed as object values
+    if (a && a.name && typeof a.method === 'function') {
+      map[a.name] = a.method
+    } else if (typeof a === 'function' && a.name) {
+      // This handles if actions are passed as { name: func }
+      map[a.name] = a
+    }
+  })
+
+  return map
+}
+
+function getDefaultActions () {
+  const defaultActions = {}
+
+  // We need actions from state and api plugins as they might be used
+  // e.g. state_setValue, api_fetch etc.
+  // Note: state.actions and api.actions might be arrays of objects { name, method }
+  const plugins = [state, api]
+
+  plugins.forEach(plugin => {
+    if (plugin.actions) {
+      Object.assign(defaultActions, getActionsMap(plugin.actions))
+    }
+  })
+
+  Object.assign(defaultActions, getActionsMap(originalActionActions))
+
+  return defaultActions
+}
+
+
+const testServer = createTestServer(5000)
+
 describe('Action Plugin', () => {
+  /**
+   * Teardown: Reset global state and plugins after each test
+   * to ensure test isolation.
+   */
+  afterEach(async () => {
+    // console.log('Restoring...')
+    await testServer.restore() // Reset server internal state
+    // console.log('Restored')
+    state.restore() // Clear application state
+    api.restore() // Reset API configuration
+    action.restore() // Clear registered action handlers
+  })
+
+  /**
+   * Final Cleanup: Stop the server process when all tests are done.
+   */
+  after(async () => {
+    await testServer.stop()
+  })
+
   describe('Plugin Setup & Initialization', () => {
     it('should setup with actions and lazy loader', async (t) => {
       const testActions = {
@@ -131,22 +122,25 @@ describe('Action Plugin', () => {
         setTimeout(() => callback(), 10)
       }
 
-      const { tester, actionPlugin } = setupActionPlugin(t, {
-        actions: testActions,
+      const stateData = createStateData()
+      state.setup(stateData)
+
+      // Setup action plugin with actions and lazy loader first
+      action.setup({
+        actions: {
+          ...getDefaultActions(),
+          ...testActions
+        },
         lazyLoadAction: lazyLoader
       })
 
       // Verify setup was called - check that actions were registered
-      strictEqual(typeof actionPlugin.setup, 'function')
-
-      tester.restoreAll()
+      strictEqual(typeof action.setup, 'function')
     })
 
     it('should throw error for invalid action method', async (t) => {
-      const { tester } = setupActionPlugin(t)
-
       throws(() => {
-        tester.plugins.action.setup({
+        action.setup({
           actions: {
             invalid: 'not_a_function'
           }
@@ -154,8 +148,6 @@ describe('Action Plugin', () => {
       }, {
         message: /Action: unexpected type/
       })
-
-      tester.restoreAll()
     })
 
     it('should handle lazy loading when action not available', async (t) => {
@@ -167,8 +159,13 @@ describe('Action Plugin', () => {
         setTimeout(() => callback(), 10)
       }
 
-      const { tester, actionPlugin } = setupActionPlugin(t, {
-        actions: lazyActions,
+      const stateData = createStateData()
+      state.setup(stateData)
+
+      action.setup({
+        actions: {
+          ...getDefaultActions()
+        },
         lazyLoadAction: lazyLoader
       })
 
@@ -182,8 +179,6 @@ describe('Action Plugin', () => {
       result = testAction({ value: 'loaded' })
 
       strictEqual(result, 'loaded')
-
-      tester.restoreAll()
     })
 
     it('should throw error when action not found and no lazy loader', async (t) => {
@@ -214,25 +209,27 @@ describe('Action Plugin', () => {
         }
       ], { action_dispatch_test: true })
 
-      const { tester, actionPlugin, statePlugin } = setupActionPlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       // Seed state with action data
-      seedActionState(statePlugin,
+      seedActionState(
         { 'test-dispatch': actionData.sequences },
         actionData.blocks,
         actionData.blockSequences
       )
 
       // Mock the action method that will be called
-      actionPlugin.setup({
+      action.setup({
         actions: {
+          ...getDefaultActions(),
           action_dispatch_test: (params, context) => {
             return { dispatched: params }
           }
         }
       })
 
-      const result = await actionPlugin.actionDispatch({
+      const result = await action.actionDispatch({
         id: 'test-dispatch',
         context: {
           id: 'ctx-1',
@@ -243,8 +240,6 @@ describe('Action Plugin', () => {
 
       strictEqual(result.dispatched.id, 'test-component')
       strictEqual(result.dispatched.payload.value, 'hello')
-
-      tester.restoreAll()
     })
 
     it('should dispatch action with context and payload', async (t) => {
@@ -254,24 +249,30 @@ describe('Action Plugin', () => {
         }
       ])
 
-      const { tester, actionPlugin, statePlugin } = setupActionPlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       // Seed state
-      seedActionState(statePlugin,
+      seedActionState(
         { 'context-test': actionData.sequences },
         actionData.blocks,
         actionData.blockSequences
       )
 
-      const result = await actionPlugin.actionDispatch({
+      // Ensure default actions are setup
+      action.setup({
+        actions: {
+          ...getDefaultActions()
+        }
+      })
+
+      const result = await action.actionDispatch({
         id: 'context-test',
         context: { id: 'test-ctx-123' },
         payload: {}
       })
 
       strictEqual(result, 'test-ctx-123')
-
-      tester.restoreAll()
     })
 
     it('should cache block values during dispatch', async (t) => {
@@ -293,28 +294,30 @@ describe('Action Plugin', () => {
         action_dispatch_test: true
       })
 
-      const { tester, actionPlugin, statePlugin } = setupActionPlugin(t, {
-        actions: {
-          action_dispatch_test: (params, context) => ({ dispatched: params })
-        }
-      })
+      const stateData = createStateData()
+      state.setup(stateData)
 
       // Seed state
-      seedActionState(statePlugin,
+      seedActionState(
         { 'cache-test': actionData.sequences },
         actionData.blocks,
         actionData.blockSequences
       )
 
-      const result = await actionPlugin.actionDispatch({
+      action.setup({
+        actions: {
+          ...getDefaultActions(),
+          action_dispatch_test: (params, context) => ({ dispatched: params })
+        }
+      })
+
+      const result = await action.actionDispatch({
         id: 'cache-test',
         context: {},
         payload: {}
       })
 
       strictEqual(result, 'comp1')
-
-      tester.restoreAll()
     })
 
     it('should fetch action from backend if not in state', async (t) => {
@@ -330,74 +333,68 @@ describe('Action Plugin', () => {
 
       const handleFetchedAction = t.mock.fn((params, context) => 'Hello world!')
 
-      // Create mock fetch that returns the action data in the correct format
-      const mockFetch = createMockFetch(t, {
-        response: [
+      // Start the test server configured to serve this specific action definition.
+      const hostname = await testServer.start({
+        middleware: ['user/auth'],
+        plugins: [
           {
-            id: 'fetched-action',
-            collection: 'action/sequence',
-            item: actionData.sequences['fetched-action'],
-            expand: actionData.blocks
+            type: 'server',
+            name: 'action.js',
+            setup: {
+              actions: [actionData]
+            }
           }
         ]
       })
 
-      // Replace global.fetch with the mock BEFORE making any network calls
-      const originalFetch = global.fetch
-      global.fetch = mockFetch.fetch
+      const stateData = createStateData()
+      api.setup({ hostname })
+      state.setup(stateData)
 
-      const { tester, actionPlugin, statePlugin } = setupActionPlugin(t, {
+      action.setup({
         actions: {
+          ...getDefaultActions(),
           handle_fetchedAction: handleFetchedAction
         }
       })
 
       // Note: We don't seed state with 'fetched-action' so it will try to fetch from backend
-      // This is the key difference from the original test
+      await action.actionDispatch({
+        id: 'fetched-action',
+        context: {},
+        payload: {}
+      })
 
-      try {
-        await actionPlugin.actionDispatch({
-          id: 'fetched-action',
-          context: {},
-          payload: {}
-        })
-
-        strictEqual(handleFetchedAction.mock.callCount(), 1)
-      } finally {
-        // Always restore the original fetch
-        global.fetch = originalFetch
-        tester.restoreAll()
-      }
+      strictEqual(handleFetchedAction.mock.callCount(), 1)
     })
 
     it('should throw error when action sequence not found', async (t) => {
-      const mockFetch = createMockFetch(t, {
-        response: []
-      })
-      const originalFetch = global.fetch
-      global.fetch = mockFetch.fetch
+      // Start server with no actions
+      const hostname = await testServer.start()
 
-      const { tester, actionPlugin } = setupActionPlugin(t, {
-        actions: {}
+      const stateData = createStateData()
+      api.setup({ hostname })
+      state.setup(stateData)
+
+      // Setup default actions
+      action.setup({
+        actions: {
+          ...getDefaultActions()
+        }
       })
 
-      try {
-        await actionPlugin.actionDispatch({
+      // Don't setup any other actions or seed state
+
+      await rejects(
+        action.actionDispatch({
           id: 'missing-action',
           context: {},
           payload: {}
-        })
-      } catch (error) {
-        throws(() => {
-          throw error
-        },
+        }),
         {
-          message: /No action found: missing-action/
-        })
-      }
-
-      tester.restoreAll()
-      global.fetch = originalFetch
+          message: /HTTP error! status: 404/
+        }
+      )
     })
 
     it('should clear block values when clearBlockValues is true', async (t) => {
@@ -407,29 +404,31 @@ describe('Action Plugin', () => {
         }
       ])
 
-      const { tester, actionPlugin, statePlugin } = setupActionPlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       // Seed state
-      seedActionState(statePlugin,
+      seedActionState(
         { 'clear-test': actionData.sequences },
         actionData.blocks,
         actionData.blockSequences
       )
 
-      actionPlugin.setup({
+      action.setup({
         actions: {
+          ...getDefaultActions(),
           action_dispatch_test: (params, context) => ({ result: 'first' })
         }
       })
 
       // First call
-      await actionPlugin.actionDispatch({
+      await action.actionDispatch({
         id: 'clear-test',
         context: {},
         payload: {}
       })
 
-      const result = await actionPlugin.actionDispatch({
+      const result = await action.actionDispatch({
         id: 'clear-test',
         context: {},
         payload: {},
@@ -437,17 +436,20 @@ describe('Action Plugin', () => {
       })
 
       strictEqual(result.result, 'second')
-
-      tester.restoreAll()
     })
   })
 
   describe('Value Retrieval Methods', () => {
     describe('action.getValue', () => {
       it('should get value from action result', async (t) => {
-        const { tester, actionPlugin } = setupActionPlugin(t)
+        const stateData = createStateData()
+        state.setup(stateData)
 
-        const result = actionPlugin.actionGetValue({
+        action.setup({
+          actions: { ...getDefaultActions() }
+        })
+
+        const result = action.actionGetValue({
           value: {
             user: {
               name: 'John',
@@ -462,14 +464,17 @@ describe('Action Plugin', () => {
             age: 30
           }
         })
-
-        tester.restoreAll()
       })
 
       it('should get nested value with query', async (t) => {
-        const { tester, actionPlugin } = setupActionPlugin(t)
+        const stateData = createStateData()
+        state.setup(stateData)
 
-        const result = actionPlugin.actionGetValue({
+        action.setup({
+          actions: { ...getDefaultActions() }
+        })
+
+        const result = action.actionGetValue({
           value: {
             user: {
               name: 'John',
@@ -480,40 +485,49 @@ describe('Action Plugin', () => {
         })
 
         strictEqual(result, 'John')
-
-        tester.restoreAll()
       })
 
       it('should return undefined for missing query path', async (t) => {
-        const { tester, actionPlugin } = setupActionPlugin(t)
+        const stateData = createStateData()
+        state.setup(stateData)
 
-        const result = actionPlugin.actionGetValue({
+        action.setup({
+          actions: { ...getDefaultActions() }
+        })
+
+        const result = action.actionGetValue({
           value: { user: { name: 'John' } },
           query: 'user.age'
         })
 
         strictEqual(result, undefined)
-
-        tester.restoreAll()
       })
 
       it('should handle array queries', async (t) => {
-        const { tester, actionPlugin } = setupActionPlugin(t)
+        const stateData = createStateData()
+        state.setup(stateData)
 
-        const result = actionPlugin.actionGetValue({
+        action.setup({
+          actions: { ...getDefaultActions() }
+        })
+
+        const result = action.actionGetValue({
           value: { items: [1, 2, 3] },
           query: 'items.1'
         })
 
         strictEqual(result, 2)
-
-        tester.restoreAll()
       })
     })
 
     describe('action.getContextValue', () => {
       it('should get value from context', async (t) => {
-        const { tester, actionPlugin } = setupActionPlugin(t)
+        const stateData = createStateData()
+        state.setup(stateData)
+
+        action.setup({
+          actions: { ...getDefaultActions() }
+        })
 
         const context = {
           context: {
@@ -526,14 +540,17 @@ describe('Action Plugin', () => {
           }
         }
 
-        const result = actionPlugin.actionGetContextValue('user.name', context)
+        const result = action.actionGetContextValue('user.name', context)
         strictEqual(result, 'Jane')
-
-        tester.restoreAll()
       })
 
       it('should get entire context when no query', async (t) => {
-        const { tester, actionPlugin } = setupActionPlugin(t)
+        const stateData = createStateData()
+        state.setup(stateData)
+
+        action.setup({
+          actions: { ...getDefaultActions() }
+        })
 
         const context = {
           context: {
@@ -542,29 +559,35 @@ describe('Action Plugin', () => {
           }
         }
 
-        const result = actionPlugin.actionGetContextValue(undefined, { context: context.context })
+        const result = action.actionGetContextValue(undefined, { context: context.context })
         deepStrictEqual(result, context.context)
-
-        tester.restoreAll()
       })
 
       it('should return undefined for missing path', async (t) => {
-        const { tester, actionPlugin } = setupActionPlugin(t)
+        const stateData = createStateData()
+        state.setup(stateData)
+
+        action.setup({
+          actions: { ...getDefaultActions() }
+        })
 
         const context = {
           context: { id: 'test' }
         }
 
-        const result = actionPlugin.actionGetContextValue('missing.path', context)
+        const result = action.actionGetContextValue('missing.path', context)
         strictEqual(result, undefined)
-
-        tester.restoreAll()
       })
     })
 
     describe('action.getPayloadValue', () => {
       it('should get value from payload', async (t) => {
-        const { tester, actionPlugin } = setupActionPlugin(t)
+        const stateData = createStateData()
+        state.setup(stateData)
+
+        action.setup({
+          actions: { ...getDefaultActions() }
+        })
 
         const context = {
           payload: {
@@ -575,14 +598,17 @@ describe('Action Plugin', () => {
           }
         }
 
-        const result = actionPlugin.actionGetPayloadValue('formData.username', context)
+        const result = action.actionGetPayloadValue('formData.username', context)
         strictEqual(result, 'testuser')
-
-        tester.restoreAll()
       })
 
       it('should get entire payload when no query', async (t) => {
-        const { tester, actionPlugin } = setupActionPlugin(t)
+        const stateData = createStateData()
+        state.setup(stateData)
+
+        action.setup({
+          actions: { ...getDefaultActions() }
+        })
 
         const context = {
           payload: {
@@ -591,14 +617,17 @@ describe('Action Plugin', () => {
           }
         }
 
-        const result = actionPlugin.actionGetPayloadValue(undefined, { payload: context.payload })
+        const result = action.actionGetPayloadValue(undefined, { payload: context.payload })
         deepStrictEqual(result, context.payload)
-
-        tester.restoreAll()
       })
 
       it('should handle nested payload structures', async (t) => {
-        const { tester, actionPlugin } = setupActionPlugin(t)
+        const stateData = createStateData()
+        state.setup(stateData)
+
+        action.setup({
+          actions: { ...getDefaultActions() }
+        })
 
         const context = {
           payload: {
@@ -611,10 +640,8 @@ describe('Action Plugin', () => {
           }
         }
 
-        const result = actionPlugin.actionGetPayloadValue('event.target.value', context)
+        const result = action.actionGetPayloadValue('event.target.value', context)
         strictEqual(result, 'input-value')
-
-        tester.restoreAll()
       })
     })
   })
@@ -649,10 +676,11 @@ describe('Action Plugin', () => {
         action_ifElse: true
       })
 
-      const { tester, actionPlugin, statePlugin } = setupActionPlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       // Seed state
-      seedActionState(statePlugin,
+      seedActionState(
         { 'ifelse-true': actionData.sequences },
         actionData.blocks,
         actionData.blockSequences
@@ -665,14 +693,15 @@ describe('Action Plugin', () => {
         return false
       })
 
-      actionPlugin.setup({
+      action.setup({
         actions: {
+          ...getDefaultActions(),
           handleActive: handleActiveResult,
           handleInactive: handleInactiveResult
         }
       })
 
-      await actionPlugin.actionDispatch({
+      await action.actionDispatch({
         id: 'ifelse-true',
         context: {},
         payload: {}
@@ -681,8 +710,6 @@ describe('Action Plugin', () => {
       // Should execute then branch (true == true is true)
       strictEqual(handleActiveResult.mock.callCount(), 1)
       strictEqual(handleInactiveResult.mock.callCount(), 0)
-
-      tester.restoreAll()
     })
 
     it('should execute else branch for false condition', async (t) => {
@@ -722,22 +749,25 @@ describe('Action Plugin', () => {
         return false
       })
 
-      const { tester, actionPlugin, statePlugin } = setupActionPlugin(t, {
-        actions: {
-          handleSuccess: handleSuccessResult,
-          handleFailure: handleFailureResult
-        }
-      })
-
+      const stateData = createStateData()
+      state.setup(stateData)
 
       // Seed state
-      seedActionState(statePlugin,
+      seedActionState(
         { 'ifelse-false': actionData.sequences },
         actionData.blocks,
         actionData.blockSequences
       )
 
-      await actionPlugin.actionDispatch({
+      action.setup({
+        actions: {
+          ...getDefaultActions(),
+          handleSuccess: handleSuccessResult,
+          handleFailure: handleFailureResult
+        }
+      })
+
+      await action.actionDispatch({
         id: 'ifelse-false',
         context: {},
         payload: {
@@ -748,8 +778,6 @@ describe('Action Plugin', () => {
       // Should execute else branch (false == true is false)
       strictEqual(handleFailureResult.mock.callCount(), 1)
       strictEqual(handleSuccessResult.mock.callCount(), 0)
-
-      tester.restoreAll()
     })
 
     it('should handle multiple conditions with AND operator', async (t) => {
@@ -789,10 +817,11 @@ describe('Action Plugin', () => {
         action_ifElse: true
       })
 
-      const { tester, actionPlugin, statePlugin } = setupActionPlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       // Seed state
-      seedActionState(statePlugin,
+      seedActionState(
         { 'ifelse-and': actionData.sequences },
         actionData.blocks,
         actionData.blockSequences
@@ -805,14 +834,15 @@ describe('Action Plugin', () => {
         return false
       })
 
-      actionPlugin.setup({
+      action.setup({
         actions: {
+          ...getDefaultActions(),
           handleAndTrue: handleAndTrueResult,
           handleAndFalse: handleAndFalseResult
         }
       })
 
-      await actionPlugin.actionDispatch({
+      await action.actionDispatch({
         id: 'ifelse-and',
         context: {},
         payload: {}
@@ -821,8 +851,6 @@ describe('Action Plugin', () => {
       // Should execute then branch (both conditions true)
       strictEqual(handleAndTrueResult.mock.callCount(), 1)
       strictEqual(handleAndFalseResult.mock.callCount(), 0)
-
-      tester.restoreAll()
     })
 
     it('should handle multiple conditions with OR operator', async (t) => {
@@ -862,10 +890,11 @@ describe('Action Plugin', () => {
         action_ifElse: true
       })
 
-      const { tester, actionPlugin, statePlugin } = setupActionPlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       // Seed state
-      seedActionState(statePlugin,
+      seedActionState(
         { 'ifelse-or': actionData.sequences },
         actionData.blocks,
         actionData.blockSequences
@@ -878,14 +907,15 @@ describe('Action Plugin', () => {
         return false
       })
 
-      actionPlugin.setup({
+      action.setup({
         actions: {
+          ...getDefaultActions(),
           handleOrTrue: handleOrTrueResult,
           handleOrFalse: handleOrFalseResult
         }
       })
 
-      await actionPlugin.actionDispatch({
+      await action.actionDispatch({
         id: 'ifelse-or',
         context: {},
         payload: {}
@@ -894,8 +924,6 @@ describe('Action Plugin', () => {
       // Should execute then branch (second condition true)
       strictEqual(handleOrTrueResult.mock.callCount(), 1)
       strictEqual(handleOrFalseResult.mock.callCount(), 0)
-
-      tester.restoreAll()
     })
 
     it('should resolve values from context and payload in conditions', async (t) => {
@@ -929,7 +957,6 @@ describe('Action Plugin', () => {
         action_ifElse: true
       })
 
-
       const handleResolvedResult = t.mock.fn((params, context) => {
         return true
       })
@@ -937,22 +964,25 @@ describe('Action Plugin', () => {
         return false
       })
 
+      const stateData = createStateData()
+      state.setup(stateData)
 
-      const { tester, actionPlugin, statePlugin } = setupActionPlugin(t, {
+      action.setup({
         actions: {
+          ...getDefaultActions(),
           handleResolved: handleResolvedResult,
           handleNotResolved: handleNotResolvedResult
         }
       })
 
       // Seed state
-      seedActionState(statePlugin,
+      seedActionState(
         { 'ifelse-resolve': actionData.sequences },
         actionData.blocks,
         actionData.blockSequences
       )
 
-      await actionPlugin.actionDispatch({
+      await action.actionDispatch({
         id: 'ifelse-resolve',
         context: { id: 'expected' },
         payload: {}
@@ -961,8 +991,6 @@ describe('Action Plugin', () => {
       // Should resolve context value and match (expected == expected is true)
       strictEqual(handleResolvedResult.mock.callCount(), 1)
       strictEqual(handleNotResolvedResult.mock.callCount(), 0)
-
-      tester.restoreAll()
     })
   })
 
@@ -988,24 +1016,27 @@ describe('Action Plugin', () => {
         }
       ])
 
-      const { tester, actionPlugin, statePlugin } = setupActionPlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       // Seed state
-      seedActionState(statePlugin,
+      seedActionState(
         { 'complete-workflow': actionData.sequences },
         actionData.blocks,
         actionData.blockSequences
       )
 
-      const result = await actionPlugin.actionDispatch({
+      action.setup({
+        actions: { ...getDefaultActions() }
+      })
+
+      const result = await action.actionDispatch({
         id: 'complete-workflow',
         context: {},
         payload: { input: { value: 'processed-data' } }
       })
 
       strictEqual(result, 'processed-data')
-
-      tester.restoreAll()
     })
 
     it('should handle async action execution', async (t) => {
@@ -1019,17 +1050,19 @@ describe('Action Plugin', () => {
         }
       ])
 
-      const { tester, actionPlugin, statePlugin } = setupActionPlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       // Seed state
-      seedActionState(statePlugin,
+      seedActionState(
         { 'async-test': actionData.sequences },
         actionData.blocks,
         actionData.blockSequences
       )
 
-      actionPlugin.setup({
+      action.setup({
         actions: {
+          ...getDefaultActions(),
           action_dispatch_test: async (params, context) => {
             return new Promise(resolve => {
               setTimeout(() => resolve(params.payload.value), 10)
@@ -1038,15 +1071,13 @@ describe('Action Plugin', () => {
         }
       })
 
-      const result = await actionPlugin.actionDispatch({
+      const result = await action.actionDispatch({
         id: 'async-test',
         context: {},
         payload: {}
       })
 
       strictEqual(result, 'async-result')
-
-      tester.restoreAll()
     })
 
     it('should propagate errors from action methods', async (t) => {
@@ -1059,17 +1090,19 @@ describe('Action Plugin', () => {
         }
       ])
 
-      const { tester, actionPlugin, statePlugin } = setupActionPlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       // Seed state
-      seedActionState(statePlugin,
+      seedActionState(
         { 'error-test': actionData.sequences },
         actionData.blocks,
         actionData.blockSequences
       )
 
-      actionPlugin.setup({
+      action.setup({
         actions: {
+          ...getDefaultActions(),
           action_dispatch_test: (params, context) => {
             return new Error(params.payload.message)
           }
@@ -1077,7 +1110,7 @@ describe('Action Plugin', () => {
       })
 
       await rejects(
-        actionPlugin.actionDispatch({
+        action.actionDispatch({
           id: 'error-test',
           context: {},
           payload: {}
@@ -1086,8 +1119,6 @@ describe('Action Plugin', () => {
           message: /Action method 'action_dispatch_test' failed/
         }
       )
-
-      tester.restoreAll()
     })
   })
 
@@ -1095,40 +1126,44 @@ describe('Action Plugin', () => {
     it('should handle empty sequence', async (t) => {
       const actionData = createAction('empty-seq', [])
 
-      const { tester, actionPlugin, statePlugin } = setupActionPlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       // Seed state
-      seedActionState(statePlugin,
+      seedActionState(
         { 'empty-seq': actionData.sequences },
         actionData.blocks,
         actionData.blockSequences
       )
 
-      const result = await actionPlugin.actionDispatch({
+      action.setup({
+        actions: { ...getDefaultActions() }
+      })
+
+      const result = await action.actionDispatch({
         id: 'empty-seq',
         context: {},
         payload: {}
       })
 
       strictEqual(result, undefined)
-
-      tester.restoreAll()
     })
 
     it('should throw error for invalid sequence type', async (t) => {
-      const { tester, actionPlugin, statePlugin } = setupActionPlugin(t, {
-        actions: {}
-      })
+      const stateData = createStateData()
+      state.setup(stateData)
+
+      action.setup({ actions: { ...getDefaultActions() } })
 
       // Mock state to return invalid sequence
-      statePlugin.stateSetValue({
+      state.stateSetValue({
         name: 'action/sequences',
         value: { 'invalid-seq': 'not-an-array' },
         options: { replace: true }
       })
 
       await rejects(
-        actionPlugin.actionDispatch({
+        action.actionDispatch({
           id: 'invalid-seq',
           context: {},
           payload: {}
@@ -1137,8 +1172,6 @@ describe('Action Plugin', () => {
           message: /Action: sequence must be an array/
         }
       )
-
-      tester.restoreAll()
     })
 
     it('should throw error when block not found', async (t) => {
@@ -1148,24 +1181,26 @@ describe('Action Plugin', () => {
         }
       ])
 
-      const { tester, actionPlugin, statePlugin } = setupActionPlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       // Seed only sequences, not blocks
-      seedActionState(statePlugin,
+      seedActionState(
         { 'missing-block': actionData.sequences },
         undefined,
         undefined
       )
 
       // Don't seed blocks - this should cause an error
-      actionPlugin.setup({
+      action.setup({
         actions: {
+          ...getDefaultActions(),
           action_dispatch_test: (params) => params
         }
       })
 
       await rejects(
-        actionPlugin.actionDispatch({
+        action.actionDispatch({
           id: 'missing-block',
           context: {},
           payload: {}
@@ -1174,8 +1209,6 @@ describe('Action Plugin', () => {
           message: /Action: block could not be found/
         }
       )
-
-      tester.restoreAll()
     })
 
     it('should throw error when block sequence not found', async (t) => {
@@ -1185,24 +1218,26 @@ describe('Action Plugin', () => {
         }
       ])
 
-      const { tester, actionPlugin, statePlugin } = setupActionPlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       // Seed blocks but not block sequences
-      seedActionState(statePlugin,
+      seedActionState(
         { 'missing-seq': actionData.sequences },
         actionData.blocks,
         undefined
       )
 
       // Don't seed blockSequences
-      actionPlugin.setup({
+      action.setup({
         actions: {
+          ...getDefaultActions(),
           action_dispatch_test: (params) => params
         }
       })
 
       await rejects(
-        actionPlugin.actionDispatch({
+        action.actionDispatch({
           id: 'missing-seq',
           context: {},
           payload: {}
@@ -1211,8 +1246,6 @@ describe('Action Plugin', () => {
           message: /Action: block sequence could not be found/
         }
       )
-
-      tester.restoreAll()
     })
 
     it('should handle block with no method or ifElse (warning)', async (t) => {
@@ -1226,14 +1259,19 @@ describe('Action Plugin', () => {
         }
       ])
 
-      const { tester, actionPlugin, statePlugin } = setupActionPlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       // Seed state
-      seedActionState(statePlugin,
+      seedActionState(
         { 'no-method': actionData.sequences },
         actionData.blocks,
         actionData.blockSequences
       )
+
+      action.setup({
+        actions: { ...getDefaultActions() }
+      })
 
       // Capture console.warn
       const originalWarn = console.warn
@@ -1243,7 +1281,7 @@ describe('Action Plugin', () => {
       }
 
       try {
-        const result = await actionPlugin.actionDispatch({
+        const result = await action.actionDispatch({
           id: 'no-method',
           context: {},
           payload: {}
@@ -1255,8 +1293,6 @@ describe('Action Plugin', () => {
       } finally {
         console.warn = originalWarn
       }
-
-      tester.restoreAll()
     })
 
     it('should handle block value retrieval from cache', async (t) => {
@@ -1276,17 +1312,19 @@ describe('Action Plugin', () => {
         }
       ])
 
-      const { tester, actionPlugin, statePlugin } = setupActionPlugin(t)
+      const stateData = createStateData()
+      state.setup(stateData)
 
       // Seed state
-      seedActionState(statePlugin,
+      seedActionState(
         { 'cache-test': actionData.sequences },
         actionData.blocks,
         actionData.blockSequences
       )
 
-      actionPlugin.setup({
+      action.setup({
         actions: {
+          ...getDefaultActions(),
           action_dispatch_test: (params, context) => ({
             cached: true,
             id: 'test-id'
@@ -1295,22 +1333,20 @@ describe('Action Plugin', () => {
       })
 
       // First call - should fetch from state
-      const result1 = await actionPlugin.actionDispatch({
+      const result1 = await action.actionDispatch({
         id: 'cache-test',
         context: {},
         payload: {}
       })
 
       // Second call - should use cache
-      const result2 = await actionPlugin.actionDispatch({
+      const result2 = await action.actionDispatch({
         id: 'cache-test',
         context: {},
         payload: {}
       })
 
       strictEqual(result1, result2)
-
-      tester.restoreAll()
     })
   })
 })
