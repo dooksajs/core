@@ -29,6 +29,7 @@ export default function createTestServer (timeout=3000) {
   return {
     worker: new Worker(path.resolve(__dirname, './server-worker.js')),
     baseUrl: null,
+    initialised: null,
 
     /** @type {Array<{resolve: Function, reject: Function}>} */
     startPromises: [],
@@ -70,11 +71,15 @@ export default function createTestServer (timeout=3000) {
           plugins
         })
 
+        this.initialised = true
+
         // Add timeout to prevent indefinite hanging
         setTimeout(() => {
           if (this.startPromises.some(p => p.resolve === resolve)) {
             this.rejectPromise(this.startPromises, resolve,
               new Error('Start operation timed out'))
+
+            this.initialised = false
           }
         }, timeout)
       })
@@ -85,7 +90,11 @@ export default function createTestServer (timeout=3000) {
      * @returns {Promise<void>} Resolves when the worker has been terminated
      */
     async stop () {
-      this.worker.postMessage({ status: 'shutdown' })
+      if (this.initialised) {
+        this.worker.postMessage({ status: 'shutdown' })
+        this.initialised = false
+      }
+
       await this.worker.terminate()
 
       // Clean up any remaining promises
@@ -99,6 +108,11 @@ export default function createTestServer (timeout=3000) {
      */
     restore () {
       return new Promise((resolve, reject) => {
+        if (!this.initialised) {
+          resolve()
+          return
+        }
+
         this.restorePromises.push({
           resolve,
           reject
