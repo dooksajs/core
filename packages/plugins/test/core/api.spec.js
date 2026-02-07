@@ -36,7 +36,7 @@ describe('API plugin', function () {
   })
 
   describe('getAll action', function () {
-    it('should fetch all documents from a collection', { skip: true }, async function (t) {
+    it('should fetch all documents from a collection', async function (t) {
       const hostname = await testServer.start({
         data: [
           {
@@ -84,7 +84,7 @@ describe('API plugin', function () {
       strictEqual(result.collection, 'user/profiles')
     })
 
-    it('should support pagination with page parameter', { skip: true }, async function (t) {
+    it('should support pagination with page parameter', async function (t) {
       const hostname = await testServer.start({
         data: [
           {
@@ -114,7 +114,7 @@ describe('API plugin', function () {
       strictEqual(result.collection, 'user/profiles')
     })
 
-    it('should support limit parameter', { skip: false }, async function (t) {
+    it('should support limit parameter', async function (t) {
       const hostname = await testServer.start({
         data: [
           {
@@ -345,6 +345,508 @@ describe('API plugin', function () {
       })
 
       ok(stateValue.isEmpty)
+    })
+  })
+
+  describe('getById action', function () {
+    it('should fetch single document by ID', async function (t) {
+      const hostname = await testServer.start({
+        routes: ['user/profiles'],
+        data: [
+          {
+            name: 'user/profiles',
+            value: {
+              'user-1': {
+                name: 'John Doe',
+                email: 'john@example.com',
+                role: 'admin'
+              },
+              'user-2': {
+                name: 'Jane Smith',
+                email: 'jane@example.com',
+                role: 'user'
+              },
+              'user-3': { name: 'Bob Johnson' }
+            }
+          }
+        ]
+      })
+
+      const stateData = createStateData()
+      // setup plugins
+      api.setup({ hostname })
+      state.setup(stateData)
+
+      const result = await api.apiGetById({
+        collection: 'user/profiles',
+        id: 'user-1'
+      })
+
+      strictEqual(result.item.length, 1)
+      strictEqual(result.item[0].item.name, 'John Doe')
+      strictEqual(result.item[0].item.email, 'john@example.com')
+      strictEqual(result.item[0].item.role, 'admin')
+      strictEqual(result.collection, 'user/profiles')
+      strictEqual(result.isEmpty, false)
+    })
+
+    it('should fetch multiple documents by ID array', async function (t) {
+      const hostname = await testServer.start({
+        routes: ['user/profiles'],
+        data: [
+          {
+            name: 'user/profiles',
+            value: {
+              'user-1': { name: 'John Doe' },
+              'user-2': { name: 'Jane Smith' },
+              'user-3': { name: 'Bob Johnson' }
+            }
+          }
+        ]
+      })
+
+      const stateData = createStateData()
+      // setup plugins
+      api.setup({ hostname })
+      state.setup(stateData)
+
+      const result = await api.apiGetById({
+        collection: 'user/profiles',
+        id: ['user-1', 'user-2']
+      })
+
+      strictEqual(result.item.length, 2)
+      ok(result.item.some(item => item.item.name === 'John Doe'))
+      ok(result.item.some(item => item.item.name === 'Jane Smith'))
+      strictEqual(result.collection, 'user/profiles')
+    })
+
+    it('should support expand parameter', async function (t) {
+      const hostname = await testServer.start({
+        data: [
+          {
+            name: 'user/settings',
+            value: {
+              'settings-1': {
+                theme: 'Dark'
+              }
+            }
+          },
+          {
+            name: 'user/profiles',
+            value: {
+              'user-1': {
+                name: 'John Doe',
+                settings: 'settings-1'
+              }
+            }
+          }
+        ]
+      })
+
+      const stateData = createStateData()
+      // setup plugins
+      api.setup({ hostname })
+      state.setup(stateData)
+
+      const result = await api.apiGetById({
+        collection: 'user/profiles',
+        id: 'user-1',
+        expand: true
+      })
+
+      strictEqual(result.item.length, 1)
+      strictEqual(result.collection, 'user/profiles')
+      strictEqual(result.item[0].expand.length, 1)
+      strictEqual(result.item[0].expand.length, 1)
+      strictEqual(result.item[0].expand[0].collection, 'user/settings')
+      strictEqual(result.item[0].expand[0].item.theme, 'dark')
+    })
+
+    it('should return empty result when no items found', async function (t) {
+      const hostname = await testServer.start({
+        routes: ['user/profiles']
+      })
+
+      const stateData = createStateData()
+      // setup plugins
+      api.setup({ hostname })
+      state.setup(stateData)
+
+      const result = await api.apiGetById({
+        collection: 'user/profiles',
+        id: 'non-existent'
+      })
+
+      strictEqual(result.item.length, 0)
+      strictEqual(result.isEmpty, true)
+      strictEqual(result.collection, 'user/profiles')
+    })
+  })
+
+  describe('Caching behavior', function () {
+    it('should return cached data on second request', async function (t) {
+      const hostname = await testServer.start({
+        routes: ['user/profiles'],
+        data: [
+          {
+            name: 'user/profiles',
+            value: {
+              'user-1': { name: 'John Doe' }
+            }
+          }
+        ]
+      })
+
+      const stateData = createStateData()
+      // setup plugins
+      api.setup({ hostname })
+      state.setup(stateData)
+
+      // Spy on fetch
+      const originalFetch = global.fetch
+      const fetchSpy = mock.fn(originalFetch)
+      global.fetch = fetchSpy
+      t.after(() => {
+        global.fetch = originalFetch
+      })
+
+      // First request - cache miss
+      const result1 = await api.apiGetAll({
+        collection: 'user/profiles'
+      })
+
+      // Second request - should use cache
+      const result2 = await api.apiGetAll({
+        collection: 'user/profiles'
+      })
+
+      // Should verify calls
+      strictEqual(fetchSpy.mock.callCount(), 1)
+      deepStrictEqual(result1, result2)
+    })
+
+    it('should cache by query parameters', async function (t) {
+      const hostname = await testServer.start({
+        routes: ['user/profiles'],
+        data: [
+          {
+            name: 'user/profiles',
+            value: {
+              'user-1': { name: 'John Doe' },
+              'user-2': { name: 'Jane Smith' },
+              'user-3': { name: 'Bob Johnson' }
+            }
+          }
+        ]
+      })
+
+      const stateData = createStateData()
+      // setup plugins
+      api.setup({ hostname })
+      state.setup(stateData)
+
+      // Spy on fetch
+      const originalFetch = global.fetch
+      const fetchSpy = mock.fn(originalFetch)
+      global.fetch = fetchSpy
+      t.after(() => {
+        global.fetch = originalFetch
+      })
+
+      // Request with pagination
+      await api.apiGetAll({
+        collection: 'user/profiles',
+        page: 1,
+        perPage: 2
+      })
+
+      // Request without pagination should be different cache
+      const result2 = await api.apiGetAll({
+        collection: 'user/profiles'
+      })
+
+      // Both should succeed (different cache keys)
+      ok(result2.item.length > 0)
+      strictEqual(fetchSpy.mock.callCount(), 2)
+    })
+  })
+
+  describe('Request queue management', function () {
+    it('should handle duplicate concurrent requests', async function (t) {
+      const hostname = await testServer.start({
+        routes: ['user/profiles'],
+        data: [
+          {
+            name: 'user/profiles',
+            value: {
+              'user-1': { name: 'John Doe' }
+            }
+          }
+        ]
+      })
+
+      const stateData = createStateData()
+      // setup plugins
+      api.setup({ hostname })
+      state.setup(stateData)
+
+      // Spy on fetch
+      const originalFetch = global.fetch
+      const fetchSpy = mock.fn(originalFetch)
+      global.fetch = fetchSpy
+      t.after(() => {
+        global.fetch = originalFetch
+      })
+
+      // Make multiple identical requests
+      const promises = [
+        api.apiGetAll({ collection: 'user/profiles' }),
+        api.apiGetAll({ collection: 'user/profiles' }),
+        api.apiGetAll({ collection: 'user/profiles' })
+      ]
+
+      await Promise.all(promises)
+
+      // Should only fetch once due to queueing
+      strictEqual(fetchSpy.mock.callCount(), 1)
+    })
+
+    it('should handle concurrent requests to different resources', async function (t) {
+      const userPlugin = createPlugin('user', {
+        state: {
+          schema: {
+            profiles: {
+              type: 'collection',
+              items: {
+                type: 'object',
+                properties: {
+                  name: { type: 'string' }
+                }
+              }
+            }
+          }
+        }
+      })
+
+      const otherPlugin = createPlugin('other', {
+        state: {
+          schema: {
+            collection: {
+              type: 'collection',
+              items: {
+                type: 'object',
+                properties: {
+                  name: { type: 'string' }
+                }
+              }
+            }
+          }
+        }
+      })
+
+      const hostname = await testServer.start({
+        routes: ['user/profiles', 'other/collection'],
+        plugins: [{ instance: userPlugin }, { instance: otherPlugin }],
+        data: [
+          {
+            name: 'user/profiles',
+            value: {
+              'user-1': { name: 'John Doe' }
+            }
+          },
+          {
+            name: 'other/collection',
+            value: {
+              'other-1': { name: 'Other' }
+            }
+          }
+        ]
+      })
+
+      const stateData = createStateData([userPlugin, otherPlugin])
+      // setup plugins
+      api.setup({ hostname })
+      state.setup(stateData)
+
+      // Spy on fetch
+      const originalFetch = global.fetch
+      const fetchSpy = mock.fn(originalFetch)
+      global.fetch = fetchSpy
+      t.after(() => {
+        global.fetch = originalFetch
+      })
+
+      // Make concurrent requests to different collections
+      const promises = [
+        api.apiGetAll({ collection: 'user/profiles' }),
+        api.apiGetAll({ collection: 'other/collection' })
+      ]
+
+      await Promise.all(promises)
+
+      // Should make 2 separate fetch calls
+      strictEqual(fetchSpy.mock.callCount(), 2)
+    })
+  })
+
+  describe('Error handling', function () {
+    it('should handle network errors', async function (t) {
+      // Start server to ensure worker is in valid state for restore
+      await testServer.start({ routes: [] })
+
+      // Setup API plugin with invalid hostname
+      api.setup({ hostname: 'http://localhost:9999' })
+      const stateData = createStateData()
+      state.setup(stateData)
+
+      try {
+        await api.apiGetAll({
+          collection: 'user/profiles'
+        })
+        ok(false, 'Should have thrown error')
+      } catch (error) {
+        ok(error.message.includes('fetch failed') || error.message.includes('ECONNREFUSED'))
+      }
+    })
+
+    it('should handle 404 responses', async function (t) {
+      const hostname = await testServer.start({
+        routes: ['user/profiles']
+      })
+
+      const stateData = createStateData()
+      // setup plugins
+      api.setup({ hostname })
+      state.setup(stateData)
+
+      try {
+        await api.apiGetById({
+          collection: 'non-existent',
+          id: 'user-1'
+        })
+        ok(false, 'Should have thrown error')
+      } catch (error) {
+        ok(error.message.includes('HTTP error! status: 404'))
+      }
+    })
+  })
+
+  describe('Performance and edge cases', function () {
+    it('should handle very large result sets', async function (t) {
+      // Generate large dataset
+      const data = []
+      const profiles = {}
+
+      for (let i = 0; i < 100; i++) {
+        profiles[`user-${i}`] = {
+          name: `User ${i}`,
+          email: `user${i}@example.com`,
+          role: i % 2 === 0 ? 'admin' : 'user'
+        }
+      }
+
+      data.push({
+        name: 'user/profiles',
+        value: profiles
+      })
+
+      const hostname = await testServer.start({
+        routes: ['user/profiles'],
+        data
+      })
+
+      const stateData = createStateData()
+      // setup plugins
+      api.setup({ hostname })
+      state.setup(stateData)
+
+      const result = await api.apiGetAll({
+        collection: 'user/profiles'
+      })
+
+      // Should return all 100 items
+      strictEqual(result.item.length, 100)
+      ok(result.item.some(item => item.item.name === 'User 0'))
+      ok(result.item.some(item => item.item.name === 'User 99'))
+    })
+
+    it('should handle special characters in collection names', async function (t) {
+      const collectionName = 'c_at_ll-ect_ion'
+      const fullCollectionName = `special/${collectionName}`
+      const specialPlugin = createPlugin('special', {
+        state: {
+          schema: {
+            [collectionName]: {
+              type: 'collection',
+              items: {
+                type: 'object',
+                properties: {
+                  name: { type: 'string' }
+                }
+              }
+            }
+          }
+        }
+      })
+
+      const hostname = await testServer.start({
+        routes: [fullCollectionName],
+        plugins: [specialPlugin],
+        data: [
+          {
+            name: fullCollectionName,
+            value: {
+              'item-1': { name: 'Special' }
+            }
+          }
+        ]
+      })
+
+      const stateData = createStateData([specialPlugin])
+      // setup plugins
+      api.setup({ hostname })
+      state.setup(stateData)
+
+      const result = await api.apiGetAll({
+        collection: fullCollectionName
+      })
+
+      strictEqual(result.item.length, 1)
+      strictEqual(result.collection, fullCollectionName)
+      strictEqual(result.item[0].item.name, 'Special')
+    })
+
+    it('should handle empty/undefined query parameters', async function (t) {
+      const hostname = await testServer.start({
+        routes: ['user/profiles'],
+        data: [
+          {
+            name: 'user/profiles',
+            value: {
+              'user-1': { name: 'John Doe' }
+            }
+          }
+        ]
+      })
+
+      const stateData = createStateData()
+      // setup plugins
+      api.setup({ hostname })
+      state.setup(stateData)
+
+      const result = await api.apiGetAll({
+        collection: 'user/profiles',
+        page: undefined,
+        perPage: undefined,
+        limit: undefined,
+        where: undefined,
+        expand: undefined
+      })
+
+      // Should work without query parameters
+      strictEqual(result.item.length, 1)
+      strictEqual(result.collection, 'user/profiles')
     })
   })
 })
