@@ -1,4 +1,5 @@
 import createPlugin from '@dooksa/create-plugin'
+import { deepClone } from '@dooksa/utils'
 
 /**
  * @import {DsPluginState, DsPluginStateExport} from '@dooksa/create-plugin/types'
@@ -26,6 +27,11 @@ export function mockStateData (plugins = []) {
   // Create schema for state
   for (let i = 0; i < plugins.length; i++) {
     const pluginData = plugins[i]
+
+    if (!pluginData.state) {
+      continue
+    }
+
     let state = pluginData.state
 
     if (!state.hasOwnProperty('_values')) {
@@ -37,7 +43,7 @@ export function mockStateData (plugins = []) {
     if (state.hasOwnProperty('_values') && '_names' in state && '_items' in state && '_values' in state && '_defaults' in state) {
       _state._names = _state._names.concat(state._names)
       _state._items = _state._items.concat(state._items)
-      _state._values = Object.assign(_state._values, state._values)
+      _state._values = Object.assign(_state._values, deepClone(state._values))
 
       // Append defaults
       if (state._defaults.length) {
