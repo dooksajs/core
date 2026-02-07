@@ -7,7 +7,7 @@
 Messages must be matched by the following regex:
 
 ```regexp
-/^(revert: )?(feat|fix|docs|style|refactor|perf|test|build|ci|chore|types|wip)(\(.+\))?: .{1,50}/
+/^(revert: )?(feat|fix|docs|style|refactor|perf|test|build|ci|chore|types|wip)(\(.+\))?: .{1,100}/
 ```
 
 #### Examples
