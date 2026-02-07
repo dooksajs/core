@@ -106,7 +106,9 @@ async function run () {
         server.restore()
 
         plugins.forEach((item) => {
-          item.instance.restore()
+          if (typeof item.instance.restore === 'function') {
+            item.instance.restore()
+          }
         })
 
         parentPort.postMessage({
