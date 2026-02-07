@@ -25,6 +25,23 @@ function createStateData (plugins = []) {
 describe('API plugin', function () {
   const testServer = createTestServer()
 
+  /**
+   * Helper function to setup the test environment
+   * @param {Object} options - Options for testServer.start
+   * @param {Array} [clientPlugins=[]] - List of client-side plugins to register
+   * @returns {Promise<Object>} Object with hostname
+   */
+  async function setupTest (options = {}, clientPlugins = []) {
+    const hostname = await testServer.start(options)
+    const stateData = createStateData(clientPlugins)
+    api.setup({
+      hostname,
+      requestCacheExpire: options.requestCacheExpire
+    })
+    state.setup(stateData)
+    return { hostname }
+  }
+
   after(async () => {
     // stop server
     await testServer.stop()
@@ -39,7 +56,7 @@ describe('API plugin', function () {
 
   describe('getAll action', function () {
     it('should fetch all documents from a collection', async function (t) {
-      const hostname = await testServer.start({
+      await setupTest({
         data: [
           {
             name: 'user/profiles',
@@ -51,11 +68,6 @@ describe('API plugin', function () {
           }
         ]
       })
-
-      const stateData = createStateData()
-      // setup plugins
-      api.setup({ hostname })
-      state.setup(stateData)
 
       const result = await api.apiGetAll({
         collection: 'user/profiles'
@@ -70,12 +82,7 @@ describe('API plugin', function () {
     })
 
     it('should handle empty collections', async function (t) {
-      const hostname = await testServer.start()
-
-      const stateData = createStateData()
-      // setup plugins
-      api.setup({ hostname })
-      state.setup(stateData)
+      await setupTest()
 
       const result = await api.apiGetAll({
         collection: 'user/profiles'
@@ -87,7 +94,7 @@ describe('API plugin', function () {
     })
 
     it('should support pagination with page parameter', async function (t) {
-      const hostname = await testServer.start({
+      await setupTest({
         data: [
           {
             name: 'user/profiles',
@@ -99,11 +106,6 @@ describe('API plugin', function () {
           }
         ]
       })
-
-      const stateData = createStateData()
-      // setup plugins
-      api.setup({ hostname })
-      state.setup(stateData)
 
       const result = await api.apiGetAll({
         collection: 'user/profiles',
@@ -117,7 +119,7 @@ describe('API plugin', function () {
     })
 
     it('should support limit parameter', async function (t) {
-      const hostname = await testServer.start({
+      await setupTest({
         data: [
           {
             name: 'user/profiles',
@@ -130,11 +132,6 @@ describe('API plugin', function () {
         ]
       })
 
-      const stateData = createStateData()
-      // setup plugins
-      api.setup({ hostname })
-      state.setup(stateData)
-
 
       const result = await api.apiGetAll({
         collection: 'user/profiles',
@@ -146,7 +143,7 @@ describe('API plugin', function () {
     })
 
     it('should support expand parameter', async function (t) {
-      const hostname = await testServer.start({
+      await setupTest({
         data: [
           {
             name: 'user/settings',
@@ -168,11 +165,6 @@ describe('API plugin', function () {
         ]
       })
 
-      const stateData = createStateData()
-      // setup plugins
-      api.setup({ hostname })
-      state.setup(stateData)
-
       const result = await api.apiGetAll({
         collection: 'user/profiles',
         expand: true
@@ -193,7 +185,7 @@ describe('API plugin', function () {
     })
 
     it('should support WHERE clause filtering', async function (t) {
-      const hostname = await testServer.start({
+      await setupTest({
         routes: ['user/profiles'],
         data: [
           {
@@ -215,11 +207,6 @@ describe('API plugin', function () {
         ]
       })
 
-      const stateData = createStateData()
-      // setup plugins
-      api.setup({ hostname })
-      state.setup(stateData)
-
       const result = await api.apiGetAll({
         collection: 'user/profiles',
         where: "role == 'admin'"
@@ -232,7 +219,7 @@ describe('API plugin', function () {
     })
 
     it('should handle complex WHERE clauses', async function (t) {
-      const hostname = await testServer.start({
+      await setupTest({
         routes: ['user/profiles'],
         data: [
           {
@@ -254,11 +241,6 @@ describe('API plugin', function () {
         ]
       })
 
-      const stateData = createStateData()
-      // setup plugins
-      api.setup({ hostname })
-      state.setup(stateData)
-
       const result = await api.apiGetAll({
         collection: 'user/profiles',
         where: "(role == 'user' && name ~ 'Jane')"
@@ -270,7 +252,7 @@ describe('API plugin', function () {
     })
 
     it('should sync data to state by default', async function (t) {
-      const hostname = await testServer.start({
+      await setupTest({
         routes: ['user/profiles'],
         data: [
           {
@@ -285,11 +267,6 @@ describe('API plugin', function () {
           }
         ]
       })
-
-      const stateData = createStateData()
-      // setup plugins
-      api.setup({ hostname })
-      state.setup(stateData)
 
       await api.apiGetAll({
         collection: 'user/profiles'
@@ -306,7 +283,7 @@ describe('API plugin', function () {
     })
 
     it('should not sync when sync option is false', async function (t) {
-      const hostname = await testServer.start({
+      await setupTest({
         routes: ['user/profiles'],
         data: [
           {
@@ -321,12 +298,6 @@ describe('API plugin', function () {
           }
         ]
       })
-
-      const stateData = createStateData()
-
-      // setup plugins
-      api.setup({ hostname })
-      state.setup(stateData)
 
       // clear state
       state.stateDeleteValue({
@@ -352,7 +323,7 @@ describe('API plugin', function () {
 
   describe('getById action', function () {
     it('should fetch single document by ID', async function (t) {
-      const hostname = await testServer.start({
+      await setupTest({
         routes: ['user/profiles'],
         data: [
           {
@@ -374,11 +345,6 @@ describe('API plugin', function () {
         ]
       })
 
-      const stateData = createStateData()
-      // setup plugins
-      api.setup({ hostname })
-      state.setup(stateData)
-
       const result = await api.apiGetById({
         collection: 'user/profiles',
         id: 'user-1'
@@ -393,7 +359,7 @@ describe('API plugin', function () {
     })
 
     it('should fetch multiple documents by ID array', async function (t) {
-      const hostname = await testServer.start({
+      await setupTest({
         routes: ['user/profiles'],
         data: [
           {
@@ -407,11 +373,6 @@ describe('API plugin', function () {
         ]
       })
 
-      const stateData = createStateData()
-      // setup plugins
-      api.setup({ hostname })
-      state.setup(stateData)
-
       const result = await api.apiGetById({
         collection: 'user/profiles',
         id: ['user-1', 'user-2']
@@ -424,7 +385,7 @@ describe('API plugin', function () {
     })
 
     it('should support expand parameter', async function (t) {
-      const hostname = await testServer.start({
+      await setupTest({
         data: [
           {
             name: 'user/settings',
@@ -446,11 +407,6 @@ describe('API plugin', function () {
         ]
       })
 
-      const stateData = createStateData()
-      // setup plugins
-      api.setup({ hostname })
-      state.setup(stateData)
-
       const result = await api.apiGetById({
         collection: 'user/profiles',
         id: 'user-1',
@@ -466,14 +422,9 @@ describe('API plugin', function () {
     })
 
     it('should return empty result when no items found', async function (t) {
-      const hostname = await testServer.start({
+      await setupTest({
         routes: ['user/profiles']
       })
-
-      const stateData = createStateData()
-      // setup plugins
-      api.setup({ hostname })
-      state.setup(stateData)
 
       const result = await api.apiGetById({
         collection: 'user/profiles',
@@ -484,11 +435,26 @@ describe('API plugin', function () {
       strictEqual(result.isEmpty, true)
       strictEqual(result.collection, 'user/profiles')
     })
+
+    it('should return empty result when id array is empty', async function (t) {
+      await setupTest({
+        routes: ['user/profiles']
+      })
+
+      const result = await api.apiGetById({
+        collection: 'user/profiles',
+        id: []
+      })
+
+      strictEqual(result.item.length, 0)
+      strictEqual(result.isEmpty, true)
+      strictEqual(result.collection, 'user/profiles')
+    })
   })
 
   describe('Caching behavior', function () {
     it('should return cached data on second request', async function (t) {
-      const hostname = await testServer.start({
+      await setupTest({
         routes: ['user/profiles'],
         data: [
           {
@@ -499,11 +465,6 @@ describe('API plugin', function () {
           }
         ]
       })
-
-      const stateData = createStateData()
-      // setup plugins
-      api.setup({ hostname })
-      state.setup(stateData)
 
       // Spy on fetch
       const originalFetch = global.fetch
@@ -529,7 +490,7 @@ describe('API plugin', function () {
     })
 
     it('should cache by query parameters', async function (t) {
-      const hostname = await testServer.start({
+      await setupTest({
         routes: ['user/profiles'],
         data: [
           {
@@ -542,11 +503,6 @@ describe('API plugin', function () {
           }
         ]
       })
-
-      const stateData = createStateData()
-      // setup plugins
-      api.setup({ hostname })
-      state.setup(stateData)
 
       // Spy on fetch
       const originalFetch = global.fetch
@@ -576,7 +532,7 @@ describe('API plugin', function () {
 
   describe('Request queue management', function () {
     it('should handle duplicate concurrent requests', async function (t) {
-      const hostname = await testServer.start({
+      await setupTest({
         routes: ['user/profiles'],
         data: [
           {
@@ -587,11 +543,6 @@ describe('API plugin', function () {
           }
         ]
       })
-
-      const stateData = createStateData()
-      // setup plugins
-      api.setup({ hostname })
-      state.setup(stateData)
 
       // Spy on fetch
       const originalFetch = global.fetch
@@ -615,7 +566,7 @@ describe('API plugin', function () {
     })
 
     it('should handle concurrent requests to different resources', async function (t) {
-      const hostname = await testServer.start({
+      await setupTest({
         routes: ['user/profiles', 'other/collection'],
         plugins: [
           {
@@ -641,12 +592,7 @@ describe('API plugin', function () {
             }
           }
         ]
-      })
-
-      const stateData = createStateData([userProfile, otherPlugin])
-      // setup plugins
-      api.setup({ hostname })
-      state.setup(stateData)
+      }, [userProfile, otherPlugin])
 
       // Spy on fetch
       const originalFetch = global.fetch
@@ -672,42 +618,37 @@ describe('API plugin', function () {
   describe('Error handling', function () {
     it('should handle network errors', async function (t) {
       // Start server to ensure worker is in valid state for restore
-      await testServer.start({ routes: [] })
+      // await setupTest({ routes: [] }) but api.setup needs specific hostname
+
+      const hostname = await testServer.start({ routes: [] })
 
       // Setup API plugin with invalid hostname
       api.setup({ hostname: 'http://localhost:9999' })
       const stateData = createStateData()
       state.setup(stateData)
 
-      try {
+      await rejects(async () => {
         await api.apiGetAll({
           collection: 'user/profiles'
         })
-        ok(false, 'Should have thrown error')
-      } catch (error) {
-        ok(error.message.includes('fetch failed') || error.message.includes('ECONNREFUSED'))
-      }
+      }, (error) => {
+        return error.message.includes('fetch failed') || error.message.includes('ECONNREFUSED')
+      })
     })
 
     it('should handle 404 responses', async function (t) {
-      const hostname = await testServer.start({
+      await setupTest({
         routes: ['user/profiles']
       })
 
-      const stateData = createStateData()
-      // setup plugins
-      api.setup({ hostname })
-      state.setup(stateData)
-
-      try {
+      await rejects(async () => {
         await api.apiGetById({
           collection: 'non-existent',
           id: 'user-1'
         })
-        ok(false, 'Should have thrown error')
-      } catch (error) {
-        ok(error.message.includes('HTTP error! status: 404'))
-      }
+      }, (error) => {
+        return error.message.includes('HTTP error! status: 404')
+      })
     })
   })
 
@@ -730,15 +671,10 @@ describe('API plugin', function () {
         value: profiles
       })
 
-      const hostname = await testServer.start({
+      await setupTest({
         routes: ['user/profiles'],
         data
       })
-
-      const stateData = createStateData()
-      // setup plugins
-      api.setup({ hostname })
-      state.setup(stateData)
 
       const result = await api.apiGetAll({
         collection: 'user/profiles'
@@ -754,7 +690,7 @@ describe('API plugin', function () {
       const collectionName = 'c_at_ll-ect_ion'
       const fullCollectionName = `special/${collectionName}`
 
-      const hostname = await testServer.start({
+      await setupTest({
         routes: [fullCollectionName],
         plugins: [
           {
@@ -770,12 +706,7 @@ describe('API plugin', function () {
             }
           }
         ]
-      })
-
-      const stateData = createStateData([specialPlugin])
-      // setup plugins
-      api.setup({ hostname })
-      state.setup(stateData)
+      }, [specialPlugin])
 
       const result = await api.apiGetAll({
         collection: fullCollectionName
@@ -787,7 +718,7 @@ describe('API plugin', function () {
     })
 
     it('should handle empty/undefined query parameters', async function (t) {
-      const hostname = await testServer.start({
+      await setupTest({
         routes: ['user/profiles'],
         data: [
           {
@@ -798,11 +729,6 @@ describe('API plugin', function () {
           }
         ]
       })
-
-      const stateData = createStateData()
-      // setup plugins
-      api.setup({ hostname })
-      state.setup(stateData)
 
       const result = await api.apiGetAll({
         collection: 'user/profiles',
