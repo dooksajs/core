@@ -20,7 +20,7 @@ export const action = createPlugin('action', {
     /** @type {Object.<string, Function>} */
     actions: {},
     /** @type {Function} */
-    lazyLoader
+    lazyLoader: null
   },
   state: {
     schema: {
@@ -888,6 +888,8 @@ export const action = createPlugin('action', {
 
     if (typeof lazyLoadAction === 'function') {
       this.lazyLoader = lazyLoadAction
+    } else {
+      // this.lazyLoader = lazyLoader
     }
   }
 })
