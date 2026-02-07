@@ -291,17 +291,19 @@ export const action = createPlugin('action', {
         }
       })
 
-      for (let i = 0; i < action.dependencies.length; i++) {
-        stateSetValue({
-          name: 'action/dependencies',
-          value: action.dependencies[i],
-          options: {
-            id: action.id,
-            update: {
-              method: 'push'
+      if (Array.isArray(action.dependencies)) {
+        for (let i = 0; i < action.dependencies.length; i++) {
+          stateSetValue({
+            name: 'action/dependencies',
+            value: action.dependencies[i],
+            options: {
+              id: action.id,
+              update: {
+                method: 'push'
+              }
             }
-          }
-        })
+          })
+        }
       }
     }
   },
