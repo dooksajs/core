@@ -1,5 +1,4 @@
 export { form, formAttachFile, formFormat, formSortOrdered, formSortUnordered } from './form.js'
-export { lazyLoader } from './lazy/index.js'
 export { editor, editorGetSchema, editorSchemaProperties } from './editor.js'
 export { component, componentRemove, componentRenderChildren } from './component.js'
 export { page, pageAppendExpand, pageGetItemsById, pageGetItemsByPath, pagePathToId, pageSave } from './page.js'

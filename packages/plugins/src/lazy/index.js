@@ -8,6 +8,9 @@
  */
 const pluginFilenames = {}
 
+/**
+ *
+ */
 function lazyLoader (pluginName) {
   return new Promise((resolve, reject) => {
     const filename = pluginFilenames[pluginName]
