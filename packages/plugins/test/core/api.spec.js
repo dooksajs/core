@@ -1,5 +1,5 @@
 import { it, afterEach, describe, after, mock } from 'node:test'
-import { ok, strictEqual, deepStrictEqual } from 'node:assert'
+import { ok, strictEqual, deepStrictEqual, rejects } from 'node:assert'
 import { mockStateData } from '@dooksa/test'
 import { api, state } from '#core'
 import createTestServer from '../fixtures/test-server.js'
@@ -526,6 +526,93 @@ describe('API plugin', function () {
 
       // Both should succeed (different cache keys)
       ok(result2.item.length > 0)
+      strictEqual(fetchSpy.mock.callCount(), 2)
+    })
+
+    it('should invalidate cache when item is deleted from state', async function (t) {
+      await setupTest({
+        routes: ['user/profiles'],
+        data: [
+          {
+            name: 'user/profiles',
+            value: {
+              'user-1': { name: 'John Doe' }
+            }
+          }
+        ]
+      })
+
+      // Spy on fetch
+      const originalFetch = global.fetch
+      const fetchSpy = mock.fn(originalFetch)
+      global.fetch = fetchSpy
+      t.after(() => {
+        global.fetch = originalFetch
+      })
+
+      // First request - cache miss
+      await api.apiGetAll({
+        collection: 'user/profiles'
+      })
+
+      // Delete item from state
+      state.stateDeleteValue({
+        name: 'user/profiles',
+        id: 'user-1'
+      })
+
+      // Second request - should not use cache because item was deleted
+      await api.apiGetAll({
+        collection: 'user/profiles'
+      })
+
+      // Should verify calls (2 calls)
+      strictEqual(fetchSpy.mock.callCount(), 2)
+    })
+
+    it('should expire cache after configured time', async function (t) {
+      await setupTest({
+        routes: ['user/profiles'],
+        data: [
+          {
+            name: 'user/profiles',
+            value: {
+              'user-1': { name: 'John Doe' }
+            }
+          }
+        ],
+        requestCacheExpire: 50
+      })
+
+      // Spy on fetch
+      const originalFetch = global.fetch
+      const fetchSpy = mock.fn(originalFetch)
+      global.fetch = fetchSpy
+      t.after(() => {
+        global.fetch = originalFetch
+      })
+
+      // First request - cache miss
+      await api.apiGetAll({
+        collection: 'user/profiles'
+      })
+
+      // Immediate second request - should use cache
+      await api.apiGetAll({
+        collection: 'user/profiles'
+      })
+
+      strictEqual(fetchSpy.mock.callCount(), 1)
+
+      // Wait for cache to expire
+      await new Promise(resolve => setTimeout(resolve, 60))
+
+      // Third request - should expire and fetch again
+      await api.apiGetAll({
+        collection: 'user/profiles'
+      })
+
+      // Should verify calls (2 calls)
       strictEqual(fetchSpy.mock.callCount(), 2)
     })
   })
