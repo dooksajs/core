@@ -442,14 +442,19 @@ export const api = createPlugin('api', {
    * @param {Object} param - Setup parameters
    * @param {string} [param.hostname='http://localhost:6362'] - Hostname
    * @param {string} [param.urlPrefix='/_/'] - Url prefix, defaults to '/_/'
+   * @param {number} [param.requestCacheExpire] - Cache expiration time in ms
    */
-  setup ({ hostname = 'http://localhost:6362', urlPrefix = '/_/' } = {}) {
+  setup ({ hostname = 'http://localhost:6362', urlPrefix = '/_/', requestCacheExpire } = {}) {
     if (hostname) {
       this.hostname = hostname
     }
 
     if (urlPrefix) {
       this.urlPrefix = urlPrefix
+    }
+
+    if (requestCacheExpire) {
+      this.requestCacheExpire = requestCacheExpire
     }
 
     // set url
