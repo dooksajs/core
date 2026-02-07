@@ -3,25 +3,8 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 
 /**
- * @typedef {Object} TestServer
- * @property {Worker} worker - The underlying worker thread managing the test server
- * @property {string|null} baseUrl - The base URL of the started server (null until started)
- * @property {Array<Object>} startPromises - Queue of pending start operation promises
- * @property {Array<Object>} restorePromises - Queue of pending restore operation promises
- * @property {Function|null} messageHandler - Reference to the worker message handler
- * @property {Function} start - Starts the test server with provided configuration
- * @property {Function} stop - Stops the test server and terminates the worker
- * @property {Function} restore - Restores the test server to initial state
- * @property {Function} setupMessageHandlers - Sets up message handling for the worker
- * @property {Function} handleWorkerError - Handles errors from the worker process
- * @property {Function} rejectPromise - Removes and rejects a specific promise
- * @property {Function} cleanupPromises - Clears all pending promises
- */
-
-/**
  * Creates a test server instance that manages a worker process for testing purposes
  * @param {number} [timeout=3000] - Callback timeout
- * @returns {TestServer} A test server object with start, stop, and restore functionality
  */
 export default function createTestServer (timeout=3000) {
   const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -43,13 +26,14 @@ export default function createTestServer (timeout=3000) {
     /**
      * Starts the test server with the provided configuration
      * @param {Object} config - Server configuration options
-     * @param {Array} [config.routes=[]] - Array of route definitions to register
+     * @param {string[]} [config.routes=[]] - Array of route definitions to register
+     * @param {string[]} [config.middleware=[]] - Array mock middleware
      * @param {Array} [config.data=[]] - Array of data fixtures to load
      * @param {Array} [config.plugins=[]] - Array of plugins to initialize
      * @returns {Promise<string>} Resolves with the server base URL when ready
      * @throws {Error} If the server fails to start or times out after 10 seconds
      */
-    async start ({ routes = [], data = [], plugins = [] } = {}) {
+    async start ({ routes = [], middleware = [], data = [], plugins = [] } = {}) {
       return new Promise((resolve, reject) => {
         // Add this promise to the queue
         this.startPromises.push({
@@ -62,11 +46,10 @@ export default function createTestServer (timeout=3000) {
           this.setupMessageHandlers()
         }
 
-        plugins = plugins.map(plugin => plugin.createObservableInstance())
-
         this.worker.postMessage({
           status: 'start',
           routes,
+          middleware,
           data,
           plugins
         })
