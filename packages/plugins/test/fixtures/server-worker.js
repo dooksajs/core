@@ -6,6 +6,7 @@ import { mockStateData } from '@dooksa/test'
 import { access } from 'fs/promises'
 import { join } from 'path'
 import { pathToFileURL } from 'url'
+import userProfile from './plugins/user-profile.js'
 
 /**
  * @typedef {Object} PluginDefinition
@@ -134,26 +135,12 @@ async function setupServer ({ routes = [], middleware = [], data = [], plugins =
   const pluginSetup = []
 
   if (!plugins.length) {
-    // Create default user plugin if no plugins provided
-    const userPlugin = createPlugin('user', {
-      state: {
-        schema: {
-          profiles: {
-            type: 'collection',
-            items: {
-              type: 'object',
-              properties: {
-                name: { type: 'string' },
-                email: { type: 'string' },
-                role: { type: 'string' }
-              }
-            }
-          }
-        }
-      }
-    })
+    // add fallback default plugins
+    pluginState.push(userProfile, server)
 
-    pluginState.push(userPlugin, server)
+    if (!routes.includes('user/profiles')) {
+      routes.push('user/profiles')
+    }
   } else {
     let hasServer = false
 
