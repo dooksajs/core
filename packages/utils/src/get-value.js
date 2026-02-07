@@ -1,7 +1,8 @@
 /**
- * Get result value
- * @param {*} value
+ * Get result value from object using query path
+ * @param {*} value - Any value to retrieve from
  * @param {string|string[]} [query] - Request to return a specific key value, dot notations are permitted
+ * @returns {*} The retrieved value or undefined
  * @example
  * getValue({
  *  a: {
@@ -37,8 +38,9 @@ function getValue (value, query) {
 /**
  * Get value by string
  * @private
- * @param {*} value
+ * @param {*} value - Any value to retrieve from
  * @param {string} query - Request to return a specific key value, dot notations are permitted
+ * @returns {*} The retrieved value or undefined
  */
 function getValueByString (value, query) {
   const keys = query.split('.')
