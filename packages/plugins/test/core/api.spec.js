@@ -2,9 +2,11 @@ import { it, afterEach, describe, after, mock } from 'node:test'
 import { ok, strictEqual, deepStrictEqual } from 'node:assert'
 import { mockStateData } from '@dooksa/test'
 import { api, state } from '#core'
-import { createPlugin } from '@dooksa/create-plugin'
 import createTestServer from '../fixtures/test-server.js'
 import userProfile from '../fixtures/plugins/user-profile.js'
+import otherPlugin from '../fixtures/plugins/other-plugin.js'
+import specialPlugin from '../fixtures/plugins/special-plugin.js'
+
 /**
  * Helper function to set up the API plugin with dependencies
  * @param {Object[]} [plugins] - Hostname for API requests
@@ -460,7 +462,7 @@ describe('API plugin', function () {
       strictEqual(result.item[0].expand.length, 1)
       strictEqual(result.item[0].expand.length, 1)
       strictEqual(result.item[0].expand[0].collection, 'user/settings')
-      strictEqual(result.item[0].expand[0].item.theme, 'dark')
+      strictEqual(result.item[0].expand[0].item.theme, 'Dark')
     })
 
     it('should return empty result when no items found', async function (t) {
@@ -613,41 +615,18 @@ describe('API plugin', function () {
     })
 
     it('should handle concurrent requests to different resources', async function (t) {
-      const userPlugin = createPlugin('user', {
-        state: {
-          schema: {
-            profiles: {
-              type: 'collection',
-              items: {
-                type: 'object',
-                properties: {
-                  name: { type: 'string' }
-                }
-              }
-            }
-          }
-        }
-      })
-
-      const otherPlugin = createPlugin('other', {
-        state: {
-          schema: {
-            collection: {
-              type: 'collection',
-              items: {
-                type: 'object',
-                properties: {
-                  name: { type: 'string' }
-                }
-              }
-            }
-          }
-        }
-      })
-
       const hostname = await testServer.start({
         routes: ['user/profiles', 'other/collection'],
-        plugins: [{ instance: userPlugin }, { instance: otherPlugin }],
+        plugins: [
+          {
+            type: 'fixture',
+            name: 'user-profile.js'
+          },
+          {
+            type: 'fixture',
+            name: 'other-plugin.js'
+          }
+        ],
         data: [
           {
             name: 'user/profiles',
@@ -664,7 +643,7 @@ describe('API plugin', function () {
         ]
       })
 
-      const stateData = createStateData([userPlugin, otherPlugin])
+      const stateData = createStateData([userProfile, otherPlugin])
       // setup plugins
       api.setup({ hostname })
       state.setup(stateData)
@@ -774,25 +753,15 @@ describe('API plugin', function () {
     it('should handle special characters in collection names', async function (t) {
       const collectionName = 'c_at_ll-ect_ion'
       const fullCollectionName = `special/${collectionName}`
-      const specialPlugin = createPlugin('special', {
-        state: {
-          schema: {
-            [collectionName]: {
-              type: 'collection',
-              items: {
-                type: 'object',
-                properties: {
-                  name: { type: 'string' }
-                }
-              }
-            }
-          }
-        }
-      })
 
       const hostname = await testServer.start({
         routes: [fullCollectionName],
-        plugins: [specialPlugin],
+        plugins: [
+          {
+            type: 'fixture',
+            name: 'special-plugin.js'
+          }
+        ],
         data: [
           {
             name: fullCollectionName,
