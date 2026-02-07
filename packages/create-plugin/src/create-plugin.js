@@ -51,7 +51,6 @@ export function createPlugin (name, {
   // Setup the Permanent Production Context
   const context = Object.create(null)
   const plugin = Object.create(null)
-  const _originalImplementation = Object.create(null)
 
   // Define Property Descriptors
   const propertyDescriptorValues = {
@@ -118,6 +117,8 @@ export function createPlugin (name, {
   }
 
   DEV: {
+    const _originalImplementation = Object.create(null)
+
     /**
      * @internal
      * Internal helper to create the actual Observable object with `node:test` tracking.
