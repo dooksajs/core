@@ -89,7 +89,7 @@ export function createPlugin (name, {
 
   // Initialise State
   if (state) {
-    plugin.state = createPluginState(context, name, state)
+    plugin.state = createPluginState(context, name, state, true)
   }
 
   // Initialise the "Bridges"
