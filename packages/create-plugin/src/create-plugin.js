@@ -17,7 +17,7 @@ import {
  * Creates a Dooksa plugin with "Bridge" architecture for testability.
  *
  * This function creates an immutable plugin object where all methods are "Bridges".
- * These bridges point to an internal `_impl` registry. This allows the plugin's
+ * These bridges point to an internal `__handlers__` registry. This allows the plugin's
  * behavior to be swapped at runtime (e.g., for mocking) without breaking
  * circular dependencies or ESM exports.
  *
@@ -61,7 +61,9 @@ export function createPlugin (name, {
   }
 
   // The implementation registry - the "live" destination for all Bridge calls.
-  context._impl = Object.create(null)
+  DEV: {
+    context.__handlers__ = Object.create(null)
+  }
   context.name = name
   plugin.name = name
 
@@ -92,7 +94,7 @@ export function createPlugin (name, {
   }
 
   // Initialise the "Bridges"
-  // The helpers populate context._impl and return stable Bridge functions.
+  // The helpers populate context.__handlers__ and return stable Bridge functions.
 
   if (actions) {
     const result = createPluginActions(context, name, actions)
@@ -154,7 +156,7 @@ export function createPlugin (name, {
       // Setup observable structure
       plugin.observe = mockMethods
       // The implementation registry
-      context._impl = Object.create(null)
+      context.__handlers__ = Object.create(null)
 
       // Set plugin name
       context.name = name
@@ -252,14 +254,14 @@ export function createPlugin (name, {
             testContext
           )
 
-          // Redirect the original context's _impl to the new observable methods.
+          // Redirect the original context's __handlers__ to the new observable methods.
           if (methods) {
             for (const key of Object.keys(methods)) {
               const fullName = name + capitalize(key)
               // store original implementation
-              _originalImplementation[key] = context._impl[key]
+              _originalImplementation[key] = context.__handlers__[key]
               // Redirect original bridge -> Observable Mock
-              context._impl[key] = (...args) => observable[fullName](...args)
+              context.__handlers__[key] = (...args) => observable[fullName](...args)
             }
           }
 
@@ -267,18 +269,18 @@ export function createPlugin (name, {
             for (const key of Object.keys(actions)) {
               const fullName = name + capitalize(key)
               // store original implementation
-              _originalImplementation[key] = context._impl[key]
+              _originalImplementation[key] = context.__handlers__[key]
               // Actions need params extracted, Bridge handles 'this', we just pass args
-              context._impl[key] = (params) => observable[fullName](params)
+              context.__handlers__[key] = (params) => observable[fullName](params)
             }
           }
 
           if (privateMethods) {
             for (const key of Object.keys(privateMethods)) {
               // store original implementation
-              _originalImplementation[key] = context._impl[key]
+              _originalImplementation[key] = context.__handlers__[key]
               // Redirect original bridge -> Observable Mock
-              context._impl[key] = (...args) => observable[key](...args)
+              context.__handlers__[key] = (...args) => observable[key](...args)
             }
           }
 
@@ -290,7 +292,7 @@ export function createPlugin (name, {
         /**
          * Restores the plugin to its original state.
          *
-         * - Resets `context._impl` to the original functions.
+         * - Resets `context.__handlers__` to the original functions.
          * - Resets `context` data to original values.
          */
         value () {
@@ -307,21 +309,21 @@ export function createPlugin (name, {
           if (methods) {
             for (const key of Object.keys(methods)) {
               if (_originalImplementation[key]) {
-                context._impl[key] = _originalImplementation[key]
+                context.__handlers__[key] = _originalImplementation[key]
               }
             }
           }
           if (actions) {
             for (const key of Object.keys(actions)) {
               if (_originalImplementation[key]) {
-                context._impl[key] = _originalImplementation[key]
+                context.__handlers__[key] = _originalImplementation[key]
               }
             }
           }
           if (privateMethods) {
             for (const key of Object.keys(privateMethods)) {
               if (_originalImplementation[key]) {
-                context._impl[key] = _originalImplementation[key]
+                context.__handlers__[key] = _originalImplementation[key]
               }
             }
           }

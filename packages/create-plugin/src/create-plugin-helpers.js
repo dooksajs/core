@@ -46,7 +46,7 @@ import { parseSchema } from './parse-schema.js'
  * Creates a stable "Bridge" function.
  *
  * The returned function is a permanent proxy. When called, it looks up the
- * current implementation in `context._impl[key]` and executes it.
+ * current implementation in `context.__handlers__[key]` and executes it.
  * This allows us to hot-swap the logic (e.g., for mocking) without changing
  * the exported function reference held by other modules.
  *
@@ -56,7 +56,7 @@ import { parseSchema } from './parse-schema.js'
  */
 function createBridge (context, key) {
   return function (...args) {
-    const currentLogic = context._impl[key]
+    const currentLogic = context.__handlers__[key]
 
     if (typeof currentLogic !== 'function') {
       throw new Error(`Implementation for [${key}] is not a function.`)
@@ -145,7 +145,7 @@ export function createPluginState (context, name, state, locked) {
 /**
  * Registers action handlers using the Bridge pattern.
  *
- * Actions are registered into `context._impl` to allow for test interception.
+ * Actions are registered into `context.__handlers__` to allow for test interception.
  * The returned methods are "Bridges" that can be safely exported via ESM.
  *
  * @overload
@@ -206,7 +206,7 @@ export function createPluginActions (context, name, source, wrapper) {
 
     DEV: {
       // Store the actual logic in the mutable registry
-      context._impl[key] = method
+      context.__handlers__[key] = method
 
       method = createBridge(context, key).bind(context)
 
@@ -294,7 +294,7 @@ export function createPluginMethods (context, name, methods, wrapper) {
 
     DEV: {
       // Store logic in mutable registry
-      context._impl[key] = method
+      context.__handlers__[key] = method
 
       method = createBridge(context, key).bind(context)
 
@@ -338,7 +338,7 @@ export function createPluginPrivateMethods (context, methods, wrapper) {
 
     DEV: {
       // Store logic
-      context._impl[key] = method
+      context.__handlers__[key] = method
 
       method = createBridge(context, key).bind(context)
 
