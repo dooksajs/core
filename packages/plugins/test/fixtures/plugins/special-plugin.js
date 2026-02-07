@@ -1,0 +1,17 @@
+import createPlugin from '@dooksa/create-plugin'
+
+export default createPlugin('special', {
+  state: {
+    schema: {
+      'c_at_ll-ect_ion': {
+        type: 'collection',
+        items: {
+          type: 'object',
+          properties: {
+            name: { type: 'string' }
+          }
+        }
+      }
+    }
+  }
+})
