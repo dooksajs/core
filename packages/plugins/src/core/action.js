@@ -1,6 +1,7 @@
 import { createPlugin } from '@dooksa/create-plugin'
 import { apiGetById, operatorCompare, operatorEval, stateGetValue } from '#core'
 import { getValue } from '@dooksa/utils'
+import { lazyLoader } from '../lazy/index.js'
 
 /**
  * @import {SetDataOptions, GetDataQuery, DataSchema, DataWhere, GetValueByQuery} from '../../../types.js'
@@ -17,7 +18,9 @@ let $actionId = ''
 export const action = createPlugin('action', {
   data: {
     /** @type {Object.<string, Function>} */
-    actions: {}
+    actions: {},
+    /** @type {Function} */
+    lazyLoader
   },
   state: {
     schema: {
@@ -855,10 +858,9 @@ export const action = createPlugin('action', {
    * Sets up the action plugin with external action methods and lazy loading capability.
    * This method validates and registers action methods for use in the action system.
    *
-   * @template {Function} T - Type of the lazy load action function
    * @param {Object} options - Configuration options for setup
    * @param {Object.<string, Function>} options.actions - Object map of action names to action functions
-   * @param {T} [options.lazyLoadAction] - Optional function for lazy loading actions when needed
+   * @param {Function} [options.lazyLoadAction] - Optional function for lazy loading actions when needed
    * @throws {Error} When any action method is not a function
    * @example
    * // Setup with action methods
