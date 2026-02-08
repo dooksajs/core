@@ -1,52 +1,43 @@
 import { describe, it, beforeEach, afterEach } from 'node:test'
-import { strictEqual, deepStrictEqual, ok } from 'node:assert'
+import { strictEqual, ok } from 'node:assert'
+import { createState, hydrateActionState, getDefaultActions } from '#test'
+import { createPlugin } from '@dooksa/create-plugin'
+import { action, state, variable } from '#core'
 import variableContextId from '../src/variable/variable-context-id.js'
-import { mockClientPlugin } from '@dooksa/test'
+
+const componentPlugin = createPlugin('component', {
+  state: {
+    schema: {
+      belongsToScopes: {
+        type: 'collection',
+        items: {
+          type: 'array',
+          items: { type: 'string' }
+        }
+      }
+    }
+  }
+})
 
 describe('variable-context-id action integration', function () {
-  let mock
+  beforeEach(function () {
+    const stateData = createState([action, variable, state, componentPlugin])
+    state.setup(stateData)
 
-  beforeEach(async function () {
-    // Mock action, variable, and component plugins
-    mock = await mockClientPlugin(this, {
-      name: 'variable',
-      modules: ['action', 'variable']
+    hydrateActionState(variableContextId)
+
+    action.setup({
+      actions: getDefaultActions(action, [variable])
     })
-
-    // Register the compiled action in the action state using unsafeSetValue
-    // to bypass schema validation during setup
-    mock.method.stateSetValue({
-      name: 'action/sequences',
-      value: variableContextId.sequences,
-      options: { id: 'variable-context-id' }
-    })
-
-    // Register all blocks
-    for (const [blockId, block] of Object.entries(variableContextId.blocks)) {
-      mock.method.stateSetValue({
-        name: 'action/blocks',
-        value: block,
-        options: { id: blockId }
-      })
-    }
-
-    // Register all block sequences
-    for (const [sequenceId, blockSequence] of Object.entries(variableContextId.blockSequences)) {
-      mock.method.stateSetValue({
-        name: 'action/blockSequences',
-        value: blockSequence,
-        options: { id: sequenceId }
-      })
-    }
   })
 
   afterEach(function () {
-    if (mock) {
-      mock.restore()
-    }
+    state.restore()
+    variable.restore()
+    action.restore()
   })
 
-  it('should set variable with context id in specified group scope', async function (t) {
+  it('should set variable with context id in specified group scope', async function () {
     // Setup context with groupId and id
     const context = {
       groupId: 'group-123',
@@ -54,13 +45,13 @@ describe('variable-context-id action integration', function () {
     }
 
     // Dispatch the action
-    await mock.method.actionDispatch({
-      id: 'variable-context-id',
+    await action.actionDispatch({
+      id: variableContextId.id,
       context
     })
 
     // Verify the variable was set correctly
-    const variableValues = mock.method.stateGetValue({
+    const variableValues = state.stateGetValue({
       name: 'variable/values',
       id: 'group-123'
     })
@@ -74,12 +65,12 @@ describe('variable-context-id action integration', function () {
       id: 'element-xyz'
     }
 
-    await mock.method.actionDispatch({
-      id: 'variable-context-id',
+    await action.actionDispatch({
+      id: variableContextId.id,
       context
     })
 
-    const variableValues = await mock.method.stateGetValue({
+    const variableValues = await state.stateGetValue({
       name: 'variable/values',
       id: 'group-abc'
     })
@@ -89,7 +80,7 @@ describe('variable-context-id action integration', function () {
 
   it('should merge with existing variables in the same scope', async function () {
     // Pre-populate the scope with existing variables
-    mock.method.stateSetValue({
+    state.stateSetValue({
       name: 'variable/values',
       value: { existing_var: 'existing_value' },
       options: { id: 'group-merge' }
@@ -100,12 +91,12 @@ describe('variable-context-id action integration', function () {
       id: 'new-value'
     }
 
-    await mock.method.actionDispatch({
-      id: 'variable-context-id',
+    await action.actionDispatch({
+      id: variableContextId.id,
       context
     })
 
-    const variableValues = mock.method.stateGetValue({
+    const variableValues = state.stateGetValue({
       name: 'variable/values',
       id: 'group-merge'
     })
@@ -121,12 +112,12 @@ describe('variable-context-id action integration', function () {
       id: ''
     }
 
-    await mock.method.actionDispatch({
-      id: 'variable-context-id',
+    await action.actionDispatch({
+      id: variableContextId.id,
       context
     })
 
-    const variableValues = mock.method.stateGetValue({
+    const variableValues = state.stateGetValue({
       name: 'variable/values',
       id: 'group-empty'
     })
@@ -140,12 +131,12 @@ describe('variable-context-id action integration', function () {
       id: null
     }
 
-    await mock.method.actionDispatch({
-      id: 'variable-context-id',
+    await action.actionDispatch({
+      id: variableContextId.id,
       context
     })
 
-    const variableValues = mock.method.stateGetValue({
+    const variableValues = state.stateGetValue({
       name: 'variable/values',
       id: 'group-null'
     })
@@ -159,12 +150,12 @@ describe('variable-context-id action integration', function () {
       id: undefined
     }
 
-    await mock.method.actionDispatch({
-      id: 'variable-context-id',
+    await action.actionDispatch({
+      id: variableContextId.id,
       context
     })
 
-    const variableValues = mock.method.stateGetValue({
+    const variableValues = state.stateGetValue({
       name: 'variable/values',
       id: 'group-undefined'
     })
