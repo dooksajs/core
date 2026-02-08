@@ -1,11 +1,8 @@
 import { it, afterEach, describe, after, mock } from 'node:test'
 import { ok, strictEqual, deepStrictEqual, rejects } from 'node:assert'
-import { mockStateData } from '@dooksa/test'
 import { api, state } from '#core'
-import createTestServer from '../fixtures/test-server.js'
-import userProfile from '../fixtures/plugins/user-profile.js'
-import otherPlugin from '../fixtures/plugins/other-plugin.js'
-import specialPlugin from '../fixtures/plugins/special-plugin.js'
+import { createState, createTestServer } from '../helpers/index.js'
+import { userPlugin, otherPlugin, specialPlugin } from '../fixtures/plugins/index.js'
 
 /**
  * Helper function to set up the API plugin with dependencies
@@ -14,10 +11,10 @@ import specialPlugin from '../fixtures/plugins/special-plugin.js'
  */
 function createStateData (plugins = []) {
   if (!plugins.length) {
-    plugins.push(userProfile)
+    plugins.push(userPlugin)
   }
 
-  const stateExport = mockStateData(plugins)
+  const stateExport = createState(plugins)
 
   return stateExport
 }
@@ -679,7 +676,7 @@ describe('API plugin', function () {
             }
           }
         ]
-      }, [userProfile, otherPlugin])
+      }, [userPlugin, otherPlugin])
 
       // Spy on fetch
       const originalFetch = global.fetch
