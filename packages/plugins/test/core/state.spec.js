@@ -227,7 +227,7 @@ describe('State Plugin - getValue Action', () => {
           name: 'non-existent/collection'
         })
       }, {
-        message: /No such collection/
+        message: 'No collection found: "non-existent/collection"'
       })
     })
 
@@ -3236,7 +3236,7 @@ describe('State Plugin - Edge Cases', () => {
         })
       },
       {
-        message: 'No such collection "non-existent/collection"'
+        message: 'No collection found: "non-existent/collection"'
       })
     })
 
