@@ -1,5 +1,6 @@
 import { createPlugin } from '@dooksa/create-plugin'
 import { generateId } from '@dooksa/utils'
+import serialize from 'serialize-javascript'
 
 /**
  * @import {DataValue} from '../../../types.js'
@@ -537,7 +538,7 @@ export const error = createPlugin('error', {
         /** @type {ErrorData} */
         const errorData = {
           id: errorId,
-          message,
+          message: typeof message === 'string' ? message : serialize(message),
           level,
           timestamp,
           browser

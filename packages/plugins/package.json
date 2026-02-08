@@ -36,7 +36,8 @@
     "express": "^5.2.1",
     "helmet": "^8.0.0",
     "jsdom": "^27.4.0",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "serialize-javascript": "^7.0.2"
   },
   "devDependencies": {
     "@types/express": "^5.0.6"
