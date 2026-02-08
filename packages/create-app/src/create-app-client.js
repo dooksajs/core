@@ -123,11 +123,9 @@ function callbackWhenAvailable ({ actions, lazy, loader, setup, options, use }) 
   const setupPlugin = (plugin, methodName, callback) => {
     use(plugin)
 
-    for (let i = 0; i < setup.length; i++) {
-      const instance = setup[i]
-
+    while (setup.length > 0) {
+      const instance = setup.shift()
       instance.setup(options[instance.name])
-      setup.splice(i)
     }
 
     if (typeof actions[methodName] === 'function') {
@@ -157,7 +155,7 @@ function callbackWhenAvailable ({ actions, lazy, loader, setup, options, use }) 
     if (fileName) {
       return loader(fileName)
         .then(plugin => setupPlugin(plugin, name, callback))
-        .catch(error => new Error(error))
+        .catch(error => Promise.reject(error))
     }
 
     // load core lazy plugins
@@ -167,7 +165,7 @@ function callbackWhenAvailable ({ actions, lazy, loader, setup, options, use }) 
           setupPlugin(plugin, name, callback)
         }
       })
-      .catch(error => new Error(error))
+      .catch(error => Promise.reject(error))
   }
 }
 
@@ -271,12 +269,9 @@ function initialize (appPlugins, appComponents) {
     }
 
     // setup plugins
-    for (let i = 0; i < appSetup.length; i++) {
-      const plugin = appSetup[i]
-
+    while (appSetup.length > 0) {
+      const plugin = appSetup.shift()
       plugin.setup(options[plugin.name])
-      appSetup.splice(i, 1)
-      i--
     }
 
     // clear setup queue
@@ -370,6 +365,13 @@ export default function createAppClient ({
       }
 
       appComponents.use(component)
+    }
+  }
+
+  // add extra components
+  for (const id in components) {
+    if (!appComponents.items[id]) {
+      appComponents.use(components[id])
     }
   }
 
