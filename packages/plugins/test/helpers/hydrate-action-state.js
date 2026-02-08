@@ -1,25 +1,54 @@
 import { stateSetValue } from '#core'
 
 /**
+ * @import {ActionCompileResult} from '@dooksa/create-action''@dooksa/create-action'
+ */
+
+/**
  * Helper function to seed action state data
- * @param {import('@dooksa/create-action').ActionCompileResult} action
+ * @param {ActionCompileResult | ActionCompileResult[]} action
  */
 export function hydrateActionState (action) {
-  stateSetValue({
-    name: 'action/sequences',
-    value: { [action.sequenceId]: action.sequences,
-    options: { replace: true }
-  })
+  const actions = Array.isArray(action) ? action : [action]
+  const sequences = {}
+  const blocks = {}
+  const blockSequences = {}
 
-  stateSetValue({
-    name: 'action/blocks',
-    value: action.blocks,
-    options: { replace: true }
-  })
+  for (const actionData of actions) {
+    if (actionData.sequences) {
+      Object.assign(sequences, { [actionData.sequenceId]: actionData.sequences })
+    }
 
-  stateSetValue({
-    name: 'action/blockSequences',
-    value: action.blockSequences,
-    options: { replace: true }
-  })
+    if (actionData.blocks) {
+      Object.assign(blocks, actionData.blocks)
+    }
+
+    if (actionData.blockSequences) {
+      Object.assign(blockSequences, actionData.blockSequences)
+    }
+  }
+
+  if (Object.keys(sequences).length) {
+    stateSetValue({
+      name: 'action/sequences',
+      value: sequences,
+      options: { merge: true }
+    })
+  }
+
+  if (Object.keys(blocks).length) {
+    stateSetValue({
+      name: 'action/blocks',
+      value: blocks,
+      options: { merge: true }
+    })
+  }
+
+  if (Object.keys(blockSequences).length) {
+    stateSetValue({
+      name: 'action/blockSequences',
+      value: blockSequences,
+      options: { merge: true }
+    })
+  }
 }
