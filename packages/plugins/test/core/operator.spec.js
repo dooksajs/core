@@ -1,8 +1,13 @@
-import { describe, it } from 'node:test'
-import { strictEqual, ok, throws } from 'node:assert'
-import { operator, operatorEval, operatorCompare } from '#core'
+import { describe, it, beforeEach } from 'node:test'
+import { strictEqual } from 'node:assert'
+import { operatorEval, operatorCompare, error } from '#core'
 
 describe('Operator plugin', () => {
+
+  beforeEach(() => {
+    error.errorClearErrors({}) // Reset error state
+  })
+
   describe('operatorEval', () => {
     it('should handle equality (==)', () => {
       strictEqual(operatorEval({
@@ -125,10 +130,17 @@ describe('Operator plugin', () => {
         name: '++',
         values: ['10']
       }), '11')
-      throws(() => operatorEval({
+
+      // Check error log
+      const result = operatorEval({
         name: '++',
         values: [true]
-      }), /Increment operator expects a number but found "boolean"/)
+      })
+
+      strictEqual(result, undefined)
+      strictEqual(error.errorGetErrorCount(), 1)
+      const errors = error.errorGetErrors()
+      strictEqual(errors[0].code, 'OPERATOR_TYPE_ERROR')
     })
 
     it('should handle decrement (--)', () => {
@@ -140,10 +152,17 @@ describe('Operator plugin', () => {
         name: '--',
         values: ['10']
       }), '9')
-      throws(() => operatorEval({
+
+      // Check error log
+      const result = operatorEval({
         name: '--',
         values: [true]
-      }), /Decrement operator expects a number but found "boolean"/)
+      })
+
+      strictEqual(result, undefined)
+      strictEqual(error.errorGetErrorCount(), 1)
+      const errors = error.errorGetErrors()
+      strictEqual(errors[0].code, 'OPERATOR_TYPE_ERROR')
     })
 
     it('should handle negation/subtraction (-)', () => {
@@ -296,11 +315,16 @@ describe('Operator plugin', () => {
       }), 'boolean')
     })
 
-    it('should throw error for unknown operator', () => {
-      throws(() => operatorEval({
+    it('should log error for unknown operator', () => {
+      const result = operatorEval({
         name: 'unknown',
         values: []
-      }), /No operator found: unknown/)
+      })
+
+      strictEqual(result, undefined)
+      strictEqual(error.errorGetErrorCount(), 1)
+      const errors = error.errorGetErrors()
+      strictEqual(errors[0].code, 'OPERATOR_NOT_FOUND')
     })
   })
 
