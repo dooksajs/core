@@ -2913,7 +2913,7 @@ export const state = createPlugin('state', {
         const collection = this.values[name]
 
         if (collection == null) {
-          throw DataValueException.noSuchCollection(name)
+          throw DataValueException.collectionNotFound(name)
         }
 
         const schema = this.getSchema(name)

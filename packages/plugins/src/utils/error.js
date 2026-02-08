@@ -334,19 +334,6 @@ class DataValueException extends DooksaException {
   }
 
   /**
-   * Create a no such collection error
-   * @param {string} collectionName - Collection name
-   * @returns {DataValueException}
-   */
-  static noSuchCollection (collectionName) {
-    return new DataValueException({
-      collection: collectionName,
-      message: `No such collection "${collectionName}"`,
-      code: 'NO_SUCH_COLLECTION'
-    })
-  }
-
-  /**
    * Create an update position error
    * @param {string} position - Position that doesn't exist
    * @param {Object} context - Additional context
@@ -387,24 +374,6 @@ class DataValueException extends DooksaException {
       message: `UnsafeSetValue unexpected id type found "${id}"`,
       code: 'UNSAFE_SET_VALUE_INVALID_ID',
       context: { invalidId: id }
-    })
-  }
-
-  /**
-   * Create an invalid position error
-   * @param {string} position - Invalid position
-   * @param {string} collection - Collection name
-   * @param {string} id - Data ID
-   * @returns {DataValueException}
-   */
-  static invalidPosition (position, collection, id) {
-    return new DataValueException({
-      collection,
-      id,
-      operation: 'update',
-      message: `Invalid position: "${position}"`,
-      code: 'INVALID_POSITION',
-      context: { position }
     })
   }
 
