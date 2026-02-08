@@ -1,7 +1,6 @@
 import { parentPort } from 'worker_threads'
 import { server, database, middlewareSet } from '#server'
 import { state } from '#core'
-import { createPlugin } from '@dooksa/create-plugin'
 import { mockStateData } from '@dooksa/test'
 import { access } from 'fs/promises'
 import { join } from 'path'

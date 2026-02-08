@@ -6,4 +6,3 @@ export { mapState } from './map-state.js'
 export { createPlugin }
 
 export default createPlugin
-
