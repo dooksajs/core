@@ -1,5 +1,5 @@
 import { createPlugin } from '@dooksa/create-plugin'
-import { actionDispatch, operatorCompare, operatorEval } from '#core'
+import { actionDispatch, errorLogError, operatorCompare, operatorEval } from '#core'
 
 /**
  * @typedef {Object} ArraySortContent
@@ -323,7 +323,18 @@ export const list = createPlugin('list', {
           return items.sort(sortDescending)
         }
 
-        throw new Error('Sort method does not exist: ' + type )
+        errorLogError({
+          message: 'Sort method does not exist: ' + type,
+          level: 'ERROR',
+          code: 'SORT_METHOD_ERROR',
+          category: 'LIST',
+          context: {
+            plugin: 'list',
+            action: 'sort'
+          }
+        })
+
+        return items
       }
     },
     splice: {
@@ -351,7 +362,17 @@ export const list = createPlugin('list', {
 
         if (start == null) {
           if (source !== undefined) {
-            throw new Error('Splice with source expects a start position but found ' + start)
+            errorLogError({
+              message: 'Splice with source expects a start position but found ' + start,
+              level: 'ERROR',
+              code: 'SPLICE_METHOD_ERROR',
+              category: 'LIST',
+              context: {
+                plugin: 'list',
+                action: 'splice'
+              }
+            })
+            return []
           }
 
           return target.splice(0)
