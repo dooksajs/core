@@ -1,7 +1,42 @@
 import appendPlugin from './append-plugin.js'
-import defaultClientPlugins, { state } from '@dooksa/plugins/client'
-import defaultServerPlugins, { serverStart } from '@dooksa/plugins/server'
+import { state } from '@dooksa/plugins/core'
+import {
+  component,
+  icon,
+  page,
+  form
+} from '@dooksa/plugins/client'
+import {
+  server,
+  database,
+  middleware,
+  page as serverPage,
+  theme,
+  metadata as serverMetadata,
+  component as serverComponent,
+  event,
+  user
+} from '@dooksa/plugins/server'
 import defaultActions from '@dooksa/actions'
+
+const defaultServerPlugins = [
+  server,
+  database,
+  middleware,
+  serverPage,
+  theme,
+  serverMetadata,
+  serverComponent,
+  event,
+  user
+]
+
+const defaultClientPlugins = [
+  component,
+  icon,
+  page,
+  form
+]
 
 /**
  * @import { DsPlugin, DsPluginMetadata, ActiveAction } from '../../create-plugin/types.js'
@@ -195,7 +230,7 @@ function initialize (serverPlugins, clientPlugins, actions) {
     // clear setup queue
     serverPlugins.setup = []
 
-    return serverStart(options.server)
+    return server.serverStart(options.server)
   }
 }
 
