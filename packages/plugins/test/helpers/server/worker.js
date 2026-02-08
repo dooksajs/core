@@ -1,11 +1,11 @@
 import { parentPort } from 'worker_threads'
 import { server, database, middlewareSet } from '#server'
 import { state } from '#core'
-import { mockStateData } from '@dooksa/test'
 import { access } from 'fs/promises'
 import { join } from 'path'
 import { pathToFileURL } from 'url'
-import userProfile from './plugins/user-profile.js'
+import { userPlugin } from '../../fixtures/plugins/user-profile.js'
+import { createState } from '../create-state.js'
 
 /**
  * @typedef {Object} PluginDefinition
@@ -67,14 +67,14 @@ async function run () {
           const plugin = message.plugins[i]
 
           if (plugin.type === 'server') {
-            const instance = await importPlugin(`../../src/server/${plugin.name}`)
+            const instance = await importPlugin(`../../../src/server/${plugin.name}`)
 
             plugins.push({
               instance,
               setup: plugin.setup
             })
           } else if (plugin.type === 'fixture') {
-            const instance = await importPlugin(`./plugins/${plugin.name}`)
+            const instance = await importPlugin(`../../fixtures/plugins/${plugin.name}`)
 
             plugins.push({
               instance,
@@ -137,7 +137,7 @@ async function setupServer ({ routes = [], middleware = [], data = [], plugins =
 
   if (!plugins.length) {
     // add fallback default plugins
-    pluginState.push(userProfile, server)
+    pluginState.push(userPlugin, server)
 
     if (!routes.includes('user/profiles')) {
       routes.push('user/profiles')
@@ -165,7 +165,7 @@ async function setupServer ({ routes = [], middleware = [], data = [], plugins =
     }
   }
   // Setup state and server
-  const stateExport = mockStateData(pluginState)
+  const stateExport = createState(pluginState)
   state.setup(stateExport)
   server.setup()
 

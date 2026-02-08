@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url'
  * Creates a test server instance that manages a worker process for testing purposes
  * @param {number} [timeout=3000] - Callback timeout
  */
-export default function createTestServer (timeout=3000) {
+export function createTestServer (timeout=3000) {
   const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
   return {
