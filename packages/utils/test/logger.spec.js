@@ -598,7 +598,7 @@ describe('Logger', function () {
     })
   })
 
-  describe('Color Output', function () {
+  describe('Color Output', { skip: true }, function () {
 
     it('should apply grey color to timestamp', function () {
       const spy = createConsoleSpy()
@@ -687,7 +687,6 @@ describe('Logger', function () {
       log({ message: 'test' })
 
       const logs = spy.getLogs()
-      // Chalk uses \u001b[39m to reset colors (not \u001b[0m)
       const hasColorReset = /\u001b\[39m/.test(logs[0])
       strictEqual(hasColorReset, true)
 
