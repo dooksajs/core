@@ -1,7 +1,7 @@
 import { describe, it, afterEach } from 'node:test'
 import { strictEqual, deepStrictEqual, ok, throws, deepEqual } from 'node:assert'
-import { mockStateData } from '@dooksa/test'
 import { state } from '#core'
+import { createState } from '../helpers/create-state.js'
 import createPlugin from '@dooksa/create-plugin'
 
 /**
@@ -78,7 +78,7 @@ function createStateData (plugins = []) {
       }
     }))
   }
-  return mockStateData(plugins)
+  return createState(plugins)
 }
 
 describe('State Plugin - Plugin Setup & Initialization', () => {
