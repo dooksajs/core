@@ -579,7 +579,7 @@ export const state = createPlugin('state', {
         const schema = this.getSchema(schemaPath)
         /** @todo validate *any* until schema supports multi type schema */
         const type = schema ? schema.type : 'object'
-        const target = this.createTarget(type, source._metadata)
+        const target = this.prepareTargetInstance(data.target, type, source._metadata)
 
         target._item = source._item || source
 
@@ -1559,13 +1559,13 @@ export const state = createPlugin('state', {
      * Helper: Handles history preservation (Snapshotting).
      */
     prepareTargetInstance (previousTarget, schemaType, metadata) {
-      // SCENARIO 1: No previous data exists
+      // No previous data exists
       if (!previousTarget) {
         return this.createTarget(schemaType, metadata)
       }
 
-      // SCENARIO 2: Existing state has an item (In-place update/history shift)
-      if (previousTarget._item) {
+      // Existing state has an item (In-place update/history shift)
+      if (previousTarget._item != null) {
         const result = this.createTarget(schemaType, metadata, previousTarget)
 
         // Move current state to history
@@ -1580,7 +1580,7 @@ export const state = createPlugin('state', {
         return previousTarget // Mutated in place
       }
 
-      // SCENARIO 3: Existing state is a raw value (Wrapping logic)
+      // Existing state is a raw value
       const newDataInstance = this.createTarget(schemaType, metadata)
       const snapshot = this.createTarget(schemaType, metadata)
 
