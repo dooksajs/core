@@ -1,85 +1,8 @@
 import { describe, it, afterEach } from 'node:test'
 import { strictEqual, deepStrictEqual, ok, throws, deepEqual } from 'node:assert'
 import { state } from '#core'
-import { createState } from '../helpers/create-state.js'
+import { createTestState, createState } from '../helpers/index.js'
 import createPlugin from '@dooksa/create-plugin'
-
-/**
- * Helper function to create state data
- * @param {Array} [plugins=[]] - plugins to add to state
- * @returns {Object} State data object
- */
-function createStateData (plugins = []) {
-  if (!plugins.length) {
-    plugins.push(createPlugin('test', {
-      state: {
-        schema: {
-          collection: {
-            type: 'collection',
-            items: {
-              type: 'object',
-              properties: {
-                name: { type: 'string' },
-                status: { type: 'string' },
-                role: { type: 'string' },
-                age: { type: 'number' },
-                relatedId: { type: 'string' }
-              }
-            }
-          },
-          single: {
-            type: 'object',
-            properties: {
-              name: { type: 'string' },
-              value: { type: 'number' }
-            }
-          },
-          array: {
-            type: 'array',
-            items: {
-              type: 'string'
-            }
-          },
-          complex: {
-            type: 'object',
-            properties: {
-              user: {
-                type: 'object',
-                properties: {
-                  profile: {
-                    type: 'object',
-                    properties: {
-                      name: { type: 'string' },
-                      age: { type: 'number' },
-                      settings: {
-                        type: 'object',
-                        properties: {
-                          theme: { type: 'string' },
-                          notifications: { type: 'boolean' }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          related: {
-            type: 'collection',
-            items: {
-              type: 'object',
-              properties: {
-                name: { type: 'string' },
-                refId: { type: 'string' }
-              }
-            }
-          }
-        }
-      }
-    }))
-  }
-  return createState(plugins)
-}
 
 describe('State Plugin - Plugin Setup & Initialization', () => {
   afterEach(() => {
@@ -104,7 +27,7 @@ describe('State Plugin - Plugin Setup & Initialization', () => {
         }
       })
 
-      const stateData = createStateData([testPlugin])
+      const stateData = createState([testPlugin])
       state.setup(stateData)
 
       // Verify state plugin is set up
@@ -128,7 +51,7 @@ describe('State Plugin - Plugin Setup & Initialization', () => {
         }
       })
 
-      const stateData = createStateData([testPlugin])
+      const stateData = createState([testPlugin])
       state.setup(stateData)
 
       // Check that state has schema
@@ -145,7 +68,7 @@ describe('State Plugin - getValue Action', () => {
 
   describe('Direct access', () => {
     it('should get value from specific collection', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       const dataIn = state.stateSetValue({
@@ -162,7 +85,7 @@ describe('State Plugin - getValue Action', () => {
     })
 
     it('should get nested value using dot notation', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       const dataIn = state.stateSetValue({
@@ -186,7 +109,7 @@ describe('State Plugin - getValue Action', () => {
     })
 
     it('should get entire collection when no ID specified', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       state.stateSetValue({
@@ -207,7 +130,7 @@ describe('State Plugin - getValue Action', () => {
     })
 
     it('should return empty result when ID not found', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       const result = state.stateGetValue({
@@ -219,7 +142,7 @@ describe('State Plugin - getValue Action', () => {
     })
 
     it('should throw error when collection not found', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       throws(() => {
@@ -232,7 +155,7 @@ describe('State Plugin - getValue Action', () => {
     })
 
     it('should apply prefix to generated ID', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       const result = state.stateSetValue({
@@ -245,7 +168,7 @@ describe('State Plugin - getValue Action', () => {
     })
 
     it('should apply suffix to generated ID', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       const result = state.stateSetValue({
@@ -258,7 +181,7 @@ describe('State Plugin - getValue Action', () => {
     })
 
     it('should apply both prefix and suffix to generated ID', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       const result = state.stateSetValue({
@@ -275,7 +198,7 @@ describe('State Plugin - getValue Action', () => {
     })
 
     it('should clone result when clone option is true', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       const originalValue = {
@@ -303,7 +226,7 @@ describe('State Plugin - getValue Action', () => {
 
   describe('Collection filtering', () => {
     it('should filter collection with simple condition', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       state.stateSetValue({
@@ -342,7 +265,7 @@ describe('State Plugin - getValue Action', () => {
     })
 
     it('should filter collection with AND conditions', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       state.stateSetValue({
@@ -392,7 +315,7 @@ describe('State Plugin - getValue Action', () => {
     })
 
     it('should filter collection with OR conditions', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       state.stateSetValue({
@@ -445,7 +368,7 @@ describe('State Plugin - getValue Action', () => {
     })
 
     it('should filter with comparison operators', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       state.stateSetValue({
@@ -484,7 +407,7 @@ describe('State Plugin - getValue Action', () => {
     })
 
     it('should return empty array when no matches', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       state.stateSetValue({
@@ -509,7 +432,7 @@ describe('State Plugin - getValue Action', () => {
     })
 
     it('should expand related data', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       // Setup main collection
@@ -564,7 +487,7 @@ describe('State Plugin - setValue Action', () => {
 
   describe('Creating values', () => {
     it('should set value in collection', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       const result = state.stateSetValue({
@@ -576,7 +499,7 @@ describe('State Plugin - setValue Action', () => {
     })
 
     it('should generate ID automatically', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       const result = state.stateSetValue({
@@ -590,7 +513,7 @@ describe('State Plugin - setValue Action', () => {
     })
 
     it('should apply prefix to generated ID', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       const result = state.stateSetValue({
@@ -617,7 +540,7 @@ describe('State Plugin - setValue Action', () => {
         }
       })
 
-      const stateData = createStateData([testPlugin])
+      const stateData = createState([testPlugin])
       state.setup(stateData)
 
       const result = state.stateSetValue({
@@ -642,7 +565,7 @@ describe('State Plugin - setValue Action', () => {
         }
       })
 
-      const stateData = createStateData([testPlugin])
+      const stateData = createState([testPlugin])
       state.setup(stateData)
 
       const result = state.stateSetValue({
@@ -657,7 +580,7 @@ describe('State Plugin - setValue Action', () => {
     })
 
     it('should apply both prefix and suffix to generated ID', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       const result = state.stateSetValue({
@@ -673,7 +596,7 @@ describe('State Plugin - setValue Action', () => {
     })
 
     it('should use provided ID with prefix and suffix', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       const result = state.stateSetValue({
@@ -689,7 +612,7 @@ describe('State Plugin - setValue Action', () => {
     })
 
     it('should set multiple values at once', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       const result = state.stateSetValue({
@@ -707,7 +630,7 @@ describe('State Plugin - setValue Action', () => {
     })
 
     it('should set value in non-collection schema', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       const result = state.stateSetValue({
@@ -725,7 +648,7 @@ describe('State Plugin - setValue Action', () => {
     })
 
     it('should set array value', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       const result = state.stateSetValue({
@@ -737,7 +660,7 @@ describe('State Plugin - setValue Action', () => {
     })
 
     it('should set complex nested values', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       const complexValue = {
@@ -764,7 +687,7 @@ describe('State Plugin - setValue Action', () => {
 
   describe('Updating values', () => {
     it('should update existing value', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       state.stateSetValue({
@@ -781,7 +704,7 @@ describe('State Plugin - setValue Action', () => {
     })
 
     it('should merge with existing values', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       state.stateSetValue({
@@ -804,7 +727,7 @@ describe('State Plugin - setValue Action', () => {
     })
 
     it('should merge with existing values in single object schema', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       state.stateSetValue({
@@ -823,7 +746,7 @@ describe('State Plugin - setValue Action', () => {
     })
 
     it('should merge with existing values in array schema', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       state.stateSetValue({
@@ -841,7 +764,7 @@ describe('State Plugin - setValue Action', () => {
     })
 
     it('should merge with existing values in complex nested object schema', { skip: true }, async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       state.stateSetValue({
@@ -881,7 +804,7 @@ describe('State Plugin - setValue Action', () => {
     })
 
     it('should merge with existing values in related collection', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       state.stateSetValue({
@@ -907,7 +830,7 @@ describe('State Plugin - setValue Action', () => {
     })
 
     it('should merge with deeply nested objects', { skip: true }, async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       state.stateSetValue({
@@ -947,7 +870,7 @@ describe('State Plugin - setValue Action', () => {
     })
 
     it('should merge with array values in objects', { skip: true }, async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       state.stateSetValue({
@@ -976,7 +899,7 @@ describe('State Plugin - setValue Action', () => {
     })
 
     it('should merge with nested collection items', { skip: true }, async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       state.stateSetValue({
@@ -1009,7 +932,7 @@ describe('State Plugin - setValue Action', () => {
     })
 
     it('should merge with primitive values overriding objects', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       state.stateSetValue({
@@ -1035,7 +958,7 @@ describe('State Plugin - setValue Action', () => {
     })
 
     it('should merge with null values', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       state.stateSetValue({
@@ -1063,7 +986,7 @@ describe('State Plugin - setValue Action', () => {
     })
 
     it('should merge with undefined values', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       state.stateSetValue({
@@ -1091,7 +1014,7 @@ describe('State Plugin - setValue Action', () => {
     })
 
     it('should merge with boolean values', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       state.stateSetValue({
@@ -1118,7 +1041,7 @@ describe('State Plugin - setValue Action', () => {
     })
 
     it('should merge with number values', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       state.stateSetValue({
@@ -1146,7 +1069,7 @@ describe('State Plugin - setValue Action', () => {
     })
 
     it('should replace entire collection', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       state.stateUnsafeSetValue({
@@ -1178,7 +1101,7 @@ describe('State Plugin - setValue Action', () => {
     })
 
     it('should update nested property', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       state.stateSetValue({
@@ -1206,7 +1129,7 @@ describe('State Plugin - setValue Action', () => {
     })
 
     it('should update array with push method', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       state.stateSetValue({
@@ -1228,7 +1151,7 @@ describe('State Plugin - setValue Action', () => {
     })
 
     it('should update array with pull method', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       state.stateSetValue({
@@ -1250,7 +1173,7 @@ describe('State Plugin - setValue Action', () => {
     })
 
     it('should update array with splice method', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       state.stateSetValue({
@@ -1275,7 +1198,7 @@ describe('State Plugin - setValue Action', () => {
     })
 
     it('should store previous value', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       state.stateSetValue({
@@ -1297,7 +1220,7 @@ describe('State Plugin - setValue Action', () => {
 
   describe('Metadata', () => {
     it('should set metadata on values', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       const result = state.stateSetValue({
@@ -1317,7 +1240,7 @@ describe('State Plugin - setValue Action', () => {
     })
 
     it('should add timestamps on server', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       const result = state.stateSetValue({
@@ -1339,7 +1262,7 @@ describe('State Plugin - deleteValue Action', () => {
 
   describe('Basic deletion', () => {
     it('should delete value from collection', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       state.stateSetValue({
@@ -1368,7 +1291,7 @@ describe('State Plugin - deleteValue Action', () => {
     })
 
     it('should return inUse true when data is referenced', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       // Setup main collection
@@ -1397,7 +1320,7 @@ describe('State Plugin - deleteValue Action', () => {
     })
 
     it('should throw error when collection not found', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       throws(() => {
@@ -1411,7 +1334,7 @@ describe('State Plugin - deleteValue Action', () => {
     })
 
     it('should not throw when ID not found', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       const result = state.stateDeleteValue({
@@ -1426,7 +1349,7 @@ describe('State Plugin - deleteValue Action', () => {
 
   describe('Cascade deletion', () => {
     it('should delete related data when cascade is true', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       // Setup main collection
@@ -1456,7 +1379,7 @@ describe('State Plugin - deleteValue Action', () => {
 
   describe('Event dispatching', () => {
     it('should dispatch delete event', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       state.stateSetValue({
@@ -1489,7 +1412,7 @@ describe('State Plugin - deleteValue Action', () => {
     })
 
     it('should not dispatch event when stopPropagation is true', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       state.stateSetValue({
@@ -1524,7 +1447,7 @@ describe('State Plugin - find Action', () => {
   })
 
   it('should find all items in collection', async (t) => {
-    const stateData = createStateData()
+    const stateData = createTestState()
     state.setup(stateData)
 
     state.stateSetValue({
@@ -1545,7 +1468,7 @@ describe('State Plugin - find Action', () => {
   })
 
   it('should filter results with where conditions', async (t) => {
-    const stateData = createStateData()
+    const stateData = createTestState()
     state.setup(stateData)
 
     state.stateSetValue({
@@ -1584,7 +1507,7 @@ describe('State Plugin - find Action', () => {
   })
 
   it('should expand related data', async (t) => {
-    const stateData = createStateData()
+    const stateData = createTestState()
     state.setup(stateData)
 
     state.stateSetValue({
@@ -1613,7 +1536,7 @@ describe('State Plugin - find Action', () => {
   })
 
   it('should return empty array when collection not found', async (t) => {
-    const stateData = createStateData()
+    const stateData = createTestState()
     state.setup(stateData)
 
     throws(() => {
@@ -1633,7 +1556,7 @@ describe('State Plugin - Event Listeners', () => {
 
   describe('addListener', () => {
     it('should add listener to collection', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       let eventFired = false
@@ -1658,7 +1581,7 @@ describe('State Plugin - Event Listeners', () => {
     })
 
     it('should add listener to specific item', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       let eventFired = false
@@ -1683,7 +1606,7 @@ describe('State Plugin - Event Listeners', () => {
     })
 
     it('should add priority listener', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       const order = []
@@ -1717,7 +1640,7 @@ describe('State Plugin - Event Listeners', () => {
     })
 
     it('should add capture-all listener', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       let eventCount = 0
@@ -1746,7 +1669,7 @@ describe('State Plugin - Event Listeners', () => {
     })
 
     it('should force event even with stopPropagation', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       let eventFired = false
@@ -1770,7 +1693,7 @@ describe('State Plugin - Event Listeners', () => {
     })
 
     it('should accept string handler (action ID)', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       // Note: This test verifies the structure, actual action dispatch
@@ -1787,7 +1710,7 @@ describe('State Plugin - Event Listeners', () => {
 
   describe('deleteListener', () => {
     it('should delete listener', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       let eventFired = false
@@ -1820,7 +1743,7 @@ describe('State Plugin - Event Listeners', () => {
     })
 
     it('should delete listener from specific item', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       let eventFired = false
@@ -1851,7 +1774,7 @@ describe('State Plugin - Event Listeners', () => {
     })
 
     it('should return false with non-existent listener is deleted', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       const result = state.stateDeleteListener({
@@ -1866,7 +1789,7 @@ describe('State Plugin - Event Listeners', () => {
 
   describe('Event dispatching', () => {
     it('should dispatch update event to all listeners', { skip: true }, async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       const events = []
@@ -1906,7 +1829,7 @@ describe('State Plugin - Event Listeners', () => {
     })
 
     it('should stop propagation when requested', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       const events = []
@@ -1938,7 +1861,7 @@ describe('State Plugin - Event Listeners', () => {
     })
 
     it('should dispatch delete event', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       let eventFired = false
@@ -1974,7 +1897,7 @@ describe('State Plugin - Schema Validation', () => {
 
   describe('Type validation', () => {
     it('should validate string type', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       // Note: Schema validation happens during setValue
@@ -1988,7 +1911,7 @@ describe('State Plugin - Schema Validation', () => {
     })
 
     it('should validate number type', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       const result = state.stateSetValue({
@@ -2000,7 +1923,7 @@ describe('State Plugin - Schema Validation', () => {
     })
 
     it('should validate boolean type', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       const result = state.stateSetValue({
@@ -2012,7 +1935,7 @@ describe('State Plugin - Schema Validation', () => {
     })
 
     it('should validate object type', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       const result = state.stateSetValue({
@@ -2029,7 +1952,7 @@ describe('State Plugin - Schema Validation', () => {
     })
 
     it('should validate array type', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       const result = state.stateSetValue({
@@ -2041,7 +1964,7 @@ describe('State Plugin - Schema Validation', () => {
     })
 
     it('should validate function type', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       const result = state.stateSetValue({
@@ -2056,7 +1979,7 @@ describe('State Plugin - Schema Validation', () => {
     })
 
     it('should validate node type', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       const result = state.stateSetValue({
@@ -2085,7 +2008,7 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const stateData = createStateData([testPlugin])
+      const stateData = createState([testPlugin])
       state.setup(stateData)
 
       // Valid object with all required properties
@@ -2119,7 +2042,7 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const stateData = createStateData([testPlugin])
+      const stateData = createState([testPlugin])
       state.setup(stateData)
 
       throws(() => {
@@ -2148,7 +2071,7 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const stateData = createStateData([testPlugin])
+      const stateData = createState([testPlugin])
       state.setup(stateData)
 
       // Valid array with unique items
@@ -2178,7 +2101,7 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const stateData = createStateData([testPlugin])
+      const stateData = createState([testPlugin])
       state.setup(stateData)
 
       throws(() => {
@@ -2207,7 +2130,7 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const stateData = createStateData([testPlugin])
+      const stateData = createState([testPlugin])
       state.setup(stateData)
 
       // Valid object with only defined properties
@@ -2241,7 +2164,7 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const stateData = createStateData([testPlugin])
+      const stateData = createState([testPlugin])
       state.setup(stateData)
 
       throws(() => {
@@ -2275,7 +2198,7 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const stateData = createStateData([testPlugin])
+      const stateData = createState([testPlugin])
       state.setup(stateData)
 
       // Valid email
@@ -2304,7 +2227,7 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const stateData = createStateData([testPlugin])
+      const stateData = createState([testPlugin])
       state.setup(stateData)
 
       throws(() => {
@@ -2334,7 +2257,7 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const stateData = createStateData([testPlugin])
+      const stateData = createState([testPlugin])
       state.setup(stateData)
 
       // Valid enum value
@@ -2363,7 +2286,7 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const stateData = createStateData([testPlugin])
+      const stateData = createState([testPlugin])
       state.setup(stateData)
 
       throws(() => {
@@ -2393,7 +2316,7 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const stateData = createStateData([testPlugin])
+      const stateData = createState([testPlugin])
       state.setup(stateData)
 
       // Valid length
@@ -2422,7 +2345,7 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const stateData = createStateData([testPlugin])
+      const stateData = createState([testPlugin])
       state.setup(stateData)
 
       throws(() => {
@@ -2450,7 +2373,7 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const stateData = createStateData([testPlugin])
+      const stateData = createState([testPlugin])
       state.setup(stateData)
 
       // Valid length
@@ -2479,7 +2402,7 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const stateData = createStateData([testPlugin])
+      const stateData = createState([testPlugin])
       state.setup(stateData)
 
       throws(() => {
@@ -2509,7 +2432,7 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const stateData = createStateData([testPlugin])
+      const stateData = createState([testPlugin])
       state.setup(stateData)
 
       // Valid value
@@ -2538,7 +2461,7 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const stateData = createStateData([testPlugin])
+      const stateData = createState([testPlugin])
       state.setup(stateData)
 
       throws(() => {
@@ -2566,7 +2489,7 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const stateData = createStateData([testPlugin])
+      const stateData = createState([testPlugin])
       state.setup(stateData)
 
       // Valid value
@@ -2595,7 +2518,7 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const stateData = createStateData([testPlugin])
+      const stateData = createState([testPlugin])
       state.setup(stateData)
 
       throws(() => {
@@ -2623,7 +2546,7 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const stateData = createStateData([testPlugin])
+      const stateData = createState([testPlugin])
       state.setup(stateData)
 
       // Valid value (greater than 18)
@@ -2652,7 +2575,7 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const stateData = createStateData([testPlugin])
+      const stateData = createState([testPlugin])
       state.setup(stateData)
 
       throws(() => {
@@ -2680,7 +2603,7 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const stateData = createStateData([testPlugin])
+      const stateData = createState([testPlugin])
       state.setup(stateData)
 
       // Valid value (less than 100)
@@ -2709,7 +2632,7 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const stateData = createStateData([testPlugin])
+      const stateData = createState([testPlugin])
       state.setup(stateData)
 
       throws(() => {
@@ -2737,7 +2660,7 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const stateData = createStateData([testPlugin])
+      const stateData = createState([testPlugin])
       state.setup(stateData)
 
       // Valid value (multiple of 5)
@@ -2766,7 +2689,7 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const stateData = createStateData([testPlugin])
+      const stateData = createState([testPlugin])
       state.setup(stateData)
 
       throws(() => {
@@ -2797,7 +2720,7 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const stateData = createStateData([testPlugin])
+      const stateData = createState([testPlugin])
       state.setup(stateData)
 
       // Valid array with 2 items
@@ -2827,7 +2750,7 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const stateData = createStateData([testPlugin])
+      const stateData = createState([testPlugin])
       state.setup(stateData)
 
       throws(() => {
@@ -2856,7 +2779,7 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const stateData = createStateData([testPlugin])
+      const stateData = createState([testPlugin])
       state.setup(stateData)
 
       // Valid array with 3 items
@@ -2886,7 +2809,7 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const stateData = createStateData([testPlugin])
+      const stateData = createState([testPlugin])
       state.setup(stateData)
 
       throws(() => {
@@ -2915,7 +2838,7 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const stateData = createStateData([testPlugin])
+      const stateData = createState([testPlugin])
       state.setup(stateData)
 
       // Valid array with unique items
@@ -2945,7 +2868,7 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const stateData = createStateData([testPlugin])
+      const stateData = createState([testPlugin])
       state.setup(stateData)
 
       throws(() => {
@@ -2980,7 +2903,7 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const stateData = createStateData([testPlugin])
+      const stateData = createState([testPlugin])
       state.setup(stateData)
 
       // Valid array with unique objects
@@ -3030,7 +2953,7 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const stateData = createStateData([testPlugin])
+      const stateData = createState([testPlugin])
       state.setup(stateData)
 
       // Valid object with only defined properties
@@ -3064,7 +2987,7 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const stateData = createStateData([testPlugin])
+      const stateData = createState([testPlugin])
       state.setup(stateData)
 
       throws(() => {
@@ -3095,7 +3018,7 @@ describe('State Plugin - Schema Validation', () => {
         }
       })
 
-      const stateData = createStateData([testPlugin])
+      const stateData = createState([testPlugin])
       state.setup(stateData)
 
       // Valid object with pattern-matching properties
@@ -3116,7 +3039,7 @@ describe('State Plugin - Schema Validation', () => {
 
   describe('Relationships', () => {
     it('should add relation between collections', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       // Setup main collection
@@ -3137,7 +3060,7 @@ describe('State Plugin - Schema Validation', () => {
     })
 
     it('should remove relation when data is deleted', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       // Setup collections
@@ -3169,7 +3092,7 @@ describe('State Plugin - Edge Cases', () => {
 
   describe('Null and undefined values', () => {
     it('should handle null values', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       const result = state.stateSetValue({
@@ -3181,7 +3104,7 @@ describe('State Plugin - Edge Cases', () => {
     })
 
     it('should handle undefined values', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       const result = state.stateSetValue({
@@ -3193,7 +3116,7 @@ describe('State Plugin - Edge Cases', () => {
     })
 
     it('should not get null value', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       throws(() => {
@@ -3208,7 +3131,7 @@ describe('State Plugin - Edge Cases', () => {
     })
 
     it('should get undefined value', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       state.stateSetValue({
@@ -3227,7 +3150,7 @@ describe('State Plugin - Edge Cases', () => {
 
   describe('Missing data', () => {
     it('should handle missing collection', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       throws(() => {
@@ -3241,7 +3164,7 @@ describe('State Plugin - Edge Cases', () => {
     })
 
     it('should handle missing ID', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       const result = state.stateGetValue({
@@ -3253,7 +3176,7 @@ describe('State Plugin - Edge Cases', () => {
     })
 
     it('should handle missing nested property', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       state.stateSetValue({
@@ -3275,7 +3198,7 @@ describe('State Plugin - Edge Cases', () => {
 
   describe('Invalid operations', () => {
     it('should throw error when setting value in non-existent collection', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       throws(() => {
@@ -3289,7 +3212,7 @@ describe('State Plugin - Edge Cases', () => {
     })
 
     it('should throw error when deleting from non-existent collection', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       throws(() => {
@@ -3303,7 +3226,7 @@ describe('State Plugin - Edge Cases', () => {
     })
 
     it('should handle empty values array', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       const result = state.stateSetValue({
@@ -3315,7 +3238,7 @@ describe('State Plugin - Edge Cases', () => {
     })
 
     it('should handle empty filter conditions', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       state.stateSetValue({
@@ -3334,7 +3257,7 @@ describe('State Plugin - Edge Cases', () => {
 
   describe('Complex scenarios', () => {
     it('should handle deeply nested structures', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       const deepValue = {
@@ -3360,7 +3283,7 @@ describe('State Plugin - Edge Cases', () => {
     })
 
     it('should handle large collections', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       const largeCollection = {}
@@ -3377,7 +3300,7 @@ describe('State Plugin - Edge Cases', () => {
     })
 
     it('should handle circular references in values', async (t) => {
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       const obj1 = { name: 'Object 1' }
@@ -3404,7 +3327,7 @@ describe('State Plugin - Integration Tests', () => {
   })
 
   it('should work with multiple collections', async (t) => {
-    const stateData = createStateData()
+    const stateData = createTestState()
     state.setup(stateData)
 
     // Set values in multiple collections
@@ -3434,7 +3357,7 @@ describe('State Plugin - Integration Tests', () => {
   })
 
   it('should handle complex workflow', async (t) => {
-    const stateData = createStateData()
+    const stateData = createTestState()
     state.setup(stateData)
 
     // 1. Create initial data
@@ -3510,7 +3433,7 @@ describe('State Plugin - Integration Tests', () => {
   })
 
   it('should handle concurrent operations', async (t) => {
-    const stateData = createStateData()
+    const stateData = createTestState()
     state.setup(stateData)
 
     // Set multiple values
@@ -3537,7 +3460,7 @@ describe('State Plugin - Integration Tests', () => {
   })
 
   it('should maintain data consistency', async (t) => {
-    const stateData = createStateData()
+    const stateData = createTestState()
     state.setup(stateData)
 
     // Set initial value
@@ -3578,7 +3501,7 @@ describe('State Plugin - unsafeSetValue Action', () => {
   })
 
   it('should set value without validation', async (t) => {
-    const stateData = createStateData()
+    const stateData = createTestState()
     state.setup(stateData)
     const data_1 = {
       item_1: { name: 'Sarah' }
@@ -3619,7 +3542,7 @@ describe('State Plugin - unsafeSetValue Action', () => {
   })
 
   it('should set value with ID', async (t) => {
-    const stateData = createStateData()
+    const stateData = createTestState()
     state.setup(stateData)
     const value = {
       name: 'Joe'
@@ -3646,7 +3569,7 @@ describe('State Plugin - unsafeSetValue Action', () => {
   })
 
   it('should replace entire collection', async (t) => {
-    const stateData = createStateData()
+    const stateData = createTestState()
     state.setup(stateData)
 
     // Set initial value
@@ -3693,7 +3616,7 @@ describe('State Plugin - unsafeSetValue Action', () => {
   })
 
   it('should dispatch update event', async (t) => {
-    const stateData = createStateData()
+    const stateData = createTestState()
     state.setup(stateData)
 
     let eventFired = false
@@ -3734,7 +3657,7 @@ describe('State Plugin - unsafeSetValue Action', () => {
   })
 
   it('should stop propagation when requested', async (t) => {
-    const stateData = createStateData()
+    const stateData = createTestState()
     state.setup(stateData)
 
     let eventFired = false
@@ -3782,7 +3705,7 @@ describe('State Plugin - generateId Action', () => {
   })
 
   it('should generate unique ID', async (t) => {
-    const stateData = createStateData()
+    const stateData = createTestState()
     state.setup(stateData)
 
     const id1 = state.stateGenerateId()
@@ -3794,7 +3717,7 @@ describe('State Plugin - generateId Action', () => {
   })
 
   it('should generate ID with correct length', async (t) => {
-    const stateData = createStateData()
+    const stateData = createTestState()
     state.setup(stateData)
 
     const id = state.stateGenerateId()
@@ -3810,7 +3733,7 @@ describe('State Plugin - getSchema Action', () => {
   })
 
   it('should get schema by path', async (t) => {
-    const stateData = createStateData()
+    const stateData = createTestState()
     state.setup(stateData)
 
     const schema = state.stateGetSchema('test/collection')
@@ -3820,7 +3743,7 @@ describe('State Plugin - getSchema Action', () => {
   })
 
   it('should return undefined for non-existent schema', async (t) => {
-    const stateData = createStateData()
+    const stateData = createTestState()
     state.setup(stateData)
 
     const schema = state.stateGetSchema('non-existent/schema')
