@@ -285,6 +285,8 @@ export default function createAppServer ({
   // use data
   appServerPlugins.use(state)
 
+  const usedServerPlugins = {}
+
   // use required server-side plugins
   for (let i = 0; i < defaultServerPlugins.length; i++) {
     let plugin = defaultServerPlugins[i]
@@ -294,8 +296,18 @@ export default function createAppServer ({
       plugin = serverPlugins[name]
     }
 
+    usedServerPlugins[name] = true
     appServerPlugins.use(plugin)
   }
+
+  // use extra server-side plugins
+  for (const name in serverPlugins) {
+    if (!usedServerPlugins[name]) {
+      appServerPlugins.use(serverPlugins[name])
+    }
+  }
+
+  const usedClientPlugins = {}
 
   // use required client-side plugins
   for (let i = 0; i < defaultClientPlugins.length; i++) {
@@ -306,8 +318,18 @@ export default function createAppServer ({
       plugin = clientPlugins[name]
     }
 
+    usedClientPlugins[name] = true
     appClientPlugins.use(plugin)
   }
+
+  // use extra client-side plugins
+  for (const name in clientPlugins) {
+    if (!usedClientPlugins[name]) {
+      appClientPlugins.use(clientPlugins[name])
+    }
+  }
+
+  const usedActions = {}
 
   // use actions
   for (let i = 0; i < defaultActions.length; i++) {
@@ -318,7 +340,15 @@ export default function createAppServer ({
       action = actions[id]
     }
 
+    usedActions[id] = true
     appActions.use(action)
+  }
+
+  // use extra actions
+  for (const id in actions) {
+    if (!usedActions[id]) {
+      appActions.use(actions[id])
+    }
   }
 
 
