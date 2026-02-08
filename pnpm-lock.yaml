@@ -88,9 +88,6 @@ importers:
       '@dooksa/plugins':
         specifier: workspace:^
         version: link:../plugins
-      '@dooksa/test':
-        specifier: workspace:^
-        version: link:../test
 
   packages/components:
     dependencies:
@@ -161,9 +158,6 @@ importers:
       '@dooksa/create-plugin':
         specifier: workspace:^
         version: link:../create-plugin
-      '@dooksa/test':
-        specifier: workspace:^
-        version: link:../test
       '@dooksa/theme':
         specifier: workspace:^
         version: link:../theme
@@ -192,27 +186,6 @@ importers:
       '@types/express':
         specifier: ^5.0.6
         version: 5.0.6
-
-  packages/test:
-    devDependencies:
-      '@dooksa/create-action':
-        specifier: workspace:^
-        version: link:../create-action
-      '@dooksa/create-plugin':
-        specifier: workspace:^
-        version: link:../create-plugin
-      '@dooksa/plugins':
-        specifier: workspace:^
-        version: link:../plugins
-      '@dooksa/utils':
-        specifier: workspace:^
-        version: link:../utils
-      express:
-        specifier: ^5.2.1
-        version: 5.2.1
-      jsdom:
-        specifier: ^27.4.0
-        version: 27.4.0
 
   packages/theme:
     dependencies:
