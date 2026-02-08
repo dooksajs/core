@@ -393,7 +393,7 @@
  * Used in packages/create-action/types/index.js for string manipulation.
  *
  * @property {string} value - Target string to search within
- * @property {string} pattern - Pattern to search for (string or regular expression)
+ * @property {string | RegExp} pattern - Pattern to search for (string or regular expression)
  * @property {string} replacement - String that will replace what matches the pattern
  */
 
