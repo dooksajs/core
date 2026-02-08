@@ -1,10 +1,29 @@
-import defaultPlugins, { stateSetValue, lazyLoader } from '@dooksa/plugins/client'
+import {
+  component,
+  icon,
+  page,
+  form
+} from '@dooksa/plugins/client'
+import {
+  action,
+  api,
+  error,
+  list,
+  metadata,
+  operator,
+  regex,
+  state,
+  string,
+  variable
+} from '@dooksa/plugins/core'
+
 import appendPlugin from './append-plugin.js'
 import {
   base as defaultBaseComponents,
   extra as defaultExtraComponents,
   bootstrap as defaultBootstrapComponents
 } from '@dooksa/components'
+import { lazyLoader } from '../../plugins/src/lazy/index.js'
 
 /**
  * @import { AppPlugin, AppComponent } from '#types'
@@ -241,7 +260,7 @@ function initialize (appPlugins, appComponents) {
       const item = data[i]
 
       // need to check if any data requires an async plugin
-      stateSetValue({
+      state.stateSetValue({
         name: item.collection,
         value: item.item,
         options: {
@@ -354,10 +373,23 @@ export default function createAppClient ({
     }
   }
 
-  // use required client-side plugins
-  for (let i = 0; i < defaultPlugins.length; i++) {
-    appPlugins.use(defaultPlugins[i])
-  }
+  // core plugins
+  appPlugins.use(action)
+  appPlugins.use(api)
+  appPlugins.use(error)
+  appPlugins.use(list)
+  appPlugins.use(metadata)
+  appPlugins.use(operator)
+  appPlugins.use(regex)
+  appPlugins.use(state)
+  appPlugins.use(string)
+  appPlugins.use(variable)
+
+  // client plugins
+  appPlugins.use(component)
+  appPlugins.use(icon)
+  appPlugins.use(page)
+  appPlugins.use(form)
 
   return {
     usePlugin: appPlugins.use,
