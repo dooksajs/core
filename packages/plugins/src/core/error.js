@@ -745,7 +745,7 @@ export const error = createPlugin('error', {
        * })
        * console.log(`Cleared ${cleared} API errors`)
        */
-      method ({ filter = {} }) {
+      method ({ filter = {} } = {}) {
         let cleared = 0
 
         if (Object.keys(filter).length === 0) {
