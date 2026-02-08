@@ -1,7 +1,7 @@
 import { describe, it, afterEach } from 'node:test'
 import { strictEqual, deepStrictEqual, ok } from 'node:assert'
 import { event, state, action, eventEmit } from '#core'
-import { createState } from '../helpers/create-state.js'
+import { createState, hydrateActionState } from '../helpers/index.js'
 import { createAction } from '@dooksa/create-action'
 
 /**
@@ -10,38 +10,6 @@ import { createAction } from '@dooksa/create-action'
  */
 function createStateData () {
   return createState([event, action, state])
-}
-
-/**
- * Helper function to seed action state data
- * @param {Object} sequences - Action sequences to seed
- * @param {Object} blocks - Action blocks to seed
- * @param {Object} blockSequences - Block sequences to seed
- */
-function seedActionState (sequences, blocks, blockSequences) {
-  if (sequences) {
-    state.stateSetValue({
-      name: 'action/sequences',
-      value: sequences,
-      options: { replace: true }
-    })
-  }
-
-  if (blocks) {
-    state.stateSetValue({
-      name: 'action/blocks',
-      value: blocks,
-      options: { replace: true }
-    })
-  }
-
-  if (blockSequences) {
-    state.stateSetValue({
-      name: 'action/blockSequences',
-      value: blockSequences,
-      options: { replace: true }
-    })
-  }
 }
 
 describe('Event Plugin', () => {
@@ -134,11 +102,7 @@ describe('Event Plugin', () => {
       ], { my_action_method: true })
 
       // Seed state with action definition
-      seedActionState(
-        { my_action: actionData.sequences },
-        actionData.blocks,
-        actionData.blockSequences
-      )
+      hydrateActionState(actionData)
 
       // Setup action plugin with the method implementation
       action.setup({
@@ -197,20 +161,7 @@ describe('Event Plugin', () => {
       ], { method2: true })
 
       // Seed state
-      seedActionState(
-        {
-          action1: action1Data.sequences,
-          action2: action2Data.sequences
-        },
-        {
-          ...action1Data.blocks,
-          ...action2Data.blocks
-        },
-        {
-          ...action1Data.blockSequences,
-          ...action2Data.blockSequences
-        }
-      )
+      hydrateActionState([action1Data, action2Data])
 
       action.setup({
         actions: {
@@ -252,20 +203,7 @@ describe('Event Plugin', () => {
         { hoverMethod: {} }
       ], { hoverMethod: true })
 
-      seedActionState(
-        {
-          clickAction: clickActionData.sequences,
-          hoverAction: hoverActionData.sequences
-        },
-        {
-          ...clickActionData.blocks,
-          ...hoverActionData.blocks
-        },
-        {
-          ...clickActionData.blockSequences,
-          ...hoverActionData.blockSequences
-        }
-      )
+      hydrateActionState([clickActionData, hoverActionData])
 
       action.setup({
         actions: {
@@ -328,20 +266,7 @@ describe('Event Plugin', () => {
         { btn2Method: {} }
       ], { btn2Method: true })
 
-      seedActionState(
-        {
-          btn1Action: btn1ActionData.sequences,
-          btn2Action: btn2ActionData.sequences
-        },
-        {
-          ...btn1ActionData.blocks,
-          ...btn2ActionData.blocks
-        },
-        {
-          ...btn1ActionData.blockSequences,
-          ...btn2ActionData.blockSequences
-        }
-      )
+      hydrateActionState([btn1ActionData, btn2ActionData])
 
       action.setup({
         actions: {

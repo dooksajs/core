@@ -1,37 +1,8 @@
 import { describe, it, afterEach, beforeEach, mock } from 'node:test'
 import { strictEqual, deepStrictEqual, rejects, throws } from 'node:assert'
 import { list, action, state } from '#core'
-import { createState } from '../helpers/index.js'
+import { createState, hydrateActionState } from '../helpers/index.js'
 import { createAction } from '@dooksa/create-action'
-
-/**
- * Helper function to seed action state data
- */
-function seedActionState (sequences, blocks, blockSequences) {
-  if (sequences) {
-    state.stateSetValue({
-      name: 'action/sequences',
-      value: sequences,
-      options: { replace: true }
-    })
-  }
-
-  if (blocks) {
-    state.stateSetValue({
-      name: 'action/blocks',
-      value: blocks,
-      options: { replace: true }
-    })
-  }
-
-  if (blockSequences) {
-    state.stateSetValue({
-      name: 'action/blockSequences',
-      value: blockSequences,
-      options: { replace: true }
-    })
-  }
-}
 
 describe('List plugin', () => {
   let testServer
@@ -233,11 +204,7 @@ describe('List plugin', () => {
         }
       ], { test_transform: true })
 
-      seedActionState(
-        { transform: actionData.sequences },
-        actionData.blocks,
-        actionData.blockSequences
-      )
+      hydrateActionState(actionData)
 
       const mockAction = mock.fn((params, context) => {
         const { key, value } = context.payload
@@ -272,11 +239,7 @@ describe('List plugin', () => {
         }
       ], { test_transformObject: true })
 
-      seedActionState(
-        { transformObject: actionData.sequences },
-        actionData.blocks,
-        actionData.blockSequences
-      )
+      hydrateActionState(actionData)
 
       const mockAction = mock.fn((params, context) => {
         const { key, value } = context.payload
@@ -317,11 +280,7 @@ describe('List plugin', () => {
         }
       ], { test_fail: true })
 
-      seedActionState(
-        { failAction: actionData.sequences },
-        actionData.blocks,
-        actionData.blockSequences
-      )
+      hydrateActionState(actionData)
 
       const mockAction = mock.fn((params, context) => {
         throw new Error('Action failed')

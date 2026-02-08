@@ -2,7 +2,7 @@ import { describe, it, afterEach, after, mock, beforeEach } from 'node:test'
 import { strictEqual, deepStrictEqual, rejects, throws } from 'node:assert'
 import { createAction } from '@dooksa/create-action'
 import { action as originalAction, state, api } from '#core'
-import { createState, createTestServer } from '../helpers/index.js'
+import { createState, createTestServer, hydrateActionState } from '../helpers/index.js'
 
 
 let testServer = createTestServer(1000)
@@ -14,40 +14,6 @@ let testServer = createTestServer(1000)
 function createStateData () {
   return createState([originalAction])
 }
-
-
-/**
- * Helper function to seed action state data
- * @param {Object} sequences - Action sequences to seed
- * @param {Object} blocks - Action blocks to seed
- * @param {Object} blockSequences - Block sequences to seed
- */
-function seedActionState (sequences, blocks, blockSequences) {
-  if (sequences) {
-    state.stateSetValue({
-      name: 'action/sequences',
-      value: sequences,
-      options: { replace: true }
-    })
-  }
-
-  if (blocks) {
-    state.stateSetValue({
-      name: 'action/blocks',
-      value: blocks,
-      options: { replace: true }
-    })
-  }
-
-  if (blockSequences) {
-    state.stateSetValue({
-      name: 'action/blockSequences',
-      value: blockSequences,
-      options: { replace: true }
-    })
-  }
-}
-
 
 function getActionsMap (actions) {
   const map = {}
@@ -224,11 +190,7 @@ describe('Action Plugin', () => {
       state.setup(stateData)
 
       // Seed state with action data
-      seedActionState(
-        { 'test-dispatch': actionData.sequences },
-        actionData.blocks,
-        actionData.blockSequences
-      )
+      hydrateActionState(actionData)
 
       // Mock the action method that will be called
       action.setup({
@@ -264,11 +226,7 @@ describe('Action Plugin', () => {
       state.setup(stateData)
 
       // Seed state
-      seedActionState(
-        { 'context-test': actionData.sequences },
-        actionData.blocks,
-        actionData.blockSequences
-      )
+      hydrateActionState(actionData)
 
       // Ensure default actions are setup
       action.setup({
@@ -310,11 +268,7 @@ describe('Action Plugin', () => {
       state.setup(stateData)
 
       // Seed state
-      seedActionState(
-        { 'cache-test': actionData.sequences },
-        actionData.blocks,
-        actionData.blockSequences
-      )
+      hydrateActionState(actionData)
 
       action.setup({
         actions: {
@@ -422,11 +376,7 @@ describe('Action Plugin', () => {
       state.setup(stateData)
 
       // Seed state
-      seedActionState(
-        { 'clear-test': actionData.sequences },
-        actionData.blocks,
-        actionData.blockSequences
-      )
+      hydrateActionState(actionData)
 
       action.setup({
         actions: {
@@ -694,11 +644,7 @@ describe('Action Plugin', () => {
       state.setup(stateData)
 
       // Seed state
-      seedActionState(
-        { 'ifelse-true': actionData.sequences },
-        actionData.blocks,
-        actionData.blockSequences
-      )
+      hydrateActionState(actionData)
 
       const handleActiveResult = t.mock.fn((params, context) => {
         return true
@@ -767,11 +713,7 @@ describe('Action Plugin', () => {
       state.setup(stateData)
 
       // Seed state
-      seedActionState(
-        { 'ifelse-false': actionData.sequences },
-        actionData.blocks,
-        actionData.blockSequences
-      )
+      hydrateActionState(actionData)
 
       action.setup({
         actions: {
@@ -835,11 +777,7 @@ describe('Action Plugin', () => {
       state.setup(stateData)
 
       // Seed state
-      seedActionState(
-        { 'ifelse-and': actionData.sequences },
-        actionData.blocks,
-        actionData.blockSequences
-      )
+      hydrateActionState(actionData)
 
       const handleAndTrueResult = t.mock.fn((params, context) => {
         return true
@@ -908,11 +846,7 @@ describe('Action Plugin', () => {
       state.setup(stateData)
 
       // Seed state
-      seedActionState(
-        { 'ifelse-or': actionData.sequences },
-        actionData.blocks,
-        actionData.blockSequences
-      )
+      hydrateActionState(actionData)
 
       const handleOrTrueResult = t.mock.fn((params, context) => {
         return true
@@ -990,11 +924,7 @@ describe('Action Plugin', () => {
       })
 
       // Seed state
-      seedActionState(
-        { 'ifelse-resolve': actionData.sequences },
-        actionData.blocks,
-        actionData.blockSequences
-      )
+      hydrateActionState(actionData)
 
       await action.actionDispatch({
         id: 'ifelse-resolve',
@@ -1034,11 +964,7 @@ describe('Action Plugin', () => {
       state.setup(stateData)
 
       // Seed state
-      seedActionState(
-        { 'complete-workflow': actionData.sequences },
-        actionData.blocks,
-        actionData.blockSequences
-      )
+      hydrateActionState(actionData)
 
       action.setup({
         actions: { ...getDefaultActions(action) }
@@ -1069,11 +995,7 @@ describe('Action Plugin', () => {
       state.setup(stateData)
 
       // Seed state
-      seedActionState(
-        { 'async-test': actionData.sequences },
-        actionData.blocks,
-        actionData.blockSequences
-      )
+      hydrateActionState(actionData)
 
       action.setup({
         actions: {
@@ -1110,11 +1032,7 @@ describe('Action Plugin', () => {
       state.setup(stateData)
 
       // Seed state
-      seedActionState(
-        { 'error-test': actionData.sequences },
-        actionData.blocks,
-        actionData.blockSequences
-      )
+      hydrateActionState(actionData)
 
       action.setup({
         actions: {
@@ -1146,11 +1064,7 @@ describe('Action Plugin', () => {
       state.setup(stateData)
 
       // Seed state
-      seedActionState(
-        { 'empty-seq': actionData.sequences },
-        actionData.blocks,
-        actionData.blockSequences
-      )
+      hydrateActionState(actionData)
 
       action.setup({
         actions: { ...getDefaultActions(action) }
@@ -1202,11 +1116,10 @@ describe('Action Plugin', () => {
       state.setup(stateData)
 
       // Seed only sequences, not blocks
-      seedActionState(
-        { 'missing-block': actionData.sequences },
-        undefined,
-        undefined
-      )
+      hydrateActionState({
+        sequenceId: 'missing-block',
+        sequences: actionData.sequences
+      })
 
       // Don't seed blocks - this should cause an error
       action.setup({
@@ -1240,11 +1153,11 @@ describe('Action Plugin', () => {
       state.setup(stateData)
 
       // Seed blocks but not block sequences
-      seedActionState(
-        { 'missing-seq': actionData.sequences },
-        actionData.blocks,
-        undefined
-      )
+      hydrateActionState({
+        sequenceId: 'missing-seq',
+        sequences: actionData.sequences,
+        blocks: actionData.blocks
+      })
 
       // Don't seed blockSequences
       action.setup({
@@ -1281,11 +1194,7 @@ describe('Action Plugin', () => {
       state.setup(stateData)
 
       // Seed state
-      seedActionState(
-        { 'no-method': actionData.sequences },
-        actionData.blocks,
-        actionData.blockSequences
-      )
+      hydrateActionState(actionData)
 
       action.setup({
         actions: { ...getDefaultActions(action) }
@@ -1335,11 +1244,7 @@ describe('Action Plugin', () => {
       state.setup(stateData)
 
       // Seed state
-      seedActionState(
-        { 'cache-test': actionData.sequences },
-        actionData.blocks,
-        actionData.blockSequences
-      )
+      hydrateActionState(actionData)
 
       action.setup({
         actions: {
