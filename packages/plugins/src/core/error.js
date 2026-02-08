@@ -366,10 +366,10 @@ export const error = createPlugin('error', {
     /**
      * Checks if error matches filter criteria
      * @param {ErrorData} errorData - Error data to check
-     * @param {Object} filter - Filter criteria
+     * @param {Object} [filter = {}] - Filter criteria
      * @returns {boolean} True if error matches filter
      */
-    matchesFilter (errorData, filter) {
+    matchesFilter (errorData, filter = {}) {
       if (!errorData) return false
 
       if (filter.code && errorData.code !== filter.code) {
@@ -667,7 +667,7 @@ export const error = createPlugin('error', {
        *   limit: 5
        * })
        */
-      method ({ filter = {}, limit }) {
+      method ({ filter, limit } = {}) {
         const errors = []
         const ids = this.errorIds
 
@@ -833,8 +833,8 @@ export const error = createPlugin('error', {
        * })
        * console.log(`Recent API errors: ${recentApiErrorCount}`)
        */
-      method ({ filter = {} }) {
-        if (Object.keys(filter).length === 0) {
+      method ({ filter } = {}) {
+        if (!filter) {
           return this.errorIds.length
         }
 
