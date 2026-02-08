@@ -221,7 +221,10 @@ function compileAction (action) {
         const id = objectHash(targetBlockSequence)
         const sequenceIndex = sequences.indexOf(id)
 
-        sequences.splice(sequenceIndex, 1)
+        if (sequenceIndex > -1) {
+          sequences.splice(sequenceIndex, 1)
+        }
+
         blockSequences[id] = targetBlockSequence
         block.value = id
         block.blockSequence = id
