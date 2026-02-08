@@ -341,7 +341,14 @@ export const list = createPlugin('list', {
        * @param {number} param.deleteCount - An integer indicating the number of elements in the array to remove from start.
        * @returns {Array} Array of removed elements
        */
-      method ({ target, source, start, deleteCount = 0 }) {
+      method (args) {
+        const { target, start } = args
+        // Use 'in' operator to check presence
+        const hasSource = 'source' in args
+        const hasDeleteCount = 'deleteCount' in args
+        const source = args.source
+        const deleteCount = args.deleteCount
+
         if (start == null) {
           if (source !== undefined) {
             throw new Error('Splice with source expects a start position but found ' + start)
@@ -350,11 +357,31 @@ export const list = createPlugin('list', {
           return target.splice(0)
         }
 
-        if (Array.isArray(source)) {
-          return target.splice(start, deleteCount, ...source)
+        // Prepare arguments for splice
+        const spliceArgs = [start]
+
+        if (hasDeleteCount) {
+          spliceArgs.push(deleteCount)
+        } else {
+          // If source is provided, we MUST provide deleteCount to splice.
+          // Default to 0 if inserting.
+          if (hasSource) {
+            spliceArgs.push(0)
+          }
         }
 
-        return target.splice(start, deleteCount, source)
+        if (hasSource) {
+          // Ensure deleteCount is pushed if not already
+          if (spliceArgs.length === 1) spliceArgs.push(0)
+
+          if (Array.isArray(source)) {
+            spliceArgs.push(...source)
+          } else {
+            spliceArgs.push(source)
+          }
+        }
+
+        return target.splice(...spliceArgs)
       }
     }
   }
