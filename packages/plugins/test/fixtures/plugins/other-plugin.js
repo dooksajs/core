@@ -1,6 +1,6 @@
 import createPlugin from '@dooksa/create-plugin'
 
-export default createPlugin('other', {
+const otherPlugin = createPlugin('other', {
   state: {
     schema: {
       collection: {
@@ -15,3 +15,5 @@ export default createPlugin('other', {
     }
   }
 })
+
+export { otherPlugin }

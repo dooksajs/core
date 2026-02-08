@@ -1,6 +1,6 @@
 import createPlugin from '@dooksa/create-plugin'
 
-export default createPlugin('user', {
+const userPlugin = createPlugin('user', {
   state: {
     schema: {
       profiles: {
@@ -30,3 +30,5 @@ export default createPlugin('user', {
     }
   }
 })
+
+export { userPlugin }

@@ -1,6 +1,6 @@
 import createPlugin from '@dooksa/create-plugin'
 
-export default createPlugin('special', {
+const specialPlugin = createPlugin('special', {
   state: {
     schema: {
       'c_at_ll-ect_ion': {
@@ -15,3 +15,5 @@ export default createPlugin('special', {
     }
   }
 })
+
+export { specialPlugin }
