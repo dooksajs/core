@@ -1,5 +1,5 @@
 import { createPlugin } from '@dooksa/create-plugin'
-import { apiGetById, operatorCompare, operatorEval, stateGetValue } from '#core'
+import { apiGetById, errorLogError, operatorCompare, operatorEval, stateGetValue } from '#core'
 import { getValue } from '@dooksa/utils'
 import { lazyLoader } from '../lazy/index.js'
 
@@ -145,7 +145,17 @@ export const action = createPlugin('action', {
         this.lazyLoader(name, callback)
       }
 
-      throw new Error('Action: no action found "' + name +'"')
+      errorLogError({
+        message: 'Action: no action found "' + name +'"',
+        level: 'ERROR',
+        code: 'ACTION_NOT_FOUND',
+        category: 'ACTION',
+        context: {
+          plugin: 'action',
+          action: 'callWhenAvailable',
+          targetAction: name
+        }
+      })
     },
     /**
      * Calls a specific action method by name, handling both synchronous and asynchronous execution.
@@ -177,22 +187,30 @@ export const action = createPlugin('action', {
       }
 
       this.callWhenAvailable(name, () => {
-        const result = this.actions[name](params, context)
-        const onSuccess = callback.onSuccess
-        const onError = callback.onError
+        try {
+          const result = this.actions[name](params, context)
+          const onSuccess = callback.onSuccess
+          const onError = callback.onError
 
-        if (result instanceof Error) {
-          onError(result)
-        } else if (result instanceof Promise) {
-          Promise.resolve(result)
-            .then(results => {
-              onSuccess(results)
-            })
-            .catch(error => {
-              onError(error)
-            })
-        } else {
-          onSuccess(result)
+          if (result instanceof Error) {
+            onError(result)
+          } else if (result instanceof Promise) {
+            Promise.resolve(result)
+              .then(results => {
+                onSuccess(results)
+              })
+              .catch(error => {
+                onError(error)
+              })
+          } else {
+            onSuccess(result)
+          }
+        } catch (error) {
+          if (callback.onError) {
+            callback.onError(error)
+          } else {
+            throw error
+          }
         }
       })
     },
@@ -218,7 +236,18 @@ export const action = createPlugin('action', {
         })
 
         if (blockData.isEmpty) {
-          throw new Error('Action: block could not be found: ' + id)
+          errorLogError({
+            message: 'Action: block could not be found: ' + id,
+            level: 'ERROR',
+            code: 'ACTION_BLOCK_NOT_FOUND',
+            category: 'ACTION',
+            context: {
+              plugin: 'action',
+              action: 'getBlockValue',
+              blockId: id
+            }
+          })
+          return
         }
 
         value = blockData.item
@@ -302,7 +331,21 @@ export const action = createPlugin('action', {
         })
 
         if (blockData.isEmpty) {
-          throw new Error('Action: block could not be found: ' + id)
+          errorLogError({
+            message: 'Action: block could not be found: ' + id,
+            level: 'ERROR',
+            code: 'ACTION_BLOCK_NOT_FOUND',
+            category: 'ACTION',
+            context: {
+              plugin: 'action',
+              action: 'getBlockValues',
+              blockId: id
+            }
+          })
+          return {
+            key: undefined,
+            value: undefined
+          }
         }
 
         const { key, value } = this.getBlockValueByKey(blockData.item, context, payload, blockValues)
@@ -349,10 +392,20 @@ export const action = createPlugin('action', {
 
       // Validate sequence input
       if (!Array.isArray(sequence)) {
-        throw new Error(`Action: sequence must be an array, received ${typeof sequence}`)
+        errorLogError({
+          message: `Action: sequence must be an array, received ${typeof sequence}`,
+          level: 'ERROR',
+          code: 'ACTION_SEQUENCE_TYPE_ERROR',
+          category: 'ACTION',
+          context: {
+            plugin: 'action',
+            action: 'processSequence'
+          }
+        })
+        return blockProcess
       }
 
-      for (let i = 0; i < sequence.length; i++) {
+      sequenceLoop: for (let i = 0; i < sequence.length; i++) {
         const blockSequenceId = sequence[i]
 
         // Get block sequence with proper empty checking
@@ -362,7 +415,18 @@ export const action = createPlugin('action', {
         })
 
         if (blockSequenceResult.isEmpty) {
-          throw new Error(`Action: block sequence could not be found: ${blockSequenceId} (sequence index: ${i})`)
+          errorLogError({
+            message: `Action: block sequence could not be found: ${blockSequenceId} (sequence index: ${i})`,
+            level: 'ERROR',
+            code: 'ACTION_SEQUENCE_NOT_FOUND',
+            category: 'ACTION',
+            context: {
+              plugin: 'action',
+              action: 'processSequence',
+              sequenceId: blockSequenceId
+            }
+          })
+          break
         }
 
         const blockSequence = blockSequenceResult.item
@@ -377,7 +441,18 @@ export const action = createPlugin('action', {
           })
 
           if (blockResult.isEmpty) {
-            throw new Error(`Action: block could not be found: ${id} (sequence: ${blockSequenceId}, position: ${j})`)
+            errorLogError({
+              message: `Action: block could not be found: ${id} (sequence: ${blockSequenceId}, position: ${j})`,
+              level: 'ERROR',
+              code: 'ACTION_BLOCK_NOT_FOUND',
+              category: 'ACTION',
+              context: {
+                plugin: 'action',
+                action: 'processSequence',
+                blockId: id
+              }
+            })
+            break sequenceLoop
           }
 
           const block = blockResult.item
@@ -404,39 +479,42 @@ export const action = createPlugin('action', {
                     callback(result)
                   }),
                   onError: (error) => {
-                    /**
-                     * @TODO Console error
-                     * Until browser support cause @link https://caniuse.com/mdn-javascript_builtins_error_cause_displayed_in_console
-                     */
-                    if (navigator.userAgent.indexOf('Firefox') === -1) {
-                      // console.error(error)
+                    errorLogError({
+                      message: `Action method '${block.method}' failed for block '${id}': ${error.message}`,
+                      level: 'ERROR',
+                      code: 'ACTION_EXECUTION_ERROR',
+                      category: 'ACTION',
+                      context: {
+                        plugin: 'action',
+                        action: 'processSequence',
+                        blockId: id,
+                        method: block.method
+                      },
+                      stack: error.stack
+                    })
+                    // Stop sequence
+                    if (typeof callback === 'function') {
+                      callback()
                     }
-
-                    // Enhance error with context
-                    const enhancedError = new Error(`Action method '${block.method}' failed for block '${id}': ${error.message}`)
-                    // @ts-ignore
-                    enhancedError.cause = error
-                    // @ts-ignore
-                    enhancedError.blockId = id
-                    // @ts-ignore
-                    enhancedError.method = block.method
-                    throw enhancedError
                   }
                 })
               } catch (error) {
-                // Catch synchronous errors from getBlockValueByKey
-                const enhancedError = new Error(`Action block preparation failed for '${id}': ${error.message}`)
-                // @ts-ignore
-                enhancedError.cause = error
-                // @ts-ignore
-                enhancedError.blockId = id
-
-                // errorLogError({
-                //   message: `Action block preparation failed for '${id}': ${error.message}`,
-                //   level: 'ERROR'
-                // })
-
-                throw error
+                errorLogError({
+                  message: `Action block preparation failed for '${id}': ${error.message}`,
+                  level: 'ERROR',
+                  code: 'ACTION_PREPARATION_ERROR',
+                  category: 'ACTION',
+                  context: {
+                    plugin: 'action',
+                    action: 'processSequence',
+                    blockId: id
+                  },
+                  stack: error.stack
+                })
+                // Stop sequence
+                if (typeof callback === 'function') {
+                  callback()
+                }
               }
             })
           } else if (block.ifElse) {
@@ -450,8 +528,10 @@ export const action = createPlugin('action', {
                 })
 
                 // append new process items
-                for (let i = 0; i < processItems.length; i++) {
-                  blockProcess.push(processItems[i])
+                if (processItems) {
+                  for (let i = 0; i < processItems.length; i++) {
+                    blockProcess.push(processItems[i])
+                  }
                 }
 
                 const nextProcess = blockProcess[++blockProcessIndex]
@@ -462,18 +542,37 @@ export const action = createPlugin('action', {
 
                 callback()
               } catch (error) {
-                // Enhance error with context
-                const enhancedError = new Error(`Action ifElse condition failed for block '${id}': ${error.message}`)
-                // @ts-ignore
-                enhancedError.cause = error
-                // @ts-ignore
-                enhancedError.blockId = id
-                throw enhancedError
+                errorLogError({
+                  message: `Action ifElse condition failed for block '${id}': ${error.message}`,
+                  level: 'ERROR',
+                  code: 'ACTION_IFELSE_ERROR',
+                  category: 'ACTION',
+                  context: {
+                    plugin: 'action',
+                    action: 'processSequence',
+                    blockId: id
+                  },
+                  stack: error.stack
+                })
+                // Stop sequence
+                if (typeof callback === 'function') {
+                  callback()
+                }
               }
             })
           } else {
             // Warn about blocks with no recognized action type
-            console.warn(`Action: block ${id} has no recognized action type (no method or ifElse)`)
+            errorLogError({
+              message: `Action: block ${id} has no recognized action type (no method or ifElse)`,
+              level: 'WARN',
+              code: 'ACTION_UNKNOWN_TYPE',
+              category: 'ACTION',
+              context: {
+                plugin: 'action',
+                action: 'processSequence',
+                blockId: id
+              }
+            })
 
             if (typeof callback === 'function') {
               callback()
@@ -578,7 +677,18 @@ export const action = createPlugin('action', {
             })
               .then(data => {
                 if (data.isEmpty) {
-                  return reject(new Error('No action found: ' + id))
+                  errorLogError({
+                    message: 'No action found: ' + id,
+                    level: 'ERROR',
+                    code: 'ACTION_NOT_FOUND',
+                    category: 'ACTION',
+                    context: {
+                      plugin: 'action',
+                      action: 'dispatch',
+                      actionId: id
+                    }
+                  })
+                  return resolve(undefined)
                 }
 
                 // @ts-ignore
@@ -588,9 +698,37 @@ export const action = createPlugin('action', {
                   payload
                 }, actionContext)
                   .then(result => resolve(result))
-                  .catch(error => reject(error))
+                  .catch(error => {
+                    errorLogError({
+                      message: 'Action dispatch failed for: ' + id,
+                      level: 'ERROR',
+                      code: 'ACTION_DISPATCH_ERROR',
+                      category: 'ACTION',
+                      context: {
+                        plugin: 'action',
+                        action: 'dispatch',
+                        actionId: id
+                      },
+                      stack: error.stack
+                    })
+                    resolve(undefined)
+                  })
               })
-              .catch(error => reject(error))
+              .catch(error => {
+                errorLogError({
+                  message: 'Failed to fetch action: ' + id,
+                  level: 'ERROR',
+                  code: 'ACTION_FETCH_ERROR',
+                  category: 'ACTION',
+                  context: {
+                    plugin: 'action',
+                    action: 'dispatch',
+                    actionId: id
+                  },
+                  stack: error.stack
+                })
+                resolve(undefined)
+              })
           }
 
           try {
@@ -824,7 +962,17 @@ export const action = createPlugin('action', {
             } else {
               // if we already have a value_1 and an operator is defined, complete the condition pair.
               if (!compareItem.op) {
-                throw new Error('Condition expects an operator')
+                errorLogError({
+                  message: 'Condition expects an operator',
+                  level: 'ERROR',
+                  code: 'ACTION_CONDITION_ERROR',
+                  category: 'ACTION',
+                  context: {
+                    plugin: 'action',
+                    action: 'ifElse'
+                  }
+                })
+                return
               }
 
               compareItem.value_2 = value
