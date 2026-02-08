@@ -10,6 +10,7 @@ import {
   server,
   database,
   middleware,
+  action,
   page as serverPage,
   theme,
   metadata as serverMetadata,
@@ -23,12 +24,13 @@ const defaultServerPlugins = [
   server,
   database,
   middleware,
+  user,
+  action,
   serverPage,
   theme,
   serverMetadata,
   serverComponent,
-  event,
-  user
+  event
 ]
 
 const defaultClientPlugins = [
