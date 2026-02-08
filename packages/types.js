@@ -359,7 +359,7 @@
  * Contains the DOM node and icon ID for icon rendering.
  * Used in packages/plugins/src/client/icon.js for icon queue management.
  *
- * @property {Node} node - The DOM node to render the icon into
+ * @property {HTMLElement} node - The DOM node to render the icon into
  * @property {string} iconId - The icon ID (without prefix)
  */
 
