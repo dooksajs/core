@@ -1,4 +1,5 @@
 import { createPlugin } from '@dooksa/create-plugin'
+import { errorLogError } from './error.js'
 
 /**
  * Array of values to be processed by an operator
@@ -188,7 +189,17 @@ export const operator = createPlugin('operator', {
 
         return num.toString()
       } else if (type != 'number') {
-        throw new Error('Increment operator expects a number but found "' + type + '"')
+        errorLogError({
+          message: 'Increment operator expects a number but found "' + type + '"',
+          level: 'ERROR',
+          code: 'OPERATOR_TYPE_ERROR',
+          category: 'OPERATOR',
+          context: {
+            plugin: 'operator',
+            action: 'increment'
+          }
+        })
+        return
       }
 
       return ++num
@@ -214,7 +225,17 @@ export const operator = createPlugin('operator', {
 
         return num.toString()
       } else if (type != 'number') {
-        throw new Error('Decrement operator expects a number but found "' + type + '"')
+        errorLogError({
+          message: 'Decrement operator expects a number but found "' + type + '"',
+          level: 'ERROR',
+          code: 'OPERATOR_TYPE_ERROR',
+          category: 'OPERATOR',
+          context: {
+            plugin: 'operator',
+            action: 'decrement'
+          }
+        })
+        return
       }
 
       return --num
@@ -495,7 +516,18 @@ export const operator = createPlugin('operator', {
           case 'isNull': return this.isNull(values)
           case 'notNull': return this.notNull(values)
           case 'typeof': return this.typeOf(values)
-          default: throw new Error('No operator found: ' + name)
+          default:
+            errorLogError({
+              message: 'No operator found: ' + name,
+              level: 'ERROR',
+              code: 'OPERATOR_NOT_FOUND',
+              category: 'OPERATOR',
+              context: {
+                plugin: 'operator',
+                action: 'eval',
+                operator: name
+              }
+            })
         }
       }
     }
