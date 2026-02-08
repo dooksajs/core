@@ -553,11 +553,14 @@ export const action = createPlugin('action', {
         payload,
         clearBlockValues
       }, actionContext = {} ) {
-        if (clearBlockValues) {
-          actionContext.blockValues = {}
-        }
-
         return new Promise((resolve, reject) => {
+          if (clearBlockValues) {
+            for (const key in actionContext.blockValues) {
+              delete actionContext.blockValues[key]
+            }
+          }
+
+          // fetch sequence and sync related data
           const sequence = stateGetValue({
             name: 'action/sequences',
             id,
