@@ -1,12 +1,12 @@
 import { stateSetValue } from '#core'
 
 /**
- * @import {ActionCompileResult} from '@dooksa/create-action''@dooksa/create-action'
+ * @import {Action} from '@dooksa/create-action'
  */
 
 /**
  * Helper function to seed action state data
- * @param {ActionCompileResult | ActionCompileResult[]} action
+ * @param {Action | Action[]} action
  */
 export function hydrateActionState (action) {
   const actions = Array.isArray(action) ? action : [action]
@@ -15,8 +15,11 @@ export function hydrateActionState (action) {
   const blockSequences = {}
 
   for (const actionData of actions) {
-    if (actionData.sequences) {
-      Object.assign(sequences, { [actionData.sequenceId]: actionData.sequences })
+    // Attempt to find ID if sequenceId is missing (createAction returns id, not sequenceId)
+    const id = actionData.id
+
+    if (actionData.sequences && id) {
+      Object.assign(sequences, { [id]: actionData.sequences })
     }
 
     if (actionData.blocks) {
