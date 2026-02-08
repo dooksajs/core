@@ -484,8 +484,12 @@ export const action = createPlugin('action', {
 
       const nextProcess = blockProcess[blockProcessIndex]
 
-      if (startProcess && typeof nextProcess === 'function') {
-        nextProcess()
+      if (startProcess) {
+        if (typeof nextProcess === 'function') {
+          nextProcess()
+        } else if (typeof callback === 'function') {
+          callback()
+        }
       }
 
       return blockProcess
