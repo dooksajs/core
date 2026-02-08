@@ -546,6 +546,7 @@ export const state = createPlugin('state', {
           } else {
             // When no ID is specified (e.g., merging a collection), return the target itself
             result.item = value
+            result.previous = value._previous
           }
 
           return result
