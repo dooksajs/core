@@ -364,6 +364,42 @@ export const error = createPlugin('error', {
     },
 
     /**
+     * Checks if error matches filter criteria
+     * @param {ErrorData} errorData - Error data to check
+     * @param {Object} filter - Filter criteria
+     * @returns {boolean} True if error matches filter
+     */
+    matchesFilter (errorData, filter) {
+      if (!errorData) return false
+
+      if (filter.code && errorData.code !== filter.code) {
+        return false
+      }
+
+      if (filter.category && errorData.category !== filter.category) {
+        return false
+      }
+
+      if (filter.level && errorData.level !== filter.level) {
+        return false
+      }
+
+      return true
+    },
+
+    /**
+     * Trims error collection to max size
+     */
+    trimErrors () {
+      while (this.errorIds.length > this.maxErrors) {
+        const oldestId = this.errorIds.shift()
+        if (oldestId) {
+          delete this.errors[oldestId]
+        }
+      }
+    },
+
+    /**
      * Stores error in state and manages error collection size
      * @param {ErrorData} errorData - Error data to store
      */
@@ -373,12 +409,7 @@ export const error = createPlugin('error', {
       this.errorIds.push(errorData.id)
 
       // Trim if exceeds max
-      if (this.errorIds.length > this.maxErrors) {
-        const oldestId = this.errorIds.shift()
-        if (oldestId) {
-          delete this.errors[oldestId]
-        }
-      }
+      this.trimErrors()
     },
 
     /**
@@ -645,24 +676,7 @@ export const error = createPlugin('error', {
           const id = ids[i]
           const errorData = this.errors[id]
 
-          if (!errorData) continue
-
-          // Apply filters
-          let matches = true
-
-          if (filter.code && errorData.code !== filter.code) {
-            matches = false
-          }
-
-          if (filter.category && errorData.category !== filter.category) {
-            matches = false
-          }
-
-          if (filter.level && errorData.level !== filter.level) {
-            matches = false
-          }
-
-          if (matches) {
+          if (this.matchesFilter(errorData, filter)) {
             errors.push(errorData)
 
             if (limit && errors.length >= limit) {
@@ -737,34 +751,17 @@ export const error = createPlugin('error', {
         if (Object.keys(filter).length === 0) {
           // Clear all errors
           cleared = this.errorIds.length
-          this.errors = {}
+          this.errors = Object.create(null)
           this.errorIds = []
         } else {
           // Clear filtered errors
           const remainingIds = []
-          const remainingErrors = {}
+          const remainingErrors = Object.create(null)
 
           for (const id of this.errorIds) {
             const errorData = this.errors[id]
 
-            if (!errorData) continue
-
-            // Check if should be cleared
-            let shouldClear = true
-
-            if (filter.code && errorData.code !== filter.code) {
-              shouldClear = false
-            }
-
-            if (filter.category && errorData.category !== filter.category) {
-              shouldClear = false
-            }
-
-            if (filter.level && errorData.level !== filter.level) {
-              shouldClear = false
-            }
-
-            if (shouldClear) {
+            if (this.matchesFilter(errorData, filter)) {
               cleared++
             } else {
               remainingIds.push(id)
@@ -846,23 +843,7 @@ export const error = createPlugin('error', {
         for (const id of this.errorIds) {
           const errorData = this.errors[id]
 
-          if (!errorData) continue
-
-          let matches = true
-
-          if (filter.code && errorData.code !== filter.code) {
-            matches = false
-          }
-
-          if (filter.category && errorData.category !== filter.category) {
-            matches = false
-          }
-
-          if (filter.level && errorData.level !== filter.level) {
-            matches = false
-          }
-
-          if (matches) {
+          if (this.matchesFilter(errorData, filter)) {
             count++
           }
         }
@@ -904,6 +885,7 @@ export const error = createPlugin('error', {
   setup ({ maxErrors = 100, reportEndpoint } = {}) {
     this.maxErrors = maxErrors
     this.reportEndpoint = reportEndpoint
+    this.trimErrors()
   }
 })
 
