@@ -22,7 +22,8 @@
     "./core": "./src/core/index.js",
     "./client": "./src/client/index.js",
     "./server": "./src/server/index.js",
-    "./dev": "./src/dev/index.js"
+    "./dev": "./src/dev/index.js",
+    "./test": "./test/helpers/index.js"
   },
   "dependencies": {
     "@dooksa/components": "workspace:^",
