@@ -1,2 +1,3 @@
 export { createState } from './create-state.js'
 export { createTestServer } from './server/index.js'
+export { mockNavigationWindow, mockWindow, mockWindowLocationSearch, mockWindowWithEvents } from './mock-window.js'
