@@ -3155,7 +3155,7 @@ export const state = createPlugin('state', {
         const result = this.setData(
           name,
           this.values[name],
-          value._item || value,
+          value._item !== undefined ? value._item : value,
           options
         )
 
