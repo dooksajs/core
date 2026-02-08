@@ -1,8 +1,8 @@
 import { describe, it, afterEach, after, mock, beforeEach } from 'node:test'
-import { strictEqual, deepStrictEqual, rejects, throws } from 'node:assert'
+import { strictEqual, deepStrictEqual, throws } from 'node:assert'
 import { createAction } from '@dooksa/create-action'
-import { action as originalAction, state, api } from '#core'
-import { createState, createTestServer, hydrateActionState } from '../helpers/index.js'
+import { action as originalAction, state, api, error } from '#core'
+import { createState, createTestServer, hydrateActionState, getDefaultActions } from '../helpers/index.js'
 
 
 let testServer = createTestServer(1000)
@@ -15,50 +15,12 @@ function createStateData () {
   return createState([originalAction])
 }
 
-function getActionsMap (actions) {
-  const map = {}
-  if (!actions) return map
-
-  const list = Array.isArray(actions) ? actions : Object.values(actions)
-
-  list.forEach(a => {
-    // Check if item is valid action object or just the function itself if passed as object values
-    if (a && a.name && typeof a.method === 'function') {
-      map[a.name] = a.method
-    } else if (typeof a === 'function' && a.name) {
-      // This handles if actions are passed as { name: func }
-      map[a.name] = a
-    }
-  })
-
-  return map
-}
-
-function getDefaultActions (action) {
-  const defaultActions = {}
-
-  // We need actions from state and api plugins as they might be used
-  // e.g. state_setValue, api_fetch etc.
-  // Note: state.actions and api.actions might be arrays of objects { name, method }
-  const plugins = [action, state, api]
-
-  plugins.forEach(plugin => {
-    if (plugin.actions) {
-      Object.assign(defaultActions, getActionsMap(plugin.actions))
-    }
-  })
-
-  Object.assign(defaultActions, getActionsMap(originalAction))
-
-  return defaultActions
-}
-
-
 describe('Action Plugin', () => {
   let action
 
   beforeEach(function () {
     action = originalAction.createObservableInstance(this)
+    error.errorClearErrors({}) // Reset error state
   })
   /**
    * Teardown: Reset global state and plugins after each test
@@ -157,19 +119,6 @@ describe('Action Plugin', () => {
       strictEqual(result, 'loaded')
     })
 
-    it('should throw error when action not found and no lazy loader', async (t) => {
-      // Create a simple mock for callWhenAvailable that throws
-      const mockCallWhenAvailable = (name, callback) => {
-        throw new Error(`Action: no action found "${name}"`)
-      }
-
-      throws(() => {
-        mockCallWhenAvailable('missing_action', () => {
-        })
-      }, {
-        message: /Action: no action found "missing_action"/
-      })
-    })
   })
 
   describe('Action Dispatch', () => {
@@ -334,7 +283,7 @@ describe('Action Plugin', () => {
       strictEqual(handleFetchedAction.mock.callCount(), 1)
     })
 
-    it('should throw error when action sequence not found', async (t) => {
+    it('should log error when action sequence not found', async (t) => {
       // Start server with no actions
       const hostname = await testServer.start()
 
@@ -351,16 +300,18 @@ describe('Action Plugin', () => {
 
       // Don't setup any other actions or seed state
 
-      await rejects(
-        action.actionDispatch({
-          id: 'missing-action',
-          context: {},
-          payload: {}
-        }),
-        {
-          message: /HTTP error! status: 404/
-        }
-      )
+      const result = await action.actionDispatch({
+        id: 'missing-action',
+        context: {},
+        payload: {}
+      })
+
+      strictEqual(result, undefined)
+      // Should log error
+      strictEqual(error.errorGetErrorCount(), 1)
+      const errors = error.errorGetErrors()
+      // Either ACTION_NOT_FOUND (if empty returned) or ACTION_FETCH_ERROR
+      strictEqual(errors[0].code === 'ACTION_NOT_FOUND' || errors[0].code === 'ACTION_FETCH_ERROR', true)
     })
 
     // Skipped due to environment flakiness with test server restart
@@ -1017,7 +968,7 @@ describe('Action Plugin', () => {
       strictEqual(result, 'async-result')
     })
 
-    it('should propagate errors from action methods', async (t) => {
+    it('should log error when action methods fail', async (t) => {
       const actionData = createAction('error-test', [
         {
           // @ts-ignore
@@ -1043,16 +994,69 @@ describe('Action Plugin', () => {
         }
       })
 
-      await rejects(
-        action.actionDispatch({
-          id: 'error-test',
-          context: {},
-          payload: {}
-        }),
+      const result = await action.actionDispatch({
+        id: 'error-test',
+        context: {},
+        payload: {}
+      })
+
+      // The action logs error and stops, so result is undefined (unless the block returns something else)
+      // Since it failed in onError callback, and that stops sequence.
+      // The promise might resolve with undefined if sequence ends.
+
+      strictEqual(error.errorGetErrorCount(), 1)
+      const errors = error.errorGetErrors()
+      strictEqual(errors[0].code, 'ACTION_EXECUTION_ERROR')
+    })
+
+    it('should stop sequence on error', async (t) => {
+      const actionData = createAction('stop-sequence-test', [
         {
-          message: /Action method 'action_dispatch_test' failed/
+          // @ts-ignore
+          fail_step: {}
+        },
+        {
+          // @ts-ignore
+          next_step: {}
         }
-      )
+      ])
+
+      const stateData = createStateData()
+      state.setup(stateData)
+      hydrateActionState(actionData)
+
+      const failStep = mock.fn((params, context) => {
+        throw new Error('Fail')
+      })
+      const nextStep = mock.fn((params, context) => {
+        return 'success'
+      })
+
+      action.setup({
+        actions: {
+          ...getDefaultActions(action),
+          fail_step: failStep,
+          next_step: nextStep
+        }
+      })
+
+      const result = await action.actionDispatch({
+        id: 'stop-sequence-test',
+        context: {},
+        payload: {}
+      })
+
+      // Result should be undefined (resolved with no value)
+      strictEqual(result, undefined)
+
+      // failStep should be called
+      strictEqual(failStep.mock.callCount(), 1)
+
+      // nextStep should NOT be called
+      strictEqual(nextStep.mock.callCount(), 0)
+
+      // Error should be logged
+      strictEqual(error.errorGetErrorCount(), 1)
     })
   })
 
@@ -1079,7 +1083,7 @@ describe('Action Plugin', () => {
       strictEqual(result, undefined)
     })
 
-    it('should throw error for invalid sequence type', async (t) => {
+    it('should log error for invalid sequence type', async (t) => {
       const stateData = createStateData()
       state.setup(stateData)
 
@@ -1092,19 +1096,18 @@ describe('Action Plugin', () => {
         options: { replace: true }
       })
 
-      await rejects(
-        action.actionDispatch({
-          id: 'invalid-seq',
-          context: {},
-          payload: {}
-        }),
-        {
-          message: /Action: sequence must be an array/
-        }
-      )
+      const result = await action.actionDispatch({
+        id: 'invalid-seq',
+        context: {},
+        payload: {}
+      })
+
+      strictEqual(error.errorGetErrorCount(), 1)
+      const errors = error.errorGetErrors()
+      strictEqual(errors[0].code, 'ACTION_SEQUENCE_TYPE_ERROR')
     })
 
-    it('should throw error when block not found', async (t) => {
+    it('should log error when block not found', async (t) => {
       const actionData = createAction('missing-block', [
         {
           // @ts-ignore
@@ -1129,19 +1132,18 @@ describe('Action Plugin', () => {
         }
       })
 
-      await rejects(
-        action.actionDispatch({
-          id: 'missing-block',
-          context: {},
-          payload: {}
-        }),
-        {
-          message: /Action: block could not be found/
-        }
-      )
+      const result = await action.actionDispatch({
+        id: 'missing-block',
+        context: {},
+        payload: {}
+      })
+
+      strictEqual(error.errorGetErrorCount(), 1)
+      const errors = error.errorGetErrors()
+      strictEqual(errors[0].code, 'ACTION_BLOCK_NOT_FOUND')
     })
 
-    it('should throw error when block sequence not found', async (t) => {
+    it('should log error when block sequence not found', async (t) => {
       const actionData = createAction('missing-seq', [
         {
           // @ts-ignore
@@ -1167,19 +1169,18 @@ describe('Action Plugin', () => {
         }
       })
 
-      await rejects(
-        action.actionDispatch({
-          id: 'missing-seq',
-          context: {},
-          payload: {}
-        }),
-        {
-          message: /Action: block sequence could not be found/
-        }
-      )
+      const result = await action.actionDispatch({
+        id: 'missing-seq',
+        context: {},
+        payload: {}
+      })
+
+      strictEqual(error.errorGetErrorCount(), 1)
+      const errors = error.errorGetErrors()
+      strictEqual(errors[0].code, 'ACTION_SEQUENCE_NOT_FOUND')
     })
 
-    it('should handle block with no method or ifElse (warning)', async (t) => {
+    it('should log warning for block with no method or ifElse', async (t) => {
       const actionData = createAction('no-method', [
         {
           // Block with no method or ifElse
@@ -1200,26 +1201,19 @@ describe('Action Plugin', () => {
         actions: { ...getDefaultActions(action) }
       })
 
-      // Capture console.warn
-      const originalWarn = console.warn
-      let warnCalled = false
-      console.warn = () => {
-        warnCalled = true
-      }
+      const result = await action.actionDispatch({
+        id: 'no-method',
+        context: {},
+        payload: {}
+      })
 
-      try {
-        const result = await action.actionDispatch({
-          id: 'no-method',
-          context: {},
-          payload: {}
-        })
+      // Should complete without error
+      strictEqual(result, undefined)
 
-        // Should complete without error
-        strictEqual(result, undefined)
-        strictEqual(warnCalled, true)
-      } finally {
-        console.warn = originalWarn
-      }
+      strictEqual(error.errorGetErrorCount(), 1)
+      const errors = error.errorGetErrors()
+      strictEqual(errors[0].code, 'ACTION_UNKNOWN_TYPE')
+      strictEqual(errors[0].level, 'WARN')
     })
 
     it('should handle block value retrieval from cache', async (t) => {
