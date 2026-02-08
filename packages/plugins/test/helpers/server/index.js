@@ -10,7 +10,7 @@ export function createTestServer (timeout=3000) {
   const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
   return {
-    worker: new Worker(path.resolve(__dirname, './server-worker.js')),
+    worker: new Worker(path.resolve(__dirname, './worker.js')),
     baseUrl: null,
     initialised: null,
 
