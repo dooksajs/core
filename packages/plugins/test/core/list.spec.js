@@ -1,6 +1,6 @@
 import { describe, it, afterEach, beforeEach, mock } from 'node:test'
-import { strictEqual, deepStrictEqual, rejects, throws } from 'node:assert'
-import { list, action, state } from '#core'
+import { strictEqual, deepStrictEqual } from 'node:assert'
+import { list, action, state, error } from '#core'
 import { createState, hydrateActionState } from '../helpers/index.js'
 import { createAction } from '@dooksa/create-action'
 
@@ -10,6 +10,7 @@ describe('List plugin', () => {
   beforeEach(() => {
     state.restore()
     action.restore()
+    error.errorClearErrors({}) // Reset error state
   })
 
   afterEach(async () => {
@@ -271,7 +272,7 @@ describe('List plugin', () => {
       })
     })
 
-    it('should propagate error from action', async (t) => {
+    it('should log error from action and not throw', async (t) => {
       state.setup(createState([action]))
 
       const actionData = createAction('failAction', [
@@ -295,16 +296,16 @@ describe('List plugin', () => {
       const items = [1]
       const context = {}
 
-      await rejects(
-        list.listMap({
-          context,
-          items,
-          actionId: 'failAction'
-        }),
-        {
-          message: /Action failed/
-        }
-      )
+      await list.listMap({
+        context,
+        items,
+        actionId: 'failAction'
+      })
+
+      // Check error log
+      strictEqual(error.errorGetErrorCount(), 1)
+      const errors = error.errorGetErrors()
+      strictEqual(errors[0].code, 'ACTION_EXECUTION_ERROR')
     })
   })
 
@@ -446,17 +447,22 @@ describe('List plugin', () => {
       strictEqual(result[2].value, 'a')
     })
 
-    it('should throw error for invalid sort type', (t) => {
-      const items = []
+    it('should log error for invalid sort type and return items', (t) => {
+      const items = [{ value: 1 }]
 
-      throws(() => {
-        list.listSort({
-          items,
-          type: 'invalid'
-        })
-      }, {
-        message: /Sort method does not exist: invalid/
+      const result = list.listSort({
+        items,
+        type: 'invalid'
       })
+
+      // Check return value
+      strictEqual(result, items)
+
+      // Check error log
+      const errorCount = error.errorGetErrorCount()
+      strictEqual(errorCount, 1)
+      const errors = error.errorGetErrors()
+      strictEqual(errors[0].code, 'SORT_METHOD_ERROR')
     })
 
     it('should handle equal values', (t) => {
@@ -569,18 +575,25 @@ describe('List plugin', () => {
       deepStrictEqual(target, [])
     })
 
-    it('should throw error if start is null but source provided', (t) => {
+    it('should log error if start is null but source provided', (t) => {
       const target = [1, 2, 3]
 
-      throws(() => {
-        list.listSplice({
-          target,
-          start: null,
-          source: 4
-        })
-      }, {
-        message: /Splice with source expects a start position/
+      const result = list.listSplice({
+        target,
+        start: null,
+        source: 4
       })
+
+      // Check return value
+      deepStrictEqual(result, [])
+      // Target should be unchanged
+      deepStrictEqual(target, [1, 2, 3])
+
+      // Check error log
+      const errorCount = error.errorGetErrorCount()
+      strictEqual(errorCount, 1)
+      const errors = error.errorGetErrors()
+      strictEqual(errors[0].code, 'SPLICE_METHOD_ERROR')
     })
   })
 })
