@@ -166,7 +166,7 @@ describe('appendPlugin', () => {
       strictEqual(manager.plugins.length, 1, 'Should not add duplicate')
     })
 
-    it('should remove setup when duplicate plugin is registered', () => {
+    it('should NOT remove setup when duplicate plugin is registered', () => {
       const manager = appendPlugin()
       const setupFn = () => {
       }
@@ -185,7 +185,7 @@ describe('appendPlugin', () => {
 
       // Register duplicate
       manager.use(plugin)
-      strictEqual(manager.setup.length, 0, 'Setup should be removed for duplicate')
+      strictEqual(manager.setup.length, 1, 'Setup should NOT be removed for duplicate')
     })
   })
 
@@ -765,7 +765,7 @@ describe('appendPlugin', () => {
       deepStrictEqual(manager.setup, customSetup)
     })
 
-    it('should remove setup when duplicate plugin is registered', () => {
+    it('should NOT remove setup when duplicate plugin is registered', () => {
       const manager = appendPlugin()
       const setupFn = () => {
       }
@@ -780,7 +780,7 @@ describe('appendPlugin', () => {
 
       // Register duplicate
       manager.use(plugin)
-      strictEqual(manager.setup.length, 0)
+      strictEqual(manager.setup.length, 1)
     })
   })
 
@@ -1218,11 +1218,11 @@ describe('appendPlugin', () => {
 
       manager.use(variablePlugin)
 
-      // Verify structure - main plugin first, then dependencies
+      // Verify structure - dependencies first, then main plugin
       strictEqual(manager.plugins.length, 3)
-      strictEqual(manager.plugins[0].name, 'variable')
-      strictEqual(manager.plugins[1].name, 'state')
-      strictEqual(manager.plugins[2].name, 'action')
+      strictEqual(manager.plugins[0].name, 'state')
+      strictEqual(manager.plugins[1].name, 'action')
+      strictEqual(manager.plugins[2].name, 'variable')
 
       // Verify actions
       strictEqual(Object.keys(manager.actions).length, 5)
@@ -1240,9 +1240,10 @@ describe('appendPlugin', () => {
       deepStrictEqual(manager.state._names, ['values', 'variables'])
 
       // Verify setup - only plugins with setup functions are queued
-      strictEqual(manager.setup.length, 2)
-      strictEqual(manager.setup[0].name, 'variable')
-      strictEqual(manager.setup[1].name, 'state')
+      strictEqual(manager.setup.length, 3)
+      strictEqual(manager.setup[0].name, 'state')
+      strictEqual(manager.setup[1].name, 'action')
+      strictEqual(manager.setup[2].name, 'variable')
     })
 
     it('should handle complex multi-plugin scenario', () => {
@@ -1461,18 +1462,18 @@ describe('appendPlugin', () => {
 
       manager.use(main)
 
-      // Verify setup queue order - main first, then dependencies
+      // Verify setup queue order - dependencies first, then main
       strictEqual(manager.setup.length, 3)
-      strictEqual(manager.setup[0].name, 'main')
-      strictEqual(manager.setup[1].name, 'dep1')
-      strictEqual(manager.setup[2].name, 'dep2')
+      strictEqual(manager.setup[0].name, 'dep1')
+      strictEqual(manager.setup[1].name, 'dep2')
+      strictEqual(manager.setup[2].name, 'main')
 
       // Simulate execution
       manager.setup.forEach(({ setup }) => setup(manager.state))
 
       // Note: The actual execution order depends on how the setup functions are called
       // This test verifies the queue order, not the execution order
-      deepStrictEqual(executionOrder, ['main', 'dep1', 'dep2'])
+      deepStrictEqual(executionOrder, ['dep1', 'dep2', 'main'])
     })
 
     it('should handle state isolation between plugins', () => {
@@ -1609,8 +1610,8 @@ describe('appendPlugin', () => {
       manager.use(component)
 
       // Verify complete structure
-      strictEqual(manager.plugins.length, 6)
-      strictEqual(Object.keys(manager.actions).length, 8)
+      strictEqual(manager.plugins.length, 7)
+      strictEqual(Object.keys(manager.actions).length, 9)
 
       // Verify state has all collections
       strictEqual(manager.state._names.length, 3) // state, event, variable
