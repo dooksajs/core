@@ -1,22 +1,10 @@
 import { createPlugin } from '@dooksa/create-plugin'
-import { stateGetValue, stateSetValue } from '#core'
+import { errorLogError, stateGetValue, stateSetValue } from '#core'
 
 /**
  * @import {Component} from '@dooksa/create-component'
  * @import {IconQueueItem, IconData, IconComponentData, IconStateSchema} from '../../../types.js'
  */
-
-/**
- * Iconify API base URL
- * @type {string}
- */
-let iconifyAPIUrl = 'https://api.iconify.design'
-
-/**
- * Timeout IDs for batch icon fetching (keyed by icon prefix)
- * @type {Object.<string, number>}
- */
-const timeoutId = {}
 
 /**
  * Queue of icons waiting to be fetched (keyed by icon prefix)
@@ -25,6 +13,13 @@ const timeoutId = {}
 const iconQueue = {}
 
 export const icon = createPlugin('icon', {
+  data: {
+    iconifyAPIUrl: 'https://api.iconify.design',
+    /**
+     * @type {Object.<string, NodeJS.Timeout>} - Timeout IDs for batch icon fetching (keyed by icon prefix)
+     */
+    timeoutId: {}
+  },
   metadata: {
     title: 'Icon',
     description: 'Icon management plugin for rendering icons from Iconify API with caching and batch fetching',
@@ -43,6 +38,16 @@ export const icon = createPlugin('icon', {
           relation: 'icon/items'
         }
       }
+    }
+  },
+  /**
+   * Setup icon plugin
+   * @param {Object} options
+   * @param {string} [options.apiUrl] - Custom API URL for icon fetching
+   */
+  setup ({ apiUrl } = {}) {
+    if (apiUrl) {
+      this.iconifyAPIUrl = apiUrl
     }
   },
   actions: {
@@ -132,22 +137,30 @@ export const icon = createPlugin('icon', {
         }
 
         // check if we are still processing queue
-        if (timeoutId[iconPrefix]) {
+        if (this.timeoutId[iconPrefix]) {
           return
         }
 
         // set new queue
-        timeoutId[iconPrefix] = setTimeout(() => {
+        this.timeoutId[iconPrefix] = setTimeout(() => {
           // clear "queue"
-          delete timeoutId[iconPrefix]
+          delete this.timeoutId[iconPrefix]
 
-          fetch(`${iconifyAPIUrl}/${iconPrefix}.json?icons=${currentIconQueue.icons.join(',')}`)
+          fetch(`${this.iconifyAPIUrl}/${iconPrefix}.json?icons=${currentIconQueue.icons.join(',')}`)
             .then(response => {
               if (response.ok) {
                 return response.json()
+              } else {
+                if (response.status === 404) {
+                  return 404
+                }
+
+                errorLogError({ message: 'Icon fetch failed with status ' + response.status + ' for URL: ' + response.url })
               }
             })
             .then(data => {
+              if (!data) return
+
               for (const key in currentIconQueue.components) {
                 if (Object.prototype.hasOwnProperty.call(currentIconQueue.components, key)) {
                   const component = currentIconQueue.components[key]
@@ -167,7 +180,7 @@ export const icon = createPlugin('icon', {
                     if (data === 404) {
                       component.node.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="none" stroke="#77767b" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4m0 4.01l.01-.011M9 3H4v3m0 5v2m16-2v2M15 3h5v3M9 21H4v-3m11 3h5v-3"/></svg>'
 
-                      console.warn('DooksaWarning: could not find icon "' + id + '"')
+                      errorLogError({ message: 'could not find icon "' + id + '"' })
                       continue
                     }
                   }
@@ -210,7 +223,7 @@ export const icon = createPlugin('icon', {
             })
             .catch(error => {
               // Handle fetch errors gracefully
-              console.error('DooksaWarning: Failed to fetch icons:', error.message)
+              errorLogError({ message: 'Failed to fetch icons: ' + error.message })
               // Clear the queue on error
               delete iconQueue[iconPrefix]
             })
