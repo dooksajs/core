@@ -579,7 +579,7 @@ export const state = createPlugin('state', {
         const schema = this.getSchema(schemaPath)
         /** @todo validate *any* until schema supports multi type schema */
         const type = schema ? schema.type : 'object'
-        const target = this.prepareTargetInstance(data.target, type, source._metadata)
+        const target = this.createTarget(type, source._metadata)
 
         target._item = source._item || source
 
@@ -596,7 +596,7 @@ export const state = createPlugin('state', {
         const schema = this.getSchema(collection)
         /** @todo validate *any* until schema supports multi type schema */
         const type = schema ? schema.type : 'object'
-        const target = this.createTarget(type, source._metadata)
+        const target = this.prepareTargetInstance(data.target, type, source._metadata)
 
         target._item = source._item || source
 
