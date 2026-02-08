@@ -251,8 +251,9 @@ import serialize from 'serialize-javascript'
  */
 
 /**
- * @typedef {'ERROR' | 'WARN' | 'FATAL'} ErrorLevel
+ * @typedef {'INFO' | 'ERROR' | 'WARN' | 'FATAL'} ErrorLevel
  * @description Error severity level that determines impact and urgency:
+ * - 'INFO': Informational messages for debugging and monitoring
  * - 'ERROR': Non-critical errors that don't stop application flow
  * - 'WARN': Potential issues that should be monitored
  * - 'FATAL': Critical errors that may crash the application or cause data loss
@@ -337,6 +338,9 @@ export const error = createPlugin('error', {
           break
         case 'WARN':
           output += '⚠️  WARN: '
+          break
+        case 'INFO':
+          output += 'ℹ️  INFO: '
           break
         default:
           output += 'ℹ️  INFO: '
@@ -491,7 +495,7 @@ export const error = createPlugin('error', {
        * Logs an error with context information and stores it in state
        * @param {Object} param - Parameters for logging error
        * @param {string} param.message - Error message (required). Should be clear and descriptive.
-       * @param {'ERROR' | 'WARN' | 'FATAL'} [param.level='ERROR'] - Error severity level:
+       * @param {'ERROR' | 'WARN' | 'FATAL' | 'INFO'} [param.level='ERROR'] - Error severity level:
        *   - 'ERROR': Non-critical errors that don't stop application flow (e.g., failed validation)
        *   - 'WARN': Potential issues that should be monitored (e.g., deprecated API usage)
        *   - 'FATAL': Critical errors that may crash the application (e.g., database connection lost)
@@ -585,7 +589,14 @@ export const error = createPlugin('error', {
 
         // Format and log to console
         const formattedMessage = this.formatErrorForConsole(errorData)
-        console.error(formattedMessage)
+
+        if (level === 'INFO') {
+          console.info(formattedMessage)
+        } else if (level === 'WARN') {
+          console.warn(formattedMessage)
+        } else {
+          console.error(formattedMessage)
+        }
 
         // Add stack trace to console if available
         if (stack) {
