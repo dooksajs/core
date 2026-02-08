@@ -2,7 +2,7 @@ import { createPlugin, mapState } from '@dooksa/create-plugin'
 import { createHash } from 'node:crypto'
 import { page as pageClient, pageGetItemsByPath } from '#client'
 import { stateGetValue, stateSetValue } from '#core'
-import { serverSetRoute, databaseSeed, databaseSetValue } from '#server'
+import { serverSetRoute, databaseSeed, databaseSetValue, user } from '#server'
 
 /**
  * @import {DataValue} from '../../../types.js'
@@ -15,6 +15,7 @@ function hashSHA (item) {
 }
 
 export const page = createPlugin('page', {
+  dependencies: [user],
   state: {
     schema: {
       app: {
@@ -35,7 +36,7 @@ export const page = createPlugin('page', {
   methods: {
     /**
      * Creates Dooksa app
-     * @param {DataValue[]} data
+     * @param {DataValue<*>[]} data
      * @returns {{ script: string, csp: string }}
      */
     createApp (data = []) {
