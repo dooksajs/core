@@ -7,6 +7,7 @@ import {
 import {
   action,
   api,
+  event,
   error,
   list,
   metadata,
@@ -379,6 +380,7 @@ export default function createAppClient ({
   appPlugins.use(action)
   appPlugins.use(api)
   appPlugins.use(error)
+  appPlugins.use(event)
   appPlugins.use(list)
   appPlugins.use(metadata)
   appPlugins.use(operator)
