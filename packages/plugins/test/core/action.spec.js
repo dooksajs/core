@@ -1,9 +1,9 @@
 import { describe, it, afterEach, after, mock, beforeEach } from 'node:test'
 import { strictEqual, deepStrictEqual, rejects, throws } from 'node:assert'
-import { mockStateData } from '@dooksa/test'
 import { createAction } from '@dooksa/create-action'
 import { action as originalAction, state, api } from '#core'
-import createTestServer from '../fixtures/test-server.js'
+import { createState, createTestServer } from '../helpers/index.js'
+
 
 let testServer = createTestServer(1000)
 
@@ -12,7 +12,7 @@ let testServer = createTestServer(1000)
  * @returns {Object} State data object
  */
 function createStateData () {
-  return mockStateData([originalAction])
+  return createState([originalAction])
 }
 
 
