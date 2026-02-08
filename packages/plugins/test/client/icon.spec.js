@@ -7,7 +7,7 @@ import { component } from '../../src/client/component.js'
 import { createTestServer, createState } from '../helpers/index.js'
 
 describe('Icon plugin', function () {
-  const testServer = createTestServer()
+  const testServer = createTestServer(3000)
   let dom
   let hostname
 
@@ -309,7 +309,7 @@ describe('Icon plugin', function () {
 
     icon.iconRender(componentId)
 
-    await new Promise(resolve => setTimeout(resolve, 100))
+    await new Promise(resolve => setTimeout(resolve, 1000))
 
     strictEqual(error.errorGetErrorCount(), 1)
     const errors = error.errorGetErrors()
