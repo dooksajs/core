@@ -1,23 +1,8 @@
 import { it, afterEach, describe, after, mock } from 'node:test'
 import { ok, strictEqual, deepStrictEqual, rejects } from 'node:assert'
 import { api, state } from '#core'
-import { createState, createTestServer } from '../helpers/index.js'
-import { userPlugin, otherPlugin, specialPlugin } from '../fixtures/plugins/index.js'
-
-/**
- * Helper function to set up the API plugin with dependencies
- * @param {Object[]} [plugins] - Hostname for API requests
- * @returns {Object} Object with tester, api plugin instance, and state helpers
- */
-function createStateData (plugins = []) {
-  if (!plugins.length) {
-    plugins.push(userPlugin)
-  }
-
-  const stateExport = createState(plugins)
-
-  return stateExport
-}
+import { createTestServer, createTestState } from '../helpers/index.js'
+import { otherPlugin, specialPlugin } from '../fixtures/plugins/index.js'
 
 describe('API plugin', function () {
   const testServer = createTestServer()
@@ -30,7 +15,7 @@ describe('API plugin', function () {
    */
   async function setupTest (options = {}, clientPlugins = []) {
     const hostname = await testServer.start(options)
-    const stateData = createStateData(clientPlugins)
+    const stateData = createTestState(clientPlugins)
     api.setup({
       hostname,
       requestCacheExpire: options.requestCacheExpire
@@ -676,7 +661,7 @@ describe('API plugin', function () {
             }
           }
         ]
-      }, [userPlugin, otherPlugin])
+      }, [otherPlugin])
 
       // Spy on fetch
       const originalFetch = global.fetch
@@ -708,7 +693,7 @@ describe('API plugin', function () {
 
       // Setup API plugin with invalid hostname
       api.setup({ hostname: 'http://localhost:9999' })
-      const stateData = createStateData()
+      const stateData = createTestState()
       state.setup(stateData)
 
       await rejects(async () => {
