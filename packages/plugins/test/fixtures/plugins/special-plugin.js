@@ -17,3 +17,4 @@ const specialPlugin = createPlugin('special', {
 })
 
 export { specialPlugin }
+export default specialPlugin

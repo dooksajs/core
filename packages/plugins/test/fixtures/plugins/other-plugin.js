@@ -17,3 +17,4 @@ const otherPlugin = createPlugin('other', {
 })
 
 export { otherPlugin }
+export default otherPlugin

@@ -32,3 +32,4 @@ const userPlugin = createPlugin('user', {
 })
 
 export { userPlugin }
+export default userPlugin

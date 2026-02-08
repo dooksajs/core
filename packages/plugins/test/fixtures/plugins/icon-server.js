@@ -60,3 +60,5 @@ const iconServer = createPlugin('icon-server', {
 })
 
 export { iconServer }
+
+export default iconServer
