@@ -395,28 +395,24 @@
  */
 
 /**
- * @typedef {Object} ParseOptions
- * @description Configuration options for parsing action data into block-based format
+ * @typedef {Object} ParseOptions - Configuration options for parsing action data into block-based format
  * @property {string} prefix - Prefix string for generating unique block IDs
  * @property {number} increment - Incrementing counter for unique block IDs
  */
 
 /**
- * @typedef {Object} BlockReference
- * @description A tuple representing a reference between blocks
+ * @typedef {Object} BlockReference - A tuple representing a reference between blocks
  * @property {string} 0 - The ID of the block containing the reference
  * @property {string|number} 1 - The value being referenced (either a block ID or sequence index)
  */
 
 /**
- * @typedef {Object} BlockAccumulator
- * @description Accumulator object for storing parsed blocks during parsing
+ * @typedef {Object} BlockAccumulator - Accumulator object for storing parsed blocks during parsing
  * @property {Object.<string, ActionBlock>} blocks - Collection of parsed blocks keyed by unique block ID
  */
 
 /**
- * @typedef {Object} ParseResult
- * @description The complete result of parsing action data into structured blocks
+ * @typedef {Object} ParseResult - The complete result of parsing action data into structured blocks
  * @property {string} [id] - The action ID if $id was specified in the input data
  * @property {Object.<string, ActionBlock>} blocks - Object mapping block IDs to block definitions
  * @property {Object.<string, string[]>} blockSequences - Object mapping sequence IDs to arrays of block IDs in execution order
@@ -425,8 +421,7 @@
  */
 
 /**
- * @typedef {Object} ParseContext
- * @description Context object maintaining state during recursive parsing
+ * @typedef {Object} ParseContext - Context object maintaining state during recursive parsing
  * @property {Object.<string, ActionBlock>} blocks - Accumulator for parsed blocks
  * @property {string[]} blockSequences - Array of block IDs in execution order
  * @property {Object.<string, boolean>} methods - Object mapping available action method names to true
@@ -439,17 +434,15 @@
  */
 
 /**
- * @typedef {Object} CompileResult
- * @description Result of compiling an action into optimized format
+ * @typedef {Object} ActionCompileResult - Result of compiling an action into optimized format
  * @property {string} sequenceId - Hashed ID representing the compiled sequence
- * @property {Object.<string, CompileBlock>} blocks - Collection of compiled blocks keyed by hash
+ * @property {Object.<string, ActionCompileBlock>} blocks - Collection of compiled blocks keyed by hash
  * @property {Object.<string, string[]>} blockSequences - Collection of compiled block sequences
  * @property {string[]} sequences - Array of sequence IDs in execution order
  */
 
 /**
- * @typedef {Object} CompileBlock
- * @description Block structure used during compilation phase
+ * @typedef {Object} ActionCompileBlock - Block structure used during compilation phase
  * @property {string} [key] - Property name for the block
  * @property {string} [method] - Action method name
  * @property {string} [dataType] - Data type ('array', 'object', etc.)

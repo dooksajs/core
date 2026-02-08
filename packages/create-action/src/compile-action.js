@@ -57,7 +57,7 @@ function hashBlock (block, sourceBlock, targetBlock, collection) {
 }
 
 /**
- * @import { CompileResult, CompileBlock } from '../types/index.js'
+ * @import { ActionCompileResult, ActionCompileBlock } from '../types/index.js'
  */
 
 /**
@@ -85,10 +85,10 @@ function hashBlock (block, sourceBlock, targetBlock, collection) {
  *
  * @param {Object} action - The source action object containing sequences, blocks, and blockSequences
  * @param {string[]} action.sequences - Array of block sequence reference IDs in execution order
- * @param {Object.<string, CompileBlock>} action.blocks - Collection of block objects keyed by original block IDs
+ * @param {Object.<string, ActionCompileBlock>} action.blocks - Collection of block objects keyed by original block IDs
  * @param {Object.<string, string[]>} action.blockSequences - Collection of block sequences mapping sequence IDs to arrays of block IDs
  *
- * @returns {CompileResult} Compiled action result containing:
+ * @returns {ActionCompileResult} Compiled action result containing:
  *   - `sequenceId`: Hashed ID representing the compiled sequence
  *   - `blocks`: Collection of compiled blocks keyed by hash
  *   - `blockSequences`: Collection of compiled block sequences
