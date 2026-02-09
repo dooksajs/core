@@ -91,9 +91,9 @@ export const user = createPlugin('user', {
 
 /**
  * Pass the password string and get hashed password back
- * @param {string} password
- * @param {string} salt
- * @returns
+ * @param {string} password - The password to encrypt
+ * @param {string} salt - The salt to use
+ * @returns {Buffer} The encrypted password
  */
 function encryptPassword (password, salt) {
   return scryptSync(password, salt, 32)
@@ -101,8 +101,8 @@ function encryptPassword (password, salt) {
 
 /**
  * Hash password with random salt
- * @param {string} password
- * @return {string} password hash followed by salt
+ * @param {string} password - The password to hash
+ * @returns {string} password hash followed by salt
  *  XXXX till 64 XXXX till 32
  *
  */
@@ -114,8 +114,8 @@ function hashPassword (password) {
 
 /**
  * Match password against the stored hash
- * @param {string} password
- * @param {string} hash
+ * @param {string} password - The password to check
+ * @param {string} hash - The stored hash to match against
  */
 function matchPassword (password, hash) {
   // extract salt from the hashed string
@@ -284,7 +284,7 @@ function login (request, response) {
 /**
  * JWT sign data
  * @private
- * @param {Object} param
+ * @param {Object} param - Parameters object
  * @param {*} param.payload - Data to encrypt
  * @param {number} param.expiresIn - Cookie max expire age
  * @returns {string}
