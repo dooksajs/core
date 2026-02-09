@@ -9,8 +9,14 @@ export default createAction('action-add-block-expand', [
     }
   },
   {
+    action_getValue: {
+      query: 'item',
+      value: { $ref: 0 }
+    }
+  },
+  {
     list_map: {
-      items: { $ref: 0 },
+      items: { $ref: 1 },
       context: {
         id: { action_getContextValue: 'id' },
         groupId: { action_getContextValue: 'groupId' }
