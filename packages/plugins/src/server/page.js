@@ -36,7 +36,7 @@ export const page = createPlugin('page', {
   methods: {
     /**
      * Creates Dooksa app
-     * @param {DataValue<*>[]} data
+     * @param {DataValue<*>[]} data - Data to inject into the app
      * @returns {{ script: string, csp: string }}
      */
     createApp (data = []) {
@@ -79,7 +79,7 @@ export const page = createPlugin('page', {
     },
     /**
      * Creates Dooksa app
-     * @param {DataValue[]} data
+     * @param {DataValue<*>[]} data - Data to inject into the app
      * @returns {{ html: string, csp: string }}
      */
     create (data){
