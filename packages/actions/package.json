@@ -18,8 +18,9 @@
     "test-coverage-lcov": "node --test --experimental-test-coverage --test-reporter=lcov --test-reporter-destination=lcov.info",
     "test-coverage-report": "node --test --experimental-test-coverage"
   },
-  "dependencies": {
+  "devDependencies": {
     "@dooksa/plugins": "workspace:^",
+    "@dooksa/create-plugin": "workspace:^",
     "@dooksa/create-action": "workspace:^"
   }
 }
