@@ -126,17 +126,18 @@ function createAction (...args) {
   const id = args[0]
   const data = args[1]
 
-  let methods, dependencies
+  let methods
+  /** @type {string[]} */
+  let dependencies = []
   let arg2 = args[2]
   let arg3 = args[3]
 
   if (typeof arg2 === 'object') {
-    dependencies = arg2
-
-    if (!Array.isArray(arg2)) {
+    if (Array.isArray(arg2)) {
+      dependencies = arg2
+    } else {
       // add methods if dependencies is excluded
       methods = arg2
-      dependencies = null
     }
   }
 
