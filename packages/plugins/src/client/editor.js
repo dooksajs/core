@@ -66,8 +66,7 @@ export const editor = createPlugin('editor', {
         icon: 'vscode-icons:file-type-json-schema'
       },
       /**
-       * Useful data to display data components
-       * @param {string} name
+       * @param {string} name - The name of the schema to retrieve
        * @returns {EditorDataSchema}
        */
       method (name) {
