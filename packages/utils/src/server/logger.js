@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 
 /**
- * @param {Object} options
+ * @param {Object} options - Logger options
  * @param {'INFO' | 'WARN' | 'ERROR'} [options.level='INFO'] - logging type
  * @param {string} options.message - Main message content
  * @param {string} [options.context] - Additional context
