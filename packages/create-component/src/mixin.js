@@ -3,8 +3,8 @@
  */
 
 /**
- * @param {InfixItem[]} infixes
- * @param {Object.<string, string>} options
+ * @param {InfixItem[]} infixes - Infix items
+ * @param {Object.<string, string>} options - Options for infix
  */
 function classNameInfix (infixes, options) {
   let className = ''
@@ -35,7 +35,7 @@ function classNameInfix (infixes, options) {
 }
 
 /**
- * @param {Infix} param
+ * @param {Infix} param - Infix configuration
  */
 export function computedInfixValue ({
   className,
@@ -75,9 +75,9 @@ export function computedInfixValue ({
 }
 
 /**
-* @param {Object} mixin
-* @param {ComponentMixinMetadata} mixin.metadata
-* @param {ComponentDataValues} mixin.data
+* @param {Object} mixin - Mixin definition
+* @param {ComponentMixinMetadata} mixin.metadata - Mixin metadata
+* @param {ComponentDataValues} mixin.data - Mixin data
 */
 export default function createMixin (mixin) {
   if (mixin.data && mixin.data.options) {
