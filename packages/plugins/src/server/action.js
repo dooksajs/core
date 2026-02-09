@@ -1,7 +1,7 @@
 import { createPlugin, mapState } from '@dooksa/create-plugin'
 import { createAction, compileAction } from '@dooksa/create-action'
 import { action as actionClient, stateSetValue } from '#core'
-import { serverSetRoute, databaseSeed, databaseGetValue, databaseDeleteValue } from '#server'
+import { serverSetRoute, databaseSeed, databaseGetValue, databaseDeleteValue, user } from '#server'
 
 /**
  * @typedef {Object} ActionSequenceResult
@@ -19,6 +19,7 @@ import { serverSetRoute, databaseSeed, databaseGetValue, databaseDeleteValue } f
  */
 
 export const action = createPlugin('action', {
+  dependencies: [user],
   state: { ...mapState(actionClient) },
   methods: {
     /**
