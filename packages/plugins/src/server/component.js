@@ -8,9 +8,9 @@ import { createDataValue } from '#utils'
 export const component = createPlugin('component', {
   state: { ...mapState(componentClient) },
   /**
-   * @param {Object} options
-   * @param {import('@dooksa/create-component').Component[]} [options.components]
-   * @param {string[]} [options.excludeComponents=[]]
+   * @param {Object} options - Setup options
+   * @param {import('@dooksa/create-component').Component[]} [options.components] - List of components to register
+   * @param {string[]} [options.excludeComponents=[]] - List of component IDs to exclude
    */
   async setup ({
     components = defaultComponents,
@@ -46,7 +46,7 @@ export const component = createPlugin('component', {
           const id = request.params.id
 
           /**
-           * @TODO need a 404 page response
+           * @todo need a 404 page response
            */
           if (!activeComponents[id]) {
             return response.status(404).send()
