@@ -50,8 +50,8 @@ export const route = createPlugin('route', {
         icon: 'gis:route-end'
       },
       /**
-       * @param {Object} param
-       * @param {string} param.to
+       * @param {Object} param - Parameters object
+       * @param {string} param.to - The path to navigate to
        */
       method ({ to }) {
         const from = currentPath()
