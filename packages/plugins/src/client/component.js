@@ -586,12 +586,12 @@ export const component = createPlugin('component', {
     },
     /**
      * Create node from template
-     * @param {Object} param
-     * @param {string} [param.id]
-     * @param {Component} param.template
-     * @param {string} param.parentId
-     * @param {string} [param.rootId]
-     * @param {string} [param.groupId]
+     * @param {Object} param - Parameters object
+     * @param {string} [param.id] - Component ID
+     * @param {Component} param.template - Component template definition
+     * @param {string} param.parentId - Parent component ID
+     * @param {string} [param.rootId] - Root component ID
+     * @param {string} [param.groupId] - Group ID for the component
      */
     createTemplate ({
       id = generateId(),
