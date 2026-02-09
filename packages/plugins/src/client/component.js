@@ -334,7 +334,7 @@ export const component = createPlugin('component', {
             name: 'event/listeners',
             value: actionId,
             options: {
-              id: 'component/' + on + id,
+              id: on + id,
               update: { method: 'push' }
             }
           })
