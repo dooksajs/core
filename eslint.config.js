@@ -25,13 +25,44 @@ export default [
       'jsdoc/check-tag-names': [
         'warn',
         {
-          definedTags: ['overload']
+          definedTags: [
+            'note',
+            'overload',
+            'query-parameters',
+            'returns-error',
+            'returns-response',
+            'returns-success',
+            'supported-operators',
+            'supported-values'
+          ]
         }
       ],
       'jsdoc/require-param-description': 'error',
       'jsdoc/require-param-type': 'error',
       'jsdoc/check-syntax': 'error',
-      'jsdoc/no-undefined-types': 'error',
+      'jsdoc/no-undefined-types': [
+        'error',
+        {
+          definedTypes: [
+            'Buffer',
+            'DOMHighResTimeStamp',
+            'Element',
+            'File',
+            'FormData',
+            'HTMLCollection',
+            'HTMLElement',
+            'HTMLFormControlsCollection',
+            'Node',
+            'NodeJS',
+            'TestContext',
+            'validateSchemaArray',
+            'validateSchemaArrayOption',
+            'validateSchemaObject',
+            'validateSchemaObjectOption',
+            'validateSchemaObjectProperties'
+          ]
+        }
+      ],
       '@stylistic/js/curly-newline': ['error', 'always'],
       '@stylistic/js/indent': [
         'error', 2, {
