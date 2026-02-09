@@ -309,7 +309,6 @@ export const page = createPlugin('page', {
   /**
    * Setup function that initializes the page on the client.
    * Fetches the current page based on the route and loads all components.
-   * @TODO Implement 404 page handling
    */
   setup () {
     // fetch current page
@@ -318,7 +317,6 @@ export const page = createPlugin('page', {
       id: routeCurrentId()
     })
 
-    /** @TODO 404 page */
     if (pagePath.isEmpty) {
       return
     }
