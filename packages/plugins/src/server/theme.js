@@ -4,17 +4,19 @@ import { stateSetValue } from '#core'
 import compileSass from '@dooksa/theme'
 
 export const theme = createPlugin('theme', {
-  schema: {
-    styles: {
-      type: 'string'
+  state: {
+    schema: {
+      styles: {
+        type: 'string'
+      }
     }
   },
   methods: {
     compile: compileSass
   },
   /**
-   * @param {Object} param
-   * @param {string} [param.path='']
+   * @param {Object} param - Setup parameters
+   * @param {string} [param.path=''] - Path to custom sass directory
    */
   setup ({ path = '' } = {}) {
     if (path) {
