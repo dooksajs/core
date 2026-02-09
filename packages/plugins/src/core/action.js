@@ -100,9 +100,9 @@ export const action = createPlugin('action', {
   privateMethods: {
     /**
      * Helper function to resolve values from context/payload
-     * @param {*} context
-     * @param {*} payload
-     * @param {*} value
+     * @param {*} context - The execution context object
+     * @param {*} payload - The data payload object
+     * @param {*} value - The value to resolve
      */
     resolveValue (context, payload, value) {
       // If it's a string that looks like a path, try to resolve it

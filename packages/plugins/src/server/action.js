@@ -22,9 +22,9 @@ export const action = createPlugin('action', {
   state: { ...mapState(actionClient) },
   methods: {
     /**
-     * @param {RequestAction} request
-     * @param {Response} response
-     * @param {Function} next
+     * @param {RequestAction} request - The express request object
+     * @param {Response} response - The express response object
+     * @param {Function} next - The express next middleware function
      * @example
      * const body = {
      *  '[0]': true,
