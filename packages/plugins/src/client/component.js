@@ -258,18 +258,18 @@ export const component = createPlugin('component', {
         id
       }).item || template.properties
 
-      if (!properties) {
+      if (properties) {
         this.setProperties(node, properties)
-
-        stateAddListener({
-          name: 'component/properties',
-          on: 'update',
-          id,
-          handler: (options) => {
-            this.setProperties(node, options.item)
-          }
-        })
       }
+
+      stateAddListener({
+        name: 'component/properties',
+        on: 'update',
+        id,
+        handler: (options) => {
+          this.setProperties(node, options.item)
+        }
+      })
 
       if (template.options) {
         stateAddListener({
