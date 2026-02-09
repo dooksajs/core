@@ -38,7 +38,7 @@ export const middleware = createPlugin('middleware', {
   methods: {
     /**
      * Get middleware
-     * @param {string} name
+     * @param {string} name - Middleware name
      * @returns {Handler}
      */
     get (name) {
@@ -52,7 +52,7 @@ export const middleware = createPlugin('middleware', {
     },
     /**
      * Set middleware
-     * @param {Object} param
+     * @param {Object} param - Parameters object
      * @param {string} param.name - Name of middleware
      * @param {Handler} param.handler - Express middleware
      */
