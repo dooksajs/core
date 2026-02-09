@@ -438,9 +438,9 @@ export const component = createPlugin('component', {
     },
     /**
      * Observe node prototype property
-     * @param {HTMLElement} element
+     * @param {HTMLElement} element - The DOM element to observe
      * @param {string} property - Property name of getter/setter
-     * @param {Function} callback
+     * @param {Function} callback - Callback to execute when property changes
      */
     observeNodeProperty (element, property, callback) {
       const elementPrototype = Object.getPrototypeOf(element)
@@ -466,7 +466,7 @@ export const component = createPlugin('component', {
     },
     /**
      * Attribute observer handler
-     * @param {Function} callback
+     * @param {Function} callback - Callback function for attribute changes
      */
     observeNodeAttributeCallback (callback) {
       return function (mutation) {
@@ -481,10 +481,10 @@ export const component = createPlugin('component', {
     },
     /**
      * Observe node attribute
-     * @param {string} id
-     * @param {HTMLElement} element
-     * @param {string} property
-     * @param {Function} callback
+     * @param {string} id - Component ID
+     * @param {HTMLElement} element - The DOM element to observe
+     * @param {string} property - Attribute name to observe
+     * @param {Function} callback - Callback to execute when attribute changes
      */
     observeNodeAttribute (id, element, property, callback) {
       const attributeCallback = this.observeNodeAttributeCallback(callback)
