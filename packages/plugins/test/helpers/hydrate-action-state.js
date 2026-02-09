@@ -6,7 +6,7 @@ import { stateSetValue } from '#core'
 
 /**
  * Helper function to seed action state data
- * @param {Action | Action[]} action
+ * @param {Action | Action[]} action - Action definition or array of action definitions
  */
 export function hydrateActionState (action) {
   const actions = Array.isArray(action) ? action : [action]
