@@ -1,5 +1,5 @@
 import createAppServer from './app-server.js'
-import { stateSetValue } from '@dooksa/plugins/client'
+import { stateSetValue } from '@dooksa/plugins/core'
 import esbuild from 'esbuild'
 import { log } from '@dooksa/utils/server'
 import { resolve, extname, parse } from 'node:path'
@@ -36,7 +36,7 @@ server
       write: false,
       minify: false,
       target: ['es2020'],
-      dropLabels: ['PROD'],
+      dropLabels: ['PROD', 'TEST'],
       reserveProps: /__ds/,
       plugins: [{
         name: 'rebuildClient',
