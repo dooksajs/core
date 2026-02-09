@@ -214,7 +214,7 @@ export const list = createPlugin('list', {
       },
       /**
        * Executes a provided action once for each array element.
-       * @param {Object} param
+       * @param {Object} param - Parameters object
        * @param {Object} param.context - Context for action, A new property named "$list" is created with the data type of the "item"
        * @param {Array|Object} param.items - Array used for iteration
        * @param {string} param.actionId - Action ID used to execute
@@ -311,8 +311,8 @@ export const list = createPlugin('list', {
       },
       /**
        * Sort list ascending or descending
-       * @param {Object} param
-       * @param {Array} param.items
+       * @param {Object} param - Parameters object
+       * @param {Array} param.items - List items to sort
        * @param {ArraySortBy} param.type - Sort by
        * @returns {ArraySortValue[]}
        */
