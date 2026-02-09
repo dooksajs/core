@@ -2,6 +2,7 @@ import createAction from '@dooksa/create-action'
 
 export const actionAddBlockListItem = createAction('action-add-block-list-item', [
   {
+    $id: 'component_result',
     state_setValue: {
       name: 'component/items',
       value: {
@@ -12,9 +13,10 @@ export const actionAddBlockListItem = createAction('action-add-block-list-item',
     }
   },
   {
+    $id: 'component_id',
     action_getValue: {
       query: 'id',
-      value: { $ref: 0 }
+      value: { $ref: 'component_result' }
     }
   },
   {
@@ -23,7 +25,7 @@ export const actionAddBlockListItem = createAction('action-add-block-list-item',
       values: [
         {
           id: 'metadata',
-          prefixId: { $ref: 1 },
+          prefixId: { $ref: 'component_id' },
           value: { action_getPayloadValue: 'value.id' }
         }
       ]
@@ -32,7 +34,7 @@ export const actionAddBlockListItem = createAction('action-add-block-list-item',
   {
     state_setValue: {
       name: 'component/children',
-      value: { $ref: 1 },
+      value: { $ref: 'component_id' },
       options: {
         id: { action_getContextValue: 'id' },
         update: { method: 'push' }
