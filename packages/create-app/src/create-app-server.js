@@ -1,5 +1,17 @@
 import appendPlugin from './append-plugin.js'
-import { state } from '@dooksa/plugins/core'
+import {
+  state,
+  api,
+  event,
+  metadata,
+  operator,
+  string,
+  variable,
+  regex,
+  action,
+  list,
+  error
+} from '@dooksa/plugins/core'
 import {
   component,
   icon,
@@ -10,12 +22,12 @@ import {
   server,
   database,
   middleware,
-  action,
+  action as serverAction,
   page as serverPage,
   theme,
   metadata as serverMetadata,
   component as serverComponent,
-  event,
+  event as serverEvent,
   user
 } from '@dooksa/plugins/server'
 import defaultActions from '@dooksa/actions'
@@ -25,19 +37,30 @@ const defaultServerPlugins = [
   database,
   middleware,
   user,
-  action,
+  serverAction,
   serverPage,
   theme,
   serverMetadata,
   serverComponent,
-  event
+  serverEvent
 ]
 
 const defaultClientPlugins = [
   component,
   icon,
   page,
-  form
+  form,
+  state,
+  api,
+  event,
+  metadata,
+  operator,
+  string,
+  variable,
+  regex,
+  action,
+  list,
+  error
 ]
 
 /**
