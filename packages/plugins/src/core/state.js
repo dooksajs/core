@@ -478,7 +478,7 @@ export const state = createPlugin('state', {
       // set values
       for (const id in sources) {
         if (Object.hasOwnProperty.call(sources, id)) {
-          /** @TODO need to look into this, clone is not being used? */
+          /** @todo need to look into this, clone is not being used? */
           const clone = newDataInstance(schemaType)
           const source = deepClone(sources[id], true)
           const target = {
@@ -638,7 +638,7 @@ export const state = createPlugin('state', {
       }
 
       if (isEnvServer()) {
-        /** @TODO need to store nano time */
+        /** @todo need to store nano time */
         const timestamp = Date.now()
 
         if (!item.userId && options && options.userId) {
@@ -726,7 +726,7 @@ export const state = createPlugin('state', {
               }
             } else {
               // Did nothing, don't fire update event
-              // @TODO Ideally a new property should be used for non events like this
+              /** @todo Ideally a new property should be used for non events like this */
               result.isValid = false
               result.isComplete = true
             }
@@ -853,7 +853,7 @@ export const state = createPlugin('state', {
       }
 
       /**
-       * @TODO extend type checker for more types
+       * @todo extend type checker for more types
        */
       const dataType = typeof value
 
@@ -1196,7 +1196,7 @@ export const state = createPlugin('state', {
     validateSchema (data, path, source) {
       const schema = this.getSchema(path)
 
-      /** @TODO validate *any* until schema supports multi type schema */
+      /** @todo validate *any* until schema supports multi type schema */
       if (!schema) {
         return
       }
@@ -1350,7 +1350,7 @@ export const state = createPlugin('state', {
         // ISSUE: containsDuplicates expects an array
         if (schema && schema.options) {
           // if (schema.options.uniqueItems) {
-          //   // @TODO this is too slow, perhaps use a hash table or use a Map
+          //   // @todo this is too slow, perhaps use a hash table or use a Map
           //   const hasDuplicates = arrayHasDuplicates(targetItem)
 
           //   if (hasDuplicates) {
@@ -2119,7 +2119,7 @@ export const state = createPlugin('state', {
         }
 
         /**
-         * @TODO the schema properties need to be split into named paths to allow validation per property
+         * @todo the schema properties need to be split into named paths to allow validation per property
          * Currently, only complete objects are validated, hence the need to validate after the merge
          */
         // validate result source
@@ -2323,14 +2323,14 @@ export const state = createPlugin('state', {
      * useful for internal operations or when data is already validated.
      * @template T
      * @overload
-     * @param {UnsafeSetValueParamsWithId} param
+     * @param {UnsafeSetValueParamsWithId} param - Parameters with ID
      * @returns {DataValue<DataValue<T>>}
      *
      * @overload
-     * @param {UnsafeSetValueParamsWithoutId} param
+     * @param {UnsafeSetValueParamsWithoutId} param - Parameters without ID
      * @returns {DataValue<DataValue<T>[]>}
      *
-     * @param {UnsafeSetValueParamsWithId | UnsafeSetValueParamsWithoutId} param
+     * @param {UnsafeSetValueParamsWithId | UnsafeSetValueParamsWithoutId} param - Parameters for unsafe set value
      * @returns {DataValue<T[]> | DataValue<T>} The created data value(s)
      * @example
      * unsafeSetValue({ name: 'users/profiles', value: { name: 'John' }, options: { id: '123' } })
@@ -2616,7 +2616,7 @@ export const state = createPlugin('state', {
         let executableHandler = handler
 
         if (typeof handler === 'string') {
-          /** @TODO check if action exists */
+          /** @todo check if action exists */
           const actionId = handler
           executableHandler = (value) => {
             actionDispatch({
@@ -2893,11 +2893,11 @@ export const state = createPlugin('state', {
       },
       /**
        * @overload
-       * @param {GetValueQueryWithId} query
+       * @param {GetValueQueryWithId} query - Query with ID
        * @returns {DataValue<*>}
        *
        * @overload
-       * @param {GetValueQueryWithoutId} query
+       * @param {GetValueQueryWithoutId} query - Query without ID
        * @returns {DataValue<*>[]}
        *
        * Retrieves data values from the state with optional filtering and expansion.
