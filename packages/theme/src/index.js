@@ -63,6 +63,11 @@ function getStyles (path) {
     ${sass.custom}`
 }
 
+/**
+ * Compiles sass to css
+ * @param {string} path - path to custom sass directory
+ * @returns {Object} css object
+ */
 function compileSass (path) {
   const sassString = getStyles(path)
   const result = compileString(sassString, {
