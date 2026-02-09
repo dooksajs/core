@@ -2,7 +2,7 @@ import { state, api, action as originalAction } from '#core'
 
 /**
  * Helper to extract action methods from a list of actions or map
- * @param {Array|Object} actions
+ * @param {Array|Object} actions - List of actions or map of actions
  * @returns {Object} Map of action names to methods
  */
 function getActionsMap (actions) {
