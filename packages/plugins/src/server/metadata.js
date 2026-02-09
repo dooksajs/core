@@ -11,11 +11,11 @@ export const metadata = createPlugin('metadata', {
     ...mapState(metadataClient)
   },
   /**
-   * @param {Object} param
-   * @param {Object[]} param.plugins
-   * @param {string} param.plugins[].name
-   * @param {DsPluginMetadata} param.plugins[].metadata
-   * @param {ActiveAction[]} param.actions
+   * @param {Object} param - Setup parameters
+   * @param {Object[]} param.plugins - List of plugins
+   * @param {string} param.plugins[].name - Plugin name
+   * @param {DsPluginMetadata} param.plugins[].metadata - Plugin metadata
+   * @param {ActiveAction[]} param.actions - List of actions
    */
   async setup ({ plugins, actions }) {
     await databaseSeed('metadata-currentLanguage')
