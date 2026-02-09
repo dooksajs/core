@@ -1,7 +1,7 @@
 import { isObject } from '@dooksa/utils'
 
 /**
- * @param {import('#types').SchemaType} type
+ * @param {import('#types').SchemaType} type - The data type to create a value for
  */
 export function dataValue (type) {
   let value
