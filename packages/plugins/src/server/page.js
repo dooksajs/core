@@ -1,7 +1,7 @@
 import { createPlugin, mapState } from '@dooksa/create-plugin'
 import { createHash } from 'node:crypto'
 import { page as pageClient, pageGetItemsByPath } from '#client'
-import { stateGetValue, stateSetValue } from '#core'
+import { errorLogError, stateGetValue, stateSetValue } from '#core'
 import { serverSetRoute, databaseSeed, databaseSetValue, user } from '#server'
 
 /**
@@ -40,8 +40,50 @@ export const page = createPlugin('page', {
      * @returns {{ script: string, csp: string }}
      */
     createApp (data = []) {
-      const appString = stateGetValue({ name: 'page/app' }).item
-      let script = '(() => {const __ds =' + JSON.stringify(data) + ';' + appString
+      const appString = stateGetValue({ name: 'page/app' })
+
+      if (appString.isEmpty) {
+        errorLogError({
+          message: 'Page: no app found',
+          level: 'ERROR',
+          code: 'APP_NOT_FOUND',
+          category: 'PAGE',
+          context: {
+            plugin: 'PAGE',
+            method: 'createApp'
+          }
+        })
+
+        return {
+          script: '',
+          csp: ''
+        }
+      }
+
+      let appData
+
+      try {
+        appData = JSON.stringify(data)
+      } catch (error) {
+        errorLogError({
+          message: 'Page: serialisation data failed',
+          level: 'ERROR',
+          code: 'DATA_SERIALISATION_FAILED',
+          category: 'PAGE',
+          context: {
+            plugin: 'PAGE',
+            method: 'createApp'
+          },
+          stack: error.stack
+        })
+
+        return {
+          script: '',
+          csp: ''
+        }
+      }
+
+      let script = '(() => {const __ds =' + JSON.stringify(data) + ';' + appString.item
 
       DEV: {
         const sourcemap = stateGetValue({
