@@ -60,8 +60,8 @@ export const server = createPlugin('server', {
     },
     /**
      * Create server
-     * @param {Object} options
-     * @param {AssetLocation} [options.assets]
+     * @param {Object} options - Server options
+     * @param {AssetLocation} [options.assets] - Asset location configuration
      */
     init ({ assets } = {}) {
       if (process.env.NODE_ENV === 'production') {
@@ -87,7 +87,7 @@ export const server = createPlugin('server', {
     },
     /**
      * Add a route to the server
-     * @param {Object} route
+     * @param {Object} route - Route configuration
      * @param {string} route.path - path
      * @param {string[]} [route.middleware] - List of middleware reference Ids
      * @param {'get'|'post'|'put'|'delete'} [route.method='get'] - HTTP method
@@ -150,9 +150,9 @@ export const server = createPlugin('server', {
     },
     /**
      * Start the web server
-     * @param {Object} options
-     * @param {number} [options.port=6362] - Port number for webserver {@link https://gchq.github.io/CyberChef/#recipe=Fletcher-8_Checksum()To_Hex('None',0)&input=ZG9va3Nh}
-     * @param {string} [options.path='http://localhost']
+     * @param {Object} options - Start options
+     * @param {number} [options.port=6362] - Port number for webserver {@link "https://gchq.github.io/CyberChef/#recipe=Fletcher-8_Checksum()To_Hex('None',0)&input=ZG9va3Nh"}
+     * @param {string} [options.path='http://localhost'] - Server path/hostname
      */
     start ({
       port = 6362,
@@ -204,10 +204,10 @@ export const server = createPlugin('server', {
     }
   },
   /**
-   * @param {Object} options
-   * @param {string} [options.cookieSecret]
+   * @param {Object} options - Setup options
+   * @param {string} [options.cookieSecret] - Secret for signing cookies
    * @param {string} [options.apiPrefix='/_'] - REST API prefix path
-   * @param {AssetLocation} [options.assets]
+   * @param {AssetLocation} [options.assets] - Asset location configuration
    */
   setup ({
     cookieSecret = '',
