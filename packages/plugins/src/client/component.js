@@ -1233,7 +1233,8 @@ export const component = createPlugin('component', {
           if (!children.length) {
             stateDeleteValue({
               name: 'component/children',
-              id: parentId
+              id: parentId,
+              stopPropagation: true
             })
           } else if (children.length !== parentChildren.item.length) {
             stateSetValue({
