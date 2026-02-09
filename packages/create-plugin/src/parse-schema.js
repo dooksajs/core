@@ -65,8 +65,8 @@ export function parseSchema (context, schema, id, entries = [], isNested = false
 /**
  * Optimizes and normalizes a schema definition
  * @private
- * @param {Object} context
- * @param {DataSchema | SchemaObjectProperty} schema
+ * @param {Object} context - The context object that will apply the schema to
+ * @param {DataSchema | SchemaObjectProperty} schema - The schema definition
  * @returns {Object} Optimized schema with entry, properties, patternProperties, and items
  */
 function optimiseSchema (context, schema) {
@@ -87,9 +87,9 @@ function optimiseSchema (context, schema) {
 /**
  * Process schema properties (both regular and pattern properties)
  * @private
- * @param {Object} context
- * @param {Object.<string, DataSchemaObject>} [properties={}]
- * @param {boolean} [isPattern=false]
+ * @param {Object} context - The context object that will apply the schema to
+ * @param {Object.<string, DataSchemaObject>} [properties={}] - Schema properties
+ * @param {boolean} [isPattern=false] - Whether these are pattern properties
  * @returns {(SchemaObjectProperty | SchemaEntry)[]}
  */
 function processSchemaProperties (context, properties = {}, isPattern = false) {
@@ -113,9 +113,9 @@ function processSchemaProperties (context, properties = {}, isPattern = false) {
 /**
  * Creates a property object with nested schema properties
  * @private
- * @param {DataSchemaObject} property
- * @param {string} name
- * @param {string[]} nestedProps
+ * @param {DataSchemaObject} property - The property definition
+ * @param {string} name - Property name
+ * @param {string[]} nestedProps - List of nested property names
  * @returns {SchemaObjectProperty}
  */
 function createNestedProperty (property, name, nestedProps) {
@@ -142,7 +142,7 @@ function createNestedProperty (property, name, nestedProps) {
 /**
  * Creates a schema entry from a property definition
  * @private
- * @param {Object} context
+ * @param {Object} context - The context object that will apply the schema to
  * @param {DataSchema | SchemaObjectProperty} item - Property values
  * @param {string} [name] - Entry name
  * @returns {SchemaEntry}
@@ -172,8 +172,8 @@ function createSchemaEntry (context, item, name) {
 /**
  * Extracts options and ID properties from schema item
  * @private
- * @param {Object} context
- * @param {Object} item
+ * @param {Object} context - The context object that will apply the schema to
+ * @param {Object} item - Schema item
  * @returns {Object} Extracted options and ID properties
  */
 function extractOptionsAndId (context, item) {
@@ -239,13 +239,13 @@ function extractOptionsAndId (context, item) {
 /**
  * Creates an object schema entry
  * @private
- * @param {Object} context
+ * @param {Object} context - The context object that will apply the schema to
  * @param {string} id - The schema ID
- * @param {SchemaEntry} entry
- * @param {SchemaObjectProperty[]} properties
- * @param {SchemaObjectProperty[]} patternProperties
- * @param {SchemaObjectOptions} options
- * @param {Schema[]} schema
+ * @param {SchemaEntry} entry - Schema entry
+ * @param {SchemaObjectProperty[]} properties - Object properties
+ * @param {SchemaObjectProperty[]} patternProperties - Pattern properties
+ * @param {SchemaObjectOptions} options - Schema options
+ * @param {Schema[]} schema - Schema array to push result to
  */
 function objectSchema (context, id, entry, properties, patternProperties, options, schema) {
   const item = {
@@ -270,11 +270,11 @@ function objectSchema (context, id, entry, properties, patternProperties, option
 /**
  * Processes object properties and handles nested schemas
  * @private
- * @param {Object} context
- * @param {string} id
- * @param {SchemaObjectProperty[]} properties
- * @param {SchemaObjectOptions} options
- * @param {Schema[]} schema
+ * @param {Object} context - The context object that will apply the schema to
+ * @param {string} id - Schema ID
+ * @param {SchemaObjectProperty[]} properties - List of properties
+ * @param {SchemaObjectOptions} options - Schema options
+ * @param {Schema[]} schema - Schema array
  * @returns {SchemaObjectProperty[]}
  */
 function objectPropertySchema (context, id, properties = [], options, schema) {
@@ -324,7 +324,7 @@ function objectPropertySchema (context, id, properties = [], options, schema) {
 /**
  * Checks if an entry has nested schema properties
  * @private
- * @param {DataSchemaObject} entry
+ * @param {DataSchemaObject} entry - The schema entry to check
  * @returns {string[]} Array of property names that indicate nested schemas
  */
 function entryHasProperties (entry) {
