@@ -6,9 +6,9 @@ import createPlugin from '@dooksa/create-plugin'
 
 /**
  * Helper to invoke variable action with context
- * @param {string} actionName
- * @param {Object} props
- * @param {Object} context
+ * @param {string} actionName - Name of action to invoke
+ * @param {Object} props - Action properties
+ * @param {Object} context - Action context
  */
 function invokeAction (actionName, props, context = {}) {
   const action = variable.actions.find(a => a.key === actionName)
