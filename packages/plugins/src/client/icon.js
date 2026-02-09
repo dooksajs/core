@@ -42,7 +42,7 @@ export const icon = createPlugin('icon', {
   },
   /**
    * Setup icon plugin
-   * @param {Object} options
+   * @param {Object} options - Plugin setup options
    * @param {string} [options.apiUrl] - Custom API URL for icon fetching
    */
   setup ({ apiUrl } = {}) {
