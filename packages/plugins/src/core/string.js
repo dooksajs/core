@@ -18,7 +18,7 @@ export const string = createPlugin('string', {
         icon: 'mdi:find-replace'
       },
       /**
-       * @param {StringReplace} param
+       * @param {StringReplace} param - Replacement parameters
        */
       method ({ value, pattern, replacement }) {
         return value.replace(pattern, replacement)
