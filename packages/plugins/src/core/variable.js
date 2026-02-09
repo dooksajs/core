@@ -36,9 +36,9 @@ export const variable = createPlugin('variable', {
     /**
      * Add affix to query
      * @private
-     * @param {string} query
-     * @param {string} prefix
-     * @param {string} suffix
+     * @param {string} query - The query string
+     * @param {string} prefix - The prefix to add
+     * @param {string} suffix - The suffix to add
      */
     affixQuery (query, prefix, suffix) {
       if (prefix) {
@@ -85,11 +85,11 @@ export const variable = createPlugin('variable', {
       },
       /**
        * Get variable value
-       * @param {Object} props
-       * @param {string} [props.scope]
-       * @param {string} [props.prefixId]
-       * @param {string} [props.suffixId]
-       * @param {string} props.query
+       * @param {Object} props - Properties object
+       * @param {string} [props.scope] - Scope ID
+       * @param {string} [props.prefixId] - Prefix ID
+       * @param {string} [props.suffixId] - Suffix ID
+       * @param {string} props.query - Query string
        */
       method (props, { context }) {
         if (props.scope) {
