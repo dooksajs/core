@@ -116,7 +116,7 @@ export const token = createPlugin('token', {
     textContent: {
       /**
        * Convert tokens to related string and update the element that the content is attached to
-       * @param {Object} param
+       * @param {Object} param - Parameters object
        * @param {string} param.viewId An ID related to the content and the target, usually the element ID
        * @param {string} param.text The original text that includes the tokens
        * @param {Function} param.updateText This the function that updates the element, e.g. element.textContent
