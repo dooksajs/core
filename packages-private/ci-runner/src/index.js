@@ -1,5 +1,5 @@
 import createAppServer from './app-server.js'
-import { stateSetValue } from '@dooksa/plugins/client'
+import { stateSetValue } from '@dooksa/plugins/core'
 import esbuild from 'esbuild'
 import { log } from '@dooksa/utils/server'
 import { resolve, extname } from 'node:path'
