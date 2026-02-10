@@ -190,6 +190,9 @@ importers:
         specifier: ^7.0.2
         version: 7.0.2
     devDependencies:
+      '@dooksa/types':
+        specifier: workspace:^
+        version: link:../types
       '@types/express':
         specifier: ^5.0.6
         version: 5.0.6
@@ -203,6 +206,8 @@ importers:
       sass:
         specifier: ^1.79.5
         version: 1.79.5
+
+  packages/types: {}
 
   packages/utils:
     dependencies:
