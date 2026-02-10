@@ -5,7 +5,7 @@ import { errorLogError, stateGetValue, stateSetValue } from '#core'
 import { serverSetRoute, databaseSeed, databaseSetValue, user } from '#server'
 
 /**
- * @import {DataValue} from '../../../types.js'
+ * @import {DataValue} from '@dooksa/types'
  */
 
 function hashSHA (item) {

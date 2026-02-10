@@ -2,7 +2,7 @@ import { createPlugin } from '@dooksa/create-plugin'
 import { stateSetValue, stateAddListener } from '#core'
 
 /**
- * @import {DataValue} from '../../../types.js'
+ * @import {DataValue} from '@dooksa/types'
  */
 
 /**

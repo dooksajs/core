@@ -4,7 +4,7 @@ import { getValue } from '@dooksa/utils'
 import { lazyLoader } from '../lazy/index.js'
 
 /**
- * @import {SetDataOptions, GetDataQuery, DataSchema, DataWhere, GetValueByQuery} from '../../../types.js'
+ * @import {SetDataOptions, GetDataQuery, DataSchema, DataWhere, GetValueByQuery} from '@dooksa/types'
  * @import {ActionDispatchContext, ActionBlock} from '@dooksa/create-action'
  */
 

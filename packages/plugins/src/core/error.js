@@ -3,7 +3,7 @@ import { generateId } from '@dooksa/utils'
 import serialize from 'serialize-javascript'
 
 /**
- * @import {DataValue} from '../../../types.js'
+ * @import {DataValue} from '@dooksa/types'
  */
 
 /**

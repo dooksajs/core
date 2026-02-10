@@ -3,7 +3,7 @@ import { stateGetValue, stateSetValue } from '#core'
 import { generateId, getValue } from '@dooksa/utils'
 
 /**
- * @import {VariableGetValue, VariableSetValue} from '../../../types.js'
+ * @import {VariableGetValue, VariableSetValue} from '@dooksa/types'
  */
 
 export const variable = createPlugin('variable', {

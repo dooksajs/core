@@ -5,7 +5,25 @@ import { deepClone, generateId, isEnvServer, getValue, shallowCopy } from '@dook
 import { createDataValue } from '../utils/data-value.js'
 
 /**
- * @import {SetDataOptions, GetDataQuery, GetDataOption, DataWhere, DataDeleteValueResult, DataListenerHandler, DataListenerCollection, UpdateOptions, DataUpdateResult, CollectionIdResult, RelationInfo, DataTarget, DataValue, DataMetadata, UpdateContext, MergeResult} from '../../../types.js'
+ * @import {
+ *  SetDataOptions,
+ *  DooksaStateRegistry,
+ *  GetDataQuery,
+ *  GetDataOption,
+ *  DataWhere,
+ *  DataDeleteValueResult,
+ *  DataListenerHandler,
+ *  DataListenerCollection,
+ *  UpdateOptions,
+ *  DataUpdateResult,
+ *  CollectionIdResult,
+ *  RelationInfo,
+ *  DataTarget,
+ *  DataValue,
+ *  DataMetadata,
+ *  UpdateContext,
+ *  MergeResult
+ * } from '@dooksa/types'
  * @import {DsPluginStateExport, SchemaEntry} from '@dooksa/create-plugin/types'
  */
 

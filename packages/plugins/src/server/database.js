@@ -49,7 +49,7 @@ class SnapshotError extends Error {
  * - Snapshot-based persistence and seeding
  * - Transaction-like operations with locking mechanisms
  *
- * @import {DataWhere} from '../../../types.js'
+ * @import {DataWhere} from '@dooksa/types'
  * @import {Request, Response} from 'express'
  */
 

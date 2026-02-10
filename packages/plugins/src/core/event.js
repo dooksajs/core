@@ -2,7 +2,7 @@ import { createPlugin } from '@dooksa/create-plugin'
 import { actionDispatch, stateGetValue } from '#core'
 
 /**
- * @import {EventEmit} from '../../../types.js'
+ * @import {EventEmit} from '@dooksa/types'
  */
 
 export const event = createPlugin('event', {

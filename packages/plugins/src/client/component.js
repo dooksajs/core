@@ -12,7 +12,7 @@ import {
 
 /**
  * @import {Component, ComponentEvent, ComponentInstance} from '@dooksa/create-component'
- * @import {ComponentItem} from '../../../types.js'
+ * @import {ComponentItem} from '@dooksa/types'
  */
 
 /**

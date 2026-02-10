@@ -3,7 +3,7 @@ import { errorLogError, stateGetValue, stateSetValue } from '#core'
 
 /**
  * @import {Component} from '@dooksa/create-component'
- * @import {IconQueueItem, IconData, IconComponentData, IconStateSchema} from '../../../types.js'
+ * @import {IconQueueItem, IconData, IconComponentData, IconStateSchema} from '@dooksa/types'
  */
 
 /**

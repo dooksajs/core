@@ -5,7 +5,7 @@ import { hash } from '@dooksa/utils'
 import { createDataValue } from '#utils'
 
 /**
- * @import {PageGetItemsByPath} from '../../../types.js'
+ * @import {PageGetItemsByPath} from '@dooksa/types'
  */
 
 export const page = createPlugin('page', {

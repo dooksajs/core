@@ -2,7 +2,7 @@ import { createPlugin } from '@dooksa/create-plugin'
 import { stateGetSchema } from '#core'
 
 /**
- * @import {EditorDataSchema, EditorDataSchemaObject} from '../../../types.js'
+ * @import {EditorDataSchema, EditorDataSchemaObject} from '@dooksa/types'
  */
 
 export const editor = createPlugin('editor', {

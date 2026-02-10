@@ -1,7 +1,7 @@
 import { createPlugin } from '@dooksa/create-plugin'
 
 /**
- * @import {StringReplace} from '../../../types.js'
+ * @import {StringReplace} from '@dooksa/types'
  */
 
 export const string = createPlugin('string', {

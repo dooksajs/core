@@ -1,7 +1,7 @@
 import { createPlugin } from '@dooksa/create-plugin'
 
 /**
- * @import {RegexPattern} from '../../../types.js'
+ * @import {RegexPattern} from '@dooksa/types'
  */
 
 export const regex = createPlugin('regex', {

@@ -2,7 +2,7 @@ import { createPlugin } from '@dooksa/create-plugin'
 import { generateId } from '@dooksa/utils'
 
 /**
- * @import {FormOrderedValue, FormFiles} from '../../../types.js'
+ * @import {FormOrderedValue, FormFiles} from '@dooksa/types'
  */
 
 export const form = createPlugin('form', {

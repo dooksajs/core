@@ -4,14 +4,17 @@ import { action as actionClient, stateSetValue } from '#core'
 import { serverSetRoute, databaseSeed, databaseGetValue, databaseDeleteValue, user } from '#server'
 
 /**
+ * @import {Action} from '@dooksa/create-action'
+ * @import {Request, Response} from 'express'
+ */
+
+/**
  * @typedef {Object} ActionSequenceResult
  * @property {Object.<string, number>} refs
  * @property {Action[]} [data]
  */
 
 /**
- * @import {Action} from '@dooksa/create-action'
- * @import {Request, Response} from 'express'
  * @typedef {Object} ActionSequence
  * @property {Object} body
  * @property {ActionSequenceResult} body.sequence
@@ -352,10 +355,6 @@ export const action = createPlugin('action', {
       method: 'post',
       handlers: [
         this.parseSequence,
-        /**
-         * @import {DataWhere} from '../../../types.js'
-         * @import {Request, Response} from 'express'
-         */
         (request, response) => {
           const id = request.body['action-name']
 
