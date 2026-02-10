@@ -1142,8 +1142,15 @@ export const component = createPlugin('component', {
 
       // remove excess unused nodes
       if (prevChildNodes.length > nextChildNodes.length) {
+        const removeNodeList = []
+
+        // create a list of nodes to remove
         for (let i = nextChildNodes.length; i < prevChildNodes.length; i++) {
-          const node = prevChildNodes[i]
+          removeNodeList.push(prevChildNodes[i])
+        }
+
+        for (let i = 0; i < removeNodeList.length; i++) {
+          const node = removeNodeList[i]
           // @ts-ignore
           const componentId = node.__dooksaId__
 
