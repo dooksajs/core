@@ -61,20 +61,6 @@ import { createDataValue } from '../utils/data-value.js'
  */
 
 /**
- * Query parameters for getValue when no ID is provided.
- *
- * @typedef {Object} GetValueQueryWithoutId
- * @property {string} name - Name of the collection
- * @property {string} [prefixId] - Whether to use prefix for ID
- * @property {string} [suffixId] - Whether to use suffix for ID
- * @property {Object} [options] - Additional options
- * @property {boolean} [options.expand] - Whether to expand related data
- * @property {boolean} [options.expandClone] - Whether to clone expanded data
- * @property {boolean} [options.clone] - Whether to clone the result
- * @property {string} [options.position] - Position path to extract specific value
- */
-
-/**
  * Determines if an array contains duplicate values.
  *
  * This function checks if any value in the array appears more than once by comparing
@@ -189,6 +175,7 @@ export const state = createPlugin('state', {
     relations: {},
     relationsInUse: {},
     schema: {},
+    /** @type {Object.<string, *>} */
     values: {}
   },
   privateMethods: {
@@ -2903,18 +2890,16 @@ export const state = createPlugin('state', {
         }
       },
       /**
-       * @overload
-       * @param {GetValueQueryWithId} query - Query with ID
-       * @returns {DataValue<*>}
-       *
-       * @overload
-       * @param {GetValueQueryWithoutId} query - Query without ID
-       * @returns {DataValue<*>[]}
-       *
        * Retrieves data values from the state with optional filtering and expansion.
        *
-       * @param {GetValueQueryWithId | GetValueQueryWithoutId} query - Query parameters
-       * @returns {DataValue<*>[] | DataValue<*>} The retrieved data value(s)
+       * @template {keyof DooksaStateRegistry} Name
+       * @param {object} query - Query parameters
+       * @param {Name} query.name - Name of collection
+       * @param {string} [query.id] - Document ID within collection
+       * @param {string} [query.prefixId] - Prefix for ID lookup
+       * @param {string} [query.suffixId] - Suffix for ID lookup
+       * @param {GetDataOption} [query.options] - Query options
+       * @returns {query['id'] extends string ? DataValue<DooksaStateRegistry[Name]['item']> : (DooksaStateRegistry[Name]['type'] extends 'collection' ? DataValue<DataValue<DooksaStateRegistry[Name]['item']>[]> & { isCollection: true } : DataValue<DooksaStateRegistry[Name]['item']>)}
        * @example
        * getValue({ name: 'users', id: '123' })
        * @example
@@ -2938,7 +2923,8 @@ export const state = createPlugin('state', {
             const result = createDataValue({
               collection: name,
               id,
-              value
+              value,
+              isCollection: true
             })
 
             for (const [id, entry] of Object.entries(collection)) {
