@@ -1,0 +1,14 @@
+{
+  "name": "@dooksa/types",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Global type definitions for Dooksa",
+  "author": "Thomas David <tom@mightysmile.com>",
+  "repository": "git@github.com:dooksajs/dooksa.git",
+  "license": "AGPL-3.0-or-later",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js",
+    "./state-registry": "./src/state-registry.js"
+  }
+}
