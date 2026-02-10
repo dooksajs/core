@@ -6,7 +6,11 @@ describe('createDataValue', function () {
   describe('Basic functionality', function () {
     it('should create DataValue with collection only', function () {
       const result = createDataValue({ collection: 'users' })
-      deepStrictEqual(result, { collection: 'users' })
+      deepStrictEqual(result, {
+        collection: 'users',
+        isEmpty: true,
+        isExpandEmpty: true
+      })
     })
 
     it('should create DataValue with collection and id', function () {
@@ -16,7 +20,9 @@ describe('createDataValue', function () {
       })
       deepStrictEqual(result, {
         collection: 'users',
-        id: 'user123'
+        id: 'user123',
+        isEmpty: true,
+        isExpandEmpty: true
       })
     })
 
@@ -32,6 +38,8 @@ describe('createDataValue', function () {
       deepStrictEqual(result, {
         collection: 'users',
         id: 'user123',
+        isEmpty: true,
+        isExpandEmpty: true,
         item: {
           name: 'John',
           age: 30
@@ -41,12 +49,20 @@ describe('createDataValue', function () {
 
     it('should handle empty collection parameter', function () {
       const result = createDataValue()
-      deepStrictEqual(result, { collection: '' })
+      deepStrictEqual(result, {
+        collection: '',
+        isEmpty: true,
+        isExpandEmpty: true
+      })
     })
 
     it('should handle collection parameter with empty string', function () {
       const result = createDataValue({ collection: '' })
-      deepStrictEqual(result, { collection: '' })
+      deepStrictEqual(result, {
+        collection: '',
+        isEmpty: true,
+        isExpandEmpty: true
+      })
     })
   })
 
@@ -72,6 +88,8 @@ describe('createDataValue', function () {
       deepStrictEqual(result, {
         collection: 'users',
         id: 'user123',
+        isEmpty: false,
+        isExpandEmpty: true,
         item: {
           name: 'John',
           age: 30
@@ -103,6 +121,8 @@ describe('createDataValue', function () {
 
       deepStrictEqual(result, {
         collection: 'users',
+        isEmpty: false,
+        isExpandEmpty: true,
         item: {
           name: 'Jane',
           age: 25
@@ -146,6 +166,8 @@ describe('createDataValue', function () {
       deepStrictEqual(result, {
         collection: 'users',
         id: 'user456',
+        isEmpty: false,
+        isExpandEmpty: true,
         item: {
           name: 'Jane',
           age: 25
@@ -184,6 +206,8 @@ describe('createDataValue', function () {
       // Should treat as raw value since _item is null
       deepStrictEqual(result, {
         collection: 'users',
+        isEmpty: true,
+        isExpandEmpty: true,
         item: dataTarget
       })
     })
@@ -205,6 +229,8 @@ describe('createDataValue', function () {
       // Should treat as raw value since _item is undefined
       deepStrictEqual(result, {
         collection: 'users',
+        isEmpty: true,
+        isExpandEmpty: true,
         item: dataTarget
       })
     })
@@ -225,6 +251,8 @@ describe('createDataValue', function () {
 
       deepStrictEqual(result, {
         collection: 'users',
+        isEmpty: false,
+        isExpandEmpty: true,
         item: {
           name: 'John',
           age: 30
@@ -251,6 +279,8 @@ describe('createDataValue', function () {
 
       deepStrictEqual(result, {
         collection: 'users',
+        isEmpty: false,
+        isExpandEmpty: true,
         item: {
           name: 'John',
           age: 30
@@ -272,6 +302,8 @@ describe('createDataValue', function () {
 
       deepStrictEqual(result, {
         collection: 'messages',
+        isEmpty: true,
+        isExpandEmpty: true,
         item: 'Hello World'
       })
     })
@@ -284,6 +316,8 @@ describe('createDataValue', function () {
 
       deepStrictEqual(result, {
         collection: 'counters',
+        isEmpty: true,
+        isExpandEmpty: true,
         item: 42
       })
     })
@@ -296,6 +330,8 @@ describe('createDataValue', function () {
 
       deepStrictEqual(result, {
         collection: 'flags',
+        isEmpty: true,
+        isExpandEmpty: true,
         item: true
       })
     })
@@ -308,6 +344,8 @@ describe('createDataValue', function () {
 
       deepStrictEqual(result, {
         collection: 'lists',
+        isEmpty: true,
+        isExpandEmpty: true,
         item: ['a', 'b', 'c']
       })
     })
@@ -324,6 +362,8 @@ describe('createDataValue', function () {
 
       deepStrictEqual(result, {
         collection: 'users',
+        isEmpty: true,
+        isExpandEmpty: true,
         item: {
           name: 'John',
           age: 30,
@@ -339,7 +379,9 @@ describe('createDataValue', function () {
       })
 
       deepStrictEqual(result, {
-        collection: 'items'
+        collection: 'items',
+        isEmpty: true,
+        isExpandEmpty: true
       })
     })
 
@@ -350,7 +392,9 @@ describe('createDataValue', function () {
       })
 
       deepStrictEqual(result, {
-        collection: 'items'
+        collection: 'items',
+        isEmpty: true,
+        isExpandEmpty: true
       })
     })
 
@@ -362,6 +406,8 @@ describe('createDataValue', function () {
 
       deepStrictEqual(result, {
         collection: 'items',
+        isEmpty: true,
+        isExpandEmpty: true,
         item: {}
       })
     })
@@ -374,6 +420,8 @@ describe('createDataValue', function () {
 
       deepStrictEqual(result, {
         collection: 'items',
+        isEmpty: true,
+        isExpandEmpty: true,
         item: []
       })
     })
@@ -397,6 +445,8 @@ describe('createDataValue', function () {
       // Should treat as raw value
       deepStrictEqual(result, {
         collection: 'users',
+        isEmpty: true,
+        isExpandEmpty: true,
         item: fakeTarget
       })
     })
@@ -418,6 +468,8 @@ describe('createDataValue', function () {
 
       deepStrictEqual(result, {
         collection: 'users',
+        isEmpty: false,
+        isExpandEmpty: true,
         item: { name: 'John' },
         metadata: {
           createdAt: 1234567890,
@@ -436,6 +488,8 @@ describe('createDataValue', function () {
       // Empty string should not be added as id
       deepStrictEqual(result, {
         collection: 'users',
+        isEmpty: true,
+        isExpandEmpty: true,
         item: { name: 'John' }
       })
     })
@@ -451,6 +505,8 @@ describe('createDataValue', function () {
       // Non-string id should not be added
       deepStrictEqual(result, {
         collection: 'users',
+        isEmpty: true,
+        isExpandEmpty: true,
         item: { name: 'John' }
       })
     })
@@ -502,6 +558,8 @@ describe('createDataValue', function () {
       deepStrictEqual(result, {
         collection: 'users',
         id: 'user456',
+        isEmpty: false,
+        isExpandEmpty: true,
         item: {
           user: {
             name: 'John',
@@ -551,6 +609,8 @@ describe('createDataValue', function () {
       deepStrictEqual(result, {
         collection: 'users',
         id: 'user123',
+        isEmpty: true,
+        isExpandEmpty: true,
         item: { name: 'John' }
       })
     })
@@ -563,6 +623,8 @@ describe('createDataValue', function () {
 
       deepStrictEqual(result, {
         collection: 'users',
+        isEmpty: true,
+        isExpandEmpty: true,
         item: { name: 'John' }
       })
     })
@@ -575,7 +637,9 @@ describe('createDataValue', function () {
 
       deepStrictEqual(result, {
         collection: 'users',
-        id: 'user123'
+        id: 'user123',
+        isEmpty: true,
+        isExpandEmpty: true
       })
     })
 
@@ -585,7 +649,9 @@ describe('createDataValue', function () {
       })
 
       deepStrictEqual(result, {
-        collection: 'users'
+        collection: 'users',
+        isEmpty: true,
+        isExpandEmpty: true
       })
     })
 
@@ -593,7 +659,9 @@ describe('createDataValue', function () {
       const result = createDataValue({})
 
       deepStrictEqual(result, {
-        collection: ''
+        collection: '',
+        isEmpty: true,
+        isExpandEmpty: true
       })
     })
 
@@ -601,7 +669,9 @@ describe('createDataValue', function () {
       const result = createDataValue()
 
       deepStrictEqual(result, {
-        collection: ''
+        collection: '',
+        isEmpty: true,
+        isExpandEmpty: true
       })
     })
   })
