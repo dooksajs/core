@@ -58,6 +58,9 @@
  * @import {TextOpacityMixin} from './styles/text-opacity.js'
  * @import {FloatMixin} from './styles/float.js'
  * @import {SizingMixin} from './styles/sizing.js'
+ * @import {TableHeaderMixin} from './table/table-header.js'
+ * @import {TableCellMixin} from './table/table-cell.js'
+ * @import {TableColMixin} from './table/table-col.js'
  */
 
 /**
@@ -127,4 +130,7 @@
  * @typedef {TranslateMixin} TranslateMixin
  * @typedef {FloatMixin} FloatMixin
  * @typedef {SizingMixin} SizingMixin
+ * @typedef {TableHeaderMixin} TableHeaderMixin
+ * @typedef {TableCellMixin} TableCellMixin
+ * @typedef {TableColMixin} TableColMixin
  */
