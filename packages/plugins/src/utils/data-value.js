@@ -1,5 +1,5 @@
 /**
- * @import {DataValue, DataTarget, DataMetadata} from '../../../types.js'
+ * @import {DataValue, DataTarget, DataMetadata} from '@dooksa/types'
  */
 
 /**
@@ -9,17 +9,20 @@
  * @param {string} [param.collection=''] - The collection name for the data
  * @param {string} [param.id] - The unique identifier for the data
  * @param {Data|DataTarget} [param.value] - The data value, either raw data or a DataTarget object containing _item, _metadata, and optionally _previous
- * @returns {DataValue} A DataValue object containing the collection, id (if provided), item, and optionally metadata and previous values
+ * @param {boolean} [param.isCollection] - Indicate if the data is a collection type
+ * @returns {DataValue<*>} A DataValue object containing the collection, id (if provided), item, and optionally metadata and previous values
  */
 function createDataValue ({
   collection = '',
   id,
-  value
+  value,
+  isCollection = false
 } = {}) {
   const result = {
     collection,
     isEmpty: true,
-    isExpandEmpty: true
+    isExpandEmpty: true,
+    isCollection
   }
 
   if (typeof id === 'string' && id !== '') {
