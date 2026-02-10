@@ -127,6 +127,7 @@ describe('State Plugin - getValue Action', () => {
 
       ok(Array.isArray(result.item), 'Result should be an array')
       strictEqual(result.item.length, 2)
+      strictEqual(result.isCollection, true)
     })
 
     it('should return empty result when ID not found', async (t) => {
@@ -1408,6 +1409,7 @@ describe('State Plugin - deleteValue Action', () => {
 
       strictEqual(eventFired, true)
       ok(eventValue, 'Event should have value')
+      // @ts-ignore
       strictEqual(eventValue.id, 'item-1')
     })
 
