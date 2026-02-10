@@ -237,6 +237,7 @@ function initialize (appPlugins, appComponents) {
 
     // setup view components
     options.component = {
+      ...options.component,
       components: appComponents.items
     }
 
