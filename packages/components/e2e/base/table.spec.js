@@ -55,8 +55,8 @@ tableComponents.forEach(({ name, tag }) => {
       'table-fake-caption',
       'td-headers-attr',
       'th-has-data-cells',
-      'aria-required-parent', // for elements missing parent
-      'aria-required-children' // for elements missing children
+      'aria-required-parent',
+      'aria-required-children'
     )
 
     await page.goto(`/_/component/${name}`)
