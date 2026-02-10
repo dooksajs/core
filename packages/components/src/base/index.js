@@ -30,9 +30,27 @@ import { createSmall, small } from './content/small.js'
 import { createSpan, span } from './generic/span.js'
 import { createSummary, summary } from './interactive/summary.js'
 import { createText, text } from './content/text.js'
+import { createCaption, caption } from './table/caption.js'
+import { createCol, col } from './table/col.js'
+import { createColgroup, colgroup } from './table/colgroup.js'
+import { createTable, table } from './table/table.js'
+import { createTbody, tbody } from './table/tbody.js'
+import { createTd, td } from './table/td.js'
+import { createTfoot, tfoot } from './table/tfoot.js'
+import { createTh, th } from './table/th.js'
+import { createThead, thead } from './table/thead.js'
+
 export * from './types.js'
 
 export {
+  createCol,
+  createColgroup,
+  createTable,
+  createTbody,
+  createTd,
+  createTfoot,
+  createTh,
+  createThead,
   createAnchor,
   createButton,
   createCode,
@@ -64,10 +82,19 @@ export {
   createSmall,
   createSpan,
   createSummary,
-  createText
+  createText,
+  createCaption
 }
 
 export default [
+  col,
+  colgroup,
+  table,
+  tbody,
+  tfoot,
+  th,
+  thead,
+  caption,
   anchor,
   button,
   code,
