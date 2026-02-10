@@ -13,10 +13,14 @@ import {
   error
 } from '@dooksa/plugins/core'
 import {
+  form,
+  editor,
   component,
-  icon,
   page,
-  form
+  token,
+  query,
+  route,
+  icon
 } from '@dooksa/plugins/client'
 import {
   server,
@@ -46,10 +50,6 @@ const defaultServerPlugins = [
 ]
 
 const defaultClientPlugins = [
-  component,
-  icon,
-  page,
-  form,
   state,
   api,
   event,
@@ -60,7 +60,15 @@ const defaultClientPlugins = [
   regex,
   action,
   list,
-  error
+  error,
+  form,
+  editor,
+  component,
+  page,
+  token,
+  query,
+  route,
+  icon
 ]
 
 /**

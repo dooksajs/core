@@ -1,8 +1,12 @@
 import {
+  form,
+  editor,
   component,
-  icon,
   page,
-  form
+  token,
+  query,
+  route,
+  icon
 } from '@dooksa/plugins/client'
 import {
   action,
@@ -394,6 +398,10 @@ export default function createAppClient ({
   appPlugins.use(icon)
   appPlugins.use(page)
   appPlugins.use(form)
+  appPlugins.use(token)
+  appPlugins.use(query)
+  appPlugins.use(route)
+  appPlugins.use(editor)
 
   return {
     usePlugin: appPlugins.use,
