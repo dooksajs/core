@@ -53,17 +53,11 @@ import { createDataValue } from '../utils/data-value.js'
 
 /**
  * Query parameters for getValue when an ID is provided.
- *
- * @typedef {Object} GetValueQueryWithId
- * @property {string} name - Name of the collection
- * @property {string} id - Document ID (required in this variant)
- * @property {string} [prefixId] - Whether to use prefix for ID
- * @property {string} [suffixId] - Whether to use suffix for ID
- * @property {Object} [options] - Additional options
- * @property {boolean} [options.expand] - Whether to expand related data
- * @property {boolean} [options.expandClone] - Whether to clone expanded data
- * @property {boolean} [options.clone] - Whether to clone the result
- * @property {string} [options.position] - Position path to extract specific value
+ * @typedef {Object} GetValueOptions
+ * @property {boolean} [expand] - Whether to expand related data
+ * @property {boolean} [expandClone] - Whether to clone expanded data
+ * @property {boolean} [clone] - Whether to clone the result
+ * @property {string} [position] - Position path to extract specific value
  */
 
 /**
@@ -71,7 +65,6 @@ import { createDataValue } from '../utils/data-value.js'
  *
  * @typedef {Object} GetValueQueryWithoutId
  * @property {string} name - Name of the collection
- * @property {undefined} [id] - Must be omitted or undefined
  * @property {string} [prefixId] - Whether to use prefix for ID
  * @property {string} [suffixId] - Whether to use suffix for ID
  * @property {Object} [options] - Additional options
