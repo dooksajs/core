@@ -8,7 +8,6 @@ import { createDataValue } from '../utils/data-value.js'
  * @import {
  *  SetDataOptions,
  *  DooksaStateRegistry,
- *  GetDataQuery,
  *  GetDataOption,
  *  DataWhere,
  *  DataDeleteValueResult,
@@ -126,6 +125,8 @@ function arrayIsUnique (name, source) {
  * newDataInstance('object') // Returns {}
  * newDataInstance('string') // Returns ''
  */
+const regexCache = new WeakMap()
+
 function newDataInstance (type) {
   switch (type) {
     case 'array':
@@ -1032,7 +1033,12 @@ export const state = createPlugin('state', {
           // check patterned keys
           for (let i = 0; i < patternProperties.length; i++) {
             const property = patternProperties[i]
-            const regex = new RegExp(property.name)
+            let regex = regexCache.get(property)
+
+            if (!regex) {
+              regex = new RegExp(property.name)
+              regexCache.set(property, regex)
+            }
 
             for (let i = 0; i < additionalKeys.length; i++) {
               const key = additionalKeys[i]
@@ -1148,7 +1154,12 @@ export const state = createPlugin('state', {
 
       for (let i = 0; i < patternProperties.length; i++) {
         const property = patternProperties[i]
-        const patternedProperty = new RegExp(property.name)
+        let patternedProperty = regexCache.get(property)
+
+        if (!patternedProperty) {
+          patternedProperty = new RegExp(property.name)
+          regexCache.set(property, patternedProperty)
+        }
 
         for (const name in source) {
           if (Object.prototype.hasOwnProperty.call(source, name)) {
