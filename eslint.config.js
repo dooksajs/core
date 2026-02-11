@@ -7,6 +7,11 @@ export default [
       '@stylistic/js': stylisticJs,
       jsdoc
     },
+    settings: {
+    jsdoc: {
+      exemptDestructuredRootsFromChecks: true
+      }
+    },
     rules: {
       // JSDoc Rules
       'jsdoc/require-jsdoc': [
