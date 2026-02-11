@@ -51,7 +51,7 @@ export const listGroupItemAction = createComponent({
  */
 
 /**
- * @param {ComponentExtend & ExtendListGroupItemAction} options
+ * @param {ComponentExtend & ExtendListGroupItemAction} options -
  */
 export const createListGroupItemAction = function (options) {
   return extendComponent(listGroupItemAction, options)

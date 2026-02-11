@@ -46,7 +46,7 @@ export const listGroupItemActionLink = createComponent({
  */
 
 /**
- * @param {ComponentExtend & ExtendListGroupItemAction} options
+ * @param {ComponentExtend & ExtendListGroupItemAction} options -
  */
 export const createListGroupItemActionLink = function (options) {
   return extendComponent(listGroupItemActionLink, options)

@@ -27,7 +27,7 @@ export const cardBody = createComponent({
  */
 
 /**
- * @param {ExtendCarBody} options
+ * @param {ExtendCarBody} options -
  */
 export const createCardBody = function (options) {
   return extendComponent(cardBody, options)

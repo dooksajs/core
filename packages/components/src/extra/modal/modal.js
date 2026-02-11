@@ -100,7 +100,7 @@ export const modal = createComponent({
  */
 
 /**
- * @param {ComponentExtend & ExtendModalOptions} options
+ * @param {ComponentExtend & ExtendModalOptions} options -
  */
 export const createModal = function (options) {
   return extendComponent(modal, options)

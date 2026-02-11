@@ -16,7 +16,7 @@ export const accordionItem = createDetails({
  */
 
 /**
- * @param {ComponentExtendDetails} options
+ * @param {ComponentExtendDetails} options -
  */
 export const createAccordionItem = function (options) {
   return extendComponent(accordionItem, options)

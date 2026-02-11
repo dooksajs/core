@@ -61,7 +61,7 @@ export const navLinkAnchor = createComponent({
  */
 
 /**
- * @param {ComponentExtend & ComponentExtendNavLinkOption} options
+ * @param {ComponentExtend & ComponentExtendNavLinkOption} options -
  */
 export const createNavLinkAnchor = function (options) {
   return extendComponent(navLinkAnchor, options)

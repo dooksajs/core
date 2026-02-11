@@ -23,7 +23,7 @@ export const tabContent = createComponent({
  */
 
 /**
- * @param {ComponentExtend & ComponentExtendTabContentOption} options
+ * @param {ComponentExtend & ComponentExtendTabContentOption} options -
  */
 export const createTabContent = function (options) {
   return extendComponent(tabContent, options)

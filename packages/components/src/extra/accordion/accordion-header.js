@@ -23,7 +23,7 @@ export const accordionHeader = createSummary({
  */
 
 /**
- * @param {ComponentExtendSummary} options
+ * @param {ComponentExtendSummary} options -
  */
 export const createAccordionHeader = function (options) {
   return extendComponent(accordionHeader, options)

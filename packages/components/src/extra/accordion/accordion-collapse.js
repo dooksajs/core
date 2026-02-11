@@ -19,7 +19,7 @@ export const accordionCollapse = createComponent({
  */
 
 /**
- * @param {ComponentExtend} options
+ * @param {ComponentExtend} options -
  */
 export const createAccordionCollapse = function (options) {
   return extendComponent(accordionCollapse, options)

@@ -42,7 +42,7 @@ export const column = createComponent({
       name: 'className',
       /**
        * Columns
-       * @param {Column[]} options
+       * @param {Column[]} options -
        * @returns {string}
        */
       computedValue (options) {
@@ -82,7 +82,7 @@ export const column = createComponent({
  */
 
 /**
- * @param {ExtendColumn} options
+ * @param {ExtendColumn} options -
  */
 export const createColumn = function (options) {
   return extendComponent(column, options)

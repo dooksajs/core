@@ -61,7 +61,7 @@ export const cardImg = createComponent({
  */
 
 /**
- * @param {ComponentExtend & ComponentExtendCardImg} options
+ * @param {ComponentExtend & ComponentExtendCardImg} options -
  */
 export const createCardImg = function (options) {
   return extendComponent(cardImg, options)

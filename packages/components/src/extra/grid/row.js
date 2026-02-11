@@ -53,7 +53,7 @@ export const row = createComponent({
       name: 'className',
       /**
        * Row columns
-       * @param {RowColumn[]} options
+       * @param {RowColumn[]} options -
        * @returns {string}
        */
       computedValue (options) {
@@ -74,7 +74,7 @@ export const row = createComponent({
       name: 'className',
       /**
        * Row gap
-       * @param {RowGap[]} options
+       * @param {RowGap[]} options -
        * @returns {string}
        */
       computedValue (options) {
@@ -114,7 +114,7 @@ export const row = createComponent({
  */
 
 /**
- * @param {ExtendRow} options
+ * @param {ExtendRow} options -
  */
 export const createRow = function (options) {
   return extendComponent(row, options)

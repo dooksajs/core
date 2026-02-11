@@ -25,7 +25,7 @@ export const container = createComponent({
  */
 
 /**
- * @param {ComponentExtend & ComponentExtendContainer} options
+ * @param {ComponentExtend & ComponentExtendContainer} options -
  */
 export const createContainer = function (options) {
   extendComponent(container, options)

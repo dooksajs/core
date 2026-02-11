@@ -72,7 +72,7 @@ export const buttonGroup = createComponent({
  */
 
 /**
- * @param {ComponentExtend & ButtonGroupExtend} options
+ * @param {ComponentExtend & ButtonGroupExtend} options -
  */
 export const createButtonGroup = function (options) {
   return extendComponent(buttonGroup, options)

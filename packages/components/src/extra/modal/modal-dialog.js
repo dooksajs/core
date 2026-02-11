@@ -50,7 +50,7 @@ export const modalDialog = createComponent({
  */
 
 /**
- * @param {ComponentExtend & ExtendModalDialogOptions} options
+ * @param {ComponentExtend & ExtendModalDialogOptions} options -
  */
 export const createModalDialog = function (options) {
   return extendComponent(modalDialog, options)

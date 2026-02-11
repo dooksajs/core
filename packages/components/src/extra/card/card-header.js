@@ -37,7 +37,7 @@ export const cardHeader = createComponent({
  */
 
 /**
- * @param {ExtendCardHeader} options
+ * @param {ExtendCardHeader} options -
  */
 export const createCardHeader = function (options) {
   return extendComponent(cardHeader, options)

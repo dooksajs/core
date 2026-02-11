@@ -24,7 +24,7 @@ export const modalTitle = createComponent({
  */
 
 /**
- * @param {ComponentExtend} options
+ * @param {ComponentExtend} options -
  */
 export const createModalTitle = function (options) {
   return extendComponent(modalTitle, options)

@@ -48,11 +48,11 @@ export const navLinkButton = createComponent({
 
 /**
  * @typedef {Object} ComponentExtendNavLinkOption
- * @property {ComponentExtendNavLink | FlexMixin | AriaCurrentMixin | AriaSelectedMixin} options
+ * @property {ComponentExtendNavLink | FlexMixin | AriaCurrentMixin | AriaSelectedMixin} options -
  */
 
 /**
- * @param {ComponentExtend & ComponentExtendNavLinkOption} options
+ * @param {ComponentExtend & ComponentExtendNavLinkOption} options -
  */
 export const createNavLinkButton = function (options) {
   return extendComponent(navLinkButton, options)

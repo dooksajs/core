@@ -35,7 +35,7 @@ export const modalHeader = createComponent({
  */
 
 /**
- * @param {ComponentExtend & ExtendModalHeader} options
+ * @param {ComponentExtend & ExtendModalHeader} options -
  */
 export const createModalHeader = function (options) {
   return extendComponent(modalHeader, options)

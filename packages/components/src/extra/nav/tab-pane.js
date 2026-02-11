@@ -52,7 +52,7 @@ export const tabPane = createComponent({
  */
 
 /**
- * @param {ComponentExtend & ComponentExtendTabPaneOption} options
+ * @param {ComponentExtend & ComponentExtendTabPaneOption} options -
  */
 export const createTabPane = function (options) {
   return extendComponent(tabPane, options)

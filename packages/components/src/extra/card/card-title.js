@@ -24,7 +24,7 @@ export const cardTitle = createComponent({
  */
 
 /**
- * @param {ComponentExtend} options
+ * @param {ComponentExtend} options -
  */
 export const createCardTitle = function (options) {
   return extendComponent(cardTitle, options)

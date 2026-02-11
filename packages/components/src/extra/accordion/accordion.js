@@ -43,7 +43,7 @@ export const accordion = createComponent({
  */
 
 /**
- * @param {ExtendAccordion} options
+ * @param {ExtendAccordion} options -
  */
 export const createAccordion = function (options) {
   return extendComponent(accordion, options)

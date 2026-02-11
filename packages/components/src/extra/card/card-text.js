@@ -24,7 +24,7 @@ export const cardText = createComponent({
  */
 
 /**
- * @param {ComponentExtend} options
+ * @param {ComponentExtend} options -
  */
 export const createCardText = function (options) {
   return extendComponent(cardText, options)
