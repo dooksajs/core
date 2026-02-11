@@ -71,7 +71,7 @@ export const td = createComponent({
  */
 
 /**
- * @param {ExtendTd} options
+ * @param {ExtendTd} options -
  */
 export const createTd = function (options) {
   return extendComponent(td, options)

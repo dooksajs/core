@@ -42,7 +42,7 @@ export const col = createComponent({
  */
 
 /**
- * @param {ExtendCol} options
+ * @param {ExtendCol} options -
  */
 export const createCol = function (options) {
   return extendComponent(col, options)

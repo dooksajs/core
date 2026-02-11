@@ -61,9 +61,19 @@
  * @import {TableHeaderMixin} from './table/table-header.js'
  * @import {TableCellMixin} from './table/table-cell.js'
  * @import {TableColMixin} from './table/table-col.js'
+ * @import {DimensionMixin} from './global/dimension.js'
+ * @import {MediaMixin} from './global/media.js'
+ * @import {EventTypeDetailsMixin} from './event-type/event-type-details.js'
+ * @import {EventTypeDialogMixin} from './event-type/event-type-dialog.js'
+ * @import {EventTypeMediaMixin} from './event-type/event-type-media.js'
  */
 
 /**
+ * @typedef {EventTypeMediaMixin} EventTypeMediaMixin
+ * @typedef {EventTypeDialogMixin} EventTypeDialogMixin
+ * @typedef {EventTypeDetailsMixin} EventTypeDetailsMixin
+ * @typedef {MediaMixin} MediaMixin
+ * @typedef {DimensionMixin} DimensionMixin
  * @typedef {TextOpacityMixin} TextOpacityMixin
  * @typedef {TextColorMixin} TextColorMixin
  * @typedef {FocusRingMixin} FocusRingMixin
@@ -134,3 +144,5 @@
  * @typedef {TableCellMixin} TableCellMixin
  * @typedef {TableColMixin} TableColMixin
  */
+
+export {}

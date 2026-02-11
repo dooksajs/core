@@ -49,7 +49,7 @@ export const formCheck = createComponent({
  */
 
 /**
- * @param {ExtendFormCheck} options
+ * @param {ExtendFormCheck} options -
  */
 export const createFormCheck = function (options) {
   return extendComponent(formCheck, options)

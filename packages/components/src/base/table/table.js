@@ -63,7 +63,7 @@ export const table = createComponent({
  */
 
 /**
- * @param {ExtendTable} options
+ * @param {ExtendTable} options -
  */
 export const createTable = function (options) {
   return extendComponent(table, options)

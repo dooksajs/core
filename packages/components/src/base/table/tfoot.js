@@ -55,7 +55,7 @@ export const tfoot = createComponent({
  */
 
 /**
- * @param {ExtendTfoot} options
+ * @param {ExtendTfoot} options -
  */
 export const createTfoot = function (options) {
   return extendComponent(tfoot, options)

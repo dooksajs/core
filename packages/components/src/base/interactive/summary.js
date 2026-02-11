@@ -14,7 +14,7 @@ export const summary = createComponent({
  */
 
 /**
- * @param {ExtendSummary} options
+ * @param {ExtendSummary} options -
  */
 export const createSummary = function (options) {
   return extendComponent(summary, options)

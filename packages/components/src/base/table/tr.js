@@ -59,7 +59,7 @@ export const tr = createComponent({
  */
 
 /**
- * @param {ExtendTr} options
+ * @param {ExtendTr} options -
  */
 export const createTr = function (options) {
   return extendComponent(tr, options)

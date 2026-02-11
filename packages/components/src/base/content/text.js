@@ -26,7 +26,7 @@ export const text = createComponent({
  */
 
 /**
- * @param {ExtendText} options
+ * @param {ExtendText} options -
  */
 export const createText = function (options) {
   return extendComponent(text, options)

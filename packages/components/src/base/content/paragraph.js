@@ -21,7 +21,7 @@ export const paragraph = createComponent({
  */
 
 /**
- * @param {ExtendParagraph} options
+ * @param {ExtendParagraph} options -
  */
 export const createParagraph = function (options) {
   return extendComponent(paragraph, options)

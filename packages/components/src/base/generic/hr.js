@@ -23,7 +23,7 @@ export const hr = createComponent({
  */
 
 /**
- * @param {ExtendHr} options
+ * @param {ExtendHr} options -
  */
 export const createHr = function (options) {
   return extendComponent(hr, options)

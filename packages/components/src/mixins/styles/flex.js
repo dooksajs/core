@@ -183,8 +183,7 @@ export default createMixin({
         name: 'className',
         /**
          * Fill
-         * @param {BreakpointMixin[]} options
-         */
+         * @param {BreakpointMixin[]} options -          */
         infixValues: {
           className: 'flex',
           infixes: [

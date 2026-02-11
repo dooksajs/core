@@ -23,7 +23,7 @@ export const h5 = createComponent({
  */
 
 /**
- * @param {ExtendH5} options
+ * @param {ExtendH5} options -
  */
 export const createH5 = function (options) {
   return extendComponent(h5, options)

@@ -126,7 +126,7 @@ export const form = createComponent({
  */
 
 /**
- * @param {ExtendForm} options
+ * @param {ExtendForm} options -
  */
 export const createForm = function (options) {
   return extendComponent(form, options)

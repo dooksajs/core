@@ -3,7 +3,10 @@ import {
   eventTypeMouseMixin,
   focusRingMixin,
   nameMixin,
-  shadowMixin
+  shadowMixin,
+  eventTypeDetailsMixin,
+  eventTypeElementDragDropMixin,
+  eventTypeTouchMixin
 } from '@dooksa/components/mixins'
 
 export const details = createComponent({
@@ -19,11 +22,19 @@ export const details = createComponent({
     }
   },
   eventTypes: { 'node/toggle': true }
-}, [nameMixin, shadowMixin, focusRingMixin, eventTypeMouseMixin])
+}, [
+  nameMixin,
+  shadowMixin,
+  focusRingMixin,
+  eventTypeMouseMixin,
+  eventTypeDetailsMixin,
+  eventTypeElementDragDropMixin,
+  eventTypeTouchMixin
+])
 
 /**
  * @import {ComponentExtend, ComponentEventOn} from '@dooksa/create-component'
- * @import {NameMixin, ShadowMixin, FocusRingMixin, EventTypeMouseMixin} from '#mixins'
+ * @import {NameMixin, ShadowMixin, FocusRingMixin, EventTypeMouseMixin, EventTypeDetailsMixin, EventTypeElementDragDropMixin, EventTypeTouchMixin} from '#mixins'
  */
 
 /**
@@ -38,7 +49,7 @@ export const details = createComponent({
 
 /**
  * @typedef {Object} ExtendDetailsEvent
- * @property {'node/toggle' | EventTypeMouseMixin | ComponentEventOn} on
+ * @property {EventTypeDetailsMixin | EventTypeMouseMixin | EventTypeElementDragDropMixin | EventTypeTouchMixin | ComponentEventOn} on
  * @property {string} actionId
  */
 
@@ -52,7 +63,7 @@ export const details = createComponent({
  */
 
 /**
- * @param {ExtendDetails} options
+ * @param {ExtendDetails} options -
  */
 export const createDetails = function (options) {
   return extendComponent(details, options)

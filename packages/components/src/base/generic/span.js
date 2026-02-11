@@ -38,7 +38,7 @@ const span = createComponent({
  */
 
 /**
- * @param {ExtendSpan} options
+ * @param {ExtendSpan} options -
  */
 function createSpan (options) {
   return extendComponent(span, options)

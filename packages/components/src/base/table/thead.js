@@ -55,7 +55,7 @@ export const thead = createComponent({
  */
 
 /**
- * @param {ExtendThead} options
+ * @param {ExtendThead} options -
  */
 export const createThead = function (options) {
   return extendComponent(thead, options)

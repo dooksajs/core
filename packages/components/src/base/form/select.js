@@ -79,7 +79,7 @@ export const select = createComponent({
  */
 
 /**
- * @param {ExtendSelect} options
+ * @param {ExtendSelect} options -
  */
 export const createSelect = function (options) {
   return extendComponent(select, options)

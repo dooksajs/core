@@ -42,7 +42,7 @@ export const colgroup = createComponent({
  */
 
 /**
- * @param {ExtendColgroup} options
+ * @param {ExtendColgroup} options -
  */
 export const createColgroup = function (options) {
   return extendComponent(colgroup, options)

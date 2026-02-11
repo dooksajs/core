@@ -69,7 +69,7 @@ export const inputText = createComponent({
  */
 
 /**
- * @param {ExtendInputText} options
+ * @param {ExtendInputText} options -
  */
 export const createInputText = function (options) {
   return extendComponent(inputText, options)

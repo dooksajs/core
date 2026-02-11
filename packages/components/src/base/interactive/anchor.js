@@ -51,7 +51,7 @@ export const anchor = createComponent({
  */
 
 /**
- * @param {ExtendAnchor} options
+ * @param {ExtendAnchor} options -
  */
 export const createAnchor = function (options) {
   return extendComponent(anchor, options)

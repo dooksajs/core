@@ -39,7 +39,7 @@ export const caption = createComponent({
  */
 
 /**
- * @param {ExtendCaption} options
+ * @param {ExtendCaption} options -
  */
 export const createCaption = function (options) {
   return extendComponent(caption, options)

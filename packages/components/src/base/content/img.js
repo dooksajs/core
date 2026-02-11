@@ -1,5 +1,9 @@
 import { createComponent, extendComponent } from '@dooksa/create-component'
-import { spacingMixin } from '@dooksa/components/mixins'
+import {
+  spacingMixin,
+  eventTypeElementDragDropMixin,
+  eventTypeTouchMixin
+} from '@dooksa/components/mixins'
 
 export const img = createComponent({
   id: 'img',
@@ -26,11 +30,11 @@ export const img = createComponent({
       name: 'alt'
     }
   }
-}, [spacingMixin])
+}, [spacingMixin, eventTypeElementDragDropMixin, eventTypeTouchMixin])
 
 /**
  * @import {ComponentExtend} from '@dooksa/create-component'
- * @import {SpacingMixin} from '@dooksa/components/mixins'
+ * @import {SpacingMixin, EventTypeElementDragDropMixin, EventTypeTouchMixin} from '@dooksa/components/mixins'
  */
 
 /**
@@ -43,7 +47,7 @@ export const img = createComponent({
  */
 
 /**
- * @param {ExtendImg} options
+ * @param {ExtendImg} options -
  */
 export const createImg = function (options) {
   return extendComponent(img, options)

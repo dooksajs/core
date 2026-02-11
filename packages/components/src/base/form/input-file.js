@@ -72,7 +72,7 @@ export const inputFile = createComponent({
  */
 
 /**
- * @param {ExtendInputFile} options
+ * @param {ExtendInputFile} options -
  */
 export const createInputFile = function (options) {
   return extendComponent(inputFile, options)

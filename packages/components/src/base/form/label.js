@@ -91,7 +91,7 @@ export const label = createComponent({
  */
 
 /**
- * @param {ExtendLabel} options
+ * @param {ExtendLabel} options -
  */
 export const createLabel = function (options) {
   return extendComponent(label, options)

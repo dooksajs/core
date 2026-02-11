@@ -46,7 +46,7 @@ export const option = createComponent({
  */
 
 /**
- * @param {ExtendOption} options
+ * @param {ExtendOption} options -
  */
 export const createOption = function (options) {
   return extendComponent(option, options)

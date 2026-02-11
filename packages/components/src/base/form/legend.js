@@ -39,7 +39,7 @@ export const legend = createComponent({
  */
 
 /**
- * @param {ExtendLegend} options
+ * @param {ExtendLegend} options -
  */
 export const createLegend = function (options) {
   return extendComponent(legend, options)

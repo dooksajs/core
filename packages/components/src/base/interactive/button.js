@@ -63,7 +63,7 @@ export const button = createComponent({
  */
 
 /**
- * @param {ExtendButton} options
+ * @param {ExtendButton} options -
  */
 export const createButton = function (options) {
   return extendComponent(button, options)

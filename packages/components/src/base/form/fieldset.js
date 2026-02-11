@@ -54,7 +54,7 @@ export const fieldset = createComponent({
  */
 
 /**
- * @param {ExtendFieldset} options
+ * @param {ExtendFieldset} options -
  */
 export const createFieldset = function (options) {
   return extendComponent(fieldset, options)

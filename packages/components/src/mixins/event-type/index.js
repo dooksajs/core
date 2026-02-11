@@ -13,6 +13,9 @@ import eventTypeScrollMixin from './event-type-scroll.js'
 import eventTypeSelectMixin from './event-type-select.js'
 import eventTypeTouchMixin from './event-type-touch.js'
 import eventTypeTransitionMixin from './event-type-transition.js'
+import eventTypeMediaMixin from './event-type-media.js'
+import eventTypeDialogMixin from './event-type-dialog.js'
+import eventTypeDetailsMixin from './event-type-details.js'
 
 export {
   eventTypeAnimationMixin,
@@ -29,5 +32,8 @@ export {
   eventTypeScrollMixin,
   eventTypeSelectMixin,
   eventTypeTouchMixin,
-  eventTypeTransitionMixin
+  eventTypeTransitionMixin,
+  eventTypeMediaMixin,
+  eventTypeDialogMixin,
+  eventTypeDetailsMixin
 }

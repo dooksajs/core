@@ -14,7 +14,10 @@ import {
   shadowMixin,
   spacingMixin,
   translateMixin,
-  zIndexMixin
+  zIndexMixin,
+  eventTypeMouseMixin,
+  eventTypeElementDragDropMixin,
+  eventTypeTouchMixin
 } from '@dooksa/components/mixins'
 
 export const div = createComponent({
@@ -35,7 +38,10 @@ export const div = createComponent({
   shadowMixin,
   spacingMixin,
   translateMixin,
-  zIndexMixin
+  zIndexMixin,
+  eventTypeMouseMixin,
+  eventTypeElementDragDropMixin,
+  eventTypeTouchMixin
 ])
 
 /**
@@ -54,9 +60,12 @@ export const div = createComponent({
  *   FontMixin,
  *   BorderMixin,
  *   GapMixin,
- *   ContainerMixin
+ *   ContainerMixin,
+ *   EventTypeMouseMixin,
+ *   EventTypeElementDragDropMixin,
+ *   EventTypeTouchMixin
  * } from '@dooksa/components/mixins'
- * @import {ComponentExtend} from '@dooksa/create-component'
+ * @import {ComponentExtend, ComponentEventOn} from '@dooksa/create-component'
  */
 
 /**
@@ -80,11 +89,25 @@ export const div = createComponent({
  */
 
 /**
- * @typedef {ComponentExtend & ExtendDivOptions} ExtendDiv
+ * @typedef {Object} ExtendDivEvent
+ * @property {EventTypeMouseMixin | EventTypeElementDragDropMixin | EventTypeTouchMixin | ComponentEventOn} on
+ * @property {string} actionId
  */
 
 /**
- * @param {ExtendDiv} options
+ * @typedef {Object} ExtendDivEventMixin
+ * @property {ExtendDivEvent[]} [events]
+ */
+
+/**
+ * @typedef {ComponentExtend
+ *   & ExtendDivOptions
+ *   | ExtendDivEventMixin
+ * } ExtendDiv
+ */
+
+/**
+ * @param {ExtendDiv} options -
  */
 export const createDiv = function (options) {
   return extendComponent(div, options)

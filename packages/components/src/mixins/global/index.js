@@ -3,11 +3,15 @@ import contentableMixin from './contentable.js'
 import nameMixin from './name.js'
 import tabindexMixin from './tabindex.js'
 import idMixin from './id.js'
+import dimensionMixin from './dimension.js'
+import mediaMixin from './media.js'
 
 export {
   idMixin,
   contentableMixin,
   tabindexMixin,
   translateMixin,
-  nameMixin
+  nameMixin,
+  dimensionMixin,
+  mediaMixin
 }

@@ -30,7 +30,7 @@ export const inputHidden = createComponent({
  */
 
 /**
- * @param {ExtendInputHidden} options
+ * @param {ExtendInputHidden} options -
  */
 export const createInputHidden = function (options) {
   return extendComponent(inputHidden, options)

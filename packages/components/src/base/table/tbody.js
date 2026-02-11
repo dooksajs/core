@@ -55,7 +55,7 @@ export const tbody = createComponent({
  */
 
 /**
- * @param {ExtendTbody} options
+ * @param {ExtendTbody} options -
  */
 export const createTbody = function (options) {
   return extendComponent(tbody, options)
