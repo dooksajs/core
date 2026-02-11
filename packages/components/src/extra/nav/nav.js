@@ -2,7 +2,7 @@ import { createComponent, extendComponent } from '@dooksa/create-component'
 import { flexMixin, roleTablistMixin } from '@dooksa/components/mixins'
 
 export const nav = createComponent({
-  id: 'ul',
+  id: 'tab',
   tag: 'nav',
   properties: [
     {
