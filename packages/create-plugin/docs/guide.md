@@ -213,12 +213,52 @@ const plugin = createPlugin('user', {
 })
 ```
 
-### State Management (Global State Plugin)
+### Composing State Schemas
 
-The `state` property is used for metadata about a global state plugin, not for internal state management:
+You can reuse state schemas from other plugins using the `mapState` utility. This allows you to compose complex schemas dynamically without duplicating code.
 
 ```javascript
-// This is for a global state plugin that manages state across the application
+import { createPlugin, mapState } from '@dooksa/create-plugin'
+
+// A base plugin with some state
+const basePlugin = createPlugin('base', {
+  state: {
+    schema: {
+      id: { type: 'string' },
+      timestamp: { type: 'number' }
+    }
+  }
+})
+
+// A plugin that extends the base state
+const extendedPlugin = createPlugin('extended', {
+  state: {
+    schema: {
+      name: { type: 'string' },
+      // Spread all properties from basePlugin
+      ...mapState(basePlugin).schema
+    }
+  }
+})
+
+// A plugin that picks specific properties
+const pickyPlugin = createPlugin('picky', {
+  state: {
+    schema: {
+      title: { type: 'string' },
+      // Only take 'id' from basePlugin
+      ...mapState(basePlugin, ['id']).schema
+    }
+  }
+})
+```
+
+### State Management (Global State Plugin)
+
+The `state` property is used for defining schemas for the global state management system. Unlike `data`, state properties are **not** added to the plugin context (`this`) and must be accessed via global state actions.
+
+```javascript
+// This defines the schema for global state
 const statePlugin = createPlugin('globalState', {
   metadata: { title: 'Global State' },
   state: {
@@ -230,7 +270,11 @@ const statePlugin = createPlugin('globalState', {
 })
 ```
 
-**Important:** For internal plugin state, use the `data` property instead.
+**Key Differences:**
+- **`data`**: Internal plugin state, accessible via `this.propertyName`
+- **`state`**: Global application state, accessed via `stateGetValue` / `stateSetValue`
+
+**Important:** For internal plugin state that doesn't need to be shared globally or validated, use the `data` property.
 
 ## Methods
 
@@ -496,25 +540,26 @@ The visual programming plugin (action.js) uses action metadata to:
 
 ### Action Context
 
-Actions receive a special context object as the second parameter:
+Actions are executed with the plugin context bound to `this`, just like methods. The first argument contains the action parameters.
 
 ```javascript
 actions: {
   save: {
     metadata: { title: 'Save' },
-    method(params, context) {
-      // context is frozen and contains:
-      // - context.context: Plugin context (this)
-      // - context.payload: Action parameters
-      // - context.blockValues: Block-specific values
+    method(params) {
+      // 'this' refers to the plugin context
+      console.log(this.name)
       
-      console.log(context.context)  // Plugin context
-      console.log(context.payload)  // Action parameters
+      // 'params' contains the action arguments
+      console.log(params)
+      
       return 'saved'
     }
   }
 }
 ```
+
+**Note:** The second argument to action methods is a reserved system object. Use `this` to access the plugin context and the first argument for parameters.
 
 ### When to Use Actions vs Methods
 
@@ -580,7 +625,7 @@ actions: {
 
 ### Defining Dependencies
 
-Plugins can depend on other plugins:
+Plugins can depend on other plugins. The `dependencies` array is primarily used to ensure that the `setup` functions of dependent plugins are executed **before** your plugin's `setup`.
 
 ```javascript
 const storagePlugin = createPlugin('storage', {
@@ -589,56 +634,63 @@ const storagePlugin = createPlugin('storage', {
     save(key, value) {
       // Save to storage
     }
+  },
+  setup() {
+    // Connect to database...
+    return 'connected'
   }
 })
 
 const userPlugin = createPlugin('user', {
   metadata: { title: 'User Plugin' },
+  // Ensures storagePlugin.setup() runs before userPlugin.setup()
   dependencies: [storagePlugin],
   actions: {
     saveProfile: {
       metadata: { title: 'Save Profile' },
       method({ profile }) {
-        // Can use storage plugin methods
-        return this.storageSave('profile', profile)
+        // Dependent plugins are NOT injected into 'this'.
+        // Call their methods directly on the imported instance.
+        return storagePlugin.storageSave('profile', profile)
       }
     }
   }
 })
 ```
 
-### Dependency Injection
+### Using Other Plugins
 
-Dependencies are automatically injected into the plugin context:
+There is no automatic "Dependency Injection" in `createPlugin`. The `dependencies` array is strictly used to define **initialization order** (ensuring the dependent plugin's `setup()` function runs before yours).
+
+To use methods from another plugin, you simply import the plugin instance and call its methods directly. Since `createPlugin` returns a stable object with exported methods, you do not need them to be injected into `this`.
 
 ```javascript
-const dep1 = createPlugin('dep1', {
-  metadata: { title: 'Dependency 1' },
+import { createPlugin } from '@dooksa/create-plugin'
+
+// Define a dependency
+const mathPlugin = createPlugin('math', {
   methods: {
-    getValue() { return 42 }
+    add(a, b) { return a + b }
   }
 })
 
-const dep2 = createPlugin('dep2', {
-  metadata: { title: 'Dependency 2' },
-  methods: {
-    getValue() { return 100 }
-  }
-})
-
-const plugin = createPlugin('main', {
-  metadata: { title: 'Main Plugin' },
-  dependencies: [dep1, dep2],
+// Define a dependent plugin
+const calculatorPlugin = createPlugin('calculator', {
+  // Ensures mathPlugin.setup() runs before calculatorPlugin.setup()
+  dependencies: [mathPlugin],
+  
   methods: {
     calculate() {
-      // Dependencies are accessible via their names
-      return this.dep1GetValue() + this.dep2GetValue()
+      // Call methods directly from the imported instance
+      return mathPlugin.mathAdd(5, 10)
     }
   }
 })
-
-plugin.mainCalculate()  // Returns: 142
 ```
+
+**Key Concept:**
+- **`dependencies: []`**: Controls lifecycle order (e.g., ensuring a Database plugin connects before a User plugin tries to query it).
+- **Direct Access**: Use standard JavaScript imports to access other plugins' functionality.
 
 ## Lifecycle & Setup
 
@@ -673,12 +725,8 @@ The setup function has access to the full plugin context:
 const plugin = createPlugin('user', {
   metadata: { title: 'User Plugin' },
   data: {
-    users: []
-  },
-  state: {
-    schema: {
-      count: { type: 'number' }
-    }
+    users: [],
+    count: 0
   },
   methods: {
     addUser(name) {
@@ -697,6 +745,8 @@ const plugin = createPlugin('user', {
 plugin.setup()  // Returns: "Initialized with 1 user(s)"
 ```
 
+**Note:** State properties defined in `state.schema` are **not** accessible via `this`. Use the `state` plugin's actions (e.g., `stateSetValue`, `stateGetValue`) to interact with global state.
+
 ## Testing & Mocking
 
 ### Observable Instances
@@ -710,10 +760,8 @@ import { test } from 'node:test'
 test('plugin behavior', async (t) => {
   const plugin = createPlugin('counter', {
     metadata: { title: 'Counter' },
-    state: {
-      schema: {
-        count: { type: 'number' }
-      }
+    data: {
+      count: 0
     },
     methods: {
       increment() {
