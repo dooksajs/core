@@ -240,9 +240,7 @@ if (result.isExpandEmpty) {
 **Throws:** `DataValueException` if collection not found
 
 **Related Documentation:**
-- [StateGetValue Guide](stateGetValue-guide.md) - Comprehensive guide with examples
-- [StateGetValue Quick Reference](stateGetValue-quick-reference.md) - One-page cheat sheet
-- [State Relationships Guide](state-relationships-guide.md) - Understanding relationships
+- [State Data Access Guide](state-data-access-guide.md) - Comprehensive guide for reading and writing data
 
 ---
 
@@ -1080,10 +1078,7 @@ async function main() {
 
 ## Next Steps
 
-- Read [State Schema Guide](state-schema-guide.md) for schema definitions
-- Read [State Default Values Guide](state-default-values-guide.md) for default values
-- Read [State Data Types Guide](state-data-types-guide.md) for type information
-- Read [State Relationships Guide](state-relationships-guide.md) for relationships
-- Read [State Validation Guide](state-validation-guide.md) for validation rules
+- Read [State Schema Guide](state-schema-guide.md) for schema definitions, types, defaults, and validation
+- Read [State Data Access Guide](state-data-access-guide.md) for reading, writing, and managing data
 - Read [State Events and Listeners Guide](state-events-listeners-guide.md) for events
 - Read [State Advanced Patterns Guide](state-advanced-patterns.md) for advanced techniques

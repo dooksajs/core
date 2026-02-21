@@ -987,8 +987,6 @@ function cleanup() {
 
 ## Next Steps
 
-- Read [State Schema Guide](state-schema-guide.md) to learn about schema definitions
-- Read [State Default Values Guide](state-default-values-guide.md) for default value configuration
-- Read [State Data Types Guide](state-data-types-guide.md) for detailed type information
-- Read [State Relationships Guide](state-relationships-guide.md) for relationship management
-- Read [State Validation Guide](state-validation-guide.md) for validation rules
+- Read [State Schema Guide](state-schema-guide.md) for schema definitions, types, defaults, and validation
+- Read [State Data Access Guide](state-data-access-guide.md) for reading, writing, and managing data
+- Read [State Advanced Patterns Guide](state-advanced-patterns.md) for complex applications

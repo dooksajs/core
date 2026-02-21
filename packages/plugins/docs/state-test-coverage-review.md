@@ -234,29 +234,25 @@ This document provides a comprehensive review of the state plugin test coverage,
 
 ### Documentation Files Reviewed
 
-1. **state-schema-guide.md** - Comprehensive coverage of schema definitions
-2. **state-validation-guide.md** - Comprehensive coverage of validation
-3. **state-default-values-guide.md** - Comprehensive coverage of defaults
-4. **state-data-types-guide.md** - Comprehensive coverage of data types
-5. **state-relationships-guide.md** - Comprehensive coverage of relationships
-6. **state-events-listeners-guide.md** - Comprehensive coverage of events
-7. **stateSetValue-guide.md** - Comprehensive coverage of setValue
-8. **state-api-reference.md** - Comprehensive API reference
-9. **state-advanced-patterns.md** - Advanced usage patterns
+1. **state-schema-guide.md** - Comprehensive coverage of schema definitions, types, defaults, and validation
+2. **state-data-access-guide.md** - Comprehensive coverage of data access (reading, writing, deleting, relationships)
+3. **state-events-listeners-guide.md** - Comprehensive coverage of events
+4. **state-advanced-patterns.md** - Advanced usage patterns
+5. **state-api-reference.md** - Comprehensive API reference
 
 ### Documentation vs Implementation Gaps
 
 **Documented but Not Tested:**
 - ❌ Pattern properties (documented in schema guide, no tests)
-- ❌ Custom validators (documented in validation guide, no tests)
-- ❌ Exclusive min/max (documented in validation guide, no tests)
-- ❌ Multiple of constraint (documented in validation guide, no tests)
-- ❌ Enum validation (documented in validation guide, no tests)
-- ❌ Unique items with objects (documented in validation guide, no tests)
-- ❌ Additional properties validation (documented in validation guide, no tests)
+- ❌ Custom validators (documented in schema guide, no tests)
+- ❌ Exclusive min/max (documented in schema guide, no tests)
+- ❌ Multiple of constraint (documented in schema guide, no tests)
+- ❌ Enum validation (documented in schema guide, no tests)
+- ❌ Unique items with objects (documented in schema guide, no tests)
+- ❌ Additional properties validation (documented in schema guide, no tests)
 - ❌ Dynamic ID generation (documented in schema guide, no tests)
-- ❌ Relationship validation (documented in relationships guide, no tests)
-- ❌ Default value precedence (documented in defaults guide, no tests)
+- ❌ Relationship validation (documented in schema guide, no tests)
+- ❌ Default value precedence (documented in schema guide, no tests)
 
 **Implemented but Not Documented:**
 - ❌ Need to verify if any features are implemented but missing documentation
