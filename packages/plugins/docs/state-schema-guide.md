@@ -13,6 +13,8 @@ A schema defines the structure, type, and validation rules for data stored in th
 - **Default Values**: Initial values for data
 - **ID Generation**: How to generate IDs for collections
 
+> **Note:** Dooksa schemas are inspired by and largely compliant with the JSON Schema specification, making it familiar for developers who have used JSON Schema before.
+
 ## Schema Types
 
 The Dooksa state system supports six primary data types:
@@ -37,7 +39,7 @@ Collections store multiple documents with unique IDs. Each document in a collect
 ```
 
 **Key Features:**
-- Auto-generates IDs if not provided
+- Auto-generates IDs if not provided (IDs are managed by the system, so explicit `id` property in schema is optional)
 - Supports prefix/suffix for IDs
 - Can define custom ID generation functions
 - Each document is independently addressable
@@ -242,6 +244,16 @@ Used with `array` and `collection` types to define the schema of items within th
 }
 ```
 
+### Primitive Constraints
+
+For primitive types (string, number, array), you can define constraints similar to JSON Schema.
+
+- **String**: `minLength`, `maxLength`, `pattern`, `enum`
+- **Number**: `minimum`, `maximum`, `exclusiveMinimum`, `exclusiveMaximum`, `multipleOf`
+- **Array**: `minItems`, `maxItems`, `uniqueItems`
+
+For a complete list of validation rules and examples, see the [State Validation Guide](state-validation-guide.md).
+
 ### Properties Property
 
 Used with `object` type to define the schema of object properties.
@@ -311,11 +323,13 @@ Creates a relationship between collections. This enables cascade operations and 
       name: { type: 'string' },
       profileId: { 
         type: 'string',
-        relation: 'profile'  // References the 'profile' collection
+        relation: 'user/profiles'  // References the 'user/profiles' collection
       }
     }
   }
 }
+
+> **Note:** Relationships must always use the full namespaced path (e.g., `pluginName/collectionName`) to ensure unambiguous resolution.
 ```
 
 ### Unique Items Property
@@ -817,7 +831,7 @@ createPlugin('content', {
 
 ### 1. Keep Schemas Simple
 
-Start with simple schemas and add complexity only when needed:
+Start with simple schemas and add complexity only when needed. Avoid deeply nested objects because they make targeted state updates more difficult and can trigger unnecessary re-renders or event listeners. Flatten your data using relationships instead.
 
 ```javascript
 // Good - simple and clear
@@ -902,7 +916,7 @@ Mark essential properties as required:
 
 ### 4. Use Default Values
 
-Provide sensible defaults for optional fields:
+Provide sensible defaults for optional fields. Use functional defaults for dynamic values like dates or unique IDs to ensure a new value is generated for each new document.
 
 ```javascript
 {
@@ -1032,7 +1046,9 @@ stateSetValue({
 
 ## Error Handling
 
-When schema validation fails, a `DataSchemaException` is thrown with detailed information:
+State mutations in Dooksa (like `stateSetValue`) are strictly synchronous. This means you can rely on standard `try/catch` blocks for error handling without needing `async/await`.
+
+When schema validation fails, a `DataSchemaException` is thrown immediately with detailed information:
 
 ```javascript
 try {
